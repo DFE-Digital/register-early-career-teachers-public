@@ -74,8 +74,7 @@ class Statement < ApplicationRecord
   end
 
   def can_authorise_payment?
-    # TODO: will also need to include: `participant_declarations.any?`
-    output_fee? && payable? && !marked_as_paid_at? && deadline_date < Date.current
+    output_fee? && payable? && !marked_as_paid_at? && has_outstanding_declarations? && within_deadline?
   end
 
   def referenced_by_declarations?
@@ -100,8 +99,16 @@ private
 
   def deadline_date_in_the_past
     return unless payable? || paid?
-    return if deadline_date < Date.current
+    return if within_deadline?
 
     errors.add(:deadline_date, "Deadline date must be in the past")
+  end
+
+  def within_deadline?
+    deadline_date < Date.current
+  end
+
+  def has_outstanding_declarations?
+    payment_declarations.payment_status_payable.exists? || clawback_declarations.clawback_status_awaiting_clawback.exists?
   end
 end

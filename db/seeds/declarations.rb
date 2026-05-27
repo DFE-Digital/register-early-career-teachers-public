@@ -134,6 +134,7 @@ end
 
 august_statement_2024 = FactoryBot.create(:statement,
                                           :adjustable,
+                                          :payable,
                                           month: 8,
                                           year: 2024,
                                           deadline_date: Date.new(2024, 7, 31),
@@ -145,6 +146,7 @@ end
 
 october_statement_2024 = FactoryBot.create(:statement,
                                            :adjustable,
+                                           :payable,
                                            month: 10,
                                            year: 2024,
                                            deadline_date: Date.new(2024, 9, 30),
@@ -156,6 +158,7 @@ end
 
 august_statement_2025 = FactoryBot.create(:statement,
                                           :adjustable,
+                                          :payable,
                                           month: 8,
                                           year: 2025,
                                           deadline_date: Date.new(2025, 7, 31),
@@ -167,6 +170,7 @@ end
 
 october_statement_2025 = FactoryBot.create(:statement,
                                            :adjustable,
+                                           :payable,
                                            month: 10,
                                            year: 2025,
                                            deadline_date: Date.new(2025, 9, 30),
@@ -193,7 +197,8 @@ data = { 2024 => { school_partnership: school_partnership_2024, october_statemen
     # Create billable declarations
     n = Random.rand(25)
     pupil_premium_uplift = assign_uplift(declaration_type, uplift_count)
-    FactoryBot.create_list(:declaration, n, :with_ect, :paid,
+    FactoryBot.create_list(:declaration, n, :with_ect,
+                           payment_status: "payable",
                            declaration_type:,
                            school_partnership:,
                            pupil_premium_uplift:,
@@ -214,7 +219,9 @@ data = { 2024 => { school_partnership: school_partnership_2024, october_statemen
 
     # Create refunded declarations
     n = Random.rand(25)
-    FactoryBot.create_list(:declaration, n, :with_ect, :awaiting_clawback,
+    FactoryBot.create_list(:declaration, n, :with_ect,
+                           payment_status: "payable",
+                           clawback_status: "awaiting_clawback",
                            declaration_type:,
                            school_partnership:,
                            payment_statement: august_statement,
@@ -226,7 +233,8 @@ data = { 2024 => { school_partnership: school_partnership_2024, october_statemen
     next unless %w[started completed].include?(declaration_type)
 
     # Create billable declarations for mentors
-    FactoryBot.create(:declaration, :with_mentor, :paid,
+    FactoryBot.create(:declaration, :with_mentor,
+                      payment_status: "payable",
                       declaration_type:,
                       school_partnership:,
                       payment_statement: october_statement)
@@ -234,7 +242,9 @@ data = { 2024 => { school_partnership: school_partnership_2024, october_statemen
     add_to_results(results, year, declaration_type, :mentors, 1)
 
     # Create refunded declarations for mentors
-    FactoryBot.create(:declaration, :with_mentor, :awaiting_clawback,
+    FactoryBot.create(:declaration, :with_mentor,
+                      payment_status: "payable",
+                      clawback_status: "awaiting_clawback",
                       declaration_type:,
                       school_partnership:,
                       payment_statement: august_statement,
