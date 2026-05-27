@@ -5,7 +5,7 @@ sidebar_position: 1
 
 Guidance on what we plan to do for current and existing cohorts, and what this means for lead providers.
 
-## The 2023 cohort is not closing
+## The 2023 and 2024 cohorts will remain open
 
 We are not closing the 2023 cohort until all cohorts related to ECF close. This is different to how we closed 2021 and 2022 cohorts.
 
@@ -13,7 +13,7 @@ We expect to close the 2023 cohort in 2027. We’ll let lead providers know when
 
 ### What this means for lead providers
 
-Lead providers should continue to do what they’ve been doing for the 2023 cohort. They need to make sure that they can manage 4 open cohorts at one time.
+Lead providers should continue to do what they’ve been doing for the 2023 and 2024 cohorts. They need to make sure that they can manage 4 open cohorts at one time.
 
 If lead providers continue to train and make declarations for partially trained ECTs or mentors, they need to make sure participants are on an extended schedule. Lead provers will need to move participants onto an extended schedule if they are not already. 
 
@@ -77,7 +77,7 @@ Training status can be set back to ‘active’ if needed.
 
 #### Mentors in the 2021 or 2022 cohorts with more than one declaration
 
-These mentors are eligible for a maximum of 2 additional declarations, if this will not exceed 6 paid declarations in total. 
+These mentors are eligible for a maximum of 3 additional declarations, if this will not exceed 6 paid declarations in total. Lead providers should refer to guidance shared by the contract management team and should check with them if they’re uncertain. 
 
 This training will be paid from their ECF cohort. Further declarations cannot be submitted over the API and must be submitted manually to contract managers. 
 
