@@ -1,6 +1,6 @@
 ---
 title: API data states
-sidebar_position: 2
+sidebar_position: 3
 ---
 
 ## What this page covers  

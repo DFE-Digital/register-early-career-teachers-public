@@ -1,6 +1,6 @@
 ---
 title: Update participant data
-sidebar_position: 7
+sidebar_position: 9
 ---
 
 This guidance explains: 

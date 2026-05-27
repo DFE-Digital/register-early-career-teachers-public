@@ -1,6 +1,6 @@
 ---
 title: View financial statement payment dates
-sidebar_position: 10
+sidebar_position: 12
 ---
 
 Providers can view up-to-date payment cut-off dates, upcoming payment dates, and check to see whether output payments have been made by DfE.
