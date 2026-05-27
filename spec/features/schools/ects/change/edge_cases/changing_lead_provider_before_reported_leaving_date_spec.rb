@@ -1,6 +1,5 @@
-RSpec.describe "Changing lead provider before the ECTs reported leaving date" do
+RSpec.describe "Changing lead provider before the ECTs reported leaving date", :travel_to_current_contract_period do
   include ChangesBeforeReportedLeavingDateHelpers
-
   include_context "test TRS API returns a teacher"
 
   before do

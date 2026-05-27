@@ -1,5 +1,12 @@
 module ECTAtSchoolPeriods
   class IncorrectTrainingProgrammeError < StandardError; end
+
+  class NoContractPeriodError < StandardError
+    def message
+      "Changes cannot be made to an ECT's training without a contract period"
+    end
+  end
+
   class NoTrainingPeriodError < StandardError; end
 
   class SwitchTraining
@@ -38,6 +45,7 @@ module ECTAtSchoolPeriods
     def to_provider_led
       raise IncorrectTrainingProgrammeError if @ect_at_school_period.provider_led_training_programme?
 
+      raise NoContractPeriodError if contract_period.blank?
       raise NoTrainingPeriodError if @lead_provider.blank?
 
       ActiveRecord::Base.transaction do

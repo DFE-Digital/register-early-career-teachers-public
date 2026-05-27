@@ -1,4 +1,4 @@
-describe Schools::RegisterMentorWizard::Wizard do
+describe Schools::RegisterMentorWizard::Wizard, :travel_to_current_contract_period do
   let(:current_step) { :find_mentor }
   let(:ect_teacher) { FactoryBot.create(:teacher, trn: "7654321") }
   let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: ect_teacher, school:) }
@@ -325,17 +325,13 @@ describe Schools::RegisterMentorWizard::Wizard do
                          started_on:)
       end
 
-      around do |example|
-        travel_to Date.new(2025, 6, 3) do
-          example.run
-        end
-      end
-
       context "when the start date is in the future" do
-        let(:started_on) { Date.new(2025, 7, 1) }
+        let(:started_on) { 2.weeks.from_now }
 
         context "when the contract period is enabled" do
-          let!(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled: true) }
+          let!(:contract_period) do
+            FactoryBot.create(:contract_period, :current, enabled: true)
+          end
 
           it do
             expect(subject).to eq(%i[find_mentor
@@ -356,7 +352,9 @@ describe Schools::RegisterMentorWizard::Wizard do
         end
 
         context "when the contract period is not enabled" do
-          let!(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled: false) }
+          let!(:contract_period) do
+            FactoryBot.create(:contract_period, :current, enabled: false)
+          end
 
           it do
             expect(subject).to eq(%i[find_mentor
@@ -393,7 +391,7 @@ describe Schools::RegisterMentorWizard::Wizard do
       end
 
       context "when the date is today" do
-        let(:started_on) { Date.new(2025, 6, 3) }
+        let(:started_on) { Date.current }
         let!(:contract_period) { nil }
 
         it do
@@ -415,7 +413,7 @@ describe Schools::RegisterMentorWizard::Wizard do
       end
 
       context "when the date is in the past" do
-        let(:started_on) { Date.new(2025, 6, 1) }
+        let(:started_on) { 2.weeks.ago }
         let!(:contract_period) { nil }
 
         it do

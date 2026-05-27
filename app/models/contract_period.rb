@@ -34,7 +34,10 @@ class ContractPeriod < ApplicationRecord
   end
 
   def self.current = containing_date(Date.current)
+  def self.current! = current || raise(StandardError, "No current contract period")
+
   def self.upcoming = closest_to(Date.current).starting_tomorrow_or_after.first
+
   def self.current_or_upcoming = current.presence || upcoming
 
   def self.current_or_upcoming!
@@ -53,7 +56,7 @@ class ContractPeriod < ApplicationRecord
   end
 
   def self.for_registration_start_date(start_date)
-    current_contract_period = current
+    current_contract_period = current!
     return current_contract_period unless current_contract_period && start_date.is_a?(Date)
 
     contract_period_from_start_date = containing_date(start_date)

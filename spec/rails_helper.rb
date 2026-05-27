@@ -62,4 +62,13 @@ RSpec.configure do |config|
       DeclarativeUpdates.skip(*declarative_updates_to_skip) { example.run }
     end
   end
+
+  config.around do |example|
+    if example.metadata[:travel_to_current_contract_period]
+      current_contract_period_dates = CONTRACT_PERIOD_DATES[Date.current.year]
+      travel_to(current_contract_period_dates[:started_on]) { example.run }
+    else
+      example.run
+    end
+  end
 end
