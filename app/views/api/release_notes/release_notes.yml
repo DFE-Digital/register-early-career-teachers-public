@@ -21,7 +21,18 @@
 #
 #     **bold** and _italic_ text
 
-- title: Update to the induction_tutor_email attribute on GET partnerships and GET schools endpoints
+  title: Added schedules and contract data for the 2026 to 2027 intake to the test (sandbox) environment 
+  date: 2026-05-27
+  tags:
+    - data-update
+    - sandbox-release
+  body: |
+    We’ve added the schedules and contract data for the 2026 to 2027 intake of early career teachers (ECTs) and mentors to the test (sandbox) environment.
+
+    Lead providers can use the seed data we’ve created. This will allow full end-to-end process testing and ensure smooth integration with POST participant-declarations, POST Partnership endpoints and all GET endpoints.
+
+
+  title: Update to the induction_tutor_email attribute on GET partnerships and GET schools endpoints
   date: 2026-05-26
   tags:
     - sandbox-release
