@@ -90,7 +90,7 @@ RSpec.describe API::Declarations::Query, :with_metadata do
 
     describe "filtering" do
       describe "by `lead_provider_id`" do
-        let(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing) }
+        let(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing)) }
         let(:lead_provider_id) { training_period.lead_provider.id }
 
         let!(:declaration1) { FactoryBot.create(:declaration, training_period:) }

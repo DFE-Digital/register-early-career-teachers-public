@@ -1183,7 +1183,7 @@ RSpec.describe Events::Record do
     end
 
     context "when ECT training" do
-      let(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing) }
+      let(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing)) }
       let(:course_identifier) { "ecf-induction" }
 
       it "queues a RecordEventJob with the correct values" do
@@ -1206,7 +1206,7 @@ RSpec.describe Events::Record do
     end
 
     context "when Mentor training" do
-      let(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing) }
+      let(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period: FactoryBot.create(:mentor_at_school_period, :ongoing)) }
       let(:course_identifier) { "ecf-mentor" }
 
       it "queues a RecordEventJob with the correct values" do
@@ -1850,6 +1850,7 @@ RSpec.describe Events::Record do
       let(:ect_at_school_period) do
         FactoryBot.create(
           :ect_at_school_period,
+          :ongoing,
           teacher:,
           school:,
           started_on:
@@ -1882,6 +1883,7 @@ RSpec.describe Events::Record do
       let(:mentor_at_school_period) do
         FactoryBot.create(
           :mentor_at_school_period,
+          :ongoing,
           teacher:,
           school:,
           started_on:

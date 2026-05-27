@@ -55,10 +55,10 @@ FactoryBot.define do
 
     trait :with_school_partnership do
       transient do
-        teacher_period { ect_at_school_period.presence || mentor_at_school_period }
+        at_school_period { ect_at_school_period.presence || mentor_at_school_period }
       end
 
-      school_partnership { association :school_partnership, school: teacher_period&.school || FactoryBot.create(:school) }
+      school_partnership { association :school_partnership, school: at_school_period&.school || FactoryBot.create(:school) }
     end
 
     trait :with_active_lead_provider do
@@ -70,7 +70,7 @@ FactoryBot.define do
         association :school_partnership,
                     :with_active_lead_provider,
                     active_lead_provider:,
-                    school: teacher_period&.school || FactoryBot.create(:school)
+                    school: at_school_period&.school || FactoryBot.create(:school)
       end
     end
 

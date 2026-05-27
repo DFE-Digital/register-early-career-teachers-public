@@ -68,8 +68,8 @@ describe AtSchoolPeriod do
           end
         end
 
-        context "with an ongoing training period when the ECT is finished" do
-          let(:ect) { FactoryBot.create(:ect_at_school_period, started_on: 2.years.ago, finished_on: 6.months.ago) }
+        context "when finishing an ECT that has an ongoing training period" do
+          let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 2.years.ago) }
 
           before do
             FactoryBot.create(:training_period, :ongoing, ect_at_school_period: ect, started_on: 2.years.ago)

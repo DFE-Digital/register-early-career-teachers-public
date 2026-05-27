@@ -243,6 +243,7 @@ RSpec.describe API::Declarations::Create, type: :model do
           context "when teacher's latest ongoing training period is in a frozen contract period but declaration targets non-frozen" do
             let(:declaration_date) { Faker::Date.between(from: training_period.started_on, to: training_period.finished_on).rfc3339 }
 
+            let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :ongoing, started_on: 6.months.ago) }
             let!(:training_period) do
               FactoryBot.create(
                 :training_period,
@@ -322,6 +323,8 @@ RSpec.describe API::Declarations::Create, type: :model do
         end
 
         describe "training period selection" do
+          let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :ongoing, started_on: 6.months.ago) }
+
           context "when multiple training periods exist for the same lead provider" do
             let!(:training_period) do
               FactoryBot.create(
@@ -630,7 +633,8 @@ RSpec.describe API::Declarations::Create, type: :model do
         let(:teacher_type) { trainee_type }
 
         context "when invalid" do
-          let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing) }
+          let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :ongoing) }
+          let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on) }
           let(:teacher_api_id) { SecureRandom.uuid }
 
           it { expect(instance.create).to be(false) }

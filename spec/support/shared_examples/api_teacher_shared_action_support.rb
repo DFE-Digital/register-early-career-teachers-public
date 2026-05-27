@@ -9,7 +9,7 @@ RSpec.shared_examples "an API teacher shared action", :with_metadata do
 
     API::Concerns::Teachers::SharedAction::TEACHER_TYPES.each do |trainee_type|
       context "for #{trainee_type}" do
-        let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: 2.months.ago) }
+        let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :ongoing, started_on: 2.months.ago) }
         let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on) }
         let(:teacher_type) { trainee_type }
 

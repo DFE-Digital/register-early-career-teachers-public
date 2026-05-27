@@ -14,7 +14,7 @@ RSpec.describe API::Teachers::Defer, type: :model do
     describe "validations" do
       API::Concerns::Teachers::SharedAction::TEACHER_TYPES.each do |trainee_type|
         context "for #{trainee_type}" do
-          let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: 2.months.ago) }
+          let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :ongoing, started_on: 2.months.ago) }
           let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on) }
           let(:teacher_type) { trainee_type }
 
@@ -59,7 +59,7 @@ RSpec.describe API::Teachers::Defer, type: :model do
           end
 
           context "when training not started yet" do
-            let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: 3.months.from_now) }
+            let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :ongoing, started_on: 3.months.from_now) }
 
             it { is_expected.to have_one_error_per_attribute }
             it { is_expected.to have_error(:teacher_api_id, "You cannot defer #/teacher_api_id. This is because they have not been training with you for at least one day.") }
@@ -95,7 +95,7 @@ RSpec.describe API::Teachers::Defer, type: :model do
           let(:teacher_type) { trainee_type }
 
           context "when invalid" do
-            let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing) }
+            let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on) }
             let(:teacher_api_id) { SecureRandom.uuid }
 
             it { expect(instance.defer).to be(false) }

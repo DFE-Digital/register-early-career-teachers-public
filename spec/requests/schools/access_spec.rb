@@ -74,7 +74,7 @@ describe "Schools access guard" do
       let(:school) { gias_school.school }
 
       before do
-        ect_at_school_period = FactoryBot.create(:ect_at_school_period, school:)
+        ect_at_school_period = FactoryBot.create(:ect_at_school_period, :ongoing, school:)
         FactoryBot.create(:training_period, :ongoing, ect_at_school_period:)
         sign_in_as(:school_user, method: :dfe_sign_in, school:)
       end
