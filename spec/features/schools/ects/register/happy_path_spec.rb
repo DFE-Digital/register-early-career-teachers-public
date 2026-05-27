@@ -229,7 +229,7 @@ RSpec.describe "Registering an ECT" do
   end
 
   def when_i_enter_the_ect_email_address
-    page.get_by_label("What is Kirk Van Damme’s email address?").fill("example@example.com")
+    page.get_by_label("Email address").fill("example@example.com")
   end
 
   def then_i_should_be_taken_to_the_training_programme_page
@@ -321,7 +321,7 @@ RSpec.describe "Registering an ECT" do
   end
 
   def when_i_enter_a_new_ect_email_address
-    page.get_by_label("What is Kirk Van Houten’s email address?").fill("new@example.com")
+    page.get_by_label("Email address").fill("new@example.com")
   end
 
   def and_i_should_see_the_new_email
