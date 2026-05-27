@@ -320,6 +320,7 @@
   - fee_per_declaration
   - created_at
   - updated_at
+  - contract_id
   :contract_banded_fee_structures:
   - id
   - recruitment_target
@@ -328,6 +329,7 @@
   - setup_fee
   - created_at
   - updated_at
+  - contract_id
   :contract_banded_fee_structure_bands:
   - id
   - banded_fee_structure_id
