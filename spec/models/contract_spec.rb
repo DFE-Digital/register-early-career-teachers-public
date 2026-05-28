@@ -111,4 +111,22 @@ describe Contract do
       it { is_expected.to eq(0) }
     end
   end
+
+  describe "#description" do
+    subject(:description) { contract.description }
+
+    around { |example| travel_to(Time.zone.local(2026, 1, 15, 14, 30)) { example.run } }
+
+    context "when the contract type is `ITTECF_ECTP`" do
+      let(:contract) { FactoryBot.create(:contract, :for_ittecf_ectp) }
+
+      it { is_expected.to eq("ITTECF ECTP (created 15 January 2026, 2:30pm)") }
+    end
+
+    context "when the contract type is `ECF`" do
+      let(:contract) { FactoryBot.create(:contract, :for_ecf) }
+
+      it { is_expected.to eq("ECF (created 15 January 2026, 2:30pm)") }
+    end
+  end
 end
