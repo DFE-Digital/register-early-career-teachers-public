@@ -15,6 +15,9 @@
   <%= turbo_include_tags %>
 
   <%= stylesheet_link_tag "application", "data-turbo-track": "reload", nonce: true %>
+  <% if Rails.application.config.enable_debug_css %>
+    <%= stylesheet_link_tag "debug", "data-turbo-track": "reload", nonce: true %>
+  <% end %>
   <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module", nonce: true %>
 
   <%= yield :head %>
