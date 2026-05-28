@@ -6,10 +6,7 @@ sudo usermod --password $(echo vscode | openssl passwd -1 -stdin) vscode
 echo "Updating RubyGems..."
 gem update --system
 
-echo "Installing dependencies..."
+echo "Setting up app..."
 bin/setup
-
-echo "Creating database..."
-bin/rails db:create db:schema:load db:migrate db:seed
 
 echo "Done!"

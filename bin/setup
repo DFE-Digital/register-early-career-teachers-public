@@ -13,7 +13,7 @@ FileUtils.chdir APP_ROOT do
   system! "gem install bundler --conservative"
   system("bundle check") || system!("bundle install")
 
-  puts "\n== Preparing JavaScript database =="
+  puts "\n== Installing JavaScript dependencies and installing Chromium for Playwright =="
   system("npm install --nofund --quiet")
   system("npx playwright install chromium")
 
