@@ -1,4 +1,4 @@
-<% if Schools::RegistrationWindow.closed? %>
+<% if current_user&.school_user? && Schools::RegistrationWindow.closed? %>
   <%= govuk_notification_banner(title_text: "Important") do |notification_banner| %>
     <% notification_banner.with_heading(text: "Registration not currently open", tag: "h3") %>
 
