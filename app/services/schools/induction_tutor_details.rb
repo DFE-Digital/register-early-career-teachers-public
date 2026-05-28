@@ -1,6 +1,7 @@
 module Schools
   class InductionTutorDetails
     include Rails.application.routes.url_helpers
+
     attr_reader :user
 
     def initialize(user)
@@ -11,8 +12,9 @@ module Schools
       return unless user&.school_user?
       return if user.dfe_user_impersonating_school_user?
       return unless school
+      return unless closest_contract_period
 
-      last_updated_year.blank? || last_updated_year < ContractPeriod.current.year
+      last_updated_year.blank? || last_updated_year < closest_contract_period.year
     end
 
     def wizard_path
@@ -25,12 +27,11 @@ module Schools
 
   private
 
-    def school
-      @school ||= @user&.school
-    end
+    def school = @school ||= @user&.school
+    def last_updated_year = school.induction_tutor_last_nominated_in&.year
 
-    def last_updated_year
-      school.induction_tutor_last_nominated_in&.year
+    def closest_contract_period
+      @closest_contract_period ||= ContractPeriod.current_or_upcoming
     end
   end
 end
