@@ -1,0 +1,18 @@
+<%
+  page_data(
+    title: "Edit statement",
+    error: @statement.errors.present?,
+    backlink_href: admin_contract_period_active_lead_provider_statement_path(@active_lead_provider.contract_period, @active_lead_provider, @statement)
+  )
+%>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <%= form_with model: @statement,
+                   url: admin_contract_period_active_lead_provider_statement_path(@active_lead_provider.contract_period, @active_lead_provider, @statement),
+                   method: :patch do |f| %>
+      <%= render "fields", form: f, active_lead_provider: @active_lead_provider, contract_period: @active_lead_provider.contract_period %>
+      <%= f.govuk_submit "Save" %>
+    <% end %>
+  </div>
+</div>

@@ -1,7 +1,7 @@
 describe Statement do
   describe "associations" do
     it { is_expected.to have_one(:active_lead_provider).through(:contract) }
-    it { is_expected.to have_many(:adjustments) }
+    it { is_expected.to have_many(:adjustments).dependent(:destroy) }
     it { is_expected.to have_many(:payment_declarations).class_name("Declaration").inverse_of(:payment_statement) }
     it { is_expected.to have_many(:clawback_declarations).class_name("Declaration").inverse_of(:clawback_statement) }
     it { is_expected.to have_one(:lead_provider).through(:active_lead_provider) }
@@ -293,6 +293,26 @@ describe Statement do
           end
         end
       end
+    end
+  end
+
+  describe "#referenced_by_declarations?" do
+    context "when no declaration" do
+      subject(:statement) { FactoryBot.create(:statement) }
+
+      it { is_expected.not_to be_referenced_by_declarations }
+    end
+
+    context "when payment declaration" do
+      subject(:statement) { FactoryBot.create(:declaration, :eligible).payment_statement }
+
+      it { is_expected.to be_referenced_by_declarations }
+    end
+
+    context "when clawback declaration" do
+      subject(:statement) { FactoryBot.create(:declaration, :clawed_back).clawback_statement }
+
+      it { is_expected.to be_referenced_by_declarations }
     end
   end
 end

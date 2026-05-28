@@ -46,7 +46,7 @@ RSpec.describe "admin/finance/active_lead_providers/statements/index.html.erb" d
     expect(rows.count).to eq(2)
     expect(rows[0].text).to include("November 2099")
     expect(rows[1].text).to include("December 2099")
-    expect(rendered).to have_link("November 2099", href: "#")
+    expect(rendered).to have_link("November 2099", href: admin_contract_period_active_lead_provider_statement_path(contract_period, active_lead_provider, november_statement))
     expect(rendered).to have_content("Output")
     expect(rendered).to have_content("Service")
     expect(rendered).to have_css(".govuk-tag.govuk-tag--blue", text: "Open")
@@ -54,7 +54,7 @@ RSpec.describe "admin/finance/active_lead_providers/statements/index.html.erb" d
     expect(rendered).to have_content(november_statement.deadline_date.to_fs(:govuk))
     expect(rendered).to have_content(december_statement.payment_date.to_fs(:govuk))
 
-    expect(rendered).to have_link("Add statement", href: "#")
+    expect(rendered).to have_link("Add statement", href: new_admin_contract_period_active_lead_provider_statement_path(contract_period, active_lead_provider))
     expect(rendered).not_to have_selector("a[aria-disabled='true']", text: "Add statement")
   end
 
