@@ -7,7 +7,7 @@ echo "Updating RubyGems..."
 sudo gem update --system
 
 echo "Installing foreman and bundler"
-sudo gem install foreman bundler
+sudo gem install foreman bundler solargraph
 
 echo "Setting up app..."
 bin/setup
