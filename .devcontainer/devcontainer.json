@@ -29,11 +29,6 @@
         "esbenp.prettier-vscode",
         "ms-vscode.vscode-types"
       ],
-      "settings": {
-        "rubyLsp.rubyVersionManager": {
-          "identifier": "rvm"
-        }
-      }
     }
   },
   "forwardPorts": [2222],
