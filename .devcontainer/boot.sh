@@ -4,7 +4,10 @@ echo "Setting SSH password for vscode user..."
 sudo usermod --password $(echo vscode | openssl passwd -1 -stdin) vscode
 
 echo "Updating RubyGems..."
-gem update --system
+sudo gem update --system
+
+echo "Installing foreman"
+sudo gem install foreman
 
 echo "Setting up app..."
 bin/setup
