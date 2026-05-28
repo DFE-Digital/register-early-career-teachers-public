@@ -19,7 +19,7 @@
     "@esbuild/linux-x64": "^0.28.0"
   },
   "scripts": {
-    "build:css": "sass ./app/assets/stylesheets/swagger.scss:./app/assets/builds/swagger.css ./app/assets/stylesheets/application.scss:./app/assets/builds/application.css --no-source-map --load-path=node_modules --quiet-deps",
+    "build:css": "sass ./app/assets/stylesheets/swagger.scss:./app/assets/builds/swagger.css ./app/assets/stylesheets/application.scss:./app/assets/builds/application.css ./app/assets/stylesheets/debug.scss:./app/assets/builds/debug.css --no-source-map --load-path=node_modules --quiet-deps",
     "build": "esbuild app/assets/javascripts/*.* --bundle --sourcemap --format=esm --outdir=app/assets/builds --public-path=/assets",
     "lint": "npm run lint:js && npm run lint:scss",
     "lint:js": "standard 'app/assets/javascripts/**/*.js'",
