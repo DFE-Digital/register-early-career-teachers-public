@@ -7,7 +7,7 @@
 
     sl.with_row do |row|
       row.with_key(text: "Contract")
-      row.with_value(text: statement.contract.contract_type)
+      row.with_value(text: statement.contract.description)
     end
 
     sl.with_row do |row|
