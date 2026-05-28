@@ -20,7 +20,9 @@ RSpec.describe "admin/finance/active_lead_providers/statements/delete.html.erb" 
     expect(view.content_for(:backlink_or_breadcrumb)).to have_link("Back", href: statement_path)
 
     expect(rendered).to have_css(".govuk-summary-list__key", text: "Period")
+    expect(rendered).to have_css(".govuk-summary-list__key", text: "Contract")
     expect(rendered).to have_css(".govuk-summary-list__key", text: "Fee type")
+    expect(rendered).to have_css(".govuk-summary-list__value", text: statement.contract.description)
 
     expect(rendered).to have_content("Are you sure you want to delete this statement?")
     expect(rendered).to have_selector("form[action='#{statement_path}']")

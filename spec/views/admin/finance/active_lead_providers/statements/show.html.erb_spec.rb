@@ -26,6 +26,7 @@ RSpec.describe "admin/finance/active_lead_providers/statements/show.html.erb" do
     ["Period", "Contract", "Fee type", "Status", "Deadline date", "Payment date"].each do |key|
       expect(rendered).to have_css(".govuk-summary-list__key", text: key)
     end
+    expect(rendered).to have_css(".govuk-summary-list__value", text: statement.contract.description)
     expect(rendered).to have_css(".govuk-tag.govuk-tag--blue", text: "Open")
 
     expect(rendered).to have_link("Edit statement", href: edit_path)
