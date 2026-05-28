@@ -22,6 +22,8 @@ lead_providers_data.each do |data|
   lead_provider = LeadProvider.find_or_create_by!(data.slice(:name, :vat_registered))
 
   data[:years].each do |year|
+    next if year == 2026
+
     contract_period = ContractPeriod.find_by!(year:)
     ActiveLeadProvider.find_or_create_by!(lead_provider:, contract_period:)
   end

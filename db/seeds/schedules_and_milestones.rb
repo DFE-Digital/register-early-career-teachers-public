@@ -355,31 +355,31 @@ def schedule_and_milestone_data
       milestones: schedule_milestone_values(declaration_types: started_to_completed, start_date: "2025-09-01", milestone_date: nil)
     },
 
-    # 2026
+    # # 2026
 
-    ## Extended
+    # ## Extended
 
-    build(identifier: "ecf-extended-september", contract_period_year: 2026, start_date: "2026-09-01"),
-    build(identifier: "ecf-extended-january", contract_period_year: 2026, start_date: "2027-01-01"),
-    build(identifier: "ecf-extended-april", contract_period_year: 2026, start_date: "2027-04-01"),
+    # build(identifier: "ecf-extended-september", contract_period_year: 2026, start_date: "2026-09-01"),
+    # build(identifier: "ecf-extended-january", contract_period_year: 2026, start_date: "2027-01-01"),
+    # build(identifier: "ecf-extended-april", contract_period_year: 2026, start_date: "2027-04-01"),
 
-    ## Reduced
+    # ## Reduced
 
-    build(identifier: "ecf-reduced-september", contract_period_year: 2026, start_date: "2026-09-01"),
-    build(identifier: "ecf-reduced-january", contract_period_year: 2026, start_date: "2027-01-01"),
-    build(identifier: "ecf-reduced-april", contract_period_year: 2026, start_date: "2027-04-01"),
+    # build(identifier: "ecf-reduced-september", contract_period_year: 2026, start_date: "2026-09-01"),
+    # build(identifier: "ecf-reduced-january", contract_period_year: 2026, start_date: "2027-01-01"),
+    # build(identifier: "ecf-reduced-april", contract_period_year: 2026, start_date: "2027-04-01"),
 
-    ## Replacement
+    # ## Replacement
 
-    build(identifier: "ecf-replacement-september", contract_period_year: 2026, start_date: "2026-09-01"),
-    build(identifier: "ecf-replacement-january", contract_period_year: 2026, start_date: "2027-01-01"),
-    build(identifier: "ecf-replacement-april", contract_period_year: 2026, start_date: "2027-04-01"),
+    # build(identifier: "ecf-replacement-september", contract_period_year: 2026, start_date: "2026-09-01"),
+    # build(identifier: "ecf-replacement-january", contract_period_year: 2026, start_date: "2027-01-01"),
+    # build(identifier: "ecf-replacement-april", contract_period_year: 2026, start_date: "2027-04-01"),
 
-    ## Standard
+    # ## Standard
 
-    build(identifier: "ecf-standard-september", contract_period_year: 2026, start_date: "2026-06-01"),
-    build(identifier: "ecf-standard-january", contract_period_year: 2026, start_date: "2027-01-01"),
-    build(identifier: "ecf-standard-april", contract_period_year: 2026, start_date: "2027-04-01"),
+    # build(identifier: "ecf-standard-september", contract_period_year: 2026, start_date: "2026-06-01"),
+    # build(identifier: "ecf-standard-january", contract_period_year: 2026, start_date: "2027-01-01"),
+    # build(identifier: "ecf-standard-april", contract_period_year: 2026, start_date: "2027-04-01"),
   ]
 end
 

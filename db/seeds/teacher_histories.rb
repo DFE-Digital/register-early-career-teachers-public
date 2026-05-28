@@ -161,16 +161,16 @@ cp_2024 = ContractPeriod.find_by!(year: 2024)
 cp_2025 = ContractPeriod.find_by!(year: 2025)
 
 future_start_date = 2.weeks.from_now.to_date
-future_contract_period = ContractPeriod.for_registration_start_date(future_start_date)
+# future_contract_period = ContractPeriod.for_registration_start_date(future_start_date)
 
 ambition_artisan_2022 = ActiveLeadProvider.find_by!(contract_period: cp_2022, lead_provider: ambition_institute)
 ambition_artisan_2023 = ActiveLeadProvider.find_by!(contract_period: cp_2023, lead_provider: ambition_institute)
 teach_first_grain_2022 = ActiveLeadProvider.find_by!(contract_period: cp_2022, lead_provider: teach_first)
 
-teach_first_grain_future = ActiveLeadProvider.find_by!(
-  contract_period: future_contract_period,
-  lead_provider: teach_first
-)
+# teach_first_grain_future = ActiveLeadProvider.find_by!(
+#   contract_period: future_contract_period,
+#   lead_provider: teach_first
+# )
 
 # Abbey Grove — Ambition / Artisan
 ambition_artisan_abbey_grove_2022 = find_or_create_school_partnership!(
@@ -210,12 +210,12 @@ teach_first_grain_abbey_grove_2025 = find_or_create_school_partnership!(
   contract_period: cp_2025
 )
 
-teach_first_grain_abbey_grove_future = find_or_create_school_partnership!(
-  school: abbey_grove_school,
-  lead_provider: teach_first,
-  delivery_partner: grain_teaching_school_hub,
-  contract_period: future_contract_period
-)
+# teach_first_grain_abbey_grove_future = find_or_create_school_partnership!(
+#   school: abbey_grove_school,
+#   lead_provider: teach_first,
+#   delivery_partner: grain_teaching_school_hub,
+#   contract_period: future_contract_period
+# )
 
 # Ackley Bridge — Ambition / Artisan
 
@@ -871,15 +871,15 @@ peter_davison_at_abbey_grove_school = FactoryBot.create(:ect_at_school_period,
                                                         finished_on: nil,
                                                         school_reported_appropriate_body: south_yorkshire_studio_hub).tap { |sp| describe_ect_at_school_period(sp) }
 
-FactoryBot.create(:training_period,
-                  :for_ect,
-                  :with_schedule,
-                  ect_at_school_period: peter_davison_at_abbey_grove_school,
-                  started_on: future_start_date,
-                  finished_on: nil,
-                  school_partnership: teach_first_grain_abbey_grove_future,
-                  training_programme: "provider_led",
-                  expression_of_interest: teach_first_grain_future).tap { |tp| describe_training_period(tp) }
+# FactoryBot.create(:training_period,
+#                   :for_ect,
+#                   :with_schedule,
+#                   ect_at_school_period: peter_davison_at_abbey_grove_school,
+#                   started_on: future_start_date,
+#                   finished_on: nil,
+#                   school_partnership: teach_first_grain_abbey_grove_future,
+#                   training_programme: "provider_led",
+#                   expression_of_interest: teach_first_grain_future).tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Kenneth Williams (mentor - future start date)", indent: 2, colour: MENTOR_COLOUR)
 
@@ -892,14 +892,14 @@ kenneth_williams_mentoring_at_abbey_grove = FactoryBot.create(:mentor_at_school_
                                                               started_on: future_start_date,
                                                               finished_on: nil).tap { |sp| describe_mentor_at_school_period(sp) }
 
-FactoryBot.create(:training_period,
-                  :for_mentor,
-                  :with_schedule,
-                  mentor_at_school_period: kenneth_williams_mentoring_at_abbey_grove,
-                  started_on: future_start_date,
-                  finished_on: nil,
-                  school_partnership: teach_first_grain_abbey_grove_future,
-                  training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
+# FactoryBot.create(:training_period,
+#                   :for_mentor,
+#                   :with_schedule,
+#                   mentor_at_school_period: kenneth_williams_mentoring_at_abbey_grove,
+#                   started_on: future_start_date,
+#                   finished_on: nil,
+#                   school_partnership: teach_first_grain_abbey_grove_future,
+#                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Naruto Uzumaki (ECT, invalid LP)", indent: 2, colour: ECT_COLOUR)
 
