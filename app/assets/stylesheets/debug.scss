@@ -1,0 +1,32 @@
+h1, h2, h3, h4 {
+  outline: 2px dashed var(--heading-color);
+  display: flex !important;
+  justify-content: space-between;
+
+  &::after {
+    font-size: .8rem;
+    content: var(--heading-label);
+    color: var(--heading-color);
+    padding: .5em
+  }
+}
+
+h1 {
+  --heading-label: " h1";
+  --heading-color: red;
+}
+
+h2 {
+  --heading-label: " h2";
+  --heading-color: magenta;
+}
+
+h3 {
+  --heading-label: " h3";
+  --heading-color: turquoise;
+}
+
+h4 {
+  --heading-label: " h4";
+  --heading-color: orange;
+}
