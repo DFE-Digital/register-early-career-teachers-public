@@ -18,7 +18,7 @@ services:
       ENCRYPTION_PRIMARY_KEY: local_primary_key
       ENCRYPTION_DETERMINISTIC_KEY: local_deterministic_key
       ENCRYPTION_DERIVATION_SALT: local_derivation_salt
-      GEM_HOME: ~/.gems
+      GEM_HOME: $HOME/.gems
     depends_on:
       - postgres
       - redis
