@@ -10,9 +10,9 @@ module Statements
     end
 
     def authorise!
-      raise NotAuthorisable unless statement.can_authorise_payment?
-
       ActiveRecord::Base.transaction do
+        raise NotAuthorisable unless statement.can_authorise_payment?
+
         settle_declarations!
         refund_declarations!
         settle_statement!
