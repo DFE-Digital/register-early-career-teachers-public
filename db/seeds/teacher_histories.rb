@@ -1171,17 +1171,14 @@ create_same_school_mentorship!(
 )
 
 # Admin add partnership EOI scenario (Grange Hill)
-contract_period = ContractPeriod.current
-raise "ContractPeriod.current not set" if contract_period.blank?
-
 lead_provider = LeadProvider.find_by!(name: "Ambition Institute")
 active_lead_provider = ActiveLeadProvider.find_or_create_by!(
   lead_provider:,
-  contract_period_year: contract_period.year
+  contract_period_year: cp_2025.year
 )
 
 schedule = Schedule.find_or_create_by!(
-  contract_period:,
+  contract_period: cp_2025,
   identifier: "ecf-standard-september"
 )
 
@@ -1196,7 +1193,7 @@ alice_period = FactoryBot.create(
   :ect_at_school_period,
   school:,
   teacher: alice_thompson,
-  started_on: contract_period.started_on + 1.month,
+  started_on: cp_2025.started_on + 1.month,
   finished_on: nil
 )
 
@@ -1204,7 +1201,7 @@ ben_period = FactoryBot.create(
   :ect_at_school_period,
   school:,
   teacher: ben_edwards,
-  started_on: contract_period.started_on + 2.months,
+  started_on: cp_2025.started_on + 2.months,
   finished_on: nil
 )
 
@@ -1212,7 +1209,7 @@ chris_period = FactoryBot.create(
   :mentor_at_school_period,
   school:,
   teacher: chris_walker,
-  started_on: contract_period.started_on + 3.months,
+  started_on: cp_2025.started_on + 3.months,
   finished_on: nil
 )
 
@@ -1220,7 +1217,7 @@ dana_period = FactoryBot.create(
   :ect_at_school_period,
   school:,
   teacher: dana_hughes,
-  started_on: contract_period.started_on + 1.week,
+  started_on: cp_2025.started_on + 1.week,
   finished_on: nil
 )
 

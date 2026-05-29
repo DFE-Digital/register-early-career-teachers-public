@@ -694,7 +694,7 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
     end
 
     context "when start date is last day of contract period" do
-      let(:start_date_value) { Date.new(2026, 5, 31).strftime("%Y-%m-%d") }
+      let(:start_date_value) { contract_period_2025.finished_on.strftime("%Y-%m-%d") }
       let!(:contract_period_2025) { FactoryBot.create(:contract_period, year: 2025, enabled: true) }
 
       it "includes working_pattern step" do

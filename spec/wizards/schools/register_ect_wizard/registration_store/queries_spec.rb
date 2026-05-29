@@ -1,4 +1,4 @@
-RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
+RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries, :travel_to_current_contract_period do
   subject(:queries) { described_class.new(registration_store:) }
 
   let(:teacher) { FactoryBot.create(:teacher) }
@@ -141,7 +141,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
     end
 
     context "when the start_date is present" do
-      let!(:contract_period) { create_contract_period(year: 2025) }
+      let!(:contract_period) { create_contract_period(year: 2026) }
       let(:start_date) { contract_period.finished_on.to_s }
 
       it "returns the normal registration contract period" do
@@ -152,9 +152,9 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
     context "when the previous training period is provider-led in closed 2021" do
       let!(:contract_period_2021) { create_contract_period(year: 2021, payments_frozen: true) }
       let!(:contract_period_2024) { create_contract_period(year: 2024, payments_frozen: true) }
-      let!(:contract_period_2025) { create_contract_period(year: 2025) }
+      let!(:contract_period_2026) { create_contract_period(year: 2026) }
 
-      let(:start_date) { contract_period_2025.started_on.to_s }
+      let(:start_date) { contract_period_2026.started_on.to_s }
 
       let(:previous_training_period) do
         build_previous_training_period_double(
@@ -172,9 +172,9 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
 
     context "when the previous training period is provider-led in a non-frozen contract period" do
       let!(:contract_period_2023) { create_contract_period(year: 2023) }
-      let!(:contract_period_2025) { create_contract_period(year: 2025) }
+      let!(:contract_period_2026) { create_contract_period(year: 2026) }
 
-      let(:start_date) { contract_period_2025.started_on.to_s }
+      let(:start_date) { contract_period_2026.started_on.to_s }
 
       let(:previous_training_period) do
         build_previous_training_period_double(
@@ -192,9 +192,9 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
 
     context "when the previous training period is school-led in a frozen contract period" do
       let!(:contract_period_2021) { create_contract_period(year: 2021, payments_frozen: true) }
-      let!(:contract_period_2025) { create_contract_period(year: 2025) }
+      let!(:contract_period_2026) { create_contract_period(year: 2026) }
 
-      let(:start_date) { contract_period_2025.started_on.to_s }
+      let(:start_date) { contract_period_2026.started_on.to_s }
 
       let(:previous_training_period) do
         build_previous_training_period_double(
@@ -206,13 +206,13 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
       before { stub_previous_training(previous_training_period, previous_ect_period:) }
 
       it "returns the normal registration contract period" do
-        expect(queries.registration_contract_period).to eq(contract_period_2025)
+        expect(queries.registration_contract_period).to eq(contract_period_2026)
       end
     end
 
     context "when there is no previous training period" do
-      let!(:contract_period_2025) { create_contract_period(year: 2025) }
-      let(:start_date) { contract_period_2025.started_on.to_s }
+      let!(:contract_period_2026) { create_contract_period(year: 2026) }
+      let(:start_date) { contract_period_2026.started_on.to_s }
 
       before do
         allow(ECTAtSchoolPeriods::Search).to receive(:new)
@@ -221,7 +221,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
       end
 
       it "returns the normal registration contract period" do
-        expect(queries.registration_contract_period).to eq(contract_period_2025)
+        expect(queries.registration_contract_period).to eq(contract_period_2026)
       end
     end
   end
@@ -236,7 +236,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
     end
 
     context "when a contract period is present" do
-      let(:contract_period) { create_contract_period(year: 2025) }
+      let(:contract_period) { create_contract_period(year: 2026) }
       let(:start_date) { (contract_period.started_on + 2.days).to_s }
       let(:lead_provider) { FactoryBot.create(:lead_provider) }
       let(:another_lead_provider) { FactoryBot.create(:lead_provider) }
@@ -256,12 +256,12 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
     context "when the previous training period is provider-led in payments frozen contract period (2021)" do
       let!(:contract_period_2021) { create_contract_period(year: 2021, payments_frozen: true) }
       let!(:contract_period_2024) { create_contract_period(year: 2024) }
-      let!(:contract_period_2025) { create_contract_period(year: 2025) }
+      let!(:contract_period_2026) { create_contract_period(year: 2026) }
 
-      let(:start_date) { contract_period_2025.started_on.to_s }
+      let(:start_date) { contract_period_2026.started_on.to_s }
 
       let!(:lead_provider_2024) { FactoryBot.create(:lead_provider, name: "LP 2024") }
-      let!(:lead_provider_2025) { FactoryBot.create(:lead_provider, name: "LP 2025") }
+      let!(:lead_provider_2026) { FactoryBot.create(:lead_provider, name: "LP 2026") }
 
       let(:previous_training_period) do
         build_previous_training_period_double(
@@ -272,7 +272,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
 
       before do
         create_active_lead_provider(contract_period: contract_period_2024, lead_provider: lead_provider_2024)
-        create_active_lead_provider(contract_period: contract_period_2025, lead_provider: lead_provider_2025)
+        create_active_lead_provider(contract_period: contract_period_2026, lead_provider: lead_provider_2026)
         stub_previous_training(previous_training_period, previous_ect_period:)
       end
 
@@ -280,7 +280,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
         names = queries.lead_providers_within_contract_period.map(&:name)
 
         expect(names).to contain_exactly("LP 2024")
-        expect(names).not_to include("LP 2025")
+        expect(names).not_to include("LP 2026")
       end
     end
 
