@@ -90,6 +90,9 @@ describe "School user can change early career teachers mentor" do
       then_i_change_lead_provider
       and_i_see_the_change_lead_provider_form
 
+      when_i_continue_without_selecting_a_lead_provider
+      then_the_lead_provider_page_title_has_an_error_prefix
+
       when_i_choose_a_lead_provider
       and_i_click_continue
       then_i_am_asked_to_check_and_confirm_the_change
@@ -149,7 +152,7 @@ describe "School user can change early career teachers mentor" do
       then_i_can_change_the_assigned_mentor
 
       when_i_continue_without_selecting_a_mentor
-      then_the_page_title_has_an_error_prefix
+      then_the_change_mentor_page_title_has_an_error_prefix
     end
   end
 
@@ -308,11 +311,9 @@ private
   end
 
   def then_i_change_lead_provider
-    change_provider_link_text = <<~TXT.squish
-      #{@provider_led_training_period.lead_provider.name} will not be providing
-      mentor training to Jane Smith
-    TXT
-    page.get_by_role("link", name: change_provider_link_text).click
+    page
+      .get_by_role("link", name: /will not be providing mentor training to Jane Smith/)
+      .click
   end
 
   def and_i_see_the_change_lead_provider_form
@@ -354,7 +355,21 @@ private
     page.get_by_role("button", name: "Continue").click
   end
 
-  def then_the_page_title_has_an_error_prefix
+  def then_the_change_mentor_page_title_has_an_error_prefix
     expect(page.title).to start_with("Error:")
+  end
+
+  def when_i_continue_without_selecting_a_lead_provider
+    page.get_by_role("button", name: "Continue").click
+  end
+
+  def then_the_lead_provider_page_title_has_an_error_prefix
+    expect(page.title).to start_with("Error:")
+
+    expect(page.locator("h1")).to have_text(
+      "Which lead provider would you like to contact your school about training Jane Smith?"
+    )
+
+    expect(page.locator(".govuk-error-summary")).to be_visible
   end
 end
