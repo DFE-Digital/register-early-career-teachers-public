@@ -24,14 +24,16 @@ class Contract < ApplicationRecord
             presence: { message: "VAT rate is required" },
             numericality: { in: 0..1, message: "VAT rate must be between 0 and 1" }
 
-  validate :fee_structures_are_correct_for_contract_type
-
   with_options if: :ittecf_ectp_contract_type? do
+    validates :flat_rate_fee_structure, presence: { message: "Flat rate fee structure must be provided for ITTECF_ECTP contracts" }
+    validates :banded_fee_structure, presence: { message: "Banded fee structure must be provided for ITTECF_ECTP contracts" }
     validates :ecf_contract_version, presence: { message: "ECF contract version must be provided for ITTECF_ECTP contracts" }
     validates :ecf_mentor_contract_version, presence: { message: "ECF mentor contract version must be provided for ITTECF_ECTP contracts" }
   end
 
   with_options if: :ecf_contract_type? do
+    validates :flat_rate_fee_structure, absence: { message: "Flat rate fee structure must be blank for ECF contracts" }
+    validates :banded_fee_structure, presence: { message: "Banded fee structure must be provided for ECF contracts" }
     validates :ecf_contract_version, presence: { message: "ECF contract version must be provided for ECF contracts" }
   end
 
@@ -39,15 +41,5 @@ class Contract < ApplicationRecord
     return 0 unless lead_provider.vat_registered
 
     vat_rate
-  end
-
-  def fee_structures_are_correct_for_contract_type
-    if ittecf_ectp_contract_type?
-      errors.add(:flat_rate_fee_structure, "Flat rate fee structure must be provided for ITTECF_ECTP contracts") if flat_rate_fee_structure.blank?
-      errors.add(:banded_fee_structure, "Banded fee structure must be provided for ITTECF_ECTP contracts") if banded_fee_structure.blank?
-    elsif ecf_contract_type?
-      errors.add(:flat_rate_fee_structure, "Flat rate fee structure must be blank for ECF contracts") if flat_rate_fee_structure.present?
-      errors.add(:banded_fee_structure, "Banded fee structure must be provided for ECF contracts") if banded_fee_structure.blank?
-    end
   end
 end
