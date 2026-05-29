@@ -68,7 +68,7 @@ RSpec.describe PaymentCalculator::FlatRate do
   end
 
   let(:flat_rate_fee_structure) do
-    FactoryBot.create(
+    FactoryBot.build(
       :contract_flat_rate_fee_structure,
       fee_per_declaration: 100.00
     )
