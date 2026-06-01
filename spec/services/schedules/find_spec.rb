@@ -140,6 +140,12 @@ RSpec.describe Schedules::Find do
             context "when the start date is the last day of the contract period" do
               let(:started_on) { Date.new(year, 5, 31) }
 
+              around do |example|
+                travel_to(Date.new(year, 5, 15)) do
+                  example.run
+                end
+              end
+
               it "assigns the schedule based on the start date of the current training period" do
                 expect(service.identifier).to include("april")
               end
