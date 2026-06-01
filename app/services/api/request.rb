@@ -41,6 +41,8 @@ module API
         return unless DfE::Analytics.enabled?
 
         request = ActionDispatch::Request.new(env)
+        return if path_excluded?(request)
+
         response = ActionDispatch::Response.new(429)
 
         user = fetch_user(request.session)
@@ -58,6 +60,10 @@ module API
       end
 
     private
+
+      def path_excluded?(request)
+        DfE::Analytics.config.excluded_paths.any? { request.fullpath.start_with?(it) }
+      end
 
       def response_hash(response_body, status)
         return {} unless status > 299
