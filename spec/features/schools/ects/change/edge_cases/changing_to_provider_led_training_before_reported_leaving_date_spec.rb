@@ -5,6 +5,7 @@ RSpec.describe "Changing to provider-led training before the ECTs reported leavi
 
   before do
     freeze_time
+    given_we_are_in_the_middle_of_a_contract_period
     given_there_is_a_school
     and_there_is_an_ect_at_the_school
     and_the_ect_is_doing_school_led_training
@@ -180,8 +181,10 @@ RSpec.describe "Changing to provider-led training before the ECTs reported leavi
 private
 
   def and_there_is_an_active_lead_provider
-    contract_period = FactoryBot.create(:contract_period, :current, :with_schedules)
-    @active_lead_provider = FactoryBot.create(:active_lead_provider, contract_period:)
+    @active_lead_provider = FactoryBot.create(
+      :active_lead_provider,
+      contract_period: @contract_period
+    )
     @lead_provider = @active_lead_provider.lead_provider
   end
 

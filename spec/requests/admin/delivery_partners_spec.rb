@@ -153,7 +153,7 @@ RSpec.describe "Admin delivery partners", type: :request do
 
   describe "GET /admin/organisations/delivery-partners/:delivery_partner_id/:year/new" do
     let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
-    let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
+    let(:contract_period) { FactoryBot.create(:contract_period, :current) }
     let(:new_path) { new_admin_delivery_partner_delivery_partnership_path(delivery_partner, contract_period.year) }
 
     it "redirects to sign in path" do
@@ -233,7 +233,7 @@ RSpec.describe "Admin delivery partners", type: :request do
 
   describe "POST /admin/organisations/delivery-partners/:delivery_partner_id/:year" do
     let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
-    let(:contract_period) { FactoryBot.create(:contract_period, year: 2026, enabled: false) }
+    let(:contract_period) { FactoryBot.create(:contract_period, :next, enabled: false) }
     let(:create_path) { admin_delivery_partner_delivery_partnership_path(delivery_partner, contract_period.year) }
     let!(:lead_provider_1) { FactoryBot.create(:lead_provider, name: "Lead Provider 1") }
     let!(:lead_provider_2) { FactoryBot.create(:lead_provider, name: "Lead Provider 2") }
@@ -411,7 +411,7 @@ RSpec.describe "Admin delivery partners", type: :request do
         end
 
         context "for current contract periods" do
-          let(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled: true, started_on: 1.year.ago, finished_on: 1.month.from_now) }
+          let(:contract_period) { FactoryBot.create(:contract_period, :current) }
 
           it "redirects back to new page with error message" do
             post create_path
