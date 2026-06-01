@@ -32,6 +32,7 @@ FactoryBot.define do
 
     trait :open do
       status { :open }
+      deadline_date { [Date.new(year, month, 1).prev_day, Date.yesterday].min }
     end
 
     trait :payable do
