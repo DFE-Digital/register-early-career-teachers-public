@@ -48,6 +48,24 @@ RSpec.describe "Admin organisations delivery partners" do
     then_i_should_see_a_form_error
   end
 
+  scenario "returning to delivery partners index does not include empty page params" do
+    given_i_am_logged_in_as_an_admin
+    and_delivery_partners_exist
+    and_a_known_delivery_partner_exists
+    and_a_contract_period_exists
+    and_an_active_lead_provider_exists
+
+    when_i_click_organisations_on_the_top_menu
+    when_i_click_delivery_partners_link
+    then_i_should_see_the_admin_delivery_partners_page
+
+    and_i_view_a_delivery_partner
+    and_i_add_a_lead_provider_partnership
+    and_i_click_the_delivery_partners_breadcrumb
+
+    then_i_should_be_on_the_delivery_partners_index_without_empty_page_params
+  end
+
   def given_i_am_logged_in_as_an_admin
     sign_in_as_dfe_user(role: :admin)
   end
@@ -59,6 +77,19 @@ RSpec.describe "Admin organisations delivery partners" do
 
   def and_a_delivery_partner_exists_with_name(name)
     FactoryBot.create(:delivery_partner, name:)
+  end
+
+  def and_a_known_delivery_partner_exists
+    @known_delivery_partner = FactoryBot.create(:delivery_partner, name: "Known Delivery Partner")
+  end
+
+  def and_a_contract_period_exists
+    @contract_period = FactoryBot.create(:contract_period, :current)
+  end
+
+  def and_an_active_lead_provider_exists
+    @lead_provider = FactoryBot.create(:lead_provider)
+    FactoryBot.create(:active_lead_provider, lead_provider: @lead_provider, contract_period: @contract_period)
   end
 
   def when_i_click_organisations_on_the_top_menu
@@ -138,5 +169,25 @@ RSpec.describe "Admin organisations delivery partners" do
 
   def then_i_should_see_a_form_error
     expect(page.locator(".govuk-error-summary")).to be_visible
+  end
+
+  def and_i_view_a_delivery_partner
+    page.get_by_role("link", name: @known_delivery_partner.name).click
+  end
+
+  def and_i_add_a_lead_provider_partnership
+    page.get_by_role("link", name: "Add").first.click
+    page.get_by_label(@lead_provider.name).check
+    page.get_by_role("button", name: "Confirm").click
+  end
+
+  def and_i_click_the_delivery_partners_breadcrumb
+    page.get_by_role("link", name: "Delivery partners").click
+  end
+
+  def then_i_should_be_on_the_delivery_partners_index_without_empty_page_params
+    expect(page.url).not_to include("page=")
+    expect(page.url).not_to include("q=")
+    expect(page.get_by_role("heading", name: "Delivery partners")).to be_visible
   end
 end

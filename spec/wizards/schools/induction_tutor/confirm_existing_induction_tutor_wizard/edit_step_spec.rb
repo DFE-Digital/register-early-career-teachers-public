@@ -161,29 +161,122 @@ describe Schools::InductionTutor::ConfirmExistingInductionTutorWizard::EditStep 
 
   describe "#save!" do
     context "when the user has confirmed the details are correct" do
-      it "updates the school's induction_tutor_last_nominated_in" do
-        current_step.save!
-        expect(school.reload.induction_tutor_last_nominated_in).to eq(current_contract_period)
-      end
-
       it "stores the confirmation" do
         expect { current_step.save! }.to change(store, :are_these_details_correct).to(true)
       end
 
-      it "records a confirmation event" do
-        freeze_time
-
-        expect(Events::Record)
-          .to receive(:record_school_induction_tutor_confirmed_event!)
-          .with(
-            author:,
-            school:,
-            name: induction_tutor_name,
-            email: induction_tutor_email,
-            contract_period_year: current_contract_period.year
+      context "when the current contract period is ongoing today" do
+        let!(:previous_contract_period) do
+          FactoryBot.create(
+            :contract_period,
+            :previous,
+            started_on: 2.months.ago,
+            finished_on: 1.month.ago.prev_day
           )
+        end
+        let!(:current_contract_period) do
+          FactoryBot.create(
+            :contract_period,
+            :current,
+            started_on: 1.month.ago,
+            finished_on: 1.month.from_now
+          )
+        end
+        let!(:upcoming_contract_period) do
+          FactoryBot.create(
+            :contract_period,
+            :next,
+            started_on: 2.months.from_now,
+            finished_on: 6.months.from_now
+          )
+        end
+        let(:school) do
+          FactoryBot.create(
+            :school,
+            :with_induction_tutor,
+            induction_tutor_last_nominated_in: previous_contract_period
+          )
+        end
 
-        current_step.save!
+        it "updates the school's induction_tutor_last_nominated_in" do
+          expect { current_step.save! }
+            .to change { school.reload.induction_tutor_last_nominated_in }
+            .from(previous_contract_period)
+            .to(current_contract_period)
+        end
+
+        it "records a confirmation event" do
+          freeze_time
+
+          expect(Events::Record)
+            .to receive(:record_school_induction_tutor_confirmed_event!)
+            .with(
+              author:,
+              school:,
+              name: induction_tutor_name,
+              email: induction_tutor_email,
+              contract_period_year: current_contract_period.year
+            )
+
+          current_step.save!
+        end
+      end
+
+      context "when the current contract period has finished" do
+        let!(:previous_contract_period) do
+          FactoryBot.create(
+            :contract_period,
+            :previous,
+            started_on: 2.months.ago,
+            finished_on: 1.month.ago.prev_day
+          )
+        end
+        let!(:current_contract_period) do
+          FactoryBot.create(
+            :contract_period,
+            :current,
+            started_on: 1.month.ago,
+            finished_on: 1.day.ago
+          )
+        end
+        let!(:upcoming_contract_period) do
+          FactoryBot.create(
+            :contract_period,
+            :next,
+            started_on: 2.months.from_now,
+            finished_on: 6.months.from_now
+          )
+        end
+        let(:school) do
+          FactoryBot.create(
+            :school,
+            :with_induction_tutor,
+            induction_tutor_last_nominated_in: previous_contract_period
+          )
+        end
+
+        it "updates the school's induction_tutor_last_nominated_in" do
+          expect { current_step.save! }
+            .to change { school.reload.induction_tutor_last_nominated_in }
+            .from(previous_contract_period)
+            .to(upcoming_contract_period)
+        end
+
+        it "records a confirmation event" do
+          freeze_time
+
+          expect(Events::Record)
+            .to receive(:record_school_induction_tutor_confirmed_event!)
+            .with(
+              author:,
+              school:,
+              name: induction_tutor_name,
+              email: induction_tutor_email,
+              contract_period_year: upcoming_contract_period.year
+            )
+
+          current_step.save!
+        end
       end
     end
 
