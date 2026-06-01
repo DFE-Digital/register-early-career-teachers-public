@@ -165,7 +165,7 @@ describe "Schools::Mentors::ChangeLeadProviderWizard Requests" do
               # different schedule to `started_on` without being explicit.
               # This travels toward the end of the contract period to ensure
               # that happens.
-              travel_to contract_period.finished_on.advance(months: -1)
+              travel_to contract_period.finished_on.prev_month
               # We've travelled so far we need to sign in again to ensure
               # the user is still authenticated.
               sign_in_as(:school_user, school:)
