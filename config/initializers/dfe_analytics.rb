@@ -100,7 +100,7 @@ DfE::Analytics.configure do |config|
   config.excluded_paths = [
     "/healthcheck",
     %r{^/admin(/.*)?$},
-    %r{^/school/opt-out-of-reminder-emails(/.*)?$},
+    %r{^/school/opt-out-of-reminder-emails(?:[/?].*)?$},
   ]
 
   # A proc which will be called during model initialization. It allows to disable models
