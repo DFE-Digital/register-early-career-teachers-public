@@ -1,5 +1,6 @@
 RSpec.describe "Registering a mentor that is mentoring at the new school only" do
   include_context "test TRS API returns a teacher"
+  include_context "safe_schedules"
   include SchoolPartnershipHelpers
 
   before { freeze_time }

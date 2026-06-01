@@ -1,4 +1,6 @@
 RSpec.describe ECTAtSchoolPeriods::ChangeLeadProviderResolver do
+  include_context "safe_schedules"
+
   describe "#call" do
     subject(:resolver) { described_class.new(ect_at_school_period) }
 

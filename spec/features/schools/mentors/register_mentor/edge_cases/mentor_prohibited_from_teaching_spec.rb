@@ -1,5 +1,6 @@
 RSpec.describe "Registering a mentor" do
   include_context "test TRS API returns a teacher prohibited from teaching"
+  include_context "safe_schedules"
 
   scenario "School attempts to register a prohibited teacher as a mentor" do
     given_there_is_a_school_in_the_service

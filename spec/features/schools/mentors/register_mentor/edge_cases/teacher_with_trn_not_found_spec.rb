@@ -1,5 +1,6 @@
 RSpec.describe "Registering a mentor" do
   include_context "test TRS API returns nothing"
+  include_context "safe_schedules"
 
   scenario "Teacher with TRN is not found" do
     given_there_is_a_school_in_the_service

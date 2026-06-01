@@ -1,6 +1,8 @@
 RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
   subject(:queries) { described_class.new(registration_store:) }
 
+  include_context "safe_schedules"
+
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:trn) { teacher.trn }
   let(:previous_ect_period) { instance_double(ECTAtSchoolPeriod, id: 123) }

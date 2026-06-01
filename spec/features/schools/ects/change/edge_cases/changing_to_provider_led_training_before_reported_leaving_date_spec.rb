@@ -2,6 +2,7 @@ RSpec.describe "Changing to provider-led training before the ECTs reported leavi
   include ChangesBeforeReportedLeavingDateHelpers
 
   include_context "test TRS API returns a teacher"
+  include_context "safe_schedules"
 
   before do
     freeze_time

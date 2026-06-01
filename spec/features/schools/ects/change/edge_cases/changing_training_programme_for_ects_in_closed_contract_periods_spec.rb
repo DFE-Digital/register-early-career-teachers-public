@@ -1,4 +1,6 @@
 describe "Changing training programme for ECTs who started provider-led training in a closed contract period" do
+  include_context "safe_schedules"
+
   before do
     given_there_is_a_school
     and_there_is_a_closed_contract_period

@@ -1,4 +1,6 @@
 describe "School user can change a mentor's lead provider" do
+  include_context "safe_schedules"
+
   before do
     given_there_is_a_school
     and_there_is_a_mentor

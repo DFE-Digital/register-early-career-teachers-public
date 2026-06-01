@@ -2,6 +2,7 @@ RSpec.describe "Changing lead provider before the ECTs reported leaving date" do
   include ChangesBeforeReportedLeavingDateHelpers
 
   include_context "test TRS API returns a teacher"
+  include_context "safe_schedules"
 
   before do
     freeze_time

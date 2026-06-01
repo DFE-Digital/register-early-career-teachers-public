@@ -1,4 +1,5 @@
 describe "Schools::RegisterMentorWizardController" do
+  include_context "safe_schedules"
   let(:school) { FactoryBot.create(:school) }
   let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school:) }
   let(:mentor_at_school_period_id) { mentor_at_school_period.id }

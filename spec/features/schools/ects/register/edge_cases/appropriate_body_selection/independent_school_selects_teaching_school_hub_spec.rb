@@ -1,5 +1,6 @@
 RSpec.describe "Registering an ECT" do
   include_context "test TRS API returns a teacher"
+  include_context "safe_schedules"
 
   before do
     FactoryBot.create(:appropriate_body_period, name: "Golden Leaf Teaching Hub")

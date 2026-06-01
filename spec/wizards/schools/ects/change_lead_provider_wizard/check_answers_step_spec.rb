@@ -1,6 +1,8 @@
 describe Schools::ECTs::ChangeLeadProviderWizard::CheckAnswersStep do
   subject(:current_step) { wizard.current_step }
 
+  include_context "safe_schedules"
+
   let(:wizard) do
     Schools::ECTs::ChangeLeadProviderWizard::Wizard.new(
       current_step: :check_answers,

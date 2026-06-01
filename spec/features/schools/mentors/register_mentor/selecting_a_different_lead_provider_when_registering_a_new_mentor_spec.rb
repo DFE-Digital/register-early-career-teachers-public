@@ -1,5 +1,6 @@
 RSpec.describe "Selecting a different lead provider" do
   include_context "test TRS API returns a teacher"
+  include_context "safe_schedules"
   include SchoolPartnershipHelpers
 
   scenario "Registering a new mentor" do

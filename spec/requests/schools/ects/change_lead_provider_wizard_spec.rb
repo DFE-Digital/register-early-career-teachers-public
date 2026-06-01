@@ -82,6 +82,8 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController" do
       end
 
       context "when the ECT is provider-led and the latest training period is withdrawn" do
+        include_context "safe_schedules"
+
         before do
           training_period.update!(
             withdrawn_at: Time.zone.today,

@@ -1,5 +1,6 @@
 RSpec.describe "Registering an ECT" do
   include_context "test TRS API returns a teacher and then nothing"
+  include_context "safe_schedules"
 
   scenario "Teacher with national insurance number is not found" do
     given_i_am_logged_in_as_a_school_user

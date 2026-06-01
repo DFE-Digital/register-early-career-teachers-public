@@ -90,7 +90,7 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
   end
 
   describe "#allowed?" do
-    let!(:current_contract_period) { FactoryBot.create(:contract_period, year: 2025) }
+    let!(:current_contract_period) { FactoryBot.create(:contract_period, :current) }
 
     context "when provider-led is chosen" do
       let!(:lead_provider) { FactoryBot.create(:lead_provider) }

@@ -3,6 +3,8 @@ describe "Schools::RegisterECTWizardController" do
   let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school:) }
   let(:ect_at_school_period_id) { ect_at_school_period.id }
 
+  include_context "safe_schedules"
+
   describe "GET #new" do
     subject { get path_for_step("what-you-will-need") }
 

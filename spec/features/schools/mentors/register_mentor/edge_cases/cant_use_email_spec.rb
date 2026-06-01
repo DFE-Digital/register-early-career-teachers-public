@@ -1,5 +1,6 @@
 RSpec.describe "Registering a mentor", :js do
   include_context "test TRS API returns a teacher"
+  include_context "safe_schedules"
 
   let(:trn) { "3002586" }
 
