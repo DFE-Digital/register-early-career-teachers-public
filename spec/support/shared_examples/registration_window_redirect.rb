@@ -1,7 +1,6 @@
 RSpec.shared_examples "a route blocked when the registration window is closed" do
   around do |example|
-    travel_to(date)
-    example.run
+    travel_to(date) { example.run }
   end
 
   before do
