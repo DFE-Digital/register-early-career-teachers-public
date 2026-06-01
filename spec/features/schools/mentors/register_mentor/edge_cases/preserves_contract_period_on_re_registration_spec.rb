@@ -47,15 +47,15 @@ private
   end
 
   def and_the_school_is_in_a_partnership_with_a_lead_provider
-    @contract_period_2025 = FactoryBot.create(:contract_period, :with_schedules, :current)
-    @school_partnership = make_partnership_for(@school, @contract_period_2025)
+    @contract_period = FactoryBot.create(:contract_period, :with_schedules, :current)
+    @school_partnership = make_partnership_for(@school, @contract_period)
     @lead_provider = @school_partnership.lead_provider_delivery_partnership.lead_provider
   end
 
   def and_there_is_an_ect_with_no_mentor_registered_at_the_school
     @active_lead_provider = FactoryBot.create(:active_lead_provider,
                                               lead_provider: @lead_provider,
-                                              contract_period: @contract_period_2025)
+                                              contract_period: @contract_period)
     @ect = FactoryBot.create(:ect_at_school_period, :ongoing, school: @school)
     FactoryBot.create(:training_period, :provider_led, :ongoing,
                       ect_at_school_period: @ect,
@@ -150,7 +150,7 @@ private
   def when_i_submit_the_started_on_form
     page.get_by_label("Day").fill("1")
     page.get_by_label("Month").fill("6")
-    page.get_by_label("Year").fill("2025")
+    page.get_by_label("Year").fill(@contract_period.year.to_s)
     page.get_by_role("button", name: "Continue").click
   end
 
