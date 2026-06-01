@@ -17,12 +17,7 @@ RSpec.describe ContractPeriods::SeedFromPrevious do
 
   describe "#schedule!" do
     let(:contract_period) do
-      FactoryBot.create(
-        :contract_period,
-        :current,
-        started_on: 1.week.from_now,
-        finished_on: 11.months.from_now
-      )
+      FactoryBot.create(:contract_period, :next)
     end
 
     context "without a previous contract period" do
@@ -36,7 +31,7 @@ RSpec.describe ContractPeriods::SeedFromPrevious do
 
     context "with a previous contract period" do
       let(:previous_contract_period) do
-        FactoryBot.create(:contract_period, :previous)
+        FactoryBot.create(:contract_period, :current)
       end
 
       let!(:previous_schedule_september) do
