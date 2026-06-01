@@ -23,7 +23,7 @@ FactoryBot.define do
 
     enabled { true }
     started_on { Date.new(year, *START_MONTH_AND_DAY) }
-    finished_on { Date.new(started_on.year + 1, *FINISH_MONTH_AND_DAY) }
+    finished_on { Date.new(started_on.year.next, *FINISH_MONTH_AND_DAY) }
     mentor_funding_enabled { true }
     detailed_evidence_types_enabled { true }
     uplift_fees_enabled { true }
