@@ -34,6 +34,15 @@ RSpec.configure do |config|
   config.infer_spec_type_from_file_location!
   config.filter_rails_from_backtrace!
 
+  # TEMP: fix for spec failures on 1st June (start of new contract period).
+  config.before do
+    travel_to(Date.new(2026, 5, 30))
+  end
+
+  config.after do
+    travel_back
+  end
+
   # Opening registration contract periods
   config.before(:each, :enable_finance_contract_periods) do
     allow(Rails.application.config).to receive(:enable_finance_contract_periods).and_return(true)
