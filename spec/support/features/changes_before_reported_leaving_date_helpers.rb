@@ -2,7 +2,7 @@ module ChangesBeforeReportedLeavingDateHelpers
 private
 
   # Setup
-  def given_there_is_a_contract_period
+  def given_we_are_in_the_middle_of_a_contract_period
     @contract_period = FactoryBot.create(
       :contract_period,
       :current,
