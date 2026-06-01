@@ -112,6 +112,7 @@ namespace :admin do
             resources :schedules, only: %i[index], path: "schedules"
             resources :active_lead_providers, only: %i[index new create destroy], path: "active-lead-providers" do
               resources :statements, only: %i[index], controller: "active_lead_providers/statements"
+              resources :contracts, only: %i[index], controller: "active_lead_providers/contracts"
             end
           end
         end
