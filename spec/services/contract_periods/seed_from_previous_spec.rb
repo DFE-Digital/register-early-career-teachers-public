@@ -1,10 +1,6 @@
 RSpec.describe ContractPeriods::SeedFromPrevious do
   subject(:service) { described_class.new(contract_period:) }
 
-  let(:current_year) { Time.zone.today.year }
-  let(:previous_year) { current_year - 1 }
-  let(:next_year) { current_year + 1 }
-
   describe "#initialize" do
     context "when :contract_period is nil" do
       let(:contract_period) { nil }
@@ -16,10 +12,7 @@ RSpec.describe ContractPeriods::SeedFromPrevious do
   end
 
   describe "#schedule!" do
-    let(:contract_period) do
-      FactoryBot.create(:contract_period,
-                        year: current_year)
-    end
+    let(:contract_period) { FactoryBot.create(:contract_period, :next) }
 
     context "without a previous contract period" do
       it do
@@ -31,10 +24,7 @@ RSpec.describe ContractPeriods::SeedFromPrevious do
     end
 
     context "with a previous contract period" do
-      let(:previous_contract_period) do
-        FactoryBot.create(:contract_period,
-                          year: previous_year)
-      end
+      let(:previous_contract_period) { FactoryBot.create(:contract_period, :current) }
 
       let!(:previous_schedule_september) do
         FactoryBot.create(:schedule,
@@ -54,27 +44,27 @@ RSpec.describe ContractPeriods::SeedFromPrevious do
                           identifier: "ecf-standard-april")
       end
 
-      let(:new_schedules) { Schedule.where(contract_period_year: current_year) }
+      let(:new_schedules) { Schedule.where(contract_period_year: contract_period.year) }
 
       before do
         previous_schedule_september.milestones.create!(
           declaration_type: "started",
-          start_date: Date.new(previous_year, 6, 1),
-          milestone_date: Date.new(previous_year, 11, 30)
+          start_date: Date.new(previous_contract_period.year, 6, 1),
+          milestone_date: Date.new(previous_contract_period.year, 11, 30)
         )
         previous_schedule_september.milestones.create!(
           declaration_type: "retained-1",
-          start_date: Date.new(previous_year, 9, 1),
+          start_date: Date.new(previous_contract_period.year, 9, 1),
           milestone_date: nil
         )
         previous_schedule_january.milestones.create!(
           declaration_type: "started",
-          start_date: Date.new(current_year, 1, 1),
-          milestone_date: Date.new(current_year, 6, 30)
+          start_date: Date.new(contract_period.year, 1, 1),
+          milestone_date: Date.new(contract_period.year, 6, 30)
         )
         previous_schedule_january.milestones.create!(
           declaration_type: "completed",
-          start_date: Date.new(current_year, 3, 1),
+          start_date: Date.new(contract_period.year, 3, 1),
           milestone_date: nil
         )
       end
@@ -107,10 +97,10 @@ RSpec.describe ContractPeriods::SeedFromPrevious do
         it "advances dates by one year if set" do
           service.schedule!
 
-          expect(new_september_schedule.milestones.find_by(declaration_type: "started").start_date).to eq(Date.new(current_year, 6, 1))
+          expect(new_september_schedule.milestones.find_by(declaration_type: "started").start_date).to eq(Date.new(contract_period.year, 6, 1))
           expect(new_september_schedule.milestones.find_by(declaration_type: "retained-1").milestone_date).to be_nil
 
-          expect(new_january_schedule.milestones.find_by(declaration_type: "started").milestone_date).to eq(Date.new(next_year, 6, 30))
+          expect(new_january_schedule.milestones.find_by(declaration_type: "started").milestone_date).to eq(Date.new(contract_period.year + 1, 6, 30))
         end
 
         it "rolls back changes if an error occurs" do
