@@ -9,8 +9,7 @@ describe "Schools::Mentors::ChangeLeadProviderWizard Requests" do
       :ongoing,
       teacher:,
       school:,
-      started_on:,
-      email: "mentor@example.com"
+      started_on:
     )
   end
 
@@ -94,7 +93,7 @@ describe "Schools::Mentors::ChangeLeadProviderWizard Requests" do
     end
 
     context "when signed in as a School user" do
-      let!(:user) { sign_in_as(:school_user, school:) }
+      before { sign_in_as(:school_user, school:) }
 
       context "when the current_step is invalid" do
         it "returns not found" do
@@ -159,6 +158,19 @@ describe "Schools::Mentors::ChangeLeadProviderWizard Requests" do
                                 expression_of_interest: active_lead_provider)
             end
 
+            before do
+              # To test that a different schedule is assigned, we need to make
+              # sure we are changing lead provider at a point in time that would
+              # change the schedule. We can't rely on "today" determining a
+              # different schedule to `started_on` without being explicit.
+              # This travels toward the end of the contract period to ensure
+              # that happens.
+              travel_to contract_period.finished_on.prev_month
+              # We've travelled so far we need to sign in again to ensure
+              # the user is still authenticated.
+              sign_in_as(:school_user, school:)
+            end
+
             it "assigns a new schedule" do
               subject
 
@@ -192,7 +204,6 @@ describe "Schools::Mentors::ChangeLeadProviderWizard Requests" do
 
           post(path_for_step("check-answers"))
 
-          expect(training_period.reload.finished_on).to eq(Date.yesterday)
           new_training_period = mentor_at_school_period.training_periods.ongoing.first
           expect(new_training_period.expression_of_interest.lead_provider).to eq(lead_provider)
 

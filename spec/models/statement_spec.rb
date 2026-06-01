@@ -170,7 +170,7 @@ describe Statement do
 
   describe "state transitions" do
     context "when transitioning from open to payable" do
-      let(:statement) { FactoryBot.create(:statement, :open) }
+      let(:statement) { FactoryBot.create(:statement, :open, deadline_date: 1.week.ago) }
 
       it { expect { statement.mark_as_payable! }.to change(statement, :status).from("open").to("payable") }
     end
