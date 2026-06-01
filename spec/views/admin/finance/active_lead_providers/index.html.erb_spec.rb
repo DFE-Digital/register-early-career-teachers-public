@@ -34,7 +34,7 @@ RSpec.describe "admin/finance/active_lead_providers/index.html.erb" do
     expect(rendered).to have_css(".govuk-table__body > tr", count: 3)
     active_lead_providers.each do |alp|
       expect(rendered).to have_css("tr", text: alp.lead_provider.name)
-      expect(rendered).to have_css("tr", text: "0 contracts")
+      expect(rendered).to have_link("0 contracts", href: admin_contract_period_active_lead_provider_contracts_path(contract_period, alp))
       expect(rendered).to have_link("0 statements", href: admin_contract_period_active_lead_provider_statements_path(contract_period, alp))
       expect(rendered).to have_css("tr", text: "0 delivery partners")
     end
@@ -65,7 +65,7 @@ RSpec.describe "admin/finance/active_lead_providers/index.html.erb" do
 
       active_lead_providers.each do |alp|
         name = alp.lead_provider.name
-        expect(rendered).to have_link("0 contracts for #{name}")
+        expect(rendered).to have_link("0 contracts for #{name}", href: admin_contract_period_active_lead_provider_contracts_path(contract_period, alp))
         expect(rendered).to have_link("0 statements for #{name}", href: admin_contract_period_active_lead_provider_statements_path(contract_period, alp))
         expect(rendered).to have_link("0 delivery partners for #{name}")
       end
