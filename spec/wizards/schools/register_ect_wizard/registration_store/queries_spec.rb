@@ -136,6 +136,8 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
   end
 
   describe "#registration_contract_period" do
+    let(:overridden_current_date) { Date.new(2026, 5, 1) }
+
     context "when the start_date is blank" do
       it "returns nil" do
         expect(queries.registration_contract_period).to be_nil
@@ -239,6 +241,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
 
     context "when a contract period is present" do
       let(:contract_period) { create_contract_period(year: 2025) }
+      let(:overridden_current_date) { start_date }
       let(:start_date) { (contract_period.started_on + 2.days).to_s }
       let(:lead_provider) { FactoryBot.create(:lead_provider) }
       let(:another_lead_provider) { FactoryBot.create(:lead_provider) }
@@ -317,6 +320,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
     context "when the previous training period is provider-led in a non-frozen contract period" do
       let!(:contract_period_2021) { create_contract_period(year: 2021) }
       let!(:contract_period_2025) { create_contract_period(year: 2025) }
+      let(:overridden_current_date) { start_date }
 
       let(:start_date) { contract_period_2025.started_on.to_s }
       let!(:lead_provider_2021) { FactoryBot.create(:lead_provider, name: "LP 2021") }
@@ -345,6 +349,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
       let!(:contract_period_2025) { create_contract_period(year: 2025) }
 
       let(:start_date) { contract_period_2025.started_on.to_s }
+      let(:overridden_current_date) { start_date }
       let!(:lead_provider_2025) { FactoryBot.create(:lead_provider, name: "LP 2025") }
 
       let(:previous_training_period) do
@@ -492,6 +497,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
 
     context "when the previous training period is school-led in a frozen contract period" do
       let!(:contract_period_2021) { create_contract_period(year: 2021, payments_frozen: true) }
+      let(:overridden_current_date) { start_date }
 
       let(:start_date) { Date.new(2025, 9, 1).to_s }
       let(:school) { FactoryBot.create(:school) }
