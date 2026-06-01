@@ -2,12 +2,30 @@ module ChangesBeforeReportedLeavingDateHelpers
 private
 
   # Setup
+  def given_there_is_a_contract_period
+    @contract_period = FactoryBot.create(
+      :contract_period,
+      :current,
+      :with_schedules,
+      started_on: 6.months.ago,
+      finished_on: 6.months.from_now
+    )
+  end
+
   def given_there_is_a_school
-    @school = FactoryBot.create(:school, :state_funded)
+    @school = FactoryBot.create(
+      :school,
+      :state_funded,
+      induction_tutor_last_nominated_in: @contract_period
+    )
   end
 
   def and_there_is_another_school
-    @another_school = FactoryBot.create(:school, :state_funded)
+    @another_school = FactoryBot.create(
+      :school,
+      :state_funded,
+      induction_tutor_last_nominated_in: @contract_period
+    )
   end
 
   def and_there_is_an_ect_at_the_school

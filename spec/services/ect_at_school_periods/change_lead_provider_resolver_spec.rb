@@ -10,7 +10,7 @@ RSpec.describe ECTAtSchoolPeriods::ChangeLeadProviderResolver do
         :ect_at_school_period,
         :ongoing,
         school:,
-        started_on: contract_period.started_on + 1.week
+        started_on: contract_period.started_on
       )
     end
 
