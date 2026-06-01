@@ -8,7 +8,7 @@ describe "Schools::ECTs::ChangeTrainingProgrammeWizardController" do
       :ongoing,
       teacher:,
       school:,
-      started_on: contract_period.started_on + 2.months
+      started_on: contract_period.started_on
     )
   end
 
@@ -70,20 +70,15 @@ describe "Schools::ECTs::ChangeTrainingProgrammeWizardController" do
 
       context "when the latest training period is withdrawn" do
         let!(:training_period) do
-          training_period = FactoryBot.create(
+          FactoryBot.create(
             :training_period,
             :ongoing,
             :provider_led,
             :for_ect,
+            :withdrawn,
             ect_at_school_period:,
             started_on: ect_at_school_period.started_on
           )
-          training_period.update!(
-            withdrawn_at: Time.zone.today,
-            withdrawal_reason: TrainingPeriod.withdrawal_reasons.keys.first,
-            finished_on: Time.zone.today
-          )
-          training_period
         end
 
         it "renders the provider-led branch for a withdrawn ECT" do
