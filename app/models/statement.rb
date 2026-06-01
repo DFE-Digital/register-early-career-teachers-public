@@ -5,7 +5,7 @@ class Statement < ApplicationRecord
 
   # Associations
   belongs_to :contract
-  has_many :adjustments
+  has_many :adjustments, dependent: :destroy
   has_many :payment_declarations, inverse_of: :payment_statement, class_name: "Declaration"
   has_many :clawback_declarations, inverse_of: :clawback_statement, class_name: "Declaration"
   has_one :active_lead_provider, through: :contract

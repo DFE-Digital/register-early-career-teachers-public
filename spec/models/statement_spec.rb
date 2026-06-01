@@ -1,7 +1,7 @@
 describe Statement do
   describe "associations" do
     it { is_expected.to have_one(:active_lead_provider).through(:contract) }
-    it { is_expected.to have_many(:adjustments) }
+    it { is_expected.to have_many(:adjustments).dependent(:destroy) }
     it { is_expected.to have_many(:payment_declarations).class_name("Declaration").inverse_of(:payment_statement) }
     it { is_expected.to have_many(:clawback_declarations).class_name("Declaration").inverse_of(:clawback_statement) }
     it { is_expected.to have_one(:lead_provider).through(:active_lead_provider) }
