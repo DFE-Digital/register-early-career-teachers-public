@@ -43,42 +43,46 @@ grouped_active_lead_providers = ActiveLeadProvider
   .joins(:contract_period)
   .group_by(&:lead_provider)
 
-grouped_active_lead_providers.each do |lead_provider, active_lead_providers|
-  statements = active_lead_providers.flat_map do |alp|
-    registration_year = alp.contract_period.year
-    months = (1..12).to_a
-    years = [registration_year, registration_year + 1]
+if Statement.count.zero?
+  grouped_active_lead_providers.each do |lead_provider, active_lead_providers|
+    statements = active_lead_providers.flat_map do |alp|
+      registration_year = alp.contract_period.year
+      months = (1..12).to_a
+      years = [registration_year, registration_year + 1]
 
-    years.product(months).each_with_index.map do |(year, month), index|
-      # Distribute contracts across statements evenly and in order, so if there are
-      # 3 contracts, the first 1/3rd of statements get the first, the next 1/3rd get the
-      # second, and the final 1/3rd get the third.
-      contract_index = (index * alp.contracts.size) / (years.size * months.size)
-      contract = alp.contracts[contract_index]
-      deadline_date = Date.new(year, month, 1).prev_day
-      payment_date = Date.new(year, month, 25)
-      fee_type = month.in?(OUTPUT_FEE_MONTHS) ? "output" : "service"
-      status = if payment_date.past? && fee_type == "output"
-                 :paid
-               elsif deadline_date.past?
-                 :payable
-               else
-                 :open
-               end
+      years.product(months).each_with_index.map do |(year, month), index|
+        # Distribute contracts across statements evenly and in order, so if there are
+        # 3 contracts, the first 1/3rd of statements get the first, the next 1/3rd get the
+        # second, and the final 1/3rd get the third.
+        contract_index = (index * alp.contracts.size) / (years.size * months.size)
+        contract = alp.contracts[contract_index]
+        deadline_date = Date.new(year, month, 1).prev_day
+        payment_date = Date.new(year, month, 25)
+        fee_type = month.in?(OUTPUT_FEE_MONTHS) ? "output" : "service"
+        status = if payment_date.past? && fee_type == "output"
+                   :paid
+                 elsif deadline_date.past?
+                   :payable
+                 else
+                   :open
+                 end
 
-      FactoryBot.create(
-        :statement,
-        contract:,
-        active_lead_provider: alp,
-        month:,
-        year:,
-        deadline_date:,
-        payment_date:,
-        fee_type:,
-        status:
-      )
+        FactoryBot.create(
+          :statement,
+          contract:,
+          active_lead_provider: alp,
+          month:,
+          year:,
+          deadline_date:,
+          payment_date:,
+          fee_type:,
+          status:
+        )
+      end
     end
-  end
 
-  describe_group_of_statements(lead_provider, statements)
+    describe_group_of_statements(lead_provider, statements)
+  end
+else
+  print_seed_info("Statements already exist, skipping", indent: 2)
 end
