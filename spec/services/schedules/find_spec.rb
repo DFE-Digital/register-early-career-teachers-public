@@ -140,6 +140,13 @@ RSpec.describe Schedules::Find do
             context "when the start date is the last day of the contract period" do
               let(:started_on) { Date.new(year, 5, 31) }
 
+              before { travel_to started_on }
+              # This is only correct if `latest_started_date` in `Schedules::Find`
+              # resolves to `started_on`. If the current date is after that,
+              # then the schedule will be a "september" schedule. We travel
+              # to the `started_on` so this test is deterministic throughout the
+              # year.
+
               it "assigns the schedule based on the start date of the current training period" do
                 expect(service.identifier).to include("april")
               end

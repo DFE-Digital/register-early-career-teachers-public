@@ -90,7 +90,7 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
   end
 
   describe "#allowed?" do
-    let!(:current_contract_period) { FactoryBot.create(:contract_period, year: 2025) }
+    let!(:current_contract_period) { FactoryBot.create(:contract_period, :current) }
 
     context "when provider-led is chosen" do
       let!(:lead_provider) { FactoryBot.create(:lead_provider) }
@@ -100,16 +100,16 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
       end
 
       context "and a reusable partnership exists for the registration contract period" do
-        let(:active_lead_provider_2025) do
+        let(:active_lead_provider) do
           FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: current_contract_period)
         end
 
-        let(:lpdp_2025) do
-          FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider_2025)
+        let(:lpdp) do
+          FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
         end
 
         let!(:reusable_partnership) do
-          FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership: lpdp_2025)
+          FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership: lpdp)
         end
 
         it "is allowed" do

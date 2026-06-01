@@ -8,7 +8,7 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController" do
       :ongoing,
       teacher:,
       school:,
-      started_on: contract_period.started_on + 2.months
+      started_on: contract_period.started_on
     )
   end
   let(:lead_provider) do
@@ -82,11 +82,15 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController" do
       end
 
       context "when the ECT is provider-led and the latest training period is withdrawn" do
-        before do
-          training_period.update!(
-            withdrawn_at: Time.zone.today,
-            withdrawal_reason: TrainingPeriod.withdrawal_reasons.keys.first,
-            finished_on: Time.zone.today
+        let!(:training_period) do
+          FactoryBot.create(
+            :training_period,
+            :ongoing,
+            :provider_led,
+            :for_ect,
+            :withdrawn,
+            ect_at_school_period:,
+            started_on: ect_at_school_period.started_on
           )
         end
 
