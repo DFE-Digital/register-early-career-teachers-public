@@ -1,4 +1,5 @@
 describe "Schools::Mentors::ChangeLeadProviderWizard Requests" do
+  include_context "safe_schedules"
   let(:started_on) { contract_period.started_on + 2.months }
   let(:school) { FactoryBot.create(:school) }
   let(:teacher) { FactoryBot.create(:teacher) }
@@ -158,6 +159,9 @@ describe "Schools::Mentors::ChangeLeadProviderWizard Requests" do
                                 started_on:,
                                 expression_of_interest: active_lead_provider)
             end
+
+            # Ensure the change happens in a month with a different identifier in order to observe the effect
+            let(:overridden_current_date) { contract_period.started_on + 10.months }
 
             it "assigns a new schedule" do
               subject
