@@ -14,6 +14,7 @@ erDiagram
   Contract_BandedFeeStructure_Band }o--|| Contract_BandedFeeStructure : belongs_to
   Contract_FlatRateFeeStructure {
     integer id
+    integer contract_id
     datetime created_at
     decimal fee_per_declaration
     integer recruitment_target
@@ -21,6 +22,7 @@ erDiagram
   }
   Contract_BandedFeeStructure {
     integer id
+    integer contract_id
     datetime created_at
     decimal monthly_service_fee
     integer recruitment_target
