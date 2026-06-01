@@ -1,10 +1,10 @@
 describe "School user can change a mentor's lead provider" do
   before do
+    given_there_is_a_contract_period
     given_there_is_a_school
     and_there_is_a_mentor
     and_i_am_logged_in_as_a_school_user
 
-    and_there_is_a_contract_period
     and_there_is_an_active_lead_provider
     with_provider_led_training
     and_there_is_another_active_lead_provider
@@ -74,12 +74,11 @@ private
       :ongoing,
       teacher: @teacher,
       school: @school,
-      # email: "ect@example.com",
-      started_on: 1.week.ago
+      started_on: @contract_period.started_on
     )
   end
 
-  def and_there_is_a_contract_period
+  def given_there_is_a_contract_period
     @contract_period = FactoryBot.create(:contract_period, :current)
   end
 

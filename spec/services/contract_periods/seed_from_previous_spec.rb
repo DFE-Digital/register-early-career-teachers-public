@@ -1,7 +1,7 @@
 RSpec.describe ContractPeriods::SeedFromPrevious do
   subject(:service) { described_class.new(contract_period:) }
 
-  let(:current_year) { Time.zone.today.year }
+  let(:current_year) { contract_period.year }
   let(:previous_year) { current_year - 1 }
   let(:next_year) { current_year + 1 }
 
@@ -17,8 +17,12 @@ RSpec.describe ContractPeriods::SeedFromPrevious do
 
   describe "#schedule!" do
     let(:contract_period) do
-      FactoryBot.create(:contract_period,
-                        year: current_year)
+      FactoryBot.create(
+        :contract_period,
+        :current,
+        started_on: 1.week.from_now,
+        finished_on: 11.months.from_now
+      )
     end
 
     context "without a previous contract period" do
@@ -32,8 +36,7 @@ RSpec.describe ContractPeriods::SeedFromPrevious do
 
     context "with a previous contract period" do
       let(:previous_contract_period) do
-        FactoryBot.create(:contract_period,
-                          year: previous_year)
+        FactoryBot.create(:contract_period, :previous)
       end
 
       let!(:previous_schedule_september) do

@@ -5,6 +5,7 @@ RSpec.describe "Changing to school-led training before the ECTs reported leaving
 
   before do
     freeze_time
+    given_there_is_a_contract_period
     given_there_is_a_school
     and_there_is_an_ect_at_the_school
     and_the_ect_is_doing_provider_led_training
