@@ -12,7 +12,7 @@ module Schools
           school.update!(
             induction_tutor_name: store.induction_tutor_name,
             induction_tutor_email: store.induction_tutor_email,
-            induction_tutor_last_nominated_in: current_contract_period
+            induction_tutor_last_nominated_in: closest_contract_period
           )
           true
         end
@@ -35,7 +35,7 @@ module Schools
           old_name: school.induction_tutor_name,
           new_name: store.induction_tutor_name,
           new_email: store.induction_tutor_email,
-          contract_period_year: current_contract_period.year,
+          contract_period_year: closest_contract_period.year,
           author:
         )
       end

@@ -2,8 +2,6 @@ module Schools
   module InductionTutor
     module ConfirmExistingInductionTutorWizard
       class EditStep < InductionTutor::Step
-        delegate :school, :author, :valid_step?, :current_contract_period, to: :wizard
-
         attribute :are_these_details_correct, :boolean
         attribute :induction_tutor_name, :string
         attribute :induction_tutor_email, :string
@@ -42,7 +40,7 @@ module Schools
             store.are_these_details_correct = are_these_details_correct
 
             ActiveRecord::Base.transaction do
-              school.update!(induction_tutor_last_nominated_in: current_contract_period)
+              school.update!(induction_tutor_last_nominated_in: closest_contract_period)
 
               record_confirmation_event!
             end
@@ -72,7 +70,7 @@ module Schools
             school:,
             name: school.induction_tutor_name,
             email: school.induction_tutor_email,
-            contract_period_year: current_contract_period.year,
+            contract_period_year: closest_contract_period.year,
             author:
           )
         end
