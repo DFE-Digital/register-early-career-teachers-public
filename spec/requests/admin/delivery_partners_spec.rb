@@ -233,7 +233,7 @@ RSpec.describe "Admin delivery partners", type: :request do
 
   describe "POST /admin/organisations/delivery-partners/:delivery_partner_id/:year" do
     let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
-    let(:contract_period) { FactoryBot.create(:contract_period, year: 2026, enabled: false) }
+    let(:contract_period) { FactoryBot.create(:contract_period, :next, enabled: false) }
     let(:create_path) { admin_delivery_partner_delivery_partnership_path(delivery_partner, contract_period.year) }
     let!(:lead_provider_1) { FactoryBot.create(:lead_provider, name: "Lead Provider 1") }
     let!(:lead_provider_2) { FactoryBot.create(:lead_provider, name: "Lead Provider 2") }
