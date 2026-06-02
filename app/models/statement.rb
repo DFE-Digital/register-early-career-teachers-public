@@ -5,7 +5,7 @@ class Statement < ApplicationRecord
 
   # Associations
   belongs_to :contract
-  has_many :adjustments
+  has_many :adjustments, dependent: :destroy
   has_many :payment_declarations, inverse_of: :payment_statement, class_name: "Declaration"
   has_many :clawback_declarations, inverse_of: :clawback_statement, class_name: "Declaration"
   has_one :active_lead_provider, through: :contract
@@ -76,6 +76,10 @@ class Statement < ApplicationRecord
   def can_authorise_payment?
     # TODO: will also need to include: `participant_declarations.any?`
     output_fee? && payable? && !marked_as_paid_at? && deadline_date < Date.current
+  end
+
+  def referenced_by_declarations?
+    payment_declarations.exists? || clawback_declarations.exists?
   end
 
 private

@@ -1072,6 +1072,60 @@ module Events
       ).record_event!
     end
 
+    # Statement Events
+
+    def self.record_statement_created_event!(author:, statement:)
+      event_type = :statement_created
+
+      active_lead_provider = statement.active_lead_provider
+      lead_provider        = active_lead_provider.lead_provider
+      heading              = "Statement created: #{Statements::Period.for(statement)} #{statement.fee_type} for #{lead_provider.name}"
+
+      new(
+        event_type:,
+        author:,
+        heading:,
+        statement:,
+        active_lead_provider:,
+        lead_provider:,
+        happened_at: Time.zone.now
+      ).record_event!
+    end
+
+    def self.record_statement_updated_event!(author:, statement:, modifications:)
+      event_type = :statement_updated
+
+      active_lead_provider = statement.active_lead_provider
+      lead_provider        = active_lead_provider.lead_provider
+      heading              = "Statement updated: #{Statements::Period.for(statement)} #{statement.fee_type} for #{lead_provider.name}"
+
+      new(
+        event_type:,
+        author:,
+        heading:,
+        statement:,
+        active_lead_provider:,
+        lead_provider:,
+        happened_at: Time.zone.now,
+        modifications:
+      ).record_event!
+    end
+
+    def self.record_statement_deleted_event!(author:, active_lead_provider:, modifications:, heading:)
+      event_type = :statement_deleted
+      lead_provider = active_lead_provider.lead_provider
+
+      new(
+        event_type:,
+        author:,
+        heading:,
+        active_lead_provider:,
+        lead_provider:,
+        happened_at: Time.zone.now,
+        modifications:
+      ).record_event!
+    end
+
   private
 
     def attributes

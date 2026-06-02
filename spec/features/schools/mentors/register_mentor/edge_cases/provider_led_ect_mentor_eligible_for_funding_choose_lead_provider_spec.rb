@@ -174,7 +174,7 @@ RSpec.describe "Registering a mentor", :js do
   end
 
   def when_i_enter_mentor_start_date
-    @mentor_start_date = 2.days.ago.to_date
+    @mentor_start_date = @contract_period.started_on + 1.week
     page.get_by_label("Day").fill(@mentor_start_date.day.to_s)
     page.get_by_label("Month").fill(@mentor_start_date.month.to_s)
     page.get_by_label("Year").fill(@mentor_start_date.year.to_s)

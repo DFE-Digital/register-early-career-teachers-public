@@ -1,0 +1,23 @@
+<%
+  contract_period = @active_lead_provider.contract_period
+  page_data(
+    title: "Statement #{Statements::Period.for(@statement)}",
+    caption: @active_lead_provider.lead_provider_name,
+    backlink_href: admin_contract_period_active_lead_provider_statements_path(contract_period, @active_lead_provider)
+  )
+%>
+
+<%= render "statement", statement: @statement %>
+
+<% disabled = contract_period.started_on_or_before_today? %>
+
+<div class="govuk-button-group">
+  <%= govuk_button_link_to("Edit statement",
+      edit_admin_contract_period_active_lead_provider_statement_path(contract_period, @active_lead_provider, @statement),
+      disabled:) %>
+
+  <%= govuk_button_link_to("Delete statement",
+      delete_admin_contract_period_active_lead_provider_statement_path(contract_period, @active_lead_provider, @statement),
+      warning: true,
+      disabled:) %>
+</div>

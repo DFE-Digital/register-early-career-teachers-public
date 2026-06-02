@@ -2553,4 +2553,78 @@ RSpec.describe Events::Record do
       )
     end
   end
+
+  describe ".record_statement_created_event!" do
+    let(:statement) { FactoryBot.create(:statement) }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        Events::Record.record_statement_created_event!(author:, statement:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          heading: "Statement created: #{Statements::Period.for(statement)} #{statement.fee_type} for #{statement.active_lead_provider.lead_provider.name}",
+          event_type: :statement_created,
+          statement:,
+          active_lead_provider: statement.active_lead_provider,
+          lead_provider: statement.active_lead_provider.lead_provider,
+          happened_at: Time.current,
+          **author_params
+        )
+      end
+    end
+  end
+
+  describe ".record_statement_updated_event!" do
+    let(:statement) { FactoryBot.create(:statement) }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        statement.month = statement.month == 12 ? 1 : statement.month + 1
+        raw_modifications = statement.changes
+
+        Events::Record.record_statement_updated_event!(author:, statement:, modifications: raw_modifications)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          heading: "Statement updated: #{Statements::Period.for(statement)} #{statement.fee_type} for #{statement.active_lead_provider.lead_provider.name}",
+          event_type: :statement_updated,
+          statement:,
+          active_lead_provider: statement.active_lead_provider,
+          lead_provider: statement.active_lead_provider.lead_provider,
+          happened_at: Time.current,
+          modifications: anything,
+          metadata: raw_modifications,
+          **author_params
+        )
+      end
+    end
+  end
+
+  describe ".record_statement_deleted_event!" do
+    let(:statement) { FactoryBot.create(:statement) }
+    let(:active_lead_provider) { statement.active_lead_provider }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        modifications = statement.attributes.transform_values { |value| [value, nil] }
+
+        Events::Record.record_statement_deleted_event!(
+          author:,
+          active_lead_provider:,
+          modifications:,
+          heading: "Statement deleted"
+        )
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          heading: "Statement deleted",
+          event_type: :statement_deleted,
+          active_lead_provider:,
+          lead_provider: active_lead_provider.lead_provider,
+          happened_at: Time.current,
+          modifications: anything,
+          metadata: anything,
+          **author_params
+        )
+      end
+    end
+  end
 end

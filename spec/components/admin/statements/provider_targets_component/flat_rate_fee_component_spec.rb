@@ -3,7 +3,7 @@ RSpec.describe Admin::Statements::ProviderTargetsComponent::FlatRateFeeComponent
 
   let(:contract) { FactoryBot.build_stubbed(:contract, flat_rate_fee_structure:) }
   let(:flat_rate_fee_structure) do
-    FactoryBot.create(
+    FactoryBot.build(
       :contract_flat_rate_fee_structure,
       recruitment_target: 3000,
       fee_per_declaration: 750

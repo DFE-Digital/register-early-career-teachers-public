@@ -208,7 +208,7 @@ RSpec.describe API::Declarations::Create, type: :model do
         end
 
         describe "frozen contract period validations" do
-          let!(:payment_statement) { FactoryBot.create(:statement, :open, active_lead_provider:) }
+          let!(:payment_statement) { FactoryBot.create(:statement, :open, active_lead_provider:, deadline_date: 1.month.from_now) }
           let(:eligible_at_field) { "#{trainee_type}_first_became_eligible_for_training_at" }
 
           context "when teacher's latest ongoing training period is in a frozen contract period and participant is eligible for funding" do

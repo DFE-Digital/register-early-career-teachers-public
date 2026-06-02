@@ -19,7 +19,7 @@ describe Schools::ECTs::ChangeLeadProviderWizard::CheckAnswersStep do
       :ect_at_school_period,
       :ongoing,
       school:,
-      started_on: contract_period.started_on + 1.week
+      started_on: contract_period.started_on
     )
   end
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
@@ -80,23 +80,16 @@ describe Schools::ECTs::ChangeLeadProviderWizard::CheckAnswersStep do
       end
 
       let!(:training_period) do
-        training_period = FactoryBot.create(
+        FactoryBot.create(
           :training_period,
           :ongoing,
           :provider_led,
+          :withdrawn,
           :with_only_expression_of_interest,
           ect_at_school_period:,
           started_on: ect_at_school_period.started_on,
           expression_of_interest: withdrawn_active_lead_provider
         )
-
-        training_period.update!(
-          withdrawn_at: Time.zone.today,
-          withdrawal_reason: TrainingPeriod.withdrawal_reasons.keys.first,
-          finished_on: Time.zone.today
-        )
-
-        training_period
       end
 
       before do
