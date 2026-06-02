@@ -116,5 +116,15 @@ FactoryBot.define do
         )
       end
     end
+
+    trait :with_realistic_email_address do
+      after(:build) do |ect_at_school_period|
+        first_name = ect_at_school_period.teacher.trs_first_name.downcase
+        last_name = ect_at_school_period.teacher.trs_last_name.downcase
+        school_domain = ect_at_school_period.school.name.parameterize
+
+        ect_at_school_period.email = %(#{first_name}.#{last_name}@#{school_domain}.org.uk)
+      end
+    end
   end
 end
