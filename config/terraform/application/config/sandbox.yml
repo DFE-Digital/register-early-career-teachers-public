@@ -13,7 +13,6 @@ ENABLE_INCIDENT_BANNER: false
 ENABLE_MAINTENANCE_BANNER: false
 ENABLE_APPROPRIATE_BODY_RECORDS_TO_REVIEW: true
 ENABLE_HUBS: false
-ENABLE_API: true
 DFE_SIGN_IN_API_AUDIENCE: signin.education.gov.uk
 DFE_SIGN_IN_PROFILE: "https://pp-profile.signin.education.gov.uk"
 DFE_SIGN_IN_API_BASE_URL: "https://pp-api.signin.education.gov.uk"
