@@ -1,0 +1,30 @@
+<%
+  contract_period = @active_lead_provider.contract_period
+  statement_path = admin_contract_period_active_lead_provider_statement_path(contract_period, @active_lead_provider, @statement)
+  page_data(
+    title: "Delete statement",
+    caption: @active_lead_provider.lead_provider_name,
+    backlink_href: statement_path
+  )
+%>
+
+<%= render "statement", statement: @statement %>
+
+<% if @statement.referenced_by_declarations? %>
+  <%= govuk_warning_text do %>
+    This statement has declarations and cannot be deleted.
+  <% end %>
+
+  <%= govuk_button_link_to "Return to statement", statement_path, secondary: true %>
+<% else %>
+  <%= govuk_warning_text do %>
+    Are you sure you want to delete this statement?<br>
+    This action cannot be undone.
+  <% end %>
+
+  <div class="govuk-button-group">
+    <%= govuk_button_to "Delete statement", statement_path, method: :delete, warning: true %>
+
+    <%= govuk_button_link_to "Cancel", statement_path, secondary: true %>
+  </div>
+<% end %>
