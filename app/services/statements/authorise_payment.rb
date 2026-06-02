@@ -46,7 +46,7 @@ module Statements
     end
 
     def declarations_awaiting_clawback
-      statement.payment_declarations.clawback_status_awaiting_clawback
+      statement.clawback_declarations.clawback_status_awaiting_clawback
     end
 
     def record_declaration_paid_event!(declaration)

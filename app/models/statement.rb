@@ -74,7 +74,11 @@ class Statement < ApplicationRecord
   end
 
   def can_authorise_payment?
-    output_fee? && payable? && !marked_as_paid_at? && has_outstanding_declarations? && within_deadline?
+    output_fee? &&
+      payable? &&
+      !marked_as_paid_at? &&
+      has_outstanding_declarations? &&
+      deadline_date.before?(Date.current)
   end
 
   def referenced_by_declarations?
@@ -99,13 +103,9 @@ private
 
   def deadline_date_in_the_past
     return unless payable? || paid?
-    return if within_deadline?
+    return if deadline_date.before?(Date.current)
 
     errors.add(:deadline_date, "Deadline date must be in the past")
-  end
-
-  def within_deadline?
-    deadline_date < Date.current
   end
 
   def has_outstanding_declarations?

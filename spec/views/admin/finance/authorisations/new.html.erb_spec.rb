@@ -30,7 +30,7 @@ RSpec.describe "admin/finance/authorisations/new.html.erb" do
                       declaration_type: "started",
                       clawback_status: "awaiting_clawback",
                       school_partnership:,
-                      payment_statement:)
+                      clawback_statement: payment_statement)
   end
 
   before do

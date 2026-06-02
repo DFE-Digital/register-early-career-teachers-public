@@ -67,7 +67,7 @@ RSpec.describe "Admin finance statement authorisations", type: :request do
         end
 
         it "flashes a success message" do
-          expect(flash[:alert]).to eq "Statement authorisation processed successfully."
+          expect(flash[:alert]).to eq "Statement authorisation processed successfully"
         end
       end
     end

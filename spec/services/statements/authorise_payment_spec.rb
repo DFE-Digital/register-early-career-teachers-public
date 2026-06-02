@@ -59,7 +59,7 @@ RSpec.describe Statements::AuthorisePayment do
                                  declaration_type: "started",
                                  clawback_status: "awaiting_clawback",
                                  school_partnership:,
-                                 payment_statement: statement)
+                                 clawback_statement: statement)
         end
 
         it "marks declarations awaiting clawback as clawed back and records events" do
