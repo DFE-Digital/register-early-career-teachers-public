@@ -11,8 +11,8 @@ class Contract < ApplicationRecord
   belongs_to :active_lead_provider
   has_one :contract_period, through: :active_lead_provider
   has_one :lead_provider, through: :active_lead_provider
-  belongs_to :flat_rate_fee_structure, class_name: "Contract::FlatRateFeeStructure", optional: true
-  belongs_to :banded_fee_structure, class_name: "Contract::BandedFeeStructure", optional: true
+  has_one :flat_rate_fee_structure, class_name: "Contract::FlatRateFeeStructure", inverse_of: :contract, dependent: :destroy
+  has_one :banded_fee_structure, class_name: "Contract::BandedFeeStructure", inverse_of: :contract, dependent: :destroy
   has_many :statements, inverse_of: :contract
 
   # Validations
@@ -25,22 +25,15 @@ class Contract < ApplicationRecord
             numericality: { in: 0..1, message: "VAT rate must be between 0 and 1" }
 
   with_options if: :ittecf_ectp_contract_type? do
-    validates :flat_rate_fee_structure,
-              presence: { message: "Flat rate fee structure must be provided for ITTECF_ECTP contracts" },
-              uniqueness: { message: "Contract with the same flat rate fee structure already exists" }
-    validates :banded_fee_structure,
-              presence: { message: "Banded fee structure must be provided for ITTECF_ECTP contracts" },
-              uniqueness: { message: "Contract with the same banded fee structure already exists" }
+    validates :flat_rate_fee_structure, presence: { message: "Flat rate fee structure must be provided for ITTECF_ECTP contracts" }
+    validates :banded_fee_structure, presence: { message: "Banded fee structure must be provided for ITTECF_ECTP contracts" }
     validates :ecf_contract_version, presence: { message: "ECF contract version must be provided for ITTECF_ECTP contracts" }
     validates :ecf_mentor_contract_version, presence: { message: "ECF mentor contract version must be provided for ITTECF_ECTP contracts" }
   end
 
   with_options if: :ecf_contract_type? do
-    validates :flat_rate_fee_structure,
-              absence: { message: "Flat rate fee structure must be blank for ECF contracts" }
-    validates :banded_fee_structure,
-              presence: { message: "Banded fee structure must be provided for ECF contracts" },
-              uniqueness: { message: "Contract with the same banded fee structure already exists" }
+    validates :flat_rate_fee_structure, absence: { message: "Flat rate fee structure must be blank for ECF contracts" }
+    validates :banded_fee_structure, presence: { message: "Banded fee structure must be provided for ECF contracts" }
     validates :ecf_contract_version, presence: { message: "ECF contract version must be provided for ECF contracts" }
   end
 
