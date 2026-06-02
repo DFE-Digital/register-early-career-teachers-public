@@ -13,7 +13,7 @@ RSpec.describe Admin::Statements::PaymentOverview::ECFComponent, type: :componen
   let(:statement) { Admin::StatementPresenter.new(statement_rec) }
 
   let(:banded_fee_structure) do
-    FactoryBot.create(
+    FactoryBot.build(
       :contract_banded_fee_structure,
       monthly_service_fee:,
       uplift_fee_per_declaration: 50,

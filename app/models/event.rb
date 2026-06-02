@@ -76,6 +76,9 @@ class Event < ApplicationRecord
     statement_marked_payable
     contract_period_added
     contract_period_updated
+    statement_created
+    statement_updated
+    statement_deleted
   ].freeze
 
   belongs_to :author, class_name: "User"

@@ -31,4 +31,5 @@ class ActiveLeadProvider < ApplicationRecord
   }
 
   delegate :name, to: :lead_provider, prefix: true
+  delegate :editable?, to: :contract_period
 end
