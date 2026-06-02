@@ -22,7 +22,7 @@ module ActiveLeadProviders
 
       ActiveRecord::Base.transaction do
         destroy_statements!
-        destroy_contracts!
+        destroy_contracts_and_fee_structures!
         destroy_lead_provider_delivery_partnerships!
         active_lead_provider.destroy!
       end
@@ -49,11 +49,21 @@ module ActiveLeadProviders
 
     def destroy_statements!
       statement_ids = active_lead_provider.statements.ids
+      Statement::Adjustment.where(statement_id: statement_ids).delete_all
       Statement.where(id: statement_ids).destroy_all
     end
 
-    def destroy_contracts!
-      active_lead_provider.contracts.destroy_all
+    def destroy_contracts_and_fee_structures!
+      # Contracts hold the FK to both fee structures, so the contract must be
+      # destroyed before the fee structures it references. Fee structures are not
+      # shared between contracts (uniqueness validation on Contract enforces this).
+      active_lead_provider.contracts.find_each do |contract|
+        flat_rate_fee_structure = contract.flat_rate_fee_structure
+        banded_fee_structure = contract.banded_fee_structure
+        contract.destroy!
+        flat_rate_fee_structure&.destroy!
+        banded_fee_structure&.destroy!
+      end
     end
 
     def destroy_lead_provider_delivery_partnerships!

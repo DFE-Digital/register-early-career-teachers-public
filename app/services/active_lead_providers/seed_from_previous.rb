@@ -81,28 +81,28 @@ private
       contract_type: previous_contract.contract_type,
       ecf_contract_version: previous_contract.ecf_contract_version,
       ecf_mentor_contract_version: previous_contract.ecf_mentor_contract_version,
-      banded_fee_structure: build_banded_fee_structure(previous_contract.banded_fee_structure),
-      flat_rate_fee_structure: build_flat_rate_fee_structure(previous_contract.flat_rate_fee_structure),
+      banded_fee_structure: create_banded_fee_structure(previous_contract.banded_fee_structure),
+      flat_rate_fee_structure: create_flat_rate_fee_structure(previous_contract.flat_rate_fee_structure),
       statements: build_new_statements,
       vat_rate: previous_contract.vat_rate
     )
   end
 
-  def build_banded_fee_structure(previous_fee_structure)
+  def create_banded_fee_structure(previous_fee_structure)
     return unless previous_fee_structure
 
+    # Band's band_consistency_across_active_lead_provider calls .reload on its parent
+    # banded_fee_structure, so the parent must be inserted before any newly created band validates.
     previous_fee_structure.dup.tap do |new_fee_structure|
-      new_fee_structure.contract_id = nil
+      new_fee_structure.save!
       previous_fee_structure.bands.each { |band| new_fee_structure.bands << band.dup }
     end
   end
 
-  def build_flat_rate_fee_structure(previous_fee_structure)
+  def create_flat_rate_fee_structure(previous_fee_structure)
     return unless previous_fee_structure
 
-    previous_fee_structure.dup.tap do |new_fee_structure|
-      new_fee_structure.contract_id = nil
-    end
+    previous_fee_structure.dup.tap(&:save!)
   end
 
   def build_new_statements

@@ -11,7 +11,7 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
   end
 
   let(:banded_fee_structure) do
-    FactoryBot.build(:contract_banded_fee_structure, :with_bands)
+    FactoryBot.create(:contract_banded_fee_structure, :with_bands)
   end
 
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Some LP") }
