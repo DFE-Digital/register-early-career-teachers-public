@@ -49,4 +49,8 @@ class Contract < ApplicationRecord
 
     vat_rate
   end
+
+  def description
+    "#{contract_type.humanize.upcase} (created #{created_at.to_fs(:govuk)})"
+  end
 end
