@@ -315,7 +315,7 @@ RSpec.describe Schools::RegisterECT do
 
               expect(training_period.started_on).to eq(started_on)
               expect(training_period.schedule.identifier).to eql("ecf-standard-april")
-              expect(training_period.schedule.contract_period_year).to be(2025)
+              expect(training_period.schedule.contract_period_year).to be(contract_period.year)
             end
           end
         end
@@ -345,7 +345,7 @@ RSpec.describe Schools::RegisterECT do
 
               expect(training_period.started_on).to eq(started_on)
               expect(training_period.schedule.identifier).to eql("ecf-standard-april")
-              expect(training_period.schedule.contract_period_year).to be(2025)
+              expect(training_period.schedule.contract_period_year).to be(contract_period.year)
             end
           end
         end

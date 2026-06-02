@@ -1,6 +1,10 @@
 RSpec.describe "Schools registration window banner" do
   let(:school) { FactoryBot.create(:school) }
 
+  before do
+    allow(Schools::RegistrationWindow).to receive(:closed?).and_call_original
+  end
+
   context "between 1-14 June 2026" do
     before { travel_to Date.new(2026, 6, 7) }
 

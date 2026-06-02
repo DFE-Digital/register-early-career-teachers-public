@@ -62,16 +62,18 @@ RSpec.describe PaymentCalculator::FlatRate do
   let(:statement) do
     FactoryBot.create(:statement, active_lead_provider:)
   end
-  let(:contract) do
-    FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider:, vat_rate: 0.20)
+
+  let!(:contract) do
+    FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider:, vat_rate: 0.20, flat_rate_fee_structure:)
   end
+
   let(:flat_rate_fee_structure) do
-    FactoryBot.create(
+    FactoryBot.build(
       :contract_flat_rate_fee_structure,
-      contract:,
       fee_per_declaration: 100.00
     )
   end
+
   let(:declaration_selector) do
     ->(declarations) { declarations.select(&:for_mentor?) }
   end

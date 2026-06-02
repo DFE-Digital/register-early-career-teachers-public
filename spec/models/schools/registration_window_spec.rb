@@ -4,6 +4,10 @@ describe Schools::RegistrationWindow do
   let(:first_day_of_closure) { Date.new(2026, 6, 1) }
   let(:last_day_of_closure) { Date.new(2026, 6, 14) }
 
+  before do
+    allow(Schools::RegistrationWindow).to receive(:closed?).and_call_original
+  end
+
   describe ".closed?" do
     before { travel_to date }
 

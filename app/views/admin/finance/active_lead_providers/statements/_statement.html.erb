@@ -1,0 +1,33 @@
+<%=
+  govuk_summary_list do |sl|
+    sl.with_row do |row|
+      row.with_key(text: "Period")
+      row.with_value(text: Statements::Period.for(statement))
+    end
+
+    sl.with_row do |row|
+      row.with_key(text: "Contract")
+      row.with_value(text: statement.contract.description)
+    end
+
+    sl.with_row do |row|
+      row.with_key(text: "Fee type")
+      row.with_value(text: statement.fee_type.humanize)
+    end
+
+    sl.with_row do |row|
+      row.with_key(text: "Status")
+      row.with_value { govuk_tag(**Admin::StatementPresenter.new(statement).status_tag_kwargs) }
+    end
+
+    sl.with_row do |row|
+      row.with_key(text: "Deadline date")
+      row.with_value(text: statement.deadline_date.to_fs(:govuk))
+    end
+
+    sl.with_row do |row|
+      row.with_key(text: "Payment date")
+      row.with_value(text: statement.payment_date.to_fs(:govuk))
+    end
+  end
+%>
