@@ -13,6 +13,7 @@ module API::SchoolPartnerships
     validates :lead_provider_id, presence: { message: "Enter a '#/lead_provider_id'." }
     validates :delivery_partner_api_id, presence: { message: "Enter a '#/delivery_partner_api_id'." }
     validate :contract_period_exists
+    validate :contract_period_started
     validate :contract_period_enabled
     validate :lead_provider_exists
     validate :school_exists
@@ -60,6 +61,12 @@ module API::SchoolPartnerships
       return if errors[:contract_period_year].any?
 
       errors.add(:contract_period_year, "You cannot create this partnership as the contract period is closed.") unless contract_period&.enabled?
+    end
+
+    def contract_period_started
+      return if errors[:contract_period_year].any?
+
+      errors.add(:contract_period_year, "You cannot create a partnership for a future contract period.") unless contract_period&.started_on_or_before_today?
     end
 
     def lead_provider_exists
