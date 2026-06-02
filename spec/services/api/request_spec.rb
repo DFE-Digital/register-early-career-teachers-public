@@ -165,6 +165,33 @@ RSpec.describe API::Request do
         }
         expect(DfE::Analytics::SendEvents).to have_received(:do).with(array_including(hash_including(expected_values)))
       end
+
+      context "when the request path is excluded from analytics" do
+        let(:env) do
+          {
+            "REQUEST_METHOD" => "GET",
+            "PATH_INFO" => "/school/opt-out-of-reminder-emails",
+            "QUERY_STRING" => "school_id=1&token=secret",
+            "rack.session" => {}
+          }
+        end
+
+        let(:original_excluded_paths) { DfE::Analytics.config.excluded_paths }
+
+        before do
+          DfE::Analytics.config.excluded_paths = [%r{^/school/opt-out-of-reminder-emails(?:[/?].*)?$}]
+        end
+
+        after do
+          DfE::Analytics.config.excluded_paths = original_excluded_paths
+        end
+
+        it "does not send a web_request event" do
+          described_class.send_throttled_request(env)
+
+          expect(DfE::Analytics::SendEvents).not_to have_received(:do)
+        end
+      end
     end
 
     context "dfe_analytics by default disabled" do

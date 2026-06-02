@@ -21,6 +21,21 @@ describe "School user can change mentor's email address" do
     then_i_see_the_confirmation_message
   end
 
+  context "when an invalid email address is submitted" do
+    it "re-renders the form with an error prefix in the page title" do
+      given_there_is_a_school
+      and_there_is_a_mentor
+      and_i_am_logged_in_as_a_school_user
+
+      when_i_visit_the_mentor_page
+      then_i_can_change_the_email_address
+
+      when_i_enter_an_invalid_email_address
+      and_i_continue
+      then_the_page_title_has_an_error_prefix
+    end
+  end
+
 private
 
   def given_there_is_a_school
@@ -94,5 +109,13 @@ private
     expect(success_panel).to have_text(
       "You’ve changed the mentor’s email address to new@example.com"
     )
+  end
+
+  def when_i_enter_an_invalid_email_address
+    page.get_by_label("Email address").fill("not-an-email")
+  end
+
+  def then_the_page_title_has_an_error_prefix
+    expect(page.title).to start_with("Error:")
   end
 end

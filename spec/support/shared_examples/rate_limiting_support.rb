@@ -9,6 +9,10 @@ RSpec.shared_examples "a rate limited endpoint", :rack_attack do |desc|
     let(:limit) { 2 }
     let(:throttle) { Rack::Attack.throttles[desc] }
 
+    let(:dfe_analytics_excluded_path?) do
+      DfE::Analytics.config.excluded_paths.any? { path.start_with? it }
+    end
+
     before do
       memory_store = ActiveSupport::Cache.lookup_store(:memory_store)
       allow(Rack::Attack.cache).to receive(:store) { memory_store }
@@ -35,7 +39,7 @@ RSpec.shared_examples "a rate limited endpoint", :rack_attack do |desc|
 
       it "logs a warning" do
         expect(Rails.logger).to have_received(:warn).with(
-          %r{\[rack-attack\] Throttled request [a-zA-Z0-9]{20} from #{Regexp.escape(request.remote_ip)} to '#{Regexp.escape(request.fullpath)}'}
+          %r{\[rack-attack\] Throttled request [a-zA-Z0-9]{20} from #{Regexp.escape(request.remote_ip)} to '#{Regexp.escape(request.path)}'}
         )
       end
 
@@ -58,9 +62,17 @@ RSpec.shared_examples "a rate limited endpoint", :rack_attack do |desc|
       context "dfe_analytics is enabled" do
         before { stub_const("ENV", "DFE_ANALYTICS_ENABLED" => "true") }
 
-        it { expect { perform_request }.to have_sent_analytics_event_types(:web_request) }
+        it "sends a web_request event, unless the path is excluded from analytics" do
+          if dfe_analytics_excluded_path?
+            expect { perform_request }.not_to have_sent_analytics_event_types(:web_request)
+          else
+            expect { perform_request }.to have_sent_analytics_event_types(:web_request)
+          end
+        end
 
         it "sends correct event type" do
+          skip "path is excluded from analytics" if dfe_analytics_excluded_path?
+
           allow(DfE::Analytics::SendEvents).to receive(:perform_later)
 
           perform_request

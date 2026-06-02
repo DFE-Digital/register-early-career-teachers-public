@@ -62,6 +62,11 @@ describe "School user can change ECTs training programme" do
     and_i_can_change_the_training_programme_to_provider_led
 
     when_i_change_the_training_programme
+    then_i_see_the_lead_provider_selection_page
+
+    when_i_continue_without_selecting_a_lead_provider
+    then_the_lead_provider_page_title_has_an_error_prefix
+
     and_i_choose_the_lead_provider
     and_i_continue
     then_i_am_asked_to_check_and_confirm_the_change
@@ -204,5 +209,20 @@ private
     expect(success_panel).to have_text(
       "You’ve changed John Doe’s training programme to school-led"
     )
+  end
+
+  def then_i_see_the_lead_provider_selection_page
+    heading = page.locator("h1", hasText: "Which lead provider will be training John Doe?")
+    expect(heading).to be_visible
+  end
+
+  def when_i_continue_without_selecting_a_lead_provider
+    page.get_by_role("button", name: "Continue").click
+  end
+
+  def then_the_lead_provider_page_title_has_an_error_prefix
+    expect(page.title).to start_with("Error:")
+    then_i_see_the_lead_provider_selection_page
+    expect(page.locator(".govuk-error-summary")).to be_visible
   end
 end
