@@ -128,6 +128,7 @@ shared:
     - withdrawal_reason
     - schedule_id
     - api_transfer_updated_at
+    - transfer_initiated_at
   :schools:
     - last_chosen_appropriate_body_id
     - last_chosen_lead_provider_id
