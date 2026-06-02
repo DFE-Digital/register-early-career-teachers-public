@@ -76,7 +76,7 @@ private
     destroy_unstarted_training_periods!(period)
 
     period.training_periods.ongoing_on(finished_on).each do |training_period|
-      TrainingPeriods::Finish.mentor_training(training_period:, mentor_at_school_period: period, finished_on:, author:).finish!
+      TrainingPeriods::Finish.mentor_training(training_period:, mentor_at_school_period: period, finished_on:, author:, leaving_school: true).finish!
     end
   end
 

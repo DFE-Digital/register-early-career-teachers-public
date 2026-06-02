@@ -27,7 +27,7 @@ class API::Teachers::SchoolTransferSerializer < Blueprinter::Base
       transfer.status
     end
     field(:created_at) do |(transfer, _teacher, _options)|
-      transfer.leaving_training_period.created_at
+      transfer.leaving_training_period.transfer_initiated_at.presence || transfer.leaving_training_period.created_at
     end
     association :leaving, blueprint: TrainingPeriodSerializer do |(transfer, _teacher, _options)|
       training_period = transfer.leaving_training_period

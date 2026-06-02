@@ -79,7 +79,7 @@ module ECTAtSchoolPeriods
 
       return if training_period.finished_on.present? && training_period.finished_on <= finished_on
 
-      TrainingPeriods::Finish.ect_training(author:, training_period:, ect_at_school_period:, finished_on:, record_event: record_event?).finish!
+      TrainingPeriods::Finish.ect_training(author:, training_period:, ect_at_school_period:, finished_on:, record_event: record_event?, leaving_school: true).finish!
     end
 
     def destroy_unstarted_training_periods!
