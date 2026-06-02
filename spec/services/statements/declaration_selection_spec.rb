@@ -6,26 +6,25 @@ RSpec.describe Statements::DeclarationSelection do
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
 
   let(:band_max) { 10 }
-  let(:bands) do
-    FactoryBot.build_list(
-      :contract_banded_fee_structure_band,
-      1,
-      min_declarations: 1,
-      max_declarations: band_max,
-      fee_per_declaration: 100,
-      output_fee_ratio: 1.0,
-      service_fee_ratio: 0.0
-    )
-  end
   let(:banded_fee_structure) do
-    FactoryBot.build(
+    FactoryBot.create(
       :contract_banded_fee_structure,
       recruitment_target: 10,
       uplift_fee_per_declaration: 0,
       monthly_service_fee: 0,
-      setup_fee: 0,
-      bands:
-    )
+      setup_fee: 0
+    ).tap do |structure|
+      FactoryBot.create(
+        :contract_banded_fee_structure_band,
+        banded_fee_structure: structure,
+        min_declarations: 1,
+        max_declarations: band_max,
+        fee_per_declaration: 100,
+        output_fee_ratio: 1.0,
+        service_fee_ratio: 0.0
+      )
+      structure.bands.reload
+    end
   end
 
   let(:contract) do
