@@ -10,8 +10,8 @@ RSpec.describe Statements::DeclarationsCSV do
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Ambition Institute") }
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
   let(:banded_fee_structure) do
-    FactoryBot.build(:contract_banded_fee_structure).tap do |structure|
-      FactoryBot.build(
+    FactoryBot.create(:contract_banded_fee_structure).tap do |structure|
+      FactoryBot.create(
         :contract_banded_fee_structure_band,
         banded_fee_structure: structure,
         min_declarations: 1,

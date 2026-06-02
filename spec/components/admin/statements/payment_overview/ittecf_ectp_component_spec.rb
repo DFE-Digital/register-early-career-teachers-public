@@ -13,7 +13,7 @@ RSpec.describe Admin::Statements::PaymentOverview::IttecfEctpComponent, type: :c
   let(:statement) { Admin::StatementPresenter.new(statement_rec) }
 
   let(:banded_fee_structure) do
-    FactoryBot.build(
+    FactoryBot.create(
       :contract_banded_fee_structure,
       monthly_service_fee:,
       uplift_fee_per_declaration: 50,
@@ -32,7 +32,7 @@ RSpec.describe Admin::Statements::PaymentOverview::IttecfEctpComponent, type: :c
   end
 
   let(:flat_rate_fee_structure) do
-    FactoryBot.build(
+    FactoryBot.create(
       :contract_flat_rate_fee_structure,
       fee_per_declaration: 100.00
     )

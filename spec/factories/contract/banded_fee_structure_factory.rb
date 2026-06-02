@@ -10,8 +10,8 @@ FactoryBot.define do
         declaration_boundaries do
           min = 1
 
-          Array.new(3) do
-            max = min + 80
+          Array.new(Faker::Number.between(from: 3, to: 4)) do
+            max = min + Faker::Number.between(from: 20, to: 200)
             { min:, max: }.tap { min = max + 1 }
           end
         end
@@ -23,9 +23,7 @@ FactoryBot.define do
             :contract_banded_fee_structure_band,
             banded_fee_structure: instance,
             min_declarations: boundary[:min],
-            max_declarations: boundary[:max],
-            fee_per_declaration: boundary[:max] + 100,
-            strategy: :build
+            max_declarations: boundary[:max]
           )
         end
       end

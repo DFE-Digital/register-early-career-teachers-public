@@ -54,7 +54,7 @@ RSpec.describe PaymentCalculator::Banded do
   end
 
   let(:banded_fee_structure) do
-    FactoryBot.build(
+    FactoryBot.create(
       :contract_banded_fee_structure,
       :with_bands,
       monthly_service_fee: 1_000,
@@ -203,7 +203,7 @@ RSpec.describe PaymentCalculator::Banded do
 
     context "when banded_fee_structure monthly_service_fee is nil" do
       let(:banded_fee_structure) do
-        FactoryBot.build(
+        FactoryBot.create(
           :contract_banded_fee_structure,
           monthly_service_fee: nil
         )

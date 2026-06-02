@@ -96,11 +96,10 @@ private
 
     attributes_to_ignore = %w[id banded_fee_structure_id created_at updated_at].freeze
     unique_bands_by_index = bands_for_active_lead_provider
-      .group_by { it.banded_fee_structure.bands.index(it) || it.banded_fee_structure.bands.count }
+      .group_by { it.banded_fee_structure.reload.bands.index(it) || it.banded_fee_structure.bands.count }
       .transform_values { |bands| bands.map { it.attributes.except(*attributes_to_ignore) }.uniq }
 
     inconsistent_bands = unique_bands_by_index.select { |_, bands| bands.size > 1 }
-
     inconsistent_bands.each_key do |index|
       errors.add(:base, "Band at index #{index} is inconsistent across statements for the same active lead provider")
     end
