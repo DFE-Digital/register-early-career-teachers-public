@@ -5,7 +5,7 @@ module Admin::Finance
     before_action :redirect_if_contract_period_started
 
     def new
-      @milestone = Milestone.new
+      @milestone = @schedule.milestones.build
     end
 
     def create
@@ -46,7 +46,7 @@ module Admin::Finance
     end
 
     def set_schedule
-      @schedule = Schedule.find(params[:schedule_id])
+      @schedule = @contract_period.schedules.find(params[:schedule_id])
     end
 
     def milestone_params

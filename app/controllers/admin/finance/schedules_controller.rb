@@ -26,7 +26,7 @@ module Admin::Finance
     end
 
     def new
-      @schedule = Schedule.new
+      @schedule = @contract_period.schedules.build
     end
 
     def create
@@ -44,7 +44,7 @@ module Admin::Finance
         render :new, status: :unprocessable_content
       end
     rescue ActionController::ParameterMissing
-      @schedule = Schedule.new
+      @schedule = @contract_period.schedules.build
       @schedule.errors.add(:identifier, "Select a schedule")
       render :new, status: :unprocessable_content
     end
@@ -71,7 +71,7 @@ module Admin::Finance
     end
 
     def set_schedule
-      @schedule = Schedule.find(params[:id])
+      @schedule = @contract_period.schedules.find(params[:id])
     end
 
     def schedule_params
