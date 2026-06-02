@@ -58,7 +58,7 @@ RSpec.describe APISeedData::ParticipantScenarios do
 
     it "creates participants for each contract period and lead provider" do
       LeadProvider.find_each do |lead_provider|
-        ContractPeriod.find_each do |contract_period|
+        ContractPeriod.where(year: [2024, 2025]).find_each do |contract_period|
           ects_in_period = Teacher
             .joins(ect_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } }] })
             .where(schedules: { contract_period_year: contract_period.year })

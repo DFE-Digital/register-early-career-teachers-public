@@ -5,6 +5,7 @@ RSpec.shared_examples "a route blocked when the registration window is closed" d
   end
 
   before do
+    allow(Schools::RegistrationWindow).to receive(:closed?).and_call_original
     sign_in_as(:school_user, school:)
     subject
   end

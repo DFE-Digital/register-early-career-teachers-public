@@ -46,15 +46,15 @@ private
   end
 
   def and_the_school_is_in_a_partnership_with_a_lead_provider
-    @contract_period_2025 = FactoryBot.create(:contract_period, :with_schedules, :current)
-    @school_partnership = make_partnership_for(@school, @contract_period_2025)
+    @contract_period = FactoryBot.create(:contract_period, :with_schedules, :current)
+    @school_partnership = make_partnership_for(@school, @contract_period)
     @lead_provider = @school_partnership.lead_provider_delivery_partnership.lead_provider
   end
 
   def and_there_is_an_ect_with_no_mentor_registered_at_the_school
     @active_lead_provider = FactoryBot.create(:active_lead_provider,
                                               lead_provider: @lead_provider,
-                                              contract_period: @contract_period_2025)
+                                              contract_period: @contract_period)
     @ect = FactoryBot.create(:ect_at_school_period, :ongoing, school: @school)
     FactoryBot.create(:training_period, :provider_led, :ongoing,
                       ect_at_school_period: @ect,
@@ -66,19 +66,19 @@ private
   end
 
   def and_there_is_a_mentor_previously_registered_at_another_school_in_an_older_contract_period
-    @contract_period_2024 = FactoryBot.create(:contract_period, :with_schedules, :previous)
+    @previous_contract_period = FactoryBot.create(:contract_period, :with_schedules, :previous)
     @another_school = FactoryBot.create(:school, urn: "7654321")
     @teacher = FactoryBot.create(:teacher, trn:, trs_first_name: "Kirk", trs_last_name: "Van Houten", corrected_name: nil)
 
     older_active_lead_provider = FactoryBot.create(:active_lead_provider,
                                                    lead_provider: @lead_provider,
-                                                   contract_period: @contract_period_2024)
+                                                   contract_period: @previous_contract_period)
 
     @existing_mentor_at_school_period = FactoryBot.create(:mentor_at_school_period,
                                                           teacher: @teacher,
                                                           school: @another_school,
-                                                          started_on: @contract_period_2024.started_on,
-                                                          finished_on: @contract_period_2024.started_on + 6.months)
+                                                          started_on: @previous_contract_period.started_on,
+                                                          finished_on: @previous_contract_period.started_on + 6.months)
 
     FactoryBot.create(:training_period, :provider_led, :for_mentor, :with_only_expression_of_interest,
                       mentor_at_school_period: @existing_mentor_at_school_period,
@@ -149,7 +149,7 @@ private
   def when_i_submit_the_started_on_form
     page.get_by_label("Day").fill("1")
     page.get_by_label("Month").fill("6")
-    page.get_by_label("Year").fill("2025")
+    page.get_by_label("Year").fill(Date.current.year.to_s)
     page.get_by_role("button", name: "Continue").click
   end
 
@@ -189,6 +189,6 @@ private
     new_training_period = new_mentor_at_school_period&.training_periods&.first
 
     expect(new_training_period).not_to be_nil
-    expect(new_training_period.schedule.contract_period).to eq(@contract_period_2024)
+    expect(new_training_period.schedule.contract_period).to eq(@previous_contract_period)
   end
 end

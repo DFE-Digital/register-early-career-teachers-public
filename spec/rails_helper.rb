@@ -34,6 +34,11 @@ RSpec.configure do |config|
   config.infer_spec_type_from_file_location!
   config.filter_rails_from_backtrace!
 
+  # Ensure registration window (i.e contract periods) are always open
+  config.before do
+    allow(Schools::RegistrationWindow).to receive(:closed?).and_return(false)
+  end
+
   # Opening registration contract periods
   config.before(:each, :enable_finance_contract_periods) do
     allow(Rails.application.config).to receive(:enable_finance_contract_periods).and_return(true)
