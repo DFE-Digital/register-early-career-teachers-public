@@ -32,7 +32,7 @@ end
     detailed_evidence_types_enabled: true,
     uplift_fees_enabled: false },
   { year: 2026,
-    enabled: false,
+    enabled: true,
     mentor_funding_enabled: true,
     detailed_evidence_types_enabled: true,
     uplift_fees_enabled: false }

@@ -2,14 +2,16 @@ class Contract::BandedFeeStructure < ApplicationRecord
   self.table_name = "contract_banded_fee_structures"
 
   # Associations
+  belongs_to :contract
   has_many :bands,
            -> { order(min_declarations: :asc) },
            class_name: "Contract::BandedFeeStructure::Band",
            inverse_of: :banded_fee_structure,
            dependent: :destroy
-  has_one :contract, inverse_of: :banded_fee_structure
 
   # Validations
+  validates :contract_id, uniqueness: { message: "Contract with the same banded fee structure already exist" }
+
   validates :recruitment_target,
             presence: { message: "Recruitment target is required" },
             numericality: {
