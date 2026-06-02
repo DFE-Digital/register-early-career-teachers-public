@@ -113,7 +113,7 @@ school_partnership_2025 = FactoryBot.create(:school_partnership,
   describe_school_partnership(partnership)
 end
 
-ecf_banded_fee_structure = FactoryBot.create(:contract_banded_fee_structure, :with_bands, declaration_boundaries: ECF_BOUNDARIES)
+ecf_banded_fee_structure = FactoryBot.build(:contract_banded_fee_structure, :with_bands, declaration_boundaries: ECF_BOUNDARIES)
 ucl_contract_2024 = FactoryBot.create(:contract,
                                       :for_ecf,
                                       active_lead_provider: school_partnership_2024.active_lead_provider,
@@ -122,8 +122,8 @@ ucl_contract_2024 = FactoryBot.create(:contract,
   describe_contract(contract)
 end
 
-ittecf_banded_fee_structure = FactoryBot.create(:contract_banded_fee_structure, :with_bands, declaration_boundaries: ITTECF_BOUNDARIES)
-ittecf_flat_rate_fee_structure = FactoryBot.create(:contract_flat_rate_fee_structure)
+ittecf_banded_fee_structure = FactoryBot.build(:contract_banded_fee_structure, :with_bands, declaration_boundaries: ITTECF_BOUNDARIES)
+ittecf_flat_rate_fee_structure = FactoryBot.build(:contract_flat_rate_fee_structure)
 ucl_contract_2025 = FactoryBot.create(:contract,
                                       :for_ittecf_ectp,
                                       active_lead_provider: school_partnership_2025.active_lead_provider,
