@@ -1,12 +1,3 @@
-def print_seed_info(text, indent: 0, colour: nil, blank_lines_before: 0)
-  blank_lines_before.times { puts "🌱 \n" }
-
-  if colour
-    puts "🌱 " + (" " * indent) + Colourize.text(text, colour)
-  else
-    puts "🌱 " + (" " * indent) + text
-  end
-end
 
 priority_seeds = %w[
   contract_periods
