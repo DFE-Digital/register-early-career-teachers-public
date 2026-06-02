@@ -134,14 +134,12 @@ RSpec.describe "Admin finance statements index", type: :request do
       let(:lead_provider) { FactoryBot.create(:lead_provider) }
       let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
       let(:banded_fee_structure) do
-        FactoryBot.create(:contract_banded_fee_structure).tap do |structure|
-          FactoryBot.create(
-            :contract_banded_fee_structure_band,
-            banded_fee_structure: structure,
-            min_declarations: 1,
-            max_declarations: 100
-          )
-        end
+        band = FactoryBot.build(
+          :contract_banded_fee_structure_band,
+          min_declarations: 1,
+          max_declarations: 100
+        )
+        FactoryBot.build(:contract_banded_fee_structure, bands: [band])
       end
       let(:contract) { FactoryBot.create(:contract, :for_ecf, active_lead_provider:, banded_fee_structure:) }
       let!(:statement) do
