@@ -16,7 +16,9 @@ module Schools
         @school ||= School.find(school_id)
       end
 
-      def closest_contract_period = ContractPeriod.current_or_upcoming!
+      def closest_contract_period
+        @closest_contract_period ||= ContractPeriod.current_or_upcoming
+      end
 
       def send_confirmation_email?
         raise NotImplementedError, "#{self.class} must implement #send_confirmation_email?"

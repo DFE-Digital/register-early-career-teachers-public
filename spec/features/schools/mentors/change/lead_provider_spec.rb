@@ -19,6 +19,10 @@ describe "School user can change a mentor's lead provider" do
       and_i_see_the_change_lead_provider_form
       and_the_current_lead_provider_is_not_an_option
 
+      when_i_continue
+      then_the_page_title_should_have_an_error_prefix
+      and_i_see_the_change_lead_provider_form
+
       when_i_choose_a_lead_provider
       and_i_continue
       then_i_am_asked_to_check_and_confirm_the_change
@@ -149,6 +153,11 @@ private
   def and_i_see_the_change_lead_provider_form
     heading = page.locator("h1")
     expect(heading).to have_text("Change lead provider for John Doe")
+  end
+
+  def then_the_page_title_should_have_an_error_prefix
+    expect(page.title).to start_with("Error:")
+    expect(page.locator(".govuk-error-summary")).to be_visible
   end
 
   def and_the_current_lead_provider_is_not_an_option

@@ -32,25 +32,17 @@ module API::DeliveryPartners
   private
 
     def preload_associations(results)
-      preloaded_results = results
+      results
         .strict_loading
-        .includes(:lead_provider_metadata)
-
-      unless ignore?(filter: lead_provider_id)
-        preloaded_results = preloaded_results
-          .references(:metadata_delivery_partners_lead_providers)
-          .where(metadata_delivery_partners_lead_providers: { lead_provider_id: })
-      end
-
-      preloaded_results
+        .includes(:active_lead_providers)
     end
 
     def where_lead_provider_is(lead_provider_id)
       return if ignore?(filter: lead_provider_id)
 
       delivery_partners_with_lead_provider = DeliveryPartner
-        .joins(lead_provider_delivery_partnerships: :active_lead_provider)
-        .where(active_lead_provider: { lead_provider_id: })
+        .joins(:active_lead_providers)
+        .where(active_lead_providers: { lead_provider_id: })
 
       scope.merge!(delivery_partners_with_lead_provider)
     end

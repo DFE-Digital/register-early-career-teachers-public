@@ -1,0 +1,34 @@
+<%
+  page_data(
+    title: "Add schedule",
+    caption: "#{@contract_period.year} contract period",
+    caption_size: "l",
+    error: @schedule.errors.present?,
+    backlink_href: admin_contract_period_schedules_path(@contract_period)
+  )
+%>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <%= form_with model: [:admin, @contract_period, @schedule], local: true do |f| %>
+      <%= content_for(:error_summary) { f.govuk_error_summary } %>
+
+      <%= f.govuk_radio_buttons_fieldset :identifier, legend: { hidden: true } do %>
+        <% @contract_period.available_schedules.each do |identifier| %>
+          <%=
+            f.govuk_radio_button :identifier, identifier,
+              label: { text: identifier.delete_prefix("ecf-").titleize },
+              link_errors: false
+          %>
+        <% end %>
+      <% end %>
+
+      <%= f.govuk_submit "Save" %>
+    <% end %>
+
+    <p class="govuk-body">
+      <%= govuk_link_to "Cancel and return to schedules", admin_contract_period_schedules_path(@contract_period) %>
+    </p>
+  </div>
+</div>

@@ -130,6 +130,5 @@ describe LeadProviderDeliveryPartnership do
     let!(:target) { FactoryBot.create(:delivery_partner) }
 
     it_behaves_like "a declarative touch model", on_event: %i[create destroy], timestamp_attribute: :api_updated_at
-    it_behaves_like "a declarative metadata model", on_event: %i[create destroy update]
   end
 end

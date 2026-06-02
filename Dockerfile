@@ -82,8 +82,6 @@ RUN addgroup -S appgroup -g 20001 && adduser -S appuser -G appgroup -u 10001
 RUN apk add --no-cache libpq zlib && \
     apk upgrade --no-cache zlib
 
-RUN apk add --no-cache plantuml # FIXME can be removed once the migration is done
-
 # Copy files generated in the builder image
 COPY --from=builder /app /app
 COPY --from=builder /usr/local/bundle/ /usr/local/bundle/

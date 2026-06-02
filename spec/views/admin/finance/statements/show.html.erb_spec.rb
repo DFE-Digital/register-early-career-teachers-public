@@ -87,13 +87,13 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
   def create_clawback(training_period, payment_statement:, clawback_statement:)
     FactoryBot.create(
       :declaration,
-      :paid,
+      :payable,
       payment_statement:,
       training_period:
     )
     FactoryBot.create(
       :declaration,
-      :clawed_back,
+      :awaiting_clawback,
       clawback_statement:,
       training_period:
     )

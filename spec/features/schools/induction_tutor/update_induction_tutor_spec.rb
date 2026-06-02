@@ -15,6 +15,7 @@ RSpec.describe "Assigning a new induction tutor" do
 
     when_i_enter_invalid_details_for_the_induction_tutor
     and_i_click_continue
+    then_the_page_title_should_have_an_error_prefix
     then_i_should_see_error_messages_indicating_what_i_need_to_fix
 
     when_i_enter_valid_details_for_the_induction_tutor
@@ -82,5 +83,11 @@ RSpec.describe "Assigning a new induction tutor" do
 
   def base_page
     "/school/induction-tutor/update-induction-tutor"
+  end
+
+  def then_the_page_title_should_have_an_error_prefix
+    expect(page.title).to start_with("Error:")
+    expect(page.locator("h1")).to have_text("Change induction tutor")
+    expect(page.locator(".govuk-error-summary")).to be_visible
   end
 end

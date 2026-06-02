@@ -117,31 +117,29 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
         end
 
         context "with a start date on the last day of the next contract period, when today is the end of the current period" do
-          around do |example|
-            travel_to Date.new(2026, 5, 31) { example.run }
+          let(:upcoming_contract_period) { FactoryBot.create(:contract_period, :next) }
+
+          let(:upcoming_active_lead_provider) do
+            FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: upcoming_contract_period)
           end
 
-          let(:next_contract_period) { FactoryBot.create(:contract_period, year: 2026) }
-
-          let(:active_lead_provider_2026) do
-            FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: next_contract_period)
-          end
-
-          let(:lpdp_2026) do
-            FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider_2026)
+          let(:upcoming_lpdp) do
+            FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: upcoming_active_lead_provider)
           end
 
           let!(:reusable_partnership) do
-            FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership: lpdp_2026)
+            FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership: upcoming_lpdp)
           end
 
           let(:store) do
             FactoryBot.build(
               :session_repository,
               use_previous_ect_choices:,
-              start_date: "31 May 2027"
+              start_date: upcoming_contract_period.finished_on
             )
           end
+
+          before { travel_to current_contract_period.finished_on }
 
           it "finds a partnership in the next contract period, and the step is allowed" do
             expect(SchoolPartnerships::FindReusablePartnership)
@@ -149,7 +147,7 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
               .with(
                 school:,
                 lead_provider: school.last_chosen_lead_provider,
-                contract_period: next_contract_period
+                contract_period: upcoming_contract_period
               )
               .and_call_original
 
@@ -456,13 +454,13 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
       end
 
       context "and no partnership is reusable but a previous EOI exists and the LP is available in the registration contract period" do
-        let!(:previous_contract_period) { FactoryBot.create(:contract_period, year: 2024) }
+        let!(:previous_contract_period) { FactoryBot.create(:contract_period, :previous) }
 
         let!(:previous_year_active_lead_provider) do
           FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: previous_contract_period)
         end
 
-        let!(:active_lead_provider_2025) do
+        let!(:active_lead_provider) do
           FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: current_contract_period)
         end
 
@@ -470,7 +468,7 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
           FactoryBot.create(
             :ect_at_school_period,
             school:,
-            started_on: Date.new(2024, 9, 1),
+            started_on: previous_contract_period.started_on.next_month,
             finished_on: nil
           )
         end
@@ -482,7 +480,7 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
             training_programme: "provider_led",
             expression_of_interest: previous_year_active_lead_provider,
             school_partnership: nil,
-            started_on: Date.new(2024, 9, 1),
+            started_on: ect_at_school_period.started_on,
             finished_on: nil
           )
         end
@@ -500,30 +498,28 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
         end
 
         context "with a start date on the last day of the next contract period, when today is the end of the current period" do
-          around do |example|
-            travel_to Date.new(2026, 5, 31) { example.run }
-          end
-
-          let(:next_contract_period) { FactoryBot.create(:contract_period, year: 2026) }
+          let(:upcoming_contract_period) { FactoryBot.create(:contract_period, :next) }
 
           let(:store) do
             FactoryBot.build(
               :session_repository,
               use_previous_ect_choices:,
-              start_date: "31 May 2027"
+              start_date: upcoming_contract_period.finished_on
             )
           end
 
-          let!(:active_lead_provider_2026) do
-            FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: next_contract_period)
+          let!(:upcoming_active_lead_provider) do
+            FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: upcoming_contract_period)
           end
+
+          before { travel_to current_contract_period.finished_on }
 
           it "is allowed" do
             expect(ActiveLeadProvider)
               .to receive(:exists?)
               .with(
-                contract_period_year: 2026,
-                lead_provider_id: active_lead_provider_2026.lead_provider_id
+                contract_period_year: previous_contract_period.year,
+                lead_provider_id: previous_year_active_lead_provider.lead_provider_id
               )
               .and_call_original
 
@@ -678,7 +674,7 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
   end
 
   describe "#save!" do
-    let!(:current_contract_period) { FactoryBot.create(:contract_period, year: 2025) }
+    let!(:current_contract_period) { FactoryBot.create(:contract_period, :current) }
 
     let(:step_params) do
       ActionController::Parameters.new(
@@ -749,14 +745,14 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
       let!(:lead_provider) { FactoryBot.create(:lead_provider) }
       let!(:delivery_partner) { FactoryBot.create(:delivery_partner) }
 
-      let!(:active_lead_provider_2025) do
+      let!(:active_lead_provider) do
         FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: current_contract_period)
       end
 
-      let!(:lpdp_2025) do
+      let!(:lpdp) do
         FactoryBot.create(
           :lead_provider_delivery_partnership,
-          active_lead_provider: active_lead_provider_2025,
+          active_lead_provider:,
           delivery_partner:
         )
       end
@@ -765,7 +761,7 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
         FactoryBot.create(
           :school_partnership,
           school:,
-          lead_provider_delivery_partnership: lpdp_2025
+          lead_provider_delivery_partnership: lpdp
         )
       end
 
