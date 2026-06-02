@@ -8,7 +8,7 @@ FactoryBot.define do
       contract_type { "ecf" }
       ecf_contract_version { "1" }
       association :banded_fee_structure, :with_bands, factory: :contract_banded_fee_structure
-      flat_rate_fee_structure_id { nil }
+      flat_rate_fee_structure { nil }
     end
 
     trait(:for_ittecf_ectp) do
