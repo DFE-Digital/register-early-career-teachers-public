@@ -3,16 +3,16 @@ RSpec.describe Admin::Statements::OutputPaymentsComponent, type: :component do
 
   let(:statement) { FactoryBot.create(:statement, contract:) }
 
-  let(:banded_fee_structure) do
-    fs = FactoryBot.create(:contract_banded_fee_structure)
+  let(:banded_fee_structure) { FactoryBot.build(:contract_banded_fee_structure, bands:) }
+
+  let(:bands) do
     [
       { min: 1, max: 10, fee: 100 },
       { min: 11, max: 20, fee: 75 },
       { min: 21, max: 30, fee: 50 },
-    ].each do |attrs|
-      FactoryBot.create(
+    ].map do |attrs|
+      FactoryBot.build(
         :contract_banded_fee_structure_band,
-        banded_fee_structure: fs,
         min_declarations: attrs[:min],
         max_declarations: attrs[:max],
         fee_per_declaration: attrs[:fee],
@@ -20,10 +20,7 @@ RSpec.describe Admin::Statements::OutputPaymentsComponent, type: :component do
         service_fee_ratio: 0.2
       )
     end
-    fs.reload
   end
-
-  let(:bands) { banded_fee_structure.bands }
 
   let(:banded_outputs) do
     fee_proportions = PaymentCalculator::Banded::DeclarationTypeOutput::FEE_PROPORTIONS

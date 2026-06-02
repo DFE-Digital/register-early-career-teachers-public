@@ -1,19 +1,19 @@
 RSpec.describe PaymentCalculator::ServiceFees do
-  subject(:service_fees) { described_class.new(banded_fee_structure: banded_fee_structure.reload) }
+  subject(:service_fees) { described_class.new(banded_fee_structure:) }
 
   describe "#monthly_amount" do
     context "with a single band" do
       let(:banded_fee_structure) do
-        FactoryBot.create(
+        FactoryBot.build(
           :contract_banded_fee_structure,
           recruitment_target: 100,
-          setup_fee: 500
+          setup_fee: 500,
+          bands: [band]
         )
       end
       let!(:band) do
-        FactoryBot.create(
+        FactoryBot.build(
           :contract_banded_fee_structure_band,
-          banded_fee_structure:,
           min_declarations: 1,
           max_declarations: 100,
           fee_per_declaration: 800,
@@ -33,16 +33,16 @@ RSpec.describe PaymentCalculator::ServiceFees do
 
     context "with multiple bands" do
       let(:banded_fee_structure) do
-        FactoryBot.create(
+        FactoryBot.build(
           :contract_banded_fee_structure,
           recruitment_target: 150,
-          setup_fee: 500
+          setup_fee: 500,
+          bands: [band_a, band_b]
         )
       end
       let!(:band_a) do
-        FactoryBot.create(
+        FactoryBot.build(
           :contract_banded_fee_structure_band,
-          banded_fee_structure:,
           min_declarations: 1,
           max_declarations: 100,
           fee_per_declaration: 800,
@@ -51,10 +51,8 @@ RSpec.describe PaymentCalculator::ServiceFees do
         )
       end
       let!(:band_b) do
-        banded_fee_structure.bands.reset
-        FactoryBot.create(
+        FactoryBot.build(
           :contract_banded_fee_structure_band,
-          banded_fee_structure:,
           min_declarations: 101,
           max_declarations: 200,
           fee_per_declaration: 600,
@@ -74,16 +72,16 @@ RSpec.describe PaymentCalculator::ServiceFees do
 
     context "when recruitment target is less than first band capacity" do
       let(:banded_fee_structure) do
-        FactoryBot.create(
+        FactoryBot.build(
           :contract_banded_fee_structure,
           recruitment_target: 50,
-          setup_fee: 500
+          setup_fee: 500,
+          bands: [band]
         )
       end
       let!(:band) do
-        FactoryBot.create(
+        FactoryBot.build(
           :contract_banded_fee_structure_band,
-          banded_fee_structure:,
           min_declarations: 1,
           max_declarations: 100,
           fee_per_declaration: 800,
