@@ -8,7 +8,7 @@ RSpec.describe API::SchoolPartnerships::Create, type: :model do
     )
   end
 
-  let(:contract_period) { FactoryBot.create(:contract_period) }
+  let(:contract_period) { FactoryBot.create(:contract_period, :current) }
   let(:contract_period_year) { contract_period.year }
 
   let(:school) { FactoryBot.create(:school, :eligible) }
@@ -43,11 +43,20 @@ RSpec.describe API::SchoolPartnerships::Create, type: :model do
     end
 
     context "when the contract period year is not enabled" do
-      before { contract_period.update!(enabled: false) }
+      let(:contract_period) { FactoryBot.create(:contract_period, :previous, enabled: false) }
 
       it "is invalid" do
         expect(service).to be_invalid
         expect(service.errors[:contract_period_year]).to eq(["You cannot create this partnership as the contract period is closed."])
+      end
+    end
+
+    context "when the contract period has not started" do
+      let(:contract_period) { FactoryBot.create(:contract_period, :next) }
+
+      it "is invalid" do
+        expect(service).to be_invalid
+        expect(service.errors[:contract_period_year]).to eq(["You cannot create a partnership for a future contract period."])
       end
     end
 
@@ -89,7 +98,7 @@ RSpec.describe API::SchoolPartnerships::Create, type: :model do
 
     context "when a school partnership already exists for the lead provider and a different contract period" do
       before do
-        contract_period = FactoryBot.create(:contract_period, year: contract_period_year + 1)
+        contract_period = FactoryBot.create(:contract_period, :previous)
         active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:)
         lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:)
 
