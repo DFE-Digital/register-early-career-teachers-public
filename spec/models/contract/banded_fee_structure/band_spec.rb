@@ -60,10 +60,8 @@ RSpec.describe Contract::BandedFeeStructure::Band, type: :model do
         )
       end
 
-      let!(:contract) { FactoryBot.create(:contract, :for_ecf, banded_fee_structure:) }
-
       let(:banded_fee_structure) do
-        FactoryBot.build(
+        FactoryBot.create(
           :contract_banded_fee_structure,
           :with_bands,
           declaration_boundaries: [
@@ -107,7 +105,7 @@ RSpec.describe Contract::BandedFeeStructure::Band, type: :model do
       context "when the banded fee structure has no bands yet " \
               "and the band's min declarations is not 1" do
         let(:banded_fee_structure) do
-          FactoryBot.build(:contract_banded_fee_structure)
+          FactoryBot.build_stubbed(:contract_banded_fee_structure)
         end
         let(:min_declarations) { 2 }
         let(:max_declarations) { 400 }
@@ -121,7 +119,7 @@ RSpec.describe Contract::BandedFeeStructure::Band, type: :model do
       context "when the banded fee structure has no bands yet " \
               "and the band's min declarations is 1" do
         let(:banded_fee_structure) do
-          FactoryBot.build(:contract_banded_fee_structure)
+          FactoryBot.build_stubbed(:contract_banded_fee_structure)
         end
         let(:min_declarations) { 1 }
         let(:max_declarations) { 400 }
@@ -130,7 +128,7 @@ RSpec.describe Contract::BandedFeeStructure::Band, type: :model do
       end
 
       context "when updating an existing band" do
-        let(:banded_fee_structure) { FactoryBot.build(:contract_banded_fee_structure, :with_bands) }
+        let(:banded_fee_structure) { FactoryBot.create(:contract_banded_fee_structure, :with_bands) }
 
         it "is valid if the updated band still has sequential declaration boundaries" do
           band = banded_fee_structure.bands.last
@@ -153,35 +151,33 @@ RSpec.describe Contract::BandedFeeStructure::Band, type: :model do
       let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
 
       it "is valid when creating the first band for the active lead provider" do
-        banded_fee_structure = FactoryBot.build(:contract_banded_fee_structure)
+        contract = FactoryBot.create(:contract, :for_ecf, active_lead_provider:)
+        banded_fee_structure = FactoryBot.create(:contract_banded_fee_structure, contract:)
         band = FactoryBot.build(:contract_banded_fee_structure_band, banded_fee_structure:)
-        FactoryBot.create(:contract, :for_ecf, active_lead_provider:, banded_fee_structure:)
         expect(band).to be_valid
       end
 
       it "is valid when creating bands for another contract for the same active lead provider when the bands are consistent" do
-        banded_fee_structure = FactoryBot.build(:contract_banded_fee_structure)
-        FactoryBot.build(:contract_banded_fee_structure_band, banded_fee_structure:, fee_per_declaration: 100)
-        FactoryBot.create(:contract, :for_ecf, active_lead_provider:, banded_fee_structure:)
+        original_contract = FactoryBot.create(:contract, :for_ecf, active_lead_provider:)
+        banded_fee_structure = FactoryBot.create(:contract_banded_fee_structure, contract: original_contract)
+        FactoryBot.create(:contract_banded_fee_structure_band, banded_fee_structure:, fee_per_declaration: 100)
 
-        new_banded_fee_structure = FactoryBot.build(:contract_banded_fee_structure)
+        new_contract = FactoryBot.create(:contract, :for_ecf, active_lead_provider:)
+        new_banded_fee_structure = FactoryBot.create(:contract_banded_fee_structure, contract: new_contract)
         new_band = FactoryBot.build(:contract_banded_fee_structure_band, banded_fee_structure: new_banded_fee_structure, fee_per_declaration: 100)
-        FactoryBot.create(:contract, :for_ecf, active_lead_provider:, banded_fee_structure: new_banded_fee_structure)
 
         expect(new_band).to be_valid
       end
 
       it "is invalid when creating bands for another contract for the same active lead provider when the bands are not consistent" do
-        bands = [
-          FactoryBot.build(:contract_banded_fee_structure_band, fee_per_declaration: 100, min_declarations: 1, max_declarations: 2),
-          FactoryBot.build(:contract_banded_fee_structure_band, fee_per_declaration: 150, min_declarations: 3, max_declarations: 4)
-        ]
-        banded_fee_structure = FactoryBot.build(:contract_banded_fee_structure, bands:)
-        FactoryBot.create(:contract, :for_ecf, active_lead_provider:, banded_fee_structure:)
+        original_contract = FactoryBot.create(:contract, :for_ecf, active_lead_provider:)
+        banded_fee_structure = FactoryBot.create(:contract_banded_fee_structure, contract: original_contract)
+        FactoryBot.create(:contract_banded_fee_structure_band, banded_fee_structure:, fee_per_declaration: 100, min_declarations: 1, max_declarations: 2)
+        FactoryBot.create(:contract_banded_fee_structure_band, banded_fee_structure:, fee_per_declaration: 150, min_declarations: 3, max_declarations: 4)
 
-        new_band = FactoryBot.build(:contract_banded_fee_structure_band, fee_per_declaration: 150, min_declarations: 1, max_declarations: 2)
-        new_banded_fee_structure = FactoryBot.build(:contract_banded_fee_structure, bands: [new_band])
-        FactoryBot.create(:contract, :for_ecf, active_lead_provider:, banded_fee_structure: new_banded_fee_structure)
+        new_contract = FactoryBot.create(:contract, :for_ecf, active_lead_provider:)
+        new_banded_fee_structure = FactoryBot.create(:contract_banded_fee_structure, contract: new_contract)
+        new_band = FactoryBot.build(:contract_banded_fee_structure_band, banded_fee_structure: new_banded_fee_structure, fee_per_declaration: 150, min_declarations: 1, max_declarations: 2)
 
         expect(new_band).to be_invalid
         expect(new_band.errors[:base]).to include(/Band at index 0 is inconsistent across statements for the same active lead provider/)
@@ -199,13 +195,13 @@ RSpec.describe Contract::BandedFeeStructure::Band, type: :model do
       end
 
       it "is invalid when updating a band such that it becomes inconsistent with bands for the same active lead provider" do
-        band = FactoryBot.build(:contract_banded_fee_structure_band, fee_per_declaration: 100)
-        banded_fee_structure = FactoryBot.build(:contract_banded_fee_structure, bands: [band])
-        FactoryBot.create(:contract, :for_ecf, active_lead_provider:, banded_fee_structure:)
+        original_contract = FactoryBot.create(:contract, :for_ecf, active_lead_provider:)
+        banded_fee_structure = FactoryBot.create(:contract_banded_fee_structure, contract: original_contract)
+        FactoryBot.create(:contract_banded_fee_structure_band, banded_fee_structure:, fee_per_declaration: 100)
 
-        new_band = FactoryBot.build(:contract_banded_fee_structure_band, fee_per_declaration: 100)
-        new_banded_fee_structure = FactoryBot.build(:contract_banded_fee_structure, bands: [new_band])
-        FactoryBot.create(:contract, :for_ecf, active_lead_provider:, banded_fee_structure: new_banded_fee_structure)
+        new_contract = FactoryBot.create(:contract, :for_ecf, active_lead_provider:)
+        new_banded_fee_structure = FactoryBot.create(:contract_banded_fee_structure, contract: new_contract)
+        new_band = FactoryBot.create(:contract_banded_fee_structure_band, banded_fee_structure: new_banded_fee_structure, fee_per_declaration: 100)
 
         new_band.fee_per_declaration = 150
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_28_082643) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_21_133546) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -157,7 +157,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_28_082643) do
   end
 
   create_table "contract_banded_fee_structures", force: :cascade do |t|
-    t.bigint "contract_id", null: false
+    t.bigint "contract_id"
     t.datetime "created_at", null: false
     t.decimal "monthly_service_fee", precision: 12, scale: 2
     t.integer "recruitment_target", null: false
@@ -169,7 +169,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_28_082643) do
   end
 
   create_table "contract_flat_rate_fee_structures", force: :cascade do |t|
-    t.bigint "contract_id", null: false
+    t.bigint "contract_id"
     t.datetime "created_at", null: false
     t.decimal "fee_per_declaration", precision: 12, scale: 2, null: false
     t.integer "recruitment_target", null: false
