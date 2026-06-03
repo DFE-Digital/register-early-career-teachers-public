@@ -30,17 +30,17 @@ module Admin::Finance
     end
 
     def create
-      @service = Schedules::Create.new(
+      service = Schedules::Create.new(
         author: current_user,
         contract_period_year: @contract_period.year,
         identifier: schedule_params[:identifier]
       )
 
-      if @service.create!
+      if service.create!
         redirect_to admin_contract_period_schedules_path(@contract_period),
-                    alert: "#{@service.schedule.name} schedule added"
+                    alert: "#{service.schedule.name} schedule added"
       else
-        @schedule = @service.schedule
+        @schedule = service.schedule
         render :new, status: :unprocessable_content
       end
     rescue ActionController::ParameterMissing
@@ -50,12 +50,12 @@ module Admin::Finance
     end
 
     def destroy
-      @service = Schedules::Destroy.new(
+      service = Schedules::Destroy.new(
         author: current_user,
         schedule: @schedule
       )
 
-      if @service.destroy!
+      if service.destroy!
         redirect_to admin_contract_period_schedules_path(@contract_period),
                     alert: "#{@schedule.name} schedule removed"
       else
