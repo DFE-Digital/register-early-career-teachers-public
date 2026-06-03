@@ -3,6 +3,7 @@ describe "Schools::InductionTutor::NewInductionTutorWizardController" do
   let(:params) { {} }
   let(:induction_tutor_name) { "Old Induction Tutor Name" }
   let(:induction_tutor_email) { "old.name@gmail.com" }
+  let!(:contract_period) { FactoryBot.create(:contract_period, :current) }
 
   describe "GET #new" do
     context "when not signed in" do
@@ -41,12 +42,16 @@ describe "Schools::InductionTutor::NewInductionTutorWizardController" do
           expect(response).to have_http_status(:ok)
         end
       end
-    end
 
-    context "when visiting an invalid step" do
-      it "renders a 404 page" do
-        get path_for_step("fake-step")
-        expect(response).to have_http_status(:not_found)
+      context "when there is not a current or upcoming contract period" do
+        let!(:contract_period) { nil }
+
+        it "redirects to the schools page" do
+          get path_for_step("edit")
+
+          expect(response).to redirect_to(schools_induction_tutor_path)
+          expect(flash[:alert]).to eq("You cannot assign or confirm an induction tutor at this time")
+        end
       end
     end
   end
@@ -85,8 +90,6 @@ describe "Schools::InductionTutor::NewInductionTutorWizardController" do
         let(:params) { { edit: { induction_tutor_name: "New Name", induction_tutor_email: "new.name@gmail.com" } } }
 
         it "updates the details" do
-          FactoryBot.create(:contract_period, :current)
-
           expect { post(path_for_step("edit"), params:) }
             .not_to change(school, :induction_tutor_email)
 
@@ -103,13 +106,17 @@ describe "Schools::InductionTutor::NewInductionTutorWizardController" do
 
           expect(response).to redirect_to(path_for_step("confirmation"))
         end
-      end
-    end
 
-    context "when visiting an invalid step" do
-      it "renders a 404 page" do
-        post path_for_step("fake-step")
-        expect(response).to have_http_status(:not_found)
+        context "when there is not a current or upcoming contract period" do
+          let!(:contract_period) { nil }
+
+          it "redirects to the schools page" do
+            post path_for_step("edit")
+
+            expect(response).to redirect_to(schools_induction_tutor_path)
+            expect(flash[:alert]).to eq("You cannot assign or confirm an induction tutor at this time")
+          end
+        end
       end
     end
   end

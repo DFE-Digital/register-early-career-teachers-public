@@ -14,7 +14,6 @@ describe Schools::InductionTutor::UpdateInductionTutorWizard::CheckAnswersStep d
   let(:store)  { FactoryBot.build(:session_repository, induction_tutor_email:, induction_tutor_name:) }
   let(:author) { FactoryBot.build(:school_user, school_urn: school.urn) }
   let(:school) { FactoryBot.create(:school, :with_unconfirmed_induction_tutor) }
-  let!(:current_contract_period) { FactoryBot.create(:contract_period, :current) }
 
   let(:induction_tutor_email) { Faker::Internet.email }
   let(:induction_tutor_name) { Faker::Name.name }
@@ -52,6 +51,12 @@ describe Schools::InductionTutor::UpdateInductionTutorWizard::CheckAnswersStep d
         )
       end
 
+      it "updates the induction tutor details" do
+        expect { current_step.save! }
+          .to change { school.reload.induction_tutor_name }.to(induction_tutor_name)
+          .and change { school.reload.induction_tutor_email }.to(induction_tutor_email)
+      end
+
       it "assigns the induction_tutor_last_nominated_in" do
         expect { current_step.save! }
           .to change { school.reload.induction_tutor_last_nominated_in }
@@ -60,8 +65,6 @@ describe Schools::InductionTutor::UpdateInductionTutorWizard::CheckAnswersStep d
       end
 
       it "records an event" do
-        freeze_time
-
         expect(Events::Record)
           .to receive(:record_school_induction_tutor_updated_event!)
           .with(
@@ -74,6 +77,15 @@ describe Schools::InductionTutor::UpdateInductionTutorWizard::CheckAnswersStep d
           )
 
         current_step.save!
+      end
+
+      it "is truthy" do
+        expect(current_step.save!).to be_truthy
+      end
+
+      it "sends a confirmation email" do
+        expect { current_step.save! }
+          .to have_enqueued_mail(Schools::InductionTutorConfirmationMailer, :confirmation)
       end
     end
 
@@ -95,6 +107,12 @@ describe Schools::InductionTutor::UpdateInductionTutorWizard::CheckAnswersStep d
         )
       end
 
+      it "updates the induction tutor details" do
+        expect { current_step.save! }
+          .to change { school.reload.induction_tutor_name }.to(induction_tutor_name)
+          .and change { school.reload.induction_tutor_email }.to(induction_tutor_email)
+      end
+
       it "assigns the induction_tutor_last_nominated_in" do
         expect { current_step.save! }
           .to change { school.reload.induction_tutor_last_nominated_in }
@@ -103,8 +121,6 @@ describe Schools::InductionTutor::UpdateInductionTutorWizard::CheckAnswersStep d
       end
 
       it "records an event" do
-        freeze_time
-
         expect(Events::Record)
           .to receive(:record_school_induction_tutor_updated_event!)
           .with(
@@ -118,23 +134,52 @@ describe Schools::InductionTutor::UpdateInductionTutorWizard::CheckAnswersStep d
 
         current_step.save!
       end
+
+      it "is truthy" do
+        expect(current_step.save!).to be_truthy
+      end
+
+      it "sends a confirmation email" do
+        expect { current_step.save! }
+          .to have_enqueued_mail(Schools::InductionTutorConfirmationMailer, :confirmation)
+      end
     end
 
-    it "updates the school's induction tutor details" do
-      current_step.save!
+    context "when there is no current or upcoming contract period" do
+      it "updates the induction tutor details" do
+        expect { current_step.save! }
+          .to change { school.reload.induction_tutor_name }.to(induction_tutor_name)
+          .and change { school.reload.induction_tutor_email }.to(induction_tutor_email)
+      end
 
-      school.reload
-      expect(school.induction_tutor_email).to eq(induction_tutor_email)
-      expect(school.induction_tutor_name).to eq(induction_tutor_name)
-    end
+      it "does not assign the induction_tutor_last_nominated_in" do
+        expect { current_step.save! }
+          .not_to(change { school.reload.induction_tutor_last_nominated_in })
+      end
 
-    it "is truthy" do
-      expect(current_step.save!).to be_truthy
-    end
+      it "records an event" do
+        expect(Events::Record)
+          .to receive(:record_school_induction_tutor_updated_event!)
+          .with(
+            author:,
+            school:,
+            old_name: school.induction_tutor_name,
+            new_name: induction_tutor_name,
+            new_email: induction_tutor_email,
+            contract_period_year: nil
+          )
 
-    it "sends a confirmation email" do
-      expect { current_step.save! }
-        .to have_enqueued_mail(Schools::InductionTutorConfirmationMailer, :confirmation)
+        current_step.save!
+      end
+
+      it "is truthy" do
+        expect(current_step.save!).to be_truthy
+      end
+
+      it "sends a confirmation email" do
+        expect { current_step.save! }
+          .to have_enqueued_mail(Schools::InductionTutorConfirmationMailer, :confirmation)
+      end
     end
   end
 end
