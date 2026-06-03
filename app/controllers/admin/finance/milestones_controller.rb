@@ -9,33 +9,33 @@ module Admin::Finance
     end
 
     def create
-      @service = Milestones::Create.new(
+      service = Milestones::Create.new(
         author: current_user,
         schedule: @schedule,
         params: milestone_params
       )
 
-      if @service.create!
+      if service.create!
         redirect_to admin_contract_period_schedule_path(@contract_period, @schedule),
-                    alert: "#{@service.milestone.declaration_type.titleize} milestone added"
+                    alert: "#{service.milestone.declaration_type.titleize} milestone added"
       else
-        @milestone = @service.milestone
+        @milestone = service.milestone
         render :new, status: :unprocessable_content
       end
     end
 
     def destroy
-      @service = Milestones::Destroy.new(
+      service = Milestones::Destroy.new(
         author: current_user,
         milestone: @schedule.milestones.find(params[:id])
       )
 
-      if @service.destroy!
+      if service.destroy!
         redirect_to admin_contract_period_schedule_path(@contract_period, @schedule),
-                    alert: "#{@service.milestone.declaration_type.titleize} milestone removed"
+                    alert: "#{service.milestone.declaration_type.titleize} milestone removed"
       else
         redirect_to admin_contract_period_schedule_path(@contract_period, @schedule),
-                    alert: "#{@service.milestone.declaration_type.titleize} milestone could not be removed"
+                    alert: "#{service.milestone.declaration_type.titleize} milestone could not be removed"
       end
     end
 

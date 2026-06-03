@@ -28,22 +28,22 @@ module Admin::Finance
     end
 
     def create
-      @service = ContractPeriods::Create.new(
+      service = ContractPeriods::Create.new(
         author: current_user,
         params: contract_period_params
       )
 
-      if @service.create!
-        redirect_to admin_contract_periods_path, alert: "#{@service.contract_period.year} Contract period added"
+      if service.create!
+        redirect_to admin_contract_periods_path, alert: "#{service.contract_period.year} Contract period added"
       else
-        @contract_period = @service.contract_period
+        @contract_period = service.contract_period
         render :new, status: :unprocessable_content
       end
     rescue ContractPeriods::SeedFromPrevious::AlreadyScheduledError,
            ContractPeriods::SeedFromPrevious::ContractPeriodStartedError,
            ContractPeriods::SeedFromPrevious::NoPreviousContractPeriodError => e
       flash[:error] = "Cannot seed contract period: #{e.message}"
-      @contract_period = @service.contract_period
+      @contract_period = service.contract_period
       render :new, status: :unprocessable_content
     end
 
@@ -51,16 +51,16 @@ module Admin::Finance
     end
 
     def update
-      @service = ContractPeriods::Update.new(
+      service = ContractPeriods::Update.new(
         author: current_user,
         contract_period: @contract_period,
         params: contract_period_params
       )
 
-      if @service.update!
-        redirect_to admin_contract_periods_path, alert: "#{@service.contract_period.year} Contract period updated"
+      if service.update!
+        redirect_to admin_contract_periods_path, alert: "#{service.contract_period.year} Contract period updated"
       else
-        @contract_period = @service.contract_period
+        @contract_period = service.contract_period
         render :edit, status: :unprocessable_content
       end
     end
