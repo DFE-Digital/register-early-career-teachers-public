@@ -1,0 +1,102 @@
+module TeacherHistories
+  class ECTAtSchoolPeriodBuilder
+    include TeacherHistories::DateExtractor
+    include TeacherHistories::Indentation
+    include TeacherHistories::PeriodDuration
+
+    attr_reader :ect_at_school_period
+
+    def initialize(ect_at_school_period)
+      @ect_at_school_period = ect_at_school_period
+    end
+
+    def base_indent_level = 4
+
+    def provider_led_training_period(lead_provider, contract_period, dates, &block)
+      started_on, finished_on = extract_date(dates)
+
+      training_period = FactoryBot.build(
+        :training_period,
+        :for_ect,
+        ect_at_school_period:,
+        started_on:,
+        finished_on:,
+        **provider_data(lead_provider:, contract_period:)
+      )
+
+      if training_period.save
+        print_seed_info("📕 trained by #{lead_provider.name} #{describe_period(training_period)}", indent: indent(2))
+      else
+        print_seed_info("Error messages: #{training_period.errors.messages}", error: true, indent: indent(2))
+
+        fail
+      end
+
+      if block_given?
+        TrainingPeriodBuilder.new(training_period).instance_eval(&block)
+      end
+    end
+
+    alias_method :training_period, :provider_led_training_period
+
+    def school_led_training_period(dates)
+      started_on, finished_on = extract_date(dates)
+
+      training_period = FactoryBot.build(
+        :training_period,
+        :for_ect,
+        :school_led,
+        ect_at_school_period:,
+        started_on:,
+        finished_on:
+      )
+
+      if training_period.save
+        print_seed_info("🦉 received school-led training #{describe_period(training_period)}", indent: indent(2))
+      else
+        print_seed_info("Error messages: #{training_period.errors.messages}", error: true, indent: indent(2))
+
+        fail
+      end
+
+      if block_given?
+        TrainingPeriodBuilder.new(training_period).instance_eval(&block)
+      end
+    end
+
+    def mentorship_period(mentor, dates)
+      mentor_at_school_period = MentorAtSchoolPeriod.find_by(teacher: mentor, school: ect_at_school_period.school)
+      started_on, finished_on = extract_date(dates)
+
+      # FIXME: we can probably do something cleverer here to work out the intersection, it might make adding
+      #        mentorships a bit less tedious
+
+      mentorship_period = FactoryBot.build(
+        :mentorship_period,
+        started_on:,
+        finished_on:,
+        mentor: mentor_at_school_period,
+        mentee: ect_at_school_period
+      )
+
+      if mentorship_period.save
+        mentor_name = Teachers::Name.new(mentorship_period.mentor.teacher).full_name
+        print_seed_info("🌟 mentored by #{mentor_name} #{describe_period(mentorship_period)}", indent: indent(2))
+      else
+        print_seed_info("Error messages: #{mentorship_period.errors.messages}", error: true, indent: indent(2))
+
+        fail
+      end
+    end
+
+  private
+
+    def provider_data(lead_provider:, contract_period:)
+      if (school_partnership = SchoolPartnerships::Search.new(school: ect_at_school_period.school, lead_provider:, contract_period:).school_partnerships.first)
+        { school_partnership: }
+      elsif (expression_of_interest = LeadProviders::Active.new(lead_provider).active_lead_providers(contract_period).first)
+        { expression_of_interest: }
+      end
+    end
+  end
+end

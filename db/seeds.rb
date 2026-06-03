@@ -1,3 +1,4 @@
+Rails.root.glob("db/seeds/support/{*.rb,teacher_histories/*.rb,builders/*.rb}").each { require(it) }
 
 priority_seeds = %w[
   contract_periods
