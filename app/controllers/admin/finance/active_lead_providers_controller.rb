@@ -3,7 +3,7 @@ module Admin::Finance
     layout "full"
 
     before_action :set_contract_period
-    before_action :reject_if_contract_period_started, only: %i[new create destroy]
+    before_action :redirect_unless_contract_period_editable, only: %i[new create destroy]
 
     def index
       @breadcrumbs = {
@@ -11,7 +11,7 @@ module Admin::Finance
         "Contract periods" => admin_contract_periods_path,
         @contract_period.year.to_s => admin_contract_period_path(@contract_period),
       }
-      @editable = editable?
+      @editable = @contract_period.editable?
       @active_lead_providers = @contract_period
         .active_lead_providers
         .with_lead_provider_ordered_by_name
@@ -60,8 +60,8 @@ module Admin::Finance
       @contract_period = ContractPeriod.find(params[:contract_period_id])
     end
 
-    def reject_if_contract_period_started
-      return if editable?
+    def redirect_unless_contract_period_editable
+      return if @contract_period.editable?
 
       flash[:error] = "Active lead providers cannot be changed once the contract period has started"
       redirect_to admin_contract_period_active_lead_providers_path(@contract_period)
@@ -75,10 +75,6 @@ module Admin::Finance
 
     def active_lead_provider_params
       params.expect(active_lead_provider: [:lead_provider_id])
-    end
-
-    def editable?
-      !@contract_period.started_on_or_before_today?
     end
   end
 end
