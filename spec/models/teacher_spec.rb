@@ -385,6 +385,53 @@ describe Teacher do
       end
     end
 
+    describe "archiving" do
+      context "when both archived_reason and archived_at are present" do
+        subject { FactoryBot.build(:teacher, archived_reason: "registered_in_error", archived_at: Time.zone.now) }
+
+        it { is_expected.to be_valid }
+      end
+
+      context "when both archived_reason and archived_at are blank" do
+        subject { FactoryBot.build(:teacher, archived_reason: nil, archived_at: nil) }
+
+        it { is_expected.to be_valid }
+      end
+
+      context "when archived_at is present but archived_reason is missing" do
+        subject { FactoryBot.build(:teacher, archived_reason: nil, archived_at: Time.zone.now) }
+
+        it { is_expected.to be_invalid }
+
+        it "has a validation error on archived_reason" do
+          subject.valid?
+          expect(subject.errors.messages[:archived_reason]).to be_present
+        end
+      end
+
+      context "when archived_reason is present but archived_at is missing" do
+        subject { FactoryBot.build(:teacher, archived_reason: "registered_in_error", archived_at: nil) }
+
+        it { is_expected.to be_invalid }
+
+        it "has a validation error on archived_at" do
+          subject.valid?
+          expect(subject.errors.messages[:archived_at]).to be_present
+        end
+      end
+
+      describe "archived_reason enum" do
+        it "accepts registered_in_error" do
+          teacher = FactoryBot.build(:teacher, archived_reason: "registered_in_error", archived_at: Time.zone.now)
+          expect(teacher).to be_valid
+        end
+
+        it "raises an ArgumentError for an invalid value" do
+          expect { FactoryBot.build(:teacher, archived_reason: "invalid_reason") }.to raise_error(ArgumentError)
+        end
+      end
+    end
+
     describe ".ect_first_became_eligible_for_training_at, .mentor_first_became_eligible_for_training_at" do
       context "when not yet set" do
         subject { FactoryBot.create(:teacher, ect_first_became_eligible_for_training_at: nil, mentor_first_became_eligible_for_training_at: nil) }

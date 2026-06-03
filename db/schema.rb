@@ -21,6 +21,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_102349) do
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
   create_enum "appropriate_body_type", ["local_authority", "national", "teaching_school_hub"]
+  create_enum "archived_reasons", ["registered_in_error"]
   create_enum "batch_status", ["pending", "processing", "processed", "completing", "completed", "failed"]
   create_enum "batch_type", ["action", "claim"]
   create_enum "contract_types", ["ecf", "ittecf_ectp"]
@@ -843,6 +844,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_102349) do
     t.uuid "api_mentor_training_record_id", default: -> { "gen_random_uuid()" }, null: false
     t.datetime "api_unfunded_mentor_updated_at", default: -> { "CURRENT_TIMESTAMP" }
     t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
+    t.datetime "archived_at"
+    t.enum "archived_reason", enum_type: "archived_reasons"
     t.string "corrected_name"
     t.datetime "created_at", null: false
     t.date "ect_became_ineligible_for_funding_on"
