@@ -37,10 +37,10 @@ RSpec.describe "admin/finance/contract_periods/index.html.erb" do
     expect(rendered).to have_css(".govuk-table > .govuk-table__body > tr", count: 3)
   end
 
-  it "renders an add contract period button" do
+  it "renders a button to add a contract period" do
     render
 
-    expect(rendered).to have_link("Add Contract period")
+    expect(rendered).to have_button("Add Contract period")
   end
 
   context "when there are no contract periods" do

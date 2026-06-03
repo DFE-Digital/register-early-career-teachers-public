@@ -1,7 +1,7 @@
 describe ContractPeriods::Create do
   include ActiveJob::TestHelper
 
-  subject(:service) { described_class.new(author:, params:) }
+  subject { described_class.new(author:, params:) }
 
   let(:params) do
     {
@@ -23,8 +23,8 @@ describe ContractPeriods::Create do
 
   describe "#initialize" do
     it "accepts and assigns the author and params" do
-      expect(service.author).to eql(author)
-      expect(service.contract_period).to be_a(ContractPeriod)
+      expect(subject.author).to eql(author)
+      expect(subject.contract_period).to be_a(ContractPeriod)
     end
   end
 
@@ -81,14 +81,15 @@ describe ContractPeriods::Create do
         }
       end
 
-      before do
-        allow(Events::Record).to receive(:record_contract_period_added_event!)
+      it "returns false" do
+        expect(subject.create!).to be_falsey
       end
 
-      it "raises an error" do
-        expect { service.create! }.to raise_error(/Finished on The end date must be later than the start date/)
-        expect(Events::Record).not_to have_received(:record_contract_period_added_event!)
+      it "does not record an event" do
+        subject.create!
         expect(seed_service).not_to have_received(:schedule!)
+        perform_enqueued_jobs
+        expect(Event.count).to be_zero
       end
     end
   end

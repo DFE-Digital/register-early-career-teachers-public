@@ -8,6 +8,8 @@ module ContractPeriods
     end
 
     def create!
+      return false unless contract_period.valid?
+
       ActiveRecord::Base.transaction do
         contract_period.save!
         record_event!
