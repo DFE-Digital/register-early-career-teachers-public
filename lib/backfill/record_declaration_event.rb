@@ -13,15 +13,7 @@ module Backfill
     end
 
     def process
-      if event_exists?
-        puts("- #{declaration.id} #{formatted_status} event already exists")
-        return false
-      end
-
-      unless statement.status_paid?
-        puts("- #{declaration.id} #{formatted_status} event cannot be created because statement is not paid")
-        return false
-      end
+      return false if event_exists?
 
       Event.create!(
         event_type:,
