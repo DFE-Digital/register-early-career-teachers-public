@@ -420,20 +420,7 @@ describe ContractPeriod do
 
     context "without associated schedules" do
       it "lists all possible schedules" do
-        expect(contract_period.available_schedules).to eq(%w[
-          ecf-standard-january
-          ecf-standard-april
-          ecf-standard-september
-          ecf-extended-january
-          ecf-extended-april
-          ecf-extended-september
-          ecf-reduced-january
-          ecf-reduced-april
-          ecf-reduced-september
-          ecf-replacement-january
-          ecf-replacement-april
-          ecf-replacement-september
-        ])
+        expect(contract_period.available_schedules).to eq(Schedule.identifiers.keys)
       end
     end
 
@@ -456,14 +443,7 @@ describe ContractPeriod do
       end
 
       it "lists any remaining schedules" do
-        expect(contract_period.available_schedules).to eq(%w[
-          ecf-extended-january
-          ecf-extended-april
-          ecf-extended-september
-          ecf-replacement-january
-          ecf-replacement-april
-          ecf-replacement-september
-        ])
+        expect(contract_period.available_schedules).to eq(Schedule.identifiers.keys - associated_schedules)
       end
     end
   end
