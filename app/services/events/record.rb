@@ -1061,7 +1061,7 @@ module Events
     def self.record_schedule_added_event!(author:, schedule:)
       event_type = :schedule_added
       contract_period = schedule.contract_period
-      heading = "Schedule '#{schedule.name}' added to #{contract_period.year}"
+      heading = "#{schedule.description} added"
 
       new(event_type:, author:, heading:, contract_period:, happened_at: Time.zone.now).record_event!
     end
@@ -1069,27 +1069,23 @@ module Events
     def self.record_schedule_deleted_event!(author:, schedule:)
       event_type = :schedule_deleted
       contract_period = schedule.contract_period
-      heading = "Schedule '#{schedule.name}' removed from #{contract_period.year}"
+      heading = "#{schedule.description} removed"
 
       new(event_type:, author:, heading:, contract_period:, happened_at: Time.zone.now).record_event!
     end
 
     def self.record_milestone_added_event!(author:, milestone:)
       event_type = :milestone_added
-      milestone_name = milestone.declaration_type.titleize
-      schedule_name = milestone.schedule.name
       contract_period = milestone.schedule.contract_period
-      heading = "Milestone '#{milestone_name}' added to '#{schedule_name}' #{contract_period.year}"
+      heading = "Milestone #{milestone.declaration_type.titleize} added to #{milestone.schedule.description}"
 
       new(event_type:, author:, heading:, contract_period:, happened_at: Time.zone.now).record_event!
     end
 
     def self.record_milestone_deleted_event!(author:, milestone:)
       event_type = :milestone_deleted
-      milestone_name = milestone.declaration_type.titleize
-      schedule_name = milestone.schedule.name
       contract_period = milestone.schedule.contract_period
-      heading = "Milestone '#{milestone_name}' removed from '#{schedule_name}' #{contract_period.year}"
+      heading = "Milestone #{milestone.declaration_type.titleize} removed from #{milestone.schedule.description}"
 
       new(event_type:, author:, heading:, contract_period:, happened_at: Time.zone.now).record_event!
     end

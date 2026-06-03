@@ -45,7 +45,7 @@ class Schedule < ApplicationRecord
   end
 
   def description
-    "#{identifier} for #{contract_period.year}"
+    "#{name} for #{contract_period.year}"
   end
 
   def replacement_schedule?
