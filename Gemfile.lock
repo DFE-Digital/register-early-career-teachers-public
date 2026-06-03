@@ -746,7 +746,7 @@ GEM
       rubocop-rspec (~> 3.5)
     ruby-progressbar (1.13.0)
     rubypants (0.7.1)
-    rubyzip (3.3.0)
+    rubyzip (3.3.1)
     safely_block (1.0.0)
     savon (2.17.1)
       akami (~> 1.2)
