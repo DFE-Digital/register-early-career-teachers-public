@@ -89,7 +89,7 @@ RSpec.describe "Admin finance contract periods", type: :request do
         it "displays the contract period show page" do
           get "/admin/finance/contract-periods/#{contract_period.id}"
           expect(response).to have_http_status(:success)
-          expect(response.body).to include("#{contract_period.year} contract period")
+          expect(response.body).to include("Contract period #{contract_period.year}")
         end
       end
     end

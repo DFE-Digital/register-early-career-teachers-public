@@ -4,7 +4,7 @@ module Admin::Finance
 
     before_action :set_contract_period, only: %i[show edit update]
     before_action :set_contract_period_flags, only: %i[show edit update]
-    before_action :redirect_unless_contract_period_editable, only: %i[edit update]
+    before_action :redirect_if_contract_period_not_editable, only: %i[edit update]
 
     def index
       @breadcrumbs = {
@@ -28,22 +28,22 @@ module Admin::Finance
     end
 
     def create
-      service = ContractPeriods::Create.new(
+      @service = ContractPeriods::Create.new(
         author: current_user,
         params: contract_period_params
       )
 
-      if service.create!
-        redirect_to admin_contract_periods_path, alert: "#{service.contract_period.year} Contract period added"
+      if @service.create!
+        redirect_to admin_contract_periods_path, alert: "#{@service.contract_period.year} Contract period added"
       else
-        @contract_period = service.contract_period
+        @contract_period = @service.contract_period
         render :new, status: :unprocessable_content
       end
     rescue ContractPeriods::SeedFromPrevious::AlreadyScheduledError,
            ContractPeriods::SeedFromPrevious::ContractPeriodStartedError,
            ContractPeriods::SeedFromPrevious::NoPreviousContractPeriodError => e
       flash[:error] = "Cannot seed contract period: #{e.message}"
-      @contract_period = service.contract_period
+      @contract_period = @service.contract_period
       render :new, status: :unprocessable_content
     end
 
@@ -51,16 +51,16 @@ module Admin::Finance
     end
 
     def update
-      service = ContractPeriods::Update.new(
+      @service = ContractPeriods::Update.new(
         author: current_user,
         contract_period: @contract_period,
         params: contract_period_params
       )
 
-      if service.update!
-        redirect_to admin_contract_periods_path, alert: "#{service.contract_period.year} Contract period updated"
+      if @service.update!
+        redirect_to admin_contract_periods_path, alert: "#{@service.contract_period.year} Contract period updated"
       else
-        @contract_period = service.contract_period
+        @contract_period = @service.contract_period
         render :edit, status: :unprocessable_content
       end
     end
@@ -92,11 +92,10 @@ module Admin::Finance
       @has_schedules = @contract_period.schedules.any?
     end
 
-    def redirect_unless_contract_period_editable
-      return if @contract_period.editable?
+    def redirect_if_contract_period_not_editable
+      return if @editable
 
-      flash[:error] = "This contract period has started and cannot be edited"
-      redirect_to admin_contract_periods_path
+      redirect_to(request.referer || admin_contract_periods_path, notice: "This contract period cannot be edited")
     end
   end
 end
