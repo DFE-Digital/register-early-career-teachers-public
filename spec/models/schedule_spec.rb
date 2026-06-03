@@ -119,11 +119,10 @@ describe Schedule do
       it { is_expected.to eq("Standard April") }
     end
 
-    # TODO: use #name in the #description
     describe "#description" do
       subject { schedule.description }
 
-      it { is_expected.to eq("ecf-standard-april for 2023") }
+      it { is_expected.to eq("Standard April for 2023") }
     end
   end
 
