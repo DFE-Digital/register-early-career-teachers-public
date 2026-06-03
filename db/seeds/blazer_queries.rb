@@ -71,3 +71,6 @@ end
 ].each do |query|
   create_query(creator: user_manager, **query)
 end
+
+require Rails.root.join("db/seeds/blazer_queries/school_comms")
+BlazerQueries::SchoolComms.sync!
