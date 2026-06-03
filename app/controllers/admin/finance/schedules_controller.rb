@@ -4,7 +4,7 @@ module Admin::Finance
 
     before_action :set_contract_period
     before_action :set_schedule, only: %i[show destroy]
-    before_action :redirect_if_contract_period_started, only: %i[new create destroy]
+    before_action :redirect_unless_contract_period_editable, only: %i[new create destroy]
 
     def index
       @breadcrumbs = {
@@ -78,7 +78,7 @@ module Admin::Finance
       params.expect(schedule: %i[identifier])
     end
 
-    def redirect_if_contract_period_started
+    def redirect_unless_contract_period_editable
       return if @contract_period.editable?
 
       flash[:error] = "Schedules cannot be edited once the contract period has started"

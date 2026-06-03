@@ -2,7 +2,7 @@ module Admin::Finance
   class MilestonesController < Admin::Finance::BaseController
     before_action :set_contract_period
     before_action :set_schedule
-    before_action :redirect_if_contract_period_started
+    before_action :redirect_unless_contract_period_editable
 
     def new
       @milestone = @schedule.milestones.build
@@ -53,7 +53,7 @@ module Admin::Finance
       params.expect(milestone: %i[declaration_type start_date milestone_date])
     end
 
-    def redirect_if_contract_period_started
+    def redirect_unless_contract_period_editable
       return if @contract_period.editable?
 
       flash[:error] = "Milestones cannot be edited once the contract period has started"
