@@ -38,6 +38,76 @@ RSpec.describe API::TrainingPeriods::TeacherStatus do
       end
     end
 
+    context "when training period is withdrawn" do
+      context "when the teacher is acting as an ECT for this training period" do
+        let(:training_period) { FactoryBot.create(:training_period, :for_ect, :withdrawn) }
+
+        it { is_expected.to eq(:left) }
+
+        context "when completed induction" do
+          before do
+            FactoryBot.create(:induction_period, :pass, teacher:,
+                                                        started_on: training_period.started_on,
+                                                        finished_on: training_period.finished_on)
+          end
+
+          it { is_expected.to eq(:left) }
+        end
+      end
+
+      context "when the teacher is acting as a mentor for this training period" do
+        let(:training_period) { FactoryBot.create(:training_period, :for_mentor, :withdrawn) }
+
+        it { is_expected.to eq(:left) }
+
+        context "when teacher becomes ineligible before period has finished" do
+          before do
+            teacher.update!(
+              mentor_became_ineligible_for_funding_on: training_period.finished_on - 1.week,
+              mentor_became_ineligible_for_funding_reason: "completed_declaration_received"
+            )
+          end
+
+          it { is_expected.to eq(:left) }
+        end
+      end
+    end
+
+    context "when training period is deferred" do
+      context "when the teacher is acting as an ECT for this training period" do
+        let(:training_period) { FactoryBot.create(:training_period, :for_ect, :deferred) }
+
+        it { is_expected.to eq(:left) }
+
+        context "when completed induction" do
+          before do
+            FactoryBot.create(:induction_period, :pass, teacher:,
+                                                        started_on: training_period.started_on,
+                                                        finished_on: training_period.finished_on)
+          end
+
+          it { is_expected.to eq(:left) }
+        end
+      end
+
+      context "when the teacher is acting as a mentor for this training period" do
+        let(:training_period) { FactoryBot.create(:training_period, :for_mentor, :deferred) }
+
+        it { is_expected.to eq(:left) }
+
+        context "when teacher becomes ineligible before period has finished" do
+          before do
+            teacher.update!(
+              mentor_became_ineligible_for_funding_on: training_period.finished_on - 1.week,
+              mentor_became_ineligible_for_funding_reason: "completed_declaration_received"
+            )
+          end
+
+          it { is_expected.to eq(:left) }
+        end
+      end
+    end
+
     context "when training period has already finished" do
       context "when the teacher is acting as an ECT for this training period" do
         let(:training_period) { FactoryBot.create(:training_period, :for_ect, :finished) }
