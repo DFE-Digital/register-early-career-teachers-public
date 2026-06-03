@@ -17,13 +17,12 @@ class Milestone < ApplicationRecord
 
   validates :schedule_id, presence: { message: "Choose a schedule" }
 
-  # TODO: Add milestone start date validations (sensible values within the contract period)
   validates :start_date,
             presence: { message: "Enter a start date" }
 
-  # TODO: Add "if start_date.present?" to milestone validation
   validates :milestone_date,
             comparison: { greater_than: :start_date, message: "Milestone date must be after the start date" },
+            if: -> { start_date.present? },
             allow_nil: true
 
   validates :declaration_type,
