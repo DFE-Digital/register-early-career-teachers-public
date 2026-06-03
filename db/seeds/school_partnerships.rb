@@ -124,6 +124,7 @@ capita__delivery_partner__2022 =
   { school: mallory_towers, lead_provider_delivery_partnership: teach_first__grain__2022 },
   { school: brookfield_school, lead_provider_delivery_partnership: teach_first__grain__2022 },
   { school: brookfield_school, lead_provider_delivery_partnership: capita__delivery_partner__2022 },
+  { school: brookfield_school, lead_provider_delivery_partnership: teach_first__grain__2024 },
 ].each do |kwargs|
   SchoolPartnership.find_or_create_by!(**kwargs).tap do |sp|
     describe_school_partnership(sp)
