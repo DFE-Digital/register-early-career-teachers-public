@@ -17,12 +17,30 @@ module TeacherHistories
           hash[ms.declaration_type] = ms.milestone_date
         end
 
-      milestone_data.slice(*types).each { |type, date| declaration(type, date - Random.rand(60).days) }
+      case types
+      when Array
+        milestone_data.slice(*types).each do |type, date|
+          traits = case
+                   when date < 1.year.ago   then :paid
+                   when date < 6.months.ago then :eligible
+                   when date < 3.months.ago then :payable
+                   else                          :no_payment
+                   end
+
+          declaration(type, date - Random.rand(60).days, *traits)
+        end
+      when Hash
+        milestone_data.slice(*types.keys).each do |type, date|
+          traits = types[type]
+          declaration(type, date - Random.rand(60).days, *traits)
+        end
+      end
     end
 
-    def declaration(declaration_type, declaration_date, &block)
+    def declaration(declaration_type, declaration_date, *traits, &block)
       declaration = FactoryBot.build(
         :declaration,
+        *traits,
         training_period: @training_period,
         declaration_type:,
         declaration_date:,
