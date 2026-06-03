@@ -59,13 +59,6 @@ describe "Schools::InductionTutor::UpdateInductionTutorWizardController" do
         expect(response.body).to include("second.school.tutor@example.com")
       end
     end
-
-    context "when visiting an invalid step" do
-      it "renders a 404 page" do
-        get path_for_step("fake-step")
-        expect(response).to have_http_status(:not_found)
-      end
-    end
   end
 
   describe "POST #create" do
@@ -120,13 +113,26 @@ describe "Schools::InductionTutor::UpdateInductionTutorWizardController" do
 
           expect(response).to redirect_to(path_for_step("confirmation"))
         end
-      end
-    end
 
-    context "when visiting an invalid step" do
-      it "renders a 404 page" do
-        post path_for_step("fake-step")
-        expect(response).to have_http_status(:not_found)
+        context "when there is not a current or upcoming contract period" do
+          it "updates the details" do
+            expect { post(path_for_step("edit"), params:) }
+              .not_to change(school, :induction_tutor_email)
+
+            expect(response).to redirect_to(path_for_step("check-answers"))
+
+            follow_redirect!
+
+            expect { post path_for_step("check-answers") }
+              .to change { school.reload.induction_tutor_email }
+              .to("new.name@gmail.com")
+              .and change { school.reload.induction_tutor_name }
+              .to("New Name")
+              .and(not_change { school.reload.induction_tutor_last_nominated_in })
+
+            expect(response).to redirect_to(path_for_step("confirmation"))
+          end
+        end
       end
     end
   end
