@@ -160,6 +160,26 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe ".record_teacher_archived_event!" do
+    let(:author) { Events::SystemAuthor.new }
+    let(:author_params) { { author_type: "system" } }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        Events::Record.record_teacher_archived_event!(author:, teacher:, reason: :registered_in_error)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          teacher:,
+          heading: "Rhys Ifans was archived",
+          event_type: :teacher_archived,
+          happened_at: Time.zone.now,
+          body: "Teacher was archived. Reason: registered_in_error",
+          **author_params
+        )
+      end
+    end
+  end
+
   describe ".record_teacher_passes_induction_event!" do
     let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
     let(:mentorship_period) { FactoryBot.create(:mentorship_period, mentee: ect_at_school_period, mentor:) }
