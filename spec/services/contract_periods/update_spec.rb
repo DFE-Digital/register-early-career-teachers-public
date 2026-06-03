@@ -1,7 +1,7 @@
 RSpec.describe ContractPeriods::Update do
   include ActiveJob::TestHelper
 
-  subject { described_class.new(author:, contract_period:, params:) }
+  subject(:service) { described_class.new(author:, contract_period:, params:) }
 
   let(:author) { Events::SystemAuthor.new }
 
@@ -29,12 +29,12 @@ RSpec.describe ContractPeriods::Update do
       end
 
       it "updates the record" do
-        expect { subject.update! }.to change { contract_period.reload.started_on }.to((started_on + 3.months).to_date)
+        expect { service.update! }.to change { contract_period.reload.started_on }.to((started_on + 3.months).to_date)
           .and change { contract_period.reload.finished_on }.to((finished_on - 3.months).to_date)
       end
 
       it "records a `contract_period_updated` event" do
-        subject.update!
+        service.update!
 
         perform_enqueued_jobs
 
@@ -44,7 +44,7 @@ RSpec.describe ContractPeriods::Update do
       it "creates an event with the expected values" do
         freeze_time
 
-        subject.update!
+        service.update!
 
         perform_enqueued_jobs
 
@@ -77,8 +77,17 @@ RSpec.describe ContractPeriods::Update do
       }
     end
 
-    it "returns false" do
-      expect(subject.update!).to be_falsey
+    # it "returns false" do
+    #   expect(subject.update!).to be_falsey
+    # end
+
+    before do
+      allow(Events::Record).to receive(:record_contract_period_updated_event!)
+    end
+
+    it "raises an error" do
+      expect { service.update! }.to raise_error(/Finished on The end date must be later than the start date/)
+      expect(Events::Record).not_to have_received(:record_contract_period_updated_event!)
     end
   end
 end

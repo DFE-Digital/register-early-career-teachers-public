@@ -14,8 +14,6 @@ module ContractPeriods
       contract_period.assign_attributes(params)
       modifications = contract_period.changes
 
-      return unless contract_period.valid?
-
       ActiveRecord::Base.transaction do
         contract_period.update!(params)
         record_event!(modifications)

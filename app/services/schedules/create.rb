@@ -9,8 +9,6 @@ module Schedules
     end
 
     def create!
-      return false unless schedule.valid?
-
       ActiveRecord::Base.transaction do
         schedule.save!
         record_event!

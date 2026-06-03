@@ -30,20 +30,21 @@ module Admin::Finance
     end
 
     def create
-      service = Schedules::Create.new(
+      @schedule = Schedules::Create.new(
         author: current_user,
         contract_period_year: @contract_period.year,
         identifier: schedule_params[:identifier]
-      )
+      ).create!
 
-      if service.create!
+      if @schedule.persisted?
         redirect_to admin_contract_period_schedules_path(@contract_period),
-                    alert: "#{service.schedule.name} schedule added"
+                    alert: "#{@schedule.name} schedule added"
       else
-        @schedule = service.schedule
+        @schedule = @contract_period.schedules.build
         render :new, status: :unprocessable_content
       end
-    rescue ActionController::ParameterMissing
+    rescue ActionController::ParameterMissing,
+           ActiveModel::ValidationError
       @schedule = @contract_period.schedules.build
       @schedule.errors.add(:identifier, "Select a schedule")
       render :new, status: :unprocessable_content

@@ -9,19 +9,23 @@ module Admin::Finance
     end
 
     def create
-      service = Milestones::Create.new(
+      @milestone = Milestones::Create.new(
         author: current_user,
         schedule: @schedule,
         params: milestone_params
-      )
+      ).create!
 
-      if service.create!
+      if @milestone.persisted?
         redirect_to admin_contract_period_schedule_path(@contract_period, @schedule),
-                    alert: "#{service.milestone.declaration_type.titleize} milestone added"
+                    alert: "#{@milestone.declaration_type.titleize} milestone added"
       else
-        @milestone = service.milestone
+        @milestone = @schedule.milestones.build
         render :new, status: :unprocessable_content
       end
+    rescue ActiveRecord::RecordInvalid,
+           ActiveModel::ValidationError
+      @schedule = @schedule.milestones.build
+      render :new, status: :unprocessable_content
     end
 
     def destroy

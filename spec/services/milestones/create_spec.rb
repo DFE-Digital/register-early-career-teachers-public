@@ -49,19 +49,8 @@ RSpec.describe Milestones::Create do
         }
       end
 
-      it { expect(service.create!).to be(false) }
-
-      it "does not save the milestone" do
-        expect { service.create! }.not_to change(Milestone, :count)
-
-        expect(service.milestone).not_to be_persisted
-        expect(service.milestone.errors[:declaration_type]).to include("Choose a valid declaration type")
-        expect(service.milestone.errors[:start_date]).to include("Enter a start date")
-      end
-
-      it "does not record an event" do
-        service.create!
-
+      it "raises an error" do
+        expect { service.create! }.to raise_error(/Declaration type Choose a valid declaration type/)
         expect(Events::Record).not_to have_received(:record_milestone_added_event!)
       end
     end
@@ -71,18 +60,8 @@ RSpec.describe Milestones::Create do
         FactoryBot.create(:milestone, schedule:, declaration_type: "started")
       end
 
-      it { expect(service.create!).to be(false) }
-
-      it "does not save the milestone" do
-        expect { service.create! }.not_to change(Milestone, :count)
-
-        expect(service.milestone).not_to be_persisted
-        expect(service.milestone.errors[:declaration_type]).to include("Can be used once per schedule")
-      end
-
-      it "does not record an event" do
-        service.create!
-
+      it "raises an error" do
+        expect { service.create! }.to raise_error(/Declaration type Can be used once per schedule/)
         expect(Events::Record).not_to have_received(:record_milestone_added_event!)
       end
     end
@@ -96,13 +75,9 @@ RSpec.describe Milestones::Create do
         }
       end
 
-      it { expect(service.create!).to be(false) }
-
-      it "does not save the milestone" do
-        expect { service.create! }.not_to change(Milestone, :count)
-
-        expect(service.milestone).not_to be_persisted
-        expect(service.milestone.errors[:milestone_date]).to include("Milestone date must be after the start date")
+      it "raises an error" do
+        expect { service.create! }.to raise_error(/Milestone date Milestone date must be after the start date/)
+        expect(Events::Record).not_to have_received(:record_milestone_added_event!)
       end
     end
   end
