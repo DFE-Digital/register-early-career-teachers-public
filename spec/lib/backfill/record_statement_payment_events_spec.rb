@@ -62,18 +62,6 @@ RSpec.describe Backfill::RecordStatementPaymentEvents do
   end
 
   describe "#process" do
-    it "returns counts of created declaration events by type" do
-      result = subject
-
-      expect(result).to include(
-        started: 3,
-        retained: 4,
-        extended: 2,
-        completed: 3,
-        clawed_back: 12
-      )
-    end
-
     it "records paid events for each paid declaration on the statement" do
       allow(Backfill::RecordDeclarationEvent).to receive(:new).and_call_original
 
@@ -138,6 +126,42 @@ RSpec.describe Backfill::RecordStatementPaymentEvents do
         .to include(
           "contract_period_year" => active_lead_provider.contract_period_year
         )
+    end
+
+    it "returns counts of processed declarations out of the total by type" do
+      result = subject
+
+      expect(result).to include(
+        started: "3/3",
+        retained: "4/4",
+        extended: "2/2",
+        completed: "3/3",
+        clawed_back: "12/12"
+      )
+    end
+
+    context "when some declarations already have events recorded" do
+      before do
+        paid_declarations.first(2).each do |declaration|
+          FactoryBot.create(:event, event_type: "teacher_declaration_paid", declaration:)
+        end
+
+        clawed_back_declarations.first(2).each do |declaration|
+          FactoryBot.create(:event, event_type: "teacher_declaration_clawed_back", declaration:)
+        end
+      end
+
+      it "returns counts of those processed out of the total count" do
+        result = subject
+
+        expect(result).to include(
+          started: "1/3",
+          retained: "4/4",
+          extended: "2/2",
+          completed: "3/3",
+          clawed_back: "10/12"
+        )
+      end
     end
 
     context "when a statement authorised for payment event already exists for the statement" do

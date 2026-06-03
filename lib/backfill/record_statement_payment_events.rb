@@ -15,25 +15,30 @@ module Backfill
     end
 
     def process
-      counts = DECLARATION_TYPES.index_with { 0 }
+      processed = DECLARATION_TYPES.index_with { 0 }
+      updated = DECLARATION_TYPES.index_with { 0 }
 
       ActiveRecord::Base.transaction do
         paid_declarations.find_each do |declaration|
+          processed[declaration_type(declaration)] += 1
+
           next unless declaration_event_created?(declaration, statement, :paid)
 
-          counts[declaration_type(declaration)] += 1
+          updated[declaration_type(declaration)] += 1
         end
 
         clawed_back_declarations.find_each do |declaration|
+          processed[:clawed_back] += 1
+
           next unless declaration_event_created?(declaration, declaration.clawback_statement, :clawed_back)
 
-          counts[:clawed_back] += 1
+          updated[:clawed_back] += 1
         end
 
-        record_statement_authorized_for_payment_event!
+        record_statement_authorised_for_payment_event!
       end
 
-      counts
+      format_output(processed, updated)
     end
 
   private
@@ -53,8 +58,8 @@ module Backfill
       ).process
     end
 
-    def record_statement_authorized_for_payment_event!
-      if statement_authorized_event_exists?
+    def record_statement_authorised_for_payment_event!
+      if statement_authorised_event_exists?
         puts("Statement: #{statement.id} Authorised for payment event already exists")
         return
       end
@@ -76,7 +81,7 @@ module Backfill
       puts("Statement: #{statement.id} Authorised for payment event created")
     end
 
-    def statement_authorized_event_exists?
+    def statement_authorised_event_exists?
       Event.where(
         event_type: "statement_authorised_for_payment",
         statement:
@@ -92,6 +97,12 @@ module Backfill
         .clawback_declarations
         .clawback_status_clawed_back
         .includes(:clawback_statement)
+    end
+
+    def format_output(processed, updated)
+      DECLARATION_TYPES.index_with do |type|
+        "#{updated[type]} / #{processed[type]}"
+      end
     end
   end
 end
