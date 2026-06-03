@@ -1,9 +1,6 @@
 class MentorStartDateValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)
-    start_date = Schools::Validation::MentorStartDate.new(
-      date_as_hash: value,
-      current_date: options[:current_date]
-    )
+    start_date = Schools::Validation::MentorStartDate.new(date_as_hash: value)
 
     unless start_date.valid?
       record.errors.add(attribute, start_date.error_message)
