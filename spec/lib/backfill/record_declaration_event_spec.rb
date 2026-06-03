@@ -81,6 +81,17 @@ RSpec.describe Backfill::RecordDeclarationEvent do
     end
 
     context "when the declaration is a clawback declaration" do
+      let!(:declaration) do
+        FactoryBot.create(
+          :declaration,
+          :with_ect,
+          payment_status: "paid",
+          clawback_status: "clawed_back",
+          school_partnership:,
+          payment_statement: statement
+        )
+      end
+
       let(:status) { :clawed_back }
 
       it "creates a clawed back event" do
