@@ -1,0 +1,164 @@
+@urns = (1..).to_enum
+
+ambition = LeadProvider.find_by!(name: "Ambition Institute")
+teach_first = LeadProvider.find_by!(name: "Teach First")
+capita = LeadProvider.find_by!(name: "Capita")
+
+# Schools
+abbey_grove_school = School.find_by!(urn: 1_759_427)
+ackley_bridge = School.find_by!(urn: 3_375_958)
+mallory_towers = School.find_by!(urn: 5_279_293)
+brookfield_school = School.find_by!(urn: 2_976_163)
+ashford_independent_school = School.find_by!(urn: 9_123_458)
+
+# Appropriate bodies
+south_yorkshire_studio_hub = AppropriateBodyPeriod.find_by!(name: "South Yorkshire Studio Hub")
+golden_leaf_teaching_school_hub = AppropriateBodyPeriod.find_by!(name: "Golden Leaf Teaching School Hub")
+umber_teaching_school_hub = AppropriateBodyPeriod.find_by!(name: "Umber Teaching School Hub")
+
+def teacher(...) = TeacherHistories::TeacherBuilder.teacher(...)
+def next_urn = (sprintf("%07d", @urns.next))
+
+_caroline_quentin = teacher(next_urn, "Caroline Quentin") do
+  induction_period(south_yorkshire_studio_hub, "2024-09-05")
+
+  ect_at_school_period(ashford_independent_school, "2024-09-01") do
+    school_led_training_period("2024-09-01")
+  end
+end
+
+_emma_thompson = teacher(next_urn, "Emma Thompson", trs_induction_status: "InProgress") do
+  mentor_at_school_period(abbey_grove_school, "2022-09-01")
+end
+
+felicity_kendall = teacher(next_urn, "Felicity Kendall") do
+  induction_period(golden_leaf_teaching_school_hub, "2023-08-28")
+
+  mentor_at_school_period(abbey_grove_school, "2023-09-01 -> 2025-05-05") do
+    training_period(ambition, 2023, "2023-09-01 -> 2024-11-20") do
+      declaration("started",    "2023-09-15")
+      declaration("retained-1", "2024-01-06")
+    end
+  end
+end
+
+hugh_grant = teacher(next_urn, "Hugh Grant") do
+  description("Mentor at 3 schools")
+  mentor_at_school_period(abbey_grove_school, "2023-09-01")
+  mentor_at_school_period(ashford_independent_school, "2022-09-01")
+  mentor_at_school_period(brookfield_school, "2022-09-01")
+end
+
+_kate_winslet = teacher(next_urn, "Kate Winslet") do
+  description("ECT induction complete")
+
+  induction_period(golden_leaf_teaching_school_hub, "2023-08-28 -> 2025-10-28", :pass)
+
+  ect_at_school_period(abbey_grove_school, "2023-09-01") do
+    training_period(ambition, 2023, "2023-09-01 -> 2025-08-01") do
+      declaration("started",    "2023-12-05")
+      declaration("retained-1", "2024-03-10")
+      declaration("retained-2", "2024-07-01")
+      declaration("retained-3", "2024-12-20")
+      declaration("retained-4", "2025-03-18")
+      declaration("completed",  "2025-07-30")
+    end
+
+    mentorship_period(felicity_kendall, "2023-09-01 -> 2025-05-05")
+    mentorship_period(hugh_grant, "2025-05-06 -> 2025-07-30")
+  end
+end
+
+_alan_rickman = teacher(next_urn, "Alan Rickman") do
+  induction_period(umber_teaching_school_hub, "2022-09-05 -> 2024-03-30")
+  induction_period(golden_leaf_teaching_school_hub, "2024-12-10")
+
+  ect_at_school_period(abbey_grove_school, "2022-09-05") do
+    training_period(ambition, 2022, "2022-09-05 -> 2023-05-05") do
+      declaration("started", "2022-12-05")
+    end
+
+    training_period(ambition, 2022, "2023-06-06 -> 2024-05-05") do
+      declaration("retained-1", "2023-03-05")
+      declaration("retained-2", "2023-06-01")
+    end
+
+    mentorship_period(felicity_kendall, "2023-09-01 -> 2024-05-05")
+  end
+end
+
+_dominic_west = teacher(next_urn, "Dominic West") do
+  description "completed mentor training"
+
+  mentor_at_school_period(mallory_towers, "2022-09-01 -> 2025-07-24") do
+    training_period(teach_first, 2022, "2022-09-01 -> 2025-01-17") do
+      declaration("started",    "2022-09-15")
+      declaration("retained-1", "2023-03-16")
+      declaration("retained-2", "2023-07-08")
+      declaration("retained-3", "2023-12-05")
+      declaration("retained-4", "2024-01-20")
+      declaration("completed",  "2024-05-14")
+    end
+  end
+end
+
+_anthony_hopkins = teacher(next_urn, "Anthony Hopkins") do
+  ect_at_school_period(abbey_grove_school, "2023-09-01") do
+    training_period(ambition, 2023, "2023-09-01 -> 2024-07-30") do
+      declaration("started",    "2023-12-05")
+      declaration("retained-1", "2024-03-10")
+      declaration("retained-2", "2024-07-01")
+    end
+
+    mentorship_period(felicity_kendall, "2023-09-01 -> 2024-07-30")
+    mentorship_period(hugh_grant, "2024-07-31")
+  end
+end
+
+_harriet_walter = teacher(next_urn, "Harriet Walter") do
+  ect_at_school_period(brookfield_school, "2022-09-04") do
+    training_period(teach_first, 2022, "2022-09-04") do
+      # shorthand way of creating multiple declarations that are submitted 0..60 days before the milestone_date
+      declarations(%w[started retained-1 retained-2 retained-3])
+    end
+
+    mentorship_period(hugh_grant, "2022-10-31")
+  end
+end
+
+_hugh_laurie = teacher(next_urn, "Hugh Laurie") do
+  ect_at_school_period(brookfield_school, "2022-09-04") do
+    training_period(teach_first, 2022, "2022-09-04") do
+      declarations(%w[started retained-1 retained-2 retained-3 retained-4])
+    end
+
+    mentorship_period(hugh_grant, "2022-11-02")
+  end
+end
+
+_alastair_sim = teacher(next_urn, "Alastair Sim") do
+  ect_at_school_period(ackley_bridge, "2023-09-01 -> 2025-06-01") do
+    training_period(ambition, 2023, "2023-09-01 -> 2025-06-01") do
+      declarations(%w[started retained-1 retained-2 retained-3 retained-4 completed])
+    end
+  end
+
+  mentor_at_school_period(ackley_bridge, "2025-09-01")
+end
+
+_imogen_stubbs = teacher(next_urn, "Imogen Stubbs") do
+  description("Changed lead provider")
+
+  ect_at_school_period(brookfield_school, "2022-09-04") do
+    training_period(teach_first, 2022, "2022-09-04 -> 2023-04-08") do
+      declarations(%w[started retained-1 retained-2])
+    end
+
+    training_period(capita, 2022, "2023-04-09") do
+      declarations(%w[retained-3 retained-4])
+    end
+
+    mentorship_period(hugh_grant, "2022-11-02 -> 2023-04-08")
+    mentorship_period(hugh_grant, "2023-04-09")
+  end
+end
