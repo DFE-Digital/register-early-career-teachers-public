@@ -69,17 +69,6 @@ RSpec.describe Backfill::RecordDeclarationEvent do
       it { is_expected.to be_falsy }
     end
 
-    context "when the statement is not paid" do
-      let(:statement) { FactoryBot.create(:statement) }
-
-      it "does not create the event" do
-        expect { process }
-          .not_to change(Event, :count)
-      end
-
-      it { is_expected.to be_falsy }
-    end
-
     context "when the declaration is a clawback declaration" do
       let!(:declaration) do
         FactoryBot.create(

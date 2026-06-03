@@ -164,6 +164,36 @@ RSpec.describe Backfill::RecordStatementPaymentEvents do
       end
     end
 
+    context "when the statement is not paid" do
+      let(:statement) { FactoryBot.create(:statement) }
+
+      it "does not create any events" do
+        expect { subject }
+          .not_to change(Event, :count)
+      end
+
+      it "does not return any results" do
+        result = subject
+
+        expect(result).to eq({})
+      end
+    end
+
+    context "when the statement is not an output fee statement" do
+      let(:statement) { FactoryBot.create(:statement, :service_fee) }
+
+      it "does not create any events" do
+        expect { subject }
+          .not_to change(Event, :count)
+      end
+
+      it "does not return any results" do
+        result = subject
+
+        expect(result).to eq({})
+      end
+    end
+
     context "when a statement authorised for payment event already exists for the statement" do
       it "does not create a duplicate statement authorised event" do
         FactoryBot.create(

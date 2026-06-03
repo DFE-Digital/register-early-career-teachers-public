@@ -15,26 +15,50 @@ module Backfill
     end
 
     def process
+      unless statement.status_paid?
+        puts("- #{statement.id} event cannot be created because statement is not paid")
+        return {}
+      end
+
+      unless statement.output_fee?
+        puts("- #{statement.id} event cannot be created for service statements")
+        return {}
+      end
+
       processed = DECLARATION_TYPES.index_with { 0 }
       updated = DECLARATION_TYPES.index_with { 0 }
 
+      paid_declarations.find_in_batches(batch_size: 500) do |declarations|
+        ActiveRecord::Base.transaction do
+          declarations.each do |declaration|
+            type = declaration_type(declaration)
+
+            processed[type] += 1
+
+            next unless declaration_event_created?(declaration, statement, :paid)
+
+            updated[type] += 1
+          end
+        end
+      end
+
+      clawed_back_declarations.find_in_batches(batch_size: 500) do |declarations|
+        ActiveRecord::Base.transaction do
+          declarations.each do |declaration|
+            processed[:clawed_back] += 1
+
+            next unless declaration_event_created?(
+              declaration,
+              declaration.clawback_statement,
+              :clawed_back
+            )
+
+            updated[:clawed_back] += 1
+          end
+        end
+      end
+
       ActiveRecord::Base.transaction do
-        paid_declarations.find_each do |declaration|
-          processed[declaration_type(declaration)] += 1
-
-          next unless declaration_event_created?(declaration, statement, :paid)
-
-          updated[declaration_type(declaration)] += 1
-        end
-
-        clawed_back_declarations.find_each do |declaration|
-          processed[:clawed_back] += 1
-
-          next unless declaration_event_created?(declaration, declaration.clawback_statement, :clawed_back)
-
-          updated[:clawed_back] += 1
-        end
-
         record_statement_authorised_for_payment_event!
       end
 
@@ -67,7 +91,7 @@ module Backfill
       Event.create!(
         event_type: "statement_authorised_for_payment",
         heading: "Statement authorised for payment",
-        happened_at: statement.payment_date,
+        happened_at:,
         statement:,
         lead_provider:,
         active_lead_provider:,
@@ -79,6 +103,10 @@ module Backfill
       )
 
       puts("Statement: #{statement.id} Authorised for payment event created")
+    end
+
+    def happened_at
+      statement.marked_as_paid_at || statement.payment_date
     end
 
     def statement_authorised_event_exists?
@@ -101,7 +129,7 @@ module Backfill
 
     def format_output(processed, updated)
       DECLARATION_TYPES.index_with do |type|
-        "#{updated[type]} / #{processed[type]}"
+        "#{updated[type]}/#{processed[type]}"
       end
     end
   end
