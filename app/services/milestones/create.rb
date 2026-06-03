@@ -9,8 +9,6 @@ module Milestones
     end
 
     def create!
-      return false unless milestone.valid?
-
       ActiveRecord::Base.transaction do
         milestone.save!
         record_event!

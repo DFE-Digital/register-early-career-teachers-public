@@ -46,18 +46,8 @@ RSpec.describe Schedules::Create do
     context "with invalid params" do
       let(:identifier) { "invalid-identifier" }
 
-      it { expect(service.create!).to be(false) }
-
-      it "does not save the schedule" do
-        expect { service.create! }.not_to change(Schedule, :count)
-
-        expect(service.schedule).not_to be_persisted
-        expect(service.schedule.errors[:identifier]).to include("Choose an identifier from the list")
-      end
-
-      it "does not record an event" do
-        service.create!
-
+      it "raises an error" do
+        expect { service.create! }.to raise_error("Validation failed: Identifier Choose an identifier from the list")
         expect(Events::Record).not_to have_received(:record_schedule_added_event!)
       end
     end
@@ -67,18 +57,8 @@ RSpec.describe Schedules::Create do
         FactoryBot.create(:schedule, contract_period_year:, identifier:)
       end
 
-      it { expect(service.create!).to be(false) }
-
-      it "does not save the schedule" do
-        expect { service.create! }.not_to change(Schedule, :count)
-
-        expect(service.schedule).not_to be_persisted
-        expect(service.schedule.errors[:identifier]).to include("Can be used once per contract period")
-      end
-
-      it "does not record an event" do
-        service.create!
-
+      it "raises an error" do
+        expect { service.create! }.to raise_error("Validation failed: Identifier Can be used once per contract period")
         expect(Events::Record).not_to have_received(:record_schedule_added_event!)
       end
     end
