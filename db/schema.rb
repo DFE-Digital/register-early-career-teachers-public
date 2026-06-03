@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_29_104725) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_03_140320) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -484,17 +484,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_29_104725) do
     t.index ["mentor_at_school_period_id", "ect_at_school_period_id", "started_on"], name: "idx_on_mentor_at_school_period_id_ect_at_school_per_d69dffeecc", unique: true
     t.index ["mentor_at_school_period_id"], name: "index_mentorship_periods_on_mentor_at_school_period_id"
     t.check_constraint "finished_on >= started_on", name: "finished_on_not_before_started_on"
-  end
-
-  create_table "metadata_delivery_partners_lead_providers", force: :cascade do |t|
-    t.integer "contract_period_years", default: [], null: false, array: true
-    t.datetime "created_at", null: false
-    t.bigint "delivery_partner_id", null: false
-    t.bigint "lead_provider_id", null: false
-    t.datetime "updated_at", null: false
-    t.index ["delivery_partner_id", "lead_provider_id"], name: "idx_on_delivery_partner_id_lead_provider_id_a83df5ed0c", unique: true
-    t.index ["delivery_partner_id"], name: "idx_on_delivery_partner_id_d734fa500e"
-    t.index ["lead_provider_id"], name: "idx_on_lead_provider_id_b318746369"
   end
 
   create_table "metadata_schools_contract_periods", force: :cascade do |t|
@@ -986,8 +975,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_29_104725) do
   add_foreign_key "mentor_at_school_periods", "teachers"
   add_foreign_key "mentorship_periods", "ect_at_school_periods"
   add_foreign_key "mentorship_periods", "mentor_at_school_periods"
-  add_foreign_key "metadata_delivery_partners_lead_providers", "delivery_partners"
-  add_foreign_key "metadata_delivery_partners_lead_providers", "lead_providers"
   add_foreign_key "metadata_schools_contract_periods", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "metadata_schools_contract_periods", "schools"
   add_foreign_key "metadata_schools_lead_providers_contract_periods", "contract_periods", column: "contract_period_year", primary_key: "year"

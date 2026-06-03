@@ -65,10 +65,7 @@ RSpec.describe Admin::DeliveryPartners::AddLeadProviders do
     context "when delivery partner does not exist" do
       let(:lead_provider_ids) { [active_lead_provider_1.id.to_s] }
 
-      before do
-        delivery_partner.lead_provider_metadata.destroy_all
-        delivery_partner.destroy!
-      end
+      before { delivery_partner.destroy! }
 
       it "raises a ValidationError" do
         expect { service.call }.to raise_error(described_class::ValidationError, "Delivery partner not found")

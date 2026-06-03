@@ -20,6 +20,7 @@ erDiagram
     integer recruitment_target
     datetime updated_at
   }
+  Contract_FlatRateFeeStructure }o--|| Contract : belongs_to
   Contract_BandedFeeStructure {
     integer id
     integer contract_id
@@ -30,6 +31,7 @@ erDiagram
     datetime updated_at
     decimal uplift_fee_per_declaration
   }
+  Contract_BandedFeeStructure }o--|| Contract : belongs_to
   User {
     integer id
     datetime created_at
@@ -374,33 +376,6 @@ erDiagram
     string name
     datetime updated_at
   }
-  Declaration {
-    integer id
-    uuid api_id
-    datetime api_updated_at
-    integer clawback_statement_id
-    enum clawback_status
-    datetime created_at
-    datetime declaration_date
-    enum declaration_type
-    integer delivery_partner_when_created_id
-    enum evidence_type
-    integer mentorship_period_id
-    integer payment_statement_id
-    enum payment_status
-    boolean pupil_premium_uplift
-    boolean sparsity_uplift
-    integer training_period_id
-    datetime updated_at
-    datetime voided_by_user_at
-    integer voided_by_user_id
-  }
-  Declaration }o--|| TrainingPeriod : belongs_to
-  Declaration }o--|| User : belongs_to
-  Declaration }o--|| MentorshipPeriod : belongs_to
-  Declaration }o--|| DeliveryPartner : belongs_to
-  Declaration }o--|| Statement : belongs_to
-  Declaration }o--|| Statement : belongs_to
   ContractPeriod {
     integer year
     datetime created_at
@@ -427,8 +402,6 @@ erDiagram
     decimal vat_rate
   }
   Contract }o--|| ActiveLeadProvider : belongs_to
-  Contract }o--|| Contract_FlatRateFeeStructure : belongs_to
-  Contract }o--|| Contract_BandedFeeStructure : belongs_to
   AppropriateBodyPeriod {
     integer id
     integer appropriate_body_id
@@ -470,6 +443,33 @@ erDiagram
     datetime updated_at
     integer zendesk_id
   }
+  Declaration {
+    integer id
+    uuid api_id
+    datetime api_updated_at
+    integer clawback_statement_id
+    enum clawback_status
+    datetime created_at
+    datetime declaration_date
+    enum declaration_type
+    integer delivery_partner_when_created_id
+    enum evidence_type
+    integer mentorship_period_id
+    integer payment_statement_id
+    enum payment_status
+    boolean pupil_premium_uplift
+    boolean sparsity_uplift
+    integer training_period_id
+    datetime updated_at
+    datetime voided_by_user_at
+    integer voided_by_user_id
+  }
+  Declaration }o--|| TrainingPeriod : belongs_to
+  Declaration }o--|| User : belongs_to
+  Declaration }o--|| MentorshipPeriod : belongs_to
+  Declaration }o--|| DeliveryPartner : belongs_to
+  Declaration }o--|| Statement : belongs_to
+  Declaration }o--|| Statement : belongs_to
   Metadata_TeacherLeadProvider {
     integer id
     datetime created_at
@@ -514,14 +514,4 @@ erDiagram
   }
   Metadata_SchoolContractPeriod }o--|| School : belongs_to
   Metadata_SchoolContractPeriod }o--|| ContractPeriod : belongs_to
-  Metadata_DeliveryPartnerLeadProvider {
-    integer id
-    array[integer] contract_period_years
-    datetime created_at
-    integer delivery_partner_id
-    integer lead_provider_id
-    datetime updated_at
-  }
-  Metadata_DeliveryPartnerLeadProvider }o--|| DeliveryPartner : belongs_to
-  Metadata_DeliveryPartnerLeadProvider }o--|| LeadProvider : belongs_to
 ```
