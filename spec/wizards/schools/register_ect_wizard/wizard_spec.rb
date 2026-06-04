@@ -1,5 +1,5 @@
 RSpec.describe Schools::RegisterECTWizard::Wizard do
-  let(:school) { FactoryBot.create(:school, :state_funded) }
+  let(:school) { FactoryBot.create(:school, :state_funded, create_contract_period: false) }
   let(:user) { FactoryBot.create(:user) }
   let(:store) { SessionRepository.new(session: {}, form_key: :register_ect_wizard) }
   let(:wizard) { described_class.new(current_step: :find_ect, author: user, step_params: {}, store:, school:) }
@@ -276,28 +276,12 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
     end
 
     context "when the school has previous programme choices" do
-      around do |example|
-        travel_to(Date.new(2024, 9, 15)) { example.run } # inside CP 2024
-      end
-
       let!(:previous_contract_period) do
-        FactoryBot.create(
-          :contract_period,
-          year: 2023,
-          started_on: Date.new(2023, 6, 1),
-          finished_on: Date.new(2024, 5, 31),
-          enabled: true
-        )
+        FactoryBot.create(:contract_period, :previous)
       end
 
       let!(:current_contract_period) do
-        FactoryBot.create(
-          :contract_period,
-          year: 2024,
-          started_on: Date.new(2024, 6, 1),
-          finished_on: Date.new(2025, 5, 31),
-          enabled: true
-        )
+        FactoryBot.create(:contract_period, :current)
       end
 
       let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Spec Lead Provider") }
@@ -601,13 +585,11 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
   end
 
   describe "contract period validation" do
-    around do |example|
-      travel_to(Date.new(2024, 9, 15)) { example.run }
-    end
-
-    let(:future_start_date) { Date.new(2025, 7, 1) } # future relative to 2024-09-15
+    let(:start_date_value) { start_date.strftime("%Y-%m-%d") }
 
     before do
+      travel_to date_to_travel_to
+
       wizard.ect.update!(
         trn: "1234567",
         date_of_birth: "1990-01-01",
@@ -628,16 +610,14 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
     end
 
     context "when start date is in future and contract period is not enabled" do
-      let(:start_date_value) { future_start_date.strftime("%Y-%m-%d") }
-
-      let!(:contract_period_2025) do
-        FactoryBot.create(
-          :contract_period,
-          year: 2025,
-          started_on: Date.new(2025, 6, 1),
-          finished_on: Date.new(2026, 5, 31),
-          enabled: false
-        )
+      # We want to ensure the start date is in the future and within the
+      # current contract period.
+      # This travels to some point in the contract period so that always holds
+      # no matter when "today" actually is
+      let(:date_to_travel_to) { current_contract_period.started_on.next_month }
+      let(:start_date) { date_to_travel_to + 1.week }
+      let!(:current_contract_period) do
+        FactoryBot.create(:contract_period, :current, enabled: false)
       end
 
       it "includes cannot_register_ect_yet step" do
@@ -649,17 +629,11 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
       end
     end
 
-    context "when start date is in past" do
-      let(:start_date_value) { Date.new(2024, 1, 1).strftime("%Y-%m-%d") }
-
-      let!(:contract_period_2024) do
-        FactoryBot.create(
-          :contract_period,
-          year: 2024,
-          started_on: Date.new(2024, 6, 1),
-          finished_on: Date.new(2025, 5, 31),
-          enabled: false
-        )
+    context "when start date is in past and contract period is not enabled" do
+      let(:date_to_travel_to) { Date.current }
+      let(:start_date) { previous_contract_period.finished_on.prev_month }
+      let!(:previous_contract_period) do
+        FactoryBot.create(:contract_period, :previous, enabled: false)
       end
 
       it "includes working_pattern step" do
@@ -671,17 +645,15 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
       end
     end
 
-    context "when start date is in future but contract period is enabled" do
-      let(:start_date_value) { future_start_date.strftime("%Y-%m-%d") }
-
-      let!(:contract_period_2025) do
-        FactoryBot.create(
-          :contract_period,
-          year: 2025,
-          started_on: Date.new(2025, 6, 1),
-          finished_on: Date.new(2026, 5, 31),
-          enabled: true
-        )
+    context "when start date is in future and contract period is enabled" do
+      # We want to ensure the start date is in the future and within the
+      # current contract period.
+      # This travels to some point in the contract period so that always holds
+      # no matter when "today" actually is
+      let(:date_to_travel_to) { current_contract_period.started_on.next_month }
+      let(:start_date) { date_to_travel_to + 1.week }
+      let!(:current_contract_period) do
+        FactoryBot.create(:contract_period, :current, enabled: true)
       end
 
       it "includes working_pattern step" do
@@ -694,8 +666,11 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
     end
 
     context "when start date is last day of contract period" do
-      let(:start_date_value) { Date.new(2026, 5, 31).strftime("%Y-%m-%d") }
-      let!(:contract_period_2025) { FactoryBot.create(:contract_period, year: 2025, enabled: true) }
+      let(:date_to_travel_to) { Date.current }
+      let(:start_date) { current_contract_period.finished_on }
+      let!(:current_contract_period) do
+        FactoryBot.create(:contract_period, :current, enabled: true)
+      end
 
       it "includes working_pattern step" do
         expect(wizard.allowed_steps).to include(:working_pattern)

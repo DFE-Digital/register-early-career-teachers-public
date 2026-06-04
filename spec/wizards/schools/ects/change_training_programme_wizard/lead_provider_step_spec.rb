@@ -98,58 +98,74 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::LeadProviderStep do
   end
 
   describe "#lead_providers_for_select" do
-    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:, started_on:) }
-    let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, :for_year, year:) }
-    let!(:other_lead_provider) { FactoryBot.create(:active_lead_provider, :for_year, year:) }
-    let!(:future_lead_provider) { FactoryBot.create(:active_lead_provider, :for_year, year: year + 1) }
-    let(:year) { 2025 }
+    subject(:lead_providers_for_select) { current_step.lead_providers_for_select }
+
+    let(:current_contract_period) do
+      FactoryBot.create(:contract_period, :current)
+    end
+    let(:upcoming_contract_period) do
+      FactoryBot.create(:contract_period, :next)
+    end
+    let!(:active_lead_provider) do
+      FactoryBot.create(:active_lead_provider, contract_period: current_contract_period)
+    end
+    let!(:other_lead_provider) do
+      FactoryBot.create(:active_lead_provider, contract_period: current_contract_period)
+    end
+    let!(:future_lead_provider) do
+      FactoryBot.create(:active_lead_provider, contract_period: upcoming_contract_period)
+    end
+    let(:ect_at_school_period) do
+      FactoryBot.create(:ect_at_school_period, :ongoing, school:, started_on:)
+    end
 
     context "when there are no active lead providers in contract period containing the ect's start date" do
-      let(:started_on) { Date.new(2024, 6, 1) }
+      let(:started_on) { current_contract_period.started_on.prev_day }
 
-      it "returns an empty array" do
-        expect(current_step.lead_providers_for_select).to be_empty
-      end
+      it { is_expected.to be_empty }
     end
 
     context "when there are active lead providers in contract period containing the ect's start date" do
-      let(:started_on) { Date.new(2025, 6, 1) }
+      let(:started_on) { current_contract_period.started_on.next_month }
 
-      it "returns the active lead providers in the contract period" do
-        expect(current_step.lead_providers_for_select).to contain_exactly(active_lead_provider.lead_provider, other_lead_provider.lead_provider)
-      end
+      it { is_expected.to contain_exactly(active_lead_provider.lead_provider, other_lead_provider.lead_provider) }
 
       context "when the ect starts on the last day of the contract period" do
-        let(:started_on) { Date.new(2026, 5, 31) }
+        let(:started_on) { current_contract_period.finished_on }
 
-        it "returns the active lead providers in the contract period" do
-          expect(current_step.lead_providers_for_select).to contain_exactly(active_lead_provider.lead_provider, other_lead_provider.lead_provider)
-        end
+        it { is_expected.to contain_exactly(active_lead_provider.lead_provider, other_lead_provider.lead_provider) }
       end
     end
 
-    context "when the ect started provider-led training in a closed contract period" do
-      let(:started_on) { Date.new(2021, 9, 1) }
-      let(:year) { 2024 }
+    context "when the ECT started provider-led training in a frozen contract period" do
+      let(:started_on) { frozen_contract_period.started_on.next_week }
 
-      let(:school_partnership) do
+      let(:frozen_contract_period) do
         FactoryBot.create(
-          :school_partnership,
-          :for_year,
-          year: 2021,
-          school: ect_at_school_period.school
+          :contract_period,
+          :with_payments_frozen,
+          year: 2021
+        )
+      end
+      let(:school_partnership) do
+        FactoryBot.create(:school_partnership, :for_year, year: 2021, school:)
+      end
+      let!(:training_period) do
+        FactoryBot.create(
+          :training_period,
+          :for_ect,
+          :provider_led,
+          ect_at_school_period:,
+          started_on: ect_at_school_period.started_on,
+          school_partnership:
         )
       end
 
-      before do
-        FactoryBot.create(:contract_period, :with_schedules, :with_payments_frozen, year: 2021)
-        old_training_period = FactoryBot.create(:training_period, :for_ect, :finished, :provider_led, ect_at_school_period:, school_partnership:, started_on:)
-        FactoryBot.create(:training_period, :for_ect, :ongoing, :school_led, ect_at_school_period:, started_on: old_training_period.finished_on + 1.day)
+      let!(:replacement_active_lead_provider) do
+        FactoryBot.create(:active_lead_provider, :for_year, year: 2024)
       end
 
-      it "returns the active lead providers in the successor contract period" do
-        expect(current_step.lead_providers_for_select).to contain_exactly(active_lead_provider.lead_provider, other_lead_provider.lead_provider)
-      end
+      it { is_expected.to contain_exactly(replacement_active_lead_provider.lead_provider) }
     end
   end
 end
