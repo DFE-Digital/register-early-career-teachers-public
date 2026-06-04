@@ -327,7 +327,15 @@ module Events
     def self.record_teacher_ect_at_school_period_deleted!(author:, teacher:, school:, started_on:, happened_at: Time.zone.now)
       event_type = :teacher_ect_at_school_period_deleted
       teacher_name = Teachers::Name.new(teacher).full_name
-      heading = "#{teacher_name}'s ECT at school period which was due to start on #{started_on} was deleted"
+      heading = "#{teacher_name}'s ECT at school period which was due to start on #{started_on} at #{school.name} was deleted"
+
+      new(event_type:, author:, heading:, teacher:, school:, happened_at:).record_event!
+    end
+
+    def self.record_teacher_mentor_at_school_period_deleted!(author:, teacher:, school:, started_on:, happened_at: Time.zone.now)
+      event_type = :teacher_mentor_at_school_period_deleted
+      teacher_name = Teachers::Name.new(teacher).full_name
+      heading = "#{teacher_name}'s Mentor at school period which was due to start on #{started_on} at #{school.name} was deleted"
 
       new(event_type:, author:, heading:, teacher:, school:, happened_at:).record_event!
     end
