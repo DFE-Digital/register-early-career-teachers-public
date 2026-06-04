@@ -28,22 +28,19 @@ module Admin::Finance
     end
 
     def create
-      service = ContractPeriods::Create.new(
+      @contract_period = ContractPeriods::Create.new(
         author: current_user,
         params: contract_period_params
-      )
+      ).create!
 
-      if service.create!
-        redirect_to admin_contract_periods_path, alert: "#{service.contract_period.year} Contract period added"
-      else
-        @contract_period = service.contract_period
-        render :new, status: :unprocessable_content
-      end
-    rescue ContractPeriods::SeedFromPrevious::AlreadyScheduledError,
+      redirect_to admin_contract_periods_path, alert: "#{@contract_period.year} Contract period added"
+    rescue ActiveRecord::RecordInvalid,
+           ContractPeriods::SeedFromPrevious::AlreadyScheduledError,
            ContractPeriods::SeedFromPrevious::ContractPeriodStartedError,
            ContractPeriods::SeedFromPrevious::NoPreviousContractPeriodError => e
+
       flash[:error] = "Cannot seed contract period: #{e.message}"
-      @contract_period = service.contract_period
+      @contract_period = e.record
       render :new, status: :unprocessable_content
     end
 
@@ -51,26 +48,22 @@ module Admin::Finance
     end
 
     def update
-      service = ContractPeriods::Update.new(
+      ContractPeriods::Update.new(
         author: current_user,
         contract_period: @contract_period,
         params: contract_period_params
-      )
+      ).update!
 
-      if service.update!
-        redirect_to admin_contract_periods_path, alert: "#{service.contract_period.year} Contract period updated"
-      else
-        @contract_period = service.contract_period
-        render :edit, status: :unprocessable_content
-      end
+      redirect_to admin_contract_periods_path, alert: "#{@contract_period.year} Contract period updated"
+    rescue ActiveRecord::RecordInvalid,
+           ContractPeriods::Update::NotEditable
+      render :edit, status: :unprocessable_content
     end
 
   private
 
     def set_contract_period
-      @contract_period = ContractPeriod
-        .includes(:active_lead_providers, :schedules)
-        .find(params[:id])
+      @contract_period = ContractPeriod.includes(:active_lead_providers, :schedules).find(params[:id])
     end
 
     def contract_period_params
