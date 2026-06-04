@@ -144,7 +144,6 @@ module Events
 
     def self.record_teacher_archived_event!(author:, teacher:, reason:, happened_at: Time.zone.now)
       event_type = :teacher_archived
-      teacher_name = Teachers::Name.new(teacher).full_name
       heading = "#{teacher_name} was archived"
       body = "Teacher was archived. Reason: #{reason}"
       new(event_type:, author:, teacher:, heading:, body:, happened_at:).record_event!

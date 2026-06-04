@@ -13,12 +13,12 @@ module Teachers
       ActiveRecord::Base.transaction do
         if billable_declarations?
           finish_periods!
-          record_archived_event!
         else
-          record_archived_event!
           delete_periods!
           anonymise_teacher! unless induction_period_exists?
         end
+
+        record_archived_event!
       end
 
       API::Teachers::Query.new.teacher_by_id(teacher.id)
