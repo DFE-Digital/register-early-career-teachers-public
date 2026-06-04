@@ -2,6 +2,8 @@ module Teachers
   class Archive
     attr_reader :author, :period, :reason, :teacher
 
+    delegate :training_periods, :mentorship_periods, to: :period
+
     def initialize(author:, period:, reason:)
       @author = author
       @period = period
@@ -32,14 +34,6 @@ module Teachers
 
     def declarations
       Declaration.where(training_period: training_periods)
-    end
-
-    def training_periods
-      period.training_periods
-    end
-
-    def mentorship_periods
-      period.mentorship_periods
     end
 
     def finish_periods!

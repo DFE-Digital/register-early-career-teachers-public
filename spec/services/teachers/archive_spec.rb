@@ -30,32 +30,12 @@ RSpec.describe Teachers::Archive do
       context "with an eligible declaration" do
         let!(:declaration) { FactoryBot.create(:declaration, :eligible, training_period:) }
 
-        it "sets finished_on to today on the relevant school period" do
-          freeze_time do
-            archive
-            expect(ect_at_school_period.reload.finished_on).to eq(Time.zone.today)
-          end
-        end
-
-        it "sets finished_on to today on the relevant training period" do
-          freeze_time do
-            archive
-            expect(training_period.reload.finished_on).to eq(Time.zone.today)
-          end
-        end
-
-        it "sets finished_on to today on relevant mentorship periods" do
-          freeze_time do
-            archive
-            expect(mentorship_period.reload.finished_on).to eq(Time.zone.today)
-          end
+        it "finishes the relevant periods" do
+          expect_periods_to_be_finished(ect_at_school_period:, training_period:, mentorship_period:)
         end
 
         it "does not delete the relevant periods" do
-          archive
-          expect { ect_at_school_period.reload }.not_to raise_error
-          expect { training_period.reload }.not_to raise_error
-          expect { mentorship_period.reload }.not_to raise_error
+          expect_periods_not_to_be_deleted(ect_at_school_period:, training_period:, mentorship_period:)
         end
 
         it "does not anonymise the teacher" do
@@ -85,42 +65,24 @@ RSpec.describe Teachers::Archive do
       context "with a payable declaration" do
         let!(:declaration) { FactoryBot.create(:declaration, :payable, training_period:) }
 
-        it "sets finished_on to today on the relevant periods" do
-          freeze_time do
-            archive
-
-            expect(ect_at_school_period.reload.finished_on).to eq(Time.zone.today)
-            expect(training_period.reload.finished_on).to eq(Time.zone.today)
-            expect(mentorship_period.reload.finished_on).to eq(Time.zone.today)
-          end
+        it "finishes the relevant periods" do
+          expect_periods_to_be_finished(ect_at_school_period:, training_period:, mentorship_period:)
         end
 
         it "does not delete the relevant periods" do
-          archive
-          expect { ect_at_school_period.reload }.not_to raise_error
-          expect { training_period.reload }.not_to raise_error
-          expect { mentorship_period.reload }.not_to raise_error
+          expect_periods_not_to_be_deleted(ect_at_school_period:, training_period:, mentorship_period:)
         end
       end
 
       context "with a paid declaration" do
         let!(:declaration) { FactoryBot.create(:declaration, :paid, training_period:) }
 
-        it "does not delete the relevant periods" do
-          archive
-          expect { ect_at_school_period.reload }.not_to raise_error
-          expect { training_period.reload }.not_to raise_error
-          expect { mentorship_period.reload }.not_to raise_error
+        it "finishes the relevant periods" do
+          expect_periods_to_be_finished(ect_at_school_period:, training_period:, mentorship_period:)
         end
 
-        it "sets finished_on to today on the relevant periods" do
-          freeze_time do
-            archive
-
-            expect(ect_at_school_period.reload.finished_on).to eq(Time.zone.today)
-            expect(training_period.reload.finished_on).to eq(Time.zone.today)
-            expect(mentorship_period.reload.finished_on).to eq(Time.zone.today)
-          end
+        it "does not delete the relevant periods" do
+          expect_periods_not_to_be_deleted(ect_at_school_period:, training_period:, mentorship_period:)
         end
       end
     end
@@ -145,20 +107,12 @@ RSpec.describe Teachers::Archive do
       context "with an awaiting_clawback declaration" do
         let!(:declaration) { FactoryBot.create(:declaration, :awaiting_clawback, training_period:) }
 
-        it "sets finished_on to today on the relevant periods" do
-          freeze_time do
-            archive
-            expect(ect_at_school_period.reload.finished_on).to eq(Time.zone.today)
-            expect(training_period.reload.finished_on).to eq(Time.zone.today)
-            expect(mentorship_period.reload.finished_on).to eq(Time.zone.today)
-          end
+        it "finishes the relevant periods" do
+          expect_periods_to_be_finished(ect_at_school_period:, training_period:, mentorship_period:)
         end
 
         it "does not delete the relevant periods" do
-          archive
-          expect { ect_at_school_period.reload }.not_to raise_error
-          expect { training_period.reload }.not_to raise_error
-          expect { mentorship_period.reload }.not_to raise_error
+          expect_periods_not_to_be_deleted(ect_at_school_period:, training_period:, mentorship_period:)
         end
 
         it "does not anonymise the teacher" do
@@ -188,21 +142,12 @@ RSpec.describe Teachers::Archive do
       context "with a clawed_back declaration" do
         let!(:declaration) { FactoryBot.create(:declaration, :clawed_back, training_period:) }
 
-        it "does not delete the relevant periods" do
-          archive
-          expect { ect_at_school_period.reload }.not_to raise_error
-          expect { training_period.reload }.not_to raise_error
-          expect { mentorship_period.reload }.not_to raise_error
+        it "finishes the relevant periods" do
+          expect_periods_to_be_finished(ect_at_school_period:, training_period:, mentorship_period:)
         end
 
-        it "sets finished_on to today on the relevant periods" do
-          freeze_time do
-            archive
-
-            expect(ect_at_school_period.reload.finished_on).to eq(Time.zone.today)
-            expect(training_period.reload.finished_on).to eq(Time.zone.today)
-            expect(mentorship_period.reload.finished_on).to eq(Time.zone.today)
-          end
+        it "does not delete the relevant periods" do
+          expect_periods_not_to_be_deleted(ect_at_school_period:, training_period:, mentorship_period:)
         end
       end
     end
@@ -225,19 +170,8 @@ RSpec.describe Teachers::Archive do
       end
 
       context "with no declarations" do
-        it "deletes the relevant school period" do
-          archive
-          expect { ect_at_school_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
-        end
-
-        it "deletes the relevant training period" do
-          archive
-          expect { training_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
-        end
-
-        it "deletes relevant mentorship periods" do
-          archive
-          expect { mentorship_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+        it "deletes the relevant periods" do
+          expect_periods_to_be_deleted(ect_at_school_period:, training_period:, mentorship_period:)
         end
 
         it "records an archive event" do
@@ -251,10 +185,7 @@ RSpec.describe Teachers::Archive do
         let!(:declaration) { FactoryBot.create(:declaration, training_period:) }
 
         it "deletes the relevant periods" do
-          archive
-          expect { ect_at_school_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
-          expect { training_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
-          expect { mentorship_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+          expect_periods_to_be_deleted(ect_at_school_period:, training_period:, mentorship_period:)
         end
       end
 
@@ -262,15 +193,16 @@ RSpec.describe Teachers::Archive do
         let!(:declaration) { FactoryBot.create(:declaration, :voided, training_period:) }
 
         it "deletes the relevant periods" do
-          archive
-          expect { ect_at_school_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
-          expect { training_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
-          expect { mentorship_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+          expect_periods_to_be_deleted(ect_at_school_period:, training_period:, mentorship_period:)
         end
       end
 
       context "when the teacher has an induction period" do
         let!(:induction_period) { FactoryBot.create(:induction_period, teacher: ect_at_school_period.teacher) }
+
+        it "deletes the relevant periods" do
+          expect_periods_to_be_deleted(ect_at_school_period:, training_period:, mentorship_period:)
+        end
 
         it "does not anonymise the teacher" do
           archive
@@ -287,21 +219,6 @@ RSpec.describe Teachers::Archive do
         it "does not set archived_at" do
           archive
           expect(ect_at_school_period.teacher.reload.archived_at).to be_nil
-        end
-
-        it "deletes the relevant school period" do
-          archive
-          expect { ect_at_school_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
-        end
-
-        it "deletes the relevant training period" do
-          archive
-          expect { training_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
-        end
-
-        it "deletes relevant mentorship periods" do
-          archive
-          expect { mentorship_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
         end
 
         it "records an archive event" do
@@ -408,6 +325,29 @@ RSpec.describe Teachers::Archive do
         expect { ect_at_school_period.reload }.not_to raise_error
         expect { training_period.reload }.not_to raise_error
       end
+    end
+
+    def expect_periods_to_be_finished(ect_at_school_period:, training_period:, mentorship_period:)
+      freeze_time do
+        archive
+        expect(ect_at_school_period.reload.finished_on).to eq(Time.zone.today)
+        expect(training_period.reload.finished_on).to eq(Time.zone.today)
+        expect(mentorship_period.reload.finished_on).to eq(Time.zone.today)
+      end
+    end
+
+    def expect_periods_not_to_be_deleted(ect_at_school_period:, training_period:, mentorship_period:)
+      archive
+      expect { ect_at_school_period.reload }.not_to raise_error
+      expect { training_period.reload }.not_to raise_error
+      expect { mentorship_period.reload }.not_to raise_error
+    end
+
+    def expect_periods_to_be_deleted(ect_at_school_period:, training_period:, mentorship_period:)
+      archive
+      expect { ect_at_school_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+      expect { training_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+      expect { mentorship_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
 end
