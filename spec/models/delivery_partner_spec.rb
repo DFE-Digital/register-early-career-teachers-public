@@ -9,6 +9,7 @@ describe DeliveryPartner do
   describe "associations" do
     it { is_expected.to have_many(:events) }
     it { is_expected.to have_many(:lead_provider_delivery_partnerships).inverse_of(:delivery_partner) }
+    it { is_expected.to have_many(:active_lead_providers).through(:lead_provider_delivery_partnerships) }
     it { is_expected.to have_many(:school_partnerships).through(:lead_provider_delivery_partnerships) }
     it { is_expected.to have_many(:lead_provider_metadata).class_name("Metadata::DeliveryPartnerLeadProvider") }
   end
