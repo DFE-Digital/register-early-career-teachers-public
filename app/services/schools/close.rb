@@ -12,6 +12,7 @@ module Schools
 
       destroy_unstarted_periods!
       finish_ongoing_periods!
+      record_school_closed_event!
     end
 
   private
@@ -61,6 +62,13 @@ module Schools
 
     def ongoing_ect_at_school_periods
       ect_at_school_periods.ongoing_on(Date.current)
+    end
+
+    def record_school_closed_event!
+      Events::Record.record_school_closed_event!(
+        school:,
+        author:
+      )
     end
 
     def author
