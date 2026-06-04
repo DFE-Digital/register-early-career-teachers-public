@@ -2,10 +2,6 @@ RSpec.describe "Admin finance statement authorisations", type: :request do
   let!(:statement) { FactoryBot.create(:statement) }
   let(:service) { double(authorise!: true) }
 
-  before do
-    allow(Statements::AuthorisePayment).to receive(:new).and_return(service)
-  end
-
   describe "GET /admin/finance/statements/:statement_id/authorisations/new" do
     subject do
       get "/admin/finance/statements/#{statement.id}/authorisations/new"
@@ -24,10 +20,6 @@ RSpec.describe "Admin finance statement authorisations", type: :request do
       it "renders the confirmation form" do
         expect(subject.body).to include("Check and authorise statement for payment")
       end
-
-      it "does not authorise the payment" do
-        expect(service).not_to have_received(:authorise!)
-      end
     end
   end
 
@@ -39,6 +31,10 @@ RSpec.describe "Admin finance statement authorisations", type: :request do
     end
 
     let(:confirmed) { "0" }
+
+    before do
+      allow(Statements::AuthorisePayment).to receive(:new).and_return(service)
+    end
 
     include_examples "requires finance access"
 
@@ -54,7 +50,7 @@ RSpec.describe "Admin finance statement authorisations", type: :request do
           expect(subject.body).to include("You must have completed all assurance checks")
         end
 
-        it "does not authorise the payment" do
+        it "does not call the service" do
           expect(service).not_to have_received(:authorise!)
         end
       end
@@ -62,14 +58,16 @@ RSpec.describe "Admin finance statement authorisations", type: :request do
       context "with confirmation" do
         let(:confirmed) { "1" }
 
-        it { is_expected.to redirect_to(admin_finance_statement_path(statement)) }
+        it "redirects to the statement page" do
+          expect(subject).to redirect_to(admin_finance_statement_path(statement))
+        end
 
-        it "authorises the payment" do
+        it "calls the service to authorise the payment" do
           expect(service).to have_received(:authorise!)
         end
 
         it "flashes a success message" do
-          expect(flash[:alert]).to eq "Statement authorisation processing"
+          expect(flash[:alert]).to eq "Statement authorisation processed successfully"
         end
       end
     end

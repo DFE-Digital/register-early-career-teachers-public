@@ -251,48 +251,73 @@ describe Statement do
   end
 
   describe ".can_authorise_payment?" do
-    context "open statement" do
-      subject { FactoryBot.build(:statement, :open) }
+    subject { statement.can_authorise_payment? }
 
-      it { expect(subject.can_authorise_payment?).to be(false) }
+    let(:statement) do
+      FactoryBot.create(:statement,
+                        fee_type: "output",
+                        status: "payable",
+                        marked_as_paid_at: nil,
+                        deadline_date: Date.yesterday)
     end
 
-    context "paid statement" do
-      subject { FactoryBot.build(:statement, :paid) }
+    let(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, year: statement.contract_period.year, active_lead_provider: statement.active_lead_provider) }
 
-      it { expect(subject.can_authorise_payment?).to be(false) }
+    let!(:declaration) { FactoryBot.create(:declaration, :with_ect, declaration_type: "started", payment_status: "payable", school_partnership:, payment_statement: statement) }
+    let!(:clawback_declaration) { FactoryBot.create(:declaration, :with_ect, declaration_type: "started", clawback_status: "awaiting_clawback", school_partnership:, clawback_statement: statement) }
+
+    it { is_expected.to be_truthy }
+
+    context "when statement is not an output fee" do
+      before { statement.fee_type = "service" }
+
+      it { is_expected.to be_falsey }
     end
 
-    context "payable statement" do
-      context "service_fee statement" do
-        subject { FactoryBot.build(:statement, :payable, :service_fee) }
+    context "when statement is not payable" do
+      before { statement.status = "open" }
 
-        it { expect(subject.can_authorise_payment?).to be(false) }
+      it { is_expected.to be_falsey }
+    end
+
+    context "when statement is marked as paid" do
+      before { statement.marked_as_paid_at = Time.current }
+
+      it { is_expected.to be_falsey }
+    end
+
+    context "when statement is past the deadline" do
+      before { statement.deadline_date = Date.tomorrow }
+
+      it { is_expected.to be_falsey }
+    end
+
+    context "when there are clawback declarations awaiting clawback but no payment declarations" do
+      let!(:declaration) { nil }
+
+      it { is_expected.to be_truthy }
+    end
+
+    context "when there are payment declarations payable but no clawback declarations" do
+      let!(:clawback_declaration) { nil }
+
+      it { is_expected.to be_truthy }
+    end
+
+    context "when there are no payment or clawback declarations" do
+      let!(:declaration) { nil }
+      let!(:clawback_declaration) { nil }
+
+      it { is_expected.to be_falsey }
+    end
+
+    context "when statement has no declarations requiring settlement" do
+      before do
+        declaration.update!(payment_status: "paid")
+        clawback_declaration.update!(clawback_status: "clawed_back")
       end
 
-      context "output_fee statement" do
-        context "with deadline_date in future" do
-          subject { FactoryBot.build(:statement, :payable, :output_fee, deadline_date: 3.days.from_now.to_date) }
-
-          it { expect(subject.can_authorise_payment?).to be(false) }
-        end
-
-        context "with deadline_date in past" do
-          let(:deadline_date) { 3.days.ago.to_date }
-
-          context "marked as payable" do
-            subject { FactoryBot.build(:statement, :payable, :output_fee, deadline_date:, marked_as_paid_at: Time.zone.now) }
-
-            it { expect(subject.can_authorise_payment?).to be(false) }
-          end
-
-          context "is not marked as payable" do
-            subject { FactoryBot.build(:statement, :payable, :output_fee, deadline_date:, marked_as_paid_at: nil) }
-
-            it { expect(subject.can_authorise_payment?).to be(true) }
-          end
-        end
-      end
+      it { is_expected.to be_falsey }
     end
   end
 
