@@ -2,6 +2,7 @@ module Admin::Finance
   class MilestonesController < Admin::Finance::BaseController
     before_action :set_contract_period
     before_action :set_schedule
+    before_action :set_milestone, only: %i[destroy]
     before_action :redirect_unless_contract_period_editable
 
     def new
@@ -15,32 +16,29 @@ module Admin::Finance
         params: milestone_params
       ).create!
 
-      if @milestone.persisted?
-        redirect_to admin_contract_period_schedule_path(@contract_period, @schedule),
-                    alert: "#{@milestone.declaration_type.titleize} milestone added"
-      else
-        @milestone = @schedule.milestones.build
-        render :new, status: :unprocessable_content
-      end
-    rescue ActiveRecord::RecordInvalid,
-           ActiveModel::ValidationError
-      @schedule = @schedule.milestones.build
+      redirect_to admin_contract_period_schedule_path(@contract_period, @schedule),
+                  alert: "#{@milestone.declaration_type.titleize} milestone added"
+    rescue ActionController::ParameterMissing
+      @milestone = @schedule.milestones.build
+      @milestone.errors.add(:base, "Select a declaration type, start date and optional milestone date")
+      render :new, status: :unprocessable_content
+    rescue ActiveRecord::RecordInvalid => e
+      @milestone = e.record
       render :new, status: :unprocessable_content
     end
 
     def destroy
-      service = Milestones::Destroy.new(
+      Milestones::Destroy.new(
         author: current_user,
-        milestone: @schedule.milestones.find(params[:id])
-      )
+        milestone: @milestone
+      ).destroy!
 
-      if service.destroy!
-        redirect_to admin_contract_period_schedule_path(@contract_period, @schedule),
-                    alert: "#{service.milestone.declaration_type.titleize} milestone removed"
-      else
-        redirect_to admin_contract_period_schedule_path(@contract_period, @schedule),
-                    alert: "#{service.milestone.declaration_type.titleize} milestone could not be removed"
-      end
+      redirect_to admin_contract_period_schedule_path(@contract_period, @schedule),
+                  alert: "#{@milestone.declaration_type.titleize} milestone removed"
+    rescue ActiveRecord::RecordNotDestroyed,
+           ActiveRecord::InvalidForeignKey
+      redirect_to admin_contract_period_schedule_path(@contract_period, @schedule),
+                  error: "#{@milestone.declaration_type.titleize} milestone could not be removed"
     end
 
   private
@@ -51,6 +49,10 @@ module Admin::Finance
 
     def set_schedule
       @schedule = @contract_period.schedules.find(params[:schedule_id])
+    end
+
+    def set_milestone
+      @milestone = @schedule.milestones.find(params[:id])
     end
 
     def milestone_params

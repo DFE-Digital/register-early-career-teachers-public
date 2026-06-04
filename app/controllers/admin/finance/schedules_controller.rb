@@ -36,33 +36,29 @@ module Admin::Finance
         identifier: schedule_params[:identifier]
       ).create!
 
-      if @schedule.persisted?
-        redirect_to admin_contract_period_schedules_path(@contract_period),
-                    alert: "#{@schedule.name} schedule added"
-      else
-        @schedule = @contract_period.schedules.build
-        render :new, status: :unprocessable_content
-      end
-    rescue ActionController::ParameterMissing,
-           ActiveModel::ValidationError
+      redirect_to admin_contract_period_schedules_path(@contract_period),
+                  alert: "#{@schedule.name} schedule added"
+    rescue ActionController::ParameterMissing
       @schedule = @contract_period.schedules.build
       @schedule.errors.add(:identifier, "Select a schedule")
+      render :new, status: :unprocessable_content
+    rescue ActiveRecord::RecordInvalid => e
+      @schedule = e.record
       render :new, status: :unprocessable_content
     end
 
     def destroy
-      service = Schedules::Destroy.new(
+      Schedules::Destroy.new(
         author: current_user,
         schedule: @schedule
-      )
+      ).destroy!
 
-      if service.destroy!
-        redirect_to admin_contract_period_schedules_path(@contract_period),
-                    alert: "#{@schedule.name} schedule removed"
-      else
-        redirect_to admin_contract_period_schedule_path(@contract_period, @schedule),
-                    alert: "#{@schedule.name} schedule could not be removed"
-      end
+      redirect_to admin_contract_period_schedules_path(@contract_period),
+                  alert: "#{@schedule.name} schedule removed"
+    rescue ActiveRecord::RecordNotDestroyed,
+           ActiveRecord::InvalidForeignKey
+      redirect_to admin_contract_period_schedule_path(@contract_period, @schedule),
+                  error: "#{@schedule.name} schedule could not be removed"
     end
 
   private
