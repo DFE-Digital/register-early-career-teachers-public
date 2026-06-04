@@ -170,6 +170,7 @@ RSpec.describe Events::Record do
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           teacher:,
+          heading: "Teacher was archived",
           event_type: :teacher_archived,
           happened_at: Time.zone.now,
           body: "Teacher was archived. Reason: registered_in_error",

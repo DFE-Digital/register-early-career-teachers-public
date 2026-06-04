@@ -59,6 +59,7 @@ class Event < ApplicationRecord
     teacher_schedule_assigned_to_training_period
     teacher_defers_training_period
     teacher_resumes_training_period
+    teacher_archived
     teacher_withdraws_training_period
     teacher_changes_schedule_training_period
     teacher_declaration_voided
