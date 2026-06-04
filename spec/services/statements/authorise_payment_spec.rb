@@ -1,89 +1,75 @@
 RSpec.describe Statements::AuthorisePayment do
-  subject { described_class.new(statement, author:) }
+  subject { described_class.new(statement:, author:) }
 
-  let(:statement) { FactoryBot.create(:statement, :payable, marked_as_paid_at: nil) }
   let(:user)      { FactoryBot.create(:user, email: "test@example.com", name: "Test User") }
   let(:author)    { Sessions::Users::DfEPersona.new(email: user.email) }
 
+  let!(:statement) { FactoryBot.create(:statement, :payable, deadline_date: Date.yesterday) }
+  let(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, year: statement.contract_period.year, active_lead_provider: statement.active_lead_provider) }
+
   describe "#authorise!" do
-    context "can authorise payment" do
-      before { allow(statement).to receive(:can_authorise_payment?).and_return(true) }
+    context "when the statement is not payable" do
+      let(:statement) { FactoryBot.create(:statement) }
 
-      it "sets marked_as_paid_at and status to paid and records the event with the same timestamp" do
-        freeze_time do
-          expect(Events::Record).to receive(:record_statement_authorised_for_payment_event!).with(
-            author:,
-            statement:,
-            happened_at: kind_of(ActiveSupport::TimeWithZone)
-          )
-
-          expect(subject.authorise!).to be(true)
-        end
-
-        statement.reload
-        expect(statement.marked_as_paid_at).to be_present
-        expect(statement).to be_paid
-      end
-
-      it "uses marked_as_paid_at as happened_at" do
-        freeze_time do
-          allow(Events::Record).to receive(:record_statement_authorised_for_payment_event!)
-
-          expect(subject.authorise!).to be(true)
-
-          expect(Events::Record).to have_received(:record_statement_authorised_for_payment_event!).with(
-            hash_including(happened_at: statement.reload.marked_as_paid_at)
-          )
-        end
-      end
-    end
-
-    context "cannot authorise payment" do
-      before { allow(statement).to receive(:can_authorise_payment?).and_return(false) }
-
-      it "raises NotAuthorisable and does not record an event" do
-        expect(Events::Record).not_to receive(:record_statement_authorised_for_payment_event!)
-
+      it "raises NotAuthorisable" do
         expect {
           subject.authorise!
         }.to raise_error(Statements::AuthorisePayment::NotAuthorisable)
       end
     end
 
-    context "when mark_as_paid! raises" do
-      before do
-        allow(statement).to receive(:can_authorise_payment?).and_return(true)
-        allow(statement).to receive(:mark_as_paid!).and_raise(ActiveRecord::RecordInvalid)
+    context "when the statement is payable" do
+      let!(:declarations) do
+        FactoryBot.create_list(:declaration, 3, :with_ect,
+                               declaration_type: "started",
+                               payment_status: "payable",
+                               school_partnership:,
+                               payment_statement: statement)
       end
 
-      it "raises, does not record an event, and does not persist changes" do
-        expect(Events::Record).not_to receive(:record_statement_authorised_for_payment_event!)
+      it "marks all payable declarations as paid and records events" do
+        expect(Events::Record).to receive(:record_teacher_declaration_paid!).exactly(3).times
 
-        expect {
+        subject.authorise!
+
+        expect(declarations.each(&:reload)).to all(be_paid)
+      end
+
+      it "marks the statement as paid" do
+        freeze_time do
           subject.authorise!
-        }.to raise_error(ActiveRecord::RecordInvalid)
 
-        statement.reload
-        expect(statement.marked_as_paid_at).to be_nil
-        expect(statement).not_to be_paid
-      end
-    end
-
-    context "when recording the event raises" do
-      before do
-        allow(statement).to receive(:can_authorise_payment?).and_return(true)
-        allow(Events::Record).to receive(:record_statement_authorised_for_payment_event!)
-          .and_raise(StandardError)
+          expect(statement.reload).to be_paid
+          expect(statement.marked_as_paid_at).to eq(Time.zone.now)
+        end
       end
 
-      it "raises and rolls back the payment change" do
-        expect {
+      it "records a statement authorised for payment event" do
+        expect(Events::Record).to receive(:record_statement_authorised_for_payment_event!).with(
+          statement:,
+          author:
+        )
+
+        subject.authorise!
+      end
+
+      context "when there are declarations awaiting clawback" do
+        let!(:declarations_awaiting_clawback) do
+          FactoryBot.create_list(:declaration, 2, :with_ect,
+                                 declaration_type: "started",
+                                 clawback_status: "awaiting_clawback",
+                                 school_partnership:,
+                                 clawback_statement: statement)
+        end
+
+        it "marks declarations awaiting clawback as clawed back and records events" do
+          expect(Events::Record).to receive(:record_teacher_declaration_clawed_back!).twice
+
           subject.authorise!
-        }.to raise_error(StandardError)
 
-        statement.reload
-        expect(statement.marked_as_paid_at).to be_nil
-        expect(statement).not_to be_paid
+          expect(declarations.each(&:reload)).to all(be_paid)
+          expect(declarations_awaiting_clawback.each(&:reload)).to all(be_clawed_back)
+        end
       end
     end
   end

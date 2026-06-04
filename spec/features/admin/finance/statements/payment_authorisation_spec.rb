@@ -3,6 +3,7 @@ RSpec.describe "Payment authorisation for statement" do
 
   scenario "Statement can be authorised for payment" do
     given_a_payable_finance_statement_exists
+    and_i_have_a_payable_declaration_for_the_statement
 
     when_i_visit_the_finance_statement_page
     and_i_click_authorise_for_payment_button
@@ -13,10 +14,16 @@ RSpec.describe "Payment authorisation for statement" do
     then_i_see_payment_authorised_notice
     and_i_see_payment_authorised_text
     and_statement_is_payment_authorised
+    and_the_declarations_are_marked_as_paid
   end
 
   def given_a_payable_finance_statement_exists
     @statement = FactoryBot.create(:statement, :payable, :output_fee, marked_as_paid_at: nil, deadline_date: 3.days.ago.to_date)
+  end
+
+  def and_i_have_a_payable_declaration_for_the_statement
+    school_partnership = FactoryBot.create(:school_partnership, :for_year, year: @statement.contract_period.year, active_lead_provider: @statement.active_lead_provider)
+    @declaration = FactoryBot.create(:declaration, :with_ect, declaration_type: "started", payment_status: "payable", school_partnership:, payment_statement: @statement)
   end
 
   def when_i_visit_the_finance_statement_page
@@ -37,7 +44,7 @@ RSpec.describe "Payment authorisation for statement" do
   end
 
   def then_i_see_payment_authorised_notice
-    expect(page.get_by_text("Statement authorisation processing")).to be_visible
+    expect(page.get_by_text("Statement authorisation processed")).to be_visible
   end
 
   def and_i_see_payment_authorised_text
@@ -48,5 +55,9 @@ RSpec.describe "Payment authorisation for statement" do
   def and_statement_is_payment_authorised
     expect(@statement.marked_as_paid_at).to be_present
     expect(@statement.status).to eq("paid")
+  end
+
+  def and_the_declarations_are_marked_as_paid
+    expect(@declaration.reload).to be_paid
   end
 end
