@@ -64,6 +64,7 @@ RSpec.describe "Changing an ECT's name" do
   scenario "invalid long name" do
     when_i_change_the_name_to(Faker::Lorem.characters(number: 71))
     and_i_click_the_continue_button
+    then_the_page_title_should_have_an_error_prefix
     expect(page.get_by_role("link", name: "Corrected name must be 70 characters or less")).to be_visible
     then_i_should_be_taken_to_the_edit_page
   end
@@ -71,6 +72,7 @@ RSpec.describe "Changing an ECT's name" do
   scenario "invalid blank name" do
     when_i_change_the_name_to("")
     and_i_click_the_continue_button
+    then_the_page_title_should_have_an_error_prefix
     expect(page.get_by_role("link", name: "Enter the correct full name")).to be_visible
     then_i_should_be_taken_to_the_edit_page
   end
@@ -78,6 +80,7 @@ RSpec.describe "Changing an ECT's name" do
   scenario "invalid same name" do
     when_i_change_the_name_to("Miriam Margolyes")
     and_i_click_the_continue_button
+    then_the_page_title_should_have_an_error_prefix
     expect(page.get_by_role("link", name: "The name must be different from the current name")).to be_visible
     then_i_should_be_taken_to_the_edit_page
   end
@@ -148,5 +151,10 @@ RSpec.describe "Changing an ECT's name" do
 
   def and_the_name_field_should_be(name)
     expect(page.locator("#edit-name-field").input_value).to eq(name)
+  end
+
+  def then_the_page_title_should_have_an_error_prefix
+    expect(page.title).to start_with("Error:")
+    then_i_should_see_the_change_name_page
   end
 end
