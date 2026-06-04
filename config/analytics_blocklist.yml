@@ -288,13 +288,6 @@
   - created_at
   - updated_at
   - api_updated_at
-  :metadata_delivery_partners_lead_providers:
-  - id
-  - delivery_partner_id
-  - lead_provider_id
-  - contract_period_years
-  - created_at
-  - updated_at
   :teacher_id_changes:
   - id
   - teacher_id
