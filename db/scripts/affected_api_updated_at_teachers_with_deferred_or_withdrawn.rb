@@ -30,10 +30,31 @@ end
 latest_ect_ids    = Metadata::TeacherLeadProvider.where.not(latest_ect_training_period_id: nil).select(:latest_ect_training_period_id)
 latest_mentor_ids = Metadata::TeacherLeadProvider.where.not(latest_mentor_training_period_id: nil).select(:latest_mentor_training_period_id)
 
-withdrawn_ect_periods    = TrainingPeriod.where(id: latest_ect_ids).where.not(withdrawn_at: nil).includes(ect_at_school_period: :teacher)
-deferred_ect_periods     = TrainingPeriod.where(id: latest_ect_ids).where.not(deferred_at: nil).includes(ect_at_school_period: :teacher)
-withdrawn_mentor_periods = TrainingPeriod.where(id: latest_mentor_ids).where.not(withdrawn_at: nil).includes(mentor_at_school_period: :teacher)
-deferred_mentor_periods  = TrainingPeriod.where(id: latest_mentor_ids).where.not(deferred_at: nil).includes(mentor_at_school_period: :teacher)
+# Mirrors teacher_is_ect_and_completed_induction? — only ECTs who completed induction
+# on or before the training period ended were previously returning :active and are affected.
+completed_ect_induction = <<~SQL
+  (
+    teachers.trs_induction_completed_date IS NOT NULL
+    AND (training_periods.finished_on IS NULL OR teachers.trs_induction_completed_date <= training_periods.finished_on)
+  ) OR EXISTS (
+    SELECT 1 FROM induction_periods
+    WHERE induction_periods.teacher_id = teachers.id
+      AND induction_periods.finished_on IS NOT NULL
+      AND induction_periods.outcome IS NOT NULL
+      AND (training_periods.finished_on IS NULL OR induction_periods.finished_on <= training_periods.finished_on)
+  )
+SQL
+
+# Mirrors teacher_is_mentor_and_completed_training?
+completed_mentor_training = <<~SQL
+  teachers.mentor_became_ineligible_for_funding_on IS NOT NULL
+  AND (training_periods.finished_on IS NULL OR teachers.mentor_became_ineligible_for_funding_on <= training_periods.finished_on)
+SQL
+
+withdrawn_ect_periods    = TrainingPeriod.where(id: latest_ect_ids).where.not(withdrawn_at: nil).joins(ect_at_school_period: :teacher).where(completed_ect_induction).includes(ect_at_school_period: :teacher)
+deferred_ect_periods     = TrainingPeriod.where(id: latest_ect_ids).where.not(deferred_at: nil).joins(ect_at_school_period: :teacher).where(completed_ect_induction).includes(ect_at_school_period: :teacher)
+withdrawn_mentor_periods = TrainingPeriod.where(id: latest_mentor_ids).where.not(withdrawn_at: nil).joins(mentor_at_school_period: :teacher).where(completed_mentor_training).includes(mentor_at_school_period: :teacher)
+deferred_mentor_periods  = TrainingPeriod.where(id: latest_mentor_ids).where.not(deferred_at: nil).joins(mentor_at_school_period: :teacher).where(completed_mentor_training).includes(mentor_at_school_period: :teacher)
 
 $stdout.puts "Teachers affected by participant status changes:"
 $stdout.puts "Withdrawn ECT:    from a total of #{withdrawn_ect_periods.count} training_periods"
