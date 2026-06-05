@@ -54,6 +54,10 @@ class GIAS::School < ApplicationRecord
   # Scopes
   scope :search, ->(q) { where("gias_schools.search @@ websearch_to_tsquery('unaccented', ?)", q) }
   scope :ordered_by_name, -> { order(name: :asc) }
+  scope :without_successors, -> { left_joins(:gias_school_links).where(gias_school_links: { id: nil }) }
+  scope :closed_without_successors, -> { closed_status.without_successors }
+  scope :without_schools, -> { left_joins(:school).where(schools: { id: nil }) }
+  scope :opened_without_schools, -> { open_status.without_schools }
 
   # Instance Methods
   def closed?

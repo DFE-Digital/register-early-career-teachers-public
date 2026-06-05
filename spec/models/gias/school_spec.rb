@@ -132,5 +132,49 @@ describe GIAS::School do
         expect(GIAS::School.ordered_by_name.to_sql).to end_with('ORDER BY "gias_schools"."name" ASC')
       end
     end
+
+    describe ".without_successors" do 
+      let(:gias_school_with_successor) { FactoryBot.create(:gias_school_link).from_gias_school }
+      let(:gias_school_without_successor) { FactoryBot.create(:gias_school) }
+
+      it "returns only GIAS schools without successors" do
+        expect(GIAS::School.without_successors).to include(gias_school_without_successor)
+        expect(GIAS::School.without_successors).not_to include(gias_school_with_successor)
+      end
+    end
+
+    describe ".closed_without_successors" do
+      let(:closed_gias_school_with_successor) { FactoryBot.create(:gias_school_link, from_gias_school: FactoryBot.create(:gias_school, :closed)).from_gias_school }
+      let(:closed_gias_school_without_successor) { FactoryBot.create(:gias_school, :closed) }
+      let(:open_gias_school_without_successor) { FactoryBot.create(:gias_school, :open) }
+
+      it "returns only closed GIAS schools without successors" do
+        expect(GIAS::School.closed_without_successors).to include(closed_gias_school_without_successor)
+        expect(GIAS::School.closed_without_successors).not_to include(closed_gias_school_with_successor)
+        expect(GIAS::School.closed_without_successors).not_to include(open_gias_school_without_successor)
+      end
+    end
+
+    describe ".without_schools" do
+      let(:gias_school_with_school) { FactoryBot.create(:gias_school, :with_school) }
+      let(:gias_school_without_school) { FactoryBot.create(:gias_school) }
+
+      it "returns only GIAS schools without associated school records" do
+        expect(GIAS::School.without_schools).to include(gias_school_without_school)
+        expect(GIAS::School.without_schools).not_to include(gias_school_with_school)
+      end
+    end
+
+    describe ".opened_without_schools" do
+      let(:open_gias_school_without_school) { FactoryBot.create(:gias_school, :open) }
+      let(:open_gias_school_with_school) { FactoryBot.create(:gias_school, :open, :with_school) }
+      let(:closed_gias_school_without_school) { FactoryBot.create(:gias_school, :closed) }
+
+      it "returns only open GIAS schools without associated school records" do
+        expect(GIAS::School.opened_without_schools).to include(open_gias_school_without_school)
+        expect(GIAS::School.opened_without_schools).not_to include(open_gias_school_with_school)
+        expect(GIAS::School.opened_without_schools).not_to include(closed_gias_school_without_school)
+      end
+    end
   end
 end

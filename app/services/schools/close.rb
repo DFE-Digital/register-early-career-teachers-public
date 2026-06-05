@@ -6,7 +6,13 @@ module Schools
       @school = school
     end
 
-    def call
+    def self.call
+      GIAS::School.includes(:school).joins(:school).closed_without_successors.find_each do |gias_school|
+        new(gias_school.school).close!
+      end
+    end
+
+    def close!
       return unless gias_school.closed?
       return if gias_school.gias_school_links.exists?
 
