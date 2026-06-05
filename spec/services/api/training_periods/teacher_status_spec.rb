@@ -44,14 +44,11 @@ RSpec.describe API::TrainingPeriods::TeacherStatus do
 
         it { is_expected.to eq(:left) }
 
-        context "when completed induction" do
-          before do
-            FactoryBot.create(:induction_period, :pass, teacher:,
-                                                        started_on: training_period.started_on,
-                                                        finished_on: training_period.finished_on)
-          end
+        context "when finished in the future" do
+          let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, finished_on: 1.month.from_now) }
+          let(:training_period) { FactoryBot.create(:training_period, :for_ect, :withdrawn, ect_at_school_period:, finished_on: 1.month.from_now) }
 
-          it { is_expected.to eq(:left) }
+          it { is_expected.to eq(:leaving) }
         end
       end
 
@@ -60,15 +57,11 @@ RSpec.describe API::TrainingPeriods::TeacherStatus do
 
         it { is_expected.to eq(:left) }
 
-        context "when teacher becomes ineligible before period has finished" do
-          before do
-            teacher.update!(
-              mentor_became_ineligible_for_funding_on: training_period.finished_on - 1.week,
-              mentor_became_ineligible_for_funding_reason: "completed_declaration_received"
-            )
-          end
+        context "when finished in the future" do
+          let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, finished_on: 1.month.from_now) }
+          let(:training_period) { FactoryBot.create(:training_period, :for_mentor, :withdrawn, mentor_at_school_period:, finished_on: 1.month.from_now) }
 
-          it { is_expected.to eq(:left) }
+          it { is_expected.to eq(:leaving) }
         end
       end
     end
@@ -79,14 +72,11 @@ RSpec.describe API::TrainingPeriods::TeacherStatus do
 
         it { is_expected.to eq(:left) }
 
-        context "when completed induction" do
-          before do
-            FactoryBot.create(:induction_period, :pass, teacher:,
-                                                        started_on: training_period.started_on,
-                                                        finished_on: training_period.finished_on)
-          end
+        context "when finished in the future" do
+          let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, finished_on: 1.month.from_now) }
+          let(:training_period) { FactoryBot.create(:training_period, :for_ect, :deferred, ect_at_school_period:, finished_on: 1.month.from_now) }
 
-          it { is_expected.to eq(:left) }
+          it { is_expected.to eq(:leaving) }
         end
       end
 
@@ -95,15 +85,11 @@ RSpec.describe API::TrainingPeriods::TeacherStatus do
 
         it { is_expected.to eq(:left) }
 
-        context "when teacher becomes ineligible before period has finished" do
-          before do
-            teacher.update!(
-              mentor_became_ineligible_for_funding_on: training_period.finished_on - 1.week,
-              mentor_became_ineligible_for_funding_reason: "completed_declaration_received"
-            )
-          end
+        context "when finished in the future" do
+          let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, finished_on: 1.month.from_now) }
+          let(:training_period) { FactoryBot.create(:training_period, :for_mentor, :deferred, mentor_at_school_period:, finished_on: 1.month.from_now) }
 
-          it { is_expected.to eq(:left) }
+          it { is_expected.to eq(:leaving) }
         end
       end
     end
