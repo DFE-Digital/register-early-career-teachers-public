@@ -73,7 +73,7 @@ RSpec.describe Schools::ReminderEmailOptOutToken do
 
   describe ".token_sql" do
     it "produces SQL that reproduces the Ruby token for the same school id" do
-      sql_token = ActiveRecord::Base.connection.select_value("SELECT #{described_class.token_sql('42')}")
+      sql_token = ActiveRecord::Base.connection.select_value("SELECT #{described_class.token_sql(school_id_sql: '42')}")
 
       expect(sql_token).to eq(described_class.generate_for(school_id: 42))
     end
@@ -83,7 +83,7 @@ RSpec.describe Schools::ReminderEmailOptOutToken do
         .to receive(:school_reminder_email_opt_out_token_secret)
         .and_return(nil)
 
-      expect { described_class.token_sql("schools.id") }
+      expect { described_class.token_sql(school_id_sql: "schools.id") }
         .to raise_error(described_class::MissingSecretError)
     end
   end
