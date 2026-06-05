@@ -71,12 +71,20 @@ class ContractPeriod < ApplicationRecord
     payments_frozen_at.present? && payments_frozen_at <= Time.zone.now
   end
 
-  def all_schedules?
-    schedules.count.eql?(Schedule.identifiers.size)
+  def fully_scheduled?
+    Schedule.identifiers.keys.size == schedules.size
   end
 
   def editable?
     !started_on_or_before_today?
+  end
+
+  def available_schedules
+    Schedule.identifiers.keys - schedules.map(&:identifier)
+  end
+
+  def sorted_schedules
+    schedules.sort_by { |s| Schedule.identifiers.keys.index(s.identifier) }
   end
 
 private
