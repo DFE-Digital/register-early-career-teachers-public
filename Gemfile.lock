@@ -507,7 +507,7 @@ GEM
       bigdecimal
     notifications-ruby-client (6.4.0)
       jwt (>= 1.5, < 4)
-    oj (3.17.1)
+    oj (3.17.3)
       bigdecimal (>= 3.0)
       ostruct (>= 0.2)
     omniauth (2.1.4)
