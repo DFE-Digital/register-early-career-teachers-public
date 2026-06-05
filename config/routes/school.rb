@@ -5,6 +5,10 @@ namespace :schools, path: :school do
       to: "registration_window_closed#show",
       as: :registration_window_closed
 
+  resource :reminder_email_opt_out,
+           only: %i[new create],
+           path: "opt-out-of-reminder-emails"
+
   get "/home/ects", to: "ects#index", as: :ects_home
   resources :ects, only: %i[index show] do
     resource :mentorship, only: %i[new create] do
