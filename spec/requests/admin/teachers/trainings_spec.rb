@@ -189,6 +189,7 @@ RSpec.describe "Admin::Teachers::Training", type: :request do
 
           before do
             newer_training_period.school_partnership = older_training_period.school_partnership
+            newer_training_period.schedule = FactoryBot.create(:schedule, contract_period: older_training_period.school_partnership.contract_period)
             newer_training_period.save!
           end
 

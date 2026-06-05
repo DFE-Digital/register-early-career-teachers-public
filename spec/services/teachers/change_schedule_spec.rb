@@ -108,7 +108,7 @@ RSpec.describe Teachers::ChangeSchedule do
         end
 
         context "when moving away from a frozen contract period" do
-          let(:contract_period) { training_period.contract_period }
+          let(:contract_period) { training_period.schedule.contract_period }
 
           before { contract_period.update!(payments_frozen_at: Time.zone.now) }
 

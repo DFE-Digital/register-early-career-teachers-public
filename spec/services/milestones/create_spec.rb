@@ -7,8 +7,8 @@ RSpec.describe Milestones::Create do
   let(:params) do
     {
       declaration_type: "started",
-      start_date: Date.new(2026, 1, 1),
-      milestone_date: Date.new(2026, 6, 1),
+      start_date: Date.new(contract_period.year, 6, 1),
+      milestone_date: Date.new(contract_period.year, 9, 1),
     }
   end
 
@@ -70,8 +70,8 @@ RSpec.describe Milestones::Create do
       let(:params) do
         {
           declaration_type: "retained-1",
-          start_date: Date.new(2026, 6, 1),
-          milestone_date: Date.new(2026, 1, 1),
+          start_date: Date.new(contract_period.year, 6, 1),
+          milestone_date: Date.new(contract_period.year, 1, 1),
         }
       end
 

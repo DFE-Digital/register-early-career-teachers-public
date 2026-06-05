@@ -5,7 +5,7 @@ describe Milestone do
     it { is_expected.to belong_to(:schedule) }
   end
 
-  describe "validation" do
+  describe "validations" do
     subject { FactoryBot.build(:milestone) }
 
     it { is_expected.to validate_presence_of(:schedule_id).with_message("Choose a schedule") }
@@ -13,12 +13,56 @@ describe Milestone do
     it { is_expected.to validate_inclusion_of(:declaration_type).in_array(declaration_types).with_message("Choose a valid declaration type") }
     it { is_expected.to validate_comparison_of(:milestone_date).is_greater_than(:start_date).with_message("Milestone date must be after the start date").allow_nil }
 
-    it "ensures uniqueness of declaration_types and schedule_ids" do
-      original = FactoryBot.create(:milestone)
-      duplicate = original.dup
+    describe "declaration uniqueness" do
+      subject(:milestone) { original.dup }
 
-      expect(duplicate).not_to be_valid
-      expect(duplicate.errors.messages.fetch(:declaration_type)).to include("Can be used once per schedule")
+      let(:original) { FactoryBot.create(:milestone) }
+
+      it "ensures declaration_type is used once per schedule" do
+        expect(milestone).not_to be_valid
+        expect(milestone.errors.messages.fetch(:declaration_type)).to include("Can be used once per schedule")
+      end
+    end
+
+    describe "start date" do
+      subject(:milestone) { FactoryBot.build(:milestone, schedule:, start_date:) }
+
+      let(:contract_period) { FactoryBot.create(:contract_period, :next) }
+      let(:schedule) { FactoryBot.create(:schedule, contract_period:) }
+
+      context "when start date is before the contract period start date" do
+        let(:start_date) { contract_period.started_on.prev_day }
+
+        it "is invalid" do
+          expect(milestone).not_to be_valid
+          expect(milestone.errors.messages.fetch(:start_date)).to include("The start date must be on or after the contract start date (1 June #{contract_period.year})")
+        end
+      end
+
+      context "when start date is on the contract period start date" do
+        let(:start_date) { contract_period.started_on }
+
+        it { is_expected.to be_valid }
+      end
+
+      context "when start date is after the contract period start date" do
+        let(:start_date) { contract_period.started_on.next_day }
+
+        it { is_expected.to be_valid }
+      end
+    end
+
+    describe "milestone date" do
+      subject(:milestone) do
+        FactoryBot.build(:milestone,
+                         start_date: Date.tomorrow,
+                         milestone_date: Time.zone.today)
+      end
+
+      it "ensures milestone date is later than the start date" do
+        expect(milestone).not_to be_valid
+        expect(milestone.errors.messages.fetch(:milestone_date)).to include("Milestone date must be after the start date")
+      end
     end
   end
 

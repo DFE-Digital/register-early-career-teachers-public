@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory(:training_period) do
+  factory :training_period do
     transient do
       # default start date to be a realistic past date
       period_start_date { ect_at_school_period&.started_on || mentor_at_school_period&.started_on || rand(2.years.ago..6.months.ago) }
@@ -7,7 +7,7 @@ FactoryBot.define do
       period_end_date { started_on.tomorrow || ect_at_school_period&.finished_on&.tomorrow || mentor_at_school_period&.finished_on&.tomorrow || period_start_date + 1.year }
     end
 
-    before(:create) do |training_period|
+    before :create do |training_period|
       school_partnership = training_period.school_partnership
 
       # Ensure the associated `ect_at_school_period` and `mentor_at_school_period` have the same school
@@ -42,14 +42,14 @@ FactoryBot.define do
       finished_on { ect_at_school_period&.started_on&.+(1.month) || mentor_at_school_period&.started_on&.+(1.month) || 2.weeks.ago }
     end
 
-    trait(:school_led) do
+    trait :school_led do
       training_programme { "school_led" }
       school_partnership { nil }
       expression_of_interest { nil }
       schedule { nil }
     end
 
-    trait(:provider_led) do
+    trait :provider_led do
       training_programme { "provider_led" }
     end
 
@@ -58,43 +58,49 @@ FactoryBot.define do
         at_school_period { ect_at_school_period.presence || mentor_at_school_period }
       end
 
-      school_partnership { association :school_partnership, school: at_school_period&.school || FactoryBot.create(:school) }
+      transient do
+        school_period_school { at_school_period&.school || FactoryBot.create(:school) }
+      end
+
+      school_partnership do
+        association :school_partnership,
+                    school: school_period_school
+      end
     end
 
     trait :with_active_lead_provider do
+      with_school_partnership
+
       transient do
         active_lead_provider { association :active_lead_provider }
       end
 
       school_partnership do
-        association :school_partnership,
-                    :with_active_lead_provider,
+        association :school_partnership, :with_active_lead_provider,
                     active_lead_provider:,
-                    school: at_school_period&.school || FactoryBot.create(:school)
+                    school: school_period_school
       end
     end
 
     trait :with_schedule do
       transient do
-        schedule do
-          FactoryBot.build(:schedule, contract_period: contract_period || expression_of_interest_contract_period)
+        contract_period do
+          school_partnership&.contract_period ||
+            expression_of_interest&.contract_period ||
+            FactoryBot.create(:contract_period)
         end
       end
 
-      after(:build) do |training_period, evaluator|
-        training_period.schedule = evaluator.schedule
+      schedule do
+        association :schedule, contract_period:
       end
     end
 
     trait :with_schedule_and_milestones do
-      transient do
-        schedule do
-          FactoryBot.build(:schedule, :with_milestones, contract_period: school_partnership&.contract_period || expression_of_interest_contract_period)
-        end
-      end
+      with_schedule
 
-      after(:build) do |training_period, evaluator|
-        training_period.schedule = evaluator.schedule
+      schedule do
+        association :schedule, :with_milestones, contract_period:
       end
     end
 
@@ -103,18 +109,18 @@ FactoryBot.define do
     end
 
     trait :with_expression_of_interest do
-      after(:build) do |training_period|
-        training_period.expression_of_interest = FactoryBot.create(:active_lead_provider,
-                                                                   contract_period: training_period.contract_period ||
-                                                                   FactoryBot.create(:contract_period, :current))
+      after :build do |training_period|
+        contract_period = training_period.school_partnership&.contract_period ||
+          training_period.contract_period ||
+          FactoryBot.create(:contract_period, :current)
+        training_period.expression_of_interest = FactoryBot.create(:active_lead_provider, contract_period:)
       end
     end
 
     trait :with_only_expression_of_interest do
+      with_schedule
       school_partnership { nil }
       association :expression_of_interest, factory: :active_lead_provider
-
-      with_schedule
     end
 
     trait :ongoing do

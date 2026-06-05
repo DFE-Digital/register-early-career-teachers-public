@@ -29,7 +29,7 @@ FactoryBot.define do
     uplift_fees_enabled { true }
 
     initialize_with do
-      ContractPeriod.find_or_create_by(year:)
+      ContractPeriod.find_or_initialize_by(year:)
     end
 
     trait :with_schedules do
