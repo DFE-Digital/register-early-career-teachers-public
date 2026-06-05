@@ -18,10 +18,6 @@ module Admin::Finance
 
       redirect_to admin_contract_period_schedule_path(@contract_period, @schedule),
                   alert: "#{@milestone.declaration_type.titleize} milestone added"
-    rescue ActionController::ParameterMissing
-      @milestone = @schedule.milestones.build
-      @milestone.errors.add(:base, "Select a declaration type, start date and optional milestone date")
-      render :new, status: :unprocessable_content
     rescue ActiveRecord::RecordInvalid => e
       @milestone = e.record
       render :new, status: :unprocessable_content
