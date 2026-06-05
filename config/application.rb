@@ -58,7 +58,6 @@ module RegisterEarlyCareerTeachers
     config.enable_appropriate_body_records_to_review = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_APPROPRIATE_BODY_RECORDS_TO_REVIEW", false))
     config.enable_sentry = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_SENTRY", false))
     config.enable_blazer = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_BLAZER", false))
-    config.enable_api = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_API", false))
     config.enable_time_travel = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_TIME_TRAVEL", false))
     config.enable_debug_css = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_DEBUG_CSS", false))
     config.bypass_filter_parameter_logging = false
