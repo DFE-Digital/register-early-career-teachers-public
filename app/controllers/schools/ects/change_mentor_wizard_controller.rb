@@ -1,6 +1,7 @@
 module Schools
   module ECTs
     class ChangeMentorWizardController < SchoolsController
+      include Schools::RegistrationWindowRedirectable
       include Schools::InductionRedirectable
 
       include Wizardable

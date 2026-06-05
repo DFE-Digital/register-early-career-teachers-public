@@ -1,4 +1,5 @@
 class Schools::AssignExistingMentorWizardController < SchoolsController
+  include Schools::RegistrationWindowRedirectable
   include Schools::InductionRedirectable
 
   before_action :initialize_wizard, only: %i[new create]
