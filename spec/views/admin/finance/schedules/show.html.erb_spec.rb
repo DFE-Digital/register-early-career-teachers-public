@@ -55,10 +55,12 @@ RSpec.describe "admin/finance/schedules/show.html.erb" do
     before do
       FactoryBot.create(:milestone,
                         schedule:,
+                        start_date: Date.new(contract_period.year, 9, 1),
                         declaration_type: "started")
 
       FactoryBot.create(:milestone,
                         schedule:,
+                        milestone_date: Date.new(contract_period.year, 10, 1),
                         declaration_type: "retained-1")
     end
 
@@ -78,8 +80,8 @@ RSpec.describe "admin/finance/schedules/show.html.erb" do
 
     it "formats dates" do
       render
-      expect(rendered).to have_text("1 September 2024")
-      expect(rendered).to have_text("1 October 2024")
+      expect(rendered).to have_text("1 September #{contract_period.year}")
+      expect(rendered).to have_text("1 October #{contract_period.year}")
     end
 
     it "disables the delete schedule button" do
