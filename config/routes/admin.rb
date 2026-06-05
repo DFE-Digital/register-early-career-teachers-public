@@ -114,6 +114,7 @@ namespace :admin do
               resources :statements, only: %i[index show new create edit update destroy], controller: "active_lead_providers/statements" do
                 member { get :delete }
               end
+              resources :contracts, only: %i[index], controller: "active_lead_providers/contracts"
             end
           end
         end

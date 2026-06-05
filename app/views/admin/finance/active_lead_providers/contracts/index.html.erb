@@ -1,0 +1,33 @@
+<% page_data(title: "Contracts", breadcrumbs: @breadcrumbs) %>
+
+<p class="govuk-body">
+  Contracts for <%= @active_lead_provider.lead_provider_name %> in the <%= @active_lead_provider.contract_period_year %> contract period:
+</p>
+
+<% if @contracts.none? %>
+  <p class="govuk-body">No contracts found</p>
+<% else %>
+  <% @contracts.each do |contract| %>
+    <%= govuk_section_break(visible: true, size: "l") %>
+
+    <section class="govuk-!-margin-bottom-9">
+      <h2 class="govuk-heading-l"><%= contract.description %></h2>
+
+      <h3 class="govuk-heading-m">Flat rate fee structure</h3>
+
+      <% if contract.flat_rate_fee_structure.present? %>
+        <%= render Admin::Statements::ProviderTargetsComponent::FlatRateFeeComponent.new(contract:) %>
+      <% else %>
+        <p class="govuk-body">Not applicable</p>
+      <% end %>
+
+      <h3 class="govuk-heading-m govuk-!-margin-top-6">Banded fee structure</h3>
+
+      <% if contract.banded_fee_structure.present? %>
+        <%= render Admin::Statements::ProviderTargetsComponent::BandedFeeComponent.new(contract:) %>
+      <% else %>
+        <p class="govuk-body">Not applicable</p>
+      <% end %>
+    </section>
+  <% end %>
+<% end %>

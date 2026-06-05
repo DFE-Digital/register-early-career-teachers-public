@@ -1,6 +1,6 @@
 <% page_data(
     title: "Change name for #{@wizard.teacher_full_name}",
-    error: @wizard.ect_at_school_period.errors.present?,
+    error: @wizard.current_step.errors.present?,
     backlink_href: schools_ect_path(@ect_at_school_period),
 ) %>
 
