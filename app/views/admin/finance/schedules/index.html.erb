@@ -1,7 +1,7 @@
 <%
   page_data(
     title: "Schedules",
-    caption: @contract_period.year,
+    caption: "#{@contract_period.year} contract period",
     caption_size: "l",
     breadcrumbs: @breadcrumbs
   )
@@ -15,9 +15,9 @@
   <%=
     govuk_table(
       head: ["Schedule"],
-      rows: sort_schedules(@contract_period).map do |schedule|
+      rows: @contract_period.sorted_schedules.map do |schedule|
         [
-          govuk_link_to(schedule_name(schedule.identifier), "#"),
+          govuk_link_to(schedule.name, admin_contract_period_schedule_path(@contract_period, schedule)),
         ]
       end
     )
@@ -25,6 +25,9 @@
 <% end %>
 
 <%=
-govuk_button_to("Add schedule", "#",
-  disabled: (@contract_period.all_schedules? || @contract_period.started_on_or_before_today?))
+  if (@contract_period.fully_scheduled? || @contract_period.started_on_or_before_today?)
+    govuk_button_to "Add schedule", "#", disabled: true
+  else
+    govuk_button_link_to "Add schedule", new_admin_contract_period_schedule_path(@contract_period)
+  end
 %>

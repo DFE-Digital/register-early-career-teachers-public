@@ -51,32 +51,136 @@ describe Schedule do
   end
 
   describe "#replacement_schedule?" do
-    it "returns true for replacement schedules" do
-      schedule = Schedule.new(identifier: "ecf-replacement-april")
-      expect(schedule).to be_replacement_schedule
+    subject { Schedule.new(identifier:) }
+
+    context "with replacement schedules" do
+      let(:identifier) { "ecf-replacement-april" }
+
+      it { is_expected.to be_replacement_schedule }
     end
 
-    it "returns false for non-replacement schedules" do
-      schedule = Schedule.new(identifier: "ecf-standard-april")
-      expect(schedule).not_to be_replacement_schedule
+    context "with non-replacement schedules" do
+      let(:identifier) { "ecf-standard-april" }
+
+      it { is_expected.not_to be_replacement_schedule }
     end
   end
 
   describe "#reduced_schedule?" do
-    it "returns true for reduced schedules" do
-      schedule = Schedule.new(identifier: "ecf-reduced-april")
-      expect(schedule).to be_reduced_schedule
+    subject { Schedule.new(identifier:) }
+
+    context "with reduced schedules" do
+      let(:identifier) { "ecf-reduced-april" }
+
+      it { is_expected.to be_reduced_schedule }
     end
 
-    it "returns false for non-reduced schedules" do
-      schedule = Schedule.new(identifier: "ecf-standard-april")
-      expect(schedule).not_to be_reduced_schedule
+    context "with non-reduced schedules" do
+      let(:identifier) { "ecf-standard-april" }
+
+      it { is_expected.not_to be_reduced_schedule }
     end
   end
 
-  describe "#description" do
-    subject { FactoryBot.build(:schedule, identifier: "ecf-standard-april", contract_period: FactoryBot.build(:contract_period, year: 2023)).description }
+  describe "#fully_milestoned?" do
+    subject(:schedule) { FactoryBot.create(:schedule) }
 
-    it { is_expected.to eq("ecf-standard-april for 2023") }
+    let(:possible_milestones) { Milestone.declaration_types.values }
+
+    context "when all possible milestones have been allocated to the schedule" do
+      before do
+        possible_milestones.each do |declaration_type|
+          FactoryBot.create(:milestone, schedule:, declaration_type:)
+        end
+      end
+
+      it { is_expected.to be_fully_milestoned }
+    end
+
+    context "when only some milestones have been allocated to the schedule" do
+      before do
+        possible_milestones.take(2).each do |declaration_type|
+          FactoryBot.create(:milestone, schedule:, declaration_type:)
+        end
+      end
+
+      it { is_expected.not_to be_fully_milestoned }
+    end
+  end
+
+  # TODO: extract Schedule#name/,#description to a decorator?
+  describe "decorations" do
+    let(:schedule) { FactoryBot.build(:schedule, identifier: "ecf-standard-april", contract_period:) }
+    let(:contract_period) { FactoryBot.build(:contract_period, year: 2023) }
+
+    describe "#name" do
+      subject { schedule.name }
+
+      it { is_expected.to eq("Standard April") }
+    end
+
+    describe "#description" do
+      subject { schedule.description }
+
+      it { is_expected.to eq("Standard April for 2023") }
+    end
+  end
+
+  describe "#available_milestones" do
+    subject(:schedule) { FactoryBot.create(:schedule) }
+
+    context "without associated milestones" do
+      it "lists all possible milestones" do
+        expect(schedule.available_milestones).to eq(%w[
+          started
+          retained-1
+          retained-2
+          retained-3
+          retained-4
+          completed
+          extended-1
+          extended-2
+          extended-3
+        ])
+      end
+    end
+
+    context "with associated milestones" do
+      let(:associated_milestones) do
+        %w[completed retained-2 retained-1 started]
+      end
+
+      before do
+        associated_milestones.each do |declaration_type|
+          FactoryBot.create(:milestone, schedule:, declaration_type:)
+        end
+      end
+
+      it "lists any remaining milestones" do
+        expect(schedule.available_milestones).to eq(%w[
+          retained-3 retained-4 extended-1 extended-2 extended-3
+        ])
+      end
+    end
+  end
+
+  describe "#sorted_milestones" do
+    subject(:schedule) { FactoryBot.create(:schedule) }
+
+    let(:associated_milestones) do
+      %w[completed retained-2 retained-1 started]
+    end
+
+    before do
+      associated_milestones.each do |declaration_type|
+        FactoryBot.create(:milestone, schedule:, declaration_type:)
+      end
+    end
+
+    it "orders milestones by declaration_type as defined in the enum" do
+      expect(schedule.sorted_milestones.map(&:declaration_type)).to eq(%w[
+        started retained-1 retained-2 completed
+      ])
+    end
   end
 end

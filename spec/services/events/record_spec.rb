@@ -1848,16 +1848,18 @@ RSpec.describe Events::Record do
 
     context "when ECT training" do
       let(:ect_at_school_period) do
-        FactoryBot.create(
-          :ect_at_school_period,
-          :ongoing,
-          teacher:,
-          school:,
-          started_on:
-        )
+        FactoryBot.create(:ect_at_school_period, :ongoing,
+                          teacher:,
+                          school:,
+                          started_on:)
       end
 
-      let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period:, started_on:, school_partnership:) }
+      let!(:training_period) do
+        FactoryBot.create(:training_period, :for_ect, :ongoing,
+                          ect_at_school_period:,
+                          started_on:,
+                          school_partnership:)
+      end
 
       it "queues a RecordEventJob with the correct values" do
         Events::Record.record_teacher_schedule_assigned_to_training_period!(
@@ -1871,7 +1873,7 @@ RSpec.describe Events::Record do
           training_period:,
           teacher:,
           schedule: training_period.schedule,
-          heading: "Ichigo Kurosaki’s ECT training period schedule was set to ecf-standard-september for #{training_period.schedule.contract_period_year}",
+          heading: "Ichigo Kurosaki’s ECT training period schedule was set to Standard September for #{training_period.schedule.contract_period_year}",
           event_type: :teacher_schedule_assigned_to_training_period,
           happened_at: Time.zone.now,
           **author_params
@@ -1881,16 +1883,18 @@ RSpec.describe Events::Record do
 
     context "when Mentor training" do
       let(:mentor_at_school_period) do
-        FactoryBot.create(
-          :mentor_at_school_period,
-          :ongoing,
-          teacher:,
-          school:,
-          started_on:
-        )
+        FactoryBot.create(:mentor_at_school_period, :ongoing,
+                          teacher:,
+                          school:,
+                          started_on:)
       end
 
-      let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:, started_on:, school_partnership:) }
+      let!(:training_period) do
+        FactoryBot.create(:training_period, :for_mentor, :ongoing,
+                          mentor_at_school_period:,
+                          started_on:,
+                          school_partnership:)
+      end
 
       it "queues a RecordEventJob with the correct values" do
         Events::Record.record_teacher_schedule_assigned_to_training_period!(
@@ -1904,7 +1908,7 @@ RSpec.describe Events::Record do
           training_period:,
           teacher:,
           schedule: training_period.schedule,
-          heading: "Ichigo Kurosaki’s mentor training period schedule was set to ecf-standard-september for #{training_period.schedule.contract_period_year}",
+          heading: "Ichigo Kurosaki’s mentor training period schedule was set to Standard September for #{training_period.schedule.contract_period_year}",
           event_type: :teacher_schedule_assigned_to_training_period,
           happened_at: Time.zone.now,
           **author_params
@@ -2622,6 +2626,84 @@ RSpec.describe Events::Record do
           happened_at: Time.current,
           modifications: anything,
           metadata: anything,
+          **author_params
+        )
+      end
+    end
+  end
+
+  describe ".record_schedule_added_event!" do
+    let!(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
+    let!(:schedule) { FactoryBot.create(:schedule, contract_period:) }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        Events::Record.record_schedule_added_event!(author:, schedule:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          contract_period:,
+          heading: "Standard September for 2025 added",
+          event_type: :schedule_added,
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      end
+    end
+  end
+
+  describe ".record_schedule_deleted_event!" do
+    let!(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
+    let!(:schedule) { FactoryBot.create(:schedule, contract_period:) }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        Events::Record.record_schedule_deleted_event!(author:, schedule:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          contract_period:,
+          heading: "Standard September for 2025 removed",
+          event_type: :schedule_deleted,
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      end
+    end
+  end
+
+  describe ".record_milestone_added_event!" do
+    let!(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
+    let!(:schedule) { FactoryBot.create(:schedule, contract_period:) }
+    let!(:milestone) { FactoryBot.create(:milestone, schedule:) }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        Events::Record.record_milestone_added_event!(author:, milestone:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          contract_period:,
+          heading: "Milestone Started added to Standard September for 2025",
+          event_type: :milestone_added,
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      end
+    end
+  end
+
+  describe ".record_milestone_deleted_event!" do
+    let!(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
+    let!(:schedule) { FactoryBot.create(:schedule, contract_period:) }
+    let!(:milestone) { FactoryBot.create(:milestone, schedule:) }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        Events::Record.record_milestone_deleted_event!(author:, milestone:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          contract_period:,
+          heading: "Milestone Started removed from Standard September for 2025",
+          event_type: :milestone_deleted,
+          happened_at: Time.zone.now,
           **author_params
         )
       end

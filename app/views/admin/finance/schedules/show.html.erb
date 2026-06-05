@@ -1,0 +1,49 @@
+<%
+  page_data(
+    title: @schedule.name,
+    caption: "#{@contract_period.year} contract period",
+    caption_size: "l",
+    breadcrumbs: @breadcrumbs,
+  )
+%>
+
+<% if @schedule.milestones.none? %>
+  <p class="govuk-body">This schedule currently has no milestones.</p>
+<% else %>
+  <%=
+    govuk_table(
+      head: ["Declaration type", "Start date", "Milestone date", ""],
+      rows: @schedule.sorted_milestones.map do |milestone|
+        [
+          milestone.declaration_type.titleize,
+          milestone.start_date.to_fs(:govuk),
+          milestone.milestone_date.present? ? milestone.milestone_date.to_fs(:govuk) : "-",
+          govuk_button_to("Remove",
+                    admin_contract_period_schedule_milestone_path(@contract_period, @schedule, milestone),
+                    method: :delete,
+                    secondary: true,
+                    disabled: @contract_period.started_on_or_before_today?,
+                    visually_hidden_suffix: milestone.declaration_type.titleize,
+                    class: "govuk-!-margin-bottom-0")
+        ]
+      end
+    )
+  %>
+<% end %>
+
+<div class="govuk-button-group">
+  <%=
+    govuk_button_to "Delete schedule", admin_contract_period_schedule_path(@contract_period, @schedule),
+      visually_hidden_suffix: @schedule.name,
+      method: :delete,
+      warning: true,
+      disabled: @schedule.milestones.any?
+  %>
+  <%=
+    if (@schedule.fully_milestoned? || @contract_period.started_on_or_before_today?)
+      govuk_button_to "Add milestone", "#", disabled: true
+    else
+      govuk_button_link_to "Add milestone", new_admin_contract_period_schedule_milestone_path(@contract_period, @schedule)
+    end
+  %>
+</div>

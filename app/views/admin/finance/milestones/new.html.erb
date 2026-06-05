@@ -1,0 +1,35 @@
+<%
+  page_data(
+    title: "Add milestone",
+    caption: "#{@schedule.name} #{@contract_period.year}",
+    caption_size: "l",
+    error: @milestone.errors.present?,
+    backlink_href: admin_contract_period_schedule_path(@contract_period, @schedule)
+  )
+%>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <%= form_with model: [:admin, @contract_period, @schedule, @milestone], local: true do |f| %>
+      <%= content_for(:error_summary) { f.govuk_error_summary } %>
+
+      <%= f.govuk_radio_buttons_fieldset :declaration_type, legend: { hidden: true } do %>
+        <% @schedule.available_milestones.each do |declaration_type| %>
+          <%= f.govuk_radio_button :declaration_type, declaration_type,
+            label: { text: declaration_type.titleize }, link_errors: false %>
+        <% end %>
+      <% end %>
+
+      <%= f.govuk_date_field :start_date, legend: { text: "Start date", size: "m" } %>
+
+      <%= f.govuk_date_field :milestone_date, legend: { text: "Milestone date", size: "m" } %>
+
+      <%= f.govuk_submit "Save" %>
+    <% end %>
+
+    <p class="govuk-body">
+      <%= govuk_link_to "Cancel and return to schedule", admin_contract_period_schedule_path(@contract_period, @schedule) %>
+    </p>
+  </div>
+</div>
