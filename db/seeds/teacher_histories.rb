@@ -1294,8 +1294,8 @@ FactoryBot.create(:induction_period, :pass, teacher: pat_deferred, appropriate_b
 
 # Withdrawn + leaving (finished_on future) — picked up by affected_api_updated_at script
 sal_withdrawn = Teacher.find_by!(trn: "0000044")
-sal_withdrawn_at_school = FactoryBot.create(:ect_at_school_period, teacher: sal_withdrawn, school: abbey_grove_school, started_on: Date.new(2022, 9, 1), finished_on: nil)
-FactoryBot.create(:training_period, :for_ect, :school_led, ect_at_school_period: sal_withdrawn_at_school, school_partnership: nil, expression_of_interest: nil, started_on: Date.new(2022, 9, 1), finished_on: Date.new(2026, 12, 31), withdrawn_at: Date.new(2023, 3, 15), withdrawal_reason: "left_teaching_profession")
+sal_withdrawn_at_school = FactoryBot.create(:ect_at_school_period, teacher: sal_withdrawn, school: abbey_grove_school, started_on: Date.new(2022, 9, 1), finished_on: 3.days.from_now.to_date)
+FactoryBot.create(:training_period, :for_ect, :school_led, ect_at_school_period: sal_withdrawn_at_school, school_partnership: nil, expression_of_interest: nil, started_on: Date.new(2022, 9, 1), finished_on: 3.days.from_now.to_date, withdrawn_at: Date.new(2023, 3, 15), withdrawal_reason: "left_teaching_profession")
 FactoryBot.create(:induction_period, :pass, teacher: sal_withdrawn, appropriate_body_period: south_yorkshire_studio_hub, started_on: Date.new(2022, 9, 1), finished_on: Date.new(2024, 1, 31), number_of_terms: 6)
 
 # Withdrawn + left (finished_on past) — picked up by affected_api_updated_at script
