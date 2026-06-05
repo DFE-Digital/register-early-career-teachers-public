@@ -183,7 +183,7 @@ module BlazerQueries
       end
 
       def opt_out_url_sql
-        token_sql = Schools::ReminderEmailOptOutToken.token_sql("s.id")
+        token_sql = Schools::ReminderEmailOptOutToken.token_sql(school_id_sql: "s.id")
 
         "'#{opt_out_base_url}?school_id=' || s.id || '&token=' || #{token_sql}"
       end

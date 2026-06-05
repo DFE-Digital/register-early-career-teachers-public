@@ -11,7 +11,7 @@ module Schools
       def generate_for(school_id:)   = new(school_id:).generate
       def valid?(school_id:, token:) = new(school_id:).valid?(token)
 
-      def token_sql(school_id_sql)
+      def token_sql(school_id_sql:)
         message = "'#{PURPOSE}:' || (#{school_id_sql})::text"
         quoted_secret = ActiveRecord::Base.connection.quote(secret)
 
