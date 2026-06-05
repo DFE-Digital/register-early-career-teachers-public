@@ -21,6 +21,7 @@ class Rack::Attack
     /sign-in
     /auth
     /healthcheck
+    /school/opt-out-of-reminder-emails
   ].freeze
 
   PUBLIC_API_PATH_PREFIXES = [
@@ -44,7 +45,7 @@ class Rack::Attack
     request.get_header("HTTP_AUTHORIZATION")
   end
 
-  throttle("protected routes (OTP)", limit: 5, period: 20.seconds) do |request|
+  throttle("protected routes", limit: 5, period: 20.seconds) do |request|
     request.remote_ip if protected_path?(request)
   end
 
@@ -68,7 +69,7 @@ end
 
 ActiveSupport::Notifications.subscribe("throttle.rack_attack") do |_name, _start, _finish, request_id, payload|
   ip = payload.fetch(:request).remote_ip
-  path = payload.fetch(:request).fullpath
+  path = payload.fetch(:request).path
 
   Rails.logger.warn("[rack-attack] Throttled request #{request_id} from #{ip} to '#{path}'")
 
