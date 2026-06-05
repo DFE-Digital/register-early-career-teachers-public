@@ -128,6 +128,7 @@ module BlazerQueries
             INNER JOIN gias_schools gs ON gs.urn = s.urn
             WHERE #{not_a_childrens_centre_sql}
               AND #{not_opted_out_sql}
+              -- school has a partnership in the current contract period
               AND EXISTS (
                 SELECT 1
                 FROM school_partnerships sp
