@@ -128,6 +128,7 @@ erDiagram
     integer last_chosen_lead_provider_id
     enum last_chosen_training_programme
     boolean marked_as_eligible
+    date opted_out_of_reminder_emails_until
     datetime updated_at
     integer urn
   }
@@ -376,6 +377,33 @@ erDiagram
     string name
     datetime updated_at
   }
+  Declaration {
+    integer id
+    uuid api_id
+    datetime api_updated_at
+    integer clawback_statement_id
+    enum clawback_status
+    datetime created_at
+    datetime declaration_date
+    enum declaration_type
+    integer delivery_partner_when_created_id
+    enum evidence_type
+    integer mentorship_period_id
+    integer payment_statement_id
+    enum payment_status
+    boolean pupil_premium_uplift
+    boolean sparsity_uplift
+    integer training_period_id
+    datetime updated_at
+    datetime voided_by_user_at
+    integer voided_by_user_id
+  }
+  Declaration }o--|| TrainingPeriod : belongs_to
+  Declaration }o--|| User : belongs_to
+  Declaration }o--|| MentorshipPeriod : belongs_to
+  Declaration }o--|| DeliveryPartner : belongs_to
+  Declaration }o--|| Statement : belongs_to
+  Declaration }o--|| Statement : belongs_to
   ContractPeriod {
     integer year
     datetime created_at
@@ -392,12 +420,10 @@ erDiagram
   Contract {
     integer id
     integer active_lead_provider_id
-    integer banded_fee_structure_id
     enum contract_type
     datetime created_at
     string ecf_contract_version
     string ecf_mentor_contract_version
-    integer flat_rate_fee_structure_id
     datetime updated_at
     decimal vat_rate
   }
@@ -443,33 +469,6 @@ erDiagram
     datetime updated_at
     integer zendesk_id
   }
-  Declaration {
-    integer id
-    uuid api_id
-    datetime api_updated_at
-    integer clawback_statement_id
-    enum clawback_status
-    datetime created_at
-    datetime declaration_date
-    enum declaration_type
-    integer delivery_partner_when_created_id
-    enum evidence_type
-    integer mentorship_period_id
-    integer payment_statement_id
-    enum payment_status
-    boolean pupil_premium_uplift
-    boolean sparsity_uplift
-    integer training_period_id
-    datetime updated_at
-    datetime voided_by_user_at
-    integer voided_by_user_id
-  }
-  Declaration }o--|| TrainingPeriod : belongs_to
-  Declaration }o--|| User : belongs_to
-  Declaration }o--|| MentorshipPeriod : belongs_to
-  Declaration }o--|| DeliveryPartner : belongs_to
-  Declaration }o--|| Statement : belongs_to
-  Declaration }o--|| Statement : belongs_to
   Metadata_TeacherLeadProvider {
     integer id
     datetime created_at
