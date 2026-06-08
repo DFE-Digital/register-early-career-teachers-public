@@ -151,6 +151,11 @@ different combination of things in order to resolve it.
 
 ### Full data restore
 
+If we need to replace the database with an older version, we'll need to take the
+service down for multiple hours and inform all of our users.
+
+It should only be done if we suffer from a catastrophic data loss.
+
 If we need to restore the entire database we'll want to do it from a [point in
 time recovery](https://learn.microsoft.com/en-us/azure/postgresql/backup-restore/concepts-backup-restore#point-in-time-recovery) (PITR),
 choosing the latest time where we're sure the data is fully intact.
