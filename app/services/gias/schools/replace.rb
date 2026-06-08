@@ -31,12 +31,10 @@ module GIAS::Schools
     end
 
     def record_school_replaced_event!
-      Schools::Events::SchoolReplaced.create!(
+      Events::Record.record_school_changed_event!(
         school:,
-        successor_gias_school: gias_school.successor,
-        previous_gias_school: gias_school,
-        successor_urn: gias_school.successor.urn,
-        previous_urn: gias_school.urn,
+        new_gias_school: gias_school.successor,
+        old_gias_school: gias_school,
         author:
       )
     end

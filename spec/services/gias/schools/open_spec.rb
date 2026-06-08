@@ -1,5 +1,7 @@
 RSpec.describe GIAS::Schools::Open do
   describe ".call" do
+    subject(:service) { described_class.call }
+
     let!(:first_openable_gias_school) { FactoryBot.create(:gias_school, status: :open) }
     let!(:second_openable_gias_school) { FactoryBot.create(:gias_school, status: :open) }
     let!(:closed_gias_school) { FactoryBot.create(:gias_school, status: :closed) }
@@ -9,17 +11,27 @@ RSpec.describe GIAS::Schools::Open do
     let(:already_opened_gias_school) { FactoryBot.create(:gias_school, :with_school, status: :open) }
 
     it "only opens openable GIAS schools" do
-      expect { described_class.call }.to change(School, :count).by(2)
+      expect { service }.to change(School, :count).by(2)
 
       expect(first_openable_gias_school.reload.school).to be_present
       expect(second_openable_gias_school.reload.school).to be_present
     end
 
-    xit "logs an event when opening a school" do
-      expect { described_class.call }.to change(Event, :count).by(2)
+    it "logs an event for each school opened" do
+      allow(Events::Record).to receive(:record_school_opened_event!)
 
-      Event.last
-      # TODO
+      service
+
+      expect(Events::Record).to have_received(:record_school_opened_event!)
+      .twice
+      .with(
+        hash_including(
+          {
+            author: an_instance_of(Events::SystemAuthor),
+            school: an_instance_of(School),
+          }
+        )
+      )
     end
   end
 
@@ -37,6 +49,17 @@ RSpec.describe GIAS::Schools::Open do
       end
 
       it "records a school opened event" do
+        allow(Events::Record).to receive(:record_school_opened_event!)
+
+        service
+
+        school = gias_school.reload.school
+
+        expect(Events::Record).to have_received(:record_school_opened_event!).with(
+          school:,
+          gias_school:,
+          author: an_instance_of(Events::SystemAuthor)
+        ).once
       end
     end
 

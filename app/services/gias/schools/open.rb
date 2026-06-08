@@ -28,10 +28,11 @@ module GIAS
     private
 
       def record_school_opened_event!
-        # Events::SchoolOpened.create!(
-        #   school:,
-        #   author:
-        # )
+        Events::Record.record_school_opened_event!(
+          school: gias_school.school,
+          gias_school:,
+          author:
+        )
       end
 
       def already_opened?

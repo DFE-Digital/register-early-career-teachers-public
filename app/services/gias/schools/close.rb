@@ -76,6 +76,7 @@ module GIAS::Schools
     def record_school_closed_event!
       Events::Record.record_school_closed_event!(
         school:,
+        gias_school:,
         author:
       )
     end
