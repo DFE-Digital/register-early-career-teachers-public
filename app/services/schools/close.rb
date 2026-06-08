@@ -7,14 +7,15 @@ module Schools
     end
 
     def self.call
-      GIAS::School.includes(:school).joins(:school).closed_without_successors.find_each do |gias_school|
+      GIAS::School.includes(:school).joins(:school).closed_status.without_successors.find_each do |gias_school|
         new(gias_school.school).close!
       end
     end
 
     def close!
       return unless gias_school.closed?
-      return if gias_school.gias_school_links.exists?
+      return unless gias_school.school.present?
+      return if gias_school.successors.exist?
 
       destroy_unstarted_periods!
       finish_ongoing_periods!

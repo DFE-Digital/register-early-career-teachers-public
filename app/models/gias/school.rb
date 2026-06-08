@@ -18,6 +18,9 @@ class GIAS::School < ApplicationRecord
   # Associations
   has_one :school, foreign_key: :urn, primary_key: :urn, inverse_of: :gias_school
   has_many :gias_school_links, class_name: "GIAS::SchoolLink", foreign_key: :urn, dependent: :destroy, inverse_of: :from_gias_school
+  has_many :predecessor_links, class_name: "GIAS::SchoolLink", foreign_key: :link_urn, primary_key: :urn, inverse_of: :to_gias_school
+  has_many :successors,   class_name: "GIAS::School", through: :gias_school_links, source: :to_gias_school
+  has_many :predecessors, class_name: "GIAS::School", through: :predecessor_links, source: :from_gias_school
   has_many :contract_period_metadata, class_name: "Metadata::SchoolContractPeriod", through: :school
 
   # Validations
@@ -54,11 +57,11 @@ class GIAS::School < ApplicationRecord
   # Scopes
   scope :search, ->(q) { where("gias_schools.search @@ websearch_to_tsquery('unaccented', ?)", q) }
   scope :ordered_by_name, -> { order(name: :asc) }
-  scope :without_successors, -> { left_joins(:gias_school_links).where(gias_school_links: { id: nil }) }
-  scope :closed_without_successors, -> { closed_status.without_successors }
-  scope :without_schools, -> { left_joins(:school).where(schools: { id: nil }) }
-  scope :opened_without_schools, -> { open_status.without_schools }
 
+  scope :openable, -> { open_status.where.missing(:predecessors).where.missing(:school) }
+  scope :closeable, -> { closed_status.where.missing(:successors) }
+  scope :replaceable, -> { closed_status.where.associated(:successors).where.missing(:school) }
+  
   # Instance Methods
   def closed?
     !open?
@@ -67,4 +70,11 @@ class GIAS::School < ApplicationRecord
   def open?
     open_status? || proposed_to_close_status?
   end
+
+  def successor
+    return unless successors.one?
+
+    successors.first
+  end
+
 end
