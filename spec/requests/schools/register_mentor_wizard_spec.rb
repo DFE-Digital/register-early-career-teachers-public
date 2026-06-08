@@ -16,6 +16,7 @@ describe "Schools::RegisterMentorWizardController" do
     let(:params) { { edit: { mentor_at_school_period_id: } } }
 
     it_behaves_like "an induction redirectable route"
+    it_behaves_like "a route blocked when the registration window is closed"
   end
 
 private

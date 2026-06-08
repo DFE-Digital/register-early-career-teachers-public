@@ -1,5 +1,6 @@
 module Schools
   class MentorshipsController < SchoolsController
+    include Schools::RegistrationWindowRedirectable
     include Schools::InductionRedirectable
 
     before_action :set_ect
