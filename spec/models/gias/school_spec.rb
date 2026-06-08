@@ -178,10 +178,17 @@ describe GIAS::School do
       subject { GIAS::School.openable }
 
       let(:open_gias_school_with_predecessors) { FactoryBot.create(:gias_school_link).to_gias_school }
+      let(:open_gias_school_with_successors) { FactoryBot.create(:gias_school_link).from_gias_school }
+
+      before do
+        open_gias_school_with_predecessors.update!(status: :open)
+        open_gias_school_with_successors.update!(status: :open)
+      end
 
       it { is_expected.to include(open_gias_school) }
       it { is_expected.not_to include(closed_gias_school) }
       it { is_expected.not_to include(open_gias_school_with_predecessors) }
+      it { is_expected.not_to include(open_gias_school_with_successors) }
     end
 
     describe ".closeable" do

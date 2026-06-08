@@ -58,7 +58,7 @@ class GIAS::School < ApplicationRecord
   scope :search, ->(q) { where("gias_schools.search @@ websearch_to_tsquery('unaccented', ?)", q) }
   scope :ordered_by_name, -> { order(name: :asc) }
 
-  scope :openable, -> { open_status.where.missing(:predecessors).where.missing(:school) }
+  scope :openable, -> { open_status.where.missing(:predecessors).where.missing(:successors).where.missing(:school) }
   scope :closeable, -> { closed_status.where.missing(:successors) }
   scope :replaceable, -> { closed_status.where.associated(:successors).where.missing(:school) }
 

@@ -1,25 +1,27 @@
-module Schools
+module GIAS::Schools
   class Close
-    attr_reader :school
+    attr_reader :gias_school
 
-    def initialize(school)
-      @school = school
+    def initialize(gias_school)
+      @gias_school = gias_school
     end
 
     def self.call
-      GIAS::School.includes(:school).joins(:school).closed_status.without_successors.find_each do |gias_school|
-        new(gias_school.school).close!
+      GIAS::School.includes(:school).joins(:school).closeable.find_each do |gias_school|
+        new(gias_school).close!
       end
     end
 
     def close!
       return unless gias_school.closed?
-      return unless gias_school.school.present?
+      return if gias_school.school.blank?
       return if gias_school.successors.exist?
 
-      destroy_unstarted_periods!
-      finish_ongoing_periods!
-      record_school_closed_event!
+      ActiveRecord::Base.transaction do
+        destroy_unstarted_periods!
+        finish_ongoing_periods!
+        record_school_closed_event!
+      end
     end
 
   private
@@ -86,6 +88,7 @@ module Schools
 
     def finished_on = Date.current
 
-    delegate :ect_at_school_periods, :mentor_at_school_periods, :gias_school, to: :school
+    delegate :school, to: :gias_school
+    delegate :ect_at_school_periods, :mentor_at_school_periods, to: :school
   end
 end
