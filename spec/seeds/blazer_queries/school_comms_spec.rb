@@ -192,27 +192,36 @@ RSpec.describe BlazerQueries::SchoolComms do
   describe "the partnership-without-participants follow-up extract" do
     let(:name) { "Comms: Partnership created but no ECTs or mentors follow-up" }
     let(:current_contract_period) { FactoryBot.create(:contract_period, :current) }
+    let(:previous_contract_period) { FactoryBot.create(:contract_period, :previous) }
 
     def partner!(school)
       FactoryBot.create(:school_partnership, :for_year, year: current_contract_period.year, school:)
     end
 
-    it "includes only current-period partnership schools with no ECTs or mentors" do
+    it "includes current-period partnership schools with no participants this period" do
       no_participants = create_school(urn: 300_001)
       partner!(no_participants)
 
-      with_ect = create_school(urn: 300_002)
-      partner!(with_ect)
-      FactoryBot.create(:ect_at_school_period, school: with_ect)
+      with_current_ect = create_school(urn: 300_002)
+      partner!(with_current_ect)
+      FactoryBot.create(:ect_at_school_period, school: with_current_ect,
+                                               started_on: current_contract_period.started_on, finished_on: nil)
 
       opted_out = create_school(urn: 300_003, opted_out_of_reminder_emails_until: Date.current + 30)
       partner!(opted_out)
 
       create_school(urn: 300_004) # no partnership
 
+      # only had a participant in a previous contract period -> still needs the nudge
+      previous_ect_only = create_school(urn: 300_005)
+      partner!(previous_ect_only)
+      FactoryBot.create(:ect_at_school_period, school: previous_ect_only,
+                                               started_on: previous_contract_period.started_on,
+                                               finished_on: previous_contract_period.finished_on)
+
       urns = run(name).map { |row| row["urn"].to_i }
 
-      expect(urns).to eq [300_001]
+      expect(urns).to contain_exactly(300_001, 300_005)
     end
   end
 end
