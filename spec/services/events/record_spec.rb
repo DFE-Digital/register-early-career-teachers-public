@@ -2657,13 +2657,19 @@ RSpec.describe Events::Record do
 
     it "queues a RecordEventJob with the correct values" do
       freeze_time do
-        Events::Record.record_school_opened_event!(author:, school:)
+        Events::Record.record_school_opened_event!(author:, school:, gias_school:)
+
+        metadata = {
+          gias_school_name: "Springfield Elementary",
+          gias_school_urn: 123_456
+        }
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           school:,
           heading: "Springfield Elementary (123456) opened",
           event_type: :school_opened,
           happened_at: Time.zone.now,
+          metadata:,
           **author_params
         )
       end
@@ -2676,13 +2682,18 @@ RSpec.describe Events::Record do
 
     it "queues a RecordEventJob with the correct values" do
       freeze_time do
-        Events::Record.record_school_closed_event!(author:, school:)
+        Events::Record.record_school_closed_event!(author:, school:, gias_school:)
+        metadata = {
+          gias_school_name: "Springfield Elementary",
+          gias_school_urn: 123_456
+        }
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           school:,
           heading: "Springfield Elementary (123456) closed",
           event_type: :school_closed,
           happened_at: Time.zone.now,
+          metadata:,
           **author_params
         )
       end
@@ -2697,10 +2708,10 @@ RSpec.describe Events::Record do
     it "queues a RecordEventJob with the correct values" do
       freeze_time do
         metadata = {
-          old_name: "Old Springfield Elementary",
-          new_name: "New Springfield Elementary",
-          old_urn: 987_654,
-          new_urn: 123_456
+          old_gias_school_name: "Old Springfield Elementary",
+          new_gias_school_name: "New Springfield Elementary",
+          old_gias_school_urn: 987_654,
+          new_gias_school_urn: 123_456
         }
 
         Events::Record.record_school_changed_event!(author:, school:, old_gias_school:, new_gias_school:)
