@@ -15,7 +15,7 @@ module GIAS::Schools
     def close!
       return unless gias_school.closed?
       return if gias_school.school.blank?
-      return if gias_school.successors.exist?
+      return if gias_school.successors.any?
 
       ActiveRecord::Base.transaction do
         destroy_unstarted_periods!
@@ -82,7 +82,7 @@ module GIAS::Schools
     end
 
     def author
-      @author ||= Events::SystemAuthor.new
+      Events::SystemAuthor.new
     end
 
     def reported_by_school_id = school.id

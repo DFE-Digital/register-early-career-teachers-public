@@ -15,8 +15,8 @@ module GIAS
 
       def open!
         return unless gias_school.open?
-        return if gias_school.predecessors.exists?
-        return if gias_school.successors.exists?
+        return if gias_school.predecessors.any?
+        return if gias_school.successors.any?
         return if already_opened?
 
         ActiveRecord::Base.transaction do
@@ -40,7 +40,7 @@ module GIAS
       end
 
       def author
-        @author ||= Events::SystemAuthor.new
+        Events::SystemAuthor.new
       end
     end
   end

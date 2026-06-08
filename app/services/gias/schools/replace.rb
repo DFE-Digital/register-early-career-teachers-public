@@ -15,6 +15,7 @@ module GIAS::Schools
     def replace!
       return unless gias_school.closed?
       return unless gias_school.successors.one?
+      return unless gias_school.successor.predecessors.one?
       return unless gias_school.successor.open?
       return if already_replaced?
 
@@ -40,7 +41,7 @@ module GIAS::Schools
     end
 
     def author
-      @author ||= Events::SystemAuthor.new
+      Events::SystemAuthor.new
     end
 
     def already_replaced?

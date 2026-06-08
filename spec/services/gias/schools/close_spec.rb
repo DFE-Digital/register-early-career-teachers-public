@@ -10,11 +10,11 @@ RSpec.describe GIAS::Schools::Close do
       FactoryBot.create(:gias_school, :open, :with_school)
     end
 
-    let!(:linked_school) do
-      FactoryBot.create(:gias_school, :closed, :with_school).tap do |gias_school|
-        FactoryBot.create(:gias_school_link, from_gias_school: gias_school)
-      end
-    end
+    let(:closed_gias_school_with_successor) { FactoryBot.create(:gias_school, status: :closed) }
+    let(:open_gias_school_with_predecessor) { FactoryBot.create(:gias_school, status: :open) }
+    let!(:school_link) { FactoryBot.create(:gias_school_link, from_gias_school: closed_gias_school_with_successor, to_gias_school: open_gias_school_with_predecessor) }
+
+    
 
     it "closes only closed schools without successors" do
       closer = instance_double(described_class, close!: true)
@@ -30,7 +30,7 @@ RSpec.describe GIAS::Schools::Close do
         .with(open_school.school)
 
       expect(described_class).not_to have_received(:new)
-        .with(linked_school.school)
+        .with(closed_gias_school_with_successor.school)
 
       expect(closer).to have_received(:close!).once
     end
