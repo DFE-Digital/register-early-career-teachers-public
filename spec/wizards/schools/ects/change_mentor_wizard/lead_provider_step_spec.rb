@@ -118,39 +118,42 @@ describe Schools::ECTs::ChangeMentorWizard::LeadProviderStep do
   end
 
   describe "#lead_providers_for_select" do
-    let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, :for_year, year: 2025) }
-    let!(:other_lead_provider) { FactoryBot.create(:active_lead_provider, :for_year, year: 2025) }
-    let!(:future_lead_provider) { FactoryBot.create(:active_lead_provider, :for_year, year: 2026) }
+    subject(:lead_providers_for_select) { current_step.lead_providers_for_select }
+
+    let(:current_contract_period) do
+      FactoryBot.create(:contract_period, :current)
+    end
+    let(:upcoming_contract_period) do
+      FactoryBot.create(:contract_period, :next)
+    end
+    let!(:active_lead_provider) do
+      FactoryBot.create(:active_lead_provider, contract_period: current_contract_period)
+    end
+    let!(:other_lead_provider) do
+      FactoryBot.create(:active_lead_provider, contract_period: current_contract_period)
+    end
+    let!(:future_lead_provider) do
+      FactoryBot.create(:active_lead_provider, contract_period: upcoming_contract_period)
+    end
     let(:mentor_at_school_period) do
-      FactoryBot.create(
-        :mentor_at_school_period,
-        :ongoing,
-        school:,
-        started_on:
-      )
+      FactoryBot.create(:mentor_at_school_period, school:, started_on:)
     end
 
     context "when there are no active lead providers in contract period containing the mentor's start date" do
-      let(:started_on) { Date.new(2024, 6, 1) }
+      let(:started_on) { current_contract_period.started_on.prev_day }
 
-      it "returns an empty array" do
-        expect(current_step.lead_providers_for_select).to be_empty
-      end
+      it { is_expected.to be_empty }
     end
 
     context "when there are active lead providers in contract period containing the mentor's start date" do
-      let(:started_on) { Date.new(2025, 6, 1) }
+      let(:started_on) { current_contract_period.started_on.next_month }
 
-      it "returns the active lead providers in the contract period" do
-        expect(current_step.lead_providers_for_select).to contain_exactly(active_lead_provider.lead_provider, other_lead_provider.lead_provider)
-      end
+      it { is_expected.to contain_exactly(active_lead_provider.lead_provider, other_lead_provider.lead_provider) }
 
       context "when the mentor started on the last day of the contract period" do
-        let(:started_on) { Date.new(2026, 5, 31) }
+        let(:started_on) { current_contract_period.finished_on }
 
-        it "returns the active lead providers in the contract period" do
-          expect(current_step.lead_providers_for_select).to contain_exactly(active_lead_provider.lead_provider, other_lead_provider.lead_provider)
-        end
+        it { is_expected.to contain_exactly(active_lead_provider.lead_provider, other_lead_provider.lead_provider) }
       end
     end
   end
