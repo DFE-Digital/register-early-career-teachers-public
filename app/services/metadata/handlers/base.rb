@@ -32,39 +32,21 @@ module Metadata::Handlers
       @lead_provider_ids ||= LeadProvider.pluck(:id)
     end
 
-    def changes?(metadata, changes)
-      changes.stringify_keys!
-      metadata.attributes.slice(*changes.keys) != changes
-    end
-
-    def commit_changes!(metadata, changes)
-      return unless metadata.new_record? || changes?(metadata, changes)
-
+    def update_metadata!(metadata, latest_attributes)
       # As we touch other models when metadata is updated via ActiveRecord callbacks,
       # we need to ensure this remains a method that will trigger those callbacks
       # (rather than using something like upsert_all which would otherwise be quicker).
-      metadata.update!(changes)
-      alert_on_changes(metadata, changes)
+      metadata.update!(latest_attributes)
+      alert_on_changes(metadata)
     end
 
-    def alert_on_changes(metadata, changes)
-      return unless @alert_on_changes
-
-      changed_attributes_with_history = changes.each_with_object({}) do |(key, new_value), hash|
-        old_value = metadata.attributes[key]
-
-        next if old_value == new_value
-
-        hash[key] = {
-          old: old_value,
-          new: new_value
-        }
-      end
+    def alert_on_changes(metadata)
+      return unless @alert_on_changes && metadata.saved_changes.any?
 
       attrs = {
         class: metadata.class.name,
         id: metadata.id,
-        changed_attributes: changed_attributes_with_history,
+        saved_changes: metadata.saved_changes
       }
 
       Rails.logger.warn("[Metadata] #{metadata.class.name} change: #{attrs.inspect}")
