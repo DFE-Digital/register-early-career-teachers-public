@@ -18,11 +18,15 @@ module Sessions
     end
 
     # @see Sessions::Users::Builder#session_user
-    def begin_session!(session_user, id_token: "")
+    def begin_session!(session_user, id_token: nil)
       check_authorisation!(session_user)
       @current_user = nil
       session["user_session"] = session_user.to_h
-      cookies["id_token"] = { value: encrypt_token(id_token), httponly: true, secure: true, same_site: :strict }
+      if id_token.present?
+        cookies["id_token"] = { value: encrypt_token(id_token), httponly: true, secure: true, same_site: :strict }
+      else
+        cookies.delete("id_token")
+      end
     end
 
     # @see Sessions::User
