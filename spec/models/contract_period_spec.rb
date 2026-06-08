@@ -63,34 +63,34 @@ describe ContractPeriod do
   end
 
   describe ".current" do
-    context "when there is a current contract period" do
-      let!(:period) do
-        FactoryBot.create(:contract_period, started_on: Date.new(2024, 6, 1), finished_on: Date.new(2025, 5, 31))
-      end
+    subject(:current) { described_class.current }
 
-      it "returns the current contract period" do
-        FactoryBot.create(:contract_period, started_on: Date.new(2023, 6, 1), finished_on: Date.new(2024, 5, 31))
-
-        travel_to Date.new(2024, 6, 1) do
-          expect(ContractPeriod.current).to eq(period)
-        end
-      end
-
-      context "when we are on the last day of the contract period" do
-        it "returns the current contract period" do
-          travel_to period.finished_on do
-            expect(ContractPeriod.current).to eq(period)
-          end
-        end
-      end
+    let(:current_contract_period) do
+      FactoryBot.create(:contract_period, :current)
     end
 
-    context "when there is no current contract period" do
-      it "returns nil" do
-        travel_to Date.new(2025, 6, 1) do
-          expect(ContractPeriod.current).to be_nil
-        end
-      end
+    context "when we are in the current contract period" do
+      before { travel_to current_contract_period.started_on }
+
+      it { is_expected.to eq(current_contract_period) }
+    end
+
+    context "when we are on the last day of the current contract period" do
+      before { travel_to current_contract_period.finished_on }
+
+      it { is_expected.to eq(current_contract_period) }
+    end
+
+    context "when we are before the current contract period" do
+      before { travel_to current_contract_period.started_on.prev_day }
+
+      it { is_expected.to be_nil }
+    end
+
+    context "when we are past the current contract period" do
+      before { travel_to current_contract_period.finished_on.next_day }
+
+      it { is_expected.to be_nil }
     end
   end
 
