@@ -4,11 +4,11 @@ title: Cookies
 
 Cookies are small files saved on your phone, tablet or computer when you visit a website.
 
-We use cookies to make this service work.
+We use some essential cookies to make this service work.
 
 ## Essential cookies
 
-Essential cookies keep your information secure while you use this service. We do not need to ask for permission to use them.
+We do not need to ask for permission to use essential cookies.
 
 <%=
   govuk_table(
@@ -17,12 +17,12 @@ Essential cookies keep your information secure while you use this service. We do
       [
         tag.code(Rails.application.config.session_options[:key]),
         "Keeps you signed in and your data secure.",
-        "At the end of your browser session"
+        "When you sign out, when your browser session ends, or after 2 hours of inactivity."
       ],
       [
         tag.code("id_token"),
         "Used only for DfE Sign-in journeys to support secure sign-out.",
-        "At the end of your browser session"
+        "When you sign out or when your browser session ends."
       ]
     ]
   )
