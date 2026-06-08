@@ -175,6 +175,14 @@ aks-console: get-cluster-credentials set-namespace
 aks-ssh: get-cluster-credentials set-namespace
 	kubectl -n ${NAMESPACE} exec -ti --tty deployment/${SERVICE_NAME}-${ENVIRONMENT}-web -- /bin/sh
 
+# downloads the given file from the app/tmp directory of all web pods in the
+# cluster to the local computer (into a subdirectory matching the pod name).
+## ie: FILENAME=restart.txt make production aks-download-tmp-file
+## ie: FILENAME=restart.txt make review aks-download-tmp-file PULL_REQUEST_NUMBER=4169
+aks-download-tmp-file: get-cluster-credentials set-namespace
+	$(if $(FILENAME), , $(error Usage: FILENAME=restart.txt make production aks-download-tmp-file))
+	kubectl get pods -n ${NAMESPACE} -l app=${SERVICE_NAME}-${ENVIRONMENT}-web -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' | xargs -I {} sh -c 'mkdir -p {}/ && kubectl cp ${NAMESPACE}/{}:/app/tmp/${FILENAME} {}/${FILENAME}'
+
 action-group-resources: set-azure-account # make env_aks action-group-resources ACTION_GROUP_EMAIL=notificationemail@domain.com . Must be run before setting enable_monitoring=true for each subscription
 	$(if $(ACTION_GROUP_EMAIL), , $(error Please specify a notification email for the action group))
 	echo ${AZURE_RESOURCE_PREFIX}-${SERVICE_SHORT}-mn-rg
