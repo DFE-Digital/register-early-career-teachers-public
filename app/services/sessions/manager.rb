@@ -25,7 +25,7 @@ module Sessions
       if id_token.present?
         cookies["id_token"] = { value: encrypt_token(id_token), httponly: true, secure: true, same_site: :strict }
       else
-        cookies.delete("id_token")
+        cookies.delete("id_token") unless cookies["id_token"].nil?
       end
     end
 
