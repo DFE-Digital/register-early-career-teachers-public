@@ -114,9 +114,9 @@ module BlazerQueries
         {
           name: "Comms: Partnership created but no ECTs or mentors follow-up",
           description: "Schools with a school partnership in the current contract " \
-                       "period but no ECTs or mentors at the school, that have NOT " \
-                       "opted out of reminder emails (children's centres and linked " \
-                       "sites excluded). #{recipient_note}",
+                       "period but no ECTs or mentors at the school during that " \
+                       "period, that have NOT opted out of reminder emails " \
+                       "(children's centres and linked sites excluded). #{recipient_note}",
           statement: <<~SQL.strip
             SELECT
               s.urn,
@@ -128,24 +128,8 @@ module BlazerQueries
             INNER JOIN gias_schools gs ON gs.urn = s.urn
             WHERE #{not_a_childrens_centre_sql}
               AND #{not_opted_out_sql}
-              -- school has a partnership in the current contract period
-              AND EXISTS (
-                SELECT 1
-                FROM school_partnerships sp
-                INNER JOIN lead_provider_delivery_partnerships lpdp
-                  ON lpdp.id = sp.lead_provider_delivery_partnership_id
-                INNER JOIN active_lead_providers alp
-                  ON alp.id = lpdp.active_lead_provider_id
-                INNER JOIN contract_periods cp ON cp.year = alp.contract_period_year
-                WHERE sp.school_id = s.id
-                  AND cp.range @> CURRENT_DATE
-              )
-              AND NOT EXISTS (
-                SELECT 1 FROM ect_at_school_periods e WHERE e.school_id = s.id
-              )
-              AND NOT EXISTS (
-                SELECT 1 FROM mentor_at_school_periods m WHERE m.school_id = s.id
-              )
+              AND #{has_current_partnership_sql}
+              AND #{no_participants_this_period_sql}
             ORDER BY gs.name;
           SQL
         }
@@ -165,6 +149,33 @@ module BlazerQueries
       def not_opted_out_sql
         "(s.opted_out_of_reminder_emails_until IS NULL " \
           "OR s.opted_out_of_reminder_emails_until < CURRENT_DATE)"
+      end
+
+      # Date range of the contract period that contains today.
+      def current_contract_period_range_sql
+        "(SELECT cp.range FROM contract_periods cp WHERE cp.range @> CURRENT_DATE)"
+      end
+
+      # School has at least one partnership in the current contract period.
+      def has_current_partnership_sql
+        "EXISTS (" \
+          "SELECT 1 FROM school_partnerships sp " \
+          "INNER JOIN lead_provider_delivery_partnerships lpdp " \
+          "ON lpdp.id = sp.lead_provider_delivery_partnership_id " \
+          "INNER JOIN active_lead_providers alp " \
+          "ON alp.id = lpdp.active_lead_provider_id " \
+          "INNER JOIN contract_periods cp ON cp.year = alp.contract_period_year " \
+          "WHERE sp.school_id = s.id AND cp.range @> CURRENT_DATE)"
+      end
+
+      # ...but no ECT or mentor was at the school during the current contract period.
+      def no_participants_this_period_sql
+        "NOT EXISTS (" \
+          "SELECT 1 FROM ect_at_school_periods e " \
+          "WHERE e.school_id = s.id AND e.range && #{current_contract_period_range_sql}) " \
+          "AND NOT EXISTS (" \
+          "SELECT 1 FROM mentor_at_school_periods m " \
+          "WHERE m.school_id = s.id AND m.range && #{current_contract_period_range_sql})"
       end
 
       def recipient_name_sql
