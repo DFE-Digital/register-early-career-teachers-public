@@ -34,6 +34,7 @@ RSpec.describe "Assign existing mentor wizard" do
     subject { get schools_assign_existing_mentor_wizard_review_mentor_eligibility_path }
 
     it_behaves_like "an induction redirectable route"
+    it_behaves_like "a route blocked when the registration window is closed"
 
     context "when signed in as a school user" do
       before { sign_in_as(:school_user, school:) }
@@ -74,6 +75,7 @@ RSpec.describe "Assign existing mentor wizard" do
     before { sign_in_as(:school_user, school:) }
 
     it_behaves_like "an induction redirectable route"
+    it_behaves_like "a route blocked when the registration window is closed"
 
     context "when the wizard is not started" do
       it "redirects to the root path" do
