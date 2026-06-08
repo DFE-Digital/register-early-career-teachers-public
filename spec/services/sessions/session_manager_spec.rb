@@ -70,7 +70,7 @@ RSpec.describe Sessions::Manager do
         end
       end
 
-      context "when a stale id_token cookie exists and the current login does not provide a new id_token" do
+      context "when signing in without an id_token and a stale cookie exists" do
         let(:cookies) { HashWithIndifferentAccess.new("id_token" => "stale_token") }
 
         before do
@@ -80,6 +80,25 @@ RSpec.describe Sessions::Manager do
 
         it "does not persist the id_token cookie" do
           expect(cookies["id_token"]).to be_nil
+        end
+
+        it "does not encrypt a token" do
+          expect(ActiveSupport::MessageEncryptor).not_to have_received(:new)
+        end
+      end
+
+      context "when signing in without an id_token and no stale cookie exists" do
+        let(:cookies) { double("ActionDispatch::Cookies::CookieJar") }
+
+        before do
+          allow(cookies).to receive(:[]).with("id_token").and_return(nil)
+          allow(cookies).to receive(:delete)
+          allow(ActiveSupport::MessageEncryptor).to receive(:new).and_call_original
+          service.begin_session!(user)
+        end
+
+        it "does not delete the id_token cookie" do
+          expect(cookies).not_to have_received(:delete)
         end
 
         it "does not encrypt a token" do
