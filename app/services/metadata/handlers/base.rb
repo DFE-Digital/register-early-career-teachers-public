@@ -40,13 +40,22 @@ module Metadata::Handlers
       alert_on_changes(metadata)
     end
 
+    # Allows individual handlers to exclude attributes that we can't
+    # reliably update at the moment they change. Prevents them from
+    # being included in the alerts.
+    def alertable_changes(saved_changes) = saved_changes
+
     def alert_on_changes(metadata)
-      return unless @alert_on_changes && metadata.saved_changes.any?
+      return unless @alert_on_changes
+
+      alertable_changes = alertable_changes(metadata.saved_changes)
+
+      return unless alertable_changes.any?
 
       attrs = {
         class: metadata.class.name,
         id: metadata.id,
-        saved_changes: metadata.saved_changes
+        alertable_changes:
       }
 
       Rails.logger.warn("[Metadata] #{metadata.class.name} change: #{attrs.inspect}")
