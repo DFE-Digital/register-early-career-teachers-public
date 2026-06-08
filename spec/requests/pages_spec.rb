@@ -47,10 +47,13 @@ RSpec.describe "Pages", type: :request do
       get "/cookies"
       expect(response).to be_successful
       expect(response.body).to include("Cookies")
+      expect(response.body).to include("We use some essential cookies to make this service work.")
       expect(response.body).to include("Essential cookies")
       expect(response.body).to include(Rails.application.config.session_options[:key])
       expect(response.body).to include("id_token")
       expect(response.body).to include("Used only for DfE Sign-in journeys")
+      expect(response.body).to include("When you sign out, when your browser session ends")
+      expect(response.body).to include("after 2 hours of inactivity")
     end
   end
 
