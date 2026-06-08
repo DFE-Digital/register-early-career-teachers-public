@@ -327,6 +327,22 @@ RSpec.describe Metadata::Handlers::Teacher do
             expect(metadata.ect_assigned_mentor_latest_school_period).to eq(future_mentorship_period.mentor)
           end
 
+          it "does not alert on changes to ect_assigned_mentor_latest_school_period_id" do
+            handler.track_changes!
+
+            scope = instance_double(Sentry::Scope, set_context: nil)
+            allow(Sentry).to receive(:with_scope).and_yield(scope)
+
+            refresh_metadata
+
+            expect(scope).to have_received(:set_context).with(
+              "metadata_changes",
+              a_hash_including(
+                alertable_changes: a_hash_excluding("ect_assigned_mentor_latest_school_period_id")
+              )
+            )
+          end
+
           context "when there is also an ongoing mentorship period" do
             let!(:ongoing_mentorship_period) do
               FactoryBot.create(
