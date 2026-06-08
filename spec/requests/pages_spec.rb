@@ -47,6 +47,7 @@ RSpec.describe "Pages", type: :request do
       get "/cookies"
       expect(response).to be_successful
       expect(response.body).to include("Cookies")
+      expect(response.body).to include(Rails.application.config.session_options[:key])
     end
   end
 
