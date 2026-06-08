@@ -32,7 +32,7 @@ module Metadata::Handlers
         involved_in_school_transfer = school_transfers_exist_for(teacher.ect_at_school_periods, lead_provider_id) ||
           school_transfers_exist_for(teacher.mentor_at_school_periods, lead_provider_id)
 
-        changes = {
+        latest_attributes = {
           teacher_id: teacher.id,
           lead_provider_id:,
           latest_ect_training_period_id: latest_ect_training_period&.id,
@@ -43,7 +43,7 @@ module Metadata::Handlers
           involved_in_school_transfer:
         }
 
-        commit_changes!(metadata, changes)
+        update_metadata!(metadata, latest_attributes)
       end
     end
 

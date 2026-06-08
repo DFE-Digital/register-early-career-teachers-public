@@ -24,14 +24,14 @@ module Metadata::Handlers
         metadata = existing_contract_period_metadata[contract_period_year] ||
           Metadata::SchoolContractPeriod.new(school:, contract_period_year:)
 
-        changes = {
+        latest_attributes = {
           school_id: school.id,
           contract_period_year:,
           in_partnership: contract_period_year.in?(school_partnership_contract_period_years),
           induction_programme_choice: school.training_programme_for(contract_period_year)
         }
 
-        commit_changes!(metadata, changes)
+        update_metadata!(metadata, latest_attributes)
       end
     end
 
@@ -42,14 +42,14 @@ module Metadata::Handlers
 
         expression_of_interest_or_school_partnership = expression_of_interest_or_school_partnership_pairings.include?([lead_provider_id, contract_period_year])
 
-        changes = {
+        latest_attributes = {
           school_id: school.id,
           lead_provider_id:,
           contract_period_year:,
           expression_of_interest_or_school_partnership:
         }
 
-        commit_changes!(metadata, changes)
+        update_metadata!(metadata, latest_attributes)
       end
     end
 
