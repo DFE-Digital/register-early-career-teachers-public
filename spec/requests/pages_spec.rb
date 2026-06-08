@@ -48,6 +48,8 @@ RSpec.describe "Pages", type: :request do
       expect(response).to be_successful
       expect(response.body).to include("Cookies")
       expect(response.body).to include(Rails.application.config.session_options[:key])
+      expect(response.body).to include("id_token")
+      expect(response.body).to include("If you sign in with DfE Sign-in")
     end
   end
 
