@@ -11,7 +11,7 @@ module GIAS::Schools
       return unless gias_school.successors.one?
       return unless gias_school.successor.open?
       return if school_already_replaced?
-      return if school_is_merging? 
+      return if school_is_merging?
       return if school_is_amalgamating?
 
       ActiveRecord::Base.transaction do

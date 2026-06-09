@@ -14,6 +14,10 @@ FactoryBot.define do
       link_type { GIAS::SchoolLink::PREDECESSOR_LINK_TYPES.sample }
     end
 
+    trait :merged do
+      link_type { GIAS::SchoolLink::MERGE_LINK_TYPES.sample }
+    end
+
     trait :successor_split do
       link_type { "Successor - Split School" }
     end
@@ -31,8 +35,7 @@ FactoryBot.define do
     end
 
     trait :other do
-      OTHER_LINK_TYPES = GIAS::SchoolLink::LINK_TYPES - GIAS::SchoolLink::SUCCESSOR_LINK_TYPES - GIAS::SchoolLink::PREDECESSOR_LINK_TYPES
-      link_type { OTHER_LINK_TYPES.sample }
+      link_type { GIAS::SchoolLink::OTHER_LINK_TYPES.sample }
     end
   end
 end

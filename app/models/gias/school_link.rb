@@ -1,25 +1,20 @@
 class GIAS::SchoolLink < ApplicationRecord
   self.table_name = "gias_school_links"
 
-  LINK_TYPES = [
+  OTHER_LINK_TYPES = [
     "Children's Centre Link",
     "Closure",
     "Expansion",
-    "Merged - change in age range",
-    "Merged - expansion in school capacity and changer in age range",
-    "Merged - expansion of school capacity",
     "Other",
-    "Predecessor - amalgamated",
-    "Predecessor - merged",
-    "Predecessor - Split School",
-    "Predecessor",
     "Result of Amalgamation",
     "Sixth Form Centre Link",
     "Sixth Form Centre School",
-    "Successor - amalgamated",
-    "Successor - merged",
-    "Successor - Split School",
-    "Successor"
+  ].freeze
+
+  MERGE_LINK_TYPES = [
+    "Merged - change in age range",
+    "Merged - expansion in school capacity and changer in age range",
+    "Merged - expansion of school capacity"
   ].freeze
 
   SUCCESSOR_LINK_TYPES = [
@@ -35,6 +30,8 @@ class GIAS::SchoolLink < ApplicationRecord
     "Predecessor - Split School",
     "Predecessor"
   ].freeze
+
+  LINK_TYPES = (OTHER_LINK_TYPES + MERGE_LINK_TYPES + SUCCESSOR_LINK_TYPES + PREDECESSOR_LINK_TYPES).uniq.sort.freeze
 
   # Associations
   belongs_to :from_gias_school, class_name: "GIAS::School", foreign_key: :urn, primary_key: :urn, inverse_of: :gias_school_links

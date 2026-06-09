@@ -4,7 +4,7 @@ RSpec.describe GIAS::Schools::Replace do
 
     let(:gias_school) { FactoryBot.create(:gias_school, :with_school, status: :closed) }
     let(:successor_gias_school) { FactoryBot.create(:gias_school, status: :open) }
-    let!(:school_link) { FactoryBot.create(:gias_school_link, link_type, from_gias_school: gias_school, to_gias_school: successor_gias_school ) }
+    let!(:school_link) { FactoryBot.create(:gias_school_link, link_type, from_gias_school: gias_school, to_gias_school: successor_gias_school) }
     let(:link_type) { :successor_unique }
 
     context "when the school is being replaced one-one" do
@@ -113,7 +113,6 @@ RSpec.describe GIAS::Schools::Replace do
         expect { service }.not_to change(Event, :count)
       end
     end
-
 
     context "when the school has not yet closed" do
       let(:gias_school) { FactoryBot.create(:gias_school, :with_school, status: :proposed_to_close) }
