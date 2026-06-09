@@ -62,7 +62,7 @@ RSpec.describe AppropriateBodyHelper, type: :helper do
 
     it "builds a summary card for a teacher" do
       expect(summary_card).to have_selector(".govuk-summary-card__title", text: "Barry White")
-      expect(summary_card).to have_selector(".govuk-summary-card__action a", text: "Show")
+      expect(summary_card).to have_selector(".govuk-summary-card__actions > a", text: "Show")
       expect(summary_card).to have_selector("dt", text: "TRN")
       expect(summary_card).to have_selector("dd", text: teacher.trn)
     end
