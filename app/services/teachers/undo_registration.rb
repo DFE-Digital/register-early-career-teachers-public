@@ -13,11 +13,11 @@ module Teachers
 
     def undo!
       ActiveRecord::Base.transaction do
-        if billable_or_refundable_declarations?
+        if billable_or_refundable_declarations_exist?
           finish_periods!
         else
           delete_periods!
-          anonymise_teacher! unless induction_period_exists?
+          anonymise_teacher! if anonymise_teacher?
         end
 
         record_undo_registration_event!
@@ -28,12 +28,10 @@ module Teachers
 
   private
 
-    def billable_or_refundable_declarations?
-      declarations.billable.exists? || declarations.refundable.exists?
-    end
-
-    def declarations
+    def billable_or_refundable_declarations_exist?
       Declaration.where(training_period: training_periods)
+        .merge(Declaration.billable.or(Declaration.refundable))
+        .exists?
     end
 
     def finish_periods!
@@ -60,8 +58,10 @@ module Teachers
       )
     end
 
-    def induction_period_exists?
-      teacher.induction_periods.exists?
+    def anonymise_teacher?
+      teacher.induction_periods.none? &&
+        teacher.ect_at_school_periods.reload.none? &&
+        teacher.mentor_at_school_periods.reload.none?
     end
 
     def record_undo_registration_event!
