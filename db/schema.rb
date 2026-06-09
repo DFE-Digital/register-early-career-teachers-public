@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_03_140320) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_09_102349) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -402,7 +402,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_03_140320) do
     t.enum "induction_programme", null: false, enum_type: "induction_programme"
     t.float "number_of_terms"
     t.enum "outcome", enum_type: "induction_outcomes"
-    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
+    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on, '[]'::text)", stored: true
     t.date "started_on", null: false
     t.bigint "teacher_id"
     t.enum "training_programme", enum_type: "training_programme"
