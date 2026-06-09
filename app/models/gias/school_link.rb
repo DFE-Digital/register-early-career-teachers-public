@@ -22,6 +22,20 @@ class GIAS::SchoolLink < ApplicationRecord
     "Successor"
   ].freeze
 
+  SUCCESSOR_LINK_TYPES = [
+    "Successor - amalgamated",
+    "Successor - merged",
+    "Successor - Split School",
+    "Successor"
+  ].freeze
+
+  PREDECESSOR_LINK_TYPES = [
+    "Predecessor - amalgamated",
+    "Predecessor - merged",
+    "Predecessor - Split School",
+    "Predecessor"
+  ].freeze
+
   # Associations
   belongs_to :from_gias_school, class_name: "GIAS::School", foreign_key: :urn, primary_key: :urn, inverse_of: :gias_school_links
   belongs_to :to_gias_school, class_name: "GIAS::School", foreign_key: :link_urn, primary_key: :urn

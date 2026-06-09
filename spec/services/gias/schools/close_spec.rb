@@ -1,45 +1,8 @@
 RSpec.describe GIAS::Schools::Close do
-  xdescribe ".call" do
-    subject(:service) { described_class.call }
-
-    let!(:closed_school) do
-      FactoryBot.create(:gias_school, :closed, :with_school)
-    end
-
-    let!(:open_school) do
-      FactoryBot.create(:gias_school, :open, :with_school)
-    end
-
-    let(:closed_gias_school_with_successor) { FactoryBot.create(:gias_school, status: :closed) }
-    let(:open_gias_school_with_predecessor) { FactoryBot.create(:gias_school, status: :open) }
-    let!(:school_link) { FactoryBot.create(:gias_school_link, from_gias_school: closed_gias_school_with_successor, to_gias_school: open_gias_school_with_predecessor) }
-
-    
-
-    it "closes only closed schools without successors" do
-      closer = instance_double(described_class, close!: true)
-
-      allow(described_class).to receive(:new).and_return(closer)
-
-      described_class.call
-
-      expect(described_class).to have_received(:new)
-        .with(closed_school.school)
-
-      expect(described_class).not_to have_received(:new)
-        .with(open_school.school)
-
-      expect(described_class).not_to have_received(:new)
-        .with(closed_gias_school_with_successor.school)
-
-      expect(closer).to have_received(:close!).once
-    end
-  end
-
   describe "#close" do
     subject(:service) { described_class.new(gias_school).close! }
 
-    let(:gias_school) { FactoryBot.create(:gias_school, :closed, :with_school) }
+    let(:gias_school) { FactoryBot.create(:gias_school, :with_school, status: :close) }
     let(:school) { gias_school.school }
     let!(:mentors) { FactoryBot.create_list(:mentor_at_school_period, 3, :ongoing, :with_training_period, school:) }
     let!(:ects) { FactoryBot.create_list(:ect_at_school_period, 3, :ongoing, :with_training_period, school:) }
@@ -83,7 +46,7 @@ RSpec.describe GIAS::Schools::Close do
       service
       expect(Events::Record).to have_received(:record_school_closed_event!)
       .once
-      .with(school: school, gias_school:, author: an_instance_of(Events::SystemAuthor))
+      .with(school:, gias_school:, author: an_instance_of(Events::SystemAuthor))
     end
 
     context "when the school is open" do
@@ -162,7 +125,6 @@ RSpec.describe GIAS::Schools::Close do
         expect(Events::Record).to have_received(:record_school_closed_event!)
         .once
         .with(school:, gias_school:, author: an_instance_of(Events::SystemAuthor))
-        
       end
     end
 
@@ -190,7 +152,6 @@ RSpec.describe GIAS::Schools::Close do
         expect(Events::Record).to have_received(:record_school_closed_event!)
         .once
         .with(school:, gias_school:, author: an_instance_of(Events::SystemAuthor))
-         
       end
     end
 

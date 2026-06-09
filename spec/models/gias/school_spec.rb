@@ -63,8 +63,9 @@ describe GIAS::School do
     it { is_expected.to have_one(:school).with_primary_key(:urn).with_foreign_key(:urn).inverse_of(:gias_school) }
     it { is_expected.to have_many(:gias_school_links).with_foreign_key(:urn).dependent(:destroy).class_name("GIAS::SchoolLink").inverse_of(:from_gias_school) }
     it { is_expected.to have_many(:contract_period_metadata).class_name("Metadata::SchoolContractPeriod").through(:school) }
-    it { is_expected.to have_many(:predecessor_links).with_foreign_key(:link_urn).with_primary_key(:urn).class_name("GIAS::SchoolLink").inverse_of(:to_gias_school) }
-    it { is_expected.to have_many(:successors).through(:gias_school_links).source(:to_gias_school).class_name("GIAS::School") }
+    it { is_expected.to have_many(:successor_links).class_name("GIAS::SchoolLink").with_foreign_key(:urn).with_primary_key(:urn).conditions(link_type: GIAS::SchoolLink::SUCCESSOR_LINK_TYPES) }
+    it { is_expected.to have_many(:predecessor_links).class_name("GIAS::SchoolLink").with_foreign_key(:urn).with_primary_key(:urn).conditions(link_type: GIAS::SchoolLink::PREDECESSOR_LINK_TYPES) }
+    it { is_expected.to have_many(:successors).through(:successor_links).source(:to_gias_school).class_name("GIAS::School") }
     it { is_expected.to have_many(:predecessors).through(:predecessor_links).source(:from_gias_school).class_name("GIAS::School") }
   end
 
@@ -136,26 +137,40 @@ describe GIAS::School do
       context "when the school has one successor" do
         let(:successor) { FactoryBot.create(:gias_school) }
 
-        before { FactoryBot.create(:gias_school_link, from_gias_school: gias_school, to_gias_school: successor) }
+        before { FactoryBot.create(:gias_school_link, from_gias_school: gias_school, to_gias_school: successor, link_type: "Successor") }
 
         it { is_expected.to eq(successor) }
       end
 
-      context "when the school has more than one successor" do
+      context "when the school has two successor links" do
+        let(:successor) { FactoryBot.create(:gias_school) }
+        let(:other_successor) { FactoryBot.create(:gias_school) }
+
         before do
-          FactoryBot.create(:gias_school_link, from_gias_school: gias_school)
-          FactoryBot.create(:gias_school_link, from_gias_school: gias_school)
+          FactoryBot.create(:gias_school_link, from_gias_school: gias_school, to_gias_school: successor, link_type: "Successor - Split School")
+          FactoryBot.create(:gias_school_link, from_gias_school: gias_school, to_gias_school: other_successor, link_type: "Successor - Split School")
         end
 
         it { is_expected.to be_nil }
       end
 
-      context "when the school has no successors" do
+      context "when the school has several links only one of which is a successor" do
+        let(:successor) { FactoryBot.create(:gias_school) }
+
+        before do
+          FactoryBot.create(:gias_school_link, from_gias_school: gias_school, to_gias_school: successor, link_type: "Successor")
+          FactoryBot.create(:gias_school_link, from_gias_school: gias_school, link_type: "Predecessor")
+        end
+
+        it { is_expected.to eq(successor) }
+      end
+
+      context "when the school has no links" do
         it { is_expected.to be_nil }
       end
 
-      context "when the school has a predecessor but no successors" do
-        before { FactoryBot.create(:gias_school_link, to_gias_school: gias_school) }
+      context "when the school has no successor links" do
+        before { FactoryBot.create(:gias_school_link, from_gias_school: gias_school, link_type: "Predecessor") }
 
         it { is_expected.to be_nil }
       end
@@ -177,62 +192,67 @@ describe GIAS::School do
     describe ".openable" do
       subject { GIAS::School.openable }
 
-      let(:open_gias_school_with_predecessors) { FactoryBot.create(:gias_school_link).to_gias_school }
-      let(:open_gias_school_with_successors) { FactoryBot.create(:gias_school_link).from_gias_school }
+      let(:open_gias_school_with_predecessors) { FactoryBot.create(:gias_school, status: :open) }
+      let(:open_gias_school_with_successors) { FactoryBot.create(:gias_school, status: :open) }
+      let(:open_gias_school_with_any_link) { FactoryBot.create(:gias_school, status: :open) }
+      let(:open_gias_school) { FactoryBot.create(:gias_school, status: :open) }
+      let(:closed_gias_school) { FactoryBot.create(:gias_school, status: :closed) }
 
       before do
-        open_gias_school_with_predecessors.update!(status: :open)
-        open_gias_school_with_successors.update!(status: :open)
+        FactoryBot.create(:gias_school_link, :successor, from_gias_school: open_gias_school_with_predecessors)
+        FactoryBot.create(:gias_school_link, :predecessor, from_gias_school: open_gias_school_with_successors)
+        FactoryBot.create(:gias_school_link, :other, from_gias_school: open_gias_school_with_any_link)
       end
 
       it { is_expected.to include(open_gias_school) }
       it { is_expected.not_to include(closed_gias_school) }
       it { is_expected.not_to include(open_gias_school_with_predecessors) }
       it { is_expected.not_to include(open_gias_school_with_successors) }
+      it { is_expected.not_to include(open_gias_school_with_any_link) }
     end
 
     describe ".closeable" do
       subject { GIAS::School.closeable }
 
-      let(:closed_gias_school_with_sucessors) do
-        FactoryBot.create(:gias_school_link,
-                          from_gias_school: FactoryBot.create(:gias_school, status: :closed)).from_gias_school
+      let(:closed_gias_school_with_successors) { FactoryBot.create(:gias_school, :with_school, status: :closed) }
+      let(:closed_gias_school) { FactoryBot.create(:gias_school, :with_school, status: :closed) }
+      let(:closed_gias_school_without_school_record) { FactoryBot.create(:gias_school, status: :closed) }
+      let(:open_gias_school) { FactoryBot.create(:gias_school, status: :open) }
+      let(:closed_gias_school_with_predecessors) { FactoryBot.create(:gias_school, :with_school, status: :closed) }
+
+      before do
+        FactoryBot.create(:gias_school_link, :successor, from_gias_school: closed_gias_school_with_successors)
+        FactoryBot.create(:gias_school_link, :predecessor, from_gias_school: closed_gias_school_with_predecessors)
       end
 
       it { is_expected.to include(closed_gias_school) }
+      it { is_expected.to include(closed_gias_school_with_predecessors) }
+      it { is_expected.not_to include(closed_gias_school_without_school_record) }
       it { is_expected.not_to include(open_gias_school) }
-      it { is_expected.not_to include(closed_gias_school_with_sucessors) }
+      it { is_expected.not_to include(closed_gias_school_with_successors) }
     end
 
     describe ".replaceable" do
       subject { GIAS::School.replaceable }
 
-      let(:closed_gias_school_with_one_successor) do
-        FactoryBot.create(:gias_school_link,
-                          from_gias_school: FactoryBot.create(:gias_school, status: :closed)).from_gias_school
-      end
-
-      let(:open_gias_school_with_one_successor) do
-        FactoryBot.create(:gias_school_link,
-                          from_gias_school: FactoryBot.create(:gias_school, status: :open)).from_gias_school
-      end
-
-      let(:closed_gias_school_with_multiple_successors) { FactoryBot.create(:gias_school, status: :closed) }
-      let(:open_gias_school_with_multiple_successors) { FactoryBot.create(:gias_school, status: :open) }
+      let(:closed_gias_school_with_open_successor) { FactoryBot.create(:gias_school, :with_school, status: :closed) }
+      let(:closed_gias_school_without_school_record) { FactoryBot.create(:gias_school, status: :closed) }
+      let(:closed_gias_school_with_multiple_successors) { FactoryBot.create(:gias_school, :with_school, status: :closed) }
+      let(:closed_gias_school_with_no_successor) { FactoryBot.create(:gias_school, :with_school, status: :closed) }
+      let(:open_successor) { FactoryBot.create(:gias_school, status: :open) }
+      let(:other_open_successor) { FactoryBot.create(:gias_school, status: :open) }
 
       before do
-        FactoryBot.create(:gias_school_link, from_gias_school: closed_gias_school_with_multiple_successors)
-        FactoryBot.create(:gias_school_link, from_gias_school: closed_gias_school_with_multiple_successors)
-        FactoryBot.create(:gias_school_link, from_gias_school: open_gias_school_with_multiple_successors)
-        FactoryBot.create(:gias_school_link, from_gias_school: open_gias_school_with_multiple_successors)
+        FactoryBot.create(:gias_school_link, :successor, from_gias_school: closed_gias_school_with_open_successor, to_gias_school: open_successor)
+        FactoryBot.create(:gias_school_link, :successor, from_gias_school: closed_gias_school_without_school_record, to_gias_school: other_open_successor)
+        FactoryBot.create(:gias_school_link, :successor, from_gias_school: closed_gias_school_with_multiple_successors)
+        FactoryBot.create(:gias_school_link, :successor, from_gias_school: closed_gias_school_with_multiple_successors)
       end
 
-      it { is_expected.to include(closed_gias_school_with_one_successor) }
+      it { is_expected.to include(closed_gias_school_with_open_successor) }
+      it { is_expected.not_to include(closed_gias_school_without_school_record) }
       it { is_expected.to include(closed_gias_school_with_multiple_successors) }
-      it { is_expected.not_to include(open_gias_school_with_one_successor) }
-      it { is_expected.not_to include(open_gias_school_with_multiple_successors) }
-      it { is_expected.not_to include(open_gias_school) }
-      it { is_expected.not_to include(closed_gias_school) }
+      it { is_expected.not_to include(closed_gias_school_with_no_successor) }
     end
   end
 end

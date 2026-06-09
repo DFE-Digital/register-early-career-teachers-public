@@ -6,18 +6,13 @@ module GIAS::Schools
       @gias_school = gias_school
     end
 
-    def self.call
-      GIAS::School.includes(:school).joins(:school).replaceable.find_each do |gias_school|
-        new(gias_school).replace!
-      end
-    end
-
     def replace!
       return unless gias_school.closed?
       return unless gias_school.successors.one?
-      return unless gias_school.successor.predecessors.one?
       return unless gias_school.successor.open?
-      return if already_replaced?
+      return if school_already_replaced?
+      return if school_is_merging? 
+      return if school_is_amalgamating?
 
       ActiveRecord::Base.transaction do
         replace_school!
@@ -36,6 +31,7 @@ module GIAS::Schools
         school:,
         new_gias_school: gias_school.successor,
         old_gias_school: gias_school,
+        happened_at: gias_school.successor.opened_on,
         author:
       )
     end
@@ -44,8 +40,16 @@ module GIAS::Schools
       Events::SystemAuthor.new
     end
 
-    def already_replaced?
+    def school_already_replaced?
       gias_school.successor.school.present?
+    end
+
+    def school_is_merging?
+      gias_school.successor_links.where(link_type: "Successor - merged").exists?
+    end
+
+    def school_is_amalgamating?
+      gias_school.successor_links.where(link_type: "Successor - amalgamated").exists?
     end
 
     delegate :school, to: :gias_school

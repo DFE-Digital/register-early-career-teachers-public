@@ -1,40 +1,4 @@
 RSpec.describe GIAS::Schools::Open do
-  describe ".call" do
-    subject(:service) { described_class.call }
-
-    let!(:first_openable_gias_school) { FactoryBot.create(:gias_school, status: :open) }
-    let!(:second_openable_gias_school) { FactoryBot.create(:gias_school, status: :open) }
-    let!(:closed_gias_school) { FactoryBot.create(:gias_school, status: :closed) }
-    let(:predecessor_gias_school) { FactoryBot.create(:gias_school) }
-    let(:open_gias_school_with_predecessor) { FactoryBot.create(:gias_school, status: :open) }
-    let!(:school_link) { FactoryBot.create(:gias_school_link, from_gias_school: predecessor_gias_school, to_gias_school: open_gias_school_with_predecessor) }
-    let(:already_opened_gias_school) { FactoryBot.create(:gias_school, :with_school, status: :open) }
-
-    it "only opens openable GIAS schools" do
-      expect { service }.to change(School, :count).by(2)
-
-      expect(first_openable_gias_school.reload.school).to be_present
-      expect(second_openable_gias_school.reload.school).to be_present
-    end
-
-    it "logs an event for each school opened" do
-      allow(Events::Record).to receive(:record_school_opened_event!)
-
-      service
-
-      expect(Events::Record).to have_received(:record_school_opened_event!)
-      .twice
-      .with(
-        hash_including(
-          {
-            author: an_instance_of(Events::SystemAuthor),
-            school: an_instance_of(School),
-          }
-        )
-      )
-    end
-  end
-
   describe "#open!" do
     subject(:service) { described_class.new(gias_school).open! }
 
@@ -58,6 +22,7 @@ RSpec.describe GIAS::Schools::Open do
         expect(Events::Record).to have_received(:record_school_opened_event!).with(
           school:,
           gias_school:,
+          happened_at: gias_school.opened_on,
           author: an_instance_of(Events::SystemAuthor)
         ).once
       end
@@ -78,7 +43,7 @@ RSpec.describe GIAS::Schools::Open do
     context "for open GIAS schools with predecessors" do
       let(:predecessor_gias_school) { FactoryBot.create(:gias_school) }
       let(:gias_school) { FactoryBot.create(:gias_school, status: :open) }
-      let!(:school_link) { FactoryBot.create(:gias_school_link, from_gias_school: predecessor_gias_school, to_gias_school: gias_school) }
+      let!(:school_link) { FactoryBot.create(:gias_school_link, :predecessor, from_gias_school: gias_school, to_gias_school: predecessor_gias_school) }
 
       it "does not create a school" do
         expect { service }.not_to(change(gias_school, :school))
@@ -93,7 +58,7 @@ RSpec.describe GIAS::Schools::Open do
       let(:successor_gias_school) { FactoryBot.create(:gias_school) }
       let(:gias_school) { FactoryBot.create(:gias_school, status: :open) }
 
-      let!(:school_link) { FactoryBot.create(:gias_school_link, from_gias_school: gias_school, to_gias_school: successor_gias_school) }
+      let!(:school_link) { FactoryBot.create(:gias_school_link, :successor, from_gias_school: gias_school, to_gias_school: successor_gias_school) }
 
       it "does not create a school" do
         expect { service }.not_to(change(gias_school, :school))

@@ -6,20 +6,15 @@ module GIAS::Schools
       @gias_school = gias_school
     end
 
-    def self.call
-      GIAS::School.includes(:school).joins(:school).closeable.find_each do |gias_school|
-        new(gias_school).close!
-      end
-    end
-
     def close!
       return unless gias_school.closed?
-      return if gias_school.school.blank?
       return if gias_school.successors.any?
+      return if school_already_closed?
 
       ActiveRecord::Base.transaction do
         destroy_unstarted_periods!
         finish_ongoing_periods!
+
         record_school_closed_event!
       end
     end
@@ -77,6 +72,7 @@ module GIAS::Schools
       Events::Record.record_school_closed_event!(
         school:,
         gias_school:,
+        happened_at: gias_school.closed_on,
         author:
       )
     end
@@ -88,6 +84,11 @@ module GIAS::Schools
     def reported_by_school_id = school.id
 
     def finished_on = Date.current
+
+    # If the school was closed before the service was launched no school record would have been created
+    def school_already_closed?
+      Event.where(school:, event_type: :school_closed).exists? || gias_school.school.blank?
+    end
 
     delegate :school, to: :gias_school
     delegate :ect_at_school_periods, :mentor_at_school_periods, to: :school

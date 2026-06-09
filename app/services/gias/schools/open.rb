@@ -7,17 +7,11 @@ module GIAS
         @gias_school = gias_school
       end
 
-      def self.call
-        GIAS::School.openable.find_each do |gias_school|
-          new(gias_school).open!
-        end
-      end
-
       def open!
         return unless gias_school.open?
         return if gias_school.predecessors.any?
         return if gias_school.successors.any?
-        return if already_opened?
+        return if school_already_opened?
 
         ActiveRecord::Base.transaction do
           gias_school.create_school!
@@ -31,11 +25,12 @@ module GIAS
         Events::Record.record_school_opened_event!(
           school: gias_school.school,
           gias_school:,
+          happened_at: gias_school.opened_on,
           author:
         )
       end
 
-      def already_opened?
+      def school_already_opened?
         gias_school.school.present?
       end
 
