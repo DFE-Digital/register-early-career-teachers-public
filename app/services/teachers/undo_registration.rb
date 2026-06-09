@@ -1,26 +1,26 @@
 module Teachers
-  class Archive
-    attr_reader :author, :period, :reason, :teacher
+  class UndoRegistration
+    attr_reader :author, :at_school_period, :reason, :teacher
 
-    delegate :training_periods, :mentorship_periods, to: :period
+    delegate :training_periods, :mentorship_periods, to: :at_school_period
 
-    def initialize(author:, period:, reason:)
+    def initialize(author:, at_school_period:, reason:)
       @author = author
-      @period = period
+      @at_school_period = at_school_period
       @reason = reason
-      @teacher = period.teacher
+      @teacher = at_school_period.teacher
     end
 
-    def archive
+    def undo!
       ActiveRecord::Base.transaction do
-        if billable_declarations?
+        if billable_or_refundable_declarations?
           finish_periods!
         else
           delete_periods!
           anonymise_teacher! unless induction_period_exists?
         end
 
-        record_archived_event!
+        record_undo_registration_event!
       end
 
       API::Teachers::Query.new.teacher_by_id(teacher.id)
@@ -28,7 +28,7 @@ module Teachers
 
   private
 
-    def billable_declarations?
+    def billable_or_refundable_declarations?
       declarations.billable.exists? || declarations.refundable.exists?
     end
 
@@ -37,15 +37,15 @@ module Teachers
     end
 
     def finish_periods!
-      mentorship_periods.find_each { |mp| mp.update!(finished_on: Time.zone.today) }
-      training_periods.find_each { |tp| tp.update!(finished_on: Time.zone.today) }
-      period.update!(finished_on: Time.zone.today)
+      mentorship_periods.find_each(&:finish!)
+      training_periods.find_each(&:finish!)
+      at_school_period.finish!
     end
 
     def delete_periods!
       mentorship_periods.destroy_all
       training_periods.destroy_all
-      period.destroy!
+      at_school_period.destroy!
     end
 
     def anonymise_teacher!
@@ -55,8 +55,8 @@ module Teachers
         corrected_name: nil,
         trn: nil,
         trnless: true,
-        archived_reason: reason,
-        archived_at: Time.zone.now
+        anonymisation_reason: reason,
+        anonymised_at: Time.zone.now
       )
     end
 
@@ -64,8 +64,8 @@ module Teachers
       teacher.induction_periods.exists?
     end
 
-    def record_archived_event!
-      Events::Record.record_teacher_archived_event!(
+    def record_undo_registration_event!
+      Events::Record.record_undo_registration_event!(
         author:,
         teacher:,
         reason:

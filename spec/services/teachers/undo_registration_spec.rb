@@ -1,18 +1,18 @@
-RSpec.describe Teachers::Archive do
+RSpec.describe Teachers::UndoRegistration do
   let(:author) { Events::SystemAuthor.new }
 
-  describe "#archive" do
-    subject(:archive) do
+  describe "#undo!" do
+    subject(:undo_registration) do
       described_class.new(
         author:,
-        period:,
+        at_school_period:,
         reason: :registered_in_error
-      ).archive
+      ).undo!
     end
 
     context "when the participant has billable declarations" do
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing) }
-      let(:period) { ect_at_school_period }
+      let(:at_school_period) { ect_at_school_period }
       let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period:) }
       let(:mentor_at_school_period) do
         FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: ect_at_school_period.started_on, school: ect_at_school_period.school)
@@ -39,26 +39,26 @@ RSpec.describe Teachers::Archive do
         end
 
         it "does not anonymise the teacher" do
-          archive
+          undo_registration
           teacher = ect_at_school_period.teacher.reload
           expect(teacher.trs_first_name).to be_present
           expect(teacher.trs_last_name).to be_present
         end
 
-        it "does not set archived_reason" do
-          archive
-          expect(ect_at_school_period.teacher.reload.archived_reason).to be_nil
+        it "does not set anonymisation_reason" do
+          undo_registration
+          expect(ect_at_school_period.teacher.reload.anonymisation_reason).to be_nil
         end
 
-        it "does not set archived_at" do
-          archive
-          expect(ect_at_school_period.teacher.reload.archived_at).to be_nil
+        it "does not set anonymised_at" do
+          undo_registration
+          expect(ect_at_school_period.teacher.reload.anonymised_at).to be_nil
         end
 
-        it "records an archive event" do
-          expect(Events::Record).to receive(:record_teacher_archived_event!)
+        it "records an undo registration event" do
+          expect(Events::Record).to receive(:record_undo_registration_event!)
             .with(author:, teacher: ect_at_school_period.teacher, reason: :registered_in_error)
-          archive
+          undo_registration
         end
       end
 
@@ -89,7 +89,7 @@ RSpec.describe Teachers::Archive do
 
     context "when the participant has refundable declarations" do
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing) }
-      let(:period) { ect_at_school_period }
+      let(:at_school_period) { ect_at_school_period }
       let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period:) }
       let(:mentor_at_school_period) do
         FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: ect_at_school_period.started_on, school: ect_at_school_period.school)
@@ -116,26 +116,26 @@ RSpec.describe Teachers::Archive do
         end
 
         it "does not anonymise the teacher" do
-          archive
+          undo_registration
           teacher = ect_at_school_period.teacher.reload
           expect(teacher.trs_first_name).to be_present
           expect(teacher.trs_last_name).to be_present
         end
 
-        it "does not set archived_reason" do
-          archive
-          expect(ect_at_school_period.teacher.reload.archived_reason).to be_nil
+        it "does not set anonymisation_reason" do
+          undo_registration
+          expect(ect_at_school_period.teacher.reload.anonymisation_reason).to be_nil
         end
 
-        it "does not set archived_at" do
-          archive
-          expect(ect_at_school_period.teacher.reload.archived_at).to be_nil
+        it "does not set anonymised_at" do
+          undo_registration
+          expect(ect_at_school_period.teacher.reload.anonymised_at).to be_nil
         end
 
-        it "records an archive event" do
-          expect(Events::Record).to receive(:record_teacher_archived_event!)
+        it "records an undo registration event" do
+          expect(Events::Record).to receive(:record_undo_registration_event!)
             .with(author:, teacher: ect_at_school_period.teacher, reason: :registered_in_error)
-          archive
+          undo_registration
         end
       end
 
@@ -154,7 +154,7 @@ RSpec.describe Teachers::Archive do
 
     context "when the participant has no billable or refundable declarations" do
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing) }
-      let(:period) { ect_at_school_period }
+      let(:at_school_period) { ect_at_school_period }
       let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period:) }
       let(:mentor_at_school_period) do
         FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: ect_at_school_period.started_on, school: ect_at_school_period.school)
@@ -174,10 +174,10 @@ RSpec.describe Teachers::Archive do
           expect_periods_to_be_deleted(ect_at_school_period:, training_period:, mentorship_period:)
         end
 
-        it "records an archive event" do
-          expect(Events::Record).to receive(:record_teacher_archived_event!)
+        it "records an undo registration event" do
+          expect(Events::Record).to receive(:record_undo_registration_event!)
             .with(author:, teacher: ect_at_school_period.teacher, reason: :registered_in_error)
-          archive
+          undo_registration
         end
       end
 
@@ -205,59 +205,59 @@ RSpec.describe Teachers::Archive do
         end
 
         it "does not anonymise the teacher" do
-          archive
+          undo_registration
           teacher = ect_at_school_period.teacher.reload
           expect(teacher.trs_first_name).to be_present
           expect(teacher.trs_last_name).to be_present
         end
 
-        it "does not set archived_reason" do
-          archive
-          expect(ect_at_school_period.teacher.reload.archived_reason).to be_nil
+        it "does not set anonymisation_reason" do
+          undo_registration
+          expect(ect_at_school_period.teacher.reload.anonymisation_reason).to be_nil
         end
 
-        it "does not set archived_at" do
-          archive
-          expect(ect_at_school_period.teacher.reload.archived_at).to be_nil
+        it "does not set anonymised_at" do
+          undo_registration
+          expect(ect_at_school_period.teacher.reload.anonymised_at).to be_nil
         end
 
-        it "records an archive event" do
-          expect(Events::Record).to receive(:record_teacher_archived_event!)
+        it "records an undo registration event" do
+          expect(Events::Record).to receive(:record_undo_registration_event!)
             .with(author:, teacher: ect_at_school_period.teacher, reason: :registered_in_error)
-          archive
+          undo_registration
         end
       end
 
       context "when the teacher has no induction period" do
         it "keeps the teacher record" do
           teacher = ect_at_school_period.teacher
-          archive
+          undo_registration
           expect { teacher.reload }.not_to raise_error
         end
 
         it "preserves api_id" do
           teacher = ect_at_school_period.teacher
           original = teacher.api_id
-          archive
+          undo_registration
           expect(teacher.reload.api_id).to eq(original)
         end
 
         it "preserves api_ect_training_record_id" do
           teacher = ect_at_school_period.teacher
           original = teacher.api_ect_training_record_id
-          archive
+          undo_registration
           expect(teacher.reload.api_ect_training_record_id).to eq(original)
         end
 
         it "preserves api_mentor_training_record_id" do
           teacher = ect_at_school_period.teacher
           original = teacher.api_mentor_training_record_id
-          archive
+          undo_registration
           expect(teacher.reload.api_mentor_training_record_id).to eq(original)
         end
 
         it "anonymises the teacher" do
-          archive
+          undo_registration
           teacher = ect_at_school_period.teacher.reload
           expect(teacher.trs_first_name).to be_nil
           expect(teacher.trs_last_name).to be_nil
@@ -265,33 +265,33 @@ RSpec.describe Teachers::Archive do
           expect(teacher.trn).to be_nil
         end
 
-        it "sets the archive reason to registered_in_error" do
-          archive
-          expect(ect_at_school_period.teacher.reload.archived_reason).to eq("registered_in_error")
+        it "sets the anonymisation reason to registered_in_error" do
+          undo_registration
+          expect(ect_at_school_period.teacher.reload.anonymisation_reason).to eq("registered_in_error")
         end
 
-        it "sets archived_at" do
+        it "sets anonymised_at" do
           freeze_time do
-            archive
-            expect(ect_at_school_period.teacher.reload.archived_at).to eq(Time.zone.now)
+            undo_registration
+            expect(ect_at_school_period.teacher.reload.anonymised_at).to eq(Time.zone.now)
           end
         end
 
         it "sets trnless to true" do
-          archive
+          undo_registration
           expect(ect_at_school_period.teacher.reload.trnless).to be(true)
         end
       end
     end
 
-    context "when archiving a mentor registration" do
+    context "when undoing a mentor registration" do
       let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing) }
-      let(:period) { mentor_at_school_period }
+      let(:at_school_period) { mentor_at_school_period }
       let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:) }
 
       context "with no declarations" do
-        it "deletes the mentor registration" do
-          archive
+        it "only undoes the targeted registration" do
+          undo_registration
           expect { mentor_at_school_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
           expect { training_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
         end
@@ -304,24 +304,24 @@ RSpec.describe Teachers::Archive do
       let!(:legitimate_training_period) { FactoryBot.create(:training_period, :for_ect, :finished, ect_at_school_period: legitimate_period) }
       let(:erroneous_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, started_on: legitimate_period.finished_on + 1.day) }
       let!(:erroneous_training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period: erroneous_period) }
-      let(:period) { erroneous_period }
+      let(:at_school_period) { erroneous_period }
 
-      it "only archives the targeted registration" do
-        archive
+      it "only undoes the targeted registration" do
+        undo_registration
         expect { erroneous_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
         expect { legitimate_period.reload }.not_to raise_error
         expect { legitimate_training_period.reload }.not_to raise_error
       end
     end
 
-    context "when an error occurs mid-archive" do
+    context "when an error occurs mid-anonymisation" do
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing) }
-      let(:period) { ect_at_school_period }
+      let(:at_school_period) { ect_at_school_period }
       let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period:) }
 
       it "rolls back all changes" do
-        allow(Events::Record).to receive(:record_teacher_archived_event!).and_raise(StandardError)
-        expect { archive }.to raise_error(StandardError)
+        allow(Events::Record).to receive(:record_undo_registration_event!).and_raise(StandardError)
+        expect { undo_registration }.to raise_error(StandardError)
         expect { ect_at_school_period.reload }.not_to raise_error
         expect { training_period.reload }.not_to raise_error
       end
@@ -329,7 +329,7 @@ RSpec.describe Teachers::Archive do
 
     def expect_periods_to_be_finished(ect_at_school_period:, training_period:, mentorship_period:)
       freeze_time do
-        archive
+        undo_registration
         expect(ect_at_school_period.reload.finished_on).to eq(Time.zone.today)
         expect(training_period.reload.finished_on).to eq(Time.zone.today)
         expect(mentorship_period.reload.finished_on).to eq(Time.zone.today)
@@ -337,14 +337,14 @@ RSpec.describe Teachers::Archive do
     end
 
     def expect_periods_not_to_be_deleted(ect_at_school_period:, training_period:, mentorship_period:)
-      archive
+      undo_registration
       expect { ect_at_school_period.reload }.not_to raise_error
       expect { training_period.reload }.not_to raise_error
       expect { mentorship_period.reload }.not_to raise_error
     end
 
     def expect_periods_to_be_deleted(ect_at_school_period:, training_period:, mentorship_period:)
-      archive
+      undo_registration
       expect { ect_at_school_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
       expect { training_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
       expect { mentorship_period.reload }.to raise_error(ActiveRecord::RecordNotFound)

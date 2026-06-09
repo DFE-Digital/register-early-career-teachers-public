@@ -385,49 +385,49 @@ describe Teacher do
       end
     end
 
-    describe "archiving" do
-      context "when both archived_reason and archived_at are present" do
-        subject { FactoryBot.build(:teacher, archived_reason: "registered_in_error", archived_at: Time.zone.now) }
+    describe "anonymisation" do
+      context "when both anonymisation_reason and anonymised_at are present" do
+        subject { FactoryBot.build(:teacher, anonymisation_reason: "registered_in_error", anonymised_at: Time.zone.now) }
 
         it { is_expected.to be_valid }
       end
 
-      context "when both archived_reason and archived_at are blank" do
-        subject { FactoryBot.build(:teacher, archived_reason: nil, archived_at: nil) }
+      context "when both anonymisation_reason and anonymised_at are blank" do
+        subject { FactoryBot.build(:teacher, anonymisation_reason: nil, anonymised_at: nil) }
 
         it { is_expected.to be_valid }
       end
 
-      context "when archived_at is present but archived_reason is missing" do
-        subject { FactoryBot.build(:teacher, archived_reason: nil, archived_at: Time.zone.now) }
+      context "when anonymised_at is present but anonymisation_reason is missing" do
+        subject { FactoryBot.build(:teacher, anonymisation_reason: nil, anonymised_at: Time.zone.now) }
 
         it { is_expected.to be_invalid }
 
-        it "has a validation error on archived_reason" do
+        it "has a validation error on anonymisation_reason" do
           subject.valid?
-          expect(subject.errors.messages[:archived_reason]).to be_present
+          expect(subject.errors.messages[:anonymisation_reason]).to be_present
         end
       end
 
-      context "when archived_reason is present but archived_at is missing" do
-        subject { FactoryBot.build(:teacher, archived_reason: "registered_in_error", archived_at: nil) }
+      context "when anonymisation_reason is present but anonymised_at is missing" do
+        subject { FactoryBot.build(:teacher, anonymisation_reason: "registered_in_error", anonymised_at: nil) }
 
         it { is_expected.to be_invalid }
 
-        it "has a validation error on archived_at" do
+        it "has a validation error on anonymised_at" do
           subject.valid?
-          expect(subject.errors.messages[:archived_at]).to be_present
+          expect(subject.errors.messages[:anonymised_at]).to be_present
         end
       end
 
-      describe "archived_reason enum" do
+      describe "anonymisation_reason enum" do
         it "accepts registered_in_error" do
-          teacher = FactoryBot.build(:teacher, archived_reason: "registered_in_error", archived_at: Time.zone.now)
+          teacher = FactoryBot.build(:teacher, anonymisation_reason: "registered_in_error", anonymised_at: Time.zone.now)
           expect(teacher).to be_valid
         end
 
         it "raises an ArgumentError for an invalid value" do
-          expect { FactoryBot.build(:teacher, archived_reason: "invalid_reason") }.to raise_error(ArgumentError)
+          expect { FactoryBot.build(:teacher, anonymisation_reason: "invalid_reason") }.to raise_error(ArgumentError)
         end
       end
     end

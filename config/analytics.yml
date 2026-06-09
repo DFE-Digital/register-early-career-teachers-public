@@ -57,8 +57,8 @@ shared:
     - mentor_first_became_eligible_for_training_at
     - api_updated_at
     - api_unfunded_mentor_updated_at
-    - archived_at
-    - archived_reason
+    - anonymised_at
+    - anonymisation_reason
   :users:
     - id
     - name
