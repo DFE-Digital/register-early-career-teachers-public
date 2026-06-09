@@ -208,7 +208,7 @@ module BlazerQueries
         # In production the configured host can already include the scheme
         # (e.g. "https://example.com"); only add one when it's missing.
         unless host.include?("://")
-          scheme = host == "localhost" ? "http" : "https"
+          scheme = (host == "localhost") ? "http" : "https"
           host = "#{scheme}://#{host}"
         end
 
