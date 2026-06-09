@@ -9,9 +9,9 @@ contract_period_year = 2025
 lead_provider = LeadProvider.find_by!(name:)
 active_lead_provider = ActiveLeadProvider.find_by!(lead_provider:, contract_period_year:)
 
-contract = Contract.find_by!(active_lead_provider:)
+contract = Contract.where(active_lead_provider:).sole
 
-band = contract.banded_fee_structure.bands.order(min_declarations: :desc).second
+band = contract.banded_fee_structure.bands.last
 
 raise "Max declarations #{band.max_declarations} is not 3102!" if band.max_declarations != 3102
 
