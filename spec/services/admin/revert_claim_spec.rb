@@ -21,7 +21,7 @@ RSpec.describe Admin::RevertClaim do
   let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:author) { FactoryBot.create(:user) }
-  let!(:induction_period) { FactoryBot.create(:induction_period, teacher:, appropriate_body_period:) }
+  let!(:induction_period) { FactoryBot.create(:induction_period, teacher:, appropriate_body_period:, started_on: 1.year.ago) }
 
   describe "#revert_claim" do
     it "destroys the induction period" do
@@ -46,7 +46,7 @@ RSpec.describe Admin::RevertClaim do
     end
 
     context "when the teacher has other induction periods" do
-      let!(:other_induction_period) { FactoryBot.create(:induction_period, teacher:, started_on: 2.years.ago) }
+      let!(:other_induction_period) { FactoryBot.create(:induction_period, teacher:, started_on: 2.years.ago, finished_on: 13.months.ago) }
 
       it "does not enqueue a ResetInductionJob" do
         expect {
