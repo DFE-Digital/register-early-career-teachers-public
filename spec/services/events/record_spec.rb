@@ -160,20 +160,20 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe ".record_teacher_archived_event!" do
+  describe ".record_undo_registration_event!" do
     let(:author) { Events::SystemAuthor.new }
     let(:author_params) { { author_type: "system" } }
 
     it "queues a RecordEventJob with the correct values" do
       freeze_time do
-        Events::Record.record_teacher_archived_event!(author:, teacher:, reason: :registered_in_error)
+        Events::Record.record_undo_registration_event!(author:, teacher:, reason: :registered_in_error)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           teacher:,
-          heading: "Teacher was archived",
-          event_type: :teacher_archived,
+          heading: "Teacher #{teacher.id} registration was undone",
+          event_type: :teacher_registration_undone,
           happened_at: Time.zone.now,
-          body: "Teacher was archived. Reason: registered_in_error",
+          body: "Teacher registration was undone. Reason: registered_in_error",
           **author_params
         )
       end

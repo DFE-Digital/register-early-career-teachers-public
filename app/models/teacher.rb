@@ -18,7 +18,7 @@ class Teacher < ApplicationRecord
     completed_during_early_roll_out: "completed_during_early_roll_out",
     started_not_completed: "started_not_completed",
   }
-  enum :archived_reason, {
+  enum :anonymisation_reason, {
     registered_in_error: "registered_in_error",
   }
 
@@ -109,8 +109,8 @@ class Teacher < ApplicationRecord
   validates :ect_first_became_eligible_for_training_at, immutable_once_set: true
   validates :mentor_first_became_eligible_for_training_at, immutable_once_set: true
 
-  validates :archived_reason, presence: true, if: -> { archived_at.present? }
-  validates :archived_at, presence: true, if: -> { archived_reason.present? }
+  validates :anonymisation_reason, presence: true, if: -> { anonymised_at.present? }
+  validates :anonymised_at, presence: true, if: -> { anonymisation_reason.present? }
 
   # Scopes
   scope :search, ->(query_string) {

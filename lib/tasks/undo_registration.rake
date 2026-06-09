@@ -1,6 +1,6 @@
 namespace :support do
-  desc "Archive a teacher registration made in error. Usage: rake support:archive_teacher[ECTAtSchoolPeriod,123]"
-  task :archive_teacher, %i[period_type period_id] => :environment do |_task, args|
+  desc "Undo a teacher registration made in error. Usage: rake support:undo_registration[ECTAtSchoolPeriod,123]"
+  task :undo_registration, %i[period_type period_id] => :environment do |_task, args|
     period_types = {
       "ECTAtSchoolPeriod" => ECTAtSchoolPeriod,
       "MentorAtSchoolPeriod" => MentorAtSchoolPeriod
@@ -13,20 +13,20 @@ namespace :support do
     period = period_class.find(args[:period_id])
     teacher = period.teacher
 
-    puts "WARNING: This task archives a teacher registration made in error."
+    puts "WARNING: This task undoes a teacher registration made in error."
     puts "  - If billable/refundable declarations exist: periods will be closed with today's date"
     puts "  - If no billable/refundable declarations: periods will be permanently deleted and the teacher record may be anonymised"
     puts "Teacher ID: #{teacher.id} | Period: #{period.class.name} #{period.id}"
-    print "Type ARCHIVE to confirm: "
+    print "Enter the teacher ID to confirm: "
 
-    abort "Archive cancelled." unless $stdin.gets&.strip == "ARCHIVE"
+    abort "Undo cancelled." unless $stdin.gets&.strip == teacher.id.to_s
 
-    Teachers::Archive.new(
+    Teachers::UndoRegistration.new(
       author: Events::SystemAuthor.new,
       period:,
       reason: :registered_in_error
-    ).archive
+    ).undo_registration
 
-    puts "Done. Archived #{period.class.name} #{period.id} for teacher #{teacher.id}"
+    puts "Done. Undone #{period.class.name} #{period.id} for teacher #{teacher.id}"
   end
 end
