@@ -205,11 +205,17 @@ module BlazerQueries
         host = options[:host].presence
         raise "action_mailer default_url_options host is not configured" if host.blank?
 
-        scheme = host == "localhost" ? "http" : "https"
-        authority = [host, options[:port]].compact.join(":")
+        # In production the configured host can already include the scheme
+        # (e.g. "https://example.com"); only add one when it's missing.
+        unless host.include?("://")
+          scheme = host == "localhost" ? "http" : "https"
+          host = "#{scheme}://#{host}"
+        end
+
+        origin = [host, options[:port]].compact.join(":")
         path = Rails.application.routes.url_helpers.new_schools_reminder_email_opt_out_path
 
-        "#{scheme}://#{authority}#{path}"
+        "#{origin}#{path}"
       end
     end
   end
