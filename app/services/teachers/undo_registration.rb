@@ -41,8 +41,8 @@ module Teachers
     end
 
     def delete_periods!
-      mentorship_periods.destroy_all
-      training_periods.destroy_all
+      mentorship_periods.each(&:destroy!)
+      training_periods.each(&:destroy!)
       at_school_period.destroy!
     end
 
