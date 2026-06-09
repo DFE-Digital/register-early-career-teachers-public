@@ -228,6 +228,63 @@ RSpec.describe Teachers::UndoRegistration do
         end
       end
 
+      context "when the teacher has another mentor registration" do
+        let!(:other_mentor_at_school_period) do
+          FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: ect_at_school_period.teacher)
+        end
+
+        it "deletes only the targeted ECT registration" do
+          undo_registration
+
+          expect { ect_at_school_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+          expect { training_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+          expect { mentorship_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+
+          expect { other_mentor_at_school_period.reload }.not_to raise_error
+        end
+
+        it "does not anonymise the teacher" do
+          undo_registration
+
+          teacher = ect_at_school_period.teacher.reload
+          expect(teacher.trs_first_name).to be_present
+          expect(teacher.trs_last_name).to be_present
+          expect(teacher.anonymisation_reason).to be_nil
+          expect(teacher.anonymised_at).to be_nil
+        end
+      end
+
+      context "when the teacher has another ECT registration" do
+        let!(:other_ect_at_school_period) do
+          FactoryBot.create(
+            :ect_at_school_period,
+            teacher: ect_at_school_period.teacher,
+            started_on: 2.years.ago.to_date,
+            finished_on: 1.year.ago.to_date
+          )
+        end
+
+        it "deletes only the targeted ECT registration" do
+          undo_registration
+
+          expect { ect_at_school_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+          expect { training_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+          expect { mentorship_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+
+          expect { other_ect_at_school_period.reload }.not_to raise_error
+        end
+
+        it "does not anonymise the teacher" do
+          undo_registration
+
+          teacher = ect_at_school_period.teacher.reload
+          expect(teacher.trs_first_name).to be_present
+          expect(teacher.trs_last_name).to be_present
+          expect(teacher.anonymisation_reason).to be_nil
+          expect(teacher.anonymised_at).to be_nil
+        end
+      end
+
       context "when the teacher has no induction period" do
         it "keeps the teacher record" do
           teacher = ect_at_school_period.teacher
@@ -296,6 +353,56 @@ RSpec.describe Teachers::UndoRegistration do
           expect { training_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
         end
       end
+
+      context "when the teacher has another ECT registration" do
+        let!(:other_ect_at_school_period) do
+          FactoryBot.create(:ect_at_school_period, :ongoing, teacher: mentor_at_school_period.teacher)
+        end
+
+        it "deletes only the targeted mentor registration" do
+          undo_registration
+
+          expect { mentor_at_school_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+          expect { training_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+
+          expect { other_ect_at_school_period.reload }.not_to raise_error
+        end
+
+        it "does not anonymise the teacher" do
+          undo_registration
+
+          teacher = mentor_at_school_period.teacher.reload
+          expect(teacher.trs_first_name).to be_present
+          expect(teacher.trs_last_name).to be_present
+          expect(teacher.anonymisation_reason).to be_nil
+          expect(teacher.anonymised_at).to be_nil
+        end
+      end
+
+      context "when the teacher has another mentor registration" do
+        let!(:other_mentor_at_school_period) do
+          FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: mentor_at_school_period.teacher)
+        end
+
+        it "deletes only the targeted mentor registration" do
+          undo_registration
+
+          expect { mentor_at_school_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+          expect { training_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+
+          expect { other_mentor_at_school_period.reload }.not_to raise_error
+        end
+
+        it "does not anonymise the teacher" do
+          undo_registration
+
+          teacher = mentor_at_school_period.teacher.reload
+          expect(teacher.trs_first_name).to be_present
+          expect(teacher.trs_last_name).to be_present
+          expect(teacher.anonymisation_reason).to be_nil
+          expect(teacher.anonymised_at).to be_nil
+        end
+      end
     end
 
     context "when the teacher has previous legitimate registrations" do
@@ -314,7 +421,7 @@ RSpec.describe Teachers::UndoRegistration do
       end
     end
 
-    context "when an error occurs mid-anonymisation" do
+    context "when an error occurs during undoing the registration" do
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing) }
       let(:at_school_period) { ect_at_school_period }
       let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period:) }
