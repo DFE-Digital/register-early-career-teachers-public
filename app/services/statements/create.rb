@@ -5,10 +5,11 @@ module Statements
     def initialize(author:, params:)
       @author = author
       @statement = Statement.new(params)
-      @statement.fee_type = FeeTypeForMonth.new(month: @statement.month).call
     end
 
     def call
+      statement.fee_type = FeeTypeForMonth.new(month: statement.month).call
+
       ActiveRecord::Base.transaction do
         statement.save!
         Events::Record.record_statement_created_event!(author:, statement:)
