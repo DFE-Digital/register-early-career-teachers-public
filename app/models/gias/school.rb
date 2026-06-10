@@ -18,8 +18,14 @@ class GIAS::School < ApplicationRecord
   # Associations
   has_one :school, foreign_key: :urn, primary_key: :urn, inverse_of: :gias_school
   has_many :school_funding_eligibilities, foreign_key: :gias_school_urn, primary_key: :urn, inverse_of: :gias_school
-  has_many :gias_school_links, class_name: "GIAS::SchoolLink", foreign_key: :urn, dependent: :destroy, inverse_of: :from_gias_school
   has_many :contract_period_metadata, class_name: "Metadata::SchoolContractPeriod", through: :school
+  has_many :gias_school_links, class_name: "GIAS::SchoolLink", foreign_key: :urn, dependent: :destroy, inverse_of: :from_gias_school
+
+  has_many :successor_links,   -> { where(link_type: GIAS::SchoolLink::SUCCESSOR_LINK_TYPES) },   class_name: "GIAS::SchoolLink", foreign_key: :urn, primary_key: :urn
+  has_many :predecessor_links, -> { where(link_type: GIAS::SchoolLink::PREDECESSOR_LINK_TYPES) }, class_name: "GIAS::SchoolLink", foreign_key: :urn, primary_key: :urn
+
+  has_many :successors,   class_name: "GIAS::School", through: :successor_links, source: :to_gias_school
+  has_many :predecessors, class_name: "GIAS::School", through: :predecessor_links, source: :from_gias_school
 
   # Validations
   validates :establishment_number,
@@ -63,5 +69,49 @@ class GIAS::School < ApplicationRecord
 
   def open?
     open_status? || proposed_to_close_status?
+  end
+
+  def successor
+    return unless successors.one?
+
+    successors.first
+  end
+
+  def closeable?
+    closed_status? && successors.empty? && !school_closure_recorded?
+  end
+
+  def openable?
+    open_status? && school_not_yet_opened? && predecessors.empty? && successors.empty?
+  end
+
+  def replaceable?
+    closed_status? && successor&.open_status? && successor.school_not_yet_opened? && school_is_being_replaced?
+  end
+
+  def school_not_yet_opened?
+    school.blank?
+  end
+
+private
+
+  def school_closure_recorded?
+    Event.where(school:, event_type: :school_closed).exists?
+  end
+
+  def school_is_being_merged?
+    successor_links.where(link_type: GIAS::SchoolLink::SUCCESSOR_MERGED).exists?
+  end
+
+  def school_is_being_amalgamated?
+    successor_links.where(link_type: GIAS::SchoolLink::SUCCESSOR_AMALGAMATED).exists?
+  end
+
+  def school_is_being_split?
+    successor_links.where(link_type: GIAS::SchoolLink::SUCCESSOR_SPLIT).exists?
+  end
+
+  def school_is_being_replaced?
+    successor_links.where(link_type: GIAS::SchoolLink::SUCESSOR).exists?
   end
 end
