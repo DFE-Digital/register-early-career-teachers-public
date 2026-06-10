@@ -77,19 +77,37 @@ class GIAS::School < ApplicationRecord
   end
 
   def closeable?
-    closed_status? && successors.empty? && !school_closure_recorded?
+    closed_status? && successors.empty? && !school_closure_recorded? && closed_on_or_before_today?
   end
 
   def openable?
-    open_status? && school_not_yet_opened? && predecessors.empty? && successors.empty?
+    open_status? && school_not_yet_opened? && predecessors.empty? && successors.empty? && opened_on_or_before_today?
   end
 
   def replaceable?
-    closed_status? && successor&.open_status? && successor.school_not_yet_opened? && school_is_being_replaced?
+    closed_status? &&
+      closed_on_or_before_today? &&
+      successors.one? &&
+      successor.open_status? &&
+      successor.opened_on_or_before_today? &&
+      successor.school_not_yet_opened? &&
+      school_replaced?
   end
 
   def school_not_yet_opened?
     school.blank?
+  end
+
+  def closed_on_or_before_today?
+    return false if closed_on.blank?
+
+    closed_on <= Date.current
+  end
+
+  def opened_on_or_before_today?
+    return false if opened_on.blank?
+
+    opened_on <= Date.current
   end
 
 private
@@ -98,19 +116,7 @@ private
     Event.where(school:, event_type: :school_closed).exists?
   end
 
-  def school_is_being_merged?
-    successor_links.where(link_type: GIAS::SchoolLink::SUCCESSOR_MERGED).exists?
-  end
-
-  def school_is_being_amalgamated?
-    successor_links.where(link_type: GIAS::SchoolLink::SUCCESSOR_AMALGAMATED).exists?
-  end
-
-  def school_is_being_split?
-    successor_links.where(link_type: GIAS::SchoolLink::SUCCESSOR_SPLIT).exists?
-  end
-
-  def school_is_being_replaced?
+  def school_replaced?
     successor_links.where(link_type: GIAS::SchoolLink::SUCESSOR).exists?
   end
 end
