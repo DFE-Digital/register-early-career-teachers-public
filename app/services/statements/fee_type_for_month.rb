@@ -7,9 +7,17 @@ module Statements
     end
 
     def call
-      if @month.present?
-        Date::MONTHNAMES[@month].in?(OUTPUT_FEE_MONTHS) ? "output" : "service"
-      end
+      return if month.blank?
+
+      output_fee_type_month? ? "output" : "service"
+    end
+
+  private
+
+    attr_accessor :month
+
+    def output_fee_type_month?
+      Date::MONTHNAMES[month].in?(OUTPUT_FEE_MONTHS)
     end
   end
 end
