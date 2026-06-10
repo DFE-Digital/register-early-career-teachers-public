@@ -24,6 +24,9 @@ class Event < ApplicationRecord
     school_user_signs_in
     school_induction_tutor_confirmed
     school_induction_tutor_updated
+    school_opened
+    school_closed
+    school_changed
     statement_adjustment_added
     statement_adjustment_deleted
     statement_adjustment_updated
