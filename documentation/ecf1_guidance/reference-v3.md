@@ -16,10 +16,7 @@ The lead provider API for DfE’s manage teacher CPD service.
  **Production** 
  [https://manage-training-for-early-career-teachers.education.gov.uk](https://manage-training-for-early-career-teachers.education.gov.uk) 
 
-## GET
-    
-    
-      /api/v3/delivery-partners
+## GET /api/v3/delivery-partners
 
 
  _Note, this endpoint is new.Retrieve delivery partners_ 
@@ -81,10 +78,7 @@ This response returns a [UnauthorisedResponse](#unauthorisedresponse) schema.
 ---
 
 
-## GET
-    
-    
-      /api/v3/delivery-partners/{id}
+## GET /api/v3/delivery-partners/{id}
 
 
  _Note, this endpoint is new.Retrieve a specific delivery partner_ 
@@ -153,10 +147,7 @@ This response returns a [NotFoundResponse](#notfoundresponse) schema.
 ---
 
 
-## GET
-    
-    
-      /api/v3/partnerships/ecf
+## GET /api/v3/partnerships/ecf
 
 
  _Note, this endpoint is new.Retrieve multiple ECF partnerships_ 
@@ -223,10 +214,7 @@ This response returns a [UnauthorisedResponse](#unauthorisedresponse) schema.
 ---
 
 
-## POST
-    
-    
-      /api/v3/partnerships/ecf
+## POST /api/v3/partnerships/ecf
 
 
  _Note, this endpoint is new.Create an ECF partnership with a school and delivery partner_ 
@@ -318,10 +306,7 @@ This response returns a [ECFPartnershipRequestErrorResponse](#ecfpartnershiprequ
 ---
 
 
-## GET
-    
-    
-      /api/v3/partnerships/ecf/{id}
+## GET /api/v3/partnerships/ecf/{id}
 
 
  _Note, this endpoint is new.Get a single ECF partnership_ 
@@ -395,10 +380,7 @@ This response returns a [NotFoundResponse](#notfoundresponse) schema.
 ---
 
 
-## PUT
-    
-    
-      /api/v3/partnerships/ecf/{id}
+## PUT /api/v3/partnerships/ecf/{id}
 
 
  _Note, this endpoint is new.Update a partnership’s delivery partner in an existing partnership in a cohort_ 
@@ -507,10 +489,7 @@ This response returns a [NotFoundResponse](#notfoundresponse) schema.
 ---
 
 
-## GET
-    
-    
-      /api/v3/schools/ecf
+## GET /api/v3/schools/ecf
 
 
  _Note, this endpoint is new.Retrieve multiple ECF schools scoped to cohort_ 
@@ -574,10 +553,7 @@ This response returns a [UnauthorisedResponse](#unauthorisedresponse) schema.
 ---
 
 
-## GET
-    
-    
-      /api/v3/schools/ecf/{id}
+## GET /api/v3/schools/ecf/{id}
 
 
  _Note, this endpoint is new.Get a single ECF school scoped to cohort_ 
@@ -647,10 +623,7 @@ This response returns a [NotFoundResponse](#notfoundresponse) schema.
 ---
 
 
-## GET
-    
-    
-      /api/v3/participant-declarations
+## GET /api/v3/participant-declarations
 
 
  _Note, this endpoint includes updated specifications.List all participant declarations_ 
@@ -720,10 +693,7 @@ This response returns a [UnauthorisedResponse](#unauthorisedresponse) schema.
 ---
 
 
-## POST
-    
-    
-      /api/v3/participant-declarations
+## POST /api/v3/participant-declarations
 
 
  _Note, this endpoint includes updated specifications.Declare a participant has reached a milestone. Idempotent endpoint - submitting exact copy of a request will return the same response body as submitting it the first time._ 
@@ -812,10 +782,7 @@ This response returns a [BadRequestResponse](#badrequestresponse) schema.
 ---
 
 
-## GET
-    
-    
-      /api/v3/participant-declarations/{id}
+## GET /api/v3/participant-declarations/{id}
 
 
  _Note, this endpoint includes updated specifications.Get single participant declaration_ 
@@ -893,10 +860,7 @@ This response returns a [NotFoundResponse](#notfoundresponse) schema.
 ---
 
 
-## PUT
-    
-    
-      /api/v3/participant-declarations/{id}/void
+## PUT /api/v3/participant-declarations/{id}/void
 
 
  _Note, this endpoint includes updated specifications.Void a declaration - it will not be soft-deleted_ 
@@ -953,10 +917,7 @@ This response returns a [SingleParticipantDeclarationResponse](#singleparticipan
 ---
 
 
-## GET
-    
-    
-      /api/v3/participants/ecf
+## GET /api/v3/participants/ecf
 
 
  _Note, this endpoint includes updated specifications.Retrieve multiple participants, replaces /api/v3/participants_ 
@@ -1046,10 +1007,7 @@ This response returns a [UnauthorisedResponse](#unauthorisedresponse) schema.
 ---
 
 
-## GET
-    
-    
-      /api/v3/participants/ecf/{id}
+## GET /api/v3/participants/ecf/{id}
 
 
  _Note, this endpoint includes updated specifications.Get a single ECF participant_ 
@@ -1146,10 +1104,7 @@ This response returns a [NotFoundResponse](#notfoundresponse) schema.
 ---
 
 
-## GET
-    
-    
-      /api/v3/participants/ecf/transfers
+## GET /api/v3/participants/ecf/transfers
 
 
  _Note, this endpoint is new.Retrieve multiple ECF participant transfers_ 
@@ -1220,10 +1175,7 @@ This response returns a [UnauthorisedResponse](#unauthorisedresponse) schema.
 ---
 
 
-## PUT
-    
-    
-      /api/v3/participants/ecf/{id}/defer
+## PUT /api/v3/participants/ecf/{id}/defer
 
 
  _Note, this endpoint includes updated specifications.Notify that an ECF participant is taking a break from their course_ 
@@ -1323,10 +1275,7 @@ This response returns a [ECFParticipantResponse](#ecfparticipantresponse) schema
 ---
 
 
-## PUT
-    
-    
-      /api/v3/participants/ecf/{id}/resume
+## PUT /api/v3/participants/ecf/{id}/resume
 
 
  _Note, this endpoint includes updated specifications.Notify that an ECF participant is resuming their course_ 
@@ -1422,10 +1371,7 @@ This response returns a [ECFParticipantResponse](#ecfparticipantresponse) schema
 ---
 
 
-## PUT
-    
-    
-      /api/v3/participants/ecf/{id}/withdraw
+## PUT /api/v3/participants/ecf/{id}/withdraw
 
 
  _Note, this endpoint includes updated specifications.Notify that an ECF participant has withdrawn from their course_ 
@@ -1525,10 +1471,7 @@ This response returns a [ECFParticipantResponse](#ecfparticipantresponse) schema
 ---
 
 
-## GET
-    
-    
-      /api/v3/participants/ecf/{id}/transfers
+## GET /api/v3/participants/ecf/{id}/transfers
 
 
  _Note, this endpoint is new.Get a single participant’s transfers_ 
@@ -1601,10 +1544,7 @@ This response returns a [NotFoundResponse](#notfoundresponse) schema.
 ---
 
 
-## PUT
-    
-    
-      /api/v3/participants/ecf/{id}/change-schedule
+## PUT /api/v3/participants/ecf/{id}/change-schedule
 
 
  _Note, this endpoint includes updated specifications.Notify that an ECF Participant is changing training schedule_ 
@@ -1702,10 +1642,7 @@ This response returns a [ECFParticipantResponse](#ecfparticipantresponse) schema
 ---
 
 
-## GET
-    
-    
-      /api/v3/unfunded-mentors/ecf
+## GET /api/v3/unfunded-mentors/ecf
 
 
  _Note, this endpoint is new.Retrieve multiple unfunded mentors_ 
@@ -1765,10 +1702,7 @@ This response returns a [UnauthorisedResponse](#unauthorisedresponse) schema.
 ---
 
 
-## GET
-    
-    
-      /api/v3/unfunded-mentors/ecf/{id}
+## GET /api/v3/unfunded-mentors/ecf/{id}
 
 
  _Note, this endpoint is new.Get a single unfunded mentor_ 
@@ -1835,10 +1769,7 @@ This response returns a [NotFoundResponse](#notfoundresponse) schema.
 ---
 
 
-## GET
-    
-    
-      /api/v3/statements
+## GET /api/v3/statements
 
 
  _Note, this endpoint is new.Retrieve financial statements_ 
@@ -1901,10 +1832,7 @@ This response returns a [UnauthorisedResponse](#unauthorisedresponse) schema.
 ---
 
 
-## GET
-    
-    
-      /api/v3/statements/{id}
+## GET /api/v3/statements/{id}
 
 
  _Note, this endpoint is new.Retrieve specific financial statement_ 

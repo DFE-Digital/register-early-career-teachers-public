@@ -13,10 +13,7 @@ The lead provider API for DfE’s manage teacher CPD service
  [/](/) 
  **Production** 
  [https://manage-training-for-early-career-teachers.education.gov.uk](https://manage-training-for-early-career-teachers.education.gov.uk) 
-## GET
-    
-    
-      /api/v1/participant-declarations
+## GET /api/v1/participant-declarations
 
 
  _List all participant declarations_ 
@@ -86,10 +83,7 @@ This response returns a [UnauthorisedResponse](#unauthorisedresponse) schema.
 ---
 
 
-## POST
-    
-    
-      /api/v1/participant-declarations
+## POST /api/v1/participant-declarations
 
 
  _Declare a participant has reached a milestone. Idempotent endpoint - submitting exact copy of a request will return the same response body as submitting it the first time._ 
@@ -171,10 +165,7 @@ This response returns a [BadRequestResponse](#badrequestresponse) schema.
 ---
 
 
-## GET
-    
-    
-      /api/v1/participant-declarations.csv
+## GET /api/v1/participant-declarations.csv
 
 
  _Retrieve all participant declarations in CSV format_ 
@@ -198,10 +189,7 @@ This response returns a [UnauthorisedResponse](#unauthorisedresponse) schema.
 ---
 
 
-## GET
-    
-    
-      /api/v1/participant-declarations/{id}
+## GET /api/v1/participant-declarations/{id}
 
 
  _Get single participant declaration_ 
@@ -271,10 +259,7 @@ This response returns a [UnauthorisedResponse](#unauthorisedresponse) schema.
 ---
 
 
-## PUT
-    
-    
-      /api/v1/participant-declarations/{id}/void
+## PUT /api/v1/participant-declarations/{id}/void
 
 
  _Void a declaration - it will not be soft-deleted_ 
@@ -324,10 +309,7 @@ This response returns a [SingleParticipantDeclarationResponse](#singleparticipan
 ---
 
 
-## GET
-    
-    
-      /api/v1/participants/ecf
+## GET /api/v1/participants/ecf
 
 
  _Retrieve multiple participants, replaces /api/v1/participants_ 
@@ -434,10 +416,7 @@ This response returns a [UnauthorisedResponse](#unauthorisedresponse) schema.
 ---
 
 
-## GET
-    
-    
-      /api/v1/participants/ecf.csv
+## GET /api/v1/participants/ecf.csv
 
 
  _Retrieve all participants in CSV format, replaces /api/v1/participants.csv_ 
@@ -469,10 +448,7 @@ This response returns a [UnauthorisedResponse](#unauthorisedresponse) schema.
 ---
 
 
-## GET
-    
-    
-      /api/v1/participants/ecf/{id}
+## GET /api/v1/participants/ecf/{id}
 
 
  _Get a single ECF participant_ 
@@ -539,10 +515,7 @@ This response returns a [UnauthorisedResponse](#unauthorisedresponse) schema.
 ---
 
 
-## PUT
-    
-    
-      /api/v1/participants/{id}/defer
+## PUT /api/v1/participants/{id}/defer
 
 
  _Notify that an ECF participant is taking a break from their course_ 
@@ -620,10 +593,7 @@ This response returns a [ECFParticipantResponse](#ecfparticipantresponse) schema
 ---
 
 
-## PUT
-    
-    
-      /api/v1/participants/{id}/resume
+## PUT /api/v1/participants/{id}/resume
 
 
  _Notify that an ECF participant is resuming their course_ 
@@ -700,10 +670,7 @@ This response returns a [ECFParticipantResponse](#ecfparticipantresponse) schema
 ---
 
 
-## PUT
-    
-    
-      /api/v1/participants/{id}/withdraw
+## PUT /api/v1/participants/{id}/withdraw
 
 
  _Notify that an ECF participant has withdrawn from their course_ 
@@ -781,10 +748,7 @@ This response returns a [ECFParticipantResponse](#ecfparticipantresponse) schema
 ---
 
 
-## PUT
-    
-    
-      /api/v1/participants/ecf/{id}/defer
+## PUT /api/v1/participants/ecf/{id}/defer
 
 
  _Notify that an ECF participant is taking a break from their course_ 
@@ -861,10 +825,7 @@ This response returns a [ECFParticipantDeferResponse](#ecfparticipantdeferrespon
 ---
 
 
-## PUT
-    
-    
-      /api/v1/participants/ecf/{id}/resume
+## PUT /api/v1/participants/ecf/{id}/resume
 
 
  _Notify that an ECF participant is resuming their course_ 
@@ -940,10 +901,7 @@ This response returns a [ECFParticipantResumeResponse](#ecfparticipantresumeresp
 ---
 
 
-## PUT
-    
-    
-      /api/v1/participants/ecf/{id}/withdraw
+## PUT /api/v1/participants/ecf/{id}/withdraw
 
 
  _Notify that an ECF participant has withdrawn from their course_ 
@@ -1020,10 +978,7 @@ This response returns a [ECFParticipantWithdrawResponse](#ecfparticipantwithdraw
 ---
 
 
-## PUT
-    
-    
-      /api/v1/participants/{id}/change-schedule
+## PUT /api/v1/participants/{id}/change-schedule
 
 
  _Notify that an ECF participant is changing training schedule_ 
@@ -1102,10 +1057,7 @@ This response returns a [ECFParticipantResponse](#ecfparticipantresponse) schema
 ---
 
 
-## PUT
-    
-    
-      /api/v1/participants/ecf/{id}/change-schedule
+## PUT /api/v1/participants/ecf/{id}/change-schedule
 
 
  _Notify that an ECF participant is changing training schedule_ 

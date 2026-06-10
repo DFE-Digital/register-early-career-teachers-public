@@ -1,7 +1,7 @@
 
 # Guidance
 
-The focus of the following guidance is on business logic only. Critical details which would be necessary for real-world usage have been left out. For example, [authentication](get-started#connect-to-the-API) is not detailed.
+The focus of the following guidance is on business logic only. Critical details which would be necessary for real-world usage have been left out. For example, [authentication](../get-started.md#connect-to-the-API) is not detailed.
 
 > This guidance is written for API version 3.0.0, and therefore all endpoints reference `v3`. Providers should view specifications for the API version their systems are integrated as appropriate.
 
@@ -81,7 +81,7 @@ The API will **not** show schools that are ineligible for funding in a given coh
 
 If a school’s eligibility changes from one cohort to the next, results will default according to the latest school eligibility. For example, if a school was eligible for funding in the 2024 cohort but becomes ineligible for funding in 2025, the API will **not** show the school in the 2025 cohort.
 
-For more detailed information, see the `GET schools` [endpoint documentation](reference-v3#api-v3-schools-ecf-get).
+For more detailed information, see the `GET schools` [endpoint documentation](../reference-v3.md#get-api-v3-schools-ecf).
 
 #### Example response body
 
@@ -117,7 +117,7 @@ Providers can view details for a specific school providing training in a given c
 
 Successful requests will return a response body with school details.
 
-For more detailed information, view the `GET schools/ecf/{id}` [endpoint documentation](reference-v3#api-v3-schools-ecf-id-get).
+For more detailed information, view the `GET schools/ecf/{id}` [endpoint documentation](../reference-v3.md#get-api-v3-schools-ecf-id).
 
 #### Example response body
 
@@ -147,13 +147,13 @@ For more detailed information, view the `GET schools/ecf/{id}` [endpoint documen
 GET /api/v3/delivery-partners
 ```
 
-We assign every delivery partner a unique ID. This `delivery_partner_id` is required when [confirming partnerships with a school and delivery partner](ecf/guidance#confirm-a-partnership-with-a-school-and-delivery-partner).
+We assign every delivery partner a unique ID. This `delivery_partner_id` is required when [confirming partnerships with a school and delivery partner](guidance.md#confirm-a-partnership-with-a-school-and-delivery-partner).
 
 Providers can also filter results by adding a cohort filter to the parameter. For example, `GET /api/v3/delivery-partners?filter[cohort]=2024`.
 
 Successful requests will return a response body including delivery partner details.
 
-For more detailed information, view the `GET delivery-partners` [endpoint documentation](reference-v3#api-v3-delivery-partners-get).
+For more detailed information, view the `GET delivery-partners` [endpoint documentation](../reference-v3.md#get-api-v3-delivery-partners).
 
 #### Example response body
 
@@ -187,7 +187,7 @@ View details for a specific delivery partner to check whether they've been regis
 
 Successful requests will return a response body with the delivery partner's details.
 
-For more detailed information, view the `GET delivery-partners/{id}` [endpoint documentation](reference-v3#api-v3-delivery-partners-id-get).
+For more detailed information, view the `GET delivery-partners/{id}` [endpoint documentation](../reference-v3.md#get-api-v3-delivery-partners-id-get).
 
 #### Example response body
 
@@ -240,7 +240,7 @@ If a school has mistakenly selected a `school-led` induction programme and inten
 * confirm with the school before submitting the change
 * provide both the school’s URN and the delivery partner’s ID
 
-For more detailed information, view the `POST partnerships`[endpoint documentation](reference-v3#api-v3-partnerships-ecf-post).
+For more detailed information, view the `POST partnerships`[endpoint documentation](../reference-v3.md#post-api-v3-partnerships-ecf).
 
 #### Example request body
 
@@ -288,11 +288,11 @@ For more detailed information, view the `POST partnerships`[endpoint documentati
 GET /api/v3/partnerships/ecf
 ```
 
-View details for all existing partnerships to check information is correct and whether any have had their status challenged by schools. [Find out more about partnership statuses.](ecf/definitions-and-states#partnership-states)
+View details for all existing partnerships to check information is correct and whether any have had their status challenged by schools. [Find out more about partnership statuses.](definitions-and-states.md#partnership-states)
 
 Providers can also filter results by adding a cohort filter to the parameter. For example, `GET /api/v3/partnerships/ecf?filter[cohort]=2024`.
 
-For more detailed information, view the `GET partnerships/ecf` [endpoint documentation](reference-v3#api-v3-partnerships-ecf-get).
+For more detailed information, view the `GET partnerships/ecf` [endpoint documentation](../reference-v3.md#get-api-v3-partnerships-ecf).
 
 #### Example response body
 
@@ -327,10 +327,10 @@ For more detailed information, view the `GET partnerships/ecf` [endpoint documen
 GET /api/v3/partnerships/ecf/{id}
 ```
 
-View details for an existing partnership to check information is correct and whether the [partnership status](ecf/definitions-and-states/#partnership-states) has been challenged by the school.
+View details for an existing partnership to check information is correct and whether the [partnership status](definitions-and-states.md#partnership-states) has been challenged by the school.
 
 
-For more detailed information, view `GET/ partnerships/ecf/{id}` [endpoint documentation](reference-v3#api-v3-partnerships-ecf-id-get).
+For more detailed information, view `GET/ partnerships/ecf/{id}` [endpoint documentation](../reference-v3.md#get-api-v3-partnerships-ecf-id).
 
 #### Example response body
 
@@ -367,15 +367,15 @@ For more detailed information, view `GET/ partnerships/ecf/{id}` [endpoint docum
 
 Update an existing partnership with new delivery partner details for a given cohort.
 
-Request bodies must include a new value for the `delivery_partner_id` attribute. If unsure, providers can [find delivery partner IDs](ecf/guidance#find-delivery-partner-ids).
+Request bodies must include a new value for the `delivery_partner_id` attribute. If unsure, providers can [find delivery partner IDs](#find-delivery-partner-ids).
 
 Providers can only update partnerships where the `status` attribute is `active`. Any requests to update `challenged` partnerships will return an error. If a partnership has been challenged and rejected, use `POST partnerships` to create a new partnership, rather than `PUT partnerships`.
 
-[Find out more about partnership statuses.](ecf/definitions-and-states#partnership-states)
+[Find out more about partnership statuses.](definitions-and-states#partnership-states.md)
 
 Successful requests will return a response body with updates included.
 
-For more detailed information see the specifications for this [update a partnership endpoint](reference-v3#api-v3-partnerships-ecf-id-put).
+For more detailed information see the specifications for this [update a partnership endpoint](../reference-v3.md#put-api-v3-partnerships-ecf-id).
 
 #### Example request body
 
@@ -427,18 +427,18 @@ Providers can view data to find out whether participants:
 * have valid teacher reference numbers (TRN)
 * have achieved qualified teacher status (QTS)
 * are eligible for funding
-* have [transferred to or from a school you're partnered with](ecf/guidance#view-data-for-all-participants-who-have-transferred)
-* have (if they're ECTs) been assigned [unfunded mentors](ecf/guidance#view-all-unfunded-mentor-details)
+* have [transferred to or from a school you're partnered with](#view-data-for-all-participants-who-have-transferred)
+* have (if they're ECTs) been assigned [unfunded mentors](#view-all-unfunded-mentor-details)
 * have (if they're ECTs) completed their induction, according to the Database of Qualified Teachers
 
 Note, while participants can enter different email addresses when registering for each training course they apply for, providers will only see the email address associated with a given course registration. For example, a participant may complete their training with one associated email address, then register for an NPQ with a different email address, and go on to be an ECT mentor with a third email address. DfE will share the relevant email address with the relevant course provider.
 
 Providers can then update data to notify DfE that participants have:
 
-* [deferred training](ecf/guidance#notify-dfe-a-participant-has-taken-a-break-deferred-from-training )
-* [resumed training](ecf/guidance#notify-dfe-a-participant-has-resumed-training)
-* [withdrawn from training](ecf/guidance#notify-dfe-a-participant-has-withdrawn-from-training)
-* [changed their training schedule](ecf/guidance#notify-dfe-of-a-participant-39-s-training-schedule)
+* [deferred training](#notify-dfe-a-participant-has-taken-a-break-deferred-from-training)
+* [resumed training](#notify-dfe-a-participant-has-resumed-training)
+* [withdrawn from training](#notify-dfe-a-participant-has-withdrawn-from-training)
+* [changed their training schedule](#notify-dfe-of-a-participant-39-s-training-schedule)
 
 ### View all participant data
 
@@ -452,11 +452,11 @@ An example response body is listed below.
 
 **Providers should note:**
 
-* DfE has [previously advised](release-notes#15-march-2023) of the possibility that participants may be registered as duplicates with multiple participant_ids. Where DfE identifies duplicates, it will fix the error by ‘retiring’ one of the participant IDs, then associating all records and data under the remaining ID
-* providers can check if a participant’s ID has changed using the `participant_id_changes` nested structure in the [ECFEnrolment](reference-v3#schema-ecfenrolment), which contains a `from_participant_id` and a `to_participant_id` string fields, as well a `changed_at` date value
+* DfE has [previously advised](../release-notes.md#15-march-2023) of the possibility that participants may be registered as duplicates with multiple participant_ids. Where DfE identifies duplicates, it will fix the error by ‘retiring’ one of the participant IDs, then associating all records and data under the remaining ID
+* providers can check if a participant’s ID has changed using the `participant_id_changes` nested structure in the [ECFEnrolment](../reference-v3.md#ecfenrolment), which contains a `from_participant_id` and a `to_participant_id` string fields, as well a `changed_at` date value
 * DfE will close the funding contract for the 2021 cohort on 31 July 2024. Schools will start moving ECTs and mentors with partial declarations originally assigned to the 2021 cohort to the 2024 cohort from mid-June  
 
-For more detailed information, see the specifications for this [view multiple participants endpoint](reference-v3#api-v3-participants-ecf-get).
+For more detailed information, see the specifications for this [view multiple participants endpoint](../reference-v3.md#get-api-v3-participants-ecf).
 
 #### Example response body:
 
@@ -517,11 +517,11 @@ An example response body is listed below.
 
 **Providers should note:**
 
-* we’ve [previously advised](release-notes#15-march-2023) of the possibility that participants may be registered as duplicates with multiple `participant_ids`. Where we identify duplicates, we’ll fix the error by ‘retiring’ one of the participant IDs and then associating all records and data under the remaining ID. To date, when this has occurred, we’ve informed providers of changes via CSVs
-* they can check if a participant’s ID has changed using the `participant_id_changes` nested structure in the [ECFEnrolment](reference-v3#schema-ecfenrolment), which contains a `from_participant_id` and a `to_participant_id` string fields, as well a `changed_at` date value
-* if they cannot see a mentor as expected using this endpoint, it's probably because the mentor is not eligible for funding through them. In this case, providers should use the [GET /api/v3/unfunded-mentors/ecf/{id} endpoint](reference-v3#api-v3-unfunded-mentors-ecf-id-get) to retrieve the mentor’s details
+* we’ve [previously advised](../release-notes.md#15-march-2023) of the possibility that participants may be registered as duplicates with multiple `participant_ids`. Where we identify duplicates, we’ll fix the error by ‘retiring’ one of the participant IDs and then associating all records and data under the remaining ID. To date, when this has occurred, we’ve informed providers of changes via CSVs
+* they can check if a participant’s ID has changed using the `participant_id_changes` nested structure in the [ECFEnrolment](../reference-v3.md#ecfenrolment), which contains a `from_participant_id` and a `to_participant_id` string fields, as well a `changed_at` date value
+* if they cannot see a mentor as expected using this endpoint, it's probably because the mentor is not eligible for funding through them. In this case, providers should use the [GET /api/v3/unfunded-mentors/ecf/{id} endpoint](../reference-v3.md#get-api-v3-unfunded-mentors-ecf-id) to retrieve the mentor’s details
 
-For more detailed information, see the specifications for the [view a single participant endpoint](reference-v3#api-v3-participants-ecf-id-get).
+For more detailed information, see the specifications for the [view a single participant endpoint](../reference-v3.md#get-api-v3-participants-ecf-id).
 
 #### Example response body:
 
@@ -580,7 +580,7 @@ GET /api/v3/unfunded-mentors/ecf
  
 Lead providers can use this endpoint to retrieve the names and email addresses of all mentors who are not eligible for funding through them but are assigned to their ECTs. Typically, these mentors have either completed, or are currently doing, mentor training with a different lead provider than the one delivering training to the ECT they support.
 
-For more detailed information, see the [‘Retrieve multiple unfunded mentors’ endpoint documentation](reference-v3#api-v3-unfunded-mentors-ecf-get). 
+For more detailed information, see the [‘Retrieve multiple unfunded mentors’ endpoint documentation](../reference-v3.md#get-api-v3-unfunded-mentors-ecf). 
 
 #### Example response body:
 
@@ -612,7 +612,7 @@ For more detailed information, see the [‘Retrieve multiple unfunded mentors’
 
 Lead providers can use this endpoint to retrieve the names and email addresses of individual mentors who are not eligible for funding through them but are assigned to their ECTs. Having these details will then enable providers to give these mentors access to the right learning platforms.
 
-For more detailed information, [see the ‘Get a single unfunded mentor’ endpoint documentation](reference-v3#api-v3-unfunded-mentors-ecf-id-get).
+For more detailed information, [see the ‘Get a single unfunded mentor’ endpoint documentation](../reference-v3.md#get-api-v3-unfunded-mentors-ecf-id).
 
 #### Example response body:
 
@@ -644,7 +644,7 @@ An example request body is listed below.
 
 Successful requests will return a response body including updates to the `training_status` attribute.
 
-For more detailed information, see the specifications for the [notify DfE that a participant is taking a break from their course endpoint](reference-v3#api-v3-participants-ecf-id-defer-put).
+For more detailed information, see the specifications for the [notify DfE that a participant is taking a break from their course endpoint](../reference-v3.md#put-api-v3-participants-ecf-id-defer).
 
 #### Example request body:
 
@@ -672,7 +672,7 @@ An example request body is listed below.
 
 Successful requests will return a response body including updates to the `training_status` attribute.
 
-For more detailed information see the specifications for this [notify DfE that a participant has resumed training endpoint](reference-v3#api-v3-participants-ecf-id-resume-put).
+For more detailed information see the specifications for this [notify DfE that a participant has resumed training endpoint](../reference-v3.md#put-api-v3-participants-ecf-id-resume).
 
 #### Example request body:
 
@@ -699,7 +699,7 @@ An example request body is listed below.
 
 Successful requests will return a response body including updates to the `training_status` attribute.
 
-For more detailed information see the specifications for this [notify DfE that a participant has withdrawn from training endpoint](reference-v3#api-v3-participants-ecf-id-withdraw-put).
+For more detailed information see the specifications for this [notify DfE that a participant has withdrawn from training endpoint](../reference-v3.md#put-api-v3-participants-ecf-id-withdraw).
 
 #### Providers should note:
 
@@ -746,9 +746,9 @@ Where this occurs, providers should:
 2. Change the participant’s training schedule.
 3. Resubmit backdated declarations (where `declaration_date` aligns with the new schedule).
 
-For replacement mentors, view [guidance on updating a replacement mentor’s schedule.](ecf/guidance#update-a-replacement-mentor-s-schedule)
+For replacement mentors, view [guidance on updating a replacement mentor’s schedule.](#update-a-replacement-mentor-s-schedule)
 
-For more detailed information see the specifications for this [notify that a participant has changed their training schedule endpoint](reference-v3#api-v3-participants-ecf-id-change-schedule-put).
+For more detailed information see the specifications for this [notify that a participant has changed their training schedule endpoint](../reference-v3.md#put-api-v3-participants-ecf-id-change-schedule).
 
 #### Example request body:
 
@@ -769,7 +769,7 @@ For more detailed information see the specifications for this [notify that a par
 
 A new mentor can be assigned to an ECT part way through training.
 
-[Providers must notify DfE of replacement mentors by updating their training schedule.](ecf/guidance#notify-dfe-of-a-participant-39-s-training-schedule)
+[Providers must notify DfE of replacement mentors by updating their training schedule.](#notify-dfe-of-a-participant-39-s-training-schedule)
 
 Note, if a replacement mentor is already mentoring another ECT, and they replace a mentor for a second ECT, the first ECT takes precedence. In this instance, the provider should not change the mentor’s schedule.
 
@@ -810,7 +810,7 @@ GET /api/v3/participants/ecf/transfers
 
 Lead providers can use this endpoint to view data for participants who’ve transferred from and to schools they’re in partnership with. The data is updated whenever schools report a transfer. 
 
-View the [‘Retrieve multiple participant transfers’ endpoint documentation](reference-v3#api-v3-participants-ecf-transfers-get).
+View the [‘Retrieve multiple participant transfers’ endpoint documentation](../reference-v3.md#get-api-v3-participants-ecf-transfers).
 
 ### View data for a specific participant who has transferred  
 
@@ -820,7 +820,7 @@ GET /api/v3/participants/ecf/{id}/transfers
 
 Lead providers can use this endpoint to view data for individual participants who’ve transferred from and to schools they’re in partnership with.  
 
-View the [‘Get a single participant’s transfers’ endpoint documentation](reference-v3#api-v3-participants-ecf-id-transfers-get).
+View the [‘Get a single participant’s transfers’ endpoint documentation](../reference-v3.md#get-api-v3-participants-ecf-id-transfers).
 
 ### What providers will see in the API when a participant is transferring away from them  
 | Scenario | Participant status | Transfer response |
@@ -846,7 +846,7 @@ View the [‘Get a single participant’s transfers’ endpoint documentation](r
 
 ### Managing transfers between providers 
  
-Providers must [notify DfE when a participant withdraws](reference-v3#api-v3-participants-ecf-id-withdraw-put) from their training to ensure data accuracy. Once a participant transfers to a new provider and school induction tutors have confirmed the move, the original provider will see the `participant_status` as `left`. They should then update the participant’s `training_status` to `withdrawn`. The transfer record will also appear in `GET transfers` and `GET {id}/transfers` endpoint responses.
+Providers must [notify DfE when a participant withdraws](../reference-v3.md#put-api-v3-participants-ecf-id-withdraw) from their training to ensure data accuracy. Once a participant transfers to a new provider and school induction tutors have confirmed the move, the original provider will see the `participant_status` as `left`. They should then update the participant’s `training_status` to `withdrawn`. The transfer record will also appear in `GET transfers` and `GET {id}/transfers` endpoint responses.
 
 ### Why transfer data can appear incomplete 
  
@@ -991,7 +991,7 @@ X-With-Server-Date: 2025-01-10T10:42:00Z
 
 ### Submit a declaration to notify DfE a participant has started training
 
-Notify the DfE that a participant has started training by submitting a `started` declaration in line with [milestone 1 dates](ecf/schedules-and-milestone-dates).
+Notify the DfE that a participant has started training by submitting a `started` declaration in line with [milestone 1 dates](schedules-and-milestone-dates.md).
 
 ```
  POST /api/v3/participant-declarations
@@ -1005,7 +1005,7 @@ Any attempts to submit duplicate declarations will return an error message.
 
 > Note, providers should store the returned participant declaration ID for management tasks.
 
-For more detailed information see the specifications for this [notify DfE that a participant has started training endpoint](reference-v3#api-v3-participant-declarations-post).
+For more detailed information see the specifications for this [notify DfE that a participant has started training endpoint](../reference-v3.md#post-api-v3-participant-declarations).
 
 #### Example request body:
 
@@ -1052,7 +1052,7 @@ For more detailed information see the specifications for this [notify DfE that a
 
 ### Submit a declaration to notify DfE a participant has been retained in training
 
-Notify DfE that a participant has reached a given retention point in their training by submitting a `retained` declaration in line with [milestone dates](ecf/schedules-and-milestone-dates).
+Notify DfE that a participant has reached a given retention point in their training by submitting a `retained` declaration in line with [milestone dates](schedules-and-milestone-dates.md).
 
 ```
 POST /api/v{n}/participant-declarations
@@ -1066,7 +1066,7 @@ Any attempts to submit duplicate declarations will return an error message.
 
 > Note, providers should store the returned participant declaration ID for management tasks.</div>
 
-For more detailed information see the specifications for this [notify DfE that a participant has been retained in training endpoint](reference-v3#api-v3-participant-declarations-post).
+For more detailed information see the specifications for this [notify DfE that a participant has been retained in training endpoint](../reference-v3.md#post-api-v3-participant-declarations).
 
 #### Example request body:
 
@@ -1114,7 +1114,7 @@ For more detailed information see the specifications for this [notify DfE that a
 
 ### Submit a declaration to notify DfE a participant has completed training
 
-Notify the DfE that a participant has completed their training by submitting a `completed` declaration in line with [milestone dates](ecf/schedules-and-milestone-dates).
+Notify the DfE that a participant has completed their training by submitting a `completed` declaration in line with [milestone dates](schedules-and-milestone-dates.md).
 
 ```
 POST /api/v{n}/participant-declarations
@@ -1128,7 +1128,7 @@ Any attempts to submit duplicate declarations will return an error message.
 
 > Note, providers should store the returned participant declaration ID for future management tasks.
 
-For more detailed information see the specifications for this [notify DfE that a participant has completed training endpoint](reference-v3#api-v3-participant-declarations-post).
+For more detailed information see the specifications for this [notify DfE that a participant has completed training endpoint](../reference-v3.md#post-api-v3-participant-declarations).
 
 #### Example request body:
 
@@ -1185,7 +1185,7 @@ Note, providers can also filter results by adding filters to the parameter. For 
 
 An example response body is listed below.
 
-For more detailed information see the specifications for this [view all declarations endpoint.](reference-v3#api-v3-participant-declarations-get)
+For more detailed information see the specifications for this [view all declarations endpoint.](../reference-v3.md#get-api-v3-participant-declarations)
 
 #### Example response body:
 ```
@@ -1245,7 +1245,7 @@ GET /api/v3/participant-declarations/{id}
 
 An example response body is listed below.
 
-For more detailed information see the specifications for this [view specific declarations endpoint.](reference-v3#api-v3-participant-declarations-id-get)
+For more detailed information see the specifications for this [view specific declarations endpoint.](../reference-v3.md#get-api-v3-participant-declarations-id)
 
 #### Example response body:
 
@@ -1287,9 +1287,9 @@ An example response body is listed below. Successful requests will return a resp
 * `voided` if it had been  `submitted`, `ineligible`, `eligible`, or `payable`
 * `awaiting_clawback` if it had been `paid`
 
-View more information on [declaration states.](ecf/definitions-and-states/#declaration-states)
+View more information on [declaration states.](definitions-and-states/#declaration-states.md)
 
-For more detailed information see the specifications for this [void declarations endpoint.](reference-v3#api-v3-participant-declarations-id-void-put)
+For more detailed information see the specifications for this [void declarations endpoint.](../reference-v3.md#put-api-v3-participant-declarations-id-void)
 
 #### Example response body:
 
@@ -1332,7 +1332,7 @@ GET /api/v3/statements
 
 An example response body is listed below.
 
-For more detailed information see the specifications for this [view all statements endpoint.](reference-v3#api-v3-statements-get)
+For more detailed information see the specifications for this [view all statements endpoint.](../reference-v3.md#get-api-v3-statements)
 
 #### Example response body:
 
@@ -1364,11 +1364,11 @@ For more detailed information see the specifications for this [view all statemen
 GET /api/v3/statements/{id}
 ```
 
-Providers can find statement IDs within [previously submitted declaration](ecf/guidance/#view-a-specific-previously-submitted-declaration) response bodies.
+Providers can find statement IDs within [previously submitted declaration](#view-a-specific-previously-submitted-declaration) response bodies.
 
 An example response body is listed below.
 
-For more detailed information see the specifications for this [view a specific statement endpoint.](reference-v3#api-v3-statements-id-get)
+For more detailed information see the specifications for this [view a specific statement endpoint.](../reference-v3.md#get-api-v3-statements-id)
 
 #### Example response body:
 

@@ -91,7 +91,7 @@ https://sb.manage-training-for-early-career-teachers.education.gov.uk/api/v3
 
 <div class="govuk-inset-text"> Note, there are some custom API headers that can only be used in the sandbox. </div>
 
-[Test the ability to submit declarations in the sandbox ahead of time](ecf/guidance.md#test-the-ability-to-submit-declarations-in-sandbox-ahead-of-time)
+[Test the ability to submit declarations in the sandbox ahead of time](ecf/guidance.md#how-providers-can-test-theyre-able-to-submit-declarations)
 
 ## Rate limits
 

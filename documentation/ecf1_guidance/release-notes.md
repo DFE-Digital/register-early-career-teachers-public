@@ -30,7 +30,7 @@ Providers can now submit declarations for these participants as expected.
 
 Registration is now open for the 2025/26 intake of early career teachers and mentors, so we’ve added the schedules and contract data for this academic year to the production environment.
 
-For more details, [view our guidance on changes for the 2025/26 academic year](changes-for-the-2025-2026-academic-year).
+For more details, [view our guidance on changes for the 2025/26 academic year](changes-for-the-2025-2026-academic-year.md).
 
 ## 23 April 2025
 
@@ -71,7 +71,7 @@ We’ll contact providers directly to ensure their integrations can support the 
 
 We’ve set up dummy data/contracts and milestones in the [API v3 test (sandbox) environment](https://sb.manage-training-for-early-career-teachers.education.gov.uk/) to support providers ahead of the closure of the 2022 ECF cohort at the end of July.
 
-[View detailed guidance about the closure of the 2022 cohort](2022-cohort-closure-information-for-lead-providers)
+[View detailed guidance about the closure of the 2022 cohort](2022-cohort-closure-information-for-lead-providers.md)
 
 ### How we’ll handle participants who haven’t completed their training by 31 July
 
@@ -104,7 +104,7 @@ We recommend providers use the dummy data we’ve set up in the test environment
 - check their CRM to make sure they can handle an enrolment in a new cohort with declarations spanning across 2022 and 2024
 - familiarise themselves with the `cohort_changed_after_payments_frozen` field in the `GET participant` endpoint response
 - check they can see historically submitted declarations made in a previous cohort in the `GET participant-declarations` endpoint when using the cohort filter
-- attempt some [future declarations](ecf/guidance/?#test-the-ability-to-submit-declarations-in-sandbox-ahead-of-time) and ensure they’re recorded and handled safely in their CRM
+- attempt some [future declarations](ecf/guidance.md#how-providers-can-test-theyre-able-to-submit-declarations) and ensure they’re recorded and handled safely in their CRM
 
 ## 14 March 2025
 
@@ -225,9 +225,9 @@ Providers can add the required API version and endpoint depending on what they w
 
 The endpoints documentation for each version of the API is also unchanged:
 
-- [ECF API v1 documentation](https://manage-training-for-early-career-teachers.education.gov.ukreference-v1.html)
-- [ECF API v2 documentation](https://manage-training-for-early-career-teachers.education.gov.ukreference-v2.html)
-- [ECF API v3 documentation](https://manage-training-for-early-career-teachers.education.gov.ukreference-v3.html)
+- [ECF API v1 documentation](reference-v1.md)
+- [ECF API v2 documentation](reference-v2.md)
+- [ECF API v3 documentation](reference-v3.md)
 
 To ensure everything runs smoothly on the ECF side of things, we recommend providers take the following post-separation actions:
 
@@ -242,7 +242,7 @@ Providers can contact us via their dedicated DfE Slack channel if they’ve got 
 
 Providers can now see the new <code>mentor_ineligible_for_funding_reason</code> field in the API production environment's participant response bodies.
 
-For full details about the field and the values it can display, read the <a href="release-notes.html#20-august-2024">release note we published</a> when we added this functionality to the test (sandbox) environment.
+For full details about the field and the values it can display, read the [release notes we published](#20-august-2024) when we added this functionality to the test (sandbox) environment.
 
 ## 20 August 2024
 
@@ -277,9 +277,9 @@ Providers can add the required API version and endpoint depending on what they w
 
 We’ve also created documentation for the new separation environment endpoints:
 
-- [ECF API v1 documentation](https://sp.manage-training-for-early-career-teachers.education.gov.ukreference-v1.html)
-- [ECF API v2 documentation](https://sp.manage-training-for-early-career-teachers.education.gov.ukreference-v2.html)
-- [ECF API v3 documentation](https://sp.manage-training-for-early-career-teachers.education.gov.ukreference-v3.html)
+- [ECF API v1 documentation](reference-v1.md)
+- [ECF API v2 documentation](reference-v2.md)
+- [ECF API v3 documentation](reference-v3.md)
 - [NPQ API v1 documentation](https://npq-registration-separation-web.teacherservices.cloud/api/docs/v1)
 - [NPQ API v2 documentation](https://npq-registration-separation-web.teacherservices.cloud/api/docs/v2)
 - [NPQ API v3 documentation](https://npq-registration-separation-web.teacherservices.cloud/api/docs/v3)
@@ -294,7 +294,7 @@ Registration has opened for the 2024/25 intake of NPQ participant applications, 
 - functionality which enables providers to set whether NPQ applicants are going to have their training funded by DfE
 - the new special education needs coordinator (SENCO) NPQ
 
-See the [14 June release note](release-notes.html#14-june-2024) for more details about the funded training functionality and SENCO NPQ.
+See the [14 June release note](#14-june-2024) for more details about the funded training functionality and SENCO NPQ.
 
 ## 28 June 2024
 
@@ -302,7 +302,7 @@ We’ve added some new features to help providers ahead of the closure of the fu
 
 The main impact will be ECTs and mentors with partial declarations currently assigned to the 2021 cohort being moved to the 2024 cohort.
 
-Because these ECTs and mentors are automatically shifted from a standard to an extended schedule, we’re allowing providers to change their schedules if necessary, using the existing [change-schedule](reference-v3.html#api-v3-participants-ecf-id-change-schedule-put) endpoint.
+Because these ECTs and mentors are automatically shifted from a standard to an extended schedule, we’re allowing providers to change their schedules if necessary, using the existing [change-schedule](reference-v3.md#put-api-v3-participants-ecf-id-change-schedule) endpoint.
 
 Providers can also temporarily move participants back to the 2021 cohort if they need to make any final declarations before it closes. They must be returned to the 2024 cohort to start making submissions against that year.
 
@@ -325,7 +325,7 @@ From today, schools have started moving ECTs and mentors with partial declaratio
 
 This is because we’re closing the funding contract for the 2021 cohort at the end of July.
 
-Providers will be able to identify participants who’ve been moved by the new `cohort_changed_after_payments_frozen` attribute to the [participant response](reference-v3.html?#api-v3-participants-ecf-get-responses-examples) in the API v3 production environment. The value shown for these participants will be `true`.
+Providers will be able to identify participants who’ve been moved by the new `cohort_changed_after_payments_frozen` attribute to the [participant response](reference-v3.md#api-v3-participants-ecf-get-responses-examples) in the API v3 production environment. The value shown for these participants will be `true`.
 
 Providers will no longer be able to submit or void declarations for the 2021 cohort after the contract closes on 31 July.
 
@@ -409,9 +409,9 @@ As always, we’d welcome feedback on this sandbox update before it goes into pr
 
 ## 8 March 2024
 
-Lead providers can now use the new `mentor_funding_end_date` field in the Live environment’s [ECF participant endpoint](reference-v3.html#api-v3-participants-ecf-get).
+Lead providers can now use the new `mentor_funding_end_date` field in the Live environment’s [ECF participant endpoint](reference-v3.md#get-api-v3-participants-ecf).
 
-Further details are available in the release note of [4 March 2024](release-notes.html#4-march-2024).
+Further details are available in the release note of [4 March 2024](#4-march-2024).
 
 ## 4 March 2024
 
@@ -419,7 +419,7 @@ We’ve found and fixed a bug that meant ‘participant IDs’ had been wrongly 
 
 ## 4 March 2024
 
-We're trialing new functionality in the API v3 sandbox which surfaces the `mentor_funding_end_date` field in the [ ECF participant endpoint](reference-v3.html#api-v3-participants-ecf-get).
+We're trialing new functionality in the API v3 sandbox which surfaces the `mentor_funding_end_date` field in the [ ECF participant endpoint](reference-v3.md#get-api-v3-participants-ecf).
 
 When a declaration is submitted for a mentor the completed date will equal the declaration date. When a declaration is voided the completed date will be cleared. Completed dates for early roll-out mentors will be set to 19 April 2021 regardless of any completed declarations.
 
@@ -443,7 +443,7 @@ Training providers will now only see the ECT in the latest cohort they’ve been
 
 We’ve fixed an issue with merging duplicate user accounts that meant existing declarations were not being redirected to the newly merged account correctly.
 
-Participant records in merged accounts will now point to the right declarations in the [ECF](reference-v3.html#api-v3-participants-ecf-get) and [NPQ](/api-reference/reference-v3.html#api-v3-participants-npq-get) GET participant endpoints.
+Participant records in merged accounts will now point to the right declarations in the [ECF](reference-v3.md#get-api-v3-participants-ecf) and [NPQ](reference-v3.md#get-api-v3-participants-npq) GET participant endpoints.
 
 This will ensure that all participant declarations are consistent.
 
@@ -453,11 +453,11 @@ We’ve fixed a bug that had prevented some providers from changing schedules fo
 
 * ‘You cannot change a participant to this cohort as you do not have a partnership with the school for the cohort. Contact the DfE for assistance.’
 
-This error message should now only apply where a lead provider is attempting to the use the [change schedule endpoint](reference-v3.html#api-v3-participants-ecf-id-change-schedule-put) to change the participant's cohort.
+This error message should now only apply where a lead provider is attempting to the use the [change schedule endpoint](reference-v3.md#put-api-v3-participants-ecf-id-change-schedule) to change the participant's cohort.
 
 ## 28 November 2023
 
-We've fixed a bug that meant some providers were having issues finding unfunded mentor IDs when using the `updated_at` filter on the [GET unfunded mentors endpoint](reference-v3.html#api-v3-unfunded-mentors-ecf-get).
+We've fixed a bug that meant some providers were having issues finding unfunded mentor IDs when using the `updated_at` filter on the [GET unfunded mentors endpoint](reference-v3.md#get-api-v3-unfunded-mentors-ecf).
 
 The `updated_at` value of an unfunded mentor now gets touched when the mentor is linked to an ECT.
 
@@ -467,7 +467,7 @@ An API call to the unfunded mentors endpoint filtered for any updates once the l
 
 We're trialing new functionality in the API v3 sandbox which allows lead providers to add a participant's schedule when accepting NPQ applications.
 
-We've added the optional `schedule-identifier` field on the [NPQ accept an application request body](npq/guidance.html#example-request-body).
+We've added the optional `schedule-identifier` field on the [NPQ accept an application request body](npq/guidance.md#example-request-body).
 
 This will prevent providers having to make manual changes if a participant has been defaulted to the wrong schedule.
 
@@ -477,13 +477,13 @@ We'd welcome feedback on this sandbox update before it goes into production.
 
 Lead providers can now use the new `participant_id_changes` features in the Live environment.
 
-Further detail on the change is available in the release note of [6 October 2023](release-notes.html#6-october-2023).
+Further detail on the change is available in the release note of [6 October 2023](release-notes.md#6-october-2023).
 
 ## 2 November 2023
 
 The DfE has released a fix for an issue which affected NPQ only providers using the v3 declarations endpoints. Some providers reported receiving 403 errors when attempting to POST or GET declarations. The issue was limited to v3. The fix has been released to sandbox and production environments.
 
-The fix also addresses an issue with the [cohort filter](reference-v3.html#schema-participantdeclarationsfilter), which is available for the declarations endpoint. Providers using the filter should now see that the response only returns NPQ and ECF declarations in the cohort specified. Previously, the filtering was inconsistent for NPQ declarations. The fix applies to production and sandbox environments.
+The fix also addresses an issue with the [cohort filter](reference-v3.md#schema-participantdeclarationsfilter), which is available for the declarations endpoint. Providers using the filter should now see that the response only returns NPQ and ECF declarations in the cohort specified. Previously, the filtering was inconsistent for NPQ declarations. The fix applies to production and sandbox environments.
 
 ## 30 October 2023
 
@@ -494,11 +494,11 @@ Lead providers can now test the new `participant_id_changes` feature in the sand
 
 The DfE welcomes feedback and intends to deploy the change to the production environment as soon as possible.
 
-Further detail on the change is available in the release note of [6 October 2023](release-notes.html#6-october-2023).
+Further detail on the change is available in the release note of [6 October 2023](release-notes.md#6-october-2023).
 
 ## 16 October 2023
 
-We've removed the `started-in-error` option from the [ECFWithdrawal schemas](reference-v3.html#schema-ecfwithdrawal) in all versions of the API.
+We've removed the `started-in-error` option from the [ECFWithdrawal schemas](reference-v3.md#schema-ecfwithdrawal) in all versions of the API.
 
 Note that NPQ participants can still be withdrawn for this reason.
 
@@ -506,15 +506,15 @@ Note that NPQ participants can still be withdrawn for this reason.
 
 Lead providers integrated with v3 of the API can now view details of ECTs that have completed their induction.
 
-We've added a new field, `induction_end_date`, to [ECFEnrolment](reference-v3.html#schema-ecfenrolment). We populate the field with data gathered about the date an ECT completed their induction from the Database of Qualified Teachers (DQT).
+We've added a new field, `induction_end_date`, to [ECFEnrolment](reference-v3.md#schema-ecfenrolment). We populate the field with data gathered about the date an ECT completed their induction from the Database of Qualified Teachers (DQT).
 
-We check the DQT on a daily basis for data about induction completion. We'll update a participant's records when we confirm they've completed their induction. Lead providers can use the [`updated_since` filter on the GET participants endpoint](reference-v3.html#schema-ecfparticipantfilter) to check for this kind of update.
+We check the DQT on a daily basis for data about induction completion. We'll update a participant's records when we confirm they've completed their induction. Lead providers can use the [`updated_since` filter on the GET participants endpoint](reference-v3.md#schema-ecfparticipantfilter) to check for this kind of update.
 
-Lead providers can use the field to identify participants that have completed their induction, and which may need to be placed on a [reduced schedule](ecf/schedules-and-milestone-dates.html#reduced-schedule).
+Lead providers can use the field to identify participants that have completed their induction, and which may need to be placed on a [reduced schedule](ecf/schedules-and-milestone-dates.md#reduced-schedule).
 
 ## 9 October 2023
 
-We've released a change to the `updated_at` functionality of the [ECFPartnershipAttributes](reference-v3.html#schema-ecfpartnershipattributes).
+We've released a change to the `updated_at` functionality of the [ECFPartnershipAttributes](reference-v3.md#schema-ecfpartnershipattributes).
 
 Now, when a user (for example, a school induction tutor) challenges a partnership, the date and time of this change will populate the `updated_at` field of the partnership.
 
@@ -524,13 +524,13 @@ In this way, providers may rely on the `updated_since` filter to identify if the
 
 We’ve added experimental fields to the API v3 sandbox environment to make it simpler for lead providers to identify and manage deduped participants.
 
-We’ve [previously advised](release-notes.html#15-march-2023) of the possibility that participants may be registered as duplicates with multiple participant_ids.
+We’ve [previously advised](release-notes.md#15-march-2023) of the possibility that participants may be registered as duplicates with multiple participant_ids.
 
 Where we identify duplicates, we'll fix the error by ‘retiring’ one of the participant IDs, then associating all records and data under the remaining ID. To date, when this occurred, the DfE has informed providers of changes via CSVs.
 
 We’re now proposing that lead providers may manage these limited changes using some new API v3 functionality including:
 
-* a new `participant_id_changes` nested structure added to the [ECFEnrolment](reference-v3.html#schema-ecfenrolment) and [NPQEnrolment](/api-reference/reference-v3.html#schema-npqenrolment) schemas, which would each contain a `from_participant_id` and a `to_participant_id` string fields, as well a `changed_at` date value
+* a new `participant_id_changes` nested structure added to the [ECFEnrolment](reference-v3.md#schema-ecfenrolment) and [NPQEnrolment](reference-v3.md#schema-npqenrolment) schemas, which would each contain a `from_participant_id` and a `to_participant_id` string fields, as well a `changed_at` date value
 * a new filter for the various GET participant endpoints, so lead providers can search by a participant_id to check if it has changed, which will return the participant including their changed id. For example, **GET** `api/v3/participants/ecf?filter[from_participant_id]={your_id}`
 
 We welcome feedback on these changes and intends to release them to the sandbox and production as soon as possible. We'll provide a release note at each stage.
@@ -574,21 +574,21 @@ Providers should:
 
 ## 24 August 2023
 
-Lead providers can now submit 'extended declarations' for ECTs that are on extended schedules in production. The change applies to all versions of the API. Previously, lead providers could only test the new functionality in the [sandbox environment](release-notes.html#17-august-2023).
+Lead providers can now submit 'extended declarations' for ECTs that are on extended schedules in production. The change applies to all versions of the API. Previously, lead providers could only test the new functionality in the [sandbox environment](release-notes.md#17-august-2023).
 
-There is [guidance available for providers in the API documentation](ecf/schedules-and-milestone-dates.html#extended-schedules). Please note that while there are currently only three extended declarations, the number of extended declarations a provider may need to submit is not limited in the contract. The DfE may add additional extended declarations should the need arise.
+There is [guidance available for providers in the API documentation](ecf/schedules-and-milestone-dates.md#extended-schedules). Please note that while there are currently only three extended declarations, the number of extended declarations a provider may need to submit is not limited in the contract. The DfE may add additional extended declarations should the need arise.
 
 ## 17 August 2023
 
 Lead providers can now submit 'extended declarations' for ECTs that are on extended schedules in the sandbox environment. Providers may not submit extended declarations for mentors.
 
-Qualifying ECTs will have had their induction extended as a result of having not yet met the Teachers' standards, and need additional support to meet the standards. These ECTs must be placed onto one of the available ['extended schedules'](ecf/schedules-and-milestone-dates.html#extended-schedules) for ECF.
+Qualifying ECTs will have had their induction extended as a result of having not yet met the Teachers' standards, and need additional support to meet the standards. These ECTs must be placed onto one of the available ['extended schedules'](ecf/schedules-and-milestone-dates.md#extended-schedules) for ECF.
 
 Providers may submit an extended declaration (subject to meeting the engagement criteria) for each extended term until the ECT has completed their induction, up to a maximum of three extensions. On completing induction, the provider should submit a completion declaration for the final term.
 
 For further details about how and when to use these declaration types, providers should refer to the ECF payment guidance issued by their contract manager.
 
-Providers may submit extended declarations using the following values in the `declaration_type` field on the [participant declaration request body](reference-v3.html#schema-participantdeclarationrequest):
+Providers may submit extended declarations using the following values in the `declaration_type` field on the [participant declaration request body](reference-v3.md#schema-participantdeclarationrequest):
 
 - extended-1
 - extended-2
@@ -600,7 +600,7 @@ Providers will be notified ahead of this functionality becoming available in the
 
 Lead providers can now ‘resume’ NPQ and ECF participants they've previously withdrawn.
 
-Lead providers should use the relevant [ecf](reference-v3.html#api-v3-participants-ecf-id-resume-put) or [npq](/api-reference/reference-v3.html#api-v3-participants-npq-id-resume-put) resume endpoints to change a given participant’s `training_status` from withdrawn to active.
+Lead providers should use the relevant [ecf](reference-v3.md#put-api-v3-participants-ecf-id-resume) or [npq](reference-v3.md#put-api-v3-participants-npq-id-resume) resume endpoints to change a given participant’s `training_status` from withdrawn to active.
 
 The DfE will monitor levels of withdrawn participants that have been resumed.
 
@@ -611,7 +611,7 @@ Lead Providers can now change the cohort of an ECF participant, providing that:
 - the lead provider has a partnership with the school in the new cohort they want to move the participant into; and
 - any declarations the provider may have made for the participant have been `voided` or `clawed_back`
 
-Providers may change an ECF participant's cohort using the [change-schedule endpoint](reference-v3.html#api-v3-participants-ecf-id-change-schedule-put).
+Providers may change an ECF participant's cohort using the [change-schedule endpoint](reference-v3.md#put-api-v3-participants-ecf-id-change-schedule).
 
 If a lead provider has no partnership with a school for cohort 2022 and tries to change a participant from 2023 to 2022 cohort, then the API will return an error: `You cannot change a participant to this cohort as you do not have a partnership with the school for the cohort. Contact the DfE for assistance.`
 
@@ -636,7 +636,7 @@ Providers can now filter ECF and NPQ participants by training_status, for exampl
 * GET /api/v3/participants/ecf?filter[training_status]=deferred
 * GET /api/v3/participants/npq?filter[training_status]=active
 
-The filter is optional and only applies to v3 of the API. More detail is available in the [NPQ](reference-v3.html#api-v3-participants-npq-get) and [ECF](/api-reference/reference-v3.html#api-v3-participants-ecf-get) specifications.
+The filter is optional and only applies to v3 of the API. More detail is available in the [NPQ](reference-v3.md#get-api-v3-participants-npq) and [ECF](reference-v3.md#get-api-v3-participants-ecf) specifications.
 
 ## 12 July 2023
 
@@ -648,7 +648,7 @@ If a provider wishes to defer a participant without a started declaration then t
 
 ## 7 July 2023
 
-Providers can now see the name of the lead provider which submitted a given declaration. Providers can find more detail on the new attribute `lead_provider_name` in the [v3 specification](reference-v3.html#schema-participantdeclarationresponse).
+Providers can now see the name of the lead provider which submitted a given declaration. Providers can find more detail on the new attribute `lead_provider_name` in the [v3 specification](reference-v3.md#participantdeclarationresponse).
 
 Providers may see declarations submitted by another provider where an ECF participant has transferred. A provider may not void a declaration submitted by another provider.
 
@@ -666,7 +666,7 @@ When submitting a withdrawal request for an NPQ participant, providers may now i
 
 * `expected-commitment-unclear`
 
-Providers can view details about NPQ participant [withdrawal request schema](reference-v1.html#schema-npqparticipantwithdrawattributes) in the API specification.
+Providers can view details about NPQ participant [withdrawal request schema](reference-v1.md#npqparticipantwithdrawattributes) in the API specification.
 
 ## 2 June 2023
 
@@ -676,9 +676,9 @@ Based on feedback from testing in the sandbox, the following updates have been m
 
 * API v3 endpoints will order responses by `created_at` by default
 * an `updated_at` attribute has been added to the ECF statement response
-* `updated_since` filter parameters can be used when [viewing ECF statements](ecf/guidance.html#view-financial-statement-payment-dates) and [viewing ECF schools](/api-reference/ecf/guidance.html#find-schools-delivering-ecf-based-training-in-a-given-cohort)
-* an `id` parameter has been added to the [endpoint specifications for ECF schools](reference-v3.html#api-v3-schools-ecf-id-get)
-* the formatting of the `completion_date` attribute has amended to follow ISO 8601 format in the [specifications for NPQ outcomes](reference-v3.html#schema-npqoutcomeattributes)
+* `updated_since` filter parameters can be used when [viewing ECF statements](ecf/guidance.md#view-financial-statement-payment-dates) and [viewing ECF schools](ecf/guidance.md#find-schools-delivering-ecf-based-training-in-a-given-cohort)
+* an `id` parameter has been added to the [endpoint specifications for ECF schools](reference-v3.md#get-api-v3-schools-ecf-id)
+* the formatting of the `completion_date` attribute has amended to follow ISO 8601 format in the [specifications for NPQ outcomes](reference-v3.md#schema-npqoutcomeattributes)
 
 To improve sandbox performance, queries underpinning key endpoints have been optimised. Providers should notice a reduction in slower response times when testing in the sandbox.
 
@@ -697,9 +697,9 @@ Note, induction tutors are not yet able to register ECTs as mentors at different
 
 [Watch a demonstration of how to register an ECT as a mentor.](https://www.loom.com/share/7f45563f846a46aba30c713f1b0a7cce)
 
-[View API v3 specifications for the ‘nested’ participant response.](reference-v3.html#api-v3-participants-ecf-get)
+[View API v3 specifications for the ‘nested’ participant response.](reference-v3.md#get-api-v3-participants-ecf)
 
-See the [13th April 2023 release note](release-notes.html#13th-april-2023) for details on how the API handles ECT-mentors depending on provider integrations with API versions 1 or 2 and version 3.
+See the [13th April 2023 release note](#13th-april-2023) for details on how the API handles ECT-mentors depending on provider integrations with API versions 1 or 2 and version 3.
 
 ## 19 May 2023
 
@@ -707,17 +707,17 @@ Providers can now test API v3.0.0.0. integrations in the sandbox environment. Ad
 
 Feedback from providers is invited via the usual channels. All feedback will be considered ahead API v3 release to production environment.
 
-Changes to the [API v3 spec](reference-v3.html) have been implemented since the original draft was shared. Based on provider feedback and continual improvement, these include:
+Changes to the [API v3 spec](reference-v3.md) have been implemented since the original draft was shared. Based on provider feedback and continual improvement, these include:
 
-* the addition of a URN filter for when providers [find schools delivering ECF-based training in a given cohort](reference-v3.html#api-v3-schools-ecf-get)
+* the addition of a URN filter for when providers [find schools delivering ECF-based training in a given cohort](reference-v3.md#get-api-v3-schools-ecf)
 
 * pagination parameter functionality on multiple GET endpoints which, for example, do not include an `{id}` parameter
 
-* the addition of a date attribute which allows providers to view and update when a participant has deferred [from their ECF-based training](reference-v3.html#schema-ecfdeferral) or [from their NPQ course](/api-reference/reference-v3.html#schema-npqdeferral)
+* the addition of a date attribute which allows providers to view and update when a participant has deferred [from their ECF-based training](reference-v3.md#ecfdeferral) or [from their NPQ course](reference-v3.md#npqdeferral)
 
 * an update on where participant email addresses are included within participant responses to reduce confusion if, for example, a participant uses different email addresses when registering as an ECT and mentor
 
-* the removal of the `validation_status` attribute from the [ECF participant response](reference-v3.html#schema-ecfparticipant). New attribute options will be tested and added at a later stage, to meet provider and delivery partner needs
+* the removal of the `validation_status` attribute from the [ECF participant response](reference-v3.md#schema-ecfparticipant). New attribute options will be tested and added at a later stage, to meet provider and delivery partner needs
 
 ### Test dynamic scenarios
 
@@ -756,7 +756,7 @@ Note, API v3.0.0.0 is not yet available in either sandbox or production environm
 
 ## 13 April 2023
 
-To enable the scenario where a participant needs to be registered as a mentor after having already been trained as an ECT by a given provider, a new `training_record_id` attribute has been added to the [ECF participant schema](reference-v1.html#schema-ecfparticipant).
+To enable the scenario where a participant needs to be registered as a mentor after having already been trained as an ECT by a given provider, a new `training_record_id` attribute has been added to the [ECF participant schema](reference-v1.md#schema-ecfparticipant).
 
 The `training_record_id` value will be unique to each registration that a participant has for ECF-based training, as either an ECT or mentor.
 
@@ -767,9 +767,9 @@ For the moment, we have added examples to provider sandbox environments:
 * when using the endpoint GET /api/v1/participants/ecf, providers will receive an API response with all the ECF-based training registrations. Where a given participant is registered as both an ECT and a mentor, they will see multiple responses that each have the same participant_id, but which have unique `training_record_ids` for the mentor and ECT response
 * when using the endpoint GET /api/v1/participants/ecf/{id}, providers will only receive a single response for a given participant. Where a given participant is registered as both an ECT and a mentor, this will be associated with the participant’s ECT registration, not their mentor registration. Note, when API version 3.0.0 is released and integrated with, providers will receive all registrations for the participant ‘nested’ under the relevant `training_record_id`
 
-Specifications for the `‘nested’ participant response` can be found in the [draft API version 3.0.0. documentation](reference-v3.html#api-v3-participants-ecf-get).
+Specifications for the `‘nested’ participant response` can be found in the [draft API version 3.0.0. documentation](reference-v3.md#get-api-v3-participants-ecf).
 
-Note, if the DfE has been in touch regarding consolidating inconsistent participant_ids (see the [release note on 15 March 2023](release-notes.html#15th-march-2023)), the `training_record_id` would not change as it is unique to a registration.
+Note, if the DfE has been in touch regarding consolidating inconsistent participant_ids (see the [release note on 15 March 2023](#15th-march-2023)), the `training_record_id` would not change as it is unique to a registration.
 
 ## 15 March 2023
 
@@ -794,9 +794,9 @@ This update ensures API documentation is properly aligned with contractual terms
 
 Cohorts are now defined as the value indicating which call-off contract funds a given participant’s training. For example, 2021 indicates a participant that has started, or will start, their funded training in the 2021/22 academic year.
 
-[Read guidance around cohorts for ECF providers](ecf-usage.html#notifying-of-schedule-ecf-cohort-attribute)
+[Read guidance around cohorts for ECF providers](ecf-usage.md#notifying-of-schedule-ecf-cohort-attribute)
 
-[Read guidance around cohorts for NPQ providers](npq-usage.html#notifying-of-schedule-npq-cohort-attribute)
+[Read guidance around cohorts for NPQ providers](npq-usage.md#notifying-of-schedule-npq-cohort-attribute)
 
 ## 28 February 2023
 
@@ -834,7 +834,7 @@ The API will continue to support NPQ and ECF declarations via existing endpoints
 
 ## 24 February 2023
 
-When [submitting completed ECF declarations](ecf-usage.html#declaring-that-an-ecf-participant-has-completed-their-course), providers should note that `evidence_held` is a mandatory attribute and must be included in the request body. API documentation has been updated in line with contractual requirements.
+When [submitting completed ECF declarations](ecf-usage.md#declaring-that-an-ecf-participant-has-completed-their-course), providers should note that `evidence_held` is a mandatory attribute and must be included in the request body. API documentation has been updated in line with contractual requirements.
 
 Providers can only submit accepted `evidence_held` values. These signify the type of evidence held by a provider to demonstrate that a participant has met the retention criteria for the milestone period. The accepted values are:
 
@@ -942,7 +942,7 @@ Providers may need to consider funding and administrative implications of non-UK
 1. `teacher_catchment` - this field will indicate whether or not the participant is UK-based:
   * if `true` then the registration relates to a participant who is UK-based
   * if `false` then the registration relates to a participant who is not UK-based
-2. `teacher_catchment_iso_country_code` - this field identifies which non-UK country the participant has registered from. The API uses [ISO 3166 alpha-3 codes](https://www.iso.org/iso-3166-country-codes.html), three-letter codes published by the International Organization for Standardization (ISO) to represent countries, dependent territories, and special areas of geographical interest.
+2. `teacher_catchment_iso_country_code` - this field identifies which non-UK country the participant has registered from. The API uses [ISO 3166 alpha-3 codes](https://www.iso.org/iso-3166-country-codes.md), three-letter codes published by the International Organization for Standardization (ISO) to represent countries, dependent territories, and special areas of geographical interest.
 3. `teacher_catchment_country` - this field shows the text entered by the participant during their NPQ online registration.
 
 ### Example
@@ -1026,7 +1026,7 @@ Added `yes_in_first_five_years` and `yes_over_five_years` to `headteacher_status
 
 ## 21 April 2022
 
-Added `works_in_school`, `employer_name`, and `employment_role` to `NPQApplicationAttributes` API entities. Definitions available at `reference-v1.html#schema-npqapplication`.
+Added `works_in_school`, `employer_name`, and `employment_role` to `NPQApplicationAttributes` API entities. Definitions available at `reference-v1.md#schema-npqapplication`.
 
 ## 12 April 2022
 
@@ -1034,7 +1034,7 @@ When fetching participant declarations it will now return any declarations made 
 
 ## 8 March 2022
 
-In the documentation `reference.html` has been moved to `/api-reference/reference-v1.html`.
+In the documentation `reference.md` has been moved to `reference-v1.md`.
 
 ## 12 January 2022
 

@@ -18,6 +18,6 @@ Once integrated with the API, providers can view, submit and update data. The da
 
 While this guidance focuses on `v3` endpoints, providers can view specifications for the API version their systems are integrated with:
 
-* [Lead provider API - 1.0.0](reference-v1)
-* [Lead provider API - 2.0.0](reference-v2)
-* [Lead provider API - 3.0.0](reference-v3)
+* [Lead provider API - 1.0.0](reference-v1.md)
+* [Lead provider API - 2.0.0](reference-v2.md)
+* [Lead provider API - 3.0.0](reference-v3.md)
