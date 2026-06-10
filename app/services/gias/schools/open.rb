@@ -8,15 +8,21 @@ module GIAS
       end
 
       def open!
-        return unless gias_school.openable?
+        return false unless gias_school.openable?
 
+        open_school!
+
+        true
+      end
+
+    private
+
+      def open_school!
         ActiveRecord::Base.transaction do
           gias_school.create_school!
           record_school_opened_event!
         end
       end
-
-    private
 
       def record_school_opened_event!
         Events::Record.record_school_opened_event!(
