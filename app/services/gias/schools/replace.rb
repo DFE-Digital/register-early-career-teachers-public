@@ -7,18 +7,20 @@ module GIAS::Schools
     end
 
     def replace!
-      return unless gias_school.replaceable?
+      return false unless gias_school.replaceable?
 
-      ActiveRecord::Base.transaction do
-        replace_school!
-        record_school_replaced_event!
-      end
+      replace_school!
+
+      true
     end
 
   private
 
     def replace_school!
-      school.update!(urn: gias_school.successor.urn)
+      ActiveRecord::Base.transaction do
+        school.update!(urn: gias_school.successor.urn)
+        record_school_replaced_event!
+      end
     end
 
     def record_school_replaced_event!
