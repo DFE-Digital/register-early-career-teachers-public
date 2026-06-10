@@ -3,6 +3,8 @@ module Admin
     module TrainingPeriods
       module ChangeContractPeriodWizard
         class Wizard < ApplicationWizard
+          class UnexpectedTrainingPeriodTypeError < StandardError; end
+
           PartnershipOption = Data.define(:id, :name)
 
           attr_accessor :store, :teacher_id, :training_period_id, :author
@@ -99,7 +101,7 @@ module Admin
             elsif training_period.for_mentor?
               teacher.mentor_payments_frozen_year
             else
-              raise ArgumentError, "Expected training period to be ECT or Mentor"
+              raise UnexpectedTrainingPeriodTypeError, "Training period was neither ECT nor Mentor"
             end
           end
 
