@@ -23,9 +23,9 @@ namespace :support do
 
     Teachers::UndoRegistration.new(
       author: Events::SystemAuthor.new,
-      period:,
+      at_school_period: period,
       reason: :registered_in_error
-    ).undo_registration
+    ).undo!
 
     puts "Done. Undone #{period.class.name} #{period.id} for teacher #{teacher.id}"
   end
