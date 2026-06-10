@@ -218,6 +218,37 @@ describe Statement do
     end
   end
 
+  describe "#output_fee_type?" do
+    it "returns true only for output fee months" do
+      expect(described_class::OUTPUT_FEE_MONTHS).to contain_exactly("January", "April", "August", "November")
+
+      (1..12).each do |month|
+        expected = Date::MONTHNAMES[month].in?(described_class::OUTPUT_FEE_MONTHS)
+        expect(subject.output_fee_type?(month)).to be(expected)
+      end
+    end
+  end
+
+  describe "#assign_fee_type" do
+    it "sets fee_type to output for an output fee month" do
+      statement = FactoryBot.build(:statement, month: 11) # November
+      statement.assign_fee_type
+      expect(statement.fee_type).to eq("output")
+    end
+
+    it "sets fee_type to service for a non-output fee month" do
+      statement = FactoryBot.build(:statement, month: 2) # February
+      statement.assign_fee_type
+      expect(statement.fee_type).to eq("service")
+    end
+
+    it "does not set fee_type when month is nil" do
+      statement = FactoryBot.build(:statement)
+      statement.month = nil
+      expect { statement.assign_fee_type }.not_to change(statement, :fee_type)
+    end
+  end
+
   describe ".adjustment_editable?" do
     context "paid statement" do
       subject { FactoryBot.build(:statement, :paid) }
