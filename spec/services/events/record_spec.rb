@@ -2928,4 +2928,83 @@ RSpec.describe Events::Record do
       end
     end
   end
+
+  # School Events
+
+  describe ".record_school_opened_event!" do
+    let(:gias_school) { FactoryBot.create(:gias_school, :with_school, name: "Springfield Elementary", urn: "123456") }
+    let(:school) { gias_school.school }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        Events::Record.record_school_opened_event!(author:, school:, gias_school:)
+
+        metadata = {
+          gias_school_name: "Springfield Elementary",
+          gias_school_urn: 123_456
+        }
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          school:,
+          heading: "Springfield Elementary (123456) opened",
+          event_type: :school_opened,
+          happened_at: Time.zone.now,
+          metadata:,
+          **author_params
+        )
+      end
+    end
+  end
+
+  describe ".record_school_closed_event!" do
+    let(:gias_school) { FactoryBot.create(:gias_school, :with_school, name: "Springfield Elementary", urn: "123456") }
+    let(:school) { gias_school.school }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        Events::Record.record_school_closed_event!(author:, school:, gias_school:)
+        metadata = {
+          gias_school_name: "Springfield Elementary",
+          gias_school_urn: 123_456
+        }
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          school:,
+          heading: "Springfield Elementary (123456) closed",
+          event_type: :school_closed,
+          happened_at: Time.zone.now,
+          metadata:,
+          **author_params
+        )
+      end
+    end
+  end
+
+  describe ".record_school_changed_event!" do
+    let(:new_gias_school) { FactoryBot.create(:gias_school, :with_school, name: "New Springfield Elementary", urn: "123456") }
+    let(:old_gias_school) { FactoryBot.create(:gias_school, name: "Old Springfield Elementary", urn: "987654") }
+    let(:school) { new_gias_school.school }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        metadata = {
+          old_gias_school_name: "Old Springfield Elementary",
+          new_gias_school_name: "New Springfield Elementary",
+          old_gias_school_urn: 987_654,
+          new_gias_school_urn: 123_456
+        }
+
+        Events::Record.record_school_changed_event!(author:, school:, old_gias_school:, new_gias_school:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          school:,
+          heading: "New Springfield Elementary changed in GIAS (123456 changed from 987654)",
+          event_type: :school_changed,
+          happened_at: Time.zone.now,
+          metadata:,
+          **author_params
+        )
+      end
+    end
+  end
 end
