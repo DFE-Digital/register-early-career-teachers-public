@@ -21,7 +21,8 @@
 #
 #     **bold** and _italic_ text
 
-- title: Added new withdrawal reason: changed_lead_provider
+- title: |
+    Added new withdrawal reason: changed_lead_provider
   date: 2026-06-10
   tags:
     - production-release
