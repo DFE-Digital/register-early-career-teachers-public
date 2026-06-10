@@ -21,6 +21,37 @@
 #
 #     **bold** and _italic_ text
 
+- title: |
+    Changes to participant status for deferred and withdrawn participants who have completed training
+  date: 2026-06-10
+  tags:
+    - data-update
+    - new-feature
+    - production-release
+  body: |
+    We’ve updated how `participant_status` is set for deferred and withdrawn participants in GET participant responses to improve consistency.
+
+    ## What’s changed
+
+    Deferred and withdrawn participants will now always have a `participant_status` of `left` in API responses.
+
+    Previously, deferred or withdrawn participants who had completed training would return a `participant_status` of `active`, even if they were deferred or withdrawn.
+
+    ## Why we’ve made this change
+
+    The previous behaviour could result in participants appearing to move from `left` back to `active` This could cause confusion for providers and delivery partners.
+
+    This change ensures that withdrawal and deferral states are consistently reflected, without requiring additional cross-referencing with other attributes.
+
+    ## What you need to do
+
+    No action is required. However, you should:
+
+    - expect deferred and withdrawn participants to always return `participant_status`: `left`
+    - ensure your systems do not rely on `participant_status` being `active` for completed participants who have since been withdrawn or deferred
+
+
+
 - title: Added schedules and contract data for the 2026 to 2027 intake to the test (sandbox) environment
   date: 2026-05-27
   tags:
