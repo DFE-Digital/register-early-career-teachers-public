@@ -1,6 +1,11 @@
 module Statements
   class FeeTypeForMonth
-    OUTPUT_FEE_MONTHS = %w[January April August November].freeze
+    OUTPUT_FEE_MONTHS = [
+      1,  # January
+      4,  # April
+      8,  # August
+      11, # November
+    ].freeze
 
     def initialize(month:)
       @month = month
@@ -9,15 +14,11 @@ module Statements
     def call
       return if month.blank?
 
-      output_fee_type_month? ? "output" : "service"
+      month.in?(OUTPUT_FEE_MONTHS) ? "output" : "service"
     end
 
   private
 
-    attr_accessor :month
-
-    def output_fee_type_month?
-      Date::MONTHNAMES[month].in?(OUTPUT_FEE_MONTHS)
-    end
+    attr_reader :month
   end
 end
