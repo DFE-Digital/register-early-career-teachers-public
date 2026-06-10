@@ -33,7 +33,7 @@
 
     ## What’s changed
 
-    Deferred and withdrawn participants will now always have a `participant_status` of `left` in API responses.
+    Deferred and withdrawn participants will now have a `participant_status` of `left` or `leaving` (if the `finished_on` date is in the future) in API responses.
 
     Previously, deferred or withdrawn participants who had completed training would return a `participant_status` of `active`, even if they were deferred or withdrawn.
 
