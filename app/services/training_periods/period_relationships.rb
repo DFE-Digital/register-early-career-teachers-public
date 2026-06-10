@@ -7,10 +7,7 @@ module TrainingPeriods
     end
 
     def current_active_period
-      related_periods
-        .ongoing_today
-        .order(started_on: :desc, created_at: :desc)
-        .first
+      related_periods.ongoing_today.first
     end
 
     def future_periods
