@@ -8,7 +8,15 @@ RSpec.describe GIAS::Schools::Replace do
     let!(:school_link) { FactoryBot.create(:gias_school_link, link_type, from_gias_school: gias_school, to_gias_school: successor_gias_school) }
     let(:link_type) { :successor_unique }
 
-    context "when the school is being replaced one-one" do
+    before do
+      allow(gias_school).to receive(:replaceable?).and_return(replaceable)
+    end
+
+    context "when the school is replaceable" do
+      let(:replaceable) { true }
+
+      it { is_expected.to be_truthy }
+
       it "replaces the URN with the new one" do
         service
 
@@ -28,49 +36,18 @@ RSpec.describe GIAS::Schools::Replace do
       end
     end
 
-    context "when the successor school is not yet open" do
-      let(:successor_gias_school) { FactoryBot.create(:gias_school, status: :proposed_to_open) }
+    context "when the school is not replaceable" do
+      let(:replaceable) { false }
 
-      it_behaves_like "does not change the schools URN or record an event"
-    end
+      it { is_expected.to be_falsy }
 
-    context "when the school has not yet closed" do
-      let(:gias_school) { FactoryBot.create(:gias_school, :with_school, status: :proposed_to_close) }
+      it "does not update the school's URN" do
+        expect { subject }.not_to(change { gias_school.school.reload.urn })
+      end
 
-      it_behaves_like "does not change the schools URN or record an event"
-    end
-
-    context "when the school has already been created" do
-      let(:successor_gias_school) { FactoryBot.create(:gias_school, :with_school, status: :open) }
-
-      it_behaves_like "does not change the schools URN or record an event"
-    end
-
-    context "when the school is merging into a new school" do
-      let!(:other_school_link) { FactoryBot.create(:gias_school_link, link_type, from_gias_school: other_gias_school, to_gias_school: successor_gias_school) }
-      let(:link_type) { :successor_merged }
-
-      it_behaves_like "does not change the schools URN or record an event"
-    end
-
-    context "when the school is amalgamating into a new school" do
-      let!(:other_school_link) { FactoryBot.create(:gias_school_link, link_type, from_gias_school: other_gias_school, to_gias_school: successor_gias_school) }
-      let(:link_type) { :successor_amalgamated }
-
-      it_behaves_like "does not change the schools URN or record an event"
-    end
-
-    context "when the school is splitting into several schools" do
-      let!(:other_school_link) { FactoryBot.create(:gias_school_link, link_type, from_gias_school: gias_school, to_gias_school: other_gias_school) }
-      let(:link_type) { :successor_split }
-
-      it_behaves_like "does not change the schools URN or record an event"
-    end
-
-    context "when the school has multiple successor schools" do
-      let!(:other_school_link) { FactoryBot.create(:gias_school_link, :successor, from_gias_school: gias_school, to_gias_school: other_gias_school) }
-
-      it_behaves_like "does not change the schools URN or record an event"
+      it "does not record a school changed event" do
+        expect { subject }.not_to change(Event, :count)
+      end
     end
   end
 end
