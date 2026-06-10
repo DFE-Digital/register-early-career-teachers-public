@@ -26,8 +26,8 @@ The lead provider API for DfE’s manage teacher CPD service
 
 | Parameter | In | Type | Required | Description | Example |
 | ---- | ---- | ---- | ---- | ---- | ---- |
-| filter | query | object | false | Refine participant declarations to return.<br/>This consumes a [ListFilterDeclarations](#schema-listfilterdeclarations) schema.<br/> | participant\_id=ab3a7848-1208-7679-942a-b4a70eed400a&updated\_since=2020-11-13T11:21:55Z | 
-| page | query | object | false | Pagination options to navigate through the list of participant declarations.<br/>This consumes a [Pagination](#schema-pagination) schema.<br/> | page[page]=1&page[per\_page]=5 | 
+| filter | query | object | false | Refine participant declarations to return.<br/>This consumes a [ListFilterDeclarations](#listfilterdeclarations) schema.<br/> | participant\_id=ab3a7848-1208-7679-942a-b4a70eed400a&updated\_since=2020-11-13T11:21:55Z | 
+| page | query | object | false | Pagination options to navigate through the list of participant declarations.<br/>This consumes a [Pagination](#pagination) schema.<br/> | page[page]=1&page[per\_page]=5 | 
 
 
 ### Responses
@@ -35,14 +35,14 @@ The lead provider API for DfE’s manage teacher CPD service
 
 | Status | Description |
 | ---- | ---- |
-| 200 | A list of participant declarations<br/>This response returns a [MultipleParticipantDeclarationsResponse](#schema-multipleparticipantdeclarationsresponse) schema.<br/> | 
-| 401 | Unauthorized<br/>This response returns a [UnauthorisedResponse](#schema-unauthorisedresponse) schema.<br/> | 
+| 200 | A list of participant declarations<br/>This response returns a [MultipleParticipantDeclarationsResponse](#multipleparticipantdeclarationsresponse) schema.<br/> | 
+| 401 | Unauthorized<br/>This response returns a [UnauthorisedResponse](#unauthorisedresponse) schema.<br/> | 
 
 
 ### Response examples
 
 200 - A list of participant declarations
-This response returns a [MultipleParticipantDeclarationsResponse](#schema-multipleparticipantdeclarationsresponse) schema.
+This response returns a [MultipleParticipantDeclarationsResponse](#multipleparticipantdeclarationsresponse) schema.
 
 ```
 {
@@ -72,7 +72,7 @@ This response returns a [MultipleParticipantDeclarationsResponse](#schema-multip
 ```
 
 401 - Unauthorized
-This response returns a [UnauthorisedResponse](#schema-unauthorisedresponse) schema.
+This response returns a [UnauthorisedResponse](#unauthorisedresponse) schema.
 
 ```
 {
@@ -95,23 +95,23 @@ This response returns a [UnauthorisedResponse](#schema-unauthorisedresponse) sch
 ### Request body
 
 
-This consumes a [ParticipantDeclarationRequest](#schema-participantdeclarationrequest) schema.
+This consumes a [ParticipantDeclarationRequest](#participantdeclarationrequest) schema.
 
 ### Responses
 
 
 | Status | Description |
 | ---- | ---- |
-| 200 | Successful<br/>This response returns a [SingleParticipantDeclarationResponse](#schema-singleparticipantdeclarationresponse) schema.<br/> | 
-| 422 | Bad or Missing parameter<br/>This response returns a [ErrorResponse](#schema-errorresponse) schema.<br/> | 
-| 401 | Unauthorized<br/>This response returns a [UnauthorisedResponse](#schema-unauthorisedresponse) schema.<br/> | 
-| 400 | Bad Request<br/>This response returns a [BadRequestResponse](#schema-badrequestresponse) schema.<br/> | 
+| 200 | Successful<br/>This response returns a [SingleParticipantDeclarationResponse](#singleparticipantdeclarationresponse) schema.<br/> | 
+| 422 | Bad or Missing parameter<br/>This response returns a [ErrorResponse](#errorresponse) schema.<br/> | 
+| 401 | Unauthorized<br/>This response returns a [UnauthorisedResponse](#unauthorisedresponse) schema.<br/> | 
+| 400 | Bad Request<br/>This response returns a [BadRequestResponse](#badrequestresponse) schema.<br/> | 
 
 
 ### Response examples
 
 200 - Successful
-This response returns a [SingleParticipantDeclarationResponse](#schema-singleparticipantdeclarationresponse) schema.
+This response returns a [SingleParticipantDeclarationResponse](#singleparticipantdeclarationresponse) schema.
 
 ```
 {
@@ -132,7 +132,7 @@ This response returns a [SingleParticipantDeclarationResponse](#schema-singlepar
 ```
 
 422 - Bad or Missing parameter
-This response returns a [ErrorResponse](#schema-errorresponse) schema.
+This response returns a [ErrorResponse](#errorresponse) schema.
 
 ```
 {
@@ -146,7 +146,7 @@ This response returns a [ErrorResponse](#schema-errorresponse) schema.
 ```
 
 401 - Unauthorized
-This response returns a [UnauthorisedResponse](#schema-unauthorisedresponse) schema.
+This response returns a [UnauthorisedResponse](#unauthorisedresponse) schema.
 
 ```
 {
@@ -155,7 +155,7 @@ This response returns a [UnauthorisedResponse](#schema-unauthorisedresponse) sch
 ```
 
 400 - Bad Request
-This response returns a [BadRequestResponse](#schema-badrequestresponse) schema.
+This response returns a [BadRequestResponse](#badrequestresponse) schema.
 
 ```
 {
@@ -180,16 +180,16 @@ This response returns a [BadRequestResponse](#schema-badrequestresponse) schema.
 
 | Status | Description |
 | ---- | ---- |
-| 200 | A CSV file of participant declarations<br/>This response returns a [MultipleParticipantDeclarationsCsvResponse](#schema-multipleparticipantdeclarationscsvresponse) schema.<br/> | 
-| 401 | Unauthorized<br/>This response returns a [UnauthorisedResponse](#schema-unauthorisedresponse) schema.<br/> | 
+| 200 | A CSV file of participant declarations<br/>This response returns a [MultipleParticipantDeclarationsCsvResponse](#multipleparticipantdeclarationscsvresponse) schema.<br/> | 
+| 401 | Unauthorized<br/>This response returns a [UnauthorisedResponse](#unauthorisedresponse) schema.<br/> | 
 
 
 ### Response examples
 
 200 - A CSV file of participant declarations
-This response returns a [MultipleParticipantDeclarationsCsvResponse](#schema-multipleparticipantdeclarationscsvresponse) schema.
+This response returns a [MultipleParticipantDeclarationsCsvResponse](#multipleparticipantdeclarationscsvresponse) schema.
 401 - Unauthorized
-This response returns a [UnauthorisedResponse](#schema-unauthorisedresponse) schema.
+This response returns a [UnauthorisedResponse](#unauthorisedresponse) schema.
 
 ---
 
@@ -215,15 +215,15 @@ This response returns a [UnauthorisedResponse](#schema-unauthorisedresponse) sch
 
 | Status | Description |
 | ---- | ---- |
-| 200 | A single participant declaration<br/>This response returns a [SingleParticipantDeclarationResponse](#schema-singleparticipantdeclarationresponse) schema.<br/> | 
-| 404 | Not found<br/>This response returns a [NotFoundResponse](#schema-notfoundresponse) schema.<br/> | 
-| 401 | Unauthorized<br/>This response returns a [UnauthorisedResponse](#schema-unauthorisedresponse) schema.<br/> | 
+| 200 | A single participant declaration<br/>This response returns a [SingleParticipantDeclarationResponse](#singleparticipantdeclarationresponse) schema.<br/> | 
+| 404 | Not found<br/>This response returns a [NotFoundResponse](#notfoundresponse) schema.<br/> | 
+| 401 | Unauthorized<br/>This response returns a [UnauthorisedResponse](#unauthorisedresponse) schema.<br/> | 
 
 
 ### Response examples
 
 200 - A single participant declaration
-This response returns a [SingleParticipantDeclarationResponse](#schema-singleparticipantdeclarationresponse) schema.
+This response returns a [SingleParticipantDeclarationResponse](#singleparticipantdeclarationresponse) schema.
 
 ```
 {
@@ -244,7 +244,7 @@ This response returns a [SingleParticipantDeclarationResponse](#schema-singlepar
 ```
 
 404 - Not found
-This response returns a [NotFoundResponse](#schema-notfoundresponse) schema.
+This response returns a [NotFoundResponse](#notfoundresponse) schema.
 
 ```
 {
@@ -253,7 +253,7 @@ This response returns a [NotFoundResponse](#schema-notfoundresponse) schema.
 ```
 
 401 - Unauthorized
-This response returns a [UnauthorisedResponse](#schema-unauthorisedresponse) schema.
+This response returns a [UnauthorisedResponse](#unauthorisedresponse) schema.
 
 ```
 {
@@ -286,13 +286,13 @@ This response returns a [UnauthorisedResponse](#schema-unauthorisedresponse) sch
 
 | Status | Description |
 | ---- | ---- |
-| 200 | Successful<br/>This response returns a [SingleParticipantDeclarationResponse](#schema-singleparticipantdeclarationresponse) schema.<br/> | 
+| 200 | Successful<br/>This response returns a [SingleParticipantDeclarationResponse](#singleparticipantdeclarationresponse) schema.<br/> | 
 
 
 ### Response examples
 
 200 - Successful
-This response returns a [SingleParticipantDeclarationResponse](#schema-singleparticipantdeclarationresponse) schema.
+This response returns a [SingleParticipantDeclarationResponse](#singleparticipantdeclarationresponse) schema.
 
 ```
 {
@@ -329,8 +329,8 @@ This response returns a [SingleParticipantDeclarationResponse](#schema-singlepar
 
 | Parameter | In | Type | Required | Description | Example |
 | ---- | ---- | ---- | ---- | ---- | ---- |
-| filter | query | object | false | Refine ECF participants to return.<br/>This consumes a [ListFilter](#schema-listfilter) schema.<br/> | filter[cohort]=2022&filter[updated\_since]=2020-11-13T11:21:55Z | 
-| page | query | object | false | Pagination options to navigate through the list of ECF participants.<br/>This consumes a [Pagination](#schema-pagination) schema.<br/> | page[page]=1&page[per\_page]=5 | 
+| filter | query | object | false | Refine ECF participants to return.<br/>This consumes a [ListFilter](#listfilter) schema.<br/> | filter[cohort]=2022&filter[updated\_since]=2020-11-13T11:21:55Z | 
+| page | query | object | false | Pagination options to navigate through the list of ECF participants.<br/>This consumes a [Pagination](#pagination) schema.<br/> | page[page]=1&page[per\_page]=5 | 
 
 
 ### Responses
@@ -338,14 +338,14 @@ This response returns a [SingleParticipantDeclarationResponse](#schema-singlepar
 
 | Status | Description |
 | ---- | ---- |
-| 200 | A list of ECF participants<br/>This response returns a [MultipleECFParticipantsResponse](#schema-multipleecfparticipantsresponse) schema.<br/> | 
-| 401 | Unauthorized<br/>This response returns a [UnauthorisedResponse](#schema-unauthorisedresponse) schema.<br/> | 
+| 200 | A list of ECF participants<br/>This response returns a [MultipleECFParticipantsResponse](#multipleecfparticipantsresponse) schema.<br/> | 
+| 401 | Unauthorized<br/>This response returns a [UnauthorisedResponse](#unauthorisedresponse) schema.<br/> | 
 
 
 ### Response examples
 
 200 - A list of ECF participants
-This response returns a [MultipleECFParticipantsResponse](#schema-multipleecfparticipantsresponse) schema.
+This response returns a [MultipleECFParticipantsResponse](#multipleecfparticipantsresponse) schema.
 
 ```
 {
@@ -414,7 +414,7 @@ This response returns a [MultipleECFParticipantsResponse](#schema-multipleecfpar
 ```
 
 401 - Unauthorized
-This response returns a [UnauthorisedResponse](#schema-unauthorisedresponse) schema.
+This response returns a [UnauthorisedResponse](#unauthorisedresponse) schema.
 
 ```
 {
@@ -439,7 +439,7 @@ This response returns a [UnauthorisedResponse](#schema-unauthorisedresponse) sch
 
 | Parameter | In | Type | Required | Description | Example |
 | ---- | ---- | ---- | ---- | ---- | ---- |
-| filter | query | object | false | Refine ECF participants to return.<br/>This consumes a [ListFilter](#schema-listfilter) schema.<br/> | updated\_since=2020-11-13T11:21:55Z | 
+| filter | query | object | false | Refine ECF participants to return.<br/>This consumes a [ListFilter](#listfilter) schema.<br/> | updated\_since=2020-11-13T11:21:55Z | 
 
 
 ### Responses
@@ -447,16 +447,16 @@ This response returns a [UnauthorisedResponse](#schema-unauthorisedresponse) sch
 
 | Status | Description |
 | ---- | ---- |
-| 200 | A CSV file of ECF participants<br/>This response returns a [MultipleECFParticipantsCsvResponse](#schema-multipleecfparticipantscsvresponse) schema.<br/> | 
-| 401 | Unauthorized<br/>This response returns a [UnauthorisedResponse](#schema-unauthorisedresponse) schema.<br/> | 
+| 200 | A CSV file of ECF participants<br/>This response returns a [MultipleECFParticipantsCsvResponse](#multipleecfparticipantscsvresponse) schema.<br/> | 
+| 401 | Unauthorized<br/>This response returns a [UnauthorisedResponse](#unauthorisedresponse) schema.<br/> | 
 
 
 ### Response examples
 
 200 - A CSV file of ECF participants
-This response returns a [MultipleECFParticipantsCsvResponse](#schema-multipleecfparticipantscsvresponse) schema.
+This response returns a [MultipleECFParticipantsCsvResponse](#multipleecfparticipantscsvresponse) schema.
 401 - Unauthorized
-This response returns a [UnauthorisedResponse](#schema-unauthorisedresponse) schema.
+This response returns a [UnauthorisedResponse](#unauthorisedresponse) schema.
 
 ---
 
@@ -482,14 +482,14 @@ This response returns a [UnauthorisedResponse](#schema-unauthorisedresponse) sch
 
 | Status | Description |
 | ---- | ---- |
-| 200 | A single ECF participant<br/>This response returns a [ECFParticipantResponse](#schema-ecfparticipantresponse) schema.<br/> | 
-| 401 | Unauthorized<br/>This response returns a [UnauthorisedResponse](#schema-unauthorisedresponse) schema.<br/> | 
+| 200 | A single ECF participant<br/>This response returns a [ECFParticipantResponse](#ecfparticipantresponse) schema.<br/> | 
+| 401 | Unauthorized<br/>This response returns a [UnauthorisedResponse](#unauthorisedresponse) schema.<br/> | 
 
 
 ### Response examples
 
 200 - A single ECF participant
-This response returns a [ECFParticipantResponse](#schema-ecfparticipantresponse) schema.
+This response returns a [ECFParticipantResponse](#ecfparticipantresponse) schema.
 
 ```
 {
@@ -519,7 +519,7 @@ This response returns a [ECFParticipantResponse](#schema-ecfparticipantresponse)
 ```
 
 401 - Unauthorized
-This response returns a [UnauthorisedResponse](#schema-unauthorisedresponse) schema.
+This response returns a [UnauthorisedResponse](#unauthorisedresponse) schema.
 
 ```
 {
@@ -550,7 +550,7 @@ This response returns a [UnauthorisedResponse](#schema-unauthorisedresponse) sch
 ### Request body
 
 
-This consumes a [ECFParticipantDeferRequest](#schema-ecfparticipantdeferrequest) schema.
+This consumes a [ECFParticipantDeferRequest](#ecfparticipantdeferrequest) schema.
 
 ### Request example
 
@@ -573,13 +573,13 @@ This consumes a [ECFParticipantDeferRequest](#schema-ecfparticipantdeferrequest)
 
 | Status | Description |
 | ---- | ---- |
-| 200 | The ECF participant being deferred<br/>This response returns a [ECFParticipantDeferResponse](#schema-ecfparticipantdeferresponse) schema.<br/> | 
+| 200 | The ECF participant being deferred<br/>This response returns a [ECFParticipantDeferResponse](#ecfparticipantdeferresponse) schema.<br/> | 
 
 
 ### Response examples
 
 200 - The ECF participant being deferred
-This response returns a [ECFParticipantDeferResponse](#schema-ecfparticipantdeferresponse) schema.
+This response returns a [ECFParticipantDeferResponse](#ecfparticipantdeferresponse) schema.
 
 ```
 {
@@ -630,7 +630,7 @@ This response returns a [ECFParticipantDeferResponse](#schema-ecfparticipantdefe
 ### Request body
 
 
-This consumes a [ECFParticipantResumeRequest](#schema-ecfparticipantresumerequest) schema.
+This consumes a [ECFParticipantResumeRequest](#ecfparticipantresumerequest) schema.
 
 ### Request example
 
@@ -652,13 +652,13 @@ This consumes a [ECFParticipantResumeRequest](#schema-ecfparticipantresumereques
 
 | Status | Description |
 | ---- | ---- |
-| 200 | The ECF participant being resumed<br/>This response returns a [ECFParticipantResumeResponse](#schema-ecfparticipantresumeresponse) schema.<br/> | 
+| 200 | The ECF participant being resumed<br/>This response returns a [ECFParticipantResumeResponse](#ecfparticipantresumeresponse) schema.<br/> | 
 
 
 ### Response examples
 
 200 - The ECF participant being resumed
-This response returns a [ECFParticipantResumeResponse](#schema-ecfparticipantresumeresponse) schema.
+This response returns a [ECFParticipantResumeResponse](#ecfparticipantresumeresponse) schema.
 
 ```
 {
@@ -709,7 +709,7 @@ This response returns a [ECFParticipantResumeResponse](#schema-ecfparticipantres
 ### Request body
 
 
-This consumes a [ECFParticipantWithdrawRequest](#schema-ecfparticipantwithdrawrequest) schema.
+This consumes a [ECFParticipantWithdrawRequest](#ecfparticipantwithdrawrequest) schema.
 
 ### Request example
 
@@ -732,13 +732,13 @@ This consumes a [ECFParticipantWithdrawRequest](#schema-ecfparticipantwithdrawre
 
 | Status | Description |
 | ---- | ---- |
-| 200 | The ECF participant being withdrawn<br/>This response returns a [ECFParticipantWithdrawResponse](#schema-ecfparticipantwithdrawresponse) schema.<br/> | 
+| 200 | The ECF participant being withdrawn<br/>This response returns a [ECFParticipantWithdrawResponse](#ecfparticipantwithdrawresponse) schema.<br/> | 
 
 
 ### Response examples
 
 200 - The ECF participant being withdrawn
-This response returns a [ECFParticipantWithdrawResponse](#schema-ecfparticipantwithdrawresponse) schema.
+This response returns a [ECFParticipantWithdrawResponse](#ecfparticipantwithdrawresponse) schema.
 
 ```
 {
@@ -789,7 +789,7 @@ This response returns a [ECFParticipantWithdrawResponse](#schema-ecfparticipantw
 ### Request body
 
 
-This consumes a [ECFParticipantChangeScheduleRequest](#schema-ecfparticipantchangeschedulerequest) schema.
+This consumes a [ECFParticipantChangeScheduleRequest](#ecfparticipantchangeschedulerequest) schema.
 
 ### Request example
 
@@ -813,13 +813,13 @@ This consumes a [ECFParticipantChangeScheduleRequest](#schema-ecfparticipantchan
 
 | Status | Description |
 | ---- | ---- |
-| 200 | The ECF participant changing schedule<br/>This response returns a [ECFParticipantResponse](#schema-ecfparticipantresponse) schema.<br/> | 
+| 200 | The ECF participant changing schedule<br/>This response returns a [ECFParticipantResponse](#ecfparticipantresponse) schema.<br/> | 
 
 
 ### Response examples
 
 200 - The ECF participant changing schedule
-This response returns a [ECFParticipantResponse](#schema-ecfparticipantresponse) schema.
+This response returns a [ECFParticipantResponse](#ecfparticipantresponse) schema.
 
 ```
 {
@@ -899,7 +899,7 @@ The details of a participant
 | ---- | ---- | ---- | ---- |
 | id | string | true | The unique identifier of the participant record<br/> | 
 | type | string | true | The data type<br/> | 
-| attributes | object | true | The data attributes associated with an ECF participant<br/>It conforms to [ECFParticipantAttributes](#schema-ecfparticipantattributes) schema. | 
+| attributes | object | true | The data attributes associated with an ECF participant<br/>It conforms to [ECFParticipantAttributes](#ecfparticipantattributes) schema. | 
 
 
 ### ECFParticipantAttributes
@@ -935,7 +935,7 @@ An ECF participant change schedule action
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
 | type | string | true | The data type<br/>Possible values:<br/><ul><li>participant-change-schedule</li></ul> | 
-| attributes | object | true | An ECF participant change schedule action<br/>It conforms to [ECFParticipantChangeScheduleAttributes](#schema-ecfparticipantchangescheduleattributes) schema. | 
+| attributes | object | true | An ECF participant change schedule action<br/>It conforms to [ECFParticipantChangeScheduleAttributes](#ecfparticipantchangescheduleattributes) schema. | 
 
 
 #### Example
@@ -983,7 +983,7 @@ The change schedule request for a participant
 
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
-| data | object | true | An ECF participant change schedule action<br/>It conforms to [ECFParticipantChangeSchedule](#schema-ecfparticipantchangeschedule) schema. | 
+| data | object | true | An ECF participant change schedule action<br/>It conforms to [ECFParticipantChangeSchedule](#ecfparticipantchangeschedule) schema. | 
 
 
 #### Example
@@ -1177,7 +1177,7 @@ The details of a participant deferral request
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
 | type | string | true | The data type<br/>Possible values:<br/><ul><li>participant-defer</li></ul> | 
-| attributes | object | true | An ECF participant deferral action<br/>It conforms to [ECFParticipantDeferAttributes](#schema-ecfparticipantdeferattributes) schema. | 
+| attributes | object | true | An ECF participant deferral action<br/>It conforms to [ECFParticipantDeferAttributes](#ecfparticipantdeferattributes) schema. | 
 
 
 ### ECFParticipantDeferAttributes
@@ -1233,7 +1233,7 @@ The deferral request for a participant
 
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
-| data | object | true | The details of a participant deferral request<br/>It conforms to [ECFParticipantDefer](#schema-ecfparticipantdefer) schema. | 
+| data | object | true | The details of a participant deferral request<br/>It conforms to [ECFParticipantDefer](#ecfparticipantdefer) schema. | 
 
 
 #### Example
@@ -1259,7 +1259,7 @@ An ECF Participant
 
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
-| data | object | true | The details of a participant<br/>It conforms to [ECFParticipantDeferResponseData](#schema-ecfparticipantdeferresponsedata) schema. | 
+| data | object | true | The details of a participant<br/>It conforms to [ECFParticipantDeferResponseData](#ecfparticipantdeferresponsedata) schema. | 
 
 
 ### ECFParticipantDeferResponseData
@@ -1271,7 +1271,7 @@ The details of a participant
 | ---- | ---- | ---- | ---- |
 | id | string | true | The unique identifier of the participant record<br/> | 
 | type | string | true | The data type<br/> | 
-| attributes | object | true | The data attributes associated with an ECF participant<br/>It conforms to [ECFParticipantDeferAttributesResponse](#schema-ecfparticipantdeferattributesresponse) schema. | 
+| attributes | object | true | The data attributes associated with an ECF participant<br/>It conforms to [ECFParticipantDeferAttributesResponse](#ecfparticipantdeferattributesresponse) schema. | 
 
 
 ### ECFParticipantResponse
@@ -1281,7 +1281,7 @@ An ECF Participant
 
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
-| data | object | true | The details of a participant<br/>It conforms to [ECFParticipant](#schema-ecfparticipant) schema. | 
+| data | object | true | The details of a participant<br/>It conforms to [ECFParticipant](#ecfparticipant) schema. | 
 
 
 ### ECFParticipantResume
@@ -1292,7 +1292,7 @@ An ECF participant resume action
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
 | type | string | true | The data type<br/>Possible values:<br/><ul><li>participant-resume</li></ul> | 
-| attributes | object | true | An ECF participant resume action<br/>It conforms to [ECFParticipantResumeAttributes](#schema-ecfparticipantresumeattributes) schema. | 
+| attributes | object | true | An ECF participant resume action<br/>It conforms to [ECFParticipantResumeAttributes](#ecfparticipantresumeattributes) schema. | 
 
 
 ### ECFParticipantResumeAttributes
@@ -1346,7 +1346,7 @@ The resume request for a participant
 
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
-| data | object | true | An ECF participant resume action<br/>It conforms to [ECFParticipantResume](#schema-ecfparticipantresume) schema. | 
+| data | object | true | An ECF participant resume action<br/>It conforms to [ECFParticipantResume](#ecfparticipantresume) schema. | 
 
 
 #### Example
@@ -1371,7 +1371,7 @@ An ECF Participant
 
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
-| data | object | true | The details of a participant<br/>It conforms to [ECFParticipantResumeResponseData](#schema-ecfparticipantresumeresponsedata) schema. | 
+| data | object | true | The details of a participant<br/>It conforms to [ECFParticipantResumeResponseData](#ecfparticipantresumeresponsedata) schema. | 
 
 
 ### ECFParticipantResumeResponseData
@@ -1383,7 +1383,7 @@ The details of a participant
 | ---- | ---- | ---- | ---- |
 | id | string | true | The unique identifier of the participant record<br/> | 
 | type | string | true | The data type<br/> | 
-| attributes | object | true | The data attributes associated with an ECF participant<br/>It conforms to [ECFParticipantResumeAttributesResponse](#schema-ecfparticipantresumeattributesresponse) schema. | 
+| attributes | object | true | The data attributes associated with an ECF participant<br/>It conforms to [ECFParticipantResumeAttributesResponse](#ecfparticipantresumeattributesresponse) schema. | 
 
 
 ### ECFParticipantRetainedDeclaration
@@ -1394,7 +1394,7 @@ An ECF participant retained declaration request body
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
 | type | object | false | The request data<br/>Possible values:<br/><ul><li>participant-declaration</li></ul> | 
-| attributes | object | true | An ECF participant retained declaration<br/>It conforms to [ECFParticipantRetainedDeclarationAttributes](#schema-ecfparticipantretaineddeclarationattributes) schema. | 
+| attributes | object | true | An ECF participant retained declaration<br/>It conforms to [ECFParticipantRetainedDeclarationAttributes](#ecfparticipantretaineddeclarationattributes) schema. | 
 
 
 ### ECFParticipantRetainedDeclarationAttributes
@@ -1433,7 +1433,7 @@ A participant started declaration request body
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
 | type | object | false | The request data<br/>Possible values:<br/><ul><li>participant-declaration</li></ul> | 
-| attributes | object | true | An ECF started and completed participant declaration<br/>It conforms to [ECFParticipantStartedDeclarationAttributes](#schema-ecfparticipantstarteddeclarationattributes) schema. | 
+| attributes | object | true | An ECF started and completed participant declaration<br/>It conforms to [ECFParticipantStartedDeclarationAttributes](#ecfparticipantstarteddeclarationattributes) schema. | 
 
 
 ### ECFParticipantStartedDeclarationAttributes
@@ -1470,7 +1470,7 @@ An ECF participant withdrawal action
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
 | type | string | false | The data type<br/>Possible values:<br/><ul><li>participant-withdraw</li></ul> | 
-| attributes | object | false | An ECF participant withdrawal action<br/>It conforms to [ECFParticipantWithdrawAttributes](#schema-ecfparticipantwithdrawattributes) schema. | 
+| attributes | object | false | An ECF participant withdrawal action<br/>It conforms to [ECFParticipantWithdrawAttributes](#ecfparticipantwithdrawattributes) schema. | 
 
 
 ### ECFParticipantWithdrawAttributes
@@ -1528,7 +1528,7 @@ The details of a participant
 | ---- | ---- | ---- | ---- |
 | id | string | true | The unique identifier of the participant record<br/> | 
 | type | string | true | The data type<br/> | 
-| attributes | object | true | The data attributes associated with an ECF participant<br/>It conforms to [ECFParticipantWithdrawAttributesResponse](#schema-ecfparticipantwithdrawattributesresponse) schema. | 
+| attributes | object | true | The data attributes associated with an ECF participant<br/>It conforms to [ECFParticipantWithdrawAttributesResponse](#ecfparticipantwithdrawattributesresponse) schema. | 
 
 
 ### ECFParticipantWithdrawRequest
@@ -1538,7 +1538,7 @@ The withdrawal request for a participant
 
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
-| data | object | true | An ECF participant withdrawal action<br/>It conforms to [ECFParticipantWithdraw](#schema-ecfparticipantwithdraw) schema. | 
+| data | object | true | An ECF participant withdrawal action<br/>It conforms to [ECFParticipantWithdraw](#ecfparticipantwithdraw) schema. | 
 
 
 #### Example
@@ -1564,7 +1564,7 @@ An ECF Participant
 
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
-| data | object | true | The details of a participant<br/>It conforms to [ECFParticipantWithdrawDataResponse](#schema-ecfparticipantwithdrawdataresponse) schema. | 
+| data | object | true | The details of a participant<br/>It conforms to [ECFParticipantWithdrawDataResponse](#ecfparticipantwithdrawdataresponse) schema. | 
 
 
 ### Error
@@ -1585,7 +1585,7 @@ A list of errors
 
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
-| error | array | false | It conforms to [Error](#schema-error) schema. | 
+| error | array | false | It conforms to [Error](#error) schema. | 
 
 
 ### ListFilter
@@ -1616,7 +1616,7 @@ A list of ECF participants in the Comma Separated Value (CSV) format
 
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
-| data | array | true | It conforms to [ECFParticipantCsvRow](#schema-ecfparticipantcsvrow) schema. | 
+| data | array | true | It conforms to [ECFParticipantCsvRow](#ecfparticipantcsvrow) schema. | 
 
 
 ### MultipleECFParticipantsResponse
@@ -1626,7 +1626,7 @@ A list of ECF participants
 
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
-| data | array | true | It conforms to [ECFParticipant](#schema-ecfparticipant) schema. | 
+| data | array | true | It conforms to [ECFParticipant](#ecfparticipant) schema. | 
 
 
 ### MultipleParticipantDeclarationsCsvResponse
@@ -1636,7 +1636,7 @@ A list of participant declarations in the Comma Separated Value (CSV) format
 
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
-| data | array | true | It conforms to [ParticipantDeclarationCsvRow](#schema-participantdeclarationcsvrow) schema. | 
+| data | array | true | It conforms to [ParticipantDeclarationCsvRow](#participantdeclarationcsvrow) schema. | 
 
 
 ### MultipleParticipantDeclarationsResponse
@@ -1646,7 +1646,7 @@ A list of participant declarations
 
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
-| data | array | true | It conforms to [ParticipantDeclarationResponse](#schema-participantdeclarationresponse) schema. | 
+| data | array | true | It conforms to [ParticipantDeclarationResponse](#participantdeclarationresponse) schema. | 
 
 
 ### NotFoundResponse
@@ -1710,7 +1710,7 @@ A participant declaration data request for ECT participants from cohort 2025 onw
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
 | type | string | false | Possible values:<br/><ul><li>participant-declaration</li></ul> | 
-| attributes | object | false | This conforms to any of the following schemas:<br/><ul><li> [ECFParticipantDeclarationPost2024ECTStartedAttributesRequest](#schema-ecfparticipantdeclarationpost2024ectstartedattributesrequest) </li><li> [ECFParticipantDeclarationPost2024ECTRetainedAttributesRequest](#schema-ecfparticipantdeclarationpost2024ectretainedattributesrequest) </li><li> [ECFParticipantDeclarationPost2024ECTCompletedAttributesRequest](#schema-ecfparticipantdeclarationpost2024ectcompletedattributesrequest) </li><li> [ECFParticipantDeclarationPost2024ECTExtendedAttributesRequest](#schema-ecfparticipantdeclarationpost2024ectextendedattributesrequest) </li></ul> | 
+| attributes | object | false | This conforms to any of the following schemas:<br/><ul><li> [ECFParticipantDeclarationPost2024ECTStartedAttributesRequest](#ecfparticipantdeclarationpost2024ectstartedattributesrequest) </li><li> [ECFParticipantDeclarationPost2024ECTRetainedAttributesRequest](#ecfparticipantdeclarationpost2024ectretainedattributesrequest) </li><li> [ECFParticipantDeclarationPost2024ECTCompletedAttributesRequest](#ecfparticipantdeclarationpost2024ectcompletedattributesrequest) </li><li> [ECFParticipantDeclarationPost2024ECTExtendedAttributesRequest](#ecfparticipantdeclarationpost2024ectextendedattributesrequest) </li></ul> | 
 
 
 ### ParticipantDeclarationPost2024MentorDataRequest
@@ -1721,7 +1721,7 @@ A participant declaration data request for mentor participants from cohort 2025 
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
 | type | string | false | Possible values:<br/><ul><li>participant-declaration</li></ul> | 
-| attributes | object | false | This conforms to any of the following schemas:<br/><ul><li> [ECFParticipantDeclarationPost2024MentorStartedAttributesRequest](#schema-ecfparticipantdeclarationpost2024mentorstartedattributesrequest) </li><li> [ECFParticipantDeclarationPost2024MentorCompletedAttributesRequest](#schema-ecfparticipantdeclarationpost2024mentorcompletedattributesrequest) </li></ul> | 
+| attributes | object | false | This conforms to any of the following schemas:<br/><ul><li> [ECFParticipantDeclarationPost2024MentorStartedAttributesRequest](#ecfparticipantdeclarationpost2024mentorstartedattributesrequest) </li><li> [ECFParticipantDeclarationPost2024MentorCompletedAttributesRequest](#ecfparticipantdeclarationpost2024mentorcompletedattributesrequest) </li></ul> | 
 
 
 ### ParticipantDeclarationPre2025DataRequest
@@ -1732,7 +1732,7 @@ A participant declaration data request for participants in cohort 2024 and previ
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
 | type | string | false | Possible values:<br/><ul><li>participant-declaration</li></ul> | 
-| attributes | object | false | This conforms to any of the following schemas:<br/><ul><li> [ECFParticipantDeclarationPre2025StartedAttributesRequest](#schema-ecfparticipantdeclarationpre2025startedattributesrequest) </li><li> [ECFParticipantDeclarationPre2025RetainedAttributesRequest](#schema-ecfparticipantdeclarationpre2025retainedattributesrequest) </li><li> [ECFParticipantDeclarationPre2025CompletedAttributesRequest](#schema-ecfparticipantdeclarationpre2025completedattributesrequest) </li><li> [ECFParticipantDeclarationPre2025ExtendedAttributesRequest](#schema-ecfparticipantdeclarationpre2025extendedattributesrequest) </li></ul> | 
+| attributes | object | false | This conforms to any of the following schemas:<br/><ul><li> [ECFParticipantDeclarationPre2025StartedAttributesRequest](#ecfparticipantdeclarationpre2025startedattributesrequest) </li><li> [ECFParticipantDeclarationPre2025RetainedAttributesRequest](#ecfparticipantdeclarationpre2025retainedattributesrequest) </li><li> [ECFParticipantDeclarationPre2025CompletedAttributesRequest](#ecfparticipantdeclarationpre2025completedattributesrequest) </li><li> [ECFParticipantDeclarationPre2025ExtendedAttributesRequest](#ecfparticipantdeclarationpre2025extendedattributesrequest) </li></ul> | 
 
 
 ### ParticipantDeclarationRequest
@@ -1742,7 +1742,7 @@ An participant declaration request
 
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
-| data | object | true | This conforms to any of the following schemas:<br/><ul><li> [ParticipantDeclarationPre2025DataRequest](#schema-participantdeclarationpre2025datarequest) </li><li> [ParticipantDeclarationPost2024ECTDataRequest](#schema-participantdeclarationpost2024ectdatarequest) </li><li> [ParticipantDeclarationPost2024MentorDataRequest](#schema-participantdeclarationpost2024mentordatarequest) </li></ul> | 
+| data | object | true | This conforms to any of the following schemas:<br/><ul><li> [ParticipantDeclarationPre2025DataRequest](#participantdeclarationpre2025datarequest) </li><li> [ParticipantDeclarationPost2024ECTDataRequest](#participantdeclarationpost2024ectdatarequest) </li><li> [ParticipantDeclarationPost2024MentorDataRequest](#participantdeclarationpost2024mentordatarequest) </li></ul> | 
 
 
 ### ParticipantDeclarationResponse
@@ -1754,7 +1754,7 @@ A participant declaration response
 | ---- | ---- | ---- | ---- |
 | id | string | true | The unique identifier of the participant declaration record<br/> | 
 | type | string | true | The data type<br/> | 
-| attributes | object | true | The data attributes associated with a participant declaration response<br/>It conforms to [ParticipantDeclarationAttributes](#schema-participantdeclarationattributes) schema. | 
+| attributes | object | true | The data attributes associated with a participant declaration response<br/>It conforms to [ParticipantDeclarationAttributes](#participantdeclarationattributes) schema. | 
 
 
 ### ParticipantListFilter
@@ -1775,7 +1775,7 @@ A confirmation that the participant declaration has been recorded successfully
 
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
-| data | object | true | A participant declaration response<br/>It conforms to [ParticipantDeclarationResponse](#schema-participantdeclarationresponse) schema. | 
+| data | object | true | A participant declaration response<br/>It conforms to [ParticipantDeclarationResponse](#participantdeclarationresponse) schema. | 
 
 
 ### UnauthorisedResponse
