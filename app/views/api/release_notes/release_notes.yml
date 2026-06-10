@@ -22,7 +22,7 @@
 #     **bold** and _italic_ text
 
 - title: |
-    Changes to participant status for deferred and withdrawn participants who have completed training
+    Added new withdrawal reason: changed_lead_provider
   date: 2026-06-10
   tags:
     - data-update
