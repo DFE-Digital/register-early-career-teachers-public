@@ -63,6 +63,10 @@ describe GIAS::School do
     it { is_expected.to have_one(:school).with_primary_key(:urn).with_foreign_key(:urn).inverse_of(:gias_school) }
     it { is_expected.to have_many(:gias_school_links).with_foreign_key(:urn).dependent(:destroy).class_name("GIAS::SchoolLink").inverse_of(:from_gias_school) }
     it { is_expected.to have_many(:contract_period_metadata).class_name("Metadata::SchoolContractPeriod").through(:school) }
+    it { is_expected.to have_many(:successor_links).class_name("GIAS::SchoolLink").with_foreign_key(:urn).with_primary_key(:urn).conditions(link_type: GIAS::SchoolLink::SUCCESSOR_LINK_TYPES) }
+    it { is_expected.to have_many(:predecessor_links).class_name("GIAS::SchoolLink").with_foreign_key(:urn).with_primary_key(:urn).conditions(link_type: GIAS::SchoolLink::PREDECESSOR_LINK_TYPES) }
+    it { is_expected.to have_many(:successors).through(:successor_links).source(:to_gias_school).class_name("GIAS::School") }
+    it { is_expected.to have_many(:predecessors).through(:predecessor_links).source(:from_gias_school).class_name("GIAS::School") }
   end
 
   describe "validations" do
@@ -124,9 +128,192 @@ describe GIAS::School do
         it { is_expected.not_to be_closed }
       end
     end
+
+    describe "#successor" do
+      subject { gias_school.successor }
+
+      let(:gias_school) { FactoryBot.create(:gias_school) }
+
+      context "when the school has one successor" do
+        let(:successor) { FactoryBot.create(:gias_school) }
+
+        before { FactoryBot.create(:gias_school_link, :successor, from_gias_school: gias_school, to_gias_school: successor) }
+
+        it { is_expected.to eq(successor) }
+      end
+
+      context "when the school has two successor links" do
+        before do
+          FactoryBot.create(:gias_school_link, :successor_split, from_gias_school: gias_school)
+          FactoryBot.create(:gias_school_link, :successor_split, from_gias_school: gias_school)
+        end
+
+        it { is_expected.to be_nil }
+      end
+
+      context "when the school has several links only one of which is a successor" do
+        let(:successor) { FactoryBot.create(:gias_school) }
+
+        before do
+          FactoryBot.create(:gias_school_link, :successor, from_gias_school: gias_school, to_gias_school: successor)
+          FactoryBot.create(:gias_school_link, :predecessor, from_gias_school: gias_school)
+        end
+
+        it { is_expected.to eq(successor) }
+      end
+
+      context "when the school has no links" do
+        it { is_expected.to be_nil }
+      end
+
+      context "when the school has no successor links" do
+        before { FactoryBot.create(:gias_school_link, :predecessor, from_gias_school: gias_school) }
+
+        it { is_expected.to be_nil }
+      end
+    end
+
+    describe "#closeable?" do
+      subject { gias_school }
+
+      let(:gias_school) { FactoryBot.create(:gias_school, status: :closed) }
+
+      context "when the school is closed, has no successors and no closure event recorded" do
+        it { is_expected.to be_closeable }
+      end
+
+      context "when the school is closed but has a successor" do
+        before do
+          FactoryBot.create(:gias_school_link, :successor, from_gias_school: gias_school)
+        end
+
+        it { is_expected.not_to be_closeable }
+      end
+
+      context "when the school is closed but has a closure event recorded" do
+        let(:gias_school) { FactoryBot.create(:gias_school, :with_school, status: :closed) }
+
+        before do
+          FactoryBot.create(:event, event_type: :school_closed, school: gias_school.school)
+        end
+
+        it { is_expected.not_to be_closeable }
+      end
+
+      context "when the school is not closed" do
+        let(:gias_school) { FactoryBot.create(:gias_school, status: :open) }
+
+        it { is_expected.not_to be_closeable }
+      end
+    end
+
+    describe "#openable?" do
+      subject { gias_school }
+
+      let(:gias_school) { FactoryBot.create(:gias_school, status: :open) }
+
+      context "when the school is open, has no predecessors or successors and not school record" do
+        it { is_expected.to be_openable }
+      end
+
+      context "when the school is open but has a predecessor" do
+        before do
+          FactoryBot.create(:gias_school_link, :predecessor, from_gias_school: gias_school)
+        end
+
+        it { is_expected.not_to be_openable }
+      end
+
+      context "when the school is open but has a successor" do
+        before do
+          FactoryBot.create(:gias_school_link, :successor, from_gias_school: gias_school)
+        end
+
+        it { is_expected.not_to be_openable }
+      end
+
+      context "when the school is open but already has a school record" do
+        let(:gias_school) { FactoryBot.create(:gias_school, :with_school, status: :open) }
+
+        it { is_expected.not_to be_openable }
+      end
+
+      context "when the school is not open" do
+        let(:gias_school) { FactoryBot.create(:gias_school, status: :closed) }
+
+        it { is_expected.not_to be_openable }
+      end
+    end
+
+    describe "#replaceable?" do
+      subject { gias_school }
+
+      let(:gias_school) { FactoryBot.create(:gias_school, status: :closed) }
+
+      context "when the school is closed and has an open successor that has not yet opened" do
+        let(:successor) { FactoryBot.create(:gias_school, status: :open) }
+
+        before do
+          FactoryBot.create(:gias_school_link, :successor, from_gias_school: gias_school, to_gias_school: successor)
+        end
+
+        it { is_expected.to be_replaceable }
+      end
+
+      context "when the school is closed but has no successor" do
+        it { is_expected.not_to be_replaceable }
+      end
+
+      context "when the school is closed but its successor is not open" do
+        let(:successor) { FactoryBot.create(:gias_school, status: :proposed_to_open) }
+
+        before do
+          FactoryBot.create(:gias_school_link, :successor, from_gias_school: gias_school, to_gias_school: successor)
+        end
+
+        it { is_expected.not_to be_replaceable }
+      end
+
+      context "when the school is closed but its successor already has a school record" do
+        let(:successor) { FactoryBot.create(:gias_school, :with_school, status: :open) }
+
+        before do
+          FactoryBot.create(:gias_school_link, :successor, from_gias_school: gias_school, to_gias_school: successor)
+        end
+
+        it { is_expected.not_to be_replaceable }
+      end
+
+      context "when the school is not closed" do
+        let(:gias_school) { FactoryBot.create(:gias_school, status: :open) }
+
+        it { is_expected.not_to be_replaceable }
+      end
+    end
+
+    describe "#school_not_yet_opened?" do
+      subject { gias_school.school_not_yet_opened? }
+
+      let(:gias_school) { FactoryBot.create(:gias_school) }
+
+      context "when the school does not have a school record" do
+        it { is_expected.to be true }
+      end
+
+      context "when the school has a school record" do
+        let(:gias_school) { FactoryBot.create(:gias_school, :with_school) }
+
+        it { is_expected.to be false }
+      end
+    end
   end
 
   describe "scopes" do
+    let(:gias_school_with_successor) { FactoryBot.create(:gias_school_link).from_gias_school }
+    let(:gias_school_without_successor) { FactoryBot.create(:gias_school) }
+    let(:open_gias_school) { FactoryBot.create(:gias_school, status: :open) }
+    let(:closed_gias_school) { FactoryBot.create(:gias_school, status: :closed) }
+
     describe ".ordered_by_name" do
       it "amends the query so results are ordered by name, ascending" do
         expect(GIAS::School.ordered_by_name.to_sql).to end_with('ORDER BY "gias_schools"."name" ASC')
