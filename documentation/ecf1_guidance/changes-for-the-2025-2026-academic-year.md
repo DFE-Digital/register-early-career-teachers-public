@@ -85,7 +85,7 @@ The introduction of the 2025 contracts requires updates to the API service.
 
 To help lead providers prepare for the opening of registration, we'll run a testing window throughout May 2025. 
 
-Refer to our [release notes](/release-notes.md) for all the relevant spec changes.
+Refer to our [release notes](release-notes.md) for all the relevant spec changes.
 
 ### Timelines 
 

@@ -1,7 +1,3 @@
----
-title: Get help
-weight: 9
----
 
 # Get help
 
