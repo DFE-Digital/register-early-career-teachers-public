@@ -23,6 +23,11 @@ production:
     queue: metadata
     schedule: every day at 1am
 
+  touch_school_partnership_for_participants_currently_training_job:
+    class: TouchSchoolPartnershipForParticipantsCurrentlyTrainingJob
+    queue: default
+    schedule: every day at 00:01
+
   mark_statements_as_payable:
     class: Statements::MarkAsPayableJob
     queue: default
@@ -51,6 +56,11 @@ sandbox:
     queue: metadata
     schedule: every day at 1am
 
+  touch_school_partnership_for_participants_currently_training_job:
+    class: TouchSchoolPartnershipForParticipantsCurrentlyTrainingJob
+    queue: default
+    schedule: every day at 00:01
+
 staging:
   purge_pending_induction_submissions:
     class: PurgePendingInductionSubmissionsJob
@@ -60,6 +70,11 @@ staging:
   clear_solid_queue_finished_jobs:
     command: "SolidQueue::Job.clear_finished_in_batches(sleep_between_batches: 0.3)"
     schedule: every hour at minute 12
+  
+  touch_school_partnership_for_participants_currently_training_job:
+    class: TouchSchoolPartnershipForParticipantsCurrentlyTrainingJob
+    queue: default
+    schedule: every day at 00:01
 
 review:
   purge_pending_induction_submissions:
@@ -67,3 +82,7 @@ review:
     queue: default
     schedule: Every hour
 
+  touch_school_partnership_for_participants_currently_training_job:
+    class: TouchSchoolPartnershipForParticipantsCurrentlyTrainingJob
+    queue: default
+    schedule: every day at 00:01
