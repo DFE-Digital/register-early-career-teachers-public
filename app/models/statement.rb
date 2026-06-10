@@ -2,7 +2,6 @@ class Statement < ApplicationRecord
   include DeclarativeUpdates
 
   VALID_FEE_TYPES = %w[output service].freeze
-  OUTPUT_FEE_MONTHS = %w[January April August November].freeze
 
   # Associations
   belongs_to :contract
@@ -55,14 +54,6 @@ class Statement < ApplicationRecord
     event :mark_as_paid do
       transition [:payable] => :paid
     end
-  end
-
-  def assign_fee_type
-    self.fee_type = output_fee_type?(month) ? "output" : "service" if month.present?
-  end
-
-  def output_fee_type?(month)
-    Date::MONTHNAMES[month].in?(OUTPUT_FEE_MONTHS)
   end
 
   def shorthand_status

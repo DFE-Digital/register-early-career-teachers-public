@@ -79,7 +79,6 @@ RSpec.describe "Admin finance active lead provider statements", :enable_finance_
         contract_id: contract.id,
         month: 11,
         year: contract_period.year,
-        fee_type: "output",
         deadline_date: Date.new(contract_period.year, 11, 1),
         payment_date: Date.new(contract_period.year, 12, 25)
       }

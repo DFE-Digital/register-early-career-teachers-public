@@ -5,6 +5,7 @@ module Statements
     def initialize(author:, params:)
       @author = author
       @statement = Statement.new(params)
+      @statement.fee_type = FeeTypeForMonth.new(month: @statement.month).call
     end
 
     def call
