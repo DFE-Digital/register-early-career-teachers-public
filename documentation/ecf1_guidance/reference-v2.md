@@ -913,17 +913,17 @@ The data attributes associated with an ECF participant
 | full\_name | string | true | The full name of this ECF participant<br/> | 
 | mentor\_id | string | false | The unique identifier of this ECF participants mentor<br/> | 
 | school\_urn | string | true | The Unique Reference Number (URN) of the school that submitted this ECF participant<br/> | 
-| participant\_type | string | true | The type of ECF participant this record refers to<br/>Possible values:<br/><br/> - ect<br/> - mentor<br/><br/> | 
+| participant\_type | string | true | The type of ECF participant this record refers to<br/>Possible values:<br/><ul><li>ect</li><li>mentor</li></ul> | 
 | cohort | string | true | Indicates which call-off contract funds this participant’s training. 2021 indicates a participant that has started, or will start, their training in the 2021/22 academic year.<br/> | 
-| status | string | true | The status of this ECF participant record<br/>Possible values:<br/><br/> - active<br/> - withdrawn<br/><br/> | 
+| status | string | true | The status of this ECF participant record<br/>Possible values:<br/><ul><li>active</li><li>withdrawn</li></ul> | 
 | teacher\_reference\_number | string | false | The Teacher Reference Number (TRN) for this ECF participant<br/> | 
 | teacher\_reference\_number\_validated | boolean | false | Indicates whether the Teacher Reference Number (TRN) has been validated<br/> | 
 | eligible\_for\_funding | boolean | false | Indicates whether this participant is eligible to receive DfE funded induction<br/> | 
 | pupil\_premium\_uplift | boolean | false | Indicates whether this participant qualifies for an uplift payment due to pupil premium<br/> | 
 | sparsity\_uplift | boolean | false | Indicates whether this participant qualifies for an uplift payment due to sparsity<br/> | 
-| training\_status | string | true | The training status of the ECF participant<br/>Possible values:<br/><br/> - active<br/> - deferred<br/> - withdrawn<br/><br/> | 
+| training\_status | string | true | The training status of the ECF participant<br/>Possible values:<br/><ul><li>active</li><li>deferred</li><li>withdrawn</li></ul> | 
 | training\_record\_id | string | true | The unique identifier of the participant training record<br/> | 
-| schedule\_identifier | string | true | The schedule of the ECF participant<br/>Possible values:<br/><br/> - ecf-standard-september<br/> - ecf-standard-january<br/> - ecf-standard-april<br/> - ecf-reduced-september<br/> - ecf-reduced-january<br/> - ecf-reduced-april<br/> - ecf-extended-september<br/> - ecf-extended-january<br/> - ecf-extended-april<br/> - ecf-replacement-september<br/> - ecf-replacement-january<br/> - ecf-replacement-april<br/><br/> | 
+| schedule\_identifier | string | true | The schedule of the ECF participant<br/>Possible values:<br/><ul><li>ecf-standard-september</li><li>ecf-standard-january</li><li>ecf-standard-april</li><li>ecf-reduced-september</li><li>ecf-reduced-january</li><li>ecf-reduced-april</li><li>ecf-extended-september</li><li>ecf-extended-january</li><li>ecf-extended-april</li><li>ecf-replacement-september</li><li>ecf-replacement-january</li><li>ecf-replacement-april</li></ul> | 
 | updated\_at | string | true | The date the ECF participant was last updated<br/> | 
 
 
@@ -934,7 +934,7 @@ An ECF participant change schedule action
 
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
-| type | string | true | The data type<br/>Possible values:<br/><br/> - participant-change-schedule<br/><br/> | 
+| type | string | true | The data type<br/>Possible values:<br/><ul><li>participant-change-schedule</li></ul> | 
 | attributes | object | true | An ECF participant change schedule action<br/>It conforms to [ECFParticipantChangeScheduleAttributes](#schema-ecfparticipantchangescheduleattributes) schema. | 
 
 
@@ -959,8 +959,8 @@ An ECF participant change schedule action
 
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
-| schedule\_identifier | string | true | The new schedule of the participant<br/>Possible values:<br/><br/> - ecf-standard-september<br/> - ecf-standard-january<br/> - ecf-standard-april<br/> - ecf-reduced-september<br/> - ecf-reduced-january<br/> - ecf-reduced-april<br/> - ecf-extended-september<br/> - ecf-extended-january<br/> - ecf-extended-april<br/> - ecf-replacement-september<br/> - ecf-replacement-january<br/> - ecf-replacement-april<br/><br/> | 
-| course\_identifier | string | true | The type of course the participant is enrolled in<br/>Possible values:<br/><br/> - ecf-induction<br/> - ecf-mentor<br/><br/> | 
+| schedule\_identifier | string | true | The new schedule of the participant<br/>Possible values:<br/><ul><li>ecf-standard-september</li><li>ecf-standard-january</li><li>ecf-standard-april</li><li>ecf-reduced-september</li><li>ecf-reduced-january</li><li>ecf-reduced-april</li><li>ecf-extended-september</li><li>ecf-extended-january</li><li>ecf-extended-april</li><li>ecf-replacement-september</li><li>ecf-replacement-january</li><li>ecf-replacement-april</li></ul> | 
+| course\_identifier | string | true | The type of course the participant is enrolled in<br/>Possible values:<br/><ul><li>ecf-induction</li><li>ecf-mentor</li></ul> | 
 | cohort | string | false | Providers may not change the current value for ECF participants. Indicates which call-off contract funds this participant’s training. 2021 indicates a participant that has started, or will start, their training in the 2021/22 academic year.<br/> | 
 
 
@@ -1011,22 +1011,22 @@ The details of an ECF participant
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
 | id | string | true | The unique identifier of the ECF participant record<br/> | 
-| type | string | true | The data type<br/>Possible values:<br/><br/> - participant<br/><br/> | 
+| type | string | true | The data type<br/>Possible values:<br/><ul><li>participant</li></ul> | 
 | email | string | true | The email registered for this ECF participant<br/> | 
 | full\_name | string | true | The full name of the ECF participant<br/> | 
 | mentor\_id | string | false | The unique identifier of the ECF participants mentor<br/> | 
 | school\_urn | string | true | The Unique Reference Number (URN) of the school the submitted this ECF participant<br/> | 
-| participant\_type | string | true | The type of ECF Participant this record refers to either ECT or Mentor<br/>Possible values:<br/><br/> - ect<br/> - mentor<br/><br/> | 
+| participant\_type | string | true | The type of ECF Participant this record refers to either ECT or Mentor<br/>Possible values:<br/><ul><li>ect</li><li>mentor</li></ul> | 
 | cohort | string | true | Indicates which call-off contract funds this participant’s training. 2021 indicates a participant that has started, or will start, their training in the 2021/22 academic year.<br/> | 
-| status | string | true | The status of the ECF Participant record<br/>Possible values:<br/><br/> - active<br/> - withdrawn<br/><br/> | 
+| status | string | true | The status of the ECF Participant record<br/>Possible values:<br/><ul><li>active</li><li>withdrawn</li></ul> | 
 | teacher\_reference\_number | string | false | The Teacher Reference Number (TRN) for this ECF participant<br/> | 
 | teacher\_reference\_number\_validated | boolean | false | Indicates whether the Teacher Reference Number (TRN) has been validated<br/> | 
 | eligible\_for\_funding | boolean | false | Indicates whether this participant is eligible to receive DfE funded induction<br/> | 
 | pupil\_premium\_uplift | boolean | false | Indicates whether this participant qualifies for an uplift payment due to pupil premium<br/> | 
 | sparsity\_uplift | boolean | false | Indicates whether this participant qualifies for an uplift payment due to sparsity<br/> | 
-| training\_status | string | true | The training status of the ECF Participant<br/>Possible values:<br/><br/> - active<br/> - deferred<br/> - withdrawn<br/><br/> | 
+| training\_status | string | true | The training status of the ECF Participant<br/>Possible values:<br/><ul><li>active</li><li>deferred</li><li>withdrawn</li></ul> | 
 | training\_record\_id | string | true | The unique identifier of the participant training record<br/> | 
-| schedule\_identifier | string | true | The schedule of the ECF participant<br/>Possible values:<br/><br/> - ecf-standard-september<br/> - ecf-standard-january<br/> - ecf-standard-april<br/> - ecf-reduced-september<br/> - ecf-reduced-january<br/> - ecf-reduced-april<br/> - ecf-extended-september<br/> - ecf-extended-january<br/> - ecf-extended-april<br/> - ecf-replacement-september<br/> - ecf-replacement-january<br/> - ecf-replacement-april<br/><br/> | 
+| schedule\_identifier | string | true | The schedule of the ECF participant<br/>Possible values:<br/><ul><li>ecf-standard-september</li><li>ecf-standard-january</li><li>ecf-standard-april</li><li>ecf-reduced-september</li><li>ecf-reduced-january</li><li>ecf-reduced-april</li><li>ecf-extended-september</li><li>ecf-extended-january</li><li>ecf-extended-april</li><li>ecf-replacement-september</li><li>ecf-replacement-january</li><li>ecf-replacement-april</li></ul> | 
 | updated\_at | string | true | The date the ECF participant was last updated<br/> | 
 
 
@@ -1038,10 +1038,10 @@ An ECF completed participant declaration
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
 | participant\_id | string | true | The unique ID of the participant<br/> | 
-| declaration\_type | string | true | The event declaration type<br/>Possible values:<br/><br/> - completed<br/><br/> | 
+| declaration\_type | string | true | The event declaration type<br/>Possible values:<br/><ul><li>completed</li></ul> | 
 | declaration\_date | string | true | The event declaration date<br/> | 
-| course\_identifier | string | true | The type of course the participant is enrolled in<br/>Possible values:<br/><br/> - ecf-induction<br/><br/> | 
-| evidence\_held | string | true | The type of evidence the lead provider holds on their platform to demonstrate the participant has met the retention criteria for the current milestone period.<br/>Possible values:<br/><br/> - 75-percent-engagement-met<br/> - 75-percent-engagement-met-reduced-induction<br/> - one-term-induction<br/><br/> | 
+| course\_identifier | string | true | The type of course the participant is enrolled in<br/>Possible values:<br/><ul><li>ecf-induction</li></ul> | 
+| evidence\_held | string | true | The type of evidence the lead provider holds on their platform to demonstrate the participant has met the retention criteria for the current milestone period.<br/>Possible values:<br/><ul><li>75-percent-engagement-met</li><li>75-percent-engagement-met-reduced-induction</li><li>one-term-induction</li></ul> | 
 
 
 ### ECFParticipantDeclarationPost2024ECTExtendedAttributesRequest
@@ -1052,10 +1052,10 @@ An ECF extended participant declaration
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
 | participant\_id | string | true | The unique ID of the participant<br/> | 
-| declaration\_type | string | true | The event declaration type<br/>Possible values:<br/><br/> - extended-1<br/> - extended-2<br/> - extended-3<br/><br/> | 
+| declaration\_type | string | true | The event declaration type<br/>Possible values:<br/><ul><li>extended-1</li><li>extended-2</li><li>extended-3</li></ul> | 
 | declaration\_date | string | true | The event declaration date<br/> | 
-| course\_identifier | string | true | The type of course the participant is enrolled in<br/>Possible values:<br/><br/> - ecf-induction<br/><br/> | 
-| evidence\_held | string | true | The type of evidence the lead provider holds on their platform to demonstrate the participant has met the retention criteria for the current milestone period.<br/>Possible values:<br/><br/> - training-event-attended<br/> - self-study-material-completed<br/> - materials-engaged-with-offline<br/> - other<br/><br/> | 
+| course\_identifier | string | true | The type of course the participant is enrolled in<br/>Possible values:<br/><ul><li>ecf-induction</li></ul> | 
+| evidence\_held | string | true | The type of evidence the lead provider holds on their platform to demonstrate the participant has met the retention criteria for the current milestone period.<br/>Possible values:<br/><ul><li>training-event-attended</li><li>self-study-material-completed</li><li>materials-engaged-with-offline</li><li>other</li></ul> | 
 
 
 ### ECFParticipantDeclarationPost2024ECTRetainedAttributesRequest
@@ -1066,10 +1066,10 @@ An ECF participant retained declaration
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
 | participant\_id | string | true | The unique ID of the participant<br/> | 
-| declaration\_type | string | true | The event declaration type<br/>Possible values:<br/><br/> - retained-1<br/> - retained-2<br/> - retained-3<br/> - retained-4<br/><br/> | 
+| declaration\_type | string | true | The event declaration type<br/>Possible values:<br/><ul><li>retained-1</li><li>retained-2</li><li>retained-3</li><li>retained-4</li></ul> | 
 | declaration\_date | string | true | The event declaration date<br/> | 
-| course\_identifier | string | true | The type of course the participant is enrolled in<br/>Possible values:<br/><br/> - ecf-induction<br/><br/> | 
-| evidence\_held | string | true | The type of evidence the lead provider holds on their platform to demonstrate the participant has met the retention criteria for the current milestone period. For retained-2 declarations, providers will need to confirm if the engagement threshold has been reached and only accept either the ‘75-percent-engagement-met’ or ‘75-percent-engagement-met-reduced-induction’ values.<br/>Possible values:<br/><br/> - training-event-attended<br/> - self-study-material-completed<br/> - materials-engaged-with-offline<br/> - other<br/> - 75-percent-engagement-met<br/> - 75-percent-engagement-met-reduced-induction<br/><br/> | 
+| course\_identifier | string | true | The type of course the participant is enrolled in<br/>Possible values:<br/><ul><li>ecf-induction</li></ul> | 
+| evidence\_held | string | true | The type of evidence the lead provider holds on their platform to demonstrate the participant has met the retention criteria for the current milestone period. For retained-2 declarations, providers will need to confirm if the engagement threshold has been reached and only accept either the ‘75-percent-engagement-met’ or ‘75-percent-engagement-met-reduced-induction’ values.<br/>Possible values:<br/><ul><li>training-event-attended</li><li>self-study-material-completed</li><li>materials-engaged-with-offline</li><li>other</li><li>75-percent-engagement-met</li><li>75-percent-engagement-met-reduced-induction</li></ul> | 
 
 
 ### ECFParticipantDeclarationPost2024ECTStartedAttributesRequest
@@ -1080,10 +1080,10 @@ An ECF started participant declaration
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
 | participant\_id | string | true | The unique ID of the participant<br/> | 
-| declaration\_type | string | true | The event declaration type<br/>Possible values:<br/><br/> - started<br/><br/> | 
+| declaration\_type | string | true | The event declaration type<br/>Possible values:<br/><ul><li>started</li></ul> | 
 | declaration\_date | string | true | The event declaration date<br/> | 
-| course\_identifier | string | true | The type of course the participant is enrolled in<br/>Possible values:<br/><br/> - ecf-induction<br/><br/> | 
-| evidence\_held | string | false | The type of evidence the lead provider holds on their platform to demonstrate the participant has met the retention criteria for the current milestone period.<br/>Possible values:<br/><br/> - training-event-attended<br/> - self-study-material-completed<br/> - materials-engaged-with-offline<br/> - other<br/><br/> | 
+| course\_identifier | string | true | The type of course the participant is enrolled in<br/>Possible values:<br/><ul><li>ecf-induction</li></ul> | 
+| evidence\_held | string | false | The type of evidence the lead provider holds on their platform to demonstrate the participant has met the retention criteria for the current milestone period.<br/>Possible values:<br/><ul><li>training-event-attended</li><li>self-study-material-completed</li><li>materials-engaged-with-offline</li><li>other</li></ul> | 
 
 
 ### ECFParticipantDeclarationPost2024MentorCompletedAttributesRequest
@@ -1094,10 +1094,10 @@ An ECF completed participant declaration
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
 | participant\_id | string | true | The unique ID of the participant<br/> | 
-| declaration\_type | string | true | The event declaration type<br/>Possible values:<br/><br/> - completed<br/><br/> | 
+| declaration\_type | string | true | The event declaration type<br/>Possible values:<br/><ul><li>completed</li></ul> | 
 | declaration\_date | string | true | The event declaration date<br/> | 
-| course\_identifier | string | true | The type of course the participant is enrolled in<br/>Possible values:<br/><br/> - ecf-mentor<br/><br/> | 
-| evidence\_held | string | true | The type of evidence the lead provider holds on their platform to demonstrate the participant has met the retention criteria for the current milestone period.<br/>Possible values:<br/><br/> - 75-percent-engagement-met<br/> - 75-percent-engagement-met-reduced-induction<br/><br/> | 
+| course\_identifier | string | true | The type of course the participant is enrolled in<br/>Possible values:<br/><ul><li>ecf-mentor</li></ul> | 
+| evidence\_held | string | true | The type of evidence the lead provider holds on their platform to demonstrate the participant has met the retention criteria for the current milestone period.<br/>Possible values:<br/><ul><li>75-percent-engagement-met</li><li>75-percent-engagement-met-reduced-induction</li></ul> | 
 
 
 ### ECFParticipantDeclarationPost2024MentorStartedAttributesRequest
@@ -1108,10 +1108,10 @@ An ECF started participant declaration
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
 | participant\_id | string | true | The unique ID of the participant<br/> | 
-| declaration\_type | string | true | The event declaration type<br/>Possible values:<br/><br/> - started<br/><br/> | 
+| declaration\_type | string | true | The event declaration type<br/>Possible values:<br/><ul><li>started</li></ul> | 
 | declaration\_date | string | true | The event declaration date<br/> | 
-| course\_identifier | string | true | The type of course the participant is enrolled in<br/>Possible values:<br/><br/> - ecf-mentor<br/><br/> | 
-| evidence\_held | string | false | The type of evidence the lead provider holds on their platform to demonstrate the participant has met the retention criteria for the current milestone period.<br/>Possible values:<br/><br/> - training-event-attended<br/> - self-study-material-completed<br/> - materials-engaged-with-offline<br/> - other<br/><br/> | 
+| course\_identifier | string | true | The type of course the participant is enrolled in<br/>Possible values:<br/><ul><li>ecf-mentor</li></ul> | 
+| evidence\_held | string | false | The type of evidence the lead provider holds on their platform to demonstrate the participant has met the retention criteria for the current milestone period.<br/>Possible values:<br/><ul><li>training-event-attended</li><li>self-study-material-completed</li><li>materials-engaged-with-offline</li><li>other</li></ul> | 
 
 
 ### ECFParticipantDeclarationPre2025CompletedAttributesRequest
@@ -1122,10 +1122,10 @@ An ECF completed participant declaration
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
 | participant\_id | string | true | The unique ID of the participant<br/> | 
-| declaration\_type | string | true | The event declaration type<br/>Possible values:<br/><br/> - completed<br/><br/> | 
+| declaration\_type | string | true | The event declaration type<br/>Possible values:<br/><ul><li>completed</li></ul> | 
 | declaration\_date | string | true | The event declaration date<br/> | 
-| course\_identifier | string | true | The type of course the participant is enrolled in<br/>Possible values:<br/><br/> - ecf-induction<br/> - ecf-mentor<br/><br/> | 
-| evidence\_held | string | true | The type of evidence the lead provider holds on their platform to demonstrate the participant has met the retention criteria for the current milestone period.<br/>Possible values:<br/><br/> - training-event-attended<br/> - self-study-material-completed<br/> - other<br/><br/> | 
+| course\_identifier | string | true | The type of course the participant is enrolled in<br/>Possible values:<br/><ul><li>ecf-induction</li><li>ecf-mentor</li></ul> | 
+| evidence\_held | string | true | The type of evidence the lead provider holds on their platform to demonstrate the participant has met the retention criteria for the current milestone period.<br/>Possible values:<br/><ul><li>training-event-attended</li><li>self-study-material-completed</li><li>other</li></ul> | 
 
 
 ### ECFParticipantDeclarationPre2025ExtendedAttributesRequest
@@ -1136,10 +1136,10 @@ An ECF extended participant declaration
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
 | participant\_id | string | true | The unique ID of the participant<br/> | 
-| declaration\_type | string | true | The event declaration type<br/>Possible values:<br/><br/> - extended-1<br/> - extended-2<br/> - extended-3<br/><br/> | 
+| declaration\_type | string | true | The event declaration type<br/>Possible values:<br/><ul><li>extended-1</li><li>extended-2</li><li>extended-3</li></ul> | 
 | declaration\_date | string | true | The event declaration date<br/> | 
-| course\_identifier | string | true | The type of course the participant is enrolled in<br/>Possible values:<br/><br/> - ecf-induction<br/> - ecf-mentor<br/><br/> | 
-| evidence\_held | string | true | The type of evidence the lead provider holds on their platform to demonstrate the participant has met the retention criteria for the current milestone period.<br/>Possible values:<br/><br/> - training-event-attended<br/> - self-study-material-completed<br/> - other<br/><br/> | 
+| course\_identifier | string | true | The type of course the participant is enrolled in<br/>Possible values:<br/><ul><li>ecf-induction</li><li>ecf-mentor</li></ul> | 
+| evidence\_held | string | true | The type of evidence the lead provider holds on their platform to demonstrate the participant has met the retention criteria for the current milestone period.<br/>Possible values:<br/><ul><li>training-event-attended</li><li>self-study-material-completed</li><li>other</li></ul> | 
 
 
 ### ECFParticipantDeclarationPre2025RetainedAttributesRequest
@@ -1150,10 +1150,10 @@ An ECF participant retained declaration
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
 | participant\_id | string | true | The unique ID of the participant<br/> | 
-| declaration\_type | string | true | The event declaration type<br/>Possible values:<br/><br/> - retained-1<br/> - retained-2<br/> - retained-3<br/> - retained-4<br/><br/> | 
+| declaration\_type | string | true | The event declaration type<br/>Possible values:<br/><ul><li>retained-1</li><li>retained-2</li><li>retained-3</li><li>retained-4</li></ul> | 
 | declaration\_date | string | true | The event declaration date<br/> | 
-| course\_identifier | string | true | The type of course the participant is enrolled in<br/>Possible values:<br/><br/> - ecf-induction<br/> - ecf-mentor<br/><br/> | 
-| evidence\_held | string | true | The type of evidence the lead provider holds on their platform to demonstrate the participant has met the retention criteria for the current milestone period.<br/>Possible values:<br/><br/> - training-event-attended<br/> - self-study-material-completed<br/> - other<br/><br/> | 
+| course\_identifier | string | true | The type of course the participant is enrolled in<br/>Possible values:<br/><ul><li>ecf-induction</li><li>ecf-mentor</li></ul> | 
+| evidence\_held | string | true | The type of evidence the lead provider holds on their platform to demonstrate the participant has met the retention criteria for the current milestone period.<br/>Possible values:<br/><ul><li>training-event-attended</li><li>self-study-material-completed</li><li>other</li></ul> | 
 
 
 ### ECFParticipantDeclarationPre2025StartedAttributesRequest
@@ -1164,9 +1164,9 @@ An ECF started participant declaration
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
 | participant\_id | string | true | The unique ID of the participant<br/> | 
-| declaration\_type | string | true | The event declaration type<br/>Possible values:<br/><br/> - started<br/><br/> | 
+| declaration\_type | string | true | The event declaration type<br/>Possible values:<br/><ul><li>started</li></ul> | 
 | declaration\_date | string | true | The event declaration date<br/> | 
-| course\_identifier | string | true | The type of course the participant is enrolled in<br/>Possible values:<br/><br/> - ecf-induction<br/> - ecf-mentor<br/><br/> | 
+| course\_identifier | string | true | The type of course the participant is enrolled in<br/>Possible values:<br/><ul><li>ecf-induction</li><li>ecf-mentor</li></ul> | 
 
 
 ### ECFParticipantDefer
@@ -1176,7 +1176,7 @@ The details of a participant deferral request
 
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
-| type | string | true | The data type<br/>Possible values:<br/><br/> - participant-defer<br/><br/> | 
+| type | string | true | The data type<br/>Possible values:<br/><ul><li>participant-defer</li></ul> | 
 | attributes | object | true | An ECF participant deferral action<br/>It conforms to [ECFParticipantDeferAttributes](#schema-ecfparticipantdeferattributes) schema. | 
 
 
@@ -1187,8 +1187,8 @@ An ECF participant deferral action
 
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
-| reason | string | true | The reason for the deferral<br/>Possible values:<br/><br/> - bereavement<br/> - long-term-sickness<br/> - parental-leave<br/> - career-break<br/> - other<br/><br/> | 
-| course\_identifier | string | true | The type of course the participant is enrolled in<br/>Possible values:<br/><br/> - ecf-induction<br/> - ecf-mentor<br/><br/> | 
+| reason | string | true | The reason for the deferral<br/>Possible values:<br/><ul><li>bereavement</li><li>long-term-sickness</li><li>parental-leave</li><li>career-break</li><li>other</li></ul> | 
+| course\_identifier | string | true | The type of course the participant is enrolled in<br/>Possible values:<br/><ul><li>ecf-induction</li><li>ecf-mentor</li></ul> | 
 
 
 #### Example
@@ -1213,16 +1213,16 @@ The data attributes associated with an ECF participant
 | full\_name | string | true | The full name of this ECF participant<br/> | 
 | mentor\_id | string | false | The unique identifier of this ECF participants mentor<br/> | 
 | school\_urn | string | true | The Unique Reference Number (URN) of the school that submitted this ECF participant<br/> | 
-| participant\_type | string | true | The type of ECF participant this record refers to<br/>Possible values:<br/><br/> - ect<br/> - mentor<br/><br/> | 
+| participant\_type | string | true | The type of ECF participant this record refers to<br/>Possible values:<br/><ul><li>ect</li><li>mentor</li></ul> | 
 | cohort | string | true | Indicates which call-off contract funds this participant’s training. 2021 indicates a participant that has started, or will start, their training in the 2021/22 academic year.<br/> | 
-| status | string | true | The status of this ECF participant record<br/>Possible values:<br/><br/> - active<br/> - withdrawn<br/><br/> | 
+| status | string | true | The status of this ECF participant record<br/>Possible values:<br/><ul><li>active</li><li>withdrawn</li></ul> | 
 | teacher\_reference\_number | string | false | The Teacher Reference Number (TRN) for this ECF participant<br/> | 
 | teacher\_reference\_number\_validated | boolean | false | Indicates whether the Teacher Reference Number (TRN) has been validated<br/> | 
 | eligible\_for\_funding | boolean | false | Indicates whether this participant is eligible to receive DfE funded induction<br/> | 
 | pupil\_premium\_uplift | boolean | false | Indicates whether this participant qualifies for an uplift payment due to pupil premium<br/> | 
 | sparsity\_uplift | boolean | false | Indicates whether this participant qualifies for an uplift payment due to sparsity<br/> | 
-| training\_status | string | true | The training status of the ECF participant<br/>Possible values:<br/><br/> - active<br/> - deferred<br/> - withdrawn<br/><br/> | 
-| schedule\_identifier | string | true | The schedule of the ECF participant<br/>Possible values:<br/><br/> - ecf-standard-september<br/> - ecf-standard-january<br/> - ecf-standard-april<br/> - ecf-reduced-september<br/> - ecf-reduced-january<br/> - ecf-reduced-april<br/> - ecf-extended-september<br/> - ecf-extended-january<br/> - ecf-extended-april<br/> - ecf-replacement-september<br/> - ecf-replacement-january<br/> - ecf-replacement-april<br/><br/> | 
+| training\_status | string | true | The training status of the ECF participant<br/>Possible values:<br/><ul><li>active</li><li>deferred</li><li>withdrawn</li></ul> | 
+| schedule\_identifier | string | true | The schedule of the ECF participant<br/>Possible values:<br/><ul><li>ecf-standard-september</li><li>ecf-standard-january</li><li>ecf-standard-april</li><li>ecf-reduced-september</li><li>ecf-reduced-january</li><li>ecf-reduced-april</li><li>ecf-extended-september</li><li>ecf-extended-january</li><li>ecf-extended-april</li><li>ecf-replacement-september</li><li>ecf-replacement-january</li><li>ecf-replacement-april</li></ul> | 
 | updated\_at | string | true | The date the ECF participant was last updated<br/> | 
 
 
@@ -1291,7 +1291,7 @@ An ECF participant resume action
 
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
-| type | string | true | The data type<br/>Possible values:<br/><br/> - participant-resume<br/><br/> | 
+| type | string | true | The data type<br/>Possible values:<br/><ul><li>participant-resume</li></ul> | 
 | attributes | object | true | An ECF participant resume action<br/>It conforms to [ECFParticipantResumeAttributes](#schema-ecfparticipantresumeattributes) schema. | 
 
 
@@ -1302,7 +1302,7 @@ An ECF participant resume action
 
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
-| course\_identifier | string | true | The type of course the participant is enrolled in<br/>Possible values:<br/><br/> - ecf-induction<br/> - ecf-mentor<br/><br/> | 
+| course\_identifier | string | true | The type of course the participant is enrolled in<br/>Possible values:<br/><ul><li>ecf-induction</li><li>ecf-mentor</li></ul> | 
 
 
 #### Example
@@ -1326,16 +1326,16 @@ The data attributes associated with an ECF participant
 | full\_name | string | true | The full name of this ECF participant<br/> | 
 | mentor\_id | string | false | The unique identifier of this ECF participants mentor<br/> | 
 | school\_urn | string | true | The Unique Reference Number (URN) of the school that submitted this ECF participant<br/> | 
-| participant\_type | string | true | The type of ECF participant this record refers to<br/>Possible values:<br/><br/> - ect<br/> - mentor<br/><br/> | 
+| participant\_type | string | true | The type of ECF participant this record refers to<br/>Possible values:<br/><ul><li>ect</li><li>mentor</li></ul> | 
 | cohort | string | true | Indicates which call-off contract funds this participant’s training. 2021 indicates a participant that has started, or will start, their training in the 2021/22 academic year.<br/> | 
-| status | string | true | The status of this ECF participant record<br/>Possible values:<br/><br/> - active<br/> - withdrawn<br/><br/> | 
+| status | string | true | The status of this ECF participant record<br/>Possible values:<br/><ul><li>active</li><li>withdrawn</li></ul> | 
 | teacher\_reference\_number | string | false | The Teacher Reference Number (TRN) for this ECF participant<br/> | 
 | teacher\_reference\_number\_validated | boolean | false | Indicates whether the Teacher Reference Number (TRN) has been validated<br/> | 
 | eligible\_for\_funding | boolean | false | Indicates whether this participant is eligible to receive DfE funded induction<br/> | 
 | pupil\_premium\_uplift | boolean | false | Indicates whether this participant qualifies for an uplift payment due to pupil premium<br/> | 
 | sparsity\_uplift | boolean | false | Indicates whether this participant qualifies for an uplift payment due to sparsity<br/> | 
-| training\_status | string | true | The training status of the ECF participant<br/>Possible values:<br/><br/> - active<br/> - deferred<br/> - withdrawn<br/><br/> | 
-| schedule\_identifier | string | true | The schedule of the ECF participant<br/>Possible values:<br/><br/> - ecf-standard-september<br/> - ecf-standard-january<br/> - ecf-standard-april<br/> - ecf-reduced-september<br/> - ecf-reduced-january<br/> - ecf-reduced-april<br/> - ecf-extended-september<br/> - ecf-extended-january<br/> - ecf-extended-april<br/> - ecf-replacement-september<br/> - ecf-replacement-january<br/> - ecf-replacement-april<br/><br/> | 
+| training\_status | string | true | The training status of the ECF participant<br/>Possible values:<br/><ul><li>active</li><li>deferred</li><li>withdrawn</li></ul> | 
+| schedule\_identifier | string | true | The schedule of the ECF participant<br/>Possible values:<br/><ul><li>ecf-standard-september</li><li>ecf-standard-january</li><li>ecf-standard-april</li><li>ecf-reduced-september</li><li>ecf-reduced-january</li><li>ecf-reduced-april</li><li>ecf-extended-september</li><li>ecf-extended-january</li><li>ecf-extended-april</li><li>ecf-replacement-september</li><li>ecf-replacement-january</li><li>ecf-replacement-april</li></ul> | 
 | updated\_at | string | true | The date the ECF participant was last updated<br/> | 
 
 
@@ -1393,7 +1393,7 @@ An ECF participant retained declaration request body
 
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
-| type | object | false | The request data<br/>Possible values:<br/><br/> - participant-declaration<br/><br/> | 
+| type | object | false | The request data<br/>Possible values:<br/><ul><li>participant-declaration</li></ul> | 
 | attributes | object | true | An ECF participant retained declaration<br/>It conforms to [ECFParticipantRetainedDeclarationAttributes](#schema-ecfparticipantretaineddeclarationattributes) schema. | 
 
 
@@ -1405,10 +1405,10 @@ An ECF participant retained declaration
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
 | participant\_id | string | true | The unique id of the participant<br/> | 
-| declaration\_type | string | true | The event declaration type<br/>Possible values:<br/><br/> - retained-1<br/> - retained-2<br/> - retained-3<br/> - retained-4<br/><br/> | 
+| declaration\_type | string | true | The event declaration type<br/>Possible values:<br/><ul><li>retained-1</li><li>retained-2</li><li>retained-3</li><li>retained-4</li></ul> | 
 | declaration\_date | string | true | The event declaration date<br/> | 
-| course\_identifier | string | true | The type of course the participant is enrolled in<br/>Possible values:<br/><br/> - ecf-induction<br/> - ecf-mentor<br/><br/> | 
-| evidence\_held | string | true | The type of evidence the lead provider holds on their platform to demonstrate the participant has met the retention criteria for the current milestone period.<br/>Possible values:<br/><br/> - training-event-attended<br/> - self-study-material-completed<br/> - other<br/><br/> | 
+| course\_identifier | string | true | The type of course the participant is enrolled in<br/>Possible values:<br/><ul><li>ecf-induction</li><li>ecf-mentor</li></ul> | 
+| evidence\_held | string | true | The type of evidence the lead provider holds on their platform to demonstrate the participant has met the retention criteria for the current milestone period.<br/>Possible values:<br/><ul><li>training-event-attended</li><li>self-study-material-completed</li><li>other</li></ul> | 
 
 
 #### Example
@@ -1432,7 +1432,7 @@ A participant started declaration request body
 
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
-| type | object | false | The request data<br/>Possible values:<br/><br/> - participant-declaration<br/><br/> | 
+| type | object | false | The request data<br/>Possible values:<br/><ul><li>participant-declaration</li></ul> | 
 | attributes | object | true | An ECF started and completed participant declaration<br/>It conforms to [ECFParticipantStartedDeclarationAttributes](#schema-ecfparticipantstarteddeclarationattributes) schema. | 
 
 
@@ -1444,9 +1444,9 @@ An ECF started and completed participant declaration
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
 | participant\_id | string | true | The unique id of the participant<br/> | 
-| declaration\_type | string | true | The event declaration type<br/>Possible values:<br/><br/> - started<br/> - completed<br/><br/> | 
+| declaration\_type | string | true | The event declaration type<br/>Possible values:<br/><ul><li>started</li><li>completed</li></ul> | 
 | declaration\_date | string | true | The event declaration date<br/> | 
-| course\_identifier | string | true | The type of course the participant is enrolled in<br/>Possible values:<br/><br/> - ecf-induction<br/> - ecf-mentor<br/><br/> | 
+| course\_identifier | string | true | The type of course the participant is enrolled in<br/>Possible values:<br/><ul><li>ecf-induction</li><li>ecf-mentor</li></ul> | 
 
 
 #### Example
@@ -1469,7 +1469,7 @@ An ECF participant withdrawal action
 
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
-| type | string | false | The data type<br/>Possible values:<br/><br/> - participant-withdraw<br/><br/> | 
+| type | string | false | The data type<br/>Possible values:<br/><ul><li>participant-withdraw</li></ul> | 
 | attributes | object | false | An ECF participant withdrawal action<br/>It conforms to [ECFParticipantWithdrawAttributes](#schema-ecfparticipantwithdrawattributes) schema. | 
 
 
@@ -1480,8 +1480,8 @@ An ECF participant withdrawal action
 
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
-| reason | string | true | The reason for the withdrawal<br/>Possible values:<br/><br/> - left-teaching-profession<br/> - moved-school<br/> - mentor-no-longer-being-mentor<br/> - switched-to-school-led<br/> - other<br/><br/> | 
-| course\_identifier | string | true | The type of course the participant is enrolled in<br/>Possible values:<br/><br/> - ecf-induction<br/> - ecf-mentor<br/><br/> | 
+| reason | string | true | The reason for the withdrawal<br/>Possible values:<br/><ul><li>left-teaching-profession</li><li>moved-school</li><li>mentor-no-longer-being-mentor</li><li>switched-to-school-led</li><li>other</li></ul> | 
+| course\_identifier | string | true | The type of course the participant is enrolled in<br/>Possible values:<br/><ul><li>ecf-induction</li><li>ecf-mentor</li></ul> | 
 
 
 #### Example
@@ -1506,16 +1506,16 @@ The data attributes associated with an ECF participant
 | full\_name | string | true | The full name of this ECF participant<br/> | 
 | mentor\_id | string | false | The unique identifier of this ECF participants mentor<br/> | 
 | school\_urn | string | true | The Unique Reference Number (URN) of the school that submitted this ECF participant<br/> | 
-| participant\_type | string | true | The type of ECF participant this record refers to<br/>Possible values:<br/><br/> - ect<br/> - mentor<br/><br/> | 
+| participant\_type | string | true | The type of ECF participant this record refers to<br/>Possible values:<br/><ul><li>ect</li><li>mentor</li></ul> | 
 | cohort | string | true | Indicates which call-off contract funds this participant’s training. 2021 indicates a participant that has started, or will start, their training in the 2021/22 academic year.<br/> | 
-| status | string | true | The status of this ECF participant record<br/>Possible values:<br/><br/> - active<br/> - withdrawn<br/><br/> | 
+| status | string | true | The status of this ECF participant record<br/>Possible values:<br/><ul><li>active</li><li>withdrawn</li></ul> | 
 | teacher\_reference\_number | string | false | The Teacher Reference Number (TRN) for this ECF participant<br/> | 
 | teacher\_reference\_number\_validated | boolean | false | Indicates whether the Teacher Reference Number (TRN) has been validated<br/> | 
 | eligible\_for\_funding | boolean | false | Indicates whether this participant is eligible to receive DfE funded induction<br/> | 
 | pupil\_premium\_uplift | boolean | false | Indicates whether this participant qualifies for an uplift payment due to pupil premium<br/> | 
 | sparsity\_uplift | boolean | false | Indicates whether this participant qualifies for an uplift payment due to sparsity<br/> | 
-| training\_status | string | true | The training status of the ECF participant<br/>Possible values:<br/><br/> - active<br/> - deferred<br/> - withdrawn<br/><br/> | 
-| schedule\_identifier | string | true | The schedule of the ECF participant<br/>Possible values:<br/><br/> - ecf-standard-september<br/> - ecf-standard-january<br/> - ecf-standard-april<br/> - ecf-reduced-september<br/> - ecf-reduced-january<br/> - ecf-reduced-april<br/> - ecf-extended-september<br/> - ecf-extended-january<br/> - ecf-extended-april<br/> - ecf-replacement-september<br/> - ecf-replacement-january<br/> - ecf-replacement-april<br/><br/> | 
+| training\_status | string | true | The training status of the ECF participant<br/>Possible values:<br/><ul><li>active</li><li>deferred</li><li>withdrawn</li></ul> | 
+| schedule\_identifier | string | true | The schedule of the ECF participant<br/>Possible values:<br/><ul><li>ecf-standard-september</li><li>ecf-standard-january</li><li>ecf-standard-april</li><li>ecf-reduced-september</li><li>ecf-reduced-january</li><li>ecf-reduced-april</li><li>ecf-extended-september</li><li>ecf-extended-january</li><li>ecf-extended-april</li><li>ecf-replacement-september</li><li>ecf-replacement-january</li><li>ecf-replacement-april</li></ul> | 
 | updated\_at | string | true | The date the ECF participant was last updated<br/> | 
 
 
@@ -1678,10 +1678,10 @@ The data attributes associated with a participant declaration response
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
 | participant\_id | string | true | The unique id of the participant<br/> | 
-| declaration\_type | string | true | The event declaration type<br/>Possible values:<br/><br/> - started<br/> - retained-1<br/> - retained-2<br/> - retained-3<br/> - retained-4<br/> - completed<br/> - extended-1<br/> - extended-2<br/> - extended-3<br/><br/> | 
+| declaration\_type | string | true | The event declaration type<br/>Possible values:<br/><ul><li>started</li><li>retained-1</li><li>retained-2</li><li>retained-3</li><li>retained-4</li><li>completed</li><li>extended-1</li><li>extended-2</li><li>extended-3</li></ul> | 
 | declaration\_date | string | true | The event declaration date<br/> | 
-| course\_identifier | string | true | The type of course the participant is enrolled in<br/>Possible values:<br/><br/> - ecf-induction<br/> - ecf-mentor<br/><br/> | 
-| state | string | true | Indicates the state of this payment declaration<br/>Possible values:<br/><br/> - submitted<br/> - eligible<br/> - payable<br/> - paid<br/> - voided<br/> - ineligible<br/><br/> | 
+| course\_identifier | string | true | The type of course the participant is enrolled in<br/>Possible values:<br/><ul><li>ecf-induction</li><li>ecf-mentor</li></ul> | 
+| state | string | true | Indicates the state of this payment declaration<br/>Possible values:<br/><ul><li>submitted</li><li>eligible</li><li>payable</li><li>paid</li><li>voided</li><li>ineligible</li></ul> | 
 | updated\_at | string | true | The date the declaration was last updated<br/> | 
 | has\_passed | boolean | false | Whether the participant has failed or passed<br/> | 
 
@@ -1695,9 +1695,9 @@ The details of a participant declaration
 | ---- | ---- | ---- | ---- |
 | id | string | true | The unique identifier of the participant declaration record<br/> | 
 | participant\_id | string | true | The unique identifier of the participant record the declaration refers to<br/> | 
-| declaration\_type | string | true | The event declaration type<br/>Possible values:<br/><br/> - started<br/> - retained-1<br/> - retained-2<br/> - retained-3<br/> - retained-4<br/> - completed<br/> - extended-1<br/> - extended-2<br/> - extended-3<br/><br/> | 
+| declaration\_type | string | true | The event declaration type<br/>Possible values:<br/><ul><li>started</li><li>retained-1</li><li>retained-2</li><li>retained-3</li><li>retained-4</li><li>completed</li><li>extended-1</li><li>extended-2</li><li>extended-3</li></ul> | 
 | declaration\_date | string | true | The event declaration date<br/> | 
-| course\_identifier | string | true | The type of course the participant is enrolled in<br/>Possible values:<br/><br/> - ecf-induction<br/> - ecf-mentor<br/><br/> | 
+| course\_identifier | string | true | The type of course the participant is enrolled in<br/>Possible values:<br/><ul><li>ecf-induction</li><li>ecf-mentor</li></ul> | 
 | state | string | false | Indicates the state of this payment declaration<br/> | 
 | updated\_at | string | true | The date the declaration was last updated<br/> | 
 
@@ -1709,8 +1709,8 @@ A participant declaration data request for ECT participants from cohort 2025 onw
 
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
-| type | string | false | Possible values:<br/><br/> - participant-declaration<br/><br/> | 
-| attributes | object | false | This conforms to any of the following schemas:<br/><br/> -  [ECFParticipantDeclarationPost2024ECTStartedAttributesRequest](#schema-ecfparticipantdeclarationpost2024ectstartedattributesrequest) <br/> -  [ECFParticipantDeclarationPost2024ECTRetainedAttributesRequest](#schema-ecfparticipantdeclarationpost2024ectretainedattributesrequest) <br/> -  [ECFParticipantDeclarationPost2024ECTCompletedAttributesRequest](#schema-ecfparticipantdeclarationpost2024ectcompletedattributesrequest) <br/> -  [ECFParticipantDeclarationPost2024ECTExtendedAttributesRequest](#schema-ecfparticipantdeclarationpost2024ectextendedattributesrequest) <br/><br/> | 
+| type | string | false | Possible values:<br/><ul><li>participant-declaration</li></ul> | 
+| attributes | object | false | This conforms to any of the following schemas:<br/><ul><li> [ECFParticipantDeclarationPost2024ECTStartedAttributesRequest](#schema-ecfparticipantdeclarationpost2024ectstartedattributesrequest) </li><li> [ECFParticipantDeclarationPost2024ECTRetainedAttributesRequest](#schema-ecfparticipantdeclarationpost2024ectretainedattributesrequest) </li><li> [ECFParticipantDeclarationPost2024ECTCompletedAttributesRequest](#schema-ecfparticipantdeclarationpost2024ectcompletedattributesrequest) </li><li> [ECFParticipantDeclarationPost2024ECTExtendedAttributesRequest](#schema-ecfparticipantdeclarationpost2024ectextendedattributesrequest) </li></ul> | 
 
 
 ### ParticipantDeclarationPost2024MentorDataRequest
@@ -1720,8 +1720,8 @@ A participant declaration data request for mentor participants from cohort 2025 
 
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
-| type | string | false | Possible values:<br/><br/> - participant-declaration<br/><br/> | 
-| attributes | object | false | This conforms to any of the following schemas:<br/><br/> -  [ECFParticipantDeclarationPost2024MentorStartedAttributesRequest](#schema-ecfparticipantdeclarationpost2024mentorstartedattributesrequest) <br/> -  [ECFParticipantDeclarationPost2024MentorCompletedAttributesRequest](#schema-ecfparticipantdeclarationpost2024mentorcompletedattributesrequest) <br/><br/> | 
+| type | string | false | Possible values:<br/><ul><li>participant-declaration</li></ul> | 
+| attributes | object | false | This conforms to any of the following schemas:<br/><ul><li> [ECFParticipantDeclarationPost2024MentorStartedAttributesRequest](#schema-ecfparticipantdeclarationpost2024mentorstartedattributesrequest) </li><li> [ECFParticipantDeclarationPost2024MentorCompletedAttributesRequest](#schema-ecfparticipantdeclarationpost2024mentorcompletedattributesrequest) </li></ul> | 
 
 
 ### ParticipantDeclarationPre2025DataRequest
@@ -1731,8 +1731,8 @@ A participant declaration data request for participants in cohort 2024 and previ
 
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
-| type | string | false | Possible values:<br/><br/> - participant-declaration<br/><br/> | 
-| attributes | object | false | This conforms to any of the following schemas:<br/><br/> -  [ECFParticipantDeclarationPre2025StartedAttributesRequest](#schema-ecfparticipantdeclarationpre2025startedattributesrequest) <br/> -  [ECFParticipantDeclarationPre2025RetainedAttributesRequest](#schema-ecfparticipantdeclarationpre2025retainedattributesrequest) <br/> -  [ECFParticipantDeclarationPre2025CompletedAttributesRequest](#schema-ecfparticipantdeclarationpre2025completedattributesrequest) <br/> -  [ECFParticipantDeclarationPre2025ExtendedAttributesRequest](#schema-ecfparticipantdeclarationpre2025extendedattributesrequest) <br/><br/> | 
+| type | string | false | Possible values:<br/><ul><li>participant-declaration</li></ul> | 
+| attributes | object | false | This conforms to any of the following schemas:<br/><ul><li> [ECFParticipantDeclarationPre2025StartedAttributesRequest](#schema-ecfparticipantdeclarationpre2025startedattributesrequest) </li><li> [ECFParticipantDeclarationPre2025RetainedAttributesRequest](#schema-ecfparticipantdeclarationpre2025retainedattributesrequest) </li><li> [ECFParticipantDeclarationPre2025CompletedAttributesRequest](#schema-ecfparticipantdeclarationpre2025completedattributesrequest) </li><li> [ECFParticipantDeclarationPre2025ExtendedAttributesRequest](#schema-ecfparticipantdeclarationpre2025extendedattributesrequest) </li></ul> | 
 
 
 ### ParticipantDeclarationRequest
@@ -1742,7 +1742,7 @@ An participant declaration request
 
 | Name | Type | Required | Description |
 | ---- | ---- | ---- | ---- |
-| data | object | true | This conforms to any of the following schemas:<br/><br/> -  [ParticipantDeclarationPre2025DataRequest](#schema-participantdeclarationpre2025datarequest) <br/> -  [ParticipantDeclarationPost2024ECTDataRequest](#schema-participantdeclarationpost2024ectdatarequest) <br/> -  [ParticipantDeclarationPost2024MentorDataRequest](#schema-participantdeclarationpost2024mentordatarequest) <br/><br/> | 
+| data | object | true | This conforms to any of the following schemas:<br/><ul><li> [ParticipantDeclarationPre2025DataRequest](#schema-participantdeclarationpre2025datarequest) </li><li> [ParticipantDeclarationPost2024ECTDataRequest](#schema-participantdeclarationpost2024ectdatarequest) </li><li> [ParticipantDeclarationPost2024MentorDataRequest](#schema-participantdeclarationpost2024mentordatarequest) </li></ul> | 
 
 
 ### ParticipantDeclarationResponse
