@@ -1245,17 +1245,17 @@ The data attributes associated with an ECF participant
 | full\_name | string | true | The full name of this ECF participant<br/> | 
 | mentor\_id | string | false | The unique identifier of this ECF participants mentor<br/> | 
 | school\_urn | string | true | The Unique Reference Number (URN) of the school that submitted this ECF participant<br/> | 
-| participant\_type | string | true | The type of ECF participant this record refers to<br/>Possible values:<br/><br/> - ect<br/> - mentor<br/><br/> | 
+| participant\_type | string | true | The type of ECF participant this record refers to<br/>Possible values:<br/><br/> * ect<br/> * mentor<br/><br/> | 
 | cohort | string | true | Indicates which call-off contract funds this participant’s training. 2021 indicates a participant that has started, or will start, their training in the 2021/22 academic year.<br/> | 
-| status | string | true | The status of this ECF participant record<br/>Possible values:<br/><br/> - active<br/> - withdrawn<br/><br/> | 
+| status | string | true | The status of this ECF participant record<br/>Possible values:<br/><br/> * active<br/> * withdrawn<br/><br/> | 
 | teacher\_reference\_number | string | false | The Teacher Reference Number (TRN) for this ECF participant<br/> | 
 | teacher\_reference\_number\_validated | boolean | false | Indicates whether the Teacher Reference Number (TRN) has been validated<br/> | 
 | eligible\_for\_funding | boolean | false | Indicates whether this participant is eligible to receive DfE funded induction<br/> | 
 | pupil\_premium\_uplift | boolean | false | Indicates whether this participant qualifies for an uplift payment due to pupil premium<br/> | 
 | sparsity\_uplift | boolean | false | Indicates whether this participant qualifies for an uplift payment due to sparsity<br/> | 
-| training\_status | string | true | The training status of the ECF participant<br/>Possible values:<br/><br/> - active<br/> - deferred<br/> - withdrawn<br/><br/> | 
+| training\_status | string | true | The training status of the ECF participant<br/>Possible values:<br/><br/> * active<br/> * deferred<br/> * withdrawn<br/><br/> | 
 | training\_record\_id | string | true | The unique identifier of the participant training record<br/> | 
-| schedule\_identifier | string | true | The schedule of the ECF participant<br/>Possible values:<br/><br/> - ecf-standard-september<br/> - ecf-standard-january<br/> - ecf-standard-april<br/> - ecf-reduced-september<br/> - ecf-reduced-january<br/> - ecf-reduced-april<br/> - ecf-extended-september<br/> - ecf-extended-january<br/> - ecf-extended-april<br/> - ecf-replacement-september<br/> - ecf-replacement-january<br/> - ecf-replacement-april<br/><br/> | 
+| schedule\_identifier | string | true | The schedule of the ECF participant<br/>Possible values:<br/><br/> - ecf-standard-september<br/> * ecf-standard-january<br/> * ecf-standard-april<br/> * ecf-reduced-september<br/> * ecf-reduced-january<br/> * ecf-reduced-april<br/> * ecf-extended-september<br/> * ecf-extended-january<br/> * ecf-extended-april<br/> * ecf-replacement-september<br/> * ecf-replacement-january<br/> * ecf-replacement-april<br/><br/> | 
 | updated\_at | string | true | The date the ECF participant was last updated<br/> | 
 
 
