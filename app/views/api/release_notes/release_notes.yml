@@ -34,7 +34,7 @@
 
     A new withdrawal reason, `changed_lead_provider`, is now available when withdrawing an ECT or mentor via the API.
 
-    ## Why we've made this change
+    ## Why we’ve made this change
 
     ECTs and mentors can move between lead providers during their training. Previously, there was no withdrawal reason to represent this scenario. Adding `changed_lead_provider` allows lead providers to record withdrawals more accurately.
 
