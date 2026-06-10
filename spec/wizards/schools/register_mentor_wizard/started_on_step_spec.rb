@@ -1,6 +1,6 @@
 require_relative "./shared_examples/started_on_step"
 
-RSpec.describe Schools::RegisterMentorWizard::StartedOnStep do
+RSpec.describe Schools::RegisterMentorWizard::StartedOnStep, :travel_to_current_contract_period do
   subject(:step) { described_class.new(wizard:, started_on: started_on_params) }
 
   let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :started_on, store:) }

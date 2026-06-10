@@ -37,7 +37,7 @@ module Schools
         def period = ect_at_school_period
         def reuse_existing_schedule? = false
         def current_or_next_training_period_confirmed? = true
-        def date_of_transition = period.started_on
+        # def date_of_transition = period.started_on
       end
     end
   end

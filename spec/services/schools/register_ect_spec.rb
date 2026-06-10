@@ -1,5 +1,6 @@
 RSpec.describe Schools::RegisterECT do
   include ActiveJob::TestHelper
+
   subject(:service) do
     described_class.new(school_reported_appropriate_body:,
                         corrected_name:,

@@ -68,7 +68,7 @@ describe "Schools::ECTs::ChangeTrainingProgrammeWizardController" do
         end
       end
 
-      context "when the latest training period is withdrawn" do
+      context "when the latest training period is withdrawn", :travel_to_current_contract_period do
         let!(:training_period) do
           FactoryBot.create(
             :training_period,

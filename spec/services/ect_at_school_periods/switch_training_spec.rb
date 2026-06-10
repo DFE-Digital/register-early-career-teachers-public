@@ -3,8 +3,7 @@ module ECTAtSchoolPeriods
     let(:ect_at_school_period) do
       FactoryBot.create(:ect_at_school_period, :unfinished, started_on: 2.weeks.ago)
     end
-
-    let(:mentor_at_school_period) do
+    let!(:mentor_at_school_period) do
       FactoryBot.create(
         :mentor_at_school_period,
         :unfinished,
@@ -12,7 +11,6 @@ module ECTAtSchoolPeriods
         school: ect_at_school_period.school
       )
     end
-
     let!(:mentorship_period) do
       FactoryBot.create(
         :mentorship_period,
@@ -224,7 +222,15 @@ module ECTAtSchoolPeriods
     end
 
     describe ".to_provider_led" do
-      let!(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, :current) }
+      let!(:contract_period) do
+        FactoryBot.create(
+          :contract_period,
+          :with_schedules,
+          :current,
+          started_on: 1.year.ago,
+          finished_on: 6.months.from_now
+        )
+      end
       let(:lead_provider) { FactoryBot.create(:lead_provider) }
       let!(:active_lead_provider) do
         FactoryBot.create(
@@ -422,7 +428,7 @@ module ECTAtSchoolPeriods
               expect(ect_at_school_period.reload).to be_provider_led_training_programme
               new_training_period = TrainingPeriod.last
               expect(new_training_period.started_on).to eq(ect_at_school_period.started_on)
-              expect(new_training_period.expression_of_interest).to eq(future_active_lead_provider)
+              expect(new_training_period.expression_of_interest).to eq(upcoming_active_lead_provider)
             end
           end
         end
@@ -977,6 +983,16 @@ module ECTAtSchoolPeriods
         end
       end
 
+      context "when there is no contract period" do
+        let(:contract_period) { nil }
+        let(:active_lead_provider) { nil }
+
+        it "raises a `NoContractPeriodError`" do
+          expect { SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:) }
+            .to raise_error(NoContractPeriodError)
+        end
+      end
+
       context "for mentors" do
         let!(:training_period) do
           FactoryBot.create(
@@ -1220,7 +1236,7 @@ module ECTAtSchoolPeriods
         end
 
         context "when the mentee has no mentor" do
-          let(:mentorship_period) { nil }
+          let!(:mentorship_period) { nil }
 
           it "does not create a new training period for the mentor" do
             expect { SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:) }

@@ -56,6 +56,11 @@ RSpec.describe "Admin active lead providers", type: :request do
       context "when the contract period has started" do
         let(:contract_period) { FactoryBot.create(:contract_period, :current) }
 
+        before { travel_to contract_period.started_on }
+        # We need to sign in after we travel, otherwise we need to sign in
+        # again!
+        include_context "sign in as finance DfE user"
+
         it "redirects to the index with an alert" do
           get new_path
           expect(response).to redirect_to(index_path)
@@ -128,7 +133,7 @@ RSpec.describe "Admin active lead providers", type: :request do
         end
       end
 
-      context "when the contract period has started" do
+      context "when the contract period has started", :travel_to_current_contract_period do
         let(:contract_period) { FactoryBot.create(:contract_period, :current) }
 
         it "does not create an active lead provider and redirects to the index with an alert" do
@@ -168,7 +173,7 @@ RSpec.describe "Admin active lead providers", type: :request do
         expect(response).to redirect_to(admin_contract_period_active_lead_providers_path(contract_period))
       end
 
-      context "when the contract period has started" do
+      context "when the contract period has started", :travel_to_current_contract_period do
         let(:contract_period) { FactoryBot.create(:contract_period, :current) }
 
         it "does not destroy the active lead provider and redirects to the index with an alert" do

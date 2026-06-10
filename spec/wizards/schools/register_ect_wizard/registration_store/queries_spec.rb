@@ -1,4 +1,4 @@
-RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
+RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries, :travel_to_current_contract_period do
   subject(:queries) { described_class.new(registration_store:) }
 
   let(:teacher) { FactoryBot.create(:teacher) }

@@ -328,6 +328,8 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
       end
 
       before do
+        travel_to current_contract_period.started_on
+
         school.update!(
           last_chosen_training_programme: "provider_led",
           last_chosen_lead_provider: lead_provider,

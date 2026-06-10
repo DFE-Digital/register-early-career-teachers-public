@@ -100,7 +100,7 @@ RSpec.shared_examples "a use previous ect choices view" do |current_step:, back_
     end
   end
 
-  context "when provider-led with confirmed partnership" do
+  context "when provider-led with confirmed partnership", :travel_to_current_contract_period do
     let(:school) { FactoryBot.create(:school, :provider_led_last_chosen) }
 
     before do

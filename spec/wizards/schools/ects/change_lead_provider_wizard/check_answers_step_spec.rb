@@ -1,4 +1,4 @@
-describe Schools::ECTs::ChangeLeadProviderWizard::CheckAnswersStep do
+describe Schools::ECTs::ChangeLeadProviderWizard::CheckAnswersStep, :travel_to_current_contract_period do
   subject(:current_step) { wizard.current_step }
 
   let(:wizard) do

@@ -62,7 +62,7 @@ describe ContractPeriod do
     end
   end
 
-  describe ".current" do
+  describe ".current", :travel_to_current_contract_period do
     subject(:current) { described_class.current }
 
     let(:current_contract_period) do
@@ -94,7 +94,7 @@ describe ContractPeriod do
     end
   end
 
-  describe ".upcoming" do
+  describe ".upcoming", :travel_to_current_contract_period do
     subject(:upcoming) { described_class.upcoming }
 
     context "when there are no contract periods" do
@@ -145,7 +145,7 @@ describe ContractPeriod do
     end
   end
 
-  describe ".current_or_upcoming" do
+  describe ".current_or_upcoming", :travel_to_current_contract_period do
     subject(:current_or_upcoming) { described_class.current_or_upcoming }
 
     context "when there are no contract periods" do
@@ -180,7 +180,7 @@ describe ContractPeriod do
     end
   end
 
-  describe ".current_or_upcoming!" do
+  describe ".current_or_upcoming!", :travel_to_current_contract_period do
     subject(:current_or_upcoming) { ContractPeriod.current_or_upcoming! }
 
     context "when there are no contract periods" do
@@ -422,7 +422,9 @@ describe ContractPeriod do
   end
 
   describe "#editable?" do
-    subject { FactoryBot.create(:contract_period, started_on:) }
+    subject do
+      FactoryBot.create(:contract_period, started_on:, finished_on: 1.year.from_now)
+    end
 
     context "when the contract period has not yet started" do
       let(:started_on) { 1.month.from_now }

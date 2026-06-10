@@ -151,7 +151,7 @@ RSpec.describe "Admin delivery partners", type: :request do
     end
   end
 
-  describe "GET /admin/organisations/delivery-partners/:delivery_partner_id/:year/new" do
+  describe "GET /admin/organisations/delivery-partners/:delivery_partner_id/:year/new", :travel_to_current_contract_period do
     let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
     let(:contract_period) { FactoryBot.create(:contract_period, :current) }
     let(:new_path) { new_admin_delivery_partner_delivery_partnership_path(delivery_partner, contract_period.year) }
@@ -412,6 +412,11 @@ RSpec.describe "Admin delivery partners", type: :request do
 
         context "for current contract periods" do
           let(:contract_period) { FactoryBot.create(:contract_period, :current) }
+
+          before { travel_to contract_period.started_on }
+          # We need to sign in after we travel, otherwise we need to sign in
+          # again!
+          include_context "sign in as DfE user"
 
           it "redirects back to new page with error message" do
             post create_path

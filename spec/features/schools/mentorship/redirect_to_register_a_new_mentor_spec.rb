@@ -1,4 +1,4 @@
-RSpec.describe "Redirect to register a new mentor for an ECT" do
+RSpec.describe "Redirect to register a new mentor for an ECT", :travel_to_current_contract_period do
   include_context "test TRS API returns a teacher"
   include SchoolPartnershipHelpers
 

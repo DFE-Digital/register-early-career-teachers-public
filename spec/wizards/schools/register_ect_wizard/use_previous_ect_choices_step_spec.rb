@@ -1,4 +1,4 @@
-RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :model do
+RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, :travel_to_current_contract_period, type: :model do
   subject(:step) { wizard.current_step }
 
   let(:use_previous_ect_choices) { true }

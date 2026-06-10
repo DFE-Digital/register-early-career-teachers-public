@@ -2,6 +2,12 @@ module Teachers
   module LeadProviderChanger
     class LeadProviderNotChangedError < StandardError; end
 
+    class NoContractPeriodError < StandardError
+      def message
+        "Changes cannot be made to a teacher's lead provider without a contract period"
+      end
+    end
+
     extend ActiveSupport::Concern
 
     include TrainingPeriodSources
@@ -35,6 +41,7 @@ module Teachers
     end
 
     def call
+      raise NoContractPeriodError if contract_period.blank?
       raise LeadProviderNotChangedError unless lead_provider_changed?
 
       ActiveRecord::Base.transaction do
