@@ -10,7 +10,7 @@
 | `declaration`    | The notification submitted by providers via the API as the sole means for triggering output payments from DfE. Declarations are submitted where there is evidence of a participant’s engagement in training for a given milestone period      |
 | `participant`    | An early career teacher (ECT) or mentor registered for training      |
 | `partnership`     | The relationship created between schools, delivery partners and providers who work together to deliver early career training to participants      |
-| `schedule`     | The expected timeframe in which a participant will complete their early career training. Schedules include [defined milestone dates](ecf/schedules-and-milestone-dates) against which DfE validates the declarations submitted by providers      |
+| `schedule`     | The expected timeframe in which a participant will complete their early career training. Schedules include [defined milestone dates](schedules-and-milestone-dates.md) against which DfE validates the declarations submitted by providers      |
 | `statement`    | A record of output payments (based on declarations), service fees and any adjustments the DfE may pay lead providers at the end of a contractually agreed payment period. Statements sent to providers by DfE at the end of milestone periods can be used for invoicing purposes     |
 | `unfunded-mentor` | Mentors linked to a provider's ECTs but not eligible for funding through that provider. Typically, these mentors have either completed, or are currently doing, mentor training with a different lead provider than the one delivering training to the ECT they support |
 
@@ -24,7 +24,7 @@ Each status tells providers what actions they can take through the API and what 
 
 Partnership statuses are defined by the `status` attribute in partnership endpoint responses. 
 
-Providers must [confirm their partnerships with schools](ecf/guidance/#confirm-view-and-update-partnerships) for each cohort. Once a partnership has been established the `status` value will become `active` and providers will receive participant information via the API. 
+Providers must [confirm their partnerships with schools](guidance.md#confirm-view-and-update-partnerships) for each cohort. Once a partnership has been established the `status` value will become `active` and providers will receive participant information via the API. 
 
 Schools can challenge existing partnerships at any time. Once a partnership `status` becomes `challenged`, providers will no longer be able to update partnership details. 
 
@@ -33,9 +33,9 @@ Schools can challenge existing partnerships at any time. Once a partnership `sta
 | `active`     | A partnership between a provider, school and delivery partner has been agreed and confirmed by the provider    | Providers can view, confirm and update `active` partnerships     |
 | `challenged`     | A partnership between a provider, school and delivery partner has been changed or dissolved by the school     | Providers can only view `challenged` partnerships    |
 
-<div class="govuk-inset-text"> The 2025 cohort will be the last to have challenge fields in partnership responses. From 2026, schools will make changes at an individual participant level (for example, moving an ECT to a different provider) rather than challenging a school-wide partnership.</div>
+> The 2025 cohort will be the last to have challenge fields in partnership responses. From 2026, schools will make changes at an individual participant level (for example, moving an ECT to a different provider) rather than challenging a school-wide partnership.
 
-[View more detailed specifications for the partnerships schema](reference-v3.html#schema-ecfpartnershipattributes)
+[View more detailed specifications for the partnerships schema](../reference-v3.md#ecfpartnershipattributes)
 
 ### Participant statuses 
 
@@ -71,13 +71,13 @@ Example of how the two participant statuses can differ:
 
 In this case, the participant is still active in training, but their school has flagged that they are due to leave soon. Once the leaving date passes, the `participant_status` will update to `left`, while the provider will need to update the training record if the participant transfers or withdraws. 
 
-[View more detailed specifications for the ECF participant schema](reference-v3.html#schema-ecfparticipantattributes)
+[View more detailed specifications for the ECF participant schema](../reference-v3.md#schema-ecfparticipantattributes)
 
 ## Declaration states
 
 Declaration states are defined by the `state` attribute.
 
-Providers must [submit declarations](ecf/guidance/#submit-view-and-void-declarations) to confirm a participant has engaged in training within a given milestone period. A declaration’s `state` value will reflect if and when DfE will pay providers for the training delivered.
+Providers must [submit declarations](guidance.md#submit-view-and-void-declarations) to confirm a participant has engaged in training within a given milestone period. A declaration’s `state` value will reflect if and when DfE will pay providers for the training delivered.
 
 | state | Definition | Action |
 | -------- | -------- | -------- |
@@ -90,7 +90,7 @@ Providers must [submit declarations](ecf/guidance/#submit-view-and-void-declarat
 | `awaiting_clawback`     | A `paid` declaration that has since been voided by a provider    | Providers can **only** view `awaiting_clawback` declarations     |
 | `clawed_back`     | An `awaiting_clawback` declaration that has since had its value deducted from payment by DfE to a provider     | Providers can **only** view `clawed_back` declarations     |
 
-[View more detailed specifications for the declaration schema](reference-v3.html#schema-participantdeclarationattributes)
+[View more detailed specifications for the declaration schema](../reference-v3.md#schema-participantdeclarationattributes)
 
 ## IDs explained 
 
