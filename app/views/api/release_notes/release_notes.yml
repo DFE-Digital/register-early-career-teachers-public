@@ -21,6 +21,38 @@
 #
 #     **bold** and _italic_ text
 
+- title: Update updated_at when participant counts change in partnerships
+  date: 2026-06-10
+  tags:
+    - production-release
+    - bug-fix
+  body: |
+    We have updated how the updated_at timestamp behaves for GET partnerships to better reflect changes in participant activity.
+
+    ## What’s changed
+
+    The updated_at field on partnerships will now be updated whenever the number of participants currently training (ongoing participants) changes.
+
+    Previously, changes to this participant count were not reflected in updated_at, as the value is derived dynamically rather than stored on a specific attribute.
+
+    ## Why we've made this change
+
+    The number of participants currently training is an important part of the partnerships response. Not updating updated_at when this value changed meant API consumers could miss meaningful updates unless they re-polled all data.
+
+    This change ensures that updates to participant counts are surfaced consistently, making it easier for providers to detect and respond to changes.
+    
+    ## Who this applies to
+
+    This change affects API consumers using the GET partnerships endpoint or GET schools endpoint, particularly training providers who rely on induction tutor contact details.
+
+    ## What you need to do
+
+    No action is required. However, you should:
+
+    - Expect updated_at to change more frequently where participant activity changes
+    - Ensure your systems correctly pick up these updates if you rely on updated_at for incremental data syncing
+    - Ensure your systems ignore any changes that you do not need to respond to (e.g. if you only wish to respond when the count changes from 0 to 1 or more)
+
 - title: Added schedules and contract data for the 2026 to 2027 intake to the test (sandbox) environment
   date: 2026-05-27
   tags:
