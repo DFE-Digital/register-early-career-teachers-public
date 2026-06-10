@@ -77,6 +77,60 @@ RSpec.describe Teachers::UndoRegistration do
 
         include_examples "finishes periods without anonymising the teacher"
       end
+
+      context "when the periods start in the future" do
+        let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 1.week.from_now.to_date, finished_on: nil) }
+        let(:at_school_period) { ect_at_school_period }
+        let!(:training_period) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: ect_at_school_period.started_on, finished_on: nil) }
+        let!(:declaration) { FactoryBot.create(:declaration, :eligible, training_period:) }
+
+        it "finishes periods on their start date rather than today" do
+          undo_registration
+
+          expect(ect_at_school_period.reload.finished_on).to eq(ect_at_school_period.started_on)
+          expect(training_period.reload.finished_on).to eq(training_period.started_on)
+        end
+      end
+
+      context "when there are already finished linked periods" do
+        let(:ect_at_school_period) do
+          FactoryBot.create(
+            :ect_at_school_period,
+            started_on: 3.years.ago.to_date,
+            finished_on: nil
+          )
+        end
+
+        let!(:training_period) do
+          FactoryBot.create(
+            :training_period,
+            :for_ect,
+            :ongoing,
+            ect_at_school_period:,
+            started_on: 6.months.ago.to_date
+          )
+        end
+
+        let!(:finished_training_period) do
+          FactoryBot.create(
+            :training_period,
+            :for_ect,
+            ect_at_school_period:,
+            started_on: 2.years.ago.to_date,
+            finished_on: 1.year.ago.to_date
+          )
+        end
+
+        let!(:declaration) { FactoryBot.create(:declaration, :eligible, training_period:) }
+
+        it "does not overwrite existing finished_on dates" do
+          original_finished_on = finished_training_period.finished_on
+
+          undo_registration
+
+          expect(finished_training_period.reload.finished_on).to eq(original_finished_on)
+        end
+      end
     end
 
     context "when the participant has refundable declarations" do

@@ -35,9 +35,13 @@ module Teachers
     end
 
     def finish_periods!
-      mentorship_periods.find_each(&:finish!)
-      training_periods.find_each(&:finish!)
-      at_school_period.finish!
+      mentorship_periods.where(finished_on: nil).find_each { |period| period.finish!(finish_date_for(period)) }
+      training_periods.where(finished_on: nil).find_each { |period| period.finish!(finish_date_for(period)) }
+      at_school_period.finish!(finish_date_for(at_school_period)) if at_school_period.finished_on.nil?
+    end
+
+    def finish_date_for(period)
+      [period.started_on, Date.current].max
     end
 
     def delete_periods!
