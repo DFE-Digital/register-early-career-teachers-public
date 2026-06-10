@@ -29,7 +29,7 @@
     - new-feature
     - production-release
   body: |
-    We’ve updated how `participant_status` is set for deferred and withdrawn participants in GET participant responses to improve consistency.
+    We’ve updated how `participant_status` is set for deferred and withdrawn participants in GET participant responses.
 
     ## What’s changed
 
@@ -39,7 +39,7 @@
 
     ## Why we’ve made this change
 
-    The previous behaviour could result in participants appearing to move from `left` back to `active` This could cause confusion for providers and delivery partners.
+    The previous behaviour could result in participants appearing to move from `left` back to `active`. This could cause confusion for providers and delivery partners.
 
     This change ensures that withdrawal and deferral states are consistently reflected, without requiring additional cross-referencing with other attributes.
 
