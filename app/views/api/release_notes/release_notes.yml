@@ -21,6 +21,29 @@
 #
 #     **bold** and _italic_ text
 
+- title: Added new withdrawal reason: changed_lead_provider
+  date: 2026-06-10
+  tags:
+    - production-release
+    - sandbox-release
+  body: |
+    We’ve introduced a new withdrawal reason to the API to support cases where an ECT or mentor moves to a different lead provider.
+
+    ## What’s changed
+
+    A new withdrawal reason, `changed_lead_provider`, is now available when withdrawing an ECT or mentor via the API.
+
+    ## Why we've made this change
+
+    ECTs and mentors can move between lead providers during their training. Previously, there was no withdrawal reason to represent this scenario. Adding `changed_lead_provider` allows lead providers to record withdrawals more accurately.
+
+    ## What you need to do
+
+    You can now use the `changed_lead_provider` value when submitting a withdrawal via the API.
+
+    No other changes are required.
+
+
 - title: Added schedules and contract data for the 2026 to 2027 intake to the test (sandbox) environment
   date: 2026-05-27
   tags:
@@ -30,7 +53,6 @@
     We’ve added the schedules and contract data for the 2026 to 2027 intake of early career teachers (ECTs) and mentors to the test (sandbox) environment.
 
     Lead providers can use the seed data we’ve created. This will allow full end-to-end process testing and ensure smooth integration with POST participant-declarations, POST Partnership endpoints and all GET endpoints.
-
 
 - title: Update to the induction_tutor_email attribute on GET partnerships and GET schools endpoints
   date: 2026-05-26
