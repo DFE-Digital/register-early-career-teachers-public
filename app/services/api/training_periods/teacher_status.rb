@@ -2,7 +2,7 @@ module API::TrainingPeriods
   class TeacherStatus
     attr_reader :training_period, :teacher
 
-    delegate :started_on, :finished_on, :for_ect?, :for_mentor?, to: :training_period, allow_nil: true
+    delegate :started_on, :finished_on, :for_ect?, :for_mentor?, :withdrawn_at, :deferred_at, to: :training_period, allow_nil: true
     delegate :mentor_became_ineligible_for_funding_on, to: :teacher, allow_nil: true
 
     def initialize(latest_training_period:, teacher:)
@@ -11,7 +11,9 @@ module API::TrainingPeriods
     end
 
     def status
-      if teacher_is_ect_and_completed_induction? || teacher_is_mentor_and_completed_training?
+      if withdrawn_at.present? || deferred_at.present?
+        finished_on.future? ? :leaving : :left
+      elsif teacher_is_ect_and_completed_induction? || teacher_is_mentor_and_completed_training?
         :active # longer term we would prefer something like :complete
       elsif finished_on.present?
         finished_on.future? ? :leaving : :left
