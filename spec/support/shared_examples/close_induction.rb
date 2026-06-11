@@ -104,7 +104,8 @@ RSpec.shared_context "it closes an induction period and finishes any related per
       expect(ECTAtSchoolPeriods::Destroy)
       .to have_received(:call).with(
         ect_at_school_period:,
-        author:
+        author:,
+        actioned_at: Date.current
       )
 
       expect(ECTAtSchoolPeriod).not_to exist(ect_at_school_period.id)

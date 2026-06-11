@@ -761,8 +761,29 @@ RSpec.describe Events::Record do
         expect(RecordEventJob).to have_received(:perform_later).with(
           teacher:,
           school:,
-          heading: "Rhys Ifans's ECT at school period which was due to start on #{started_on} was deleted",
+          heading: "Rhys Ifans's ECT at school period which was due to start on #{started_on} at #{school.name} was deleted",
           event_type: :teacher_ect_at_school_period_deleted,
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      end
+    end
+  end
+
+  describe ".record_teacher_mentor_at_school_period_deleted!" do
+    let(:school) { FactoryBot.create(:school) }
+    let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school:, started_on:) }
+    let(:started_on) { Date.tomorrow }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        Events::Record.record_teacher_mentor_at_school_period_deleted!(author:, teacher:, school:, started_on:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          teacher:,
+          school:,
+          heading: "Rhys Ifans's Mentor at school period which was due to start on #{started_on} at #{school.name} was deleted",
+          event_type: :teacher_mentor_at_school_period_deleted,
           happened_at: Time.zone.now,
           **author_params
         )
