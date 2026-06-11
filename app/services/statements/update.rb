@@ -10,6 +10,7 @@ module Statements
 
     def call
       statement.assign_attributes(params)
+      statement.fee_type = FeeTypeForMonth.new(month: statement.month).call
       modifications = statement.changes
 
       ActiveRecord::Base.transaction do
