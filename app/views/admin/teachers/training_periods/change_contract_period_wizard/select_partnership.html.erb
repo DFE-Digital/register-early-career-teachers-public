@@ -1,5 +1,5 @@
 <% page_data(
-  title: "Select partnership for #{@wizard.selected_contract_period.year} for #{@wizard.teacher_name}",
+  title: "Select #{@wizard.selected_contract_period.year} partnership for #{@wizard.teacher_name}",
   error: @wizard.current_step.errors.present?,
   backlink_href: @wizard.previous_step_path
 ) %>

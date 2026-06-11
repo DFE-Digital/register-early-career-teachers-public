@@ -105,7 +105,7 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
       follow_redirect!
 
       expect(response).to have_http_status(:ok)
-      expect(response.body).to include("Select partnership for #{target_contract_period.year} for #{teacher_name}")
+      expect(response.body).to include("Select #{target_contract_period.year} partnership for #{teacher_name}")
       expect(response.body).to include("#{target_school_partnership.lead_provider.name} &amp; #{target_school_partnership.delivery_partner.name}")
       expect(response.body).to include(admin_school_partnerships_path(school.urn))
     end
