@@ -71,7 +71,7 @@ Example of how the two participant statuses can differ:
 
 In this case, the participant is still active in training, but their school has flagged that they are due to leave soon. Once the leaving date passes, the `participant_status` will update to `left`, while the provider will need to update the training record if the participant transfers or withdraws. 
 
-[View more detailed specifications for the ECF participant schema](../reference-v3.md#schema-ecfparticipantattributes)
+[View more detailed specifications for the ECF participant schema](../reference-v3.md#ecfparticipantattributes)
 
 ## Declaration states
 
@@ -90,7 +90,7 @@ Providers must [submit declarations](guidance.md#submit-view-and-void-declaratio
 | `awaiting_clawback`     | A `paid` declaration that has since been voided by a provider    | Providers can **only** view `awaiting_clawback` declarations     |
 | `clawed_back`     | An `awaiting_clawback` declaration that has since had its value deducted from payment by DfE to a provider     | Providers can **only** view `clawed_back` declarations     |
 
-[View more detailed specifications for the declaration schema](../reference-v3.md#schema-participantdeclarationattributes)
+[View more detailed specifications for the declaration schema](../reference-v3.md#participantdeclarationattributes)
 
 ## IDs explained 
 
