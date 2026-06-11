@@ -18,6 +18,7 @@ module GIAS::Schools
 
     def close_school!
       ActiveRecord::Base.transaction do
+        destroy_unstarted_mentorship_periods!
         destroy_unstarted_periods!
         finish_ongoing_periods!
 
@@ -33,6 +34,22 @@ module GIAS::Schools
       unstarted_ect_at_school_periods.each do |ect_at_school_period|
         ECTAtSchoolPeriods::Destroy.call(ect_at_school_period:, author:, actioned_at: gias_school.closed_on)
       end
+    end
+
+    def destroy_unstarted_mentorship_periods!
+      unstarted_mentorship_periods_at_school.each(&:destroy!)
+    end
+
+    def unstarted_mentorship_periods_at_school
+      unstarted_mentorship_periods_for_ect_at_school_periods + unstarted_mentorship_periods_for_mentor_at_school_periods
+    end
+
+    def unstarted_mentorship_periods_for_ect_at_school_periods
+      MentorshipPeriod.started_after(gias_school.closed_on).joins(:mentee).where(ect_at_school_periods: { school_id: school.id })
+    end
+
+    def unstarted_mentorship_periods_for_mentor_at_school_periods
+      MentorshipPeriod.started_after(gias_school.closed_on).joins(:mentor).where(mentor_at_school_periods: { school_id: school.id })
     end
 
     def finish_ongoing_periods!
