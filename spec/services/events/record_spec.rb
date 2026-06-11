@@ -770,7 +770,7 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe ".record_teacher_mentor_at_school_period_deleted" do
+  describe ".record_teacher_mentor_at_school_period_deleted!" do
     let(:school) { FactoryBot.create(:school) }
     let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school:, started_on:) }
     let(:started_on) { Date.tomorrow }

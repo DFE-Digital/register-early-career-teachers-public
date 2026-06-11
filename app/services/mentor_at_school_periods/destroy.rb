@@ -2,7 +2,7 @@ module MentorAtSchoolPeriods
   class Destroy
     include Periods::Destroyable
 
-    def initialize(mentor_at_school_period:, author:, actioned_at: Date.current)
+    def initialize(mentor_at_school_period:, author:, actioned_at:)
       @period = mentor_at_school_period
       @author = author
       @actioned_at = actioned_at

@@ -2,7 +2,7 @@ module ECTAtSchoolPeriods
   class Destroy
     include Periods::Destroyable
 
-    def initialize(ect_at_school_period:, author:, actioned_at: Date.current)
+    def initialize(ect_at_school_period:, author:, actioned_at:)
       @period = ect_at_school_period
       @author = author
       @actioned_at = actioned_at

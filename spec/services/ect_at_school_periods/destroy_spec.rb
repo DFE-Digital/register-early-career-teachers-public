@@ -1,5 +1,5 @@
 describe ECTAtSchoolPeriods::Destroy do
-  subject { ECTAtSchoolPeriods::Destroy.call(ect_at_school_period:, author:) }
+  subject { ECTAtSchoolPeriods::Destroy.call(ect_at_school_period:, author:, actioned_at: Date.current) }
 
   let(:started_on) { Date.tomorrow }
   let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school:, started_on: 1.week.ago) }
@@ -154,7 +154,7 @@ describe ECTAtSchoolPeriods::Destroy do
           expect { subject }.not_to(change(MentorshipPeriod, :count))
         end
 
-        it "destroys any events associated with the mentorship periods" do
+        it "does not destroy any events associated with the mentorship periods" do
           expect { subject }.not_to(change(Event, :count))
         end
       end
@@ -248,7 +248,7 @@ describe ECTAtSchoolPeriods::Destroy do
             expect { subject }.not_to(change(MentorshipPeriod, :count))
           end
 
-          it "destroys any events associated with the mentorship periods" do
+          it "does not destroy any events associated with the mentorship periods" do
             expect { subject }.not_to(change(Event, :count))
           end
         end
