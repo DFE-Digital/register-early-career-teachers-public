@@ -2661,6 +2661,7 @@ components:
                   - moved-school
                   - mentor-no-longer-being-mentor
                   - switched-to-school-led
+                  - changed-lead-provider
                   - other
                   example: left-teaching-profession
                 course_identifier:
@@ -2953,6 +2954,7 @@ components:
               - moved-school
               - mentor-no-longer-being-mentor
               - switched-to-school-led
+              - changed-lead-provider
               - other
               example: moved-school
             date:
