@@ -18,11 +18,11 @@ module Metadata::Handlers
 
   protected
 
-    def alertable_changes(saved_changes)
+    def alert_exclusions
       # Depends on mentorship periods that are ongoing/future dated, which
       # is a moving target, so the nightly refresh will often update this.
       # We don't want to alert on this change when that happens.
-      saved_changes.excluding("ect_assigned_mentor_latest_school_period_id")
+      %w[ect_assigned_mentor_latest_school_period_id]
     end
 
   private
