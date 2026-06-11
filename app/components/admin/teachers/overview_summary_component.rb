@@ -10,7 +10,7 @@ module Admin
       end
 
       def call
-        govuk_summary_list do |summary_list|
+        govuk_summary_list(actions: false) do |summary_list|
           rows.each do |row|
             summary_list.with_row do |summary_row|
               summary_row.with_key(text: row[:key])
