@@ -15,8 +15,7 @@ RSpec.describe GIAS::Schools::Close do
     let(:mentorship_finished_on) { nil }
 
     before do
-      create_mentorship_period(ects, mentors)
-      create_mentorship_period(unstarted_ects, unstarted_mentors, finished_on: nil)
+      create_mentorship_period(ects.first, mentors.first)
 
       allow(gias_school).to receive(:closeable?).and_return(closeable)
 
@@ -121,6 +120,38 @@ RSpec.describe GIAS::Schools::Close do
       it_behaves_like "records a school closed event"
     end
 
+    context "when there are unstarted mentorship periods" do
+      context "when the mentee has started but the mentorship starts in the future" do
+        let!(:unstarted_mentorship_period) { create_mentorship_period(ects.second, unstarted_mentors.second, finished_on: nil) }
+
+        it "destroys the mentorship period" do
+          service
+
+          expect { unstarted_mentorship_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+        end
+      end
+
+      context "when the mentor has started but the mentorship starts in the future" do
+        let!(:unstarted_mentorship_period) { create_mentorship_period(unstarted_ects.second, mentors.second, finished_on: nil) }
+
+        it "destroys the mentorship period" do
+          service
+
+          expect { unstarted_mentorship_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+        end
+      end
+
+      context "when neither the mentor nor the mentee period is unstarted" do
+        let!(:unstarted_mentorship_period) { create_mentorship_period(unstarted_ects.first, unstarted_mentors.first) }
+
+        it "destroys the mentorship period" do
+          service
+
+          expect { unstarted_mentorship_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+        end
+      end
+    end
+
     context "when the school is not closeable" do
       let(:closeable) { false }
 
@@ -192,10 +223,7 @@ RSpec.describe GIAS::Schools::Close do
     end
   end
 
-  def create_mentorship_period(ects, mentors, finished_on: mentorship_finished_on)
-    mentee = ects.first
-    mentor = mentors.first
-
+  def create_mentorship_period(mentee, mentor, finished_on: mentorship_finished_on)
     return unless mentee.present? && mentor.present?
 
     started_on = [mentee.started_on, mentor.started_on].max
