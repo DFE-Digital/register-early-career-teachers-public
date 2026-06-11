@@ -338,7 +338,7 @@ RSpec.describe Metadata::Handlers::Teacher do
             expect(scope).to have_received(:set_context).with(
               "metadata_changes",
               a_hash_including(
-                alertable_changes: a_hash_excluding("ect_assigned_mentor_latest_school_period_id")
+                relevant_changes: a_hash_excluding("ect_assigned_mentor_latest_school_period_id")
               )
             )
           end

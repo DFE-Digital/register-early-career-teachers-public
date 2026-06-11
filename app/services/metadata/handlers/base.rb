@@ -48,14 +48,14 @@ module Metadata::Handlers
     def alert_on_changes(metadata)
       return unless @alert_on_changes
 
-      alertable_changes = alertable_changes(metadata.saved_changes)
+      relevant_changes = alertable_changes(metadata.saved_changes)
 
-      return unless alertable_changes.any?
+      return unless relevant_changes.any?
 
       attrs = {
         class: metadata.class.name,
         id: metadata.id,
-        alertable_changes:
+        relevant_changes:
       }
 
       Rails.logger.warn("[Metadata] #{metadata.class.name} change: #{attrs.inspect}")
