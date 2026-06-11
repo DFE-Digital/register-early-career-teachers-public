@@ -111,7 +111,7 @@ RSpec.shared_examples "supports tracking metadata upsert changes" do |metadata_m
           a_hash_including(
             class: metadata_model.name,
             id: kind_of(Integer),
-            alertable_changes: a_hash_including("id" => kind_of(Array))
+            relevant_changes: a_hash_including("id" => kind_of(Array))
           )
         )
 
