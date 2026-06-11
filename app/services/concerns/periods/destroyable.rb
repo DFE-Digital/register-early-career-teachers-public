@@ -2,8 +2,10 @@ module Periods
   module Destroyable
     extend ActiveSupport::Concern
 
+    class InvalidDate < StandardError; end
+
     included do
-      attr_reader :period, :author
+      attr_reader :period, :author, :actioned_at
     end
 
     class_methods do
@@ -13,6 +15,9 @@ module Periods
     end
 
     def call
+      raise InvalidDate, "Date must be present" unless actioned_at
+      raise InvalidDate, "Date cannot be in the future" if actioned_at > Date.current
+
       return unless period
       return if period_started?
 
@@ -28,7 +33,7 @@ module Periods
   private
 
     def period_started?
-      started_on < Time.zone.today
+      started_on < actioned_at
     end
 
     def destroy_mentorship_period_events!
