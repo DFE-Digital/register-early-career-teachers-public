@@ -25,7 +25,6 @@ RSpec.describe "admin/finance/active_lead_providers/statements/edit.html.erb" do
 
     expect(rendered).to have_css("select[name='statement[month]'] option[value='11'][selected]")
     expect(rendered).to have_css("select[name='statement[year]'] option[value='2099'][selected]")
-    expect(rendered).to have_css("input[type='radio'][name='statement[fee_type]'][value='output']")
     expect(rendered).to have_css("select[name='statement[contract_id]'] option[value='#{statement.contract_id}'][selected]")
   end
 

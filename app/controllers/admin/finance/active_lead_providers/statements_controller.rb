@@ -88,7 +88,7 @@ module Admin::Finance::ActiveLeadProviders
     # forged contract_id is nilled out and rejected by the presence validation
     # rather than attaching the statement to a different provider.
     def statement_params
-      permitted = params.expect(statement: %i[contract_id month year fee_type deadline_date payment_date])
+      permitted = params.expect(statement: %i[contract_id month year deadline_date payment_date])
       return permitted unless permitted.key?(:contract_id)
 
       scoped_contract = @active_lead_provider.contracts.find_by(id: permitted[:contract_id])
