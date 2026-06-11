@@ -43,29 +43,67 @@ RSpec.describe Sessions::Manager do
     describe "storing the 'id_token' cookie" do
       let(:secret_key) { Rails.application.secret_key_base.byteslice(0, 32) }
 
-      before do
-        allow(ActiveSupport::MessageEncryptor).to receive(:new).and_call_original
-        service.begin_session!(user, id_token: "dfe_token")
+      context "when id_token is present" do
+        before do
+          allow(ActiveSupport::MessageEncryptor).to receive(:new).and_call_original
+          service.begin_session!(user, id_token: "dfe_token")
+        end
+
+        it "is set" do
+          expect(cookies["id_token"]).to be_present
+        end
+
+        it "id_token is encrypted" do
+          expect(ActiveSupport::MessageEncryptor).to have_received(:new).once.with(secret_key)
+        end
+
+        it "has 'httponly: true' set" do
+          expect(cookies.dig("id_token", "httponly")).to be(true)
+        end
+
+        it "has 'secure: true' set" do
+          expect(cookies.dig("id_token", "secure")).to be(true)
+        end
+
+        it "has 'same_site: :strict' set" do
+          expect(cookies.dig("id_token", "same_site")).to be(:strict)
+        end
       end
 
-      it "is set" do
-        expect(cookies["id_token"]).to be_present
+      context "when signing in without an id_token and a stale cookie exists" do
+        let(:cookies) { HashWithIndifferentAccess.new("id_token" => "stale_token") }
+
+        before do
+          allow(ActiveSupport::MessageEncryptor).to receive(:new).and_call_original
+          service.begin_session!(user)
+        end
+
+        it "does not persist the id_token cookie" do
+          expect(cookies["id_token"]).to be_nil
+        end
+
+        it "does not encrypt a token" do
+          expect(ActiveSupport::MessageEncryptor).not_to have_received(:new)
+        end
       end
 
-      it "id_token is encrypted" do
-        expect(ActiveSupport::MessageEncryptor).to have_received(:new).once.with(secret_key)
-      end
+      context "when signing in without an id_token and no stale cookie exists" do
+        let(:cookies) { double("ActionDispatch::Cookies::CookieJar") }
 
-      it "has 'httponly: true' set" do
-        expect(cookies.dig("id_token", "httponly")).to be(true)
-      end
+        before do
+          allow(cookies).to receive(:[]).with("id_token").and_return(nil)
+          allow(cookies).to receive(:delete)
+          allow(ActiveSupport::MessageEncryptor).to receive(:new).and_call_original
+          service.begin_session!(user)
+        end
 
-      it "has 'secure: true' set" do
-        expect(cookies.dig("id_token", "secure")).to be(true)
-      end
+        it "does not delete the id_token cookie" do
+          expect(cookies).not_to have_received(:delete)
+        end
 
-      it "has 'same_site: :strict' set" do
-        expect(cookies.dig("id_token", "same_site")).to be(:strict)
+        it "does not encrypt a token" do
+          expect(ActiveSupport::MessageEncryptor).not_to have_received(:new)
+        end
       end
     end
 
