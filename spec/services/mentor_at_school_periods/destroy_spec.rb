@@ -46,7 +46,8 @@ describe MentorAtSchoolPeriods::Destroy do
           author:,
           teacher:,
           school:,
-          started_on:
+          started_on:,
+          happened_at: Date.current
         )
 
         subject
@@ -82,7 +83,7 @@ describe MentorAtSchoolPeriods::Destroy do
     end
 
     context "when the Mentor at school period has started today" do
-      let(:started_on) { Time.zone.today }
+      let(:started_on) { Date.current }
 
       it "destroys the Mentor at school period" do
         expect { subject }.to change(MentorAtSchoolPeriod, :count).from(1).to(0)
@@ -98,7 +99,8 @@ describe MentorAtSchoolPeriods::Destroy do
           author:,
           teacher:,
           school:,
-          started_on:
+          started_on:,
+          happened_at: Date.current
         )
 
         subject
@@ -168,6 +170,170 @@ describe MentorAtSchoolPeriods::Destroy do
         it "does not destroy any events associated with the training periods" do
           expect { subject }.not_to(change(Event, :count))
         end
+      end
+    end
+
+    context "when actioned_at is in the past" do
+      subject { MentorAtSchoolPeriods::Destroy.call(mentor_at_school_period:, author:, actioned_at: Date.yesterday) }
+
+      context "when the mentor at school period started after actioned_at" do
+        let(:started_on) { Date.tomorrow }
+
+        it "destroys the Mentor at school period" do
+          expect { subject }.to change(MentorAtSchoolPeriod, :count).from(1).to(0)
+        end
+
+        it "destroys any events associated with the Mentor at school period" do
+          subject
+          expect(Event).not_to exist(mentor_at_school_period_id: mentor_at_school_period.id)
+        end
+
+        it "records an event for the deletion of the unstarted Mentor at school period" do
+          expect(Events::Record).to receive(:record_teacher_mentor_at_school_period_deleted!).with(
+            author:,
+            teacher:,
+            school:,
+            started_on:,
+            happened_at: Date.yesterday
+          )
+
+          subject
+        end
+
+        context "with associated mentorship periods" do
+          let!(:mentorship_period) { FactoryBot.create(:mentorship_period, mentee: ect_at_school_period, mentor: mentor_at_school_period, started_on:) }
+          let!(:event) { FactoryBot.create(:event, :with_mentorship_period, mentorship_period:) }
+
+          it "destroys any associated mentorship periods" do
+            expect { subject }.to change(MentorshipPeriod, :count).from(1).to(0)
+          end
+
+          it "destroys any events associated with the mentorship periods" do
+            subject
+            expect(Event).not_to exist(mentorship_period_id: mentorship_period.id)
+          end
+        end
+
+        context "with associated training periods" do
+          let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:) }
+          let!(:event) { FactoryBot.create(:event, :with_training_period, training_period:) }
+
+          it "destroys the periods" do
+            expect { subject }.to change(TrainingPeriod, :count).from(1).to(0)
+          end
+
+          it "destroys any events associated with the training periods" do
+            subject
+            expect(Event).not_to exist(training_period_id: training_period.id)
+          end
+        end
+      end
+
+      context "when the mentor at school period started before actioned_at" do
+        let(:started_on) { 2.days.ago.to_date }
+
+        it "does not destroy the Mentor at school period" do
+          expect { subject }.not_to(change { MentorAtSchoolPeriod.exists?(mentor_at_school_period.id) })
+        end
+
+        it "does not create or destroy any events" do
+          expect { subject }.not_to(change(Event, :count))
+        end
+
+        context "with associated mentorship periods" do
+          let!(:mentorship_period) { FactoryBot.create(:mentorship_period, mentee: ect_at_school_period, mentor: mentor_at_school_period, started_on:) }
+          let!(:event) { FactoryBot.create(:event, :with_mentorship_period, mentorship_period:) }
+
+          it "does not destroy any associated mentorship periods" do
+            expect { subject }.not_to(change(MentorshipPeriod, :count))
+          end
+
+          it "destroys any events associated with the mentorship periods" do
+            expect { subject }.not_to(change(Event, :count))
+          end
+        end
+
+        context "with associated training periods" do
+          let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:) }
+          let!(:event) { FactoryBot.create(:event, :with_training_period, training_period:) }
+
+          it "does not destroy the periods" do
+            expect { subject }.not_to(change(TrainingPeriod, :count))
+          end
+
+          it "does not destroy any events associated with the training periods" do
+            expect { subject }.not_to(change(Event, :count))
+          end
+        end
+      end
+
+      context "when the mentor at school period started on actioned_at" do
+        let(:started_on) { Date.yesterday }
+
+        it "destroys the Mentor at school period" do
+          expect { subject }.to change(MentorAtSchoolPeriod, :count).from(1).to(0)
+        end
+
+        it "destroys any events associated with the Mentor at school period" do
+          subject
+          expect(Event).not_to exist(mentor_at_school_period_id: mentor_at_school_period.id)
+        end
+
+        it "records an event for the deletion of the unstarted Mentor at school period" do
+          expect(Events::Record).to receive(:record_teacher_mentor_at_school_period_deleted!).with(
+            author:,
+            teacher:,
+            school:,
+            started_on:,
+            happened_at: Date.yesterday
+          )
+
+          subject
+        end
+
+        context "with associated mentorship periods" do
+          let!(:mentorship_period) { FactoryBot.create(:mentorship_period, mentee: ect_at_school_period, mentor: mentor_at_school_period, started_on:) }
+          let!(:event) { FactoryBot.create(:event, :with_mentorship_period, mentorship_period:) }
+
+          it "destroys any associated mentorship periods" do
+            expect { subject }.to change(MentorshipPeriod, :count).from(1).to(0)
+          end
+
+          it "destroys any events associated with the mentorship periods" do
+            subject
+            expect(Event).not_to exist(mentorship_period_id: mentorship_period.id)
+          end
+        end
+
+        context "with associated training periods" do
+          let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:) }
+          let!(:event) { FactoryBot.create(:event, :with_training_period, training_period:) }
+
+          it "destroys the periods" do
+            expect { subject }.to change(TrainingPeriod, :count).from(1).to(0)
+          end
+
+          it "destroys any events associated with the training periods" do
+            subject
+            expect(Event).not_to exist(training_period_id: training_period.id)
+          end
+        end
+      end
+    end
+
+    context "when actioned_at is nil" do
+      subject { MentorAtSchoolPeriods::Destroy.call(mentor_at_school_period:, author:, actioned_at: nil) }
+
+      it "raises an error" do
+        expect { subject }.to raise_error(Periods::Destroyable::InvalidDate, "Date must be present")
+      end
+    end
+
+    context "when actioned_at is in the future" do
+      subject { MentorAtSchoolPeriods::Destroy.call(mentor_at_school_period:, author:, actioned_at: Date.tomorrow) }
+
+      it "raises an error" do
+        expect { subject }.to raise_error(Periods::Destroyable::InvalidDate, "Date cannot be in the future")
       end
     end
   end
