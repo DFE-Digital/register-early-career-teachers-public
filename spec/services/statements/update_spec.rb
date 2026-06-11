@@ -20,6 +20,26 @@ describe Statements::Update do
         author:, statement:, modifications: hash_including("payment_date")
       )
     end
+
+    context "when updating to an output fee month" do
+      let(:statement) { FactoryBot.create(:statement, :open, :service_fee, month: 2) }
+      let(:params) { { month: 11 } }
+
+      it "sets fee_type to output" do
+        subject.call
+        expect(statement.reload.fee_type).to eq("output")
+      end
+    end
+
+    context "when updating to a service fee month" do
+      let(:statement) { FactoryBot.create(:statement, :open, :output_fee, month: 11) }
+      let(:params) { { month: 2 } }
+
+      it "sets fee_type to service" do
+        subject.call
+        expect(statement.reload.fee_type).to eq("service")
+      end
+    end
   end
 
   context "when the update is invalid" do

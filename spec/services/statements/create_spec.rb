@@ -14,7 +14,6 @@ describe Statements::Create do
       contract_id: contract.id,
       month: 11,
       year: contract_period.year,
-      fee_type: "output",
       deadline_date: Date.new(contract_period.year, 11, 1),
       payment_date: Date.new(contract_period.year, 12, 25)
     }
@@ -31,6 +30,20 @@ describe Statements::Create do
       expect(statement.contract).to eq(contract)
       expect(statement).to be_status_open
       expect(Events::Record).to have_received(:record_statement_created_event!).with(author:, statement:)
+    end
+
+    it "sets fee_type to output for an output fee month" do
+      statement = subject.call
+      expect(statement.fee_type).to eq("output")
+    end
+
+    context "when month is a service fee month" do
+      let(:params) { super().merge(month: 2) }
+
+      it "sets fee_type to service" do
+        statement = subject.call
+        expect(statement.fee_type).to eq("service")
+      end
     end
   end
 
