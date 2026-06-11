@@ -42,16 +42,3 @@ jobs:
             RAILS_ENV=staging \
             /usr/local/bin/bundle exec rails db:seed:replant
           '
-
-    - name: Seed API data
-      run: |
-        echo "Running API seeds..."
-        make ci staging get-cluster-credentials
-        kubectl exec -n cpd-development \
-          deployment/cpd-ec2-staging-web \
-          -- sh -c '
-            cd /app &&
-            DISABLE_DATABASE_ENVIRONMENT_CHECK=1 \
-            RAILS_ENV=staging \
-            /usr/local/bin/bundle exec rake api_seed_data:generate
-          '
