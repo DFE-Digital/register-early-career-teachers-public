@@ -28,6 +28,10 @@ module Metadata::Handlers
 
   protected
 
+    def alert_exclusions = []
+
+  private
+
     def lead_provider_ids
       @lead_provider_ids ||= LeadProvider.pluck(:id)
     end
@@ -43,7 +47,9 @@ module Metadata::Handlers
     # Allows individual handlers to exclude attributes that we can't
     # reliably update at the moment they change. Prevents them from
     # being included in the alerts.
-    def alertable_changes(saved_changes) = saved_changes
+    def alertable_changes(saved_changes)
+      saved_changes.excluding(alert_exclusions)
+    end
 
     def alert_on_changes(metadata)
       return unless @alert_on_changes
