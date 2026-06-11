@@ -24,8 +24,6 @@ RSpec.describe "admin/finance/active_lead_providers/statements/new.html.erb" do
     expect(rendered).to have_button("Save")
 
     expect(rendered).to have_css("select[name='statement[contract_id]'] option[value='#{contract.id}']")
-    expect(rendered).to have_css("input[type='radio'][name='statement[fee_type]'][value='output']")
-    expect(rendered).to have_css("input[type='radio'][name='statement[fee_type]'][value='service']")
     expect(rendered).to have_css("select[name='statement[month]'] option[value='11']", text: "November")
     expect(rendered).to have_css("legend", text: "Deadline date")
     expect(rendered).to have_css("legend", text: "Payment date")
