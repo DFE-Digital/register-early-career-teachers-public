@@ -1,8 +1,24 @@
-You tried to sign in with <%= @organisation_name %> as your organisation.
-You do not have approved access to this service with that organisation.
+You’ve tried to access the 'Register early career teachers' service with <%= @organisation_name %> as your school or organisation.
 
-**If you selected the incorrect organisation**, you need to sign out of DfE Sign-in,
-before signing in again and select a different organisation.
+You do not have approved access to the service from <%= @organisation_name %>.
 
-If you think you should have access to <%= @organisation_name %>, you need to request access from your approver.
-You can request access directly from DfE Sign-in.
+## What you need to do
+
+### If you selected the wrong school or organisation when you signed in
+
+Sign out of DfE Sign-in.
+
+Sign in again and select the school or organisation for where you want to use the service.
+
+### If you’ve signed in with the correct school or organisation
+
+You’ll need to request access to the 'Register early career teachers' service from the school or organisation.
+
+The school or organisation need to approve your request before you can use the service.
+
+<%= govuk_link_to(
+  "Request access to the service using your DfE Sign-in account.",
+  @dfe_sign_in_profile_url,
+  no_visited_state: true,
+  new_tab: true
+) %>
