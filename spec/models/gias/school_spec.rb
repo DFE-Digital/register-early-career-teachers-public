@@ -63,6 +63,7 @@ describe GIAS::School do
     it { is_expected.to have_one(:school).with_primary_key(:urn).with_foreign_key(:urn).inverse_of(:gias_school) }
     it { is_expected.to have_many(:gias_school_links).with_foreign_key(:urn).dependent(:destroy).class_name("GIAS::SchoolLink").inverse_of(:from_gias_school) }
     it { is_expected.to have_many(:contract_period_metadata).class_name("Metadata::SchoolContractPeriod").through(:school) }
+    it { is_expected.to have_many(:school_funding_eligibilities).with_foreign_key(:school_urn).with_primary_key(:urn).inverse_of(:gias_school) }
   end
 
   describe "validations" do

@@ -70,7 +70,7 @@ RSpec.describe Declarations::Create do
         context "when pupil premium and sparsity uplifts are set on the school" do
           before do
             school = at_school_period.school
-            FactoryBot.create(:school_funding_eligibility, contract_period:, school:, pupil_premium_uplift: true, sparsity_uplift: true)
+            FactoryBot.create(:school_funding_eligibility, contract_period:, gias_school: school.gias_school, pupil_premium_uplift: true, sparsity_uplift: true)
           end
 
           it "sets pupil premium and sparsity uplifts on the declaration" do

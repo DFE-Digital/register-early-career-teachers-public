@@ -35,7 +35,7 @@ module APISeedData
                           sparsity_uplift: contract_period.uplift_fees_enabled? ? Faker::Boolean.boolean(true_ratio: SPARSITY_UPLIFT_RATIO) : false,
                           pupil_premium_uplift: contract_period.uplift_fees_enabled? ? Faker::Boolean.boolean(true_ratio: PUPIL_PREMIUM_UPLIFT_RATIO) : false,
                           contract_period:,
-                          school:)
+                          gias_school: school.gias_school)
       end
     end
   end
