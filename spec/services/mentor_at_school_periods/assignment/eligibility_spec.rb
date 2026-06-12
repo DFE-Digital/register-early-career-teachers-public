@@ -1,4 +1,4 @@
-RSpec.describe MentorAtSchoolPeriods::Eligibility, type: :service do
+RSpec.describe MentorAtSchoolPeriods::Assignment::Eligibility, type: :service do
   describe ".for_first_provider_led_training?" do
     let(:school) { FactoryBot.create(:school) }
     let(:other_school) { FactoryBot.create(:school) }

@@ -106,7 +106,7 @@ RSpec.describe "Create mentorship of an ECT to a mentor" do
 
         context "when the mentor is eligible for funding" do
           before do
-            allow(::MentorAtSchoolPeriods::Eligibility)
+            allow(::MentorAtSchoolPeriods::Assignment::Eligibility)
               .to receive(:for_first_provider_led_training?)
               .and_return(true)
 
@@ -123,7 +123,7 @@ RSpec.describe "Create mentorship of an ECT to a mentor" do
         context "when the mentor is not eligible for funding" do
           before do
             allow(Schools::AssignMentorForm).to receive(:new).and_call_original
-            allow(::MentorAtSchoolPeriods::Eligibility)
+            allow(::MentorAtSchoolPeriods::Assignment::Eligibility)
               .to receive(:for_first_provider_led_training?)
               .and_return(false)
 

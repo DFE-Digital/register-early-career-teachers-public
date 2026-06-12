@@ -28,7 +28,7 @@ module Schools
       private
 
         def mentor_eligible_for_training?
-          ::MentorAtSchoolPeriods::Eligibility.for_first_provider_led_training?(
+          ::MentorAtSchoolPeriods::Assignment::Eligibility.for_first_provider_led_training?(
             ect_at_school_period:,
             mentor_at_school_period: selected_mentor_at_school_period
           )
