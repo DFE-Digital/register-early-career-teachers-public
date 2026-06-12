@@ -40,6 +40,14 @@ class Schedule < ApplicationRecord
     where.not(identifier: REDUCED_SCHEDULE_IDENTIFIERS)
   }
 
+  def name
+    identifier.delete_prefix("ecf-").titleize
+  end
+
+  def description
+    "#{name} for #{contract_period.year}"
+  end
+
   def replacement_schedule?
     identifier.in?(REPLACEMENT_SCHEDULE_IDENTIFIERS)
   end
@@ -48,7 +56,15 @@ class Schedule < ApplicationRecord
     identifier.in?(REDUCED_SCHEDULE_IDENTIFIERS)
   end
 
-  def description
-    "#{identifier} for #{contract_period.year}"
+  def fully_milestoned?
+    Milestone.declaration_types.keys.size == milestones.size
+  end
+
+  def available_milestones
+    Milestone.declaration_types.keys - milestones.map(&:declaration_type)
+  end
+
+  def sorted_milestones
+    milestones.sort_by { |m| Milestone.declaration_types.keys.index(m.declaration_type) }
   end
 end

@@ -9,6 +9,7 @@ RSpec.describe "Create mentorship of an ECT to a mentor" do
     subject { get("/school/ects/#{ect_at_school_period.id}/mentorship/new") }
 
     it_behaves_like "an induction redirectable route"
+    it_behaves_like "a route blocked when the registration window is closed"
 
     context "when not signed in" do
       it "redirects to the root page" do
@@ -39,6 +40,7 @@ RSpec.describe "Create mentorship of an ECT to a mentor" do
     let(:params) { {} }
 
     it_behaves_like "an induction redirectable route"
+    it_behaves_like "a route blocked when the registration window is closed"
 
     context "when not signed in" do
       it "redirects to the root page" do

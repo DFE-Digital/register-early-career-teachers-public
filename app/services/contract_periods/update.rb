@@ -1,5 +1,7 @@
 module ContractPeriods
   class Update
+    class NotEditable < StandardError; end
+
     attr_reader :contract_period, :author, :params
 
     def initialize(author:, contract_period:, params:)
@@ -8,13 +10,15 @@ module ContractPeriods
       @author = author
     end
 
+    # @raise [NotEditable]
+    # @raise [ActiveRecord::RecordInvalid]
+    #
+    # @return [ContractPeriod]
     def update!
-      return unless contract_period.editable?
+      raise NotEditable "The contract period cannot be edited" unless contract_period.editable?
 
       contract_period.assign_attributes(params)
       modifications = contract_period.changes
-
-      return unless contract_period.valid?
 
       ActiveRecord::Base.transaction do
         contract_period.update!(params)

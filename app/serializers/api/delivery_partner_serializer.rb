@@ -6,13 +6,10 @@ class API::DeliveryPartnerSerializer < Blueprinter::Base
     field :created_at
     field(:api_updated_at, name: :updated_at)
     field(:cohort) do |delivery_partner, options|
-      lead_provider_metadata(delivery_partner:, options:).contract_period_years.map(&:to_s)
-    end
-
-    class << self
-      def lead_provider_metadata(delivery_partner:, options:)
-        delivery_partner.lead_provider_metadata.select { it.lead_provider_id == options[:lead_provider_id] }.sole
-      end
+      delivery_partner
+        .active_lead_providers
+        .select { it.lead_provider_id == options[:lead_provider_id] }
+        .map { it.contract_period_year.to_s }
     end
   end
 

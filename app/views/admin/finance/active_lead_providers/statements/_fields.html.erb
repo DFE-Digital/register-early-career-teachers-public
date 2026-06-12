@@ -7,12 +7,6 @@
     label: { text: "Contract", size: "m" },
     options: { include_blank: "Choose a contract" } %>
 
-<%= form.govuk_collection_radio_buttons :fee_type,
-    %w[output service],
-    :to_s,
-    :capitalize,
-    legend: { text: "Fee type", size: "m" } %>
-
 <%= form.govuk_collection_select :month,
     (1..12).map { |month_number| [month_number, Date::MONTHNAMES[month_number]] },
     :first,

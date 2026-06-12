@@ -117,6 +117,8 @@ describe Teacher do
     describe ".started_induction_period" do
       subject { teacher.started_induction_period }
 
+      let(:day_following_earliest_induction_period_finish) { earliest_induction_period.finished_on.next_day }
+
       let(:teacher) { FactoryBot.create(:teacher) }
 
       it { is_expected.to be_nil }
@@ -128,8 +130,8 @@ describe Teacher do
       end
 
       context "when there are multiple induction periods" do
-        let!(:latest_induction_period) { FactoryBot.create(:induction_period, started_on: 1.year.ago, teacher:) }
-        let!(:earliest_induction_period) { FactoryBot.create(:induction_period, started_on: 2.years.ago, teacher:) }
+        let!(:earliest_induction_period) { FactoryBot.create(:induction_period, started_on: 2.years.ago, finished_on: 1.year.ago, teacher:) }
+        let!(:latest_induction_period) { FactoryBot.create(:induction_period, started_on: day_following_earliest_induction_period_finish, teacher:) }
 
         it { is_expected.to eq(earliest_induction_period) }
       end
@@ -137,6 +139,8 @@ describe Teacher do
 
     describe ".finished_induction_period" do
       subject { teacher.finished_induction_period }
+
+      let(:day_following_earliest_induction_period_finish) { earliest_induction_period.finished_on.next_day }
 
       let(:teacher) { FactoryBot.create(:teacher) }
 
@@ -156,14 +160,14 @@ describe Teacher do
 
       context "when there are multiple induction periods, all without an outcome" do
         let!(:earliest_induction_period) { FactoryBot.create(:induction_period, started_on: 6.months.ago, finished_on: 3.months.ago, teacher:) }
-        let!(:latest_induction_period) { FactoryBot.create(:induction_period, started_on: 3.months.ago, finished_on: 1.day.ago, teacher:) }
+        let!(:latest_induction_period) { FactoryBot.create(:induction_period, started_on: day_following_earliest_induction_period_finish, finished_on: 1.day.ago, teacher:) }
 
         it { is_expected.to be_nil }
       end
 
       context "when there are multiple induction periods, with and without outcomes" do
         let!(:earliest_induction_period) { FactoryBot.create(:induction_period, started_on: 6.months.ago, finished_on: 3.months.ago, teacher:) }
-        let!(:latest_induction_period) { FactoryBot.create(:induction_period, :pass, started_on: 3.months.ago, finished_on: 1.day.ago, teacher:) }
+        let!(:latest_induction_period) { FactoryBot.create(:induction_period, :pass, started_on: day_following_earliest_induction_period_finish, finished_on: 1.day.ago, teacher:) }
 
         it { is_expected.to eq(latest_induction_period) }
       end
@@ -246,7 +250,7 @@ describe Teacher do
     it "returns the appropriate body period from the ongoing induction period" do
       teacher = FactoryBot.create(:teacher)
       other_appropriate_body_period = FactoryBot.create(:appropriate_body_period)
-      _other_induction_period = FactoryBot.create(
+      other_induction_period = FactoryBot.create(
         :induction_period,
         teacher:,
         appropriate_body_period: other_appropriate_body_period,
@@ -258,7 +262,7 @@ describe Teacher do
         :induction_period,
         teacher:,
         appropriate_body_period:,
-        started_on: 1.year.ago,
+        started_on: other_induction_period.finished_on.next_day,
         finished_on: nil,
         number_of_terms: nil
       )
@@ -269,7 +273,7 @@ describe Teacher do
     it "returns nil when the teacher has no ongoing induction period" do
       teacher = FactoryBot.create(:teacher)
       other_appropriate_body_period = FactoryBot.create(:appropriate_body_period)
-      _other_induction_period = FactoryBot.create(
+      other_induction_period = FactoryBot.create(
         :induction_period,
         teacher:,
         appropriate_body_period: other_appropriate_body_period,
@@ -281,7 +285,7 @@ describe Teacher do
         :induction_period,
         teacher:,
         appropriate_body_period:,
-        started_on: 1.year.ago,
+        started_on: other_induction_period.finished_on.next_day,
         finished_on: 2.weeks.ago
       )
 

@@ -7,9 +7,13 @@ module ContractPeriods
       @contract_period = ContractPeriod.new(params.merge(enabled: true))
     end
 
+    # @raise [ContractPeriods::SeedFromPrevious::AlreadyScheduledError]
+    # @raise [ContractPeriods::SeedFromPrevious::ContractPeriodStartedError]
+    # @raise [ContractPeriods::SeedFromPrevious::NoPreviousContractPeriodError]
+    # @raise [ActiveRecord::RecordInvalid]
+    #
+    # @return [ContractPeriod]
     def create!
-      return false unless contract_period.valid?
-
       ActiveRecord::Base.transaction do
         contract_period.save!
         record_event!

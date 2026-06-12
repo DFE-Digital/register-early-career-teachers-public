@@ -36,6 +36,12 @@ RSpec.describe "OTP sessions", type: :request do
         expect(response).to redirect_to(admin_path)
         expect(session.dig("user_session", "type")).to eq("Sessions::Users::DfEUser")
       end
+
+      it "does not set an id_token cookie" do
+        sign_in_with_otp
+
+        expect(response.headers["Set-Cookie"].to_s).not_to include("id_token")
+      end
     end
 
     context "when the user has a school urn that exists in GIAS" do
