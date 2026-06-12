@@ -4,7 +4,7 @@ module APISeedData
   class UnfundedMentors < Base
     include MentorshipPeriodHelpers
 
-    MIN_UNFUNDED_MENTORS_PER_LP = 20
+    MIN_UNFUNDED_MENTORS_PER_LP = 10
 
     def plant
       return unless plantable?

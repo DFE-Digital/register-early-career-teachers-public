@@ -1,6 +1,6 @@
 module APISeedData
   class Schools < Base
-    NUMBER_OF_RECORDS = 50
+    NUMBER_OF_RECORDS = 30
     SCHOOL_TYPES = %i[independent state_funded eligible ineligible].freeze
     PUPIL_PREMIUM_UPLIFT_RATIO = 0.15
     SPARSITY_UPLIFT_RATIO = 0.20

@@ -9,48 +9,48 @@ module APISeedData
 
       log_plant_info("api school seed scenarios")
 
-      # 5x schools that have minimum 1 participant registered with the lead provider as training them,
+      # 3x schools that have minimum 1 participant registered with the lead provider as training them,
       # but without any partnership created yet
-      schools_with_participants_with_lead_provider_as_expression_of_interest(count: 5)
+      schools_with_participants_with_lead_provider_as_expression_of_interest(count: 3)
 
-      # 5x schools that for 2025 have minimum 1 participant registered with the lead provider as training them,
+      # 3x schools that for 2025 have minimum 1 participant registered with the lead provider as training them,
       # and a rolled over partnership from 2024
-      schools_with_participants_that_rolled_over_from_2024_to_2025_with_lead_provider(count: 5)
+      schools_with_participants_that_rolled_over_from_2024_to_2025_with_lead_provider(count: 3)
 
       # 2x schools where they registered at least 1 participant with a lead provider, a partnership was
       # confirmed/created which still exists, but then the school changed the lead provider for that all
       # participants to a different lead provider
       schools_with_participants_with_lead_provider_where_all_transferred_to_another_lead_provider(count: 2)
 
-      # 5x schools without any participants yet, that are already in partnership with the lead provider
-      schools_without_participants_and_with_partnership(count: 5)
+      # 3x schools without any participants yet, that are already in partnership with the lead provider
+      schools_without_participants_and_with_partnership(count: 3)
 
-      # 5x schools without any participants yet, that are not in partnership with any lead providers
-      schools_without_participants_and_without_partnership(count: 5)
+      # 3x schools without any participants yet, that are not in partnership with any lead providers
+      schools_without_participants_and_without_partnership(count: 3)
 
-      # 5x schools with partnerships and participants with a lead provider in 2024 (where expression_of_interest
+      # 3x schools with partnerships and participants with a lead provider in 2024 (where expression_of_interest
       # should show as TRUE as a result of this)
-      schools_with_participants_with_lead_provider_with_eoi_and_partnership_in_2024(count: 5)
+      schools_with_participants_with_lead_provider_with_eoi_and_partnership_in_2024(count: 3)
 
-      # 5x schools with only school-led ECTs and mentors (this doesn't have to be lead provider specific)
-      schools_with_school_led_participants_only(count: 5)
+      # 3x schools with only school-led ECTs and mentors (this doesn't have to be lead provider specific)
+      schools_with_school_led_participants_only(count: 3)
 
-      # 20x schools that have at least 1 provider-led ECT or mentor (this doesn't have to be lead provider specific)
-      schools_with_provider_led_participants(count: 20)
+      # 10x schools that have at least 1 provider-led ECT or mentor (this doesn't have to be lead provider specific)
+      schools_with_provider_led_participants(count: 10)
 
-      # 5x schools where in 2025 training took place with a lead provider and then all participants changed to
+      # 3x schools where in 2025 training took place with a lead provider and then all participants changed to
       # participant_status left, where EOI should still show as TRUE and a partnership still exists,
       # they'd still see participants, but participants_currently_training would be 0
-      schools_with_participants_trained_2025_and_finished_with_lead_provider_where_all_transferred_to_another_lead_provider(count: 5)
+      schools_with_participants_trained_2025_and_finished_with_lead_provider_where_all_transferred_to_another_lead_provider(count: 3)
 
-      # 5x schools with ECTs and mentors currently in training with the lead provider
-      schools_with_ects_and_mentors_training_with_lead_provider(count: 5)
+      # 3x schools with ECTs and mentors currently in training with the lead provider
+      schools_with_ects_and_mentors_training_with_lead_provider(count: 3)
 
-      # 5x schools with multiple partnerships with the lead provider, e.g. with different delivery partner IDs
-      schools_with_multiple_partnerships_with_lead_provider(count: 5)
+      # 3x schools with multiple partnerships with the lead provider, e.g. with different delivery partner IDs
+      schools_with_multiple_partnerships_with_lead_provider(count: 3)
 
-      # 5x schools with multiple partnerships with that lead provider and another lead provider
-      schools_with_multiple_partnerships_with_lead_provider_and_with_another_lead_provider(count: 5)
+      # 3x schools with multiple partnerships with that lead provider and another lead provider
+      schools_with_multiple_partnerships_with_lead_provider_and_with_another_lead_provider(count: 3)
     end
 
     def plant_only(scenario, count:)

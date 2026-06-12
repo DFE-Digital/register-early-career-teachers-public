@@ -20,17 +20,20 @@ namespace :api_seed_data do
       APISeedData::Declarations,
     ]
 
-    # These need to run last to avoid earlier seeds messing up the specific scenarios.
-    seeds += [
-      APISeedData::SchoolScenarios,
-      APISeedData::ParticipantScenarios,
-      APISeedData::ECTScenarios,
-      APISeedData::ECTBecomeMentorScenarios,
-      APISeedData::MentorScenarios,
-      APISeedData::SITBecomeMentorScenarios,
-      APISeedData::ECTParticipantActionScenarios,
-      APISeedData::ECTDeclarationScenarios,
-    ]
+    if Rails.env.sandbox?
+      # These need to run last to avoid earlier seeds messing up the specific scenarios.
+      # They are specific scenarios lead providers asked for, so we only run them on sandbox.
+      seeds += [
+        APISeedData::SchoolScenarios,
+        APISeedData::ParticipantScenarios,
+        APISeedData::ECTScenarios,
+        APISeedData::ECTBecomeMentorScenarios,
+        APISeedData::MentorScenarios,
+        APISeedData::SITBecomeMentorScenarios,
+        APISeedData::ECTParticipantActionScenarios,
+        APISeedData::ECTDeclarationScenarios,
+      ]
+    end
 
     if Rails.env.development? || Rails.env.review? || Rails.env.staging?
       seeds += [
