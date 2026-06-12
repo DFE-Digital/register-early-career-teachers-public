@@ -26,7 +26,7 @@ class School < ApplicationRecord
   has_many :lead_provider_contract_period_metadata, class_name: "Metadata::SchoolLeadProviderContractPeriod"
   has_many :contract_period_metadata, class_name: "Metadata::SchoolContractPeriod"
   has_many :training_periods, through: :school_partnerships
-  has_many :school_funding_eligibilities, foreign_key: :school_urn, primary_key: :urn, inverse_of: :school
+  has_many :school_funding_eligibilities, through: :gias_school
 
   touch -> { contract_period_metadata }, when_changing: %i[urn induction_tutor_name induction_tutor_email], timestamp_attribute: :api_updated_at
   touch -> { school_partnerships }, when_changing: %i[urn induction_tutor_name induction_tutor_email], timestamp_attribute: :api_updated_at

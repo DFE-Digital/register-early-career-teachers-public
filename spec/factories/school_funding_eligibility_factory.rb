@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory(:school_funding_eligibility) do
-    association :school
+    association :gias_school
     association :contract_period
 
     pupil_premium_uplift { true }

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_09_102349) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_12_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -995,7 +995,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_102349) do
   add_foreign_key "regions", "appropriate_bodies"
   add_foreign_key "schedules", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "school_funding_eligibilities", "contract_periods", column: "contract_period_year", primary_key: "year"
-  add_foreign_key "school_funding_eligibilities", "schools", column: "school_urn", primary_key: "urn"
+  add_foreign_key "school_funding_eligibilities", "gias_schools", column: "school_urn", primary_key: "urn"
   add_foreign_key "school_partnerships", "schools"
   add_foreign_key "schools", "appropriate_body_periods", column: "last_chosen_appropriate_body_id"
   add_foreign_key "schools", "contract_periods", column: "induction_tutor_last_nominated_in", primary_key: "year"
