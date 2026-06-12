@@ -55,7 +55,7 @@ RSpec.describe API::Declarations::Create, type: :model do
           let(:lead_provider_id) { FactoryBot.create(:lead_provider, name: "Different to #{lead_provider.name}").id }
 
           it { is_expected.to have_one_error_only }
-          it { is_expected.to have_error(:teacher_type, "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again.") }
+          it { is_expected.to have_error(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check participant details and try again.") }
         end
 
         context "when the teacher does not exist" do

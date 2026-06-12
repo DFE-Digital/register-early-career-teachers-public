@@ -151,7 +151,19 @@ module API::Declarations
       return if errors[:declaration_date].any?
       return if training_period
 
-      errors.add(:teacher_type, "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again.")
+      if teacher_registered_with_lead_provider?
+        errors.add(:teacher_type, "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again.")
+      else
+        errors.add(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check participant details and try again.")
+      end
+    end
+
+    def teacher_registered_with_lead_provider?
+      return false unless teacher
+
+      [teacher.ect_training_periods, teacher.mentor_training_periods].any? do |periods|
+        periods.includes(:lead_provider).where(active_lead_providers: { lead_provider_id: }).exists?
+      end
     end
 
     def validate_milestone_exists
