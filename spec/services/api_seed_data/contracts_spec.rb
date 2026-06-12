@@ -1,5 +1,6 @@
 RSpec.describe APISeedData::Contracts do
-  let(:instance) { described_class.new }
+  let(:verbose) { true }
+  let(:instance) { described_class.new(verbose:) }
   let(:environment) { "sandbox" }
   let(:logger) { instance_double(Logger, info: nil, "formatter=" => nil, "level=" => nil) }
 
@@ -36,6 +37,18 @@ RSpec.describe APISeedData::Contracts do
 
       expect(logger).to have_received(:info).with(/#{mentor_funding_active_lead_provider.lead_provider.name} contracts/).once
       expect(logger).to have_received(:info).with(/Contracts for #{mentor_funding_active_lead_provider.contract_period.year}: \d+ ITTECF ECTP/).once
+    end
+
+    context "when verbose logging is false" do
+      let(:verbose) { false }
+
+      it "does not log the creation of contracts" do
+        instance.plant
+
+        expect(logger).to have_received(:info).with(/Planting contracts/).once
+        expect(logger).not_to have_received(:info).with(/#{active_lead_provider.lead_provider.name}/)
+        expect(logger).not_to have_received(:info).with(/#{mentor_funding_active_lead_provider.lead_provider.name}/)
+      end
     end
 
     context "when in the production environment" do

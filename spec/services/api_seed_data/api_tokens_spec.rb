@@ -1,8 +1,9 @@
 RSpec.describe APISeedData::APITokens do
-  let(:instance) { described_class.new }
+  let(:verbose) { true }
+  let(:instance) { described_class.new(verbose:) }
   let(:environment) { "sandbox" }
   let(:logger) { instance_double(Logger, info: nil, "formatter=" => nil, "level=" => nil) }
-  let(:lead_providers) { FactoryBot.create_list(:lead_provider, 3) }
+  let!(:lead_providers) { FactoryBot.create_list(:lead_provider, 3) }
 
   before do
     allow(Logger).to receive(:new).with($stdout) { logger }
@@ -29,6 +30,17 @@ RSpec.describe APISeedData::APITokens do
       LeadProvider.find_each do |lead_provider|
         token = lead_provider.name.parameterize
         expect(logger).to have_received(:info).with(/#{lead_provider.name}.*#{token}'/).once
+      end
+    end
+
+    context "when verbose logging is false" do
+      let(:verbose) { false }
+
+      it "does not log the creation of API tokens" do
+        instance.plant
+
+        expect(logger).to have_received(:info).with(/Planting api_tokens/).once
+        expect(logger).not_to have_received(:info).with(/#{LeadProvider.first.name}/)
       end
     end
 

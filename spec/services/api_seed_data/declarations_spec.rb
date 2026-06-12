@@ -1,5 +1,6 @@
 RSpec.describe APISeedData::Declarations do
-  let(:instance) { described_class.new }
+  let(:verbose) { true }
+  let(:instance) { described_class.new(verbose:) }
   let(:environment) { "sandbox" }
   let(:logger) { instance_double(Logger, info: nil, "formatter=" => nil, "level=" => nil) }
 
@@ -65,6 +66,17 @@ RSpec.describe APISeedData::Declarations do
       statuses = Declaration.payment_statuses.keys + Declaration.clawback_statuses.keys
 
       expect(logger).to have_received(:info).with(/(#{types.join('|')}) - (#{statuses.join('|')}) - \d+-\d+-\d+/).at_least(:once)
+    end
+
+    context "when verbose logging is false" do
+      let(:verbose) { false }
+
+      it "does not log the creation of declaration records" do
+        plant
+
+        expect(logger).to have_received(:info).with(/Planting declarations/)
+        expect(logger).not_to have_received(:info).with(/#{ect_active_lead_provider.lead_provider.name} - ect/)
+      end
     end
 
     context "when in the production environment" do

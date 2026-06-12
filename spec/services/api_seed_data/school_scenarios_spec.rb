@@ -1,5 +1,6 @@
 RSpec.describe APISeedData::SchoolScenarios do
-  let(:instance) { described_class.new }
+  let(:verbose) { true }
+  let(:instance) { described_class.new(verbose:) }
   let(:environment) { "sandbox" }
   let(:logger) { instance_double(Logger, info: nil, "formatter=" => nil, "level=" => nil) }
 
@@ -35,6 +36,17 @@ RSpec.describe APISeedData::SchoolScenarios do
       expect(logger).to have_received("level=").with(Logger::INFO)
       expect(logger).to have_received("formatter=").with(Rails.logger.formatter)
       expect(logger).to have_received(:info).with(/Planting api school seed scenarios/).once
+    end
+
+    context "when verbose logging is false" do
+      let(:verbose) { false }
+
+      it "does not log the creation of school scenarios" do
+        instance.plant
+
+        expect(logger).to have_received(:info).with(/Planting api school seed scenarios/).once
+        expect(logger).not_to have_received(:info).with(/Created/)
+      end
     end
 
     context "when in the production environment" do

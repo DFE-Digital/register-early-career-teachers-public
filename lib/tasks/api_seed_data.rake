@@ -43,7 +43,7 @@ namespace :api_seed_data do
 
     DeclarativeUpdates.skip(:metadata) do
       seeds.each do |seed_class|
-        seed = seed_class.new
+        seed = seed_class.new(verbose: false)
         seed.plant
       end
     end
