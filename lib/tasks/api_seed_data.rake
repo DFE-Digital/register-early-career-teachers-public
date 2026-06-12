@@ -45,6 +45,6 @@ namespace :api_seed_data do
       end
     end
 
-    Metadata::Manager.refresh_all_metadata!(async: false)
+    Metadata::Manager.refresh_all_metadata!(async: !Rails.env.development?)
   end
 end
