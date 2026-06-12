@@ -1,5 +1,6 @@
 RSpec.describe APISeedData::SITBecomeMentorScenarios do
-  let(:instance) { described_class.new }
+  let(:verbose) { true }
+  let(:instance) { described_class.new(verbose:) }
   let(:environment) { "sandbox" }
   let(:logger) { instance_double(Logger, info: nil, "formatter=" => nil, "level=" => nil) }
 
@@ -80,6 +81,17 @@ RSpec.describe APISeedData::SITBecomeMentorScenarios do
       instance.plant
 
       expect(logger).to have_received(:info).with(/Planting api mentor seed scenarios/).once
+    end
+
+    context "when verbose logging is false" do
+      let(:verbose) { false }
+
+      it "does not log the creation of mentor scenarios" do
+        instance.plant
+
+        expect(logger).to have_received(:info).with(/Planting api mentor seed scenarios/).once
+        expect(logger).not_to have_received(:info).with(/Updated mentor/)
+      end
     end
 
     context "when in the production environment" do

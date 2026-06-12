@@ -1,5 +1,6 @@
 RSpec.describe APISeedData::ECTScenarios do
-  let(:instance) { described_class.new }
+  let(:verbose) { true }
+  let(:instance) { described_class.new(verbose:) }
   let(:environment) { "sandbox" }
   let(:logger) { instance_double(Logger, info: nil, "formatter=" => nil, "level=" => nil) }
 
@@ -91,6 +92,17 @@ RSpec.describe APISeedData::ECTScenarios do
       instance.ect_2025_with_2024_mentor
 
       expect(logger).to have_received(:info).with(/Created ECT \(TRN: .*?\) from 2025 with mentor from 2024/).at_least(:once)
+    end
+
+    context "when verbose logging is false" do
+      let(:verbose) { false }
+
+      it "does not log the creation of ECT scenarios" do
+        instance.plant
+
+        expect(logger).to have_received(:info).with(/Planting api ect seed scenarios/).once
+        expect(logger).not_to have_received(:info).with(/Created ECT \(TRN: .*?\) from 2025 with mentor from 2024/)
+      end
     end
   end
 

@@ -1,5 +1,6 @@
 RSpec.describe APISeedData::Statements do
-  let(:instance) { described_class.new }
+  let(:verbose) { true }
+  let(:instance) { described_class.new(verbose:) }
   let(:environment) { "sandbox" }
   let(:logger) { instance_double(Logger, info: nil, "formatter=" => nil, "level=" => nil) }
 
@@ -62,6 +63,17 @@ RSpec.describe APISeedData::Statements do
 
       %i[OP PB PD].each do |status|
         expect(logger).to have_received(:info).with(/#{status}/).at_least(:once)
+      end
+    end
+
+    context "when verbose logging is false" do
+      let(:verbose) { false }
+
+      it "does not log the creation of statements" do
+        instance.plant
+
+        expect(logger).to have_received(:info).with(/Planting statements/).once
+        expect(logger).not_to have_received(:info).with(/#{active_lead_provider.lead_provider.name}/)
       end
     end
 
