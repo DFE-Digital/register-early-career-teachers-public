@@ -39,6 +39,7 @@ describe MentorshipPeriod do
     describe "overlapping periods" do
       let(:started_on_message) { "Start date cannot overlap another Mentee period" }
       let(:finished_on_message) { "End date cannot overlap another Mentee period" }
+      let(:overlap_message) { "Period cannot overlap another Mentee period" }
 
       describe "#mentee_distinct_period" do
         PeriodHelpers::PeriodExamples.period_examples.each do |test|
@@ -85,6 +86,10 @@ describe MentorshipPeriod do
                 when "when the new period finishes after the existing one has started"
                   expect(messages).not_to have_key(:started_on)
                   expect(messages[:finished_on]).to include(finished_on_message)
+                when "when the new period envelops the existing one"
+                  expect(messages).not_to have_key(:started_on)
+                  expect(messages).not_to have_key(:finished_on)
+                  expect(messages[:base]).to include(overlap_message)
                 else
                   fail "test case didn't match an expectation"
                 end
