@@ -31,6 +31,12 @@ module PeriodHelpers
           existing_period_range: 4.months.ago.to_date..2.months.ago.to_date,
           new_period_range: 1.month.ago.to_date..1.week.ago.to_date,
           expected_valid: true
+        ),
+        OpenStruct.new(
+          description: "when the new period envelops the existing one",
+          existing_period_range: 7.months.ago.to_date..2.weeks.ago.to_date,
+          new_period_range: 8.months.ago.to_date..1.week.ago.to_date,
+          expected_valid: false
         )
       ]
     end
