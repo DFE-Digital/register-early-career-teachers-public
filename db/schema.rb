@@ -10,11 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_28_082643) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_09_102349) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
+  enable_extension "pgcrypto"
   enable_extension "unaccent"
 
   # Custom types defined in this database.
@@ -44,7 +45,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_28_082643) do
   create_enum "schedule_identifiers", ["ecf-extended-april", "ecf-extended-january", "ecf-extended-september", "ecf-reduced-april", "ecf-reduced-january", "ecf-reduced-september", "ecf-replacement-april", "ecf-replacement-january", "ecf-replacement-september", "ecf-standard-april", "ecf-standard-january", "ecf-standard-september"]
   create_enum "statement_statuses", ["open", "payable", "paid"]
   create_enum "training_programme", ["provider_led", "school_led"]
-  create_enum "withdrawal_reasons", ["left_teaching_profession", "moved_school", "mentor_no_longer_being_mentor", "switched_to_school_led", "other"]
+  create_enum "withdrawal_reasons", ["left_teaching_profession", "moved_school", "mentor_no_longer_being_mentor", "switched_to_school_led", "other", "changed_lead_provider"]
   create_enum "working_pattern", ["part_time", "full_time"]
 
   create_table "active_lead_providers", force: :cascade do |t|
@@ -195,17 +196,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_28_082643) do
 
   create_table "contracts", force: :cascade do |t|
     t.bigint "active_lead_provider_id", null: false
-    t.bigint "banded_fee_structure_id"
     t.enum "contract_type", null: false, enum_type: "contract_types"
     t.datetime "created_at", null: false
     t.string "ecf_contract_version", default: "1.0.0", null: false
     t.string "ecf_mentor_contract_version"
-    t.bigint "flat_rate_fee_structure_id"
     t.datetime "updated_at", null: false
     t.decimal "vat_rate", precision: 3, scale: 2, default: "0.2", null: false
     t.index ["active_lead_provider_id"], name: "index_contracts_on_active_lead_provider_id"
-    t.index ["banded_fee_structure_id"], name: "index_contracts_on_banded_fee_structure_id", unique: true, where: "(banded_fee_structure_id IS NOT NULL)"
-    t.index ["flat_rate_fee_structure_id"], name: "index_contracts_on_flat_rate_fee_structure_id", unique: true, where: "(flat_rate_fee_structure_id IS NOT NULL)"
   end
 
   create_table "declarations", force: :cascade do |t|
@@ -405,7 +402,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_28_082643) do
     t.enum "induction_programme", null: false, enum_type: "induction_programme"
     t.float "number_of_terms"
     t.enum "outcome", enum_type: "induction_outcomes"
-    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
+    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on, '[]'::text)", stored: true
     t.date "started_on", null: false
     t.bigint "teacher_id"
     t.enum "training_programme", enum_type: "training_programme"
@@ -488,17 +485,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_28_082643) do
     t.index ["mentor_at_school_period_id", "ect_at_school_period_id", "started_on"], name: "idx_on_mentor_at_school_period_id_ect_at_school_per_d69dffeecc", unique: true
     t.index ["mentor_at_school_period_id"], name: "index_mentorship_periods_on_mentor_at_school_period_id"
     t.check_constraint "finished_on >= started_on", name: "finished_on_not_before_started_on"
-  end
-
-  create_table "metadata_delivery_partners_lead_providers", force: :cascade do |t|
-    t.integer "contract_period_years", default: [], null: false, array: true
-    t.datetime "created_at", null: false
-    t.bigint "delivery_partner_id", null: false
-    t.bigint "lead_provider_id", null: false
-    t.datetime "updated_at", null: false
-    t.index ["delivery_partner_id", "lead_provider_id"], name: "idx_on_delivery_partner_id_lead_provider_id_a83df5ed0c", unique: true
-    t.index ["delivery_partner_id"], name: "idx_on_delivery_partner_id_d734fa500e"
-    t.index ["lead_provider_id"], name: "idx_on_lead_provider_id_b318746369"
   end
 
   create_table "metadata_schools_contract_periods", force: :cascade do |t|
@@ -668,6 +654,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_28_082643) do
     t.bigint "last_chosen_lead_provider_id"
     t.enum "last_chosen_training_programme", enum_type: "training_programme"
     t.boolean "marked_as_eligible", default: false, null: false
+    t.date "opted_out_of_reminder_emails_until"
     t.datetime "updated_at", null: false
     t.integer "urn", null: false
     t.index ["api_id"], name: "index_schools_on_api_id", unique: true
@@ -951,8 +938,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_28_082643) do
   add_foreign_key "contract_banded_fee_structures", "contracts"
   add_foreign_key "contract_flat_rate_fee_structures", "contracts"
   add_foreign_key "contracts", "active_lead_providers"
-  add_foreign_key "contracts", "contract_banded_fee_structures", column: "banded_fee_structure_id"
-  add_foreign_key "contracts", "contract_flat_rate_fee_structures", column: "flat_rate_fee_structure_id"
   add_foreign_key "declarations", "delivery_partners", column: "delivery_partner_when_created_id"
   add_foreign_key "declarations", "statements", column: "clawback_statement_id"
   add_foreign_key "declarations", "statements", column: "payment_statement_id"
@@ -992,8 +977,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_28_082643) do
   add_foreign_key "mentor_at_school_periods", "teachers"
   add_foreign_key "mentorship_periods", "ect_at_school_periods"
   add_foreign_key "mentorship_periods", "mentor_at_school_periods"
-  add_foreign_key "metadata_delivery_partners_lead_providers", "delivery_partners"
-  add_foreign_key "metadata_delivery_partners_lead_providers", "lead_providers"
   add_foreign_key "metadata_schools_contract_periods", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "metadata_schools_contract_periods", "schools"
   add_foreign_key "metadata_schools_lead_providers_contract_periods", "contract_periods", column: "contract_period_year", primary_key: "year"

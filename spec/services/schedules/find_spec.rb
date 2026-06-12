@@ -138,7 +138,7 @@ RSpec.describe Schedules::Find do
             end
 
             context "when the start date is the last day of the contract period" do
-              let(:started_on) { Date.new(year, 5, 31) }
+              let(:started_on) { contract_period.finished_on }
 
               before { travel_to started_on }
               # This is only correct if `latest_started_date` in `Schedules::Find`

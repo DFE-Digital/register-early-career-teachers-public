@@ -85,7 +85,7 @@ terraform-init: vendor-modules composed-variables set-azure-account
 	$(eval export TF_VAR_docker_image=${DOCKER_REPOSITORY}:${DOCKER_IMAGE_TAG})
 
 terraform-plan: terraform-init
-	terraform -chdir=config/terraform/application plan -var-file "config/${CONFIG}.tfvars.json"
+	terraform -chdir=config/terraform/application plan ${DETAILED_EXITCODE} -var-file "config/${CONFIG}.tfvars.json"
 
 terraform-apply: terraform-init
 	terraform -chdir=config/terraform/application apply -var-file "config/${CONFIG}.tfvars.json" ${AUTO_APPROVE}
@@ -175,6 +175,14 @@ aks-console: get-cluster-credentials set-namespace
 aks-ssh: get-cluster-credentials set-namespace
 	kubectl -n ${NAMESPACE} exec -ti --tty deployment/${SERVICE_NAME}-${ENVIRONMENT}-web -- /bin/sh
 
+# downloads the given file from the app/tmp directory of all web pods in the
+# cluster to the local computer (into a subdirectory matching the pod name).
+## ie: FILENAME=restart.txt make production aks-download-tmp-file
+## ie: FILENAME=restart.txt make review aks-download-tmp-file PULL_REQUEST_NUMBER=4169
+aks-download-tmp-file: get-cluster-credentials set-namespace
+	$(if $(FILENAME), , $(error Usage: FILENAME=restart.txt make production aks-download-tmp-file))
+	kubectl get pods -n ${NAMESPACE} -l app=${SERVICE_NAME}-${ENVIRONMENT}-web -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' | xargs -I {} sh -c 'mkdir -p {}/ && kubectl cp ${NAMESPACE}/{}:/app/tmp/${FILENAME} {}/${FILENAME}'
+
 action-group-resources: set-azure-account # make env_aks action-group-resources ACTION_GROUP_EMAIL=notificationemail@domain.com . Must be run before setting enable_monitoring=true for each subscription
 	$(if $(ACTION_GROUP_EMAIL), , $(error Please specify a notification email for the action group))
 	echo ${AZURE_RESOURCE_PREFIX}-${SERVICE_SHORT}-mn-rg
@@ -191,7 +199,7 @@ domains-infra-init: domains composed-variables set-azure-account
 		-backend-config=key=domains_infrastructure.tfstate
 
 domains-infra-plan: domains domains-infra-init  ## Terraform plan for DNS infrastructure (DNS zone and front door). Usage: make domains-infra-plan
-	terraform -chdir=config/terraform/domains/infrastructure plan -var-file config/zones.tfvars.json
+	terraform -chdir=config/terraform/domains/infrastructure plan ${DETAILED_EXITCODE} -var-file config/zones.tfvars.json
 
 domains-infra-apply: domains domains-infra-init  ## Terraform apply for DNS infrastructure (DNS zone and front door). Usage: make domains-infra-apply
 	terraform -chdir=config/terraform/domains/infrastructure apply -var-file config/zones.tfvars.json ${AUTO_APPROVE}
@@ -206,7 +214,7 @@ domains-init: domains composed-variables set-azure-account
 		-backend-config=key=${ENVIRONMENT}.tfstate
 
 domains-plan: domains-init  ## Terraform plan for DNS environment domains. Usage: make development domains-plan
-	terraform -chdir=config/terraform/domains/environment_domains plan -var-file config/${CONFIG}.tfvars.json
+	terraform -chdir=config/terraform/domains/environment_domains plan ${DETAILED_EXITCODE} -var-file config/${CONFIG}.tfvars.json
 
 domains-apply: domains-init ## Terraform apply for DNS environment domains. Usage: make development domains-apply
 	terraform -chdir=config/terraform/domains/environment_domains apply -var-file config/${CONFIG}.tfvars.json ${AUTO_APPROVE}

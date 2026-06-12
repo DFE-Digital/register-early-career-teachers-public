@@ -279,12 +279,8 @@ module ECTAtSchoolPeriods
             expect(new_training_period.expression_of_interest).to be_nil
           end
 
-          context "when the switch happens on the last day of the current contract period" do
-            around do |example|
-              travel_to(Date.new(2025, 5, 31)) do
-                example.run
-              end
-            end
+          context "when the switch happens on the last day of the contract period" do
+            before { travel_to contract_period.finished_on }
 
             it "finds the existing partnership and assigns it" do
               SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
@@ -314,12 +310,8 @@ module ECTAtSchoolPeriods
             expect(new_training_period.expression_of_interest).to eq(active_lead_provider)
           end
 
-          context "when the switch happens on the last day of the current contract period" do
-            around do |example|
-              travel_to(Date.new(2025, 5, 31)) do
-                example.run
-              end
-            end
+          context "when the switch happens on the last day of the contract period" do
+            before { travel_to contract_period.finished_on }
 
             it "finds the active_lead_provider with the correct contract period" do
               SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
@@ -361,8 +353,10 @@ module ECTAtSchoolPeriods
         end
 
         context "when the switch happens before the ECT has started" do
-          let(:ect_at_school_period) do
-            FactoryBot.create(:ect_at_school_period, :not_started_yet)
+          before { travel_to current_contract_period.started_on }
+
+          let!(:current_contract_period) do
+            FactoryBot.create(:contract_period, :current, :with_schedules)
           end
 
           let!(:training_period) do
@@ -377,10 +371,12 @@ module ECTAtSchoolPeriods
           end
 
           context "when the ECT starts in the current contract period" do
-            around do |example|
-              travel_to(Date.new(2025, 11, 15)) do
-                example.run
-              end
+            let(:ect_at_school_period) do
+              FactoryBot.create(
+                :ect_at_school_period,
+                :not_started_yet,
+                started_on: current_contract_period.started_on.next_month
+              )
             end
 
             it "removes the existing training period" do
@@ -400,23 +396,23 @@ module ECTAtSchoolPeriods
           end
 
           context "when the ect starts in the next contract period" do
-            around do |example|
-              travel_to(Date.new(2026, 5, 31)) do
-                example.run
-              end
+            let(:upcoming_contract_period) do
+              FactoryBot.create(:contract_period, :next, :with_schedules)
             end
 
             let(:ect_at_school_period) do
-              FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 2.weeks.from_now)
+              FactoryBot.create(
+                :ect_at_school_period,
+                :ongoing,
+                started_on: upcoming_contract_period.started_on
+              )
             end
-
-            let(:future_contract_period) { FactoryBot.create(:contract_period, :with_schedules, year: 2026) }
 
             let!(:future_active_lead_provider) do
               FactoryBot.create(
                 :active_lead_provider,
                 lead_provider:,
-                contract_period: future_contract_period
+                contract_period: upcoming_contract_period
               )
             end
 
@@ -881,12 +877,20 @@ module ECTAtSchoolPeriods
                 )
             end
 
-            context "when the switch happens on the last day of the current contract period" do
-              around do |example|
-                travel_to(Date.new(2025, 5, 31)) do
-                  example.run
-                end
+            context "when the switch happens on the last day of the contract period" do
+              let(:mentorship_period) do
+                FactoryBot.create(
+                  :mentorship_period,
+                  # We need there to be a `current_or_next_mentorship_period`
+                  # otherwise a new provider-led mentor training period
+                  # won't be created
+                  finished_on: contract_period.finished_on.next_week,
+                  mentee: ect_at_school_period,
+                  mentor: mentor_at_school_period
+                )
               end
+
+              before { travel_to contract_period.finished_on }
 
               it "finds the active lead provider with the correct contract period" do
                 SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
@@ -924,12 +928,20 @@ module ECTAtSchoolPeriods
               expect(new_training_period.schedule.contract_period.year).to eq(contract_period.year)
             end
 
-            context "when the switch happens on the last day of the current contract period" do
-              around do |example|
-                travel_to(Date.new(2025, 5, 31)) do
-                  example.run
-                end
+            context "when the switch happens on the last day of the contract period" do
+              let(:mentorship_period) do
+                FactoryBot.create(
+                  :mentorship_period,
+                  # We need there to be a `current_or_next_mentorship_period`
+                  # otherwise a new provider-led mentor training period
+                  # won't be created
+                  finished_on: contract_period.finished_on.next_week,
+                  mentee: ect_at_school_period,
+                  mentor: mentor_at_school_period
+                )
               end
+
+              before { travel_to contract_period.finished_on }
 
               it "finds the existing lead provider" do
                 SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)

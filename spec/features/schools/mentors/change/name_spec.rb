@@ -1,4 +1,4 @@
-RSpec.describe "Changing an mentor's name" do
+RSpec.describe "Changing a mentor's name" do
   let!(:mentor_at_school_period) do
     FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher:)
   end
@@ -34,7 +34,7 @@ RSpec.describe "Changing an mentor's name" do
     then_i_should_be_taken_to_the_check_answers_page
     and_i_click_the_back_link
     then_i_should_see_the_change_name_page
-    then_the_form_should_should_show("Professor Sprout")
+    then_the_form_should_show("Professor Sprout")
     when_i_change_the_name_to("Sister Mildred")
     and_i_click_the_continue_button
     and_i_click_the_confirmation_button
@@ -54,6 +54,7 @@ RSpec.describe "Changing an mentor's name" do
   scenario "invalid long name" do
     when_i_change_the_name_to(Faker::Lorem.characters(number: 71))
     and_i_click_the_continue_button
+    then_the_page_title_should_have_an_error_prefix
     expect(page.get_by_role("link", name: "Corrected name must be 70 characters or less")).to be_visible
     then_i_should_be_taken_to_the_edit_page
   end
@@ -61,6 +62,7 @@ RSpec.describe "Changing an mentor's name" do
   scenario "invalid blank name" do
     when_i_change_the_name_to("")
     and_i_click_the_continue_button
+    then_the_page_title_should_have_an_error_prefix
     expect(page.get_by_role("link", name: "Enter the correct full name")).to be_visible
     then_i_should_be_taken_to_the_edit_page
   end
@@ -68,6 +70,7 @@ RSpec.describe "Changing an mentor's name" do
   scenario "invalid same name" do
     when_i_change_the_name_to("Miriam Margolyes")
     and_i_click_the_continue_button
+    then_the_page_title_should_have_an_error_prefix
     expect(page.get_by_role("link", name: "The name must be different from the current name")).to be_visible
     then_i_should_be_taken_to_the_edit_page
   end
@@ -137,5 +140,11 @@ RSpec.describe "Changing an mentor's name" do
     expect(page.locator("#edit-name-field").input_value).to eq(name)
   end
 
-  alias_method :then_the_form_should_should_show, :then_the_form_should_be_reset
+  def then_the_page_title_should_have_an_error_prefix
+    expect(page.title).to start_with("Error:")
+    then_i_should_see_the_change_name_page
+    expect(page.locator(".govuk-error-summary")).to be_visible
+  end
+
+  alias_method :then_the_form_should_show, :then_the_form_should_be_reset
 end

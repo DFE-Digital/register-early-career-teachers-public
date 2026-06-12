@@ -16,7 +16,7 @@ RSpec.describe "admin/finance/contract_periods/show.html.erb" do
   it "has the page title 'Contract period <year>'" do
     render
 
-    expect(view.content_for(:page_title)).to eq("Contract period #{contract_period.year}")
+    expect(view.content_for(:page_title)).to eq("#{contract_period.year} contract period")
   end
 
   it "renders the breadcrumbs" do

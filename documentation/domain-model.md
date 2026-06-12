@@ -20,6 +20,7 @@ erDiagram
     integer recruitment_target
     datetime updated_at
   }
+  Contract_FlatRateFeeStructure }o--|| Contract : belongs_to
   Contract_BandedFeeStructure {
     integer id
     integer contract_id
@@ -30,6 +31,7 @@ erDiagram
     datetime updated_at
     decimal uplift_fee_per_declaration
   }
+  Contract_BandedFeeStructure }o--|| Contract : belongs_to
   User {
     integer id
     datetime created_at
@@ -126,6 +128,7 @@ erDiagram
     integer last_chosen_lead_provider_id
     enum last_chosen_training_programme
     boolean marked_as_eligible
+    date opted_out_of_reminder_emails_until
     datetime updated_at
     integer urn
   }
@@ -417,18 +420,14 @@ erDiagram
   Contract {
     integer id
     integer active_lead_provider_id
-    integer banded_fee_structure_id
     enum contract_type
     datetime created_at
     string ecf_contract_version
     string ecf_mentor_contract_version
-    integer flat_rate_fee_structure_id
     datetime updated_at
     decimal vat_rate
   }
   Contract }o--|| ActiveLeadProvider : belongs_to
-  Contract }o--|| Contract_FlatRateFeeStructure : belongs_to
-  Contract }o--|| Contract_BandedFeeStructure : belongs_to
   AppropriateBodyPeriod {
     integer id
     integer appropriate_body_id
@@ -514,14 +513,4 @@ erDiagram
   }
   Metadata_SchoolContractPeriod }o--|| School : belongs_to
   Metadata_SchoolContractPeriod }o--|| ContractPeriod : belongs_to
-  Metadata_DeliveryPartnerLeadProvider {
-    integer id
-    array[integer] contract_period_years
-    datetime created_at
-    integer delivery_partner_id
-    integer lead_provider_id
-    datetime updated_at
-  }
-  Metadata_DeliveryPartnerLeadProvider }o--|| DeliveryPartner : belongs_to
-  Metadata_DeliveryPartnerLeadProvider }o--|| LeadProvider : belongs_to
 ```

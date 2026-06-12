@@ -63,34 +63,34 @@ describe ContractPeriod do
   end
 
   describe ".current" do
-    context "when there is a current contract period" do
-      let!(:period) do
-        FactoryBot.create(:contract_period, started_on: Date.new(2024, 6, 1), finished_on: Date.new(2025, 5, 31))
-      end
+    subject(:current) { described_class.current }
 
-      it "returns the current contract period" do
-        FactoryBot.create(:contract_period, started_on: Date.new(2023, 6, 1), finished_on: Date.new(2024, 5, 31))
-
-        travel_to Date.new(2024, 6, 1) do
-          expect(ContractPeriod.current).to eq(period)
-        end
-      end
-
-      context "when we are on the last day of the contract period" do
-        it "returns the current contract period" do
-          travel_to period.finished_on do
-            expect(ContractPeriod.current).to eq(period)
-          end
-        end
-      end
+    let(:current_contract_period) do
+      FactoryBot.create(:contract_period, :current)
     end
 
-    context "when there is no current contract period" do
-      it "returns nil" do
-        travel_to Date.new(2025, 6, 1) do
-          expect(ContractPeriod.current).to be_nil
-        end
-      end
+    context "when we are in the current contract period" do
+      before { travel_to current_contract_period.started_on }
+
+      it { is_expected.to eq(current_contract_period) }
+    end
+
+    context "when we are on the last day of the current contract period" do
+      before { travel_to current_contract_period.finished_on }
+
+      it { is_expected.to eq(current_contract_period) }
+    end
+
+    context "when we are before the current contract period" do
+      before { travel_to current_contract_period.started_on.prev_day }
+
+      it { is_expected.to be_nil }
+    end
+
+    context "when we are past the current contract period" do
+      before { travel_to current_contract_period.finished_on.next_day }
+
+      it { is_expected.to be_nil }
     end
   end
 
@@ -367,28 +367,29 @@ describe ContractPeriod do
     end
   end
 
-  describe "#all_schedules?" do
-    let(:contract_period) { FactoryBot.create(:contract_period, :current) }
-    let(:schedule_identifiers) { Schedule.identifiers.values }
+  describe "#fully_scheduled?" do
+    subject(:contract_period) { FactoryBot.create(:contract_period, :current) }
+
+    let(:possible_schedules) { Schedule.identifiers.values }
 
     context "when all possible schedules have been allocated to the contract period" do
       before do
-        schedule_identifiers.each do |identifier|
+        possible_schedules.each do |identifier|
           FactoryBot.create(:schedule, identifier:, contract_period:)
         end
       end
 
-      it { expect(contract_period).to be_all_schedules }
+      it { is_expected.to be_fully_scheduled }
     end
 
     context "when only some schedules have been allocated to the contract period" do
       before do
-        schedule_identifiers.take(2).each do |identifier|
+        possible_schedules.take(2).each do |identifier|
           FactoryBot.create(:schedule, identifier:, contract_period:)
         end
       end
 
-      it { expect(contract_period).not_to be_all_schedules }
+      it { is_expected.not_to be_fully_scheduled }
     end
   end
 
@@ -411,6 +412,71 @@ describe ContractPeriod do
       let(:started_on) { 1.month.ago }
 
       it { is_expected.not_to be_editable }
+    end
+  end
+
+  describe "#available_schedules" do
+    subject(:contract_period) { FactoryBot.create(:contract_period) }
+
+    context "without associated schedules" do
+      it "lists all possible schedules" do
+        expect(contract_period.available_schedules).to eq(Schedule.identifiers.keys)
+      end
+    end
+
+    context "with associated schedules" do
+      let(:associated_schedules) do
+        %w[
+          ecf-reduced-april
+          ecf-standard-april
+          ecf-standard-september
+          ecf-reduced-january
+          ecf-standard-january
+          ecf-reduced-september
+        ]
+      end
+
+      before do
+        associated_schedules.each do |identifier|
+          FactoryBot.create(:schedule, identifier:, contract_period:)
+        end
+      end
+
+      it "lists any remaining schedules" do
+        expect(contract_period.available_schedules).to eq(Schedule.identifiers.keys - associated_schedules)
+      end
+    end
+  end
+
+  describe "#sorted_schedules" do
+    subject(:contract_period) { FactoryBot.create(:contract_period) }
+
+    let(:associated_schedules) do
+      %w[
+        ecf-reduced-april
+        ecf-standard-april
+        ecf-standard-september
+        ecf-reduced-january
+        ecf-standard-january
+        ecf-reduced-september
+      ]
+    end
+
+    before do
+      associated_schedules.each do |identifier|
+        FactoryBot.create(:schedule, identifier:, contract_period:)
+      end
+    end
+
+    it "orders schedules by identifier as defined in the enum" do
+      expect(contract_period.sorted_schedules.map(&:identifier)).to eq(%w[
+        ecf-standard-january
+        ecf-standard-april
+        ecf-standard-september
+        ecf-reduced-january
+        ecf-reduced-april
+        ecf-reduced-september
+      ])
     end
   end
 end

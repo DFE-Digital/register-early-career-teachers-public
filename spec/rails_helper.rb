@@ -15,6 +15,8 @@ rescue ActiveRecord::PendingMigrationError => e
   abort e.to_s.strip
 end
 
+RSpec::Matchers.define_negated_matcher :a_hash_excluding, :a_hash_including
+
 RSpec.configure do |config|
   config.fixture_paths = [
     Rails.root.join("spec/fixtures")

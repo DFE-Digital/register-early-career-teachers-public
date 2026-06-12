@@ -97,7 +97,11 @@ DfE::Analytics.configure do |config|
   # Translation missing: en.dfe.analytics.config.excluded_paths.description
   #
   # config.excluded_paths = Translation missing: en.dfe.analytics.config.excluded_paths.default
-  config.excluded_paths = ["/healthcheck", %r{^/admin(/.*)?$}]
+  config.excluded_paths = [
+    "/healthcheck",
+    %r{^/admin(/.*)?$},
+    %r{^/school/opt-out-of-reminder-emails(?:[/?].*)?$},
+  ]
 
   # A proc which will be called during model initialization. It allows to disable models
   # which should not be used. Each model is passed to bloc and if bloc returns true for the model,

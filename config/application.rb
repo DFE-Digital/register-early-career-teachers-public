@@ -58,7 +58,6 @@ module RegisterEarlyCareerTeachers
     config.enable_appropriate_body_records_to_review = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_APPROPRIATE_BODY_RECORDS_TO_REVIEW", false))
     config.enable_sentry = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_SENTRY", false))
     config.enable_blazer = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_BLAZER", false))
-    config.enable_api = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_API", false))
     config.enable_time_travel = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_TIME_TRAVEL", false))
     config.enable_debug_css = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_DEBUG_CSS", false))
     config.bypass_filter_parameter_logging = false
@@ -95,6 +94,8 @@ module RegisterEarlyCareerTeachers
     config.trs_api_base_url = ENV["TRS_API_BASE_URL"]
     config.trs_api_key = ENV["TRS_API_KEY"]
     config.trs_api_version = ENV.fetch("TRS_API_VERSION", "20260120")
+
+    config.school_reminder_email_opt_out_token_secret = ENV.fetch("SCHOOL_REMINDER_EMAIL_OPT_OUT_TOKEN_SECRET", nil)
 
     config.after_initialize do
       ActionView::Base.default_form_builder = GOVUKDesignSystemFormBuilder::FormBuilder

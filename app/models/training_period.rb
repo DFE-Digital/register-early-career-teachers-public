@@ -16,6 +16,7 @@ class TrainingPeriod < ApplicationRecord
     moved_school: "moved_school",
     mentor_no_longer_being_mentor: "mentor_no_longer_being_mentor",
     switched_to_school_led: "switched_to_school_led",
+    changed_lead_provider: "changed_lead_provider",
     other: "other"
   }, validate: { message: "Must be a valid withdrawal reason", allow_nil: true }, suffix: :withdrawal_reason
 

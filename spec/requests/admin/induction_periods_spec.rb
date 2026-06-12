@@ -260,12 +260,12 @@ RSpec.describe "Admin::InductionPeriodsController", type: :request do
         FactoryBot.create(:induction_period,
                           teacher:,
                           started_on: 9.months.ago,
-                          finished_on: 6.months.ago,
+                          finished_on: 31.days.ago,
                           induction_programme: "fip")
       end
 
-      let(:started_on) { 6.months.ago }
-      let(:finished_on) { 3.months.ago }
+      let(:started_on) { 30.days.ago }
+      let(:finished_on) { 10.days.ago }
       let(:valid_params) do
         {
           induction_period: {

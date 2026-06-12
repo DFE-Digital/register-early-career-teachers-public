@@ -37,6 +37,7 @@ describe "Schools::ECTs::ChangeMentorWizardController" do
     subject { get path_for_step("edit") }
 
     it_behaves_like "an induction redirectable route"
+    it_behaves_like "a route blocked when the registration window is closed"
 
     context "when not signed in" do
       it "redirects to the root page" do
@@ -125,6 +126,7 @@ describe "Schools::ECTs::ChangeMentorWizardController" do
     let(:other_mentor_teacher) { FactoryBot.create(:teacher) }
 
     it_behaves_like "an induction redirectable route"
+    it_behaves_like "a route blocked when the registration window is closed"
 
     context "when not signed in" do
       it "redirects to the root path" do

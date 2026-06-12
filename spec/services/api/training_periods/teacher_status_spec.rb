@@ -38,6 +38,62 @@ RSpec.describe API::TrainingPeriods::TeacherStatus do
       end
     end
 
+    context "when training period is withdrawn" do
+      context "when the teacher is acting as an ECT for this training period" do
+        let(:training_period) { FactoryBot.create(:training_period, :for_ect, :withdrawn) }
+
+        it { is_expected.to eq(:left) }
+
+        context "when finished in the future" do
+          let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, finished_on: 1.month.from_now) }
+          let(:training_period) { FactoryBot.create(:training_period, :for_ect, :withdrawn, ect_at_school_period:, finished_on: 1.month.from_now) }
+
+          it { is_expected.to eq(:leaving) }
+        end
+      end
+
+      context "when the teacher is acting as a mentor for this training period" do
+        let(:training_period) { FactoryBot.create(:training_period, :for_mentor, :withdrawn) }
+
+        it { is_expected.to eq(:left) }
+
+        context "when finished in the future" do
+          let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, finished_on: 1.month.from_now) }
+          let(:training_period) { FactoryBot.create(:training_period, :for_mentor, :withdrawn, mentor_at_school_period:, finished_on: 1.month.from_now) }
+
+          it { is_expected.to eq(:leaving) }
+        end
+      end
+    end
+
+    context "when training period is deferred" do
+      context "when the teacher is acting as an ECT for this training period" do
+        let(:training_period) { FactoryBot.create(:training_period, :for_ect, :deferred) }
+
+        it { is_expected.to eq(:left) }
+
+        context "when finished in the future" do
+          let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, finished_on: 1.month.from_now) }
+          let(:training_period) { FactoryBot.create(:training_period, :for_ect, :deferred, ect_at_school_period:, finished_on: 1.month.from_now) }
+
+          it { is_expected.to eq(:leaving) }
+        end
+      end
+
+      context "when the teacher is acting as a mentor for this training period" do
+        let(:training_period) { FactoryBot.create(:training_period, :for_mentor, :deferred) }
+
+        it { is_expected.to eq(:left) }
+
+        context "when finished in the future" do
+          let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, finished_on: 1.month.from_now) }
+          let(:training_period) { FactoryBot.create(:training_period, :for_mentor, :deferred, mentor_at_school_period:, finished_on: 1.month.from_now) }
+
+          it { is_expected.to eq(:leaving) }
+        end
+      end
+    end
+
     context "when training period has already finished" do
       context "when the teacher is acting as an ECT for this training period" do
         let(:training_period) { FactoryBot.create(:training_period, :for_ect, :finished) }
