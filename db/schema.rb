@@ -146,8 +146,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_22_120000) do
     t.index ["creator_id"], name: "index_blazer_queries_on_creator_id"
   end
 
+  create_table "contract_band_capacities", force: :cascade do |t|
+    t.bigint "active_lead_provider_id"
+    t.datetime "created_at", null: false
+    t.integer "max_declarations", null: false
+    t.integer "min_declarations", default: 1, null: false
+    t.datetime "updated_at", null: false
+    t.index ["active_lead_provider_id"], name: "index_contract_band_capacities_on_active_lead_provider_id"
+  end
+
   create_table "contract_banded_fee_structure_bands", force: :cascade do |t|
     t.bigint "banded_fee_structure_id", null: false
+    t.bigint "contract_band_capacity_id"
     t.datetime "created_at", null: false
     t.decimal "fee_per_declaration", precision: 12, scale: 2, null: false
     t.integer "max_declarations", null: false
@@ -156,6 +166,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_22_120000) do
     t.decimal "service_fee_ratio", precision: 3, scale: 2, null: false
     t.datetime "updated_at", null: false
     t.index ["banded_fee_structure_id"], name: "idx_on_banded_fee_structure_id_49a33a0bd5"
+    t.index ["contract_band_capacity_id"], name: "idx_on_contract_band_capacity_id_5b1c121440"
   end
 
   create_table "contract_banded_fee_structures", force: :cascade do |t|
@@ -937,6 +948,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_22_120000) do
   add_foreign_key "active_lead_providers", "lead_providers"
   add_foreign_key "appropriate_bodies", "dfe_sign_in_organisations"
   add_foreign_key "appropriate_body_periods", "appropriate_bodies"
+  add_foreign_key "contract_band_capacities", "active_lead_providers"
+  add_foreign_key "contract_banded_fee_structure_bands", "contract_band_capacities"
   add_foreign_key "contract_banded_fee_structure_bands", "contract_banded_fee_structures", column: "banded_fee_structure_id", on_delete: :cascade
   add_foreign_key "contract_banded_fee_structures", "contracts"
   add_foreign_key "contract_flat_rate_fee_structures", "contracts"

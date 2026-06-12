@@ -1,9 +1,15 @@
 class Contract::BandedFeeStructure::Band < ApplicationRecord
   self.table_name = "contract_banded_fee_structure_bands"
 
+  # Associations
   belongs_to :banded_fee_structure,
              class_name: "Contract::BandedFeeStructure"
 
+  belongs_to :contract_band_capacity,
+             class_name: "Contract::BandCapacity"
+
+  # Validations
+  # DEPRECATE
   validates :min_declarations,
             presence: { message: "Min declarations is required" },
             numericality: {
@@ -11,6 +17,7 @@ class Contract::BandedFeeStructure::Band < ApplicationRecord
               only_integer: true,
               message: "Min declarations must be a number greater than zero"
             }
+  # DEPRECATE
   validates :max_declarations,
             presence: { message: "Max declarations is required" },
             numericality: {
@@ -94,7 +101,7 @@ private
         .to_a
         .push(self)
 
-    attributes_to_ignore = %w[id banded_fee_structure_id created_at updated_at].freeze
+    attributes_to_ignore = %w[id banded_fee_structure_id created_at updated_at contract_band_capacity_id].freeze
     unique_bands_by_index = bands_for_active_lead_provider
       .group_by { it.banded_fee_structure.bands.index(it) || it.banded_fee_structure.bands.count }
       .transform_values { |bands| bands.map { it.attributes.except(*attributes_to_ignore) }.uniq }

@@ -326,11 +326,19 @@
   :contract_banded_fee_structure_bands:
   - id
   - banded_fee_structure_id
-  - min_declarations
-  - max_declarations
+  - contract_band_capacity_id
+  - min_declarations # DEPRECATE
+  - max_declarations # DEPRECATE
   - fee_per_declaration
   - output_fee_ratio
   - service_fee_ratio
+  - created_at
+  - updated_at
+  :contract_band_capacities:
+  - id
+  - active_lead_provider_id
+  - min_declarations
+  - max_declarations
   - created_at
   - updated_at
   :contracts:
