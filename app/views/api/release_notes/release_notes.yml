@@ -22,7 +22,7 @@
 #     **bold** and _italic_ text
 
 - title: Registration is now open for the 2026 to 2027 participant intake 
-  date: 2026-06-16
+  date: 2026-06-15
   tags:
     - data-update
     - production-release
@@ -33,7 +33,7 @@
 
     You can read guidance on [how lead providers should prepare for the 2026 to 2027 academic year](https://www.register-early-career-teachers.education.gov.uk/api/guidance/guidance-for-lead-providers/lead-provider-guidance-2026).
 
-- title: Added new withdrawal reason: changed_lead_provider
+- title: Added new withdrawal reason 'changed_lead_provider'
   date: 2026-06-11
   tags:
     - production-release
