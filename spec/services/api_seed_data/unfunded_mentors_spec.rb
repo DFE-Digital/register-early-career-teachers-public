@@ -1,5 +1,6 @@
 RSpec.describe APISeedData::UnfundedMentors, :with_metadata do
-  let(:instance) { described_class.new }
+  let(:verbose) { true }
+  let(:instance) { described_class.new(verbose:) }
   let(:environment) { "sandbox" }
   let(:logger) { instance_double(Logger, info: nil, "formatter=" => nil, "level=" => nil) }
 
@@ -54,6 +55,17 @@ RSpec.describe APISeedData::UnfundedMentors, :with_metadata do
 
       teacher = Teacher.all.sample
       expect(logger).to have_received(:info).with(/#{teacher.trs_first_name}/).at_least(:once)
+    end
+
+    context "when verbose logging is false" do
+      let(:verbose) { false }
+
+      it "does not log the creation of unfunded mentors" do
+        instance.plant
+
+        expect(logger).to have_received(:info).with(/Planting unfunded mentors/).once
+        expect(logger).not_to have_received(:info).with(/#{Teacher.all.sample.trs_first_name}/)
+      end
     end
 
     context "when in the production environment" do

@@ -1,5 +1,9 @@
 module APISeedData
   class Base
+    def initialize(verbose: true)
+      @verbose = verbose
+    end
+
   protected
 
     def log_plant_info(name)
@@ -7,6 +11,8 @@ module APISeedData
     end
 
     def log_seed_info(message, indent: 2, colour: nil, blank_lines_before: 0)
+      return unless verbose
+
       blank_lines_before.times { logger.info("🌱") }
 
       if colour
@@ -21,6 +27,8 @@ module APISeedData
     end
 
   private
+
+    attr_reader :verbose
 
     def logger
       @logger ||= Logger.new($stdout).tap do |stdout_logger|
