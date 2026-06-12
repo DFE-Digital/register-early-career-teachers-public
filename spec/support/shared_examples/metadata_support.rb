@@ -97,12 +97,24 @@ RSpec.shared_examples "supports tracking metadata upsert changes" do |metadata_m
       before { handler.track_changes! }
 
       it "tracks changes" do
+        scope = instance_double(Sentry::Scope, set_context: nil)
+        allow(Sentry).to receive(:with_scope).and_yield(scope)
         allow(Sentry).to receive(:capture_message)
+
         allow(Rails.logger).to receive(:warn)
 
         perform_refresh_metadata
 
         expect(Sentry).to have_received(:capture_message).with("[Metadata] #{metadata_model.name} change")
+        expect(scope).to have_received(:set_context).with(
+          "metadata_changes",
+          a_hash_including(
+            class: metadata_model.name,
+            id: kind_of(Integer),
+            relevant_changes: a_hash_including("id" => kind_of(Array))
+          )
+        )
+
         expect(Rails.logger).to have_received(:warn).with(a_string_starting_with("[Metadata] #{metadata_model.name} change:"))
       end
     end
