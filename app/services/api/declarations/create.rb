@@ -37,6 +37,7 @@ module API::Declarations
     validate :payment_statement_available
     validate :validate_milestone_exists
     validate :declaration_in_sequence
+    validate :teacher_registered_with_lead_provider
 
     def create
       return false unless valid?
@@ -150,12 +151,16 @@ module API::Declarations
       return if errors[:declaration_type].any?
       return if errors[:declaration_date].any?
       return if training_period
+      return unless teacher_registered_with_lead_provider?
 
-      if teacher_registered_with_lead_provider?
-        errors.add(:teacher_type, "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again.")
-      else
-        errors.add(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check participant details and try again.")
-      end
+      errors.add(:teacher_type, "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again.")
+    end
+
+    def teacher_registered_with_lead_provider
+      return if errors[:teacher_api_id].any? || errors[:lead_provider_id].any?
+      return if teacher_registered_with_lead_provider?
+
+      errors.add(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check participant details and try again.")
     end
 
     def teacher_registered_with_lead_provider?
@@ -173,6 +178,7 @@ module API::Declarations
       return if errors[:teacher_type].any?
       return if errors[:lead_provider_id].any?
       return if errors[:contract_period_year].any?
+      return unless training_period
 
       if milestone.blank?
         errors.add(:declaration_type, "The property '#/declaration_type' does not exist for this schedule.")
