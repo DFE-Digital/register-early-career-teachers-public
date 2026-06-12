@@ -5,7 +5,7 @@ module MentorAtSchoolPeriods
 
       ect_at_school_period.provider_led_training_programme? &&
         Teachers::MentorFundingEligibility.new(trn: mentor_at_school_period.teacher.trn).eligible? &&
-        mentor_at_school_period.teacher.mentor_training_periods.current_or_future.none?
+        mentor_at_school_period.teacher.mentor_training_periods.none?
     end
   end
 end
