@@ -10,6 +10,10 @@ module LeadProviders
       lead_provider.active_lead_providers.exists?(contract_period:)
     end
 
+    def active_lead_providers(contract_period)
+      lead_provider.active_lead_providers.where(contract_period:)
+    end
+
     def self.in_contract_period(contract_period)
       LeadProvider
         .joins(:active_lead_providers)

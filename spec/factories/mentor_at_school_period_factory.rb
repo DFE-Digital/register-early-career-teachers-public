@@ -72,5 +72,15 @@ FactoryBot.define do
                           finished_on: mentor.finished_on)
       end
     end
+
+    trait :with_realistic_email_address do
+      after(:build) do |mentor_at_school_period|
+        first_name = mentor_at_school_period.teacher.trs_first_name.downcase
+        last_name = mentor_at_school_period.teacher.trs_last_name.downcase
+        school_domain = mentor_at_school_period.school.name.parameterize
+
+        mentor_at_school_period.email = %(#{first_name}.#{last_name}@#{school_domain}.org.uk)
+      end
+    end
   end
 end
