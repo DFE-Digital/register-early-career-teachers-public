@@ -4,7 +4,7 @@ FactoryBot.define do
     identifier { "ecf-standard-september" }
 
     initialize_with do
-      Schedule.find_or_create_by(contract_period:, identifier:)
+      Schedule.find_or_initialize_by(contract_period:, identifier:)
     end
 
     trait :replacement_schedule do
@@ -20,7 +20,7 @@ FactoryBot.define do
     end
 
     trait :with_milestones do
-      after(:build) do |schedule|
+      after :create do |schedule|
         year = schedule.contract_period.year
         _, type, period = schedule.identifier.split("-")
 

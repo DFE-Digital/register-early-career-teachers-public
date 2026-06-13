@@ -93,7 +93,7 @@ RSpec.describe Events::Record do
       lead_provider: FactoryBot.build(:lead_provider),
       delivery_partner: FactoryBot.build(:delivery_partner),
       user: FactoryBot.build(:user),
-      training_period: FactoryBot.build(:training_period),
+      training_period: FactoryBot.build(:training_period, :school_led), # NB: school_led prevents a stray contract_period
       mentorship_period: FactoryBot.build(:mentorship_period),
     }.each do |attribute, object|
       describe "when #{attribute} is missing" do

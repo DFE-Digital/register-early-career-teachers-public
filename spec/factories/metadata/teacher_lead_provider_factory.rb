@@ -8,7 +8,7 @@ FactoryBot.define do
     end
 
     initialize_with do
-      Metadata::TeacherLeadProvider.find_or_create_by(teacher:, lead_provider:)
+      Metadata::TeacherLeadProvider.find_or_initialize_by(teacher:, lead_provider:)
     end
 
     transient do
