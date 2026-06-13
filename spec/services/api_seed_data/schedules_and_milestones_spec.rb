@@ -1,5 +1,6 @@
 RSpec.describe APISeedData::SchedulesAndMilestones do
-  let(:instance) { described_class.new }
+  let(:verbose) { true }
+  let(:instance) { described_class.new(verbose:) }
   let(:environment) { "sandbox" }
   let(:logger) { instance_double(Logger, info: nil, "formatter=" => nil, "level=" => nil) }
 
@@ -39,6 +40,17 @@ RSpec.describe APISeedData::SchedulesAndMilestones do
 
       ContractPeriod.find_each do |contract_period|
         expect(logger).to have_received(:info).with(/Added schedule.*#{contract_period.year}.*ecf-(standard|reduced|extended|replacement)/).at_least(:once)
+      end
+    end
+
+    context "when verbose logging is false" do
+      let(:verbose) { false }
+
+      it "does not log the creation of schedules and milestones" do
+        instance.plant
+
+        expect(logger).to have_received(:info).with(/Planting schedules_and_milestones/).once
+        expect(logger).not_to have_received(:info).with(/Added schedule/)
       end
     end
 

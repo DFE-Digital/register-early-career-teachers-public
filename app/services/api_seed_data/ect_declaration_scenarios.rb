@@ -32,7 +32,7 @@ module APISeedData
         milestone = training_period.schedule.milestones.where(declaration_type: :"retained-1").sample
         create_declaration(state: :paid, declaration_type: :"retained-1", training_period:, declaration_date: milestone.start_date + 2.months)
 
-        log_plant_info("Created participant for #{school_partnership.active_lead_provider.lead_provider.name} with retained-1 declaration and no started declaration")
+        log_seed_info("Created participant for #{school_partnership.active_lead_provider.lead_provider.name} with retained-1 declaration and no started declaration")
       end
     end
 
@@ -53,7 +53,7 @@ module APISeedData
         milestone = training_period.schedule.milestones.where(declaration_type: :"retained-2").sample
         create_declaration(state: :no_payment, declaration_type: :"retained-2", training_period:, declaration_date: milestone.start_date + 3.months)
 
-        log_plant_info("Created participant for #{school_partnership.active_lead_provider.lead_provider.name} with paid started declaration and submitted retained-2 declaration")
+        log_seed_info("Created participant for #{school_partnership.active_lead_provider.lead_provider.name} with paid started declaration and submitted retained-2 declaration")
       end
     end
 

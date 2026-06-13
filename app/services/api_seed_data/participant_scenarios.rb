@@ -1,6 +1,6 @@
 module APISeedData
   class ParticipantScenarios < Base
-    NUMBER_OF_RECORDS_PER_SCENARIO = 5
+    NUMBER_OF_RECORDS_PER_SCENARIO = 3
 
     def plant
       return unless plantable?

@@ -1,5 +1,6 @@
 RSpec.describe APISeedData::ECTParticipantActionScenarios do
-  let(:instance) { described_class.new }
+  let(:verbose) { true }
+  let(:instance) { described_class.new(verbose:) }
   let(:environment) { "sandbox" }
   let(:logger) { instance_double(Logger, info: nil, "formatter=" => nil, "level=" => nil) }
   let(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
@@ -132,6 +133,18 @@ RSpec.describe APISeedData::ECTParticipantActionScenarios do
       expect(logger).to have_received(:info).with(/Created resumable participant for #{lead_provider.name}/).once
       expect(logger).to have_received(:info).with(/Created participant started with another lead provider for #{lead_provider.name}/).once
       expect(logger).to have_received(:info).with(/Created participant with declaration that can change contract period\/schedule for #{lead_provider.name}/).once
+    end
+
+    context "when verbose logging is false" do
+      let(:verbose) { false }
+
+      it "does not log the creation of records" do
+        instance.plant
+
+        expect(logger).to have_received(:info).with(/Planting api testing 2024 ECT participant seed scenarios/).once
+        expect(logger).not_to have_received(:info).with(/Created resumable participant/)
+        expect(logger).not_to have_received(:info).with(/Created participant/)
+      end
     end
 
     context "when in the production environment" do

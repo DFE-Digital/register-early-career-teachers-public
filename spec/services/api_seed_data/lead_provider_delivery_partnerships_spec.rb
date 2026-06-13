@@ -1,5 +1,6 @@
 RSpec.describe APISeedData::LeadProviderDeliveryPartnerships do
-  let(:instance) { described_class.new }
+  let(:verbose) { true }
+  let(:instance) { described_class.new(verbose:) }
   let(:environment) { "sandbox" }
   let(:logger) { instance_double(Logger, info: nil, "formatter=" => nil, "level=" => nil) }
 
@@ -45,6 +46,18 @@ RSpec.describe APISeedData::LeadProviderDeliveryPartnerships do
       end
 
       expect(logger).to have_received(:info).with(/Shared delivery partners/).once
+    end
+
+    context "when verbose logging is false" do
+      let(:verbose) { false }
+
+      it "does not log the creation of lead provider delivery partnerships" do
+        instance.plant
+
+        expect(logger).to have_received(:info).with(/Planting lead provider delivery partnerships/).once
+        expect(logger).not_to have_received(:info).with(/#{LeadProvider.first.name}/)
+        expect(logger).not_to have_received(:info).with(/Shared delivery partners/)
+      end
     end
 
     context "when there are multiple active lead providers" do

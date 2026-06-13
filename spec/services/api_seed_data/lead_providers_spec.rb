@@ -1,5 +1,6 @@
 RSpec.describe APISeedData::LeadProviders do
-  let(:instance) { described_class.new }
+  let(:verbose) { true }
+  let(:instance) { described_class.new(verbose:) }
   let(:environment) { "sandbox" }
   let(:logger) { instance_double(Logger, info: nil, "formatter=" => nil, "level=" => nil) }
   let(:all_registration_years) { described_class::DATA.values.map { it[:contract_period_years] }.map(&:to_a).flatten }
@@ -47,6 +48,17 @@ RSpec.describe APISeedData::LeadProviders do
 
       expect(logger).to have_received(:info).with(/Planting lead providers/).once
       expect(logger).to have_received(:info).with(/#{described_class::DATA.keys.sample}/).once
+    end
+
+    context "when verbose logging is false" do
+      let(:verbose) { false }
+
+      it "does not log the creation of lead providers" do
+        instance.plant
+
+        expect(logger).to have_received(:info).with(/Planting lead providers/).once
+        expect(logger).not_to have_received(:info).with(/#{described_class::DATA.keys.sample}/)
+      end
     end
 
     context "when in the production environment" do

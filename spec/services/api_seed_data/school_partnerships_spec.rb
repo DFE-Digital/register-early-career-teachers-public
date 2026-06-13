@@ -1,5 +1,6 @@
 RSpec.describe APISeedData::SchoolPartnerships do
-  let(:instance) { described_class.new }
+  let(:verbose) { true }
+  let(:instance) { described_class.new(verbose:) }
   let(:environment) { "sandbox" }
   let(:logger) { instance_double(Logger, info: nil, "formatter=" => nil, "level=" => nil) }
 
@@ -60,6 +61,17 @@ RSpec.describe APISeedData::SchoolPartnerships do
 
       school_partnership = SchoolPartnership.all.sample
       expect(logger).to have_received(:info).with(/#{school_partnership.school.urn}/).at_least(:once)
+    end
+
+    context "when verbose logging is false" do
+      let(:verbose) { false }
+
+      it "does not log the creation of school partnerships" do
+        instance.plant
+
+        expect(logger).to have_received(:info).with(/Planting school partnerships/).once
+        expect(logger).not_to have_received(:info).with(/#{SchoolPartnership.all.sample.school.urn}/)
+      end
     end
 
     context "when in the production environment" do
