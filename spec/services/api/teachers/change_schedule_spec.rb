@@ -151,6 +151,16 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
               expect(subject).to have_one_error_per_attribute
               expect(subject).to have_error(:teacher_api_id, "You cannot change this participant's schedule as they have completed their training or induction.")
             end
+
+            context "when schedule is reduced" do
+              let(:schedule_identifier) { "ecf-reduced-april" }
+
+              if trainee_type == :ect
+                it { is_expected.to be_valid }
+              else
+                it { is_expected.to have_error(:schedule_identifier, "Mentors cannot be placed on a reduced schedule. Assign them to a different schedule.") }
+              end
+            end
           end
 
           context "guarded error messages" do
