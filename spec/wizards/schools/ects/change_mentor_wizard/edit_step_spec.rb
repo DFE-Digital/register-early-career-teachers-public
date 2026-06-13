@@ -60,7 +60,7 @@ describe Schools::ECTs::ChangeMentorWizard::EditStep do
 
     context "when the mentor is eligible for training" do
       before do
-        allow(::MentorAtSchoolPeriods::Eligibility)
+        allow(::MentorAtSchoolPeriods::Assignment::Eligibility)
           .to receive(:for_first_provider_led_training?)
           .and_return(true)
       end
@@ -72,7 +72,7 @@ describe Schools::ECTs::ChangeMentorWizard::EditStep do
 
     context "when the mentor is not eligible for training" do
       before do
-        allow(::MentorAtSchoolPeriods::Eligibility)
+        allow(::MentorAtSchoolPeriods::Assignment::Eligibility)
           .to receive(:for_first_provider_led_training?)
           .and_return(false)
       end
