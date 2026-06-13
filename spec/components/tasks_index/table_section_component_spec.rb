@@ -121,7 +121,7 @@ RSpec.describe TasksIndex::TableSectionComponent, type: :component do
 
     it "renders the correct headings" do
       headers = rendered.css("th").map(&:text)
-      expect(headers).to contain_exactly("Name", "TRN", "Recorded by", "Induction tutor name", "")
+      expect(headers).to contain_exactly("Name", "TRN", "Recorded by", "")
     end
 
     it "renders a release link" do

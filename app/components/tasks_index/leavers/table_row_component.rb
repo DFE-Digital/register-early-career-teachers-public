@@ -4,10 +4,9 @@ module TasksIndex
       include Rails.application.routes.url_helpers
 
       def self.headings
-        ["Name", "TRN", "Recorded by", "Induction tutor name", ""]
+        ["Name", "TRN", "Recorded by", ""]
       end
 
-      delegate :induction_tutor_name, to: :school
       delegate :ect_at_school_periods, to: :teacher
       delegate :ongoing, to: :ect_at_school_periods, prefix: true
 
