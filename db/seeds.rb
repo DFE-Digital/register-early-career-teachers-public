@@ -14,6 +14,7 @@ priority_seeds = %w[
   appropriate_body_periods
   delivery_partners
   schools
+  gias_data
   lead_provider_delivery_partnerships
   school_partnerships
   schedules_and_milestones

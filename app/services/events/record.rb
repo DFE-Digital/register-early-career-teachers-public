@@ -1152,6 +1152,43 @@ module Events
       ).record_event!
     end
 
+    # School Events
+
+    def self.record_school_opened_event!(author:, school:, gias_school:, happened_at: Time.zone.now)
+      event_type = :school_opened
+      heading = "#{school.name} (#{school.urn}) opened"
+      metadata = {
+        gias_school_urn: gias_school.urn,
+        gias_school_name: gias_school.name,
+      }
+
+      new(event_type:, author:, heading:, school:, happened_at:, metadata:).record_event!
+    end
+
+    def self.record_school_closed_event!(author:, school:, gias_school:, happened_at: Time.zone.now)
+      event_type = :school_closed
+      heading = "#{school.name} (#{school.urn}) closed"
+      metadata = {
+        gias_school_urn: gias_school.urn,
+        gias_school_name: gias_school.name,
+      }
+
+      new(event_type:, author:, heading:, school:, happened_at:, metadata:).record_event!
+    end
+
+    def self.record_school_changed_event!(author:, school:, old_gias_school:, new_gias_school:, happened_at: Time.zone.now)
+      event_type = :school_changed
+      heading = "#{school.name} changed in GIAS (#{new_gias_school.urn} changed from #{old_gias_school.urn})"
+      metadata = {
+        old_gias_school_urn: old_gias_school.urn,
+        old_gias_school_name: old_gias_school.name,
+        new_gias_school_urn: new_gias_school.urn,
+        new_gias_school_name: new_gias_school.name,
+      }
+
+      new(event_type:, author:, heading:, school:, happened_at:, metadata:).record_event!
+    end
+
   private
 
     def attributes
