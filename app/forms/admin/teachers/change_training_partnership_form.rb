@@ -15,7 +15,7 @@ module Admin
       def save(author:)
         return false unless valid?
 
-        TrainingPeriods::ChangePartnership.new(training_period:, school_partnership:, author:).call
+        ::TrainingPeriods::ChangePartnership.new(training_period:, school_partnership:, author:).call
         true
       rescue ActiveRecord::RecordInvalid => e
         errors.add(:base, e.record.errors.full_messages.to_sentence)
