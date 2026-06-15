@@ -94,11 +94,11 @@ private
 
   def and_i_see_a_link_to_request_access_to_a_school_or_organisation
     expect(page.content).to include(
-      "Request access to a school or organisation using your DfE Sign-in account."
+      "Request access to a school or organisation using your DfE Sign-in account"
     )
 
     expect(page.content).to include(
-      "https://test-profile.signin.education.gov.uk"
+      "https://services.signin.education.gov.uk/request-organisation/search"
     )
   end
 
@@ -114,11 +114,11 @@ private
 
   def and_i_see_a_link_to_request_access_to_the_service
     expect(page.content).to include(
-      "Request access to the service using your DfE Sign-in account."
+      "Request access to the service using your DfE Sign-in account"
     )
 
     expect(page.content).to include(
-      "https://test-profile.signin.education.gov.uk"
+      "https://services.signin.education.gov.uk/my-services"
     )
   end
 end
