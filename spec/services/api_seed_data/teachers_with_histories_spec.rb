@@ -1,5 +1,6 @@
 RSpec.describe APISeedData::TeachersWithHistories do
-  let(:instance) { described_class.new }
+  let(:verbose) { true }
+  let(:instance) { described_class.new(verbose:) }
   let(:environment) { "sandbox" }
   let(:logger) { instance_double(Logger, info: nil, "formatter=" => nil, "level=" => nil) }
   let!(:school_partnerships) { FactoryBot.create_list(:school_partnership, 2) }
@@ -269,6 +270,17 @@ RSpec.describe APISeedData::TeachersWithHistories do
       expect(logger).to have_received(:info).with(/(training period - provider-led - #{training_status})/).at_least(:once)
       expect(logger).to have_received(:info).with(/trained by #{training_period.school_partnership.active_lead_provider.lead_provider.name} \(LP\)/).at_least(:once)
       expect(logger).to have_received(:info).with(/and #{training_period.school_partnership.delivery_partner.name} \(DP\)/).at_least(:once)
+    end
+
+    context "when verbose logging is false" do
+      let(:verbose) { false }
+
+      it "does not log the creation of api teachers records" do
+        instance.plant
+
+        expect(logger).to have_received(:info).with(/Planting api teachers with histories/).once
+        expect(logger).not_to have_received(:info).with(/trained by/)
+      end
     end
 
     context "when in the production environment" do
