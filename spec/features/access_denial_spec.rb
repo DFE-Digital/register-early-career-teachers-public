@@ -98,7 +98,7 @@ private
     )
 
     expect(page.content).to include(
-      "https://services.signin.education.gov.uk/request-organisation/search"
+      Rails.application.config.dfe_sign_in_request_organisation_url
     )
   end
 
@@ -118,7 +118,7 @@ private
     )
 
     expect(page.content).to include(
-      "https://services.signin.education.gov.uk/my-services"
+      Rails.application.config.dfe_sign_in_my_services_url
     )
   end
 end
