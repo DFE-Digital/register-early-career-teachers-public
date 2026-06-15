@@ -79,11 +79,11 @@ module RegisterEarlyCareerTeachers
     config.dfe_sign_in_profile = ENV.fetch("DFE_SIGN_IN_PROFILE", "https://test-profile.signin.education.gov.uk")
     config.dfe_sign_in_request_organisation_url = ENV.fetch(
       "DFE_SIGN_IN_REQUEST_ORGANISATION_URL",
-      "https://services.signin.education.gov.uk/request-organisation/search"
+      "https://test-services.signin.education.gov.uk/request-organisation/search"
     )
     config.dfe_sign_in_my_services_url = ENV.fetch(
       "DFE_SIGN_IN_MY_SERVICES_URL",
-      "https://services.signin.education.gov.uk/my-services"
+      "https://test-services.signin.education.gov.uk/my-services"
     )
     config.dfe_sign_in_issuer = ENV.fetch("DFE_SIGN_IN_ISSUER", "https://test-oidc.signin.education.gov.uk")
     config.dfe_sign_in_client_id = ENV["DFE_SIGN_IN_CLIENT_ID"]
