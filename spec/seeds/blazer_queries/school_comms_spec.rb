@@ -47,6 +47,18 @@ RSpec.describe BlazerQueries::SchoolComms do
       )
     end
 
+    it "does not duplicate the scheme when the configured host already includes one" do
+      allow(Rails.application.config.action_mailer)
+        .to receive(:default_url_options)
+        .and_return(host: "https://example.com")
+
+      statements = definitions.pluck(:statement)
+
+      expect(statements)
+        .to all(include("https://example.com/school/opt-out-of-reminder-emails/new?school_id="))
+      expect(statements).to all(satisfy { |statement| statement.exclude?("https://https://") })
+    end
+
     it "excludes children's centres and their linked sites everywhere (#2501)" do
       definitions.each do |definition|
         expect(definition[:statement]).to include(
