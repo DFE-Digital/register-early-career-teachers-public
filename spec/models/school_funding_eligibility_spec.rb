@@ -1,6 +1,6 @@
 RSpec.describe SchoolFundingEligibility do
   describe "associations" do
-    it { is_expected.to belong_to(:gias_school).class_name("GIAS::School").with_foreign_key(:school_urn).with_primary_key(:urn).inverse_of(:school_funding_eligibilities) }
+    it { is_expected.to belong_to(:gias_school).class_name("GIAS::School").with_foreign_key(:gias_school_urn).with_primary_key(:urn).inverse_of(:school_funding_eligibilities) }
     it { is_expected.to belong_to(:contract_period).with_foreign_key(:contract_period_year).with_primary_key(:year) }
   end
 
