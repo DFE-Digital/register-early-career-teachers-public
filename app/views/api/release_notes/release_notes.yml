@@ -21,8 +21,19 @@
 #
 #     **bold** and _italic_ text
 
-- title: |
-    Added new withdrawal reason: changed_lead_provider
+- title: Registration is now open for the 2026 to 2027 participant intake 
+  date: 2026-06-15
+  tags:
+    - data-update
+    - production-release
+  body: |
+    Registration is now open for the 2026 to 2027 intake of early career teachers and mentors.
+
+    We’ve added the schedules and contract data for this academic year to the production environment.
+
+    You can read guidance on [how lead providers should prepare for the 2026 to 2027 academic year](https://www.register-early-career-teachers.education.gov.uk/api/guidance/guidance-for-lead-providers/lead-provider-guidance-2026).
+
+- title: Added new withdrawal reason 'changed_lead_provider'
   date: 2026-06-11
   tags:
     - production-release
@@ -44,8 +55,7 @@
 
     No other changes are required.
 
-- title: |
-    Changes to participant status for deferred and withdrawn participants who have completed training
+- title: Changes to participant status for deferred and withdrawn participants who have completed training
   date: 2026-06-10
   tags:
     - data-update
@@ -72,7 +82,6 @@
 
     - expect deferred and withdrawn participants to always return `participant_status`: `left`
     - ensure your systems do not rely on `participant_status` being `active` for completed participants who have since been withdrawn or deferred
-
 
 - title: Added schedules and contract data for the 2026 to 2027 intake to the test (sandbox) environment
   date: 2026-05-27
