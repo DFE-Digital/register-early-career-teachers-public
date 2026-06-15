@@ -147,11 +147,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_22_120000) do
   end
 
   create_table "contract_band_capacities", force: :cascade do |t|
-    t.bigint "active_lead_provider_id"
+    t.bigint "active_lead_provider_id", null: false
     t.datetime "created_at", null: false
     t.integer "max_declarations", null: false
     t.integer "min_declarations", default: 1, null: false
     t.datetime "updated_at", null: false
+    t.index ["active_lead_provider_id", "min_declarations"], name: "idx_on_active_lead_provider_id_min_declarations_a366f02101", unique: true
     t.index ["active_lead_provider_id"], name: "index_contract_band_capacities_on_active_lead_provider_id"
   end
 
@@ -165,6 +166,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_22_120000) do
     t.decimal "output_fee_ratio", precision: 3, scale: 2, null: false
     t.decimal "service_fee_ratio", precision: 3, scale: 2, null: false
     t.datetime "updated_at", null: false
+    t.index ["banded_fee_structure_id", "contract_band_capacity_id"], name: "idx_on_banded_fee_structure_id_contract_band_capaci_8325d622c7", unique: true
     t.index ["banded_fee_structure_id"], name: "idx_on_banded_fee_structure_id_49a33a0bd5"
     t.index ["contract_band_capacity_id"], name: "idx_on_contract_band_capacity_id_5b1c121440"
   end

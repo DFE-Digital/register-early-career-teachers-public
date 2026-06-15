@@ -9,7 +9,7 @@ class ActiveLeadProvider < ApplicationRecord
   has_many :events
   has_many :contracts
   has_many :statements, through: :contracts
-  has_many :band_capacities, class_name: "Contract::BandCapacity"
+  has_many :band_capacities, -> { order(min_declarations: :asc) }, class_name: "Contract::BandCapacity"
 
   # Validations
   validates :contract_period_year,

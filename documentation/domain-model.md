@@ -10,8 +10,10 @@ erDiagram
     decimal output_fee_ratio
     decimal service_fee_ratio
     datetime updated_at
+    integer contract_band_capacity_id
   }
   Contract_BandedFeeStructure_Band }o--|| Contract_BandedFeeStructure : belongs_to
+  Contract_BandedFeeStructure_Band }o--|| Contract_BandCapacity : belongs_to
   Contract_FlatRateFeeStructure {
     integer id
     integer contract_id
@@ -32,6 +34,15 @@ erDiagram
     decimal uplift_fee_per_declaration
   }
   Contract_BandedFeeStructure }o--|| Contract : belongs_to
+  Contract_BandCapacity {
+    integer id
+    integer active_lead_provider_id
+    integer min_declarations
+    integer max_declarations
+    datetime created_at
+    datetime updated_at
+  }
+  Contract_BandCapacity }o--|| ActiveLeadProvider : belongs_to
   User {
     integer id
     datetime created_at
@@ -320,11 +331,11 @@ erDiagram
     enum induction_programme
     float number_of_terms
     enum outcome
-    daterange range
     date started_on
     integer teacher_id
     enum training_programme
     datetime updated_at
+    daterange range
   }
   InductionPeriod }o--|| AppropriateBodyPeriod : belongs_to
   InductionPeriod }o--|| Teacher : belongs_to

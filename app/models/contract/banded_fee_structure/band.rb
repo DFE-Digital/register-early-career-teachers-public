@@ -5,8 +5,11 @@ class Contract::BandedFeeStructure::Band < ApplicationRecord
   belongs_to :banded_fee_structure,
              class_name: "Contract::BandedFeeStructure"
 
+  # TODO: enforce "null: false" for contract_band_capacity_id and remove optional
+  # TODO: rename to "capacity" after deprecating the instance method
   belongs_to :contract_band_capacity,
-             class_name: "Contract::BandCapacity"
+             class_name: "Contract::BandCapacity",
+             optional: true
 
   # Validations
   # DEPRECATE
@@ -46,13 +49,16 @@ class Contract::BandedFeeStructure::Band < ApplicationRecord
 
   validate :sum_of_ratios_equals_one,
            if: -> { output_fee_ratio? && service_fee_ratio? }
+  # DEPRECATE
   validate :declaration_boundaries_sequential_without_gaps,
            if: -> { min_declarations? && max_declarations? }
+  # DEPRECATE
   validate :first_band_min_declarations_is_one
   validate :band_consistency_across_active_lead_provider
 
   def letter = ("A".ord + banded_fee_structure.bands.index(self)).chr
 
+  # TODO: deprecate Contract::BandedFeeStructure::Band#capacity
   def capacity
     max_declarations - min_declarations + 1
   end
@@ -64,6 +70,7 @@ private
       (output_fee_ratio + service_fee_ratio).to_d == 1.0.to_d
   end
 
+  # DEPRECATE
   def first_band_min_declarations_is_one
     first_band = banded_fee_structure&.bands&.first || self
 
@@ -72,6 +79,7 @@ private
     errors.add(:min_declarations, "The first band's min declarations must be 1")
   end
 
+  # DEPRECATE
   def declaration_boundaries_sequential_without_gaps
     return unless banded_fee_structure
 
