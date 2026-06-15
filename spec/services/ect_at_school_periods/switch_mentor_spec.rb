@@ -118,11 +118,38 @@ module ECTAtSchoolPeriods
           expect(ect_at_school_period.mentorship_periods.where(finished_on: nil).count).to eq(1)
         end
 
-        context "when the mentor has a provider-led training period" do
+        context "when the mentor has an ongoing provider-led training period" do
           let!(:selected_mentor_training_period) do
             FactoryBot.create(
               :training_period,
               :ongoing,
+              :provider_led,
+              :for_mentor,
+              mentor_at_school_period: selected_mentor_at_school_period,
+              started_on: selected_mentor_at_school_period.started_on
+            )
+          end
+
+          it "does not create a training period" do
+            expect { switch_mentor }.not_to change(TrainingPeriod, :count)
+          end
+
+          it "does not record a `teacher_starts_training_period` event" do
+            allow(Events::Record)
+              .to receive(:record_teacher_starts_training_period_event!)
+
+            switch_mentor
+
+            expect(Events::Record)
+              .not_to have_received(:record_teacher_starts_training_period_event!)
+          end
+        end
+
+        context "when the mentor has a finished provider-led training period" do
+          let!(:selected_mentor_training_period) do
+            FactoryBot.create(
+              :training_period,
+              :finished,
               :provider_led,
               :for_mentor,
               mentor_at_school_period: selected_mentor_at_school_period,

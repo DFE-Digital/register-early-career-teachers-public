@@ -41,7 +41,7 @@ describe Schools::ECTs::ChangeMentorWizard::CheckAnswersStep do
   describe "#previous_step" do
     context "when the mentor is not eligible for training" do
       before do
-        allow(::MentorAtSchoolPeriods::Eligibility)
+        allow(::MentorAtSchoolPeriods::Assignment::Eligibility)
           .to receive(:for_first_provider_led_training?)
           .and_return(false)
       end
@@ -53,7 +53,7 @@ describe Schools::ECTs::ChangeMentorWizard::CheckAnswersStep do
 
     context "when the mentor is eligible for training" do
       before do
-        allow(::MentorAtSchoolPeriods::Eligibility)
+        allow(::MentorAtSchoolPeriods::Assignment::Eligibility)
           .to receive(:for_first_provider_led_training?)
           .and_return(true)
       end

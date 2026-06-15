@@ -77,7 +77,7 @@ RSpec.describe "Create mentorship of an ECT to a mentor" do
         end
       end
 
-      context "when a valid mentor has been selected for the school led ect mentorship" do
+      context "when a valid mentor has been selected for the school-led ECT mentorship" do
         before do
           FactoryBot.create(:training_period, :ongoing, :school_led, ect_at_school_period:)
         end
@@ -96,7 +96,7 @@ RSpec.describe "Create mentorship of an ECT to a mentor" do
         end
       end
 
-      context "provider led ECT mentorship" do
+      context "provider-led ECT mentorship" do
         before do
           FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period:)
         end
@@ -106,9 +106,9 @@ RSpec.describe "Create mentorship of an ECT to a mentor" do
 
         context "when the mentor is eligible for funding" do
           before do
-            allow(Teachers::MentorFundingEligibility).to receive(:new)
-              .with(trn: mentor.teacher.trn)
-              .and_return(instance_double(Teachers::MentorFundingEligibility, eligible?: true))
+            allow(::MentorAtSchoolPeriods::Assignment::Eligibility)
+              .to receive(:for_first_provider_led_training?)
+              .and_return(true)
 
             subject
           end
@@ -123,9 +123,9 @@ RSpec.describe "Create mentorship of an ECT to a mentor" do
         context "when the mentor is not eligible for funding" do
           before do
             allow(Schools::AssignMentorForm).to receive(:new).and_call_original
-            allow(Teachers::MentorFundingEligibility).to receive(:new)
-              .with(trn: mentor.teacher.trn)
-              .and_return(instance_double(Teachers::MentorFundingEligibility, eligible?: false))
+            allow(::MentorAtSchoolPeriods::Assignment::Eligibility)
+              .to receive(:for_first_provider_led_training?)
+              .and_return(false)
 
             subject
           end

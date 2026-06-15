@@ -1,4 +1,4 @@
-RSpec.describe MentorAtSchoolPeriods::Eligibility, type: :service do
+RSpec.describe MentorAtSchoolPeriods::Assignment::Eligibility, type: :service do
   describe ".for_first_provider_led_training?" do
     let(:school) { FactoryBot.create(:school) }
     let(:other_school) { FactoryBot.create(:school) }
@@ -42,6 +42,35 @@ RSpec.describe MentorAtSchoolPeriods::Eligibility, type: :service do
       before do
         FactoryBot.create(:training_period, :for_ect, :ongoing, :provider_led, ect_at_school_period:)
         FactoryBot.create(:training_period, :for_mentor, :provider_led, mentor_at_school_period:, started_on: 1.week.ago, finished_on: 1.day.from_now)
+      end
+
+      it "returns false" do
+        expect(result).to be(false)
+      end
+    end
+
+    context "when mentor has a finished training period at the same school" do
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher:) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
+
+      before do
+        FactoryBot.create(:training_period, :for_ect, :ongoing, :provider_led, ect_at_school_period:)
+        FactoryBot.create(:training_period, :for_mentor, :finished, :provider_led, mentor_at_school_period:)
+      end
+
+      it "returns false" do
+        expect(result).to be(false)
+      end
+    end
+
+    context "when mentor has a finished training period at another school" do
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher:) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
+      let(:other_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school: other_school, teacher:) }
+
+      before do
+        FactoryBot.create(:training_period, :for_ect, :ongoing, :provider_led, ect_at_school_period:)
+        FactoryBot.create(:training_period, :for_mentor, :finished, :provider_led, mentor_at_school_period: other_mentor_at_school_period)
       end
 
       it "returns false" do
