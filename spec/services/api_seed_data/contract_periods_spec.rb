@@ -1,5 +1,6 @@
 RSpec.describe APISeedData::ContractPeriods do
-  let(:instance) { described_class.new }
+  let(:verbose) { true }
+  let(:instance) { described_class.new(verbose:) }
   let(:environment) { "sandbox" }
   let(:logger) { instance_double(Logger, info: nil, "formatter=" => nil, "level=" => nil) }
 
@@ -36,7 +37,18 @@ RSpec.describe APISeedData::ContractPeriods do
       expect(logger).to have_received("formatter=").with(Rails.logger.formatter)
 
       expect(logger).to have_received(:info).with(/Planting contract_periods/).once
-      expect(logger).to have_received(:info).with(/#{described_class::DATA.map(&:keys).sample}/).at_least(:once)
+      expect(logger).to have_received(:info).with(/2021|2022|2023/).at_least(:once)
+    end
+
+    context "when verbose logging is false" do
+      let(:verbose) { false }
+
+      it "does not log the creation of contract_periods" do
+        instance.plant
+
+        expect(logger).to have_received(:info).with(/Planting contract_periods/).once
+        expect(logger).not_to have_received(:info).with(/2021|2022|2023/)
+      end
     end
 
     context "when in the production environment" do

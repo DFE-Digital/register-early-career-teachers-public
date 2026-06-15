@@ -1,5 +1,6 @@
 RSpec.describe APISeedData::MentorScenarios do
-  let(:instance) { described_class.new }
+  let(:verbose) { true }
+  let(:instance) { described_class.new(verbose:) }
   let(:environment) { "sandbox" }
   let(:logger) { instance_double(Logger, info: nil, "formatter=" => nil, "level=" => nil) }
 
@@ -83,6 +84,17 @@ RSpec.describe APISeedData::MentorScenarios do
       instance.send(:mentor_with_three_ects_2025)
 
       expect(logger).to have_received(:info).with(/Created mentor \(TRN: .*?\) with 3 concurrent ECTs \(2025\)/).at_least(:once)
+    end
+
+    context "when verbose logging is false" do
+      let(:verbose) { false }
+
+      it "does not log the creation of mentor scenarios" do
+        instance.plant
+
+        expect(logger).to have_received(:info).with(/Planting api mentor seed scenarios/).once
+        expect(logger).not_to have_received(:info).with(/Created mentor/)
+      end
     end
   end
 

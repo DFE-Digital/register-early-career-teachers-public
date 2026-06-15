@@ -1,5 +1,6 @@
 RSpec.describe APISeedData::DeliveryPartners do
-  let(:instance) { described_class.new }
+  let(:verbose) { true }
+  let(:instance) { described_class.new(verbose:) }
   let(:environment) { "sandbox" }
   let(:logger) { instance_double(Logger, info: nil, "formatter=" => nil, "level=" => nil) }
 
@@ -26,6 +27,17 @@ RSpec.describe APISeedData::DeliveryPartners do
 
       DeliveryPartner.find_each do |delivery_partner|
         expect(logger).to have_received(:info).with(/#{delivery_partner.name}$/).once
+      end
+    end
+
+    context "when verbose logging is false" do
+      let(:verbose) { false }
+
+      it "does not log the creation of delivery partners" do
+        instance.plant
+
+        expect(logger).to have_received(:info).with(/Planting delivery partners/).once
+        expect(logger).not_to have_received(:info).with(/#{DeliveryPartner.first.name}$/)
       end
     end
 
