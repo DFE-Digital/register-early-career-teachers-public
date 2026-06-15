@@ -65,6 +65,8 @@ module Interval
       errors.add(:started_on, "Start date cannot overlap another #{name} period")
     elsif siblings.any? { |s| s.range.include?(finished_on) } || finished_on.nil?
       errors.add(:finished_on, "End date cannot overlap another #{name} period")
+    elsif siblings.any? { |s| (s.started_on..s.finished_on).overlap?(started_on..finished_on) }
+      errors.add(:base, "Period cannot overlap another #{name} period")
     end
   end
 
