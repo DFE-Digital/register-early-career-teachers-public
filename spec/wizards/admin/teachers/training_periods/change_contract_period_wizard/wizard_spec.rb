@@ -13,6 +13,14 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Wiz
       school:
     )
   end
+  let(:target_school_partnership) do
+    FactoryBot.create(
+      :school_partnership,
+      :for_year,
+      year: target_contract_period.year,
+      school:
+    )
+  end
   let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:) }
   let(:schedule) { FactoryBot.create(:schedule, contract_period: current_contract_period) }
   let(:training_period) do
@@ -47,10 +55,28 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Wiz
       it { is_expected.to eq(%i[select_contract_period select_partnership]) }
     end
 
+    context "when an available contract period and partnership have been selected" do
+      before do
+        store.contract_period_year = target_contract_period.year
+        store.school_partnership_id = target_school_partnership.id
+      end
+
+      it { is_expected.to eq(%i[select_contract_period select_partnership check_answers]) }
+    end
+
     context "when an unavailable contract period has been selected" do
       before { store.contract_period_year = current_contract_period.year }
 
       it { is_expected.to eq([:select_contract_period]) }
+    end
+
+    context "when an unavailable partnership has been selected" do
+      before do
+        store.contract_period_year = target_contract_period.year
+        store.school_partnership_id = school_partnership.id
+      end
+
+      it { is_expected.to eq(%i[select_contract_period select_partnership]) }
     end
   end
 
