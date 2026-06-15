@@ -7,14 +7,14 @@ RSpec.describe Admin::Statements::OutputPaymentsComponent, type: :component do
 
   let(:bands) do
     [
-      { min: 1, max: 10, fee: 100 },
-      { min: 11, max: 20, fee: 75 },
-      { min: 21, max: 30, fee: 50 },
-    ].map do |attrs|
+      { capacity: 10, fee: 100 },
+      { capacity: 10, fee: 75 },
+      { capacity: 10, fee: 50 },
+    ].map.with_index do |attrs, index|
       FactoryBot.build(
         :contract_banded_fee_structure_band,
-        min_declarations: attrs[:min],
-        max_declarations: attrs[:max],
+        priority: index + 1,
+        capacity: attrs[:capacity],
         fee_per_declaration: attrs[:fee],
         output_fee_ratio: 0.8,
         service_fee_ratio: 0.2

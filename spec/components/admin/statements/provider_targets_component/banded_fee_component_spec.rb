@@ -8,11 +8,7 @@ RSpec.describe Admin::Statements::ProviderTargetsComponent::BandedFeeComponent, 
       recruitment_target: 2500,
       uplift_fee_per_declaration: 50,
       setup_fee: 5000,
-      declaration_boundaries: [
-        { min: 1, max: 50 },
-        { min: 51, max: 100 },
-        { min: 101, max: 150 }
-      ]
+      declaration_capacities: [50, 50, 50]
     )
   end
 

@@ -11,10 +11,10 @@ RSpec.describe PaymentCalculator::Banded::BandAllocator do
 
   let!(:contract) { FactoryBot.create(:contract, banded_fee_structure:) }
   let(:banded_fee_structure) { FactoryBot.build(:contract_banded_fee_structure, bands: [band_a, band_b, band_c]) }
-  let(:band_a) { FactoryBot.build(:contract_banded_fee_structure_band, min_declarations: 1, max_declarations: 2) }
-  let(:band_b) { FactoryBot.build(:contract_banded_fee_structure_band, min_declarations: 3, max_declarations: 4) }
-  let(:band_c) { FactoryBot.build(:contract_banded_fee_structure_band, min_declarations: 5, max_declarations: 6) }
-  let(:bands) { banded_fee_structure.bands.order(:min_declarations) }
+  let(:band_a) { FactoryBot.build(:contract_banded_fee_structure_band, priority: 1, capacity: 2) }
+  let(:band_b) { FactoryBot.build(:contract_banded_fee_structure_band, priority: 2, capacity: 2) }
+  let(:band_c) { FactoryBot.build(:contract_banded_fee_structure_band, priority: 3, capacity: 2) }
+  let(:bands) { banded_fee_structure.bands.order(:priority) }
 
   let(:current_billable_ids) { [] }
   let(:current_refundable_ids) { [] }

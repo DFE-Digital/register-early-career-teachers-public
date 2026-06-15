@@ -10,8 +10,8 @@ RSpec.describe Statements::DeclarationSelection do
     FactoryBot.build_list(
       :contract_banded_fee_structure_band,
       1,
-      min_declarations: 1,
-      max_declarations: band_max,
+      priority: 1,
+      capacity: band_max,
       fee_per_declaration: 100,
       output_fee_ratio: 1.0,
       service_fee_ratio: 0.0

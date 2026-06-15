@@ -61,7 +61,7 @@ RSpec.describe PaymentCalculator::Banded do
       setup_fee: 500,
       uplift_fee_per_declaration: 50,
       recruitment_target: 100,
-      declaration_boundaries: [{ min: 1, max: 200 }]
+      declaration_capacities: [200]
     )
   end
 

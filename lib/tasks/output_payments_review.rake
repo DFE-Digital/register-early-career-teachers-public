@@ -1,11 +1,6 @@
 module ProductReview
   module OutputPayments
-    DECLARATION_BOUNDARIES = [
-      { min: 1, max: 5 },
-      { min: 6, max: 10 },
-      { min: 11, max: 20 },
-      { min: 21, max: 40 },
-    ].freeze
+    DECLARATION_CAPACITIES = [5, 5, 10, 10].freeze
 
     # Counts chosen so declarations spread across all four bands (A-D).
     # Band allocation is independent per declaration type:
@@ -31,7 +26,7 @@ module ProductReview
       end
 
       def add_bands!(contract)
-        bfs = FactoryBot.create(:contract_banded_fee_structure, :with_bands, declaration_boundaries: DECLARATION_BOUNDARIES)
+        bfs = FactoryBot.create(:contract_banded_fee_structure, :with_bands, declaration_capacities: DECLARATION_CAPACITIES)
         contract.update!(banded_fee_structure_id: bfs.id)
       end
 

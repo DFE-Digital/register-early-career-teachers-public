@@ -7,24 +7,17 @@ FactoryBot.define do
 
     trait :with_bands do
       transient do
-        declaration_boundaries do
-          min = 1
-
-          Array.new(3) do
-            max = min + 80
-            { min:, max: }.tap { min = max + 1 }
-          end
-        end
+        declaration_capacities { [80, 80, 80] }
       end
 
       bands do
-        declaration_boundaries.map do |boundary|
+        declaration_capacities.map.with_index do |capacity, index|
           association(
             :contract_banded_fee_structure_band,
             banded_fee_structure: instance,
-            min_declarations: boundary[:min],
-            max_declarations: boundary[:max],
-            fee_per_declaration: boundary[:max] + 100,
+            priority: index + 1,
+            capacity:,
+            fee_per_declaration: capacity + index + 100,
             strategy: :build
           )
         end

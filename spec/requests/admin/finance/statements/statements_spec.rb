@@ -136,8 +136,7 @@ RSpec.describe "Admin finance statements index", type: :request do
       let(:banded_fee_structure) do
         band = FactoryBot.build(
           :contract_banded_fee_structure_band,
-          min_declarations: 1,
-          max_declarations: 100
+          capacity: 100
         )
         FactoryBot.build(:contract_banded_fee_structure, bands: [band])
       end

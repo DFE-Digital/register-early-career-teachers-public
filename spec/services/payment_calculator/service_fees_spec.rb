@@ -14,8 +14,7 @@ RSpec.describe PaymentCalculator::ServiceFees do
       let!(:band) do
         FactoryBot.build(
           :contract_banded_fee_structure_band,
-          min_declarations: 1,
-          max_declarations: 100,
+          capacity: 100,
           fee_per_declaration: 800,
           service_fee_ratio: 0.40,
           output_fee_ratio: 0.60
@@ -43,8 +42,8 @@ RSpec.describe PaymentCalculator::ServiceFees do
       let!(:band_a) do
         FactoryBot.build(
           :contract_banded_fee_structure_band,
-          min_declarations: 1,
-          max_declarations: 100,
+          priority: 1,
+          capacity: 100,
           fee_per_declaration: 800,
           service_fee_ratio: 0.40,
           output_fee_ratio: 0.60
@@ -53,8 +52,8 @@ RSpec.describe PaymentCalculator::ServiceFees do
       let!(:band_b) do
         FactoryBot.build(
           :contract_banded_fee_structure_band,
-          min_declarations: 101,
-          max_declarations: 200,
+          priority: 2,
+          capacity: 100,
           fee_per_declaration: 600,
           service_fee_ratio: 0.40,
           output_fee_ratio: 0.60
@@ -82,8 +81,8 @@ RSpec.describe PaymentCalculator::ServiceFees do
       let!(:band) do
         FactoryBot.build(
           :contract_banded_fee_structure_band,
-          min_declarations: 1,
-          max_declarations: 100,
+          priority: 1,
+          capacity: 100,
           fee_per_declaration: 800,
           service_fee_ratio: 0.40,
           output_fee_ratio: 0.60

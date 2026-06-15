@@ -4,8 +4,8 @@ RSpec.describe PaymentCalculator::Banded::BandAllocation do
   let(:band) do
     FactoryBot.build_stubbed(
       :contract_banded_fee_structure_band,
-      min_declarations: 1,
-      max_declarations: 100
+      priority: 1,
+      capacity: 100
     )
   end
 

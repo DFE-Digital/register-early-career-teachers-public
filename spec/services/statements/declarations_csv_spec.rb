@@ -14,8 +14,8 @@ RSpec.describe Statements::DeclarationsCSV do
       FactoryBot.build(
         :contract_banded_fee_structure_band,
         banded_fee_structure: structure,
-        min_declarations: 1,
-        max_declarations: 100
+        priority: 1,
+        capacity: 100
       )
     end
   end

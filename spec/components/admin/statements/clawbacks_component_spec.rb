@@ -7,10 +7,7 @@ RSpec.describe Admin::Statements::ClawbacksComponent, type: :component do
     FactoryBot.build_stubbed(
       :contract_banded_fee_structure,
       :with_bands,
-      declaration_boundaries: [
-        { min: 1, max: 10 },
-        { min: 11, max: 20 },
-      ]
+      declaration_capacities: [10, 10]
     )
   end
 
@@ -213,15 +210,5 @@ RSpec.describe Admin::Statements::ClawbacksComponent, type: :component do
         )
       end
     end
-  end
-
-private
-
-  def band(from:, to:)
-    FactoryBot.build_stubbed(
-      :contract_banded_fee_structure_band,
-      min_declarations: from,
-      max_declarations: to
-    )
   end
 end

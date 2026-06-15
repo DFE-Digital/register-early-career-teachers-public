@@ -59,7 +59,7 @@ RSpec.describe ActiveLeadProviders::SeedFromPrevious do
         end
 
         it "builds bands for the new banded_fee_structure" do
-          band_attributes = %i[min_declarations max_declarations fee_per_declaration output_fee_ratio service_fee_ratio]
+          band_attributes = %i[priority capacity fee_per_declaration output_fee_ratio service_fee_ratio]
           expect(new_contract.banded_fee_structure.bands.map { |b| b.slice(*band_attributes) })
             .to match_array(previous_contract.banded_fee_structure.bands.map { |b| b.slice(*band_attributes) })
           expect(new_contract.banded_fee_structure.bands).not_to include(*previous_contract.banded_fee_structure.bands)

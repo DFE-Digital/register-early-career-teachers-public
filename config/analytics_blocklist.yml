@@ -326,8 +326,8 @@
   :contract_banded_fee_structure_bands:
   - id
   - banded_fee_structure_id
-  - min_declarations
-  - max_declarations
+  - priority
+  - capacity
   - fee_per_declaration
   - output_fee_ratio
   - service_fee_ratio

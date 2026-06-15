@@ -5,11 +5,11 @@ erDiagram
     integer banded_fee_structure_id
     datetime created_at
     decimal fee_per_declaration
-    integer max_declarations
-    integer min_declarations
     decimal output_fee_ratio
     decimal service_fee_ratio
     datetime updated_at
+    integer priority
+    integer capacity
   }
   Contract_BandedFeeStructure_Band }o--|| Contract_BandedFeeStructure : belongs_to
   Contract_FlatRateFeeStructure {

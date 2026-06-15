@@ -15,9 +15,9 @@ RSpec.describe PaymentCalculator::Banded::Outputs do
   let(:refundable_declarations) { Declaration.refundable }
   let!(:contract) { FactoryBot.create(:contract, :for_ecf, banded_fee_structure:) }
   let(:banded_fee_structure) { FactoryBot.build(:contract_banded_fee_structure, bands: [band_a, band_b, band_c]) }
-  let(:band_a) { FactoryBot.build(:contract_banded_fee_structure_band, min_declarations: 1, max_declarations: 2, fee_per_declaration: 100.0) }
-  let(:band_b) { FactoryBot.build(:contract_banded_fee_structure_band, min_declarations: 3, max_declarations: 4, fee_per_declaration: 100.0) }
-  let(:band_c) { FactoryBot.build(:contract_banded_fee_structure_band, min_declarations: 5, max_declarations: 6, fee_per_declaration: 100.0) }
+  let(:band_a) { FactoryBot.build(:contract_banded_fee_structure_band, priority: 1, capacity: 2, fee_per_declaration: 100.0) }
+  let(:band_b) { FactoryBot.build(:contract_banded_fee_structure_band, priority: 2, capacity: 2, fee_per_declaration: 100.0) }
+  let(:band_c) { FactoryBot.build(:contract_banded_fee_structure_band, priority: 3, capacity: 2, fee_per_declaration: 100.0) }
 
   before do
     FactoryBot.create_list(:declaration, 5, :eligible)
