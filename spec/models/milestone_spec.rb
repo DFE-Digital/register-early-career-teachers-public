@@ -30,22 +30,22 @@ describe Milestone do
       let(:contract_period) { FactoryBot.create(:contract_period, :next) }
       let(:schedule) { FactoryBot.create(:schedule, contract_period:) }
 
-      context "when start date is before the contract period start date" do
+      context "when start date is before June 1st of the contract period year" do
         let(:start_date) { contract_period.started_on.prev_day }
 
         it "is invalid" do
           expect(milestone).not_to be_valid
-          expect(milestone.errors.messages.fetch(:start_date)).to include("The start date must be on or after the contract start date (1 June #{contract_period.year})")
+          expect(milestone.errors.messages.fetch(:start_date)).to include("The start date must be on or after the 1 June #{contract_period.year}")
         end
       end
 
-      context "when start date is on the contract period start date" do
+      context "when start date is on June 1st of the contract period year" do
         let(:start_date) { contract_period.started_on }
 
         it { is_expected.to be_valid }
       end
 
-      context "when start date is after the contract period start date" do
+      context "when start date is after June 1st of the contract period year" do
         let(:start_date) { contract_period.started_on.next_day }
 
         it { is_expected.to be_valid }

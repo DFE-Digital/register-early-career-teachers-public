@@ -39,14 +39,14 @@ class Milestone < ApplicationRecord
 
 private
 
-  # Contract periods start on 1st June
+  # NB: Contract periods typically start on 15th June, 2 weeks after the milestone start date.
   def start_date_within_contract_period
     return unless schedule&.contract_period
 
-    contract_start = schedule.contract_period.started_on
+    contract_start = Date.new(schedule.contract_period_year, 6, 1)
 
     return if start_date >= contract_start
 
-    errors.add(:start_date, "The start date must be on or after the contract start date (#{contract_start.to_fs(:govuk)})")
+    errors.add(:start_date, "The start date must be on or after the #{contract_start.to_fs(:govuk)}")
   end
 end
