@@ -326,7 +326,7 @@
   :contract_banded_fee_structure_bands:
   - id
   - banded_fee_structure_id
-  - contract_band_capacity_id
+  - contract_band_capacity_id # RENAME capacity_id
   - min_declarations # DEPRECATE
   - max_declarations # DEPRECATE
   - fee_per_declaration
