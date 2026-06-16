@@ -31,11 +31,14 @@ describe LeadProviders::Active do
 
     let(:lead_provider) { FactoryBot.create(:lead_provider) }
     let(:contract_period) { FactoryBot.create(:contract_period) }
+    let(:another_contract_period) { FactoryBot.create(:contract_period) }
 
     context "when an active_lead_provider record exists for the contract period" do
       let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
+      let!(:active_lead_provider_in_another_contact_period) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: another_contract_period) }
 
       it { is_expected.to include(active_lead_provider) }
+      it { is_expected.not_to include(active_lead_provider_in_another_contact_period) }
     end
 
     context "when no active_lead_provider record exists for the contract period" do
