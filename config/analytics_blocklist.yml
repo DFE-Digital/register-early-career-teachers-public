@@ -318,6 +318,7 @@
   - id
   - recruitment_target
   - uplift_fee_per_declaration
+  - uplift_target_ratio
   - monthly_service_fee
   - setup_fee
   - created_at
