@@ -15,6 +15,7 @@ unless Rails.application.config.bypass_filter_parameter_logging
     corrected_name
     crypt
     date_of_birth
+    dfe_sign_in_user_id
     email
     emails
     email_address
