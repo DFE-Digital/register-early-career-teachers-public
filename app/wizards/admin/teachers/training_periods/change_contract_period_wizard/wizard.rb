@@ -1,0 +1,126 @@
+module Admin
+  module Teachers
+    module TrainingPeriods
+      module ChangeContractPeriodWizard
+        class Wizard < ApplicationWizard
+          class UnexpectedTrainingPeriodTypeError < StandardError; end
+
+          PartnershipOption = Data.define(:id, :name)
+
+          attr_accessor :store, :teacher_id, :training_period_id, :author
+
+          steps do
+            [{
+              select_contract_period: SelectContractPeriodStep,
+              select_partnership: SelectPartnershipStep
+            }]
+          end
+
+          def self.step?(step_name) = Array(steps).first[step_name].present?
+
+          def allowed_steps
+            steps = [:select_contract_period]
+            return steps unless selected_contract_period_allowed?
+
+            steps << :select_partnership
+          end
+
+          def allowed_step_path
+            step_path(allowed_steps.last)
+          end
+
+          def teacher
+            @teacher ||= Teacher.find(teacher_id)
+          end
+
+          def training_period
+            @training_period ||= TrainingPeriod.find(training_period_id)
+          end
+
+          def teacher_name
+            ::Teachers::Name.new(teacher).full_name
+          end
+
+          delegate :school, to: :training_period
+
+          def contract_periods
+            scope = ContractPeriod.enabled.most_recent_first
+            scope = scope.where.not(year: current_contract_period.year) if current_contract_period
+
+            if original_frozen_contract_period_year.in?([2021, 2022])
+              scope.where.not(year: [2021, 2022] - [original_frozen_contract_period_year])
+            else
+              scope.where.not(year: [2021, 2022])
+            end
+          end
+
+          def selected_contract_period
+            return if store.contract_period_year.blank?
+
+            @selected_contract_period ||= contract_periods.find_by(year: store.contract_period_year)
+          end
+
+          def school_partnerships
+            return SchoolPartnership.none unless selected_contract_period
+
+            SchoolPartnerships::Search
+              .new(school:, contract_period: selected_contract_period)
+              .school_partnerships
+          end
+
+          def partnership_options
+            school_partnerships.map do |partnership|
+              PartnershipOption.new(
+                id: partnership.id,
+                name: "#{partnership.lead_provider.name} & #{partnership.delivery_partner.name}"
+              )
+            end
+          end
+
+          def current_step_path
+            step_path(current_step_name)
+          end
+
+          def next_step_path
+            step_path(current_step.next_step)
+          end
+
+          def previous_step_path
+            step_path(current_step.previous_step)
+          end
+
+        private
+
+          def current_contract_period
+            training_period.contract_period
+          end
+
+          def original_frozen_contract_period_year
+            if training_period.for_ect?
+              teacher.ect_payments_frozen_year
+            elsif training_period.for_mentor?
+              teacher.mentor_payments_frozen_year
+            else
+              raise UnexpectedTrainingPeriodTypeError, "Training period was neither ECT nor Mentor"
+            end
+          end
+
+          def selected_contract_period_allowed?
+            store.contract_period_year.present? &&
+              contract_periods.where(year: store.contract_period_year).exists?
+          end
+
+          def step_path(step_name)
+            return if step_name.blank?
+
+            Rails.application.routes.url_helpers.public_send(
+              "admin_teacher_training_period_change_contract_period_wizard_#{step_name}_path",
+              teacher_id,
+              training_period_id
+            )
+          end
+        end
+      end
+    end
+  end
+end
