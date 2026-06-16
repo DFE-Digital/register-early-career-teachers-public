@@ -1,0 +1,60 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  ops:
+    build:
+      dockerfile_inline: |
+        FROM mcr.microsoft.com/azure-cli:cbl-mariner2.0
+        RUN mkdir /app
+        WORKDIR /app
+        RUN yum install -y awk git jq make postgresql tar unzip
+        RUN az aks install-cli
+    command: bash
+    scale: 0
+    volumes:
+      - azure-data:/root/.azure
+      - .:/app
+
+  playwright:
+    image: mcr.microsoft.com/playwright:v1.56.1-noble
+    command: npx playwright run-server --port 3000 --host 0.0.0.0
+    volumes:
+      - playwright-data:/ms-playwright
+
+  redis:
+    image: redis:alpine
+
+  web:
+    build:
+      args:
+        - BUNDLE_WITHOUT='review staging sandbox production'
+      context: .
+    depends_on:
+      - db
+    entrypoint: []
+    command: "bin/dev"
+    env_file: .env
+    environment:
+      - DB_HOSTNAME=db
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+      - ECF_DATABASE_URL=postgresql://postgres:postgres@db/ecf_development
+      - PLAYWRIGHT_URL=ws://playwright:3000
+      - RAILS_ENV=development
+      - REDIS_CACHE_URL=redis://redis:6379
+      - REDIS_URL=redis://redis:6379
+    ports:
+      - 3000:3000
+    tty: true # for bin/dev to work
+    volumes:
+      - .:/app
+
+volumes:
+  azure-data:
+  playwright-data:
+  postgres-data:
