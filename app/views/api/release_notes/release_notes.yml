@@ -37,7 +37,7 @@
 
     ## Why we’ve made this change
 
-    The number of participants currently training is an important part of the partnerships response. Not updating `api_updated_at` when this value changed meant API consumers could miss meaningful updates unless they re-polled all data.
+    The number of participants currently training is an important part of the partnerships response. Not updating `api_updated_at` when this value changed meant lead providers could miss meaningful updates unless they re-polled all data.
 
     This change ensures that updates to participant counts are returned consistently, making it easier for providers to detect and respond to changes.
 
@@ -146,7 +146,7 @@
     
     ## Who this applies to
 
-    This change affects API consumers using the GET partnerships endpoint or GET schools endpoint, particularly training providers who rely on induction tutor contact details.
+    This change affects lead providers using the GET partnerships endpoint or GET schools endpoint, particularly training providers who rely on induction tutor contact details.
 
     ## What you need to do
 
