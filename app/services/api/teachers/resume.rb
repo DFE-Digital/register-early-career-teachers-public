@@ -4,6 +4,7 @@ module API::Teachers
 
     validate :not_already_active
     validate :no_ongoing_today_training_period
+    validate :training_period_not_finished_today
     validate :school_period_ongoing_today
 
     def resume
@@ -18,6 +19,17 @@ module API::Teachers
     end
 
   private
+
+    def training_period_not_finished_today
+      return if errors[:teacher_api_id].any?
+      return unless training_period_finished_today?
+
+      errors.add(:teacher_api_id, "You cannot resume a participant on the same day they were withdrawn or deferred. Resume them tomorrow or later.")
+    end
+
+    def training_period_finished_today?
+      training_period&.finished_on&.today?
+    end
 
     def not_already_active
       return if errors[:teacher_api_id].any?
