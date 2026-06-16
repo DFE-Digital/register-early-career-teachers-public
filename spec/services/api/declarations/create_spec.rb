@@ -10,25 +10,43 @@ RSpec.describe API::Declarations::Create, type: :model do
     )
   end
 
+  let(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, year: 2024) }
+
   let(:lead_provider) { training_period.lead_provider }
   let(:lead_provider_id) { lead_provider.id }
   let(:teacher) { training_period.teacher }
   let(:teacher_api_id) { teacher.api_id }
-  let(:school_partnership) { training_period.school_partnership }
   let(:contract_period) { training_period.contract_period }
   let(:declaration_type) { "started" }
   let(:evidence_type) { "training-event-attended" }
   let(:schedule) { training_period.schedule }
-  let!(:milestone) { FactoryBot.create(:milestone, declaration_type:, schedule:, start_date: Date.new(2024, 11, 1), milestone_date: Date.new(2024, 12, 1)) }
   let(:declaration_datetime) { Faker::Time.between(from: milestone.start_date, to: milestone.milestone_date) }
   let(:declaration_date) { declaration_datetime.rfc3339 }
   let(:active_lead_provider) { training_period.active_lead_provider }
 
+  let!(:milestone) do
+    FactoryBot.create(:milestone,
+                      declaration_type:,
+                      schedule:,
+                      start_date: Date.new(contract_period.year, 11, 1),
+                      milestone_date: Date.new(contract_period.year, 12, 1))
+  end
+
   describe "validations" do
     %i[ect mentor].each do |trainee_type|
       context "for #{trainee_type}" do
-        let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: 6.months.ago, finished_on: 2.months.from_now) }
-        let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :active, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on, finished_on: 1.week.from_now) }
+        let(:at_school_period) do
+          FactoryBot.create(:"#{trainee_type}_at_school_period",
+                            started_on: 6.months.ago,
+                            finished_on: 2.months.from_now)
+        end
+        let!(:training_period) do
+          FactoryBot.create(:training_period, :"for_#{trainee_type}", :active,
+                            "#{trainee_type}_at_school_period": at_school_period,
+                            school_partnership:,
+                            started_on: at_school_period.started_on,
+                            finished_on: at_school_period.finished_on - 1.day)
+        end
         let(:teacher_type) { trainee_type }
 
         it { is_expected.to be_valid }
@@ -130,14 +148,14 @@ RSpec.describe API::Declarations::Create, type: :model do
         end
 
         context "when declaration date does not match the milestone start date" do
-          let(:declaration_date) { Date.new(2024, 10, 25).rfc3339 }
+          let(:declaration_date) { (milestone.start_date - 1.day).rfc3339 }
 
           it { is_expected.to have_one_error_only }
           it { is_expected.to have_error(:declaration_date, "Declaration date must be on or after the milestone start date for the same declaration type.") }
         end
 
         context "when declaration date does not match the milestone date" do
-          let(:declaration_date) { Date.new(2024, 12, 25).rfc3339 }
+          let(:declaration_date) { (milestone.milestone_date + 1.day).rfc3339 }
 
           it { is_expected.to have_one_error_only }
           it { is_expected.to have_error(:declaration_date, "Declaration date must be on or before the milestone date for the same declaration type.") }
@@ -245,34 +263,24 @@ RSpec.describe API::Declarations::Create, type: :model do
 
             let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :ongoing, started_on: 6.months.ago) }
             let!(:training_period) do
-              FactoryBot.create(
-                :training_period,
-                :"for_#{trainee_type}",
-                :active,
-                "#{trainee_type}_at_school_period": at_school_period,
-                started_on: at_school_period.started_on,
-                finished_on: 2.months.ago
-              )
+              FactoryBot.create(:training_period, :"for_#{trainee_type}", :active,
+                                "#{trainee_type}_at_school_period": at_school_period,
+                                started_on: at_school_period.started_on,
+                                finished_on: 2.months.ago)
             end
 
             let(:frozen_contract_period) { FactoryBot.create(:contract_period, :with_payments_frozen) }
             let(:frozen_active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: frozen_contract_period) }
             let(:frozen_school_partnership) do
-              FactoryBot.create(
-                :school_partnership,
-                active_lead_provider: frozen_active_lead_provider,
-                school: at_school_period.school
-              )
+              FactoryBot.create(:school_partnership,
+                                active_lead_provider: frozen_active_lead_provider,
+                                school: at_school_period.school)
             end
             let!(:frozen_training_period) do
-              FactoryBot.create(
-                :training_period,
-                :"for_#{trainee_type}",
-                :ongoing,
-                "#{trainee_type}_at_school_period": at_school_period,
-                school_partnership: frozen_school_partnership,
-                started_on: training_period.finished_on + 1.day
-              )
+              FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing,
+                                "#{trainee_type}_at_school_period": at_school_period,
+                                school_partnership: frozen_school_partnership,
+                                started_on: training_period.finished_on + 1.day)
             end
 
             before do
@@ -302,18 +310,11 @@ RSpec.describe API::Declarations::Create, type: :model do
           %w[no_payment eligible payable paid].each do |payment_status|
             context "with payment status `#{payment_status}`" do
               let!(:existing_duplicate_declaration) do
-                FactoryBot.create(:declaration,
-                                  :no_payment,
+                FactoryBot.create(:declaration, payment_status.to_sym,
                                   declaration_date:,
                                   declaration_type:,
                                   evidence_type:,
                                   training_period:)
-              end
-
-              let!(:another_existing_declaration) do
-                FactoryBot.create(:declaration,
-                                  payment_status.to_sym,
-                                  declaration_type:)
               end
 
               it { is_expected.to have_one_error_only }
@@ -327,28 +328,26 @@ RSpec.describe API::Declarations::Create, type: :model do
 
           context "when multiple training periods exist for the same lead provider" do
             let!(:training_period) do
-              FactoryBot.create(
-                :training_period,
-                :"for_#{trainee_type}",
-                :active,
-                "#{trainee_type}_at_school_period": at_school_period,
-                started_on: at_school_period.started_on,
-                finished_on: 2.months.ago
-              )
+              FactoryBot.create(:training_period, :"for_#{trainee_type}", :active,
+                                "#{trainee_type}_at_school_period": at_school_period,
+                                started_on: at_school_period.started_on,
+                                finished_on: 2.months.ago)
             end
 
             let!(:current_training_period) do
-              FactoryBot.create(
-                :training_period,
-                :"for_#{trainee_type}",
-                :ongoing,
-                "#{trainee_type}_at_school_period": at_school_period,
-                school_partnership: training_period.school_partnership,
-                started_on: 2.months.ago + 1.day
-              )
+              FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing,
+                                "#{trainee_type}_at_school_period": at_school_period,
+                                school_partnership: training_period.school_partnership,
+                                started_on: 2.months.ago + 1.day)
             end
 
-            let!(:current_milestone) { FactoryBot.create(:milestone, declaration_type:, schedule: current_training_period.schedule, start_date: Date.new(2024, 11, 1), milestone_date: Date.new(2024, 12, 1)) }
+            let!(:current_milestone) do
+              FactoryBot.create(:milestone,
+                                declaration_type:,
+                                schedule: current_training_period.schedule,
+                                start_date: Date.new(contract_period.year, 11, 1),
+                                milestone_date: Date.new(contract_period.year, 12, 1))
+            end
 
             it "selects the latest started training period, not the one closest to declaration_date" do
               expect(instance.training_period).to eq(current_training_period)
@@ -357,28 +356,26 @@ RSpec.describe API::Declarations::Create, type: :model do
 
           context "when a past finished training period and a future training period exist for the same lead provider" do
             let!(:training_period) do
-              FactoryBot.create(
-                :training_period,
-                :"for_#{trainee_type}",
-                :active,
-                "#{trainee_type}_at_school_period": at_school_period,
-                started_on: at_school_period.started_on,
-                finished_on: 2.weeks.ago
-              )
+              FactoryBot.create(:training_period, :"for_#{trainee_type}", :active,
+                                "#{trainee_type}_at_school_period": at_school_period,
+                                started_on: at_school_period.started_on,
+                                finished_on: 2.weeks.ago)
             end
 
             let!(:future_training_period) do
-              FactoryBot.create(
-                :training_period,
-                :"for_#{trainee_type}",
-                :ongoing,
-                "#{trainee_type}_at_school_period": at_school_period,
-                school_partnership: training_period.school_partnership,
-                started_on: 1.month.from_now
-              )
+              FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing,
+                                "#{trainee_type}_at_school_period": at_school_period,
+                                school_partnership: training_period.school_partnership,
+                                started_on: 1.month.from_now)
             end
 
-            let!(:future_milestone) { FactoryBot.create(:milestone, declaration_type:, schedule: future_training_period.schedule, start_date: Date.new(2024, 11, 1), milestone_date: Date.new(2024, 12, 1)) }
+            let!(:future_milestone) do
+              FactoryBot.create(:milestone,
+                                declaration_type:,
+                                schedule: future_training_period.schedule,
+                                start_date: Date.new(contract_period.year, 11, 1),
+                                milestone_date: Date.new(contract_period.year, 12, 1))
+            end
 
             it "selects the future training period" do
               expect(instance.training_period).to eq(future_training_period)
@@ -387,13 +384,9 @@ RSpec.describe API::Declarations::Create, type: :model do
 
           context "when only a future training period exists for the same lead provider" do
             let!(:training_period) do
-              FactoryBot.create(
-                :training_period,
-                :"for_#{trainee_type}",
-                :ongoing,
-                "#{trainee_type}_at_school_period": at_school_period,
-                started_on: 1.month.from_now
-              )
+              FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing,
+                                "#{trainee_type}_at_school_period": at_school_period,
+                                started_on: 1.month.from_now)
             end
 
             it "selects the future training period" do
@@ -409,41 +402,43 @@ RSpec.describe API::Declarations::Create, type: :model do
 
         context "validate declaration types are in sequence order" do
           let(:school_partnership) do
-            FactoryBot.create(
-              :school_partnership,
-              :for_year,
-              year: contract_period_year,
-              school: at_school_period.school
-            )
+            FactoryBot.create(:school_partnership, :for_year,
+                              year: contract_period_year,
+                              school: at_school_period.school)
           end
           let!(:training_period) do
-            FactoryBot.create(
-              :training_period,
-              :"for_#{trainee_type}",
-              :active,
-              "#{trainee_type}_at_school_period": at_school_period,
-              school_partnership:,
-              started_on: at_school_period.started_on,
-              finished_on: 1.week.from_now
-            )
+            FactoryBot.create(:training_period, :"for_#{trainee_type}", :active,
+                              "#{trainee_type}_at_school_period": at_school_period,
+                              school_partnership:,
+                              started_on: at_school_period.started_on,
+                              finished_on: 1.week.from_now)
           end
 
           context "when contract period is 2025" do
             let(:contract_period_year) { 2025 }
 
             context "when theres existing `started` declaration" do
-              let!(:milestone) { FactoryBot.create(:milestone, declaration_type: "completed", schedule:, start_date: Date.new(contract_period_year, 1, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
-              let!(:started_milestone) { FactoryBot.create(:milestone, declaration_type: "started", schedule:, start_date: Date.new(contract_period_year, 1, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
+              let!(:milestone) do
+                FactoryBot.create(:milestone,
+                                  declaration_type: "completed",
+                                  schedule:, start_date: Date.new(contract_period_year, 6, 1),
+                                  milestone_date: Date.new(contract_period_year, 12, 1))
+              end
+              let!(:started_milestone) do
+                FactoryBot.create(:milestone,
+                                  declaration_type: "started",
+                                  schedule:,
+                                  start_date: Date.new(contract_period_year, 6, 1),
+                                  milestone_date: Date.new(contract_period_year, 12, 1))
+              end
 
               # Existing `started` declaration
               let!(:started_declaration) do
-                FactoryBot.create(
-                  :declaration,
-                  declaration_type: :started,
-                  evidence_type: "training-event-attended",
-                  declaration_date: (started_milestone.start_date + 1.month).rfc3339,
-                  training_period:
-                )
+                FactoryBot.create(:declaration,
+                                  declaration_type: :started,
+                                  evidence_type: "training-event-attended",
+                                  declaration_date: (started_milestone.start_date + 1.month).rfc3339,
+                                  training_period:)
               end
 
               # New declaration
@@ -467,18 +462,16 @@ RSpec.describe API::Declarations::Create, type: :model do
             end
 
             context "when theres existing `completed` declaration" do
-              let!(:milestone) { FactoryBot.create(:milestone, declaration_type: "started", schedule:, start_date: Date.new(contract_period_year, 1, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
-              let!(:completed_milestone) { FactoryBot.create(:milestone, declaration_type: "completed", schedule:, start_date: Date.new(contract_period_year, 1, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
+              let!(:milestone) { FactoryBot.create(:milestone, declaration_type: "started", schedule:, start_date: Date.new(contract_period_year, 6, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
+              let!(:completed_milestone) { FactoryBot.create(:milestone, declaration_type: "completed", schedule:, start_date: Date.new(contract_period_year, 6, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
 
               # Existing `completed` declaration
               let!(:completed_declaration) do
-                FactoryBot.create(
-                  :declaration,
-                  declaration_type: :completed,
-                  evidence_type: "75-percent-engagement-met",
-                  declaration_date: (completed_milestone.start_date + 2.months).rfc3339,
-                  training_period:
-                )
+                FactoryBot.create(:declaration,
+                                  declaration_type: :completed,
+                                  evidence_type: "75-percent-engagement-met",
+                                  declaration_date: (completed_milestone.start_date + 2.months).rfc3339,
+                                  training_period:)
               end
 
               # New declaration
@@ -504,30 +497,26 @@ RSpec.describe API::Declarations::Create, type: :model do
             # Mentor has `started` and `completed` only, for ECT we do outside of existing declaration date test
             if trainee_type == :ect
               context "when theres existing `started` and `completed` declarations" do
-                let!(:milestone) { FactoryBot.create(:milestone, declaration_type: "retained-1", schedule:, start_date: Date.new(contract_period_year, 1, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
-                let!(:started_milestone) { FactoryBot.create(:milestone, declaration_type: "started", schedule:, start_date: Date.new(contract_period_year, 1, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
-                let!(:completed_milestone) { FactoryBot.create(:milestone, declaration_type: "completed", schedule:, start_date: Date.new(contract_period_year, 1, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
+                let!(:milestone) { FactoryBot.create(:milestone, declaration_type: "retained-1", schedule:, start_date: Date.new(contract_period_year, 6, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
+                let!(:started_milestone) { FactoryBot.create(:milestone, declaration_type: "started", schedule:, start_date: Date.new(contract_period_year, 6, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
+                let!(:completed_milestone) { FactoryBot.create(:milestone, declaration_type: "completed", schedule:, start_date: Date.new(contract_period_year, 6, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
 
                 # Existing `started` declaration
                 let!(:started_declaration) do
-                  FactoryBot.create(
-                    :declaration,
-                    declaration_type: :started,
-                    evidence_type: "training-event-attended",
-                    declaration_date: Date.new(contract_period_year, 2, 1).rfc3339,
-                    training_period:
-                  )
+                  FactoryBot.create(:declaration,
+                                    declaration_type: :started,
+                                    evidence_type: "training-event-attended",
+                                    declaration_date: Date.new(contract_period_year, 7, 1).rfc3339,
+                                    training_period:)
                 end
 
                 # Existing `completed` declaration
                 let!(:completed_declaration) do
-                  FactoryBot.create(
-                    :declaration,
-                    declaration_type: :completed,
-                    evidence_type: "75-percent-engagement-met",
-                    declaration_date: Date.new(contract_period_year, 6, 1).rfc3339,
-                    training_period:
-                  )
+                  FactoryBot.create(:declaration,
+                                    declaration_type: :completed,
+                                    evidence_type: "75-percent-engagement-met",
+                                    declaration_date: Date.new(contract_period_year, 9, 1).rfc3339,
+                                    training_period:)
                 end
 
                 let(:declaration_type) { "retained-1" }
@@ -560,7 +549,7 @@ RSpec.describe API::Declarations::Create, type: :model do
 
                 context "when `extended-1` is submitted after `completed` declaration dates" do
                   let(:declaration_type) { "extended-1" }
-                  let!(:milestone) { FactoryBot.create(:milestone, declaration_type:, schedule:, start_date: Date.new(contract_period_year, 1, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
+                  let!(:milestone) { FactoryBot.create(:milestone, declaration_type:, schedule:, start_date: Date.new(contract_period_year, 6, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
 
                   # New declaration with declaration date set 1 day after `completed`
                   let(:declaration_date) { (completed_declaration.declaration_date + 1.day).rfc3339 }
@@ -575,8 +564,8 @@ RSpec.describe API::Declarations::Create, type: :model do
             let(:contract_period_year) { 2024 }
 
             context "when `completed` is submitted before `started` declaration date" do
-              let!(:milestone) { FactoryBot.create(:milestone, declaration_type: "completed", schedule:, start_date: Date.new(contract_period_year, 1, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
-              let!(:started_milestone) { FactoryBot.create(:milestone, declaration_type: "started", schedule:, start_date: Date.new(contract_period_year, 1, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
+              let!(:milestone) { FactoryBot.create(:milestone, declaration_type: "completed", schedule:, start_date: Date.new(contract_period_year, 6, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
+              let!(:started_milestone) { FactoryBot.create(:milestone, declaration_type: "started", schedule:, start_date: Date.new(contract_period_year, 6, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
 
               # Existing `started` declaration
               let!(:started_declaration) do
@@ -584,7 +573,7 @@ RSpec.describe API::Declarations::Create, type: :model do
                   :declaration,
                   declaration_type: :started,
                   evidence_type: "training-event-attended",
-                  declaration_date: Date.new(contract_period_year, 6, 1).rfc3339,
+                  declaration_date: Date.new(contract_period_year, 8, 1).rfc3339,
                   training_period:
                 )
               end
@@ -598,8 +587,8 @@ RSpec.describe API::Declarations::Create, type: :model do
             end
 
             context "when `started` is submitted after `completed` declaration date" do
-              let!(:milestone) { FactoryBot.create(:milestone, declaration_type: "started", schedule:, start_date: Date.new(contract_period_year, 1, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
-              let!(:completed_milestone) { FactoryBot.create(:milestone, declaration_type: "completed", schedule:, start_date: Date.new(contract_period_year, 1, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
+              let!(:milestone) { FactoryBot.create(:milestone, declaration_type: "started", schedule:, start_date: Date.new(contract_period_year, 6, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
+              let!(:completed_milestone) { FactoryBot.create(:milestone, declaration_type: "completed", schedule:, start_date: Date.new(contract_period_year, 6, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
 
               # Existing `started` declaration
               let!(:completed_declaration) do
@@ -607,7 +596,7 @@ RSpec.describe API::Declarations::Create, type: :model do
                   :declaration,
                   declaration_type: :completed,
                   evidence_type: "75-percent-engagement-met",
-                  declaration_date: Date.new(contract_period_year, 3, 1).rfc3339,
+                  declaration_date: Date.new(contract_period_year, 8, 1).rfc3339,
                   training_period:
                 )
               end
@@ -634,7 +623,11 @@ RSpec.describe API::Declarations::Create, type: :model do
 
         context "when invalid" do
           let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :ongoing) }
-          let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on) }
+          let!(:training_period) do
+            FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing,
+                              "#{trainee_type}_at_school_period": at_school_period,
+                              started_on: at_school_period.started_on)
+          end
           let(:teacher_api_id) { SecureRandom.uuid }
 
           it { expect(instance.create).to be(false) }
@@ -642,8 +635,19 @@ RSpec.describe API::Declarations::Create, type: :model do
         end
 
         context "when valid" do
-          let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: 6.months.ago, finished_on: 2.weeks.from_now) }
-          let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :active, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on) }
+          let(:at_school_period) do
+            FactoryBot.create(:"#{trainee_type}_at_school_period",
+                              started_on: 6.months.ago,
+                              finished_on: 2.weeks.from_now)
+          end
+          let!(:training_period) do
+            FactoryBot.create(:training_period, :"for_#{trainee_type}", :active,
+                              "#{trainee_type}_at_school_period": at_school_period,
+                              school_partnership:,
+                              started_on: at_school_period.started_on,
+                              finished_on: at_school_period.finished_on)
+          end
+
           let(:service) { instance_double(Declarations::Create) }
           let!(:payment_statement) { FactoryBot.create(:statement, :open, active_lead_provider:, deadline_date: 1.month.from_now) }
           let!(:mentorship_period) do

@@ -15,13 +15,15 @@ class Milestone < ApplicationRecord
 
   belongs_to :schedule
 
+  # Validations
   validates :schedule_id, presence: { message: "Choose a schedule" }
-
-  validates :start_date,
-            presence: { message: "Enter a start date" }
+  validates :start_date, presence: { message: "Enter a start date" }
 
   validates :milestone_date,
-            comparison: { greater_than: :start_date, message: "Milestone date must be after the start date" },
+            comparison: {
+              greater_than: :start_date,
+              message: "Milestone date must be after the start date"
+            },
             if: -> { start_date.present? },
             allow_nil: true
 
@@ -30,6 +32,21 @@ class Milestone < ApplicationRecord
               message: "Can be used once per schedule",
               scope: :schedule_id
             }
+  validate :start_date_within_contract_period,
+           if: -> { start_date.present? }
 
   scope :in_declaration_order, -> { order(declaration_type: "asc") }
+
+private
+
+  # NB: Contract periods typically start on 15th June, 2 weeks after the milestone start date.
+  def start_date_within_contract_period
+    return unless schedule&.contract_period
+
+    contract_start = Date.new(schedule.contract_period_year, 6, 1)
+
+    return if start_date >= contract_start
+
+    errors.add(:start_date, "The start date must be on or after the #{contract_start.to_fs(:govuk)}")
+  end
 end

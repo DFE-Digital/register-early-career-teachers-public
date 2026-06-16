@@ -307,14 +307,16 @@ RSpec.describe "Moving School - backdated start spec" do
 
     @alp_current_year = FactoryBot.create(
       :active_lead_provider,
-      lead_provider: @orange_institute_lead_provider,
-      contract_period_year: @current_contract_year
+      :for_year,
+      year: @current_contract_year,
+      lead_provider: @orange_institute_lead_provider
     )
 
     @alp_previous_year = FactoryBot.create(
       :active_lead_provider,
-      lead_provider: @orange_institute_lead_provider,
-      contract_period_year: @previous_contract_year
+      :for_year,
+      year: @previous_contract_year,
+      lead_provider: @orange_institute_lead_provider
     )
 
     @lpdp_current_year = FactoryBot.create(

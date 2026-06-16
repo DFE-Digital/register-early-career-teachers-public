@@ -63,7 +63,7 @@ RSpec.describe "Admin finance milestones", type: :request do
   describe "POST /admin/finance/contract-periods/:contract_period_id/schedules/:schedule_id/milestones/:id", :enable_finance_contract_periods do
     let(:index_path) { admin_contract_period_schedule_milestones_path(contract_period, schedule) }
 
-    let(:start_date) { Time.zone.now }
+    let(:start_date) { 1.day.after(contract_period.started_on) }
     let(:params) do
       {
         contract_period_id: contract_period.id,

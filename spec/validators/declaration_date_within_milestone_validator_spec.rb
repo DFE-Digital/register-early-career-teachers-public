@@ -15,14 +15,15 @@ RSpec.describe DeclarationDateWithinMilestoneValidator, type: :model do
     end
   end
 
-  let(:declaration_date) { Date.new(2022, 1, 30) }
-  let(:start_date) { Date.new(2022, 1, 29) }
-  let(:milestone_date) { Date.new(2022, 1, 31) }
-
-  let!(:milestone) { FactoryBot.create(:milestone, start_date:, milestone_date:) }
+  let(:declaration_date) { Date.new(contract_period.year, 7, 30) }
+  let(:start_date) { Date.new(contract_period.year, 7, 29) }
+  let(:milestone_date) { Date.new(contract_period.year, 7, 31) }
+  let(:contract_period) { FactoryBot.create(:contract_period, :current) }
+  let(:schedule) { FactoryBot.create(:schedule, contract_period:) }
+  let!(:milestone) { FactoryBot.create(:milestone, schedule:, start_date:, milestone_date:) }
 
   context "when before the milestone start" do
-    let(:declaration_date) { Date.new(2022, 1, 28) }
+    let(:declaration_date) { Date.new(contract_period.year, 7, 28) }
 
     it { is_expected.to have_error(:declaration_date, "Declaration date must be on or after the milestone start date for the same declaration type.") }
   end

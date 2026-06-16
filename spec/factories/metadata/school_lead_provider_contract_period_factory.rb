@@ -9,7 +9,7 @@ FactoryBot.define do
     end
 
     initialize_with do
-      Metadata::SchoolLeadProviderContractPeriod.find_or_create_by(school:, contract_period:, lead_provider:)
+      Metadata::SchoolLeadProviderContractPeriod.find_or_initialize_by(school:, contract_period:, lead_provider:)
     end
 
     updated_at { Faker::Time.between(from: 1.month.ago, to: Time.zone.now) }
