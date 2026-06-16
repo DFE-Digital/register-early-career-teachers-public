@@ -13,6 +13,7 @@ RSpec.describe Contract::BandedFeeStructure, type: :model do
     it { is_expected.to validate_presence_of(:uplift_fee_per_declaration).with_message("Uplift fee per declaration is required") }
     it { is_expected.to validate_numericality_of(:uplift_fee_per_declaration).is_greater_than_or_equal_to(0).with_message("Uplift fee per declaration must be greater than or equal to zero") }
 
+    it { is_expected.to validate_numericality_of(:uplift_target_ratio).is_greater_than_or_equal_to(0).is_less_than_or_equal_to(1).with_message("Uplift target ratio must be between 0 and 1").allow_nil }
     it { is_expected.to validate_numericality_of(:monthly_service_fee).is_greater_than_or_equal_to(0).with_message("Monthly service fee must be greater than or equal to zero").allow_nil }
 
     it { is_expected.to validate_presence_of(:setup_fee).with_message("Setup fee is required") }

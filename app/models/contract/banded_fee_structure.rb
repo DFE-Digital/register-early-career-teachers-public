@@ -25,6 +25,13 @@ class Contract::BandedFeeStructure < ApplicationRecord
               greater_than_or_equal_to: 0,
               message: "Uplift fee per declaration must be greater than or equal to zero"
             }
+  validates :uplift_target_ratio,
+            numericality: {
+              greater_than_or_equal_to: 0,
+              less_than_or_equal_to: 1,
+              message: "Uplift target ratio must be between 0 and 1",
+              allow_nil: true
+            }
   validates :monthly_service_fee,
             numericality: {
               greater_than_or_equal_to: 0,

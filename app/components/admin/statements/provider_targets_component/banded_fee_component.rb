@@ -1,7 +1,6 @@
 module Admin::Statements
   class ProviderTargetsComponent::BandedFeeComponent < ApplicationComponent
     REVISED_RECRUITMENT_TARGET_MULTIPLIER = 1.5
-    UPLIFT_TARGET_PERCENTAGE = 33
 
     def initialize(contract:)
       @contract = contract
@@ -25,7 +24,7 @@ module Admin::Statements
           if display_uplifts?
             summary_list.with_row do |row|
               row.with_key(text: "Uplift target")
-              row.with_value(text: number_to_percentage(UPLIFT_TARGET_PERCENTAGE, precision: 0))
+              row.with_value(text: number_to_percentage(uplift_target_percentage, precision: 0))
             end
 
             summary_list.with_row do |row|
@@ -89,7 +88,9 @@ module Admin::Statements
     end
 
     def recruitment_target = banded_fee_structure.recruitment_target
-    def display_uplifts? = contract.ecf_contract_type?
+    def display_uplifts? = contract.ecf_contract_type? && uplift_target_ratio.present?
+    def uplift_target_ratio = banded_fee_structure.uplift_target_ratio
+    def uplift_target_percentage = uplift_target_ratio * 100
     def uplift_amount = banded_fee_structure.uplift_fee_per_declaration
     def setup_fee = banded_fee_structure.setup_fee
     def bands = banded_fee_structure.bands
