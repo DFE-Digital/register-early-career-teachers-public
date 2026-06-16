@@ -385,6 +385,48 @@ describe Teacher do
       end
     end
 
+    describe "anonymisation" do
+      context "when both anonymisation_reason and anonymised_at are present" do
+        subject { FactoryBot.build(:teacher, anonymisation_reason: "registered_in_error", anonymised_at: Time.zone.now) }
+
+        it { is_expected.to be_valid }
+      end
+
+      context "when both anonymisation_reason and anonymised_at are blank" do
+        subject { FactoryBot.build(:teacher, anonymisation_reason: nil, anonymised_at: nil) }
+
+        it { is_expected.to be_valid }
+      end
+
+      context "when anonymised_at is present but anonymisation_reason is missing" do
+        subject { FactoryBot.build(:teacher, anonymisation_reason: nil, anonymised_at: Time.zone.now) }
+
+        it "has a validation error on anonymisation_reason" do
+          expect(subject).to have_error(:anonymisation_reason)
+        end
+      end
+
+      context "when anonymisation_reason is present but anonymised_at is missing" do
+        subject { FactoryBot.build(:teacher, anonymisation_reason: "registered_in_error", anonymised_at: nil) }
+
+        it "has a validation error on anonymised_at" do
+          expect(subject).to have_error(:anonymised_at)
+        end
+      end
+
+      describe "anonymisation_reason enum" do
+        it "accepts registered_in_error" do
+          teacher = FactoryBot.build(:teacher, anonymisation_reason: "registered_in_error", anonymised_at: Time.zone.now)
+
+          expect(teacher).to be_valid
+        end
+
+        it "raises an ArgumentError for an invalid value" do
+          expect { FactoryBot.build(:teacher, anonymisation_reason: "invalid_reason") }.to raise_error(ArgumentError)
+        end
+      end
+    end
+
     describe ".ect_first_became_eligible_for_training_at, .mentor_first_became_eligible_for_training_at" do
       context "when not yet set" do
         subject { FactoryBot.create(:teacher, ect_first_became_eligible_for_training_at: nil, mentor_first_became_eligible_for_training_at: nil) }
