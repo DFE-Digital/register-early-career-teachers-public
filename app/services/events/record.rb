@@ -142,6 +142,14 @@ module Events
 
     # Teacher Status Events
 
+    def self.record_undo_registration_event!(author:, teacher:, reason:, happened_at: Time.zone.now)
+      event_type = :teacher_registration_undone
+      heading = "Teacher #{teacher.id} registration was undone"
+      body = "Teacher registration was undone. Reason: #{reason}"
+
+      new(event_type:, author:, teacher:, heading:, body:, happened_at:).record_event!
+    end
+
     def self.record_teacher_passes_induction_event!(author:, appropriate_body_period:, induction_period:, ect_at_school_period:, mentorship_period:, training_period:, teacher:, body: nil, zendesk_ticket_id: nil)
       fail(NoInductionPeriod) unless induction_period
 
