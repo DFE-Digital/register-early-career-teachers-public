@@ -121,6 +121,15 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::Eligibili
     end
   end
 
+  context "when the training period ends today" do
+    let(:started_on) { today.prev_year }
+    let(:finished_on) { today }
+
+    it "is eligible" do
+      expect(eligibility).to be_eligible
+    end
+  end
+
   context "when there is only one future period and no current active period" do
     let(:started_on) { today.next_month }
 
