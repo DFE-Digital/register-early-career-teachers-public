@@ -8,9 +8,9 @@ module Admin
       include WizardStoreRescuable
 
       before_action :set_school
+      before_action :reset_store_on_entry
       before_action :initialize_wizard
       before_action :check_allowed_step
-      before_action :reset_store_on_entry
 
       def new
         render current_step
