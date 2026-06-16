@@ -57,7 +57,7 @@ module Admin
           def selected_contract_period
             return if store.contract_period_year.blank?
 
-            @selected_contract_period ||= ContractPeriod.find_by(year: store.contract_period_year)
+            @selected_contract_period ||= contract_periods.find_by(year: store.contract_period_year)
           end
 
           def school_partnerships
