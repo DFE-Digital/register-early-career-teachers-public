@@ -78,6 +78,18 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
       expect(response.body).to include("Select a new contract period")
     end
 
+    it "validates the selected contract period is available" do
+      unavailable_contract_period = FactoryBot.create(:contract_period, year: 2027, enabled: false)
+
+      post(
+        path_for_step("select-contract-period"),
+        params: { select_contract_period: { contract_period_year: unavailable_contract_period.year } }
+      )
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("Select a new contract period")
+    end
+
     it "redirects to select partnership when the selection is valid" do
       post(
         path_for_step("select-contract-period"),
