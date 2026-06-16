@@ -50,22 +50,6 @@ RSpec.describe TrainingPeriods::RelatedPeriods do
         finished_on: historical_finished_on
       )
     end
-    let(:future_ect_at_school_period) do
-      FactoryBot.create(
-        :ect_at_school_period,
-        teacher:,
-        started_on: future_start,
-        finished_on: future_start.next_month
-      )
-    end
-    let(:later_future_ect_at_school_period) do
-      FactoryBot.create(
-        :ect_at_school_period,
-        teacher:,
-        started_on: future_start.months_since(2),
-        finished_on: nil
-      )
-    end
     let!(:historical_period) do
       FactoryBot.create(
         :training_period,
@@ -75,6 +59,15 @@ RSpec.describe TrainingPeriods::RelatedPeriods do
         finished_on: historical_finished_on
       )
     end
+
+    let(:future_ect_at_school_period) do
+      FactoryBot.create(
+        :ect_at_school_period,
+        teacher:,
+        started_on: future_start,
+        finished_on: future_start.next_month
+      )
+    end
     let!(:future_period) do
       FactoryBot.create(
         :training_period,
@@ -82,6 +75,15 @@ RSpec.describe TrainingPeriods::RelatedPeriods do
         ect_at_school_period: future_ect_at_school_period,
         started_on: future_start,
         finished_on: future_start.next_month
+      )
+    end
+
+    let(:later_future_ect_at_school_period) do
+      FactoryBot.create(
+        :ect_at_school_period,
+        teacher:,
+        started_on: future_start.months_since(2),
+        finished_on: nil
       )
     end
     let!(:later_future_period) do
