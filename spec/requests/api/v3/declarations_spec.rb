@@ -55,12 +55,15 @@ RSpec.describe "Declarations API", :with_metadata, :with_touches, type: :request
     let(:path) { api_v3_declarations_path }
     let(:service) { API::Declarations::Create }
     let(:resource_type) { Declaration }
+    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, :for_year, year: 2024) }
     let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
     let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
     let(:teacher) { FactoryBot.create(:teacher) }
     let(:schedule) { FactoryBot.create(:schedule, contract_period: school_partnership.contract_period) }
     let(:milestone) { FactoryBot.create(:milestone, declaration_type: :started, schedule:) }
-    let(:declaration_date) { Faker::Date.between(from: milestone.start_date, to: milestone.milestone_date) }
+    let(:declaration_date) do
+      Faker::Date.between(from: milestone.start_date, to: milestone.milestone_date)
+    end
 
     let(:service_args) do
       {
@@ -91,8 +94,20 @@ RSpec.describe "Declarations API", :with_metadata, :with_touches, type: :request
 
     %i[ect mentor].each do |teacher_type|
       context "for #{teacher_type}" do
-        let(:at_school_period) { FactoryBot.create(:"#{teacher_type}_at_school_period", started_on: 6.months.ago, finished_on: 2.weeks.from_now, teacher:) }
-        let!(:training_period) { FactoryBot.create(:training_period, :"for_#{teacher_type}", :active, "#{teacher_type}_at_school_period": at_school_period, started_on: at_school_period.started_on.tomorrow, finished_on: at_school_period.finished_on, school_partnership:, schedule:) }
+        let(:at_school_period) do
+          FactoryBot.create(:"#{teacher_type}_at_school_period",
+                            started_on: 6.months.ago,
+                            finished_on: 2.weeks.from_now,
+                            teacher:)
+        end
+        let!(:training_period) do
+          FactoryBot.create(:training_period, :"for_#{teacher_type}", :active,
+                            "#{teacher_type}_at_school_period": at_school_period,
+                            started_on: at_school_period.started_on.tomorrow,
+                            finished_on: at_school_period.finished_on,
+                            school_partnership:,
+                            schedule:)
+        end
         let(:course_identifier) { teacher_type == :ect ? "ecf-induction" : "ecf-mentor" }
         let(:teacher_type) { teacher_type }
 

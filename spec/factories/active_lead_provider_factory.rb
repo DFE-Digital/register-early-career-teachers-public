@@ -8,7 +8,9 @@ FactoryBot.define do
     end
 
     trait :for_year do
-      transient { year { 2025 } }
+      transient do
+        year { 2025 }
+      end
       contract_period { association :contract_period, year: }
     end
   end

@@ -129,6 +129,10 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
           )
         end
 
+        before do
+          school_partnership.contract_period.update!(uplift_fees_enabled: true)
+        end
+
         it { expect(ecf_enrolments.count).to eq(2) }
 
         describe "ECT enrolment" do
