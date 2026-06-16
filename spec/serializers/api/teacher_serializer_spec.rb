@@ -108,7 +108,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
           FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:)
         end
         let(:school) { school_partnership.school }
-        let!(:school_funding_eligibility) { FactoryBot.create(:school_funding_eligibility, school:, contract_period: school_partnership.contract_period) }
+        let!(:school_funding_eligibility) { FactoryBot.create(:school_funding_eligibility, gias_school: school.gias_school, contract_period: school_partnership.contract_period) }
 
         let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on: 2.months.ago, finished_on: nil) }
         let!(:ect_training_period) { FactoryBot.create(:training_period, :for_ect, started_on: 1.month.ago, ect_at_school_period:, school_partnership:) }
@@ -347,7 +347,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
 
               FactoryBot.create(
                 :school_funding_eligibility,
-                school: ect_at_school_period.school,
+                gias_school: ect_at_school_period.school.gias_school,
                 contract_period: contract_period_2024
               )
             end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_09_102349) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_12_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -624,11 +624,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_102349) do
   create_table "school_funding_eligibilities", force: :cascade do |t|
     t.integer "contract_period_year", null: false
     t.datetime "created_at", null: false
+    t.bigint "gias_school_urn", null: false
     t.boolean "pupil_premium_uplift", default: false, null: false
-    t.bigint "school_urn", null: false
+    t.bigint "school_urn"
     t.boolean "sparsity_uplift", default: false, null: false
     t.datetime "updated_at", null: false
     t.index ["contract_period_year"], name: "index_school_funding_eligibilities_on_contract_period_year"
+    t.index ["gias_school_urn"], name: "index_school_funding_eligibilities_on_gias_school_urn"
     t.index ["school_urn"], name: "index_school_funding_eligibilities_on_school_urn"
   end
 
@@ -995,6 +997,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_102349) do
   add_foreign_key "regions", "appropriate_bodies"
   add_foreign_key "schedules", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "school_funding_eligibilities", "contract_periods", column: "contract_period_year", primary_key: "year"
+  add_foreign_key "school_funding_eligibilities", "gias_schools", column: "gias_school_urn", primary_key: "urn"
   add_foreign_key "school_funding_eligibilities", "schools", column: "school_urn", primary_key: "urn"
   add_foreign_key "school_partnerships", "schools"
   add_foreign_key "schools", "appropriate_body_periods", column: "last_chosen_appropriate_body_id"

@@ -17,6 +17,7 @@ class GIAS::School < ApplicationRecord
 
   # Associations
   has_one :school, foreign_key: :urn, primary_key: :urn, inverse_of: :gias_school
+  has_many :school_funding_eligibilities, foreign_key: :gias_school_urn, primary_key: :urn, inverse_of: :gias_school
   has_many :gias_school_links, class_name: "GIAS::SchoolLink", foreign_key: :urn, dependent: :destroy, inverse_of: :from_gias_school
   has_many :contract_period_metadata, class_name: "Metadata::SchoolContractPeriod", through: :school
 
