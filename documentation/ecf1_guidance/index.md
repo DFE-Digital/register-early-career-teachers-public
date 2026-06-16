@@ -1,5 +1,6 @@
-[!IMPORTANT]
-This is a copy of the legacy ECF1 API Guidance
+> [!IMPORTANT]
+> This is a copy of the legacy ECF1 API Guidance
+
 
 # About the API
 
