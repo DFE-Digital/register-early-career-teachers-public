@@ -1,4 +1,4 @@
-RSpec.describe TrainingPeriods::PeriodRelationships do
+RSpec.describe TrainingPeriods::RelatedPeriods do
   subject(:relationships) { described_class.new(training_period:) }
 
   let(:today) { Date.new(2026, 2, 1) }

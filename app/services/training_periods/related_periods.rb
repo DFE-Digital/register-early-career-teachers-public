@@ -1,5 +1,5 @@
 module TrainingPeriods
-  class PeriodRelationships
+  class RelatedPeriods
     attr_reader :training_period
 
     def initialize(training_period:)
