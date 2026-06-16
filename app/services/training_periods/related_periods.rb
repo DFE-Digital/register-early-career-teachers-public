@@ -11,7 +11,7 @@ module TrainingPeriods
     end
 
     def future_periods
-      @future_periods ||= related_periods
+      related_periods
         .started_after(Time.zone.today)
         .earliest_first
     end
