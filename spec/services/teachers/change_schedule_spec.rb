@@ -89,6 +89,57 @@ RSpec.describe Teachers::ChangeSchedule do
           end
         end
 
+        if trainee_type == :ect
+          context "when the trainee has completed training" do
+            let(:training_period_finished_on) { 5.days.ago.to_date }
+            let!(:induction_period) { FactoryBot.create(:induction_period, :pass, teacher:) }
+
+            before do
+              teacher.update!(trs_induction_completed_date: 5.days.ago)
+            end
+
+            context "when the new schedule is a reduced schedule" do
+              let(:new_schedule) { FactoryBot.create(:schedule, identifier: "ecf-reduced-april", contract_period: new_contract_period) }
+
+              it "does not add a new training period" do
+                expect { service.change_schedule }.not_to change(TrainingPeriod, :count)
+              end
+
+              it "updates the existing training_period with the new schedule" do
+                service.change_schedule
+                expect(training_period.schedule).to eq new_schedule
+              end
+
+              it "doesn't alter the finished_on date of the training_period" do
+                service.change_schedule
+                expect(training_period.finished_on).to eq training_period_finished_on
+              end
+            end
+
+            # NOTE: this case is caught in the API::Teachers::ChangeSchedule but not in this service
+            #       If an ECT who has completed training should not change schedule to anything but
+            #       a reduced schedule - should this be handled here?
+            #
+            context "when the new schedule is not a reduced schedule" do
+              let(:new_schedule) { FactoryBot.create(:schedule, identifier: "ecf-extended-april", contract_period: new_contract_period) }
+
+              it "adds a new training period" do
+                expect { service.change_schedule }.to change(TrainingPeriod, :count).by(1)
+              end
+
+              it "updates the new training_period with the new schedule" do
+                service.change_schedule
+                expect(training_period.siblings.last.schedule).to eq new_schedule
+              end
+
+              it "doesn't alter the finished_on date of the original training_period" do
+                service.change_schedule
+                expect(training_period.finished_on).to eq training_period_finished_on
+              end
+            end
+          end
+        end
+
         context "event recording" do
           it "records a teacher changes schedule training period event" do
             freeze_time do
