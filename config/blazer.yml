@@ -12,6 +12,7 @@ data_sources:
       batch_status: ['pending', 'processing', 'processed', 'completing', 'completed', 'failed']
       batch_type: ['action', 'claim']
       urn: "SELECT urn, CONCAT(name, ' (', urn, ')') FROM gias_schools ORDER BY name ASC"
+      active_lead_provider_id: "SELECT active_lead_providers.id, lead_providers.name FROM active_lead_providers JOIN lead_providers ON lead_providers.id=active_lead_providers.lead_provider_id ORDER BY lead_providers.name ASC"
 
     # https://blazer.dokkuapp.com/queries/2-smart-column
     smart_columns:
@@ -19,6 +20,7 @@ data_sources:
       appropriate_body_period_id: "SELECT id, name FROM appropriate_body_periods WHERE id IN {value}"
       teacher_id: "SELECT id, CONCAT(trs_first_name, ' ', trs_last_name) AS full_name FROM teachers WHERE id IN {value}"
       urn: "SELECT urn, CONCAT(name, ' (', urn, ')') FROM gias_schools WHERE urn IN {value}"
+      active_lead_provider_id: "SELECT active_lead_providers.id, lead_providers.name FROM active_lead_providers JOIN lead_providers ON lead_providers.id=active_lead_providers.lead_provider_id WHERE active_lead_providers.id IN {value}"
 
     # https://blazer.dokkuapp.com/queries/3-linked-column
     linked_columns:
@@ -28,6 +30,7 @@ data_sources:
       induction_period_id: "/admin/teachers/N/induction-periods/{value}/edit"
       zendesk_ticket_id: "https://becomingateacher.zendesk.com/agent/tickets/{value}"
       urn: "/admin/schools/{value}/overview"
+      active_lead_provider_id: "/admin" # TODO: target show page once added
 
 # statement timeout, in seconds
 # none by default

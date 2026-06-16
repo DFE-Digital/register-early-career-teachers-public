@@ -67,6 +67,11 @@ end
     name: "TRS deactivated",
     statement: "SELECT id AS teacher_id, trs_deactivated FROM teachers WHERE trs_deactivated=true",
     description: "TRS syncing has flagged deactivated records"
+  },
+  {
+    name: "Contract band capacities",
+    statement: "SELECT id, active_lead_provider_id, min_declarations, max_declarations FROM contract_band_capacities ORDER BY active_lead_provider_id, min_declarations",
+    description: "new data model"
   }
 ].each do |query|
   create_query(creator: user_manager, **query)
