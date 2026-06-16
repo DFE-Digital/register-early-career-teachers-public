@@ -23,7 +23,7 @@ module Admin
         private
 
           def relationships
-            @relationships ||= ::TrainingPeriods::PeriodRelationships.new(training_period:)
+            @relationships ||= ::TrainingPeriods::RelatedPeriods.new(training_period:)
           end
 
           def current_active_period
