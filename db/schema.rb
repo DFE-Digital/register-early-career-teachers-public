@@ -179,6 +179,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_29_150700) do
     t.decimal "setup_fee", precision: 12, scale: 2, null: false
     t.datetime "updated_at", null: false
     t.decimal "uplift_fee_per_declaration", precision: 12, scale: 2, null: false
+    t.decimal "uplift_target_ratio", precision: 5, scale: 4
     t.index ["contract_id"], name: "index_banded_fee_structures_on_contract_id_unique_not_null", unique: true, where: "(contract_id IS NOT NULL)"
     t.index ["contract_id"], name: "index_contract_banded_fee_structures_on_contract_id"
   end
