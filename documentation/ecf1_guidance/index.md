@@ -1,3 +1,6 @@
+[!IMPORTANT]
+This is a copy of the legacy ECF1 API Guidance
+
 # About the API
 
 Lead providers must use this API to view, submit and update participant data so they receive accurate payments from Department for Education (DfE) for their early career training programme.
