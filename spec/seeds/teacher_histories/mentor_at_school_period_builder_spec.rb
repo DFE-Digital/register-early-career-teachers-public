@@ -12,16 +12,19 @@ describe TeacherHistories::MentorAtSchoolPeriodBuilder do
   let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
   let!(:school_partnership) { FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:) }
 
+  let(:random_uuid) { SecureRandom.uuid }
+
   describe "adding training periods" do
     subject { teacher.mentor_at_school_periods[0].training_periods[0] }
 
     let(:teacher) do
       school_inner = school
       lead_provider_inner = lead_provider
+      random_uuid_inner = random_uuid
 
       TeacherHistories::TeacherBuilder.teacher(trn, full_name) do
         mentor_at_school_period(school_inner, "2024-01-01 -> 2025-03-03") do
-          training_period(lead_provider_inner, 2025, "2024-01-03 -> 2025-03-01")
+          training_period(lead_provider_inner, 2025, "2024-01-03 -> 2025-03-01", ecf_end_induction_record_id: random_uuid_inner)
         end
       end
     end
