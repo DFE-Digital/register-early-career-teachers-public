@@ -11,7 +11,7 @@ module Schools
   private
 
     def all_schools
-      School.joins(:gias_school)
+      School.includes(:gias_school)
     end
 
     def query
