@@ -144,7 +144,6 @@ shared:
     - opted_out_of_reminder_emails_until
   :school_funding_eligibilities:
     - id
-    - school_urn
     - gias_school_urn
     - contract_period_year
     - pupil_premium_uplift
