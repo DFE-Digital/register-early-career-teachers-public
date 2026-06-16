@@ -61,6 +61,12 @@ namespace :admin do
         resource :partnership, only: %i[new create], controller: :training_partnerships do
           get :no_other_partnerships, path: "no-other-partnerships"
         end
+
+        namespace :change_contract_period_wizard,
+                  path: "contract-period/change",
+                  controller: "/admin/teachers/training_periods/change_contract_period_wizard" do
+          concerns :wizardable, wizard: Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard
+        end
       end
     end
     resources :induction_periods, only: %i[new create edit update destroy], path: "induction-periods" do
