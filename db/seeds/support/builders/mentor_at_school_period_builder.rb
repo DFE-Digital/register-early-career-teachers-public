@@ -12,7 +12,7 @@ module TeacherHistories
 
     def base_indent_level = 4
 
-    def training_period(lead_provider, contract_period, dates, &block)
+    def training_period(lead_provider, contract_period, dates, **kwargs, &block)
       started_on, finished_on = extract_date(dates)
 
       training_period = FactoryBot.build(
@@ -21,6 +21,7 @@ module TeacherHistories
         mentor_at_school_period:,
         started_on:,
         finished_on:,
+        **kwargs,
         **provider_data(lead_provider:, contract_period:)
       )
 
