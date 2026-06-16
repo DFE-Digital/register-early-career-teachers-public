@@ -116,10 +116,6 @@ RSpec.describe Teachers::ChangeSchedule do
               end
             end
 
-            # NOTE: this case is caught in the API::Teachers::ChangeSchedule but not in this service
-            #       If an ECT who has completed training should not change schedule to anything but
-            #       a reduced schedule - should this be handled here?
-            #
             context "when the new schedule is not a reduced schedule" do
               let(:new_schedule) { FactoryBot.create(:schedule, identifier: "ecf-extended-april", contract_period: new_contract_period) }
 
