@@ -21,7 +21,11 @@ class ApplicationController < ActionController::Base
   end
 
   def set_sentry_user
-    Sentry.set_user(email: current_user&.email)
+    Sentry.set_user(
+      email: current_user&.email,
+      id: current_user.try(:id),
+      dfe_sign_in_user_id: current_user.try(:dfe_sign_in_user_id)
+    )
   end
 
 private
@@ -37,5 +41,6 @@ private
     super
     payload[:current_user_class] = current_user&.class&.name
     payload[:current_user_id] = current_user.try(:id)
+    payload[:current_user_dfe_sign_in_user_id] = current_user.try(:dfe_sign_in_user_id)
   end
 end
