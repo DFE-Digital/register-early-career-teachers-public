@@ -160,11 +160,16 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::Eligibili
     let(:current_finished_on) { started_on.yesterday }
 
     before do
+      training_period
       current_training_period
     end
 
     it "is eligible" do
       expect(eligibility).to be_eligible
+    end
+
+    it "does not make the current active period eligible" do
+      expect(described_class.new(training_period: current_training_period)).not_to be_eligible
     end
   end
 
