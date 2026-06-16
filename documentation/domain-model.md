@@ -110,12 +110,11 @@ erDiagram
     integer id
     integer contract_period_year
     datetime created_at
+    integer gias_school_urn
     boolean pupil_premium_uplift
-    integer school_urn
     boolean sparsity_uplift
     datetime updated_at
   }
-  SchoolFundingEligibility }o--|| School : belongs_to
   SchoolFundingEligibility }o--|| ContractPeriod : belongs_to
   School {
     integer id
