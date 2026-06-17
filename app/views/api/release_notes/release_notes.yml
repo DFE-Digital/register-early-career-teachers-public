@@ -26,6 +26,7 @@
   tags:
     - new-feature
     - production-release
+    - sandbox-release
   body: |
     Lead providers can now move ECTs who’ve completed induction to a reduced schedule where appropriate.
 
