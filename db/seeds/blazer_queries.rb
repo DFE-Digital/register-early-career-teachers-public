@@ -69,8 +69,8 @@ end
     description: "TRS syncing has flagged deactivated records"
   },
   {
-    name: "Contract band capacities",
-    statement: "SELECT id, active_lead_provider_id, min_declarations, max_declarations FROM contract_band_capacities ORDER BY active_lead_provider_id, min_declarations",
+    name: "Contract bands",
+    statement: "SELECT * FROM contract_bands ORDER BY active_lead_provider_id, allocation_order",
     description: "new data model"
   }
 ].each do |query|

@@ -5,10 +5,9 @@ class Contract::BandedFeeStructure::Band < ApplicationRecord
   belongs_to :banded_fee_structure,
              class_name: "Contract::BandedFeeStructure"
 
-  # TODO: enforce "null: false" for contract_band_capacity_id and remove optional
-  # TODO: rename to "capacity" after deprecating the instance method
-  belongs_to :contract_band_capacity,
-             class_name: "Contract::BandCapacity",
+  # TODO: enforce "null: false" for contract_band_id and remove optional
+  belongs_to :contract_band,
+             class_name: "Contract::Band",
              optional: true
 
   # Validations
@@ -109,7 +108,7 @@ private
         .to_a
         .push(self)
 
-    attributes_to_ignore = %w[id banded_fee_structure_id created_at updated_at contract_band_capacity_id].freeze
+    attributes_to_ignore = %w[id banded_fee_structure_id created_at updated_at contract_band_id].freeze
     unique_bands_by_index = bands_for_active_lead_provider
       .group_by { it.banded_fee_structure.bands.index(it) || it.banded_fee_structure.bands.count }
       .transform_values { |bands| bands.map { it.attributes.except(*attributes_to_ignore) }.uniq }

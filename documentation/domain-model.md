@@ -10,10 +10,10 @@ erDiagram
     decimal output_fee_ratio
     decimal service_fee_ratio
     datetime updated_at
-    integer contract_band_capacity_id
+    integer contract_band_id
   }
   Contract_BandedFeeStructure_Band }o--|| Contract_BandedFeeStructure : belongs_to
-  Contract_BandedFeeStructure_Band }o--|| Contract_BandCapacity : belongs_to
+  Contract_BandedFeeStructure_Band }o--|| Contract_Band : belongs_to
   Contract_FlatRateFeeStructure {
     integer id
     integer contract_id
@@ -34,15 +34,15 @@ erDiagram
     decimal uplift_fee_per_declaration
   }
   Contract_BandedFeeStructure }o--|| Contract : belongs_to
-  Contract_BandCapacity {
+  Contract_Band {
     integer id
     integer active_lead_provider_id
-    integer min_declarations
-    integer max_declarations
+    integer allocation_order
+    integer capacity
     datetime created_at
     datetime updated_at
   }
-  Contract_BandCapacity }o--|| ActiveLeadProvider : belongs_to
+  Contract_Band }o--|| ActiveLeadProvider : belongs_to
   User {
     integer id
     datetime created_at
