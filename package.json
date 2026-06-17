@@ -12,7 +12,7 @@
   "devDependencies": {
     "playwright": "^1.60.0",
     "standard": "^17.1.2",
-    "stylelint-config-gds": "^2.0.0"
+    "stylelint-config-gds": "^3.0.0"
   },
   "optionalDependencies": {
     "@esbuild/darwin-arm64": "^0.28.0",
