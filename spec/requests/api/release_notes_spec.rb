@@ -1,4 +1,6 @@
 RSpec.describe "Release Notes" do
+  include ActionView::Helpers::SanitizeHelper
+
   describe "GET /api/guidance/release-notes" do
     it "renders valid notes" do
       expect { get(api_guidance_release_notes_path) }.not_to raise_error
@@ -23,7 +25,7 @@ RSpec.describe "Release Notes" do
         get(api_guidance_release_note_path(note.slug))
 
         expect(response).to be_successful
-        expect(response.body).to include(note.title)
+        expect(sanitize(response.body)).to include(note.title)
         expect(response.body).to include(note.body)
         expect(response.body).to include(note.date)
         expect(response.body).to include(note.tags.sample.titleize.humanize)
