@@ -20,16 +20,15 @@ module Admin
         end
 
         def create
-          if @wizard.valid_step?
-            @wizard.current_step.save!
+          unless @wizard.valid_step? && @wizard.current_step.save!
+            return render current_step, status: :unprocessable_content
+          end
 
-            if current_step == :check_answers
-              render current_step
-            else
-              redirect_to @wizard.next_step_path
-            end
+          if current_step == :check_answers
+            store.reset
+            redirect_to admin_teacher_training_path(@teacher), alert: "Contract period changed"
           else
-            render current_step, status: :unprocessable_content
+            redirect_to @wizard.next_step_path
           end
         end
 
@@ -46,7 +45,7 @@ module Admin
         end
 
         def ensure_changeable_training_period
-          unless ChangeContractPeriod::Eligibility.new(training_period: @training_period).eligible?
+          unless ChangeContractPeriod::Eligibility.new(training_period: @training_period).current_active_period_changeable?
             raise ActionController::BadRequest,
                   "Training period is not eligible for contract period change"
           end
