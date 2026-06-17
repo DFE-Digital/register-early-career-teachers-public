@@ -1,6 +1,6 @@
 RSpec.describe Contract::BandedFeeStructure::Band, type: :model do
   describe "associations" do
-    it { is_expected.to belong_to(:contract_band).class_name("Contract::Band").optional }
+    it { is_expected.to belong_to(:band).class_name("ActiveLeadProvider::Band").optional }
     it { is_expected.to belong_to(:banded_fee_structure).class_name("Contract::BandedFeeStructure") }
   end
 

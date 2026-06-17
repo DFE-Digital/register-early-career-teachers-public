@@ -5,9 +5,9 @@ class Contract::BandedFeeStructure::Band < ApplicationRecord
   belongs_to :banded_fee_structure,
              class_name: "Contract::BandedFeeStructure"
 
-  # TODO: enforce "null: false" for contract_band_id and remove optional
-  belongs_to :contract_band,
-             class_name: "Contract::Band",
+  # TODO: enforce "null: false" for active_lead_provider_band_id and remove optional
+  belongs_to :band,
+             class_name: "ActiveLeadProvider::Band",
              optional: true
 
   # Validations
