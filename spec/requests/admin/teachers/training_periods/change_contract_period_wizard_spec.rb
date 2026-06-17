@@ -24,6 +24,7 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
   end
   let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:) }
   let(:schedule) { FactoryBot.create(:schedule, contract_period: current_contract_period) }
+  let(:target_schedule) { FactoryBot.create(:schedule, contract_period: target_contract_period, identifier: schedule.identifier) }
   let(:training_period) do
     FactoryBot.create(
       :training_period,
@@ -34,6 +35,8 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
       started_on: today.prev_month
     )
   end
+  let(:replacement_training_periods) { TrainingPeriod.where(ect_at_school_period:).where.not(id: training_period.id) }
+  let(:replacement_training_period) { replacement_training_periods.sole }
   let(:teacher_name) { Teachers::Name.new(teacher).full_name }
 
   around do |example|
@@ -60,6 +63,14 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
 
     it "returns bad request when the training period is not eligible" do
       training_period.update!(finished_on: today.yesterday)
+
+      get path_for_step("select-contract-period")
+
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it "returns bad request when the training period starts in the future" do
+      training_period.update!(started_on: today.next_month, finished_on: nil)
 
       get path_for_step("select-contract-period")
 
@@ -163,15 +174,35 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
   end
 
   describe "POST check-answers" do
-    it "does not apply the contract period change in this slice" do
+    it "applies the contract period change and redirects to the training tab" do
+      target_school_partnership
+      target_schedule
+      select_contract_period_and_partnership
+
+      expect {
+        post path_for_step("check-answers"), params: { check_answers: {} }
+      }.to change { TrainingPeriod.where(ect_at_school_period:).count }.by(1)
+
+      expect(response).to redirect_to(admin_teacher_training_path(teacher))
+      expect(training_period.reload.finished_on).to eq(today.yesterday)
+      expect(replacement_training_period.contract_period).to eq(target_contract_period)
+      expect(replacement_training_period.schedule).to eq(target_schedule)
+
+      follow_redirect!
+
+      expect(response.body).to include("Contract period changed")
+    end
+
+    it "shows an error when the selected contract period has no matching schedule" do
+      target_school_partnership
       select_contract_period_and_partnership
 
       expect {
         post path_for_step("check-answers"), params: { check_answers: {} }
       }.not_to change(TrainingPeriod, :count)
 
-      expect(response).to have_http_status(:ok)
-      expect(response.body).to include("Confirm contract period change for #{teacher_name}")
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("A matching schedule could not be found for the selected contract period")
     end
   end
 
