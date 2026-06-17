@@ -37,6 +37,29 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
       expect(attributes["teacher_reference_number"]).to eq(teacher.trn)
     end
 
+    describe "`most_recent_induction_period_end_date`" do
+      subject(:most_recent_induction_period_end_date) { attributes["most_recent_induction_period_end_date"] }
+
+      context "when the teacher is not an ECT" do
+        it { is_expected.to be_nil }
+      end
+
+      context "when the teacher is an ECT" do
+        let(:teacher) { FactoryBot.create(:teacher, :induction_in_progress) }
+        let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:) }
+        let!(:induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:) }
+
+        it { is_expected.to be_nil }
+
+        context "when the latest induction period is closed" do
+          let(:teacher) { FactoryBot.create(:teacher, :induction_completed) }
+          let!(:induction_period) { FactoryBot.create(:induction_period, :pass, teacher:) }
+
+          it { is_expected.to eq induction_period.finished_on.to_fs(:api) }
+        end
+      end
+    end
+
     describe "`full_name`" do
       subject(:full_name) { attributes["full_name"] }
 

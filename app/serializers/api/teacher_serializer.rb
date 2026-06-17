@@ -125,6 +125,11 @@ class API::TeacherSerializer < Blueprinter::Base
     field(:full_name) { |teacher| Teachers::Name.new(teacher).full_name }
     field(:trn, name: :teacher_reference_number)
     field(:api_updated_at, name: :updated_at)
+    field(:most_recent_induction_period_end_date) do |teacher|
+      if teacher.ect_at_school_periods.any?
+        teacher.induction_periods.started_on_or_before(Time.zone.today).latest_first.first&.finished_on
+      end
+    end
 
     association :ecf_enrolments, blueprint: TrainingPeriodSerializer do |teacher, options|
       metadata = ::API::TeacherSerializer.lead_provider_metadata(teacher:, options:)

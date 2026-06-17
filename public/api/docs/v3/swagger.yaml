@@ -258,6 +258,7 @@ paths:
                       attributes:
                         full_name: John Doe
                         teacher_reference_number: '1234567'
+                        most_recent_induction_period_end_date: '2025-05-31'
                         ecf_enrolments:
                         - training_record_id: 42a9ef2f-9059-400a-92ff-4830a629d0c5
                           email: jane.smith@example.com
@@ -321,6 +322,7 @@ paths:
                       attributes:
                         full_name: John Doe
                         teacher_reference_number: '1234567'
+                        most_recent_induction_period_end_date: '2025-05-31'
                         ecf_enrolments:
                         - training_record_id: 42a9ef2f-9059-400a-92ff-4830a629d0c5
                           email: jane.smith@example.com
@@ -390,6 +392,7 @@ paths:
                       attributes:
                         full_name: John Doe
                         teacher_reference_number: '1234567'
+                        most_recent_induction_period_end_date: '2025-05-31'
                         ecf_enrolments:
                         - training_record_id: 42a9ef2f-9059-400a-92ff-4830a629d0c5
                           email: jane.smith@example.com
@@ -478,6 +481,7 @@ paths:
                       attributes:
                         full_name: John Doe
                         teacher_reference_number: '1234567'
+                        most_recent_induction_period_end_date: '2025-05-31'
                         ecf_enrolments:
                         - training_record_id: 42a9ef2f-9059-400a-92ff-4830a629d0c5
                           email: jane.smith@example.com
@@ -566,6 +570,7 @@ paths:
                       attributes:
                         full_name: John Doe
                         teacher_reference_number: '1234567'
+                        most_recent_induction_period_end_date: '2025-05-31'
                         ecf_enrolments:
                         - training_record_id: 42a9ef2f-9059-400a-92ff-4830a629d0c5
                           email: jane.smith@example.com
@@ -652,6 +657,7 @@ paths:
                       attributes:
                         full_name: John Doe
                         teacher_reference_number: '1234567'
+                        most_recent_induction_period_end_date: '2025-05-31'
                         ecf_enrolments:
                         - training_record_id: 42a9ef2f-9059-400a-92ff-4830a629d0c5
                           email: jane.smith@example.com
@@ -2577,6 +2583,13 @@ components:
               type: string
               nullable: true
               example: '1234567'
+            most_recent_induction_period_end_date:
+              description: The end date of the most recent induction period for this
+                participant
+              type: string
+              nullable: true
+              format: date
+              example: '2025-05-31'
             ecf_enrolments:
               type: array
               nullable: false
