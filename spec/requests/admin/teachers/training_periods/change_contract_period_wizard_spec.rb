@@ -109,17 +109,69 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
 
     it "renders the partnership selection page after a contract period has been selected" do
       target_school_partnership
+      partnership_name =
+        "#{target_school_partnership.lead_provider.name} & #{target_school_partnership.delivery_partner.name}"
 
       post(
         path_for_step("select-contract-period"),
         params: { select_contract_period: { contract_period_year: target_contract_period.year } }
       )
       follow_redirect!
+      page = Capybara.string(response.body)
 
       expect(response).to have_http_status(:ok)
       expect(response.body).to include("Select #{target_contract_period.year} partnership for #{teacher_name}")
-      expect(response.body).to include("#{target_school_partnership.lead_provider.name} &amp; #{target_school_partnership.delivery_partner.name}")
+      expect(page).to have_text(partnership_name)
       expect(response.body).to include(admin_school_partnerships_path(school.urn))
+    end
+  end
+
+  describe "POST select-partnership" do
+    it "redirects to check answers when the selection is valid" do
+      select_contract_period_and_partnership
+
+      expect(response).to redirect_to(path_for_step("check-answers"))
+    end
+  end
+
+  describe "GET check-answers" do
+    it "redirects to select partnership when no partnership has been selected" do
+      post(
+        path_for_step("select-contract-period"),
+        params: { select_contract_period: { contract_period_year: target_contract_period.year } }
+      )
+
+      get path_for_step("check-answers")
+
+      expect(response).to redirect_to(path_for_step("select-partnership"))
+    end
+
+    it "renders the CYA page after the contract period and partnership have been selected" do
+      select_contract_period_and_partnership
+
+      get path_for_step("check-answers")
+      page = Capybara.string(response.body)
+      partnership_name =
+        "#{target_school_partnership.lead_provider.name} & #{target_school_partnership.delivery_partner.name}"
+
+      expect(response).to have_http_status(:ok)
+      expect(page).to have_text("Confirm contract period change for #{teacher_name}")
+      expect(page).to have_text(current_contract_period.year.to_s)
+      expect(page).to have_text(target_contract_period.year.to_s)
+      expect(page).to have_text(partnership_name)
+    end
+  end
+
+  describe "POST check-answers" do
+    it "does not apply the contract period change in this slice" do
+      select_contract_period_and_partnership
+
+      expect {
+        post path_for_step("check-answers"), params: { check_answers: {} }
+      }.not_to change(TrainingPeriod, :count)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Confirm contract period change for #{teacher_name}")
     end
   end
 
@@ -127,5 +179,17 @@ private
 
   def path_for_step(step, teacher: self.teacher, training_period: self.training_period)
     "/admin/teachers/#{teacher.id}/training-periods/#{training_period.id}/contract-period/change/#{step}"
+  end
+
+  def select_contract_period_and_partnership
+    post(
+      path_for_step("select-contract-period"),
+      params: { select_contract_period: { contract_period_year: target_contract_period.year } }
+    )
+
+    post(
+      path_for_step("select-partnership"),
+      params: { select_partnership: { school_partnership_id: target_school_partnership.id } }
+    )
   end
 end

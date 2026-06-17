@@ -23,7 +23,7 @@ module Admin
           if @wizard.valid_step?
             @wizard.current_step.save!
 
-            if current_step == :select_partnership
+            if current_step == :check_answers
               render current_step
             else
               redirect_to @wizard.next_step_path
