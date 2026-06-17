@@ -33,11 +33,9 @@
 
     We’ve changed validation rules to allow lead providers to submit a reduced schedule for ECTs who’ve completed training.
 
-    Previously, lead providers could not change schedules after training was complete.
-
     ## Why we’ve made this change
 
-    In some cases, ECTs on a reduced schedule complete training before the lead provider was aware. Previously, this meant lead providers were unable to change the schedule.
+    In some cases, lead providers were not aware that ECTs were on a reduced schedule before they completed training. Previously, lead providers were unable to change the ECT's schedule after training completion.
 
     Lead providers need to be able to change an ECT’s schedule to reduced even after training has been completed. 
 
