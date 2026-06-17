@@ -21,6 +21,27 @@
 #
 #     **bold** and _italic_ text
 
+- title: ECT schedules can be changed to reduced after they’ve completed training 
+  date: 2026-06-17
+  tags:
+    - new-feature
+    - production-release
+  body: |
+    Lead providers can now move ECTs who’ve completed training to a reduced schedule where appropriate.
+
+    ## What’s changed
+
+    We’ve changed validation rules to allow lead providers to submit a reduced schedule for ECTs who’ve completed training.
+
+    Previously, lead providers could not change schedules after training was complete.
+
+    ## Why we’ve made this change
+
+    In some cases, ECTs on a reduced schedule have completed training before the lead provider was aware. This meant lead providers were unable to change the schedule.
+
+    Lead providers need to be able to change an ECT’s schedule to reduced even after training has been completed. 
+
+
 - title: Update to the updated_at attribute on GET partnerships when participant counts change in partnerships
   date: 2026-06-16
   tags:
