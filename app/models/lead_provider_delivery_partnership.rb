@@ -4,9 +4,11 @@ class LeadProviderDeliveryPartnership < ApplicationRecord
   belongs_to :active_lead_provider
   belongs_to :delivery_partner
   has_many :school_partnerships
-  has_many :events
+  has_many :events, dependent: :nullify
   has_one :lead_provider, through: :active_lead_provider
   has_one :contract_period, through: :active_lead_provider
+
+  delegate :name, to: :delivery_partner, prefix: true
 
   touch -> { delivery_partner }, on_event: %i[create destroy], timestamp_attribute: :api_updated_at
 
