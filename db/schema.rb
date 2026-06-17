@@ -146,19 +146,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_22_120000) do
     t.index ["creator_id"], name: "index_blazer_queries_on_creator_id"
   end
 
-  create_table "contract_band_capacities", force: :cascade do |t|
-    t.bigint "active_lead_provider_id", null: false
-    t.datetime "created_at", null: false
-    t.integer "max_declarations", null: false
-    t.integer "min_declarations", default: 1, null: false
-    t.datetime "updated_at", null: false
-    t.index ["active_lead_provider_id", "min_declarations"], name: "idx_on_active_lead_provider_id_min_declarations_a366f02101", unique: true
-    t.index ["active_lead_provider_id"], name: "index_contract_band_capacities_on_active_lead_provider_id"
-  end
-
   create_table "contract_banded_fee_structure_bands", force: :cascade do |t|
     t.bigint "banded_fee_structure_id", null: false
-    t.bigint "contract_band_capacity_id"
+    t.bigint "contract_band_id"
     t.datetime "created_at", null: false
     t.decimal "fee_per_declaration", precision: 12, scale: 2, null: false
     t.integer "max_declarations", null: false
@@ -166,9 +156,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_22_120000) do
     t.decimal "output_fee_ratio", precision: 3, scale: 2, null: false
     t.decimal "service_fee_ratio", precision: 3, scale: 2, null: false
     t.datetime "updated_at", null: false
-    t.index ["banded_fee_structure_id", "contract_band_capacity_id"], name: "idx_on_banded_fee_structure_id_contract_band_capaci_8325d622c7", unique: true
+    t.index ["banded_fee_structure_id", "contract_band_id"], name: "idx_on_banded_fee_structure_id_contract_band_id_1c6ab39887", unique: true
     t.index ["banded_fee_structure_id"], name: "idx_on_banded_fee_structure_id_49a33a0bd5"
-    t.index ["contract_band_capacity_id"], name: "idx_on_contract_band_capacity_id_5b1c121440"
+    t.index ["contract_band_id"], name: "index_contract_banded_fee_structure_bands_on_contract_band_id"
   end
 
   create_table "contract_banded_fee_structures", force: :cascade do |t|
@@ -181,6 +171,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_22_120000) do
     t.decimal "uplift_fee_per_declaration", precision: 12, scale: 2, null: false
     t.index ["contract_id"], name: "index_banded_fee_structures_on_contract_id_unique_not_null", unique: true, where: "(contract_id IS NOT NULL)"
     t.index ["contract_id"], name: "index_contract_banded_fee_structures_on_contract_id"
+  end
+
+  create_table "contract_bands", force: :cascade do |t|
+    t.bigint "active_lead_provider_id", null: false
+    t.integer "allocation_order", null: false
+    t.integer "capacity", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["active_lead_provider_id", "allocation_order"], name: "idx_on_active_lead_provider_id_allocation_order_84da72f203", unique: true
+    t.index ["active_lead_provider_id"], name: "index_contract_bands_on_active_lead_provider_id"
   end
 
   create_table "contract_flat_rate_fee_structures", force: :cascade do |t|
@@ -950,10 +950,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_22_120000) do
   add_foreign_key "active_lead_providers", "lead_providers"
   add_foreign_key "appropriate_bodies", "dfe_sign_in_organisations"
   add_foreign_key "appropriate_body_periods", "appropriate_bodies"
-  add_foreign_key "contract_band_capacities", "active_lead_providers"
-  add_foreign_key "contract_banded_fee_structure_bands", "contract_band_capacities"
   add_foreign_key "contract_banded_fee_structure_bands", "contract_banded_fee_structures", column: "banded_fee_structure_id", on_delete: :cascade
+  add_foreign_key "contract_banded_fee_structure_bands", "contract_bands"
   add_foreign_key "contract_banded_fee_structures", "contracts"
+  add_foreign_key "contract_bands", "active_lead_providers"
   add_foreign_key "contract_flat_rate_fee_structures", "contracts"
   add_foreign_key "contracts", "active_lead_providers"
   add_foreign_key "declarations", "delivery_partners", column: "delivery_partner_when_created_id"
