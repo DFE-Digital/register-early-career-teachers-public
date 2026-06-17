@@ -1,0 +1,21 @@
+<% page_data(title: "#{@active_lead_provider.lead_provider_name} delivery partnerships for #{@active_lead_provider.contract_period_year}", breadcrumbs: @breadcrumbs) %>
+
+<% if @lead_provider_delivery_partnerships.none? %>
+  <p class="govuk-body">No delivery partners found</p>
+<% else %>
+  <%=
+    govuk_table(
+      head: ["Delivery partner", ""],
+      rows: @lead_provider_delivery_partnerships.map { |lpdp|
+        [
+          govuk_link_to(lpdp.delivery_partner_name, admin_delivery_partner_path(lpdp.delivery_partner)),
+          @active_lead_provider.editable? ? govuk_button_link_to("Remove", delete_admin_contract_period_active_lead_provider_lead_provider_delivery_partnership_path(@active_lead_provider.contract_period, @active_lead_provider, lpdp), secondary: true, visually_hidden_suffix: lpdp.delivery_partner_name, class: "govuk-!-margin-bottom-0") : "",
+        ]
+      }
+    )
+  %>
+<% end %>
+
+<%= render Shared::PaginationSummaryComponent.new(pagy: @pagy, record_name: "delivery partners") %>
+
+<%= govuk_button_link_to("Add delivery partner", new_admin_contract_period_active_lead_provider_lead_provider_delivery_partnership_path(@active_lead_provider.contract_period, @active_lead_provider), disabled: !@active_lead_provider.editable?) %>

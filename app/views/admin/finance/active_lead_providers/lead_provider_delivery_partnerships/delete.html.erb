@@ -1,0 +1,24 @@
+<% page_data(
+  title: "Remove #{@lead_provider_delivery_partnership.delivery_partner_name} from #{@active_lead_provider.contract_period_year}",
+  caption: @active_lead_provider.lead_provider_name,
+  backlink_href: admin_contract_period_active_lead_provider_lead_provider_delivery_partnerships_path(@active_lead_provider.contract_period, @active_lead_provider)
+) %>
+
+<% if @lead_provider_delivery_partnership.school_partnerships.any? %>
+  <%= govuk_warning_text do %>
+    This delivery partner has school partnerships and cannot be removed.
+  <% end %>
+
+  <%= govuk_button_link_to "Return to delivery partnerships", admin_contract_period_active_lead_provider_lead_provider_delivery_partnerships_path(@active_lead_provider.contract_period, @active_lead_provider), secondary: true %>
+<% else %>
+  <%= govuk_warning_text do %>
+    Are you sure you want to remove <%= @lead_provider_delivery_partnership.delivery_partner_name %>?<br>
+    This action cannot be undone.
+  <% end %>
+
+  <div class="govuk-button-group">
+    <%= govuk_button_to "Remove delivery partner", admin_contract_period_active_lead_provider_lead_provider_delivery_partnership_path(@active_lead_provider.contract_period, @active_lead_provider, @lead_provider_delivery_partnership), method: :delete, warning: true %>
+
+    <%= govuk_button_link_to "Cancel", admin_contract_period_active_lead_provider_lead_provider_delivery_partnerships_path(@active_lead_provider.contract_period, @active_lead_provider), secondary: true %>
+  </div>
+<% end %>

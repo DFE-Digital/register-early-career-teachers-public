@@ -1,0 +1,25 @@
+<%
+  page_data(
+    title: "Add delivery partner to #{@active_lead_provider.lead_provider_name} for #{@active_lead_provider.contract_period_year}",
+    error: @lead_provider_delivery_partnership.errors.present?,
+    backlink_href: admin_contract_period_active_lead_provider_lead_provider_delivery_partnerships_path(@active_lead_provider.contract_period, @active_lead_provider)
+  )
+%>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <%= form_with model: @lead_provider_delivery_partnership,
+                   url: admin_contract_period_active_lead_provider_lead_provider_delivery_partnerships_path(@active_lead_provider.contract_period, @active_lead_provider),
+                   method: :post do |f| %>
+      <%= content_for(:error_summary) { f.govuk_error_summary } %>
+      <%= f.govuk_collection_select :delivery_partner_id,
+                                    @available_delivery_partners,
+                                    :id,
+                                    :name,
+                                    label: { text: "Delivery partner" },
+                                    options: { include_blank: true },
+                                    class: "autocomplete" %>
+      <%= f.govuk_submit "Save" %>
+    <% end %>
+  </div>
+</div>
