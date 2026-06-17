@@ -43,7 +43,7 @@ module Admin
           end
 
           def relationships
-            @relationships ||= ::TrainingPeriods::PeriodRelationships.new(training_period:)
+            @relationships ||= ::TrainingPeriods::RelatedPeriods.new(training_period:)
           end
 
           def equivalent_schedule
