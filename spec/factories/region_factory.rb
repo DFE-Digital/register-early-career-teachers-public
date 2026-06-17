@@ -1,9 +1,5 @@
 FactoryBot.define do
   factory(:region) do
-    initialize_with do
-      Region.find_or_initialize_by(code:)
-    end
-
     sequence(:code) { |n| "XYZ#{n}" }
 
     districts do
