@@ -167,7 +167,7 @@ GEM
       xpath (~> 3.2)
     chartkick (5.2.1)
     coderay (1.1.3)
-    concurrent-ruby (1.3.6)
+    concurrent-ruby (1.3.7)
     connection_pool (3.0.2)
     console (1.34.3)
       fiber-annotation
@@ -303,7 +303,7 @@ GEM
       html-attributes-utils (~> 1.0.0, >= 1.0.0)
       pagy (>= 6, < 10)
       view_component (>= 4.9, < 4.13)
-    govuk_design_system_formbuilder (6.2.0)
+    govuk_design_system_formbuilder (6.2.1)
       actionview (>= 7.2)
       activemodel (>= 7.2)
       activesupport (>= 7.2)
@@ -343,7 +343,7 @@ GEM
       mutex_m
       nkf
       rack (>= 2.0, < 4)
-    i18n (1.14.8)
+    i18n (1.15.0)
       concurrent-ruby (~> 1.0)
     immutable-ruby (0.2.0)
       concurrent-ruby (~> 1.1)
@@ -896,7 +896,7 @@ DEPENDENCIES
   faker
   faraday
   govuk-components (= 6.3.1)
-  govuk_design_system_formbuilder (= 6.2.0)
+  govuk_design_system_formbuilder (= 6.2.1)
   govuk_markdown
   herb
   hotwire-rails
