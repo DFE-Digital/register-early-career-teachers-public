@@ -12,7 +12,8 @@ module Admin
           steps do
             [{
               select_contract_period: SelectContractPeriodStep,
-              select_partnership: SelectPartnershipStep
+              select_partnership: SelectPartnershipStep,
+              check_answers: CheckAnswersStep
             }]
           end
 
@@ -23,6 +24,9 @@ module Admin
             return steps unless selected_contract_period_allowed?
 
             steps << :select_partnership
+            return steps unless selected_school_partnership_allowed?
+
+            steps << :check_answers
           end
 
           def allowed_step_path
@@ -60,6 +64,12 @@ module Admin
             @selected_contract_period ||= contract_periods.find_by(year: store.contract_period_year)
           end
 
+          def selected_school_partnership
+            return if store.school_partnership_id.blank?
+
+            @selected_school_partnership ||= school_partnerships.find_by(id: store.school_partnership_id)
+          end
+
           def school_partnerships
             return SchoolPartnership.none unless selected_contract_period
 
@@ -89,6 +99,16 @@ module Admin
             step_path(current_step.previous_step)
           end
 
+          def existing_contract_period
+            training_period.contract_period
+          end
+
+          def selected_partnership_name
+            return unless selected_school_partnership
+
+            "#{selected_school_partnership.lead_provider.name} & #{selected_school_partnership.delivery_partner.name}"
+          end
+
         private
 
           def current_contract_period
@@ -108,6 +128,11 @@ module Admin
           def selected_contract_period_allowed?
             store.contract_period_year.present? &&
               contract_periods.where(year: store.contract_period_year).exists?
+          end
+
+          def selected_school_partnership_allowed?
+            store.school_partnership_id.present? &&
+              school_partnerships.where(id: store.school_partnership_id).exists?
           end
 
           def step_path(step_name)

@@ -11,6 +11,7 @@ module Admin
           def self.permitted_params = %i[school_partnership_id]
 
           def previous_step = :select_contract_period
+          def next_step = :check_answers
 
         private
 
