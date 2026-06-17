@@ -55,7 +55,33 @@ RSpec.describe "Errors", type: :request do
     end
   end
 
-  context "when the request format is not HTML" do
+  context "when the request format is JSON" do
+    it "renders a json 404 error for /404.json" do
+      get "/404.json"
+
+      expect(response).to have_http_status(:not_found)
+      payload = JSON.parse(response.body)
+      expect(payload["error"]).to eq("Resource not found")
+    end
+
+    it "renders a json 422 error /422.json" do
+      get "/422.json"
+
+      expect(response).to have_http_status(:unprocessable_content)
+      payload = JSON.parse(response.body)
+      expect(payload["error"]).to eq("Unprocessable content")
+    end
+
+    it "renders a json 500 error for /500.json" do
+      get "/500.json"
+
+      expect(response).to have_http_status(:internal_server_error)
+      payload = JSON.parse(response.body)
+      expect(payload["error"]).to eq("Internal server error")
+    end
+  end
+
+  context "when the request format is not HTML or JSON" do
     it "renders the 404 HTML page for /404.pdf" do
       get "/404.pdf"
 
