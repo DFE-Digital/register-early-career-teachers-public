@@ -63,6 +63,7 @@ class Event < ApplicationRecord
     teacher_registration_undone
     teacher_withdraws_training_period
     teacher_changes_schedule_training_period
+    teacher_training_period_contract_period_changed
     teacher_declaration_voided
     teacher_declaration_awaiting_clawback
     teacher_declaration_created
