@@ -126,6 +126,7 @@ Rails/UniqueValidationWithoutIndex:
 Rails/Output:
   Exclude:
     - db/seeds*
+    - db/seeds/**/*
     # Excluded because this file intentionally writes a dev-only message to stdout after migrations, which does not
     # impact application behavior and is not intended for production environments.
     - config/initializers/confirm_production_console.rb
