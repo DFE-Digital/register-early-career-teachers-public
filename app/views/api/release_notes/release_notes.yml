@@ -21,7 +21,7 @@
 #
 #     **bold** and _italic_ text
 
-- title: ECT schedules can be changed to reduced after they’ve completed training 
+- title: Schedules can be changed to reduced after ECTs have completed training 
   date: 2026-06-17
   tags:
     - new-feature
@@ -37,7 +37,7 @@
 
     ## Why we’ve made this change
 
-    In some cases, ECTs on a reduced schedule have completed training before the lead provider was aware. This meant lead providers were unable to change the schedule.
+    In some cases, ECTs on a reduced schedule complete training before the lead provider was aware. Previously, this meant lead providers were unable to change the schedule.
 
     Lead providers need to be able to change an ECT’s schedule to reduced even after training has been completed. 
 
