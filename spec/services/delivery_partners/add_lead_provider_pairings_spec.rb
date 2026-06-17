@@ -94,7 +94,9 @@ RSpec.describe DeliveryPartners::AddLeadProviderPairings do
       let(:new_active_lead_provider_ids) { [active_lead_provider_1.id] }
 
       it "returns false and logs error when ActiveRecord::RecordInvalid is raised" do
-        allow(LeadProviderDeliveryPartnership).to receive(:create!).and_raise(ActiveRecord::RecordInvalid.new(LeadProviderDeliveryPartnership.new))
+        create_service = instance_double(LeadProviderDeliveryPartnerships::Create)
+        allow(LeadProviderDeliveryPartnerships::Create).to receive(:new).and_return(create_service)
+        allow(create_service).to receive(:call).and_raise(ActiveRecord::RecordInvalid.new(LeadProviderDeliveryPartnership.new))
         expect(Rails.logger).to receive(:error).with(/Failed to add lead provider pairings/)
 
         result = service.add!

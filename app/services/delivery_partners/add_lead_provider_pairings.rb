@@ -39,23 +39,12 @@ module DeliveryPartners
     def add_partnerships(ids_to_add)
       ids_to_add.each do |active_lead_provider_id|
         active_lead_provider = ActiveLeadProvider.find(active_lead_provider_id)
-        new_partnership = LeadProviderDeliveryPartnership.create!(
-          delivery_partner:,
-          active_lead_provider:
-        )
-
-        record_partnership_added_event(active_lead_provider, new_partnership)
+        LeadProviderDeliveryPartnerships::Create.new(
+          author:,
+          active_lead_provider:,
+          params: { delivery_partner_id: delivery_partner.id }
+        ).call
       end
-    end
-
-    def record_partnership_added_event(active_lead_provider, new_partnership)
-      Events::Record.record_lead_provider_delivery_partnership_added_event!(
-        delivery_partner:,
-        lead_provider: active_lead_provider.lead_provider,
-        contract_period:,
-        author:,
-        lead_provider_delivery_partnership: new_partnership
-      )
     end
   end
 end
