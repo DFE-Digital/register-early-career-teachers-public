@@ -35,7 +35,7 @@
 
     ## Why we’ve made this change
 
-    In some cases, lead providers were not aware that ECTs were on a reduced schedule before they completed training. Previously, lead providers were unable to change the ECT's schedule after training completion.
+    In some cases, lead providers were not aware that ECTs were on a reduced schedule before they completed training. Previously, lead providers were unable to change an ECT’s schedule after training had been completed.
 
     Lead providers need to be able to change an ECT’s schedule to reduced even after training has been completed. 
 
