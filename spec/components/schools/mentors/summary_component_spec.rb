@@ -105,6 +105,35 @@ RSpec.describe Schools::Mentors::SummaryComponent, type: :component do
       it { is_expected.to have_css(".govuk-summary-list__value", text: "6 assigned ECTs") }
     end
 
+    context "when the mentor has an earlier, finished period at the same school" do
+      # Override the shared period to be the old/finished one so it's created
+      # first with a lower id, and would be picked by an unscoped find_by.
+      let!(:mentor_at_school_period) do
+        FactoryBot.create(:mentor_at_school_period, teacher: mentor, school:, started_on: 2.years.ago, finished_on: 1.year.ago)
+      end
+
+      let!(:current_period) do
+        FactoryBot.create(:mentor_at_school_period, teacher: mentor, school:, started_on:, finished_on: nil)
+      end
+
+      let(:ect_period) do
+        FactoryBot.create(:ect_at_school_period, teacher: ect1_teacher, school:, started_on:, finished_on: nil)
+      end
+
+      before do
+        FactoryBot.create(:mentorship_period, mentor: current_period, mentee: ect_period, started_on:, finished_on: nil)
+      end
+
+      it "shows the ECT assigned to the mentor's current period" do
+        expect(subject).to have_summary_list_row("Assigned ECTs", value: full_name(ect1_teacher))
+      end
+
+      it "links the mentor to their current period, not the finished one" do
+        expect(subject).to have_link(full_name(mentor), href: schools_mentor_path(current_period))
+        expect(subject).not_to have_link(full_name(mentor), href: schools_mentor_path(mentor_at_school_period))
+      end
+    end
+
     context "when there are multiple mentors at the same school" do
       let(:second_mentor) { FactoryBot.create(:teacher, trs_first_name: "Sasuke", trs_last_name: "Uchiha") }
       let!(:second_mentor_at_school_period) do
