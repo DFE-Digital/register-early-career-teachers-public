@@ -4,7 +4,8 @@ module Admin::Finance::ActiveLeadProviders
 
     before_action :set_active_lead_provider
     before_action :set_statement, only: %i[show edit update delete destroy]
-    before_action :redirect_unless_editable, only: %i[new create edit update delete destroy]
+    before_action :redirect_unless_addable, only: %i[new create]
+    before_action :redirect_unless_editable, only: %i[edit update delete destroy]
 
     def index
       contract_period = @active_lead_provider.contract_period
@@ -73,6 +74,13 @@ module Admin::Finance::ActiveLeadProviders
 
     def set_statement
       @statement = @active_lead_provider.statements.find(params[:id])
+    end
+
+    def redirect_unless_addable
+      if @active_lead_provider.contract_period.payments_frozen?
+        redirect_to statements_path,
+                    flash: { error: "Statements cannot be added once the contract period is frozen" }
+      end
     end
 
     def redirect_unless_editable
