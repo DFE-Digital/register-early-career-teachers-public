@@ -2,6 +2,7 @@
 erDiagram
   Contract_BandedFeeStructure_Band {
     integer id
+    integer band_id
     integer banded_fee_structure_id
     datetime created_at
     decimal fee_per_declaration
@@ -10,10 +11,9 @@ erDiagram
     decimal output_fee_ratio
     decimal service_fee_ratio
     datetime updated_at
-    integer contract_band_id
   }
   Contract_BandedFeeStructure_Band }o--|| Contract_BandedFeeStructure : belongs_to
-  Contract_BandedFeeStructure_Band }o--|| Contract_Band : belongs_to
+  Contract_BandedFeeStructure_Band }o--|| ActiveLeadProvider_Band : belongs_to
   Contract_FlatRateFeeStructure {
     integer id
     integer contract_id
@@ -34,7 +34,7 @@ erDiagram
     decimal uplift_fee_per_declaration
   }
   Contract_BandedFeeStructure }o--|| Contract : belongs_to
-  Contract_Band {
+  ActiveLeadProvider_Band {
     integer id
     integer active_lead_provider_id
     integer allocation_order
@@ -42,7 +42,7 @@ erDiagram
     datetime created_at
     datetime updated_at
   }
-  Contract_Band }o--|| ActiveLeadProvider : belongs_to
+  ActiveLeadProvider_Band }o--|| ActiveLeadProvider : belongs_to
   User {
     integer id
     datetime created_at
@@ -185,6 +185,8 @@ erDiagram
   PendingInductionSubmissionBatch }o--|| AppropriateBodyPeriod : belongs_to
   Teacher {
     integer id
+    enum anonymisation_reason
+    datetime anonymised_at
     uuid api_ect_training_record_id
     uuid api_id
     uuid api_mentor_training_record_id
@@ -331,11 +333,11 @@ erDiagram
     enum induction_programme
     float number_of_terms
     enum outcome
+    daterange range
     date started_on
     integer teacher_id
     enum training_programme
     datetime updated_at
-    daterange range
   }
   InductionPeriod }o--|| AppropriateBodyPeriod : belongs_to
   InductionPeriod }o--|| Teacher : belongs_to

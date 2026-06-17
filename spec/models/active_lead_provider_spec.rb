@@ -9,7 +9,7 @@ describe ActiveLeadProvider do
     it { is_expected.to have_many(:expressions_of_interest).class_name("TrainingPeriod").inverse_of(:expression_of_interest) }
     it { is_expected.to have_many(:events) }
     it { is_expected.to have_many(:contracts) }
-    it { is_expected.to have_many(:bands).class_name("Contract::Band").order(allocation_order: :asc) }
+    it { is_expected.to have_many(:bands).class_name("ActiveLeadProvider::Band").order(allocation_order: :asc) }
   end
 
   describe "validations" do

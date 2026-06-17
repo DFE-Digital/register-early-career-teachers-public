@@ -326,7 +326,7 @@
   :contract_banded_fee_structure_bands: # RENAME contract_banded_fee_structure_band_terms
   - id
   - banded_fee_structure_id
-  - contract_band_id
+  - band_id
   - min_declarations # DEPRECATE
   - max_declarations # DEPRECATE
   - fee_per_declaration
@@ -334,7 +334,7 @@
   - service_fee_ratio
   - created_at
   - updated_at
-  :contract_bands:
+  :active_lead_provider_bands:
   - id
   - active_lead_provider_id
   - allocation_order
