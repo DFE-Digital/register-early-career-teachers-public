@@ -258,7 +258,6 @@ paths:
                       attributes:
                         full_name: John Doe
                         teacher_reference_number: '1234567'
-                        most_recent_induction_period_end_date: '2025-05-31'
                         ecf_enrolments:
                         - training_record_id: 42a9ef2f-9059-400a-92ff-4830a629d0c5
                           email: jane.smith@example.com
@@ -278,6 +277,7 @@ paths:
                           deferral:
                           created_at: '2023-01-01T00:00:00Z'
                           induction_end_date: '2023-01-01'
+                          most_recent_induction_period_end_date: '2025-05-31'
                           overall_induction_start_date: '2023-01-01'
                           mentor_funding_end_date: '2023-01-01'
                           cohort_changed_after_payments_frozen: true
@@ -322,7 +322,6 @@ paths:
                       attributes:
                         full_name: John Doe
                         teacher_reference_number: '1234567'
-                        most_recent_induction_period_end_date: '2025-05-31'
                         ecf_enrolments:
                         - training_record_id: 42a9ef2f-9059-400a-92ff-4830a629d0c5
                           email: jane.smith@example.com
@@ -342,6 +341,7 @@ paths:
                           deferral:
                           created_at: '2023-01-01T00:00:00Z'
                           induction_end_date: '2023-01-01'
+                          most_recent_induction_period_end_date: '2025-05-31'
                           overall_induction_start_date: '2023-01-01'
                           mentor_funding_end_date: '2023-01-01'
                           cohort_changed_after_payments_frozen: true
@@ -392,7 +392,6 @@ paths:
                       attributes:
                         full_name: John Doe
                         teacher_reference_number: '1234567'
-                        most_recent_induction_period_end_date: '2025-05-31'
                         ecf_enrolments:
                         - training_record_id: 42a9ef2f-9059-400a-92ff-4830a629d0c5
                           email: jane.smith@example.com
@@ -414,6 +413,7 @@ paths:
                           deferral:
                           created_at: '2023-01-01T00:00:00Z'
                           induction_end_date: '2023-01-01'
+                          most_recent_induction_period_end_date: '2025-05-31'
                           overall_induction_start_date: '2023-01-01'
                           mentor_funding_end_date: '2023-01-01'
                           cohort_changed_after_payments_frozen: true
@@ -481,7 +481,6 @@ paths:
                       attributes:
                         full_name: John Doe
                         teacher_reference_number: '1234567'
-                        most_recent_induction_period_end_date: '2025-05-31'
                         ecf_enrolments:
                         - training_record_id: 42a9ef2f-9059-400a-92ff-4830a629d0c5
                           email: jane.smith@example.com
@@ -503,6 +502,7 @@ paths:
                             date: '2021-05-31T02:22:32.000Z'
                           created_at: '2023-01-01T00:00:00Z'
                           induction_end_date: '2023-01-01'
+                          most_recent_induction_period_end_date: '2025-05-31'
                           overall_induction_start_date: '2023-01-01'
                           mentor_funding_end_date: '2023-01-01'
                           cohort_changed_after_payments_frozen: true
@@ -570,7 +570,6 @@ paths:
                       attributes:
                         full_name: John Doe
                         teacher_reference_number: '1234567'
-                        most_recent_induction_period_end_date: '2025-05-31'
                         ecf_enrolments:
                         - training_record_id: 42a9ef2f-9059-400a-92ff-4830a629d0c5
                           email: jane.smith@example.com
@@ -590,6 +589,7 @@ paths:
                           deferral:
                           created_at: '2023-01-01T00:00:00Z'
                           induction_end_date: '2023-01-01'
+                          most_recent_induction_period_end_date: '2025-05-31'
                           overall_induction_start_date: '2023-01-01'
                           mentor_funding_end_date: '2023-01-01'
                           cohort_changed_after_payments_frozen: true
@@ -657,7 +657,6 @@ paths:
                       attributes:
                         full_name: John Doe
                         teacher_reference_number: '1234567'
-                        most_recent_induction_period_end_date: '2025-05-31'
                         ecf_enrolments:
                         - training_record_id: 42a9ef2f-9059-400a-92ff-4830a629d0c5
                           email: jane.smith@example.com
@@ -681,6 +680,7 @@ paths:
                             date: '2021-05-31T02:22:32.000Z'
                           created_at: '2023-01-01T00:00:00Z'
                           induction_end_date: '2023-01-01'
+                          most_recent_induction_period_end_date: '2025-05-31'
                           overall_induction_start_date: '2023-01-01'
                           mentor_funding_end_date: '2023-01-01'
                           cohort_changed_after_payments_frozen: true
@@ -2583,13 +2583,6 @@ components:
               type: string
               nullable: true
               example: '1234567'
-            most_recent_induction_period_end_date:
-              description: The end date of the most recent induction period for this
-                participant
-              type: string
-              nullable: true
-              format: date
-              example: '2025-05-31'
             ecf_enrolments:
               type: array
               nullable: false
@@ -3010,6 +3003,12 @@ components:
           format: date
           example: '2023-01-01'
           nullable: true
+        most_recent_induction_period_end_date:
+          description: The end date of the most recent induction period for this participant
+          type: string
+          nullable: true
+          format: date
+          example: '2025-05-31'
         overall_induction_start_date:
           description: The date the participant started their induction, reported
             by their appropriate body.

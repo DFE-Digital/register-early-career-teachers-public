@@ -152,6 +152,13 @@ PARTICIPANT_ECF_ENROLMENT = {
       example: "2023-01-01",
       nullable: true
     },
+    most_recent_induction_period_end_date: {
+      description: "The end date of the most recent induction period for this participant",
+      type: :string,
+      nullable: true,
+      format: :date,
+      example: "2025-05-31",
+    },
     overall_induction_start_date: {
       description: "The date the participant started their induction, reported by their appropriate body.",
       type: :string,

@@ -28,13 +28,6 @@ PARTICIPANT = {
           nullable: true,
           example: "1234567",
         },
-        most_recent_induction_period_end_date: {
-          description: "The end date of the most recent induction period for this participant",
-          type: :string,
-          nullable: true,
-          format: :date,
-          example: "2025-05-31",
-        },
         ecf_enrolments: {
           type: :array,
           nullable: false,
