@@ -10,25 +10,23 @@ module Admin
           end
 
           def eligible?
-            return false unless training_period.provider_led_training_programme?
-            return false if training_period.school_partnership.blank?
+            return false unless provider_led_with_partnership?
             return false if finished_before_today?
-            return false if current_active_period.present? && !current_active_period_started_before_today?
+            return false if blocked_by_current_active_period?
 
-            return current_active_period == training_period if future_periods.empty?
-            return future_periods == [training_period] if current_active_period.blank?
+            return current_active_period? if no_future_periods?
+            return only_future_period? if no_current_active_period?
 
-            future_periods.include?(training_period) && same_lead_provider_delivery_partnership?(current_active_period, training_period)
+            future_period? && same_partnership_as_current_active_period?
           end
 
           def current_active_period_changeable?
-            return false unless training_period.provider_led_training_programme?
-            return false if training_period.school_partnership.blank?
+            return false unless provider_led_with_partnership?
             return false if finished_before_today?
-            return false unless current_active_period == training_period
+            return false unless current_active_period?
             return false unless current_active_period_started_before_today?
 
-            future_periods.empty?
+            no_future_periods?
           end
 
         private
@@ -45,9 +43,38 @@ module Admin
             @future_periods ||= relationships.future_periods.to_a
           end
 
-          def same_lead_provider_delivery_partnership?(period, other_period)
-            period.lead_provider_delivery_partnership.present? &&
-              period.lead_provider_delivery_partnership == other_period.lead_provider_delivery_partnership
+          def provider_led_with_partnership?
+            training_period.provider_led_training_programme? &&
+              training_period.school_partnership.present?
+          end
+
+          def blocked_by_current_active_period?
+            current_active_period.present? && !current_active_period_started_before_today?
+          end
+
+          def current_active_period?
+            current_active_period == training_period
+          end
+
+          def no_future_periods?
+            future_periods.empty?
+          end
+
+          def no_current_active_period?
+            current_active_period.blank?
+          end
+
+          def only_future_period?
+            future_periods == [training_period]
+          end
+
+          def future_period?
+            future_periods.include?(training_period)
+          end
+
+          def same_partnership_as_current_active_period?
+            current_active_period.lead_provider_delivery_partnership.present? &&
+              current_active_period.lead_provider_delivery_partnership == training_period.lead_provider_delivery_partnership
           end
 
           def current_active_period_started_before_today?
