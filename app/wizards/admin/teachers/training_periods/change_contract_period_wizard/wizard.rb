@@ -13,6 +13,7 @@ module Admin
             [{
               select_contract_period: SelectContractPeriodStep,
               select_partnership: SelectPartnershipStep,
+              no_partnerships: NoPartnershipsStep,
               check_answers: CheckAnswersStep
             }]
           end
@@ -22,6 +23,8 @@ module Admin
           def allowed_steps
             steps = [:select_contract_period]
             return steps unless selected_contract_period_allowed?
+
+            return steps << :no_partnerships unless school_partnerships.exists?
 
             steps << :select_partnership
             return steps unless selected_school_partnership_allowed?
