@@ -19,7 +19,6 @@
 
   &__summary,
   &__dates,
-  &__summary_and_counts,
   &__summary__meta__dates {
     @include two-col-grid;
   }
@@ -46,13 +45,6 @@
 
     @include govuk-media-query($from: tablet) {
       grid-template-columns: repeat(4, 1fr);
-    }
-  }
-
-  &__summary_and_counts .govuk-table__body {
-    .govuk-table__cell,
-    .govuk-table__header {
-      padding-block: govuk-spacing(6);
     }
   }
 
