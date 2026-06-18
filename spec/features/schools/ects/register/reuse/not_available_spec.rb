@@ -41,7 +41,7 @@ RSpec.describe "Registering an ECT - reuse not available" do
   end
 
   def given_i_am_logged_in_as_a_state_funded_school_user_with_no_reusable_choices
-    context = build_school_with_reusable_provider_led_partnership
+    context = build_school_with_previous_provider_led_choices
 
     @current_school = context.school
     @current_contract_period = context.current_contract_period
