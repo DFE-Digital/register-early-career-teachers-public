@@ -11,7 +11,7 @@ module Admin
 
           def eligible?
             return false unless base_eligible?
-            return false if current_active_period.present? && !current_active_period_start_date_passed?
+            return false if current_active_period.present? && !current_active_period_started_before_today?
 
             return current_active_period == training_period if future_periods.empty?
             return future_periods == [training_period] if current_active_period.blank?
@@ -22,7 +22,7 @@ module Admin
           def current_active_period_changeable?
             return false unless base_eligible?
             return false unless current_active_period == training_period
-            return false unless current_active_period_start_date_passed?
+            return false unless current_active_period_started_before_today?
 
             future_periods.empty?
           end
@@ -53,7 +53,7 @@ module Admin
             !finished_before_today?
           end
 
-          def current_active_period_start_date_passed?
+          def current_active_period_started_before_today?
             current_active_period.started_on < Time.zone.today
           end
 
