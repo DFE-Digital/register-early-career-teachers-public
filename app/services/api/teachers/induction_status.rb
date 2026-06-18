@@ -19,7 +19,7 @@ module API::Teachers
     end
 
     def most_recent_induction_period_end_date
-      teacher.induction_periods.started_on_or_before(Time.zone.today).latest_first.first&.finished_on
+      teacher.induction_periods.latest_first.first&.finished_on
     end
   end
 end
