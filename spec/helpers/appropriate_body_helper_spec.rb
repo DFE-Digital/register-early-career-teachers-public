@@ -3,6 +3,29 @@ RSpec.describe AppropriateBodyHelper, type: :helper do
   include GovukLinkHelper
   include GovukVisuallyHiddenHelper
 
+  describe "#appropriate_bodies_options_for_collection" do
+    subject { appropriate_bodies_options_for_collection }
+
+    let!(:national_appropriate_body_period) do
+      FactoryBot.create(:appropriate_body_period, :national)
+    end
+    let!(:local_authority_appropriate_body_period) do
+      FactoryBot.create(:appropriate_body_period, :local_authority)
+    end
+    let!(:teaching_school_hub_appropriate_body_period) do
+      FactoryBot.create(:appropriate_body_period, :teaching_school_hub)
+    end
+    let!(:missing_dfe_sign_in_organisation_id_appropriate_body_period) do
+      FactoryBot.create(
+        :appropriate_body_period,
+        :teaching_school_hub,
+        dfe_sign_in_organisation_id: nil
+      )
+    end
+
+    it { is_expected.to contain_exactly(teaching_school_hub_appropriate_body_period) }
+  end
+
   describe "#induction_programme_choices" do
     it "returns an array of FormChoice" do
       expect(induction_programme_choices).to be_an(Array)
