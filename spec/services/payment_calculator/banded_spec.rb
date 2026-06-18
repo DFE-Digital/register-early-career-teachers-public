@@ -56,7 +56,7 @@ RSpec.describe PaymentCalculator::Banded do
   let(:banded_fee_structure) do
     FactoryBot.build(
       :contract_banded_fee_structure,
-      :with_bands,
+      :with_band_terms,
       monthly_service_fee: 1_000,
       setup_fee: 500,
       uplift_fee_per_declaration: 50,

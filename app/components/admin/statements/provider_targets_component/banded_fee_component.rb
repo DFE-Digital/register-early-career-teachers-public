@@ -55,12 +55,12 @@ module Admin::Statements
           end
 
           table.with_body do |body|
-            bands.each do |band|
+            terms.each do |term|
               body.with_row do |row|
-                row.with_cell { band_label(band) }
-                row.with_cell(numeric: true, text: band.min_declarations)
-                row.with_cell(numeric: true, text: band.max_declarations)
-                row.with_cell(numeric: true, text: number_to_pounds(band.fee_per_declaration))
+                row.with_cell { band_label(term) }
+                row.with_cell(numeric: true, text: term.min_declarations)
+                row.with_cell(numeric: true, text: term.max_declarations)
+                row.with_cell(numeric: true, text: number_to_pounds(term.fee_per_declaration))
               end
             end
           end
@@ -73,7 +73,13 @@ module Admin::Statements
     attr_reader :contract
 
     delegate :banded_fee_structure, to: :contract, private: true
+
     delegate :number_to_pounds, :number_to_percentage, to: :helpers
+
+    delegate :recruitment_target,
+             :setup_fee,
+             :terms,
+             to: :banded_fee_structure
 
     def recruitment_target_label
       if contract.ecf_contract_type?
@@ -88,11 +94,9 @@ module Admin::Statements
       "(#{number_to_percentage(REVISED_RECRUITMENT_TARGET_MULTIPLIER * 100, precision: 0)})"
     end
 
-    def recruitment_target = banded_fee_structure.recruitment_target
     def display_uplifts? = contract.ecf_contract_type?
     def uplift_amount = banded_fee_structure.uplift_fee_per_declaration
-    def setup_fee = banded_fee_structure.setup_fee
-    def bands = banded_fee_structure.bands
-    def band_label(band) = "Band #{band.letter}"
+
+    def band_label(term) = "Band #{term.letter}"
   end
 end

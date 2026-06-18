@@ -35,7 +35,7 @@ module PaymentCalculator
 
     def band_allocator
       Banded::BandAllocator.new(
-        bands:,
+        terms:,
         billable_declarations:,
         refundable_declarations:,
         previous_billable_declarations:,
@@ -47,6 +47,6 @@ module PaymentCalculator
       @band_allocations_by_declaration_type ||= band_allocator.band_allocations_by_declaration_type
     end
 
-    delegate :bands, to: :banded_fee_structure, private: true
+    delegate :terms, to: :banded_fee_structure, private: true
   end
 end

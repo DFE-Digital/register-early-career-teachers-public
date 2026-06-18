@@ -2,14 +2,12 @@ RSpec.describe PaymentCalculator::Banded::DeclarationTypeOutput do
   subject(:instance) { described_class.new(band_allocation:) }
 
   let(:band_allocation) do
-    PaymentCalculator::Banded::BandAllocation.new(band:, declaration_type:)
+    PaymentCalculator::Banded::BandAllocation.new(term:, declaration_type:)
   end
-  let(:band) do
-    FactoryBot.build_stubbed(
-      :contract_banded_fee_structure_band,
-      fee_per_declaration: 150,
-      output_fee_ratio: 0.5
-    )
+  let(:term) do
+    FactoryBot.build_stubbed(:contract_banded_fee_structure_band_term,
+                             fee_per_declaration: 150,
+                             output_fee_ratio: 0.5)
   end
   let(:declaration_type) { "started" }
 

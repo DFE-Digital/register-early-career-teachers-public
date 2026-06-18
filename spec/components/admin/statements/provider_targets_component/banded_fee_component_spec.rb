@@ -4,7 +4,7 @@ RSpec.describe Admin::Statements::ProviderTargetsComponent::BandedFeeComponent, 
   let(:banded_fee_structure) do
     FactoryBot.build_stubbed(
       :contract_banded_fee_structure,
-      :with_bands,
+      :with_band_terms,
       recruitment_target: 2500,
       uplift_fee_per_declaration: 50,
       setup_fee: 5000,
