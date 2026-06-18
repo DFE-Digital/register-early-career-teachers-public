@@ -186,6 +186,7 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
       expect(response).to redirect_to(admin_teacher_training_path(teacher))
       expect(training_period.reload.finished_on).to eq(today.yesterday)
       expect(replacement_training_period.contract_period).to eq(target_contract_period)
+      expect(replacement_training_period.school_partnership).to eq(target_school_partnership)
       expect(replacement_training_period.schedule).to eq(target_schedule)
 
       follow_redirect!
