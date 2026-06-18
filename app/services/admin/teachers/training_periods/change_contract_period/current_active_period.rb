@@ -31,7 +31,7 @@ module Admin
               replacement_finished_on = training_period.finished_on
               finish_training_period!
               new_training_period = create_replacement_training_period!(finished_on: replacement_finished_on)
-              record_contract_period_changed_event!
+              record_contract_period_changed_event!(new_training_period:)
               new_training_period
             end
           end
@@ -85,10 +85,11 @@ module Admin
             ).call
           end
 
-          def record_contract_period_changed_event!
+          def record_contract_period_changed_event!(new_training_period:)
             ::Events::Record.record_teacher_contract_period_changed_event!(
               author:,
               original_training_period: training_period,
+              new_training_period:,
               teacher: training_period.teacher,
               from_contract_period: current_contract_period,
               to_contract_period: contract_period
