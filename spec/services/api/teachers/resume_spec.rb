@@ -17,6 +17,14 @@ RSpec.describe API::Teachers::Resume, type: :model do
 
           it { is_expected.to be_valid }
 
+          context "when training period has finished today" do
+            let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :ongoing, started_on: 2.months.ago, finished_on: Date.current) }
+            let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :deferred, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on) }
+
+            it { is_expected.to have_one_error_per_attribute }
+            it { is_expected.to have_error(:teacher_api_id, "You cannot resume a participant on the same day they were withdrawn or deferred. Resume them tomorrow or later.") }
+          end
+
           context "when teacher training period is active/ongoing" do
             let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :ongoing, started_on: 2.months.ago) }
             let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on) }
@@ -56,7 +64,8 @@ RSpec.describe API::Teachers::Resume, type: :model do
             it { is_expected.to have_error(:teacher_api_id, "The participant is no longer at the school. Please contact the induction tutor to resolve.") }
           end
 
-          context "when the school period finishes today" do
+          context "when the school period finishes today, but the training period finished before today" do
+            let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :deferred, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on, finished_on: 2.days.ago) }
             let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :ongoing, started_on: 2.months.ago, finished_on: Date.current) }
 
             it { is_expected.to have_one_error_per_attribute }
