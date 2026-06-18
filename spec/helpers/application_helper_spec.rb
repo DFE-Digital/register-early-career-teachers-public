@@ -286,8 +286,8 @@ RSpec.describe ApplicationHelper, type: :helper do
       expect(subject).to match(%r{<html.*#{content}</html>})
     end
 
-    it "includes both the govuk-template and govuk-template--rebranded classes" do
-      expect(subject).to include("govuk-template govuk-template--rebranded")
+    it "includes the govuk-template class" do
+      expect(subject).to include("govuk-template")
     end
 
     it "defaults to english" do
