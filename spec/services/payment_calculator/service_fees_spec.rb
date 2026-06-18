@@ -4,22 +4,18 @@ RSpec.describe PaymentCalculator::ServiceFees do
   describe "#monthly_amount" do
     context "with a single band" do
       let(:banded_fee_structure) do
-        FactoryBot.build(
-          :contract_banded_fee_structure,
-          recruitment_target: 100,
-          setup_fee: 500,
-          bands: [band]
-        )
+        FactoryBot.build(:contract_banded_fee_structure,
+                         recruitment_target: 100,
+                         setup_fee: 500,
+                         terms: [term])
       end
-      let!(:band) do
-        FactoryBot.build(
-          :contract_banded_fee_structure_band,
-          min_declarations: 1,
-          max_declarations: 100,
-          fee_per_declaration: 800,
-          service_fee_ratio: 0.40,
-          output_fee_ratio: 0.60
-        )
+      let!(:term) do
+        FactoryBot.build(:contract_banded_fee_structure_band_term,
+                         min_declarations: 1,
+                         max_declarations: 100,
+                         fee_per_declaration: 800,
+                         service_fee_ratio: 0.40,
+                         output_fee_ratio: 0.60)
       end
 
       it "returns (band_totals - setup_fee_deduction) / 29" do
@@ -33,32 +29,26 @@ RSpec.describe PaymentCalculator::ServiceFees do
 
     context "with multiple bands" do
       let(:banded_fee_structure) do
-        FactoryBot.build(
-          :contract_banded_fee_structure,
-          recruitment_target: 150,
-          setup_fee: 500,
-          bands: [band_a, band_b]
-        )
+        FactoryBot.build(:contract_banded_fee_structure,
+                         recruitment_target: 150,
+                         setup_fee: 500,
+                         terms: [term_a, term_b])
       end
-      let!(:band_a) do
-        FactoryBot.build(
-          :contract_banded_fee_structure_band,
-          min_declarations: 1,
-          max_declarations: 100,
-          fee_per_declaration: 800,
-          service_fee_ratio: 0.40,
-          output_fee_ratio: 0.60
-        )
+      let!(:term_a) do
+        FactoryBot.build(:contract_banded_fee_structure_band_term,
+                         min_declarations: 1,
+                         max_declarations: 100,
+                         fee_per_declaration: 800,
+                         service_fee_ratio: 0.40,
+                         output_fee_ratio: 0.60)
       end
-      let!(:band_b) do
-        FactoryBot.build(
-          :contract_banded_fee_structure_band,
-          min_declarations: 101,
-          max_declarations: 200,
-          fee_per_declaration: 600,
-          service_fee_ratio: 0.40,
-          output_fee_ratio: 0.60
-        )
+      let!(:term_b) do
+        FactoryBot.build(:contract_banded_fee_structure_band_term,
+                         min_declarations: 101,
+                         max_declarations: 200,
+                         fee_per_declaration: 600,
+                         service_fee_ratio: 0.40,
+                         output_fee_ratio: 0.60)
       end
 
       it "deducts setup fee from first band only" do
@@ -72,22 +62,18 @@ RSpec.describe PaymentCalculator::ServiceFees do
 
     context "when recruitment target is less than first band capacity" do
       let(:banded_fee_structure) do
-        FactoryBot.build(
-          :contract_banded_fee_structure,
-          recruitment_target: 50,
-          setup_fee: 500,
-          bands: [band]
-        )
+        FactoryBot.build(:contract_banded_fee_structure,
+                         recruitment_target: 50,
+                         setup_fee: 500,
+                         terms: [term])
       end
-      let!(:band) do
-        FactoryBot.build(
-          :contract_banded_fee_structure_band,
-          min_declarations: 1,
-          max_declarations: 100,
-          fee_per_declaration: 800,
-          service_fee_ratio: 0.40,
-          output_fee_ratio: 0.60
-        )
+      let!(:term) do
+        FactoryBot.build(:contract_banded_fee_structure_band_term,
+                         min_declarations: 1,
+                         max_declarations: 100,
+                         fee_per_declaration: 800,
+                         service_fee_ratio: 0.40,
+                         output_fee_ratio: 0.60)
       end
 
       it "deducts setup fee proportionally to filled slots" do

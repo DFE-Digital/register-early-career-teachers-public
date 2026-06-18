@@ -3,9 +3,10 @@ class Contract::BandedFeeStructure < ApplicationRecord
 
   # Associations
   belongs_to :contract
-  has_many :bands,
+
+  has_many :terms, # PERVIOUSLY bands
            -> { order(min_declarations: :asc) },
-           class_name: "Contract::BandedFeeStructure::Band",
+           class_name: "Contract::BandedFeeStructure::BandTerm",
            inverse_of: :banded_fee_structure,
            dependent: :destroy
 

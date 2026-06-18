@@ -5,7 +5,7 @@ FactoryBot.define do
     monthly_service_fee { Faker::Number.between(from: 0, to: 20_000) }
     setup_fee { Faker::Number.between(from: 1_000, to: 50_000) }
 
-    trait :with_bands do
+    trait :with_band_terms do
       transient do
         declaration_boundaries do
           min = 1
@@ -17,10 +17,10 @@ FactoryBot.define do
         end
       end
 
-      bands do
+      terms do
         declaration_boundaries.map do |boundary|
           association(
-            :contract_banded_fee_structure_band,
+            :contract_banded_fee_structure_band_term,
             banded_fee_structure: instance,
             min_declarations: boundary[:min],
             max_declarations: boundary[:max],

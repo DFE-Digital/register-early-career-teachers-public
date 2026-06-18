@@ -5,7 +5,7 @@ module Admin
         def caption_text = "Early career teacher (ECT) output payments"
         def total_label = "ECTs output payment total"
         def fee_label = "Fee per ECT"
-        def columns = bands.map { "Band #{it.letter}" }
+        def columns = terms.map { "Band #{it.letter}" }
 
         def row_pairs
           grouped_outputs.map { |display_type, outputs| row_pair(display_type, outputs) }
@@ -13,12 +13,12 @@ module Admin
 
       private
 
-        delegate :bands, to: :banded_fee_structure
+        delegate :terms, to: :banded_fee_structure
 
         def row_pair(display_type, outputs)
-          by_band = outputs.group_by(&:band)
-          counts  = bands.map { |b| by_band[b].sum(&:billable_count).to_s }
-          fees    = bands.map { |b| by_band[b].first.type_adjusted_fee_per_declaration }
+          by_term = outputs.group_by(&:term)
+          counts  = terms.map { |b| by_term[b].sum(&:billable_count).to_s }
+          fees    = terms.map { |b| by_term[b].first.type_adjusted_fee_per_declaration }
 
           [
             [
@@ -34,9 +34,11 @@ module Admin
           ]
         end
 
+        # @return [Hash{String => Array<PaymentCalculator::Banded::DeclarationTypeOutput>}]
         def grouped_outputs
-          declaration_type_outputs
-            .group_by { |o| o.declaration_type.start_with?("extended") ? "extended" : o.declaration_type }
+          declaration_type_outputs.group_by do |output|
+            output.declaration_type.start_with?("extended") ? "extended" : output.declaration_type
+          end
         end
       end
     end

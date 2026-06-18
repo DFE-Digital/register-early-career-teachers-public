@@ -3,22 +3,20 @@ RSpec.describe Admin::Statements::OutputPaymentsComponent, type: :component do
 
   let(:statement) { FactoryBot.create(:statement, contract:) }
 
-  let(:banded_fee_structure) { FactoryBot.build(:contract_banded_fee_structure, bands:) }
+  let(:banded_fee_structure) { FactoryBot.build(:contract_banded_fee_structure, terms:) }
 
-  let(:bands) do
+  let(:terms) do
     [
       { min: 1, max: 10, fee: 100 },
       { min: 11, max: 20, fee: 75 },
       { min: 21, max: 30, fee: 50 },
     ].map do |attrs|
-      FactoryBot.build(
-        :contract_banded_fee_structure_band,
-        min_declarations: attrs[:min],
-        max_declarations: attrs[:max],
-        fee_per_declaration: attrs[:fee],
-        output_fee_ratio: 0.8,
-        service_fee_ratio: 0.2
-      )
+      FactoryBot.build(:contract_banded_fee_structure_band_term,
+                       min_declarations: attrs[:min],
+                       max_declarations: attrs[:max],
+                       fee_per_declaration: attrs[:fee],
+                       output_fee_ratio: 0.8,
+                       service_fee_ratio: 0.2)
     end
   end
 
@@ -27,13 +25,13 @@ RSpec.describe Admin::Statements::OutputPaymentsComponent, type: :component do
     billable_counts = { "started" => [10, 8, 5], "completed" => [3, 0, 0] }
 
     declaration_type_outputs = Declaration.declaration_types.keys.flat_map do |declaration_type|
-      bands.map.with_index do |band, i|
+      terms.map.with_index do |term, i|
         count = billable_counts.dig(declaration_type, i) || 0
-        fee = fee_proportions[declaration_type] * band.output_fee_ratio * band.fee_per_declaration
+        fee = fee_proportions[declaration_type] * term.output_fee_ratio * term.fee_per_declaration
 
         double(
           declaration_type:,
-          band:,
+          term:,
           billable_count: count,
           type_adjusted_fee_per_declaration: fee,
           total_billable_amount: count * fee
