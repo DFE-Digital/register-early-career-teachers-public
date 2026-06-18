@@ -15,6 +15,8 @@ priority_seeds = %w[
   bulk_uploads
 ]
 
+ActiveJob::Base.queue_adapter = :inline
+
 seed_files = Dir["db/seeds/*.rb"].sort_by do |path|
   filename = File.basename(path)
   priority_seeds.index(filename.chomp(".rb")) || Float::INFINITY
