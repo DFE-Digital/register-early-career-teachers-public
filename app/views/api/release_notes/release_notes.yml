@@ -42,7 +42,7 @@
 
     ## What you need to do
     
-    No action is needed. However, lead providers can use this change in validation to any existing cases where a reduced induction was completed before they could assign the ECT to a reduced schedule.
+    No action is needed. However, lead providers can use this change in validation for any existing cases where a reduced induction was completed before they could assign the ECT to a reduced schedule.
 
 
 - title: Update to the updated_at attribute on GET partnerships when participant counts change in partnerships
