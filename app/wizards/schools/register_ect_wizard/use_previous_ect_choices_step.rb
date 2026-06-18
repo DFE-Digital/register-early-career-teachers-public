@@ -37,6 +37,7 @@ module Schools
       def provider_led_reusable?
         return false unless school.provider_led_training_programme_chosen?
         return false if school.last_chosen_lead_provider.blank?
+        return false if school.last_chosen_appropriate_body_id.blank?
 
         reusable_partnership_id.present? || reusable_expression_of_interest?
       end
