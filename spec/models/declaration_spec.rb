@@ -132,10 +132,10 @@ describe Declaration do
     end
 
     describe "declaration date relative to milestone dates" do
-      subject(:declaration) { FactoryBot.build(:declaration, declaration_type: :started, declaration_date:, training_period:) }
+      subject(:declaration) { FactoryBot.build(:declaration, :started, declaration_date:, training_period:) }
 
       let(:schedule) { FactoryBot.create(:schedule, contract_period: school_partnership.contract_period) }
-      let(:milestone) { FactoryBot.create(:milestone, declaration_type: :started, schedule:) }
+      let(:milestone) { FactoryBot.create(:milestone, :started, schedule:) }
       let(:school_partnership) { FactoryBot.create(:school_partnership) }
       let(:training_period) { FactoryBot.create(:training_period, schedule:, school_partnership:) }
 
@@ -143,6 +143,44 @@ describe Declaration do
         let(:declaration_date) { Faker::Date.between(from: milestone.start_date, to: milestone.milestone_date) }
 
         it { is_expected.to be_valid }
+      end
+
+      context "when a declaration already exists with an invalid declaration_date" do
+        let(:declaration_date) { milestone.start_date.prev_day }
+
+        before { declaration.save!(validate: false) }
+
+        it "allows updates to the declaration" do
+          expect { declaration.update!(declaration_type: "retained-1") }.not_to raise_error
+        end
+
+        it "still validates the declaration date when it is changed" do
+          expect(declaration).to be_valid
+
+          declaration.declaration_date = milestone.milestone_date.next_day
+
+          expect(declaration).to be_invalid
+          expect(declaration.errors[:declaration_date]).to include("Declaration date must be on or before the milestone date for the same declaration type.")
+        end
+      end
+
+      context "when the declaration training period changes schedule and the declaration date is no longer valid" do
+        let(:declaration_date) { Faker::Date.between(from: milestone.start_date, to: milestone.milestone_date) }
+
+        before do
+          declaration.save!
+
+          different_contract_period = FactoryBot.create(:contract_period, year: school_partnership.contract_period.year - 1)
+          different_schedule = FactoryBot.create(:schedule, contract_period: different_contract_period)
+          FactoryBot.create(:milestone, :started, schedule: different_schedule)
+
+          declaration.training_period.schedule = different_schedule
+        end
+
+        it "is not valid" do
+          expect(declaration).to be_invalid
+          expect(declaration.errors[:declaration_date]).to include("Declaration date must be on or before the milestone date for the same declaration type.")
+        end
       end
 
       context "when the declaration date is before the milestone start_date" do
