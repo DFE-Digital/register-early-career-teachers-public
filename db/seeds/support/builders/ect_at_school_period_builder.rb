@@ -27,6 +27,28 @@ module TeacherHistories
 
       if training_period.save
         print_seed_info("📕 trained by #{lead_provider.name} #{describe_period(training_period)}", indent: indent(2))
+
+        if ect_at_school_period.started_on == training_period.started_on
+          Events::Record.record_teacher_registered_as_ect_event!(
+            author:,
+            school: ect_at_school_period.school,
+            teacher: ect_at_school_period.teacher,
+            ect_at_school_period:,
+            training_period:,
+            happened_at: ect_at_school_period.started_on
+          )
+        end
+
+        if ect_at_school_period.finished_on == training_period.finished_on
+          Events::Record.record_teacher_left_school_as_ect!(
+            author:,
+            school: ect_at_school_period.school,
+            teacher: ect_at_school_period.teacher,
+            ect_at_school_period:,
+            training_period:,
+            happened_at: ect_at_school_period.started_on
+          )
+        end
       else
         print_seed_info("Error messages: #{training_period.errors.messages}", error: true, indent: indent(2))
 
@@ -54,6 +76,28 @@ module TeacherHistories
 
       if training_period.save
         print_seed_info("🦉 received school-led training #{describe_period(training_period)}", indent: indent(2))
+
+        if ect_at_school_period.started_on == training_period.started_on
+          Events::Record.record_teacher_registered_as_ect_event!(
+            author:,
+            school: ect_at_school_period.school,
+            teacher: ect_at_school_period.teacher,
+            ect_at_school_period:,
+            training_period:,
+            happened_at: ect_at_school_period.started_on
+          )
+        end
+
+        if ect_at_school_period.finished_on == training_period.finished_on
+          Events::Record.record_teacher_left_school_as_ect!(
+            author:,
+            school: ect_at_school_period.school,
+            teacher: ect_at_school_period.teacher,
+            ect_at_school_period:,
+            training_period:,
+            happened_at: ect_at_school_period.started_on
+          )
+        end
       else
         print_seed_info("Error messages: #{training_period.errors.messages}", error: true, indent: indent(2))
 
@@ -98,6 +142,10 @@ module TeacherHistories
       elsif (expression_of_interest = LeadProviders::Active.new(lead_provider).active_lead_providers(contract_period).first)
         { expression_of_interest: }
       end
+    end
+
+    def author
+      Events::SystemAuthor.new
     end
   end
 end

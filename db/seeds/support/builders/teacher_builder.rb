@@ -29,7 +29,7 @@ module TeacherHistories
         trn = teacher.trn
         full_name = Teachers::Name.new(teacher).full_name
 
-        print_seed_info("#{full_name} - #{trn}", indent: 2)
+        print_seed_info("🧑‍🏫 #{full_name} - #{trn}", indent: 2)
       else
         print_seed_info("Could not create teacher #{name}", error: true, indent: indent(2))
         print_seed_info("Error messages: #{teacher.errors.messages}", error: true, indent: indent(2))
@@ -90,7 +90,7 @@ module TeacherHistories
       )
 
       if ect_at_school_period.save
-        print_seed_info("ECT at #{ect_at_school_period.school.name} #{describe_period(ect_at_school_period)}", indent: indent(2), colour: ECT_COLOUR)
+        print_seed_info("🏫 ECT at #{ect_at_school_period.school.name} #{describe_period(ect_at_school_period)}", indent: indent(2), colour: ECT_COLOUR)
       else
         print_seed_info("Error messages: #{ect_at_school_period.errors.messages}", error: true, indent: indent(2))
 
@@ -116,7 +116,7 @@ module TeacherHistories
       )
 
       if mentor_at_school_period.save
-        print_seed_info("Mentor at #{mentor_at_school_period.school.name} #{describe_period(mentor_at_school_period)}", indent: indent(2), colour: MENTOR_COLOUR)
+        print_seed_info("🏫 Mentor at #{mentor_at_school_period.school.name} #{describe_period(mentor_at_school_period)}", indent: indent(2), colour: MENTOR_COLOUR)
       else
         print_seed_info("Error messages: #{mentor_at_school_period.errors.messages}", error: true, indent: indent(2))
 
