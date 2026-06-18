@@ -112,7 +112,7 @@ module Schools
       end
 
       def mentor_period_for_school
-        @mentor.mentor_at_school_periods.find_by(school: @school)
+        @mentor.mentor_at_school_periods.where(school: @school).latest_first.first
       end
 
       def assigned_ects
