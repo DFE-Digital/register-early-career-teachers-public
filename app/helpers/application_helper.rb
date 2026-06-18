@@ -90,6 +90,6 @@ module ApplicationHelper
   end
 
   def govuk_html_element(&block)
-    tag.html(lang: "en", class: %w[govuk-template govuk-template--rebranded], &block)
+    tag.html(lang: "en", class: "govuk-template", &block)
   end
 end
