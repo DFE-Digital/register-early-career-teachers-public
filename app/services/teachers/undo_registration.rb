@@ -17,7 +17,7 @@ module Teachers
           finish_periods!
         else
           delete_periods!
-          anonymise_teacher! if anonymise_teacher?
+          anonymiser.anonymise! if anonymiser.permitted?
         end
 
         record_undo_registration_event!
@@ -27,6 +27,10 @@ module Teachers
     end
 
   private
+
+    def anonymiser
+      @anonymiser ||= Teachers::Anonymise.new(teacher:, reason:)
+    end
 
     def billable_or_refundable_declarations_exist?
       Declaration.where(training_period: training_periods)
@@ -48,24 +52,6 @@ module Teachers
       mentorship_periods.find_each(&:destroy!)
       training_periods.find_each(&:destroy!)
       at_school_period.destroy!
-    end
-
-    def anonymise_teacher!
-      teacher.update!(
-        trs_first_name: nil,
-        trs_last_name: nil,
-        corrected_name: nil,
-        trn: nil,
-        trnless: true,
-        anonymisation_reason: reason,
-        anonymised_at: Time.zone.now
-      )
-    end
-
-    def anonymise_teacher?
-      teacher.induction_periods.none? &&
-        teacher.ect_at_school_periods.reload.none? &&
-        teacher.mentor_at_school_periods.reload.none?
     end
 
     def record_undo_registration_event!

@@ -286,53 +286,10 @@ RSpec.describe Teachers::UndoRegistration do
           expect { teacher.reload }.not_to raise_error
         end
 
-        it "preserves api_id" do
-          teacher = ect_at_school_period.teacher
-          original = teacher.api_id
-          undo_registration
-
-          expect(teacher.reload.api_id).to eq(original)
-        end
-
-        it "preserves api_ect_training_record_id" do
-          teacher = ect_at_school_period.teacher
-          original = teacher.api_ect_training_record_id
-          undo_registration
-
-          expect(teacher.reload.api_ect_training_record_id).to eq(original)
-        end
-
-        it "preserves api_mentor_training_record_id" do
-          teacher = ect_at_school_period.teacher
-          original = teacher.api_mentor_training_record_id
-          undo_registration
-
-          expect(teacher.reload.api_mentor_training_record_id).to eq(original)
-        end
-
         it "anonymises the teacher" do
           undo_registration
-          teacher = ect_at_school_period.teacher.reload
 
-          expect(teacher.trs_first_name).to be_nil
-          expect(teacher.trs_last_name).to be_nil
-          expect(teacher.corrected_name).to be_nil
-          expect(teacher.trn).to be_nil
-          expect(teacher.trnless).to be(true)
-        end
-
-        it "sets the anonymisation reason" do
-          undo_registration
-
-          expect(ect_at_school_period.teacher.reload.anonymisation_reason).to eq("registered_in_error")
-        end
-
-        it "sets anonymised_at" do
-          freeze_time do
-            undo_registration
-
-            expect(ect_at_school_period.teacher.reload.anonymised_at).to eq(Time.zone.now)
-          end
+          expect(ect_at_school_period.teacher.reload.anonymised_at).to be_present
         end
       end
     end
@@ -432,53 +389,10 @@ RSpec.describe Teachers::UndoRegistration do
           expect { teacher.reload }.not_to raise_error
         end
 
-        it "preserves api_id" do
-          teacher = mentor_at_school_period.teacher
-          original = teacher.api_id
-          undo_registration
-
-          expect(teacher.reload.api_id).to eq(original)
-        end
-
-        it "preserves api_ect_training_record_id" do
-          teacher = mentor_at_school_period.teacher
-          original = teacher.api_ect_training_record_id
-          undo_registration
-
-          expect(teacher.reload.api_ect_training_record_id).to eq(original)
-        end
-
-        it "preserves api_mentor_training_record_id" do
-          teacher = mentor_at_school_period.teacher
-          original = teacher.api_mentor_training_record_id
-          undo_registration
-
-          expect(teacher.reload.api_mentor_training_record_id).to eq(original)
-        end
-
         it "anonymises the teacher" do
           undo_registration
-          teacher = mentor_at_school_period.teacher.reload
 
-          expect(teacher.trs_first_name).to be_nil
-          expect(teacher.trs_last_name).to be_nil
-          expect(teacher.corrected_name).to be_nil
-          expect(teacher.trn).to be_nil
-          expect(teacher.trnless).to be(true)
-        end
-
-        it "sets the anonymisation reason" do
-          undo_registration
-
-          expect(mentor_at_school_period.teacher.reload.anonymisation_reason).to eq("registered_in_error")
-        end
-
-        it "sets anonymised_at" do
-          freeze_time do
-            undo_registration
-
-            expect(mentor_at_school_period.teacher.reload.anonymised_at).to eq(Time.zone.now)
-          end
+          expect(mentor_at_school_period.teacher.reload.anonymised_at).to be_present
         end
       end
     end
