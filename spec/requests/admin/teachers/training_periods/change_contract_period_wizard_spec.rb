@@ -14,7 +14,17 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
       school:
     )
   end
-  let(:target_school_partnership) do
+  let!(:target_school_partnership) do
+    FactoryBot.create(
+      :school_partnership,
+      :for_year,
+      year: target_contract_period.year,
+      school:,
+      lead_provider: school_partnership.lead_provider,
+      delivery_partner: school_partnership.delivery_partner
+    )
+  end
+  let(:different_school_partnership) do
     FactoryBot.create(
       :school_partnership,
       :for_year,
@@ -142,6 +152,24 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
       select_contract_period_and_partnership
 
       expect(response).to redirect_to(path_for_step("check-answers"))
+    end
+
+    it "validates the selected partnership uses the current lead provider and delivery partner" do
+      post(
+        path_for_step("select-contract-period"),
+        params: { select_contract_period: { contract_period_year: target_contract_period.year } }
+      )
+
+      post(
+        path_for_step("select-partnership"),
+        params: { select_partnership: { school_partnership_id: different_school_partnership.id } }
+      )
+
+      page = Capybara.string(response.body)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(page).to have_text("There is a problem")
+      expect(page).to have_text("Select a partnership")
     end
   end
 

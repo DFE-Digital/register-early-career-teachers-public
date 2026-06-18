@@ -74,7 +74,12 @@ module Admin
             return SchoolPartnership.none unless selected_contract_period
 
             SchoolPartnerships::Search
-              .new(school:, contract_period: selected_contract_period)
+              .new(
+                school:,
+                contract_period: selected_contract_period,
+                lead_provider: training_period.lead_provider,
+                delivery_partner: training_period.delivery_partner
+              )
               .school_partnerships
           end
 
