@@ -124,6 +124,9 @@ namespace :admin do
                 member { get :delete }
               end
               resources :contracts, only: %i[index], controller: "active_lead_providers/contracts"
+              resources :lead_provider_delivery_partnerships, only: %i[index new create destroy], controller: "active_lead_providers/lead_provider_delivery_partnerships" do
+                member { get :delete }
+              end
             end
           end
         end
