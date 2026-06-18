@@ -157,6 +157,8 @@ module API::Teachers
     def trainee_not_completed
       return if errors[:teacher_api_id].any?
       return unless training_period&.teacher_completed_training?
+      # allow an ECT that has completed training to move to a reduced schedule
+      return if schedule&.reduced_schedule? && training_period&.for_ect?
 
       errors.add(:teacher_api_id, "You cannot change this participant's schedule as they have completed their training or induction.")
     end

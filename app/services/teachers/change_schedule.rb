@@ -16,7 +16,7 @@ module Teachers
       ActiveRecord::Base.transaction do
         track_payments_frozen_year!
 
-        if training_period.started_on.past?
+        if new_training_period_required?
           create_new_training_period!
         else
           update_training_period_in_place!
@@ -27,6 +27,16 @@ module Teachers
     end
 
   private
+
+    def new_training_period_required?
+      return false if completed_ect_moving_to_reduced_schedule?
+
+      training_period.started_on.past?
+    end
+
+    def completed_ect_moving_to_reduced_schedule?
+      training_period.for_ect? && schedule.reduced_schedule? && training_period.teacher_completed_training?
+    end
 
     def update_training_period_in_place!
       training_period.update!(
