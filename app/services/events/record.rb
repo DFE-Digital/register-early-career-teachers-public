@@ -513,6 +513,36 @@ module Events
       new(event_type:, author:, heading:, training_period: original_training_period, schedule: original_schedule, teacher:, lead_provider:, metadata:, happened_at:).record_event!
     end
 
+    def self.record_teacher_contract_period_changed_event!(
+      author:,
+      original_training_period:,
+      new_training_period:,
+      teacher:,
+      from_contract_period:,
+      to_contract_period:,
+      happened_at: Time.zone.now
+    )
+      event_type = :teacher_training_period_contract_period_changed
+      teacher_name = Teachers::Name.new(teacher).full_name
+      training_type = (original_training_period.for_ect?) ? "ECT" : "mentor"
+      heading = "#{teacher_name}’s #{training_type} training contract period changed from #{from_contract_period.year} to #{to_contract_period.year}"
+      metadata = {
+        new_training_period_id: new_training_period.id,
+        to_contract_period_id: to_contract_period.id,
+      }
+
+      new(
+        event_type:,
+        author:,
+        heading:,
+        training_period: original_training_period,
+        contract_period: from_contract_period,
+        teacher:,
+        metadata:,
+        happened_at:
+      ).record_event!
+    end
+
     def self.record_teacher_schedule_assigned_to_training_period!(author:, training_period:, teacher:, schedule:, happened_at: Time.zone.now)
       event_type = :teacher_schedule_assigned_to_training_period
       teacher_name = Teachers::Name.new(teacher).full_name

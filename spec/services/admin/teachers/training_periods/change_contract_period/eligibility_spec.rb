@@ -130,6 +130,14 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::Eligibili
     end
   end
 
+  context "when the current active training period starts today" do
+    let(:started_on) { today }
+
+    it "is not eligible" do
+      expect(eligibility).not_to be_eligible
+    end
+  end
+
   context "when there is only one future period and no current active period" do
     let(:started_on) { today.next_month }
 
@@ -229,6 +237,53 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::Eligibili
 
     it "is not eligible" do
       expect(eligibility).not_to be_eligible
+    end
+  end
+
+  describe "#current_active_period_changeable?" do
+    it "is changeable for a provider-led active current period with no future periods" do
+      expect(eligibility).to be_current_active_period_changeable
+    end
+
+    context "when the training period starts today" do
+      let(:started_on) { today }
+
+      it "is not changeable" do
+        expect(eligibility).not_to be_current_active_period_changeable
+      end
+    end
+
+    context "when the training period starts in the future" do
+      let(:started_on) { today.next_month }
+
+      it "is not changeable" do
+        expect(eligibility).not_to be_current_active_period_changeable
+      end
+    end
+
+    context "when there is a future period" do
+      let(:future_started_on) { today.next_month }
+      let(:finished_on) { future_started_on.yesterday }
+
+      before do
+        FactoryBot.create(
+          :training_period,
+          ect_at_school_period: FactoryBot.create(
+            :ect_at_school_period,
+            teacher:,
+            school:,
+            started_on: future_started_on,
+            finished_on: nil
+          ),
+          school_partnership:,
+          started_on: future_started_on,
+          finished_on: nil
+        )
+      end
+
+      it "is not changeable" do
+        expect(eligibility).not_to be_current_active_period_changeable
+      end
     end
   end
 end

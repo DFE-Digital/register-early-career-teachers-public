@@ -6,7 +6,10 @@ module Admin
           def self.permitted_params = []
 
           def save!
-            persist if wizard.valid_step?
+            return false unless wizard.valid_step?
+
+            persist
+            true
           end
 
         private
