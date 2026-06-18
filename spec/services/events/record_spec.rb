@@ -1461,7 +1461,14 @@ RSpec.describe Events::Record do
     let(:from_schedule) { FactoryBot.create(:schedule, contract_period: from_contract_period) }
 
     context "when ECT training" do
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
+      let(:ect_at_school_period) do
+        FactoryBot.create(
+          :ect_at_school_period,
+          teacher:,
+          started_on: 2.months.ago.to_date,
+          finished_on: nil
+        )
+      end
       let(:school_partnership) do
         FactoryBot.create(
           :school_partnership,
@@ -1476,7 +1483,25 @@ RSpec.describe Events::Record do
           :for_ect,
           ect_at_school_period:,
           school_partnership:,
-          schedule: from_schedule
+          schedule: from_schedule,
+          started_on: 1.month.ago.to_date,
+          finished_on: Date.yesterday
+        )
+      end
+      let(:to_schedule) { FactoryBot.create(:schedule, contract_period: to_contract_period) }
+      let(:new_training_period) do
+        FactoryBot.create(
+          :training_period,
+          :for_ect,
+          ect_at_school_period:,
+          school_partnership: FactoryBot.create(
+            :school_partnership,
+            :for_year,
+            year: to_contract_period.year,
+            school: ect_at_school_period.school
+          ),
+          schedule: to_schedule,
+          started_on: Time.zone.today
         )
       end
 
@@ -1485,6 +1510,7 @@ RSpec.describe Events::Record do
           Events::Record.record_teacher_contract_period_changed_event!(
             author:,
             original_training_period:,
+            new_training_period:,
             teacher:,
             from_contract_period:,
             to_contract_period:
@@ -1496,6 +1522,10 @@ RSpec.describe Events::Record do
             teacher:,
             heading: "#{teacher_name}’s ECT training contract period changed from #{from_contract_period.year} to #{to_contract_period.year}",
             event_type: :teacher_training_period_contract_period_changed,
+            metadata: {
+              new_training_period_id: new_training_period.id,
+              to_contract_period_id: to_contract_period.id,
+            },
             happened_at: Time.zone.now,
             **author_params
           )
