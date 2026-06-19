@@ -28,28 +28,61 @@ class ActiveLeadProvider::Band < ApplicationRecord
               message: "Capacity must be a number greater than zero"
             }
 
-  validate :allocation_orders_are_sequential_and_contiguous_from_one
+  validate :first_band_allocation_order_is_one, on: :create
 
+  # Callbacks
   before_validation :assign_allocation_order,
                     on: :create,
-                    if: -> { allocation_order.blank? }
+                    if: -> { active_lead_provider.present? && allocation_order.blank? }
+
+  # @return [Boolean]
+  def editable?
+    active_lead_provider.bands.last == self
+  end
+
+  # @return [Boolean]
+  def allocated?
+    allocation_order.present? && persisted?
+  end
+
+  # @return [Boolean]
+  def first_band?
+    return false unless allocated?
+
+    allocation_order == 1
+  end
+
+  def previous_band
+    return nil unless allocated?
+    return nil if first_band?
+
+    active_lead_provider.bands.find_by(allocation_order: allocation_order - 1)
+  end
+
+  def min_declarations
+    return nil unless allocated?
+    return 1 if first_band?
+
+    previous_band.max_declarations + 1
+  end
+
+  def max_declarations
+    return nil unless allocated?
+    return capacity if first_band?
+
+    min_declarations + capacity - 1
+  end
 
 private
 
   def assign_allocation_order
-    self.allocation_order = self.class.where(active_lead_provider:).maximum(:allocation_order).to_i + 1
+    self.allocation_order = active_lead_provider.bands.count + 1
   end
 
-  def allocation_orders_are_sequential_and_contiguous_from_one
-    return unless active_lead_provider && allocation_order
+  def first_band_allocation_order_is_one
+    return unless allocation_order && allocation_order > 1
+    return if active_lead_provider.bands.exists?
 
-    siblings = self.class.where(active_lead_provider:).excluding(self)
-    orders = siblings.pluck(:allocation_order).append(allocation_order).sort
-    expected = (1..orders.size).to_a
-
-    return if orders == expected
-
-    errors.add(:allocation_order, "The first band's allocation order must be 1") if orders.first != 1
-    errors.add(:allocation_order, "The allocation order should be #{expected.last}") if expected.last != allocation_order
+    errors.add(:allocation_order, "The first band's allocation order must be 1")
   end
 end
