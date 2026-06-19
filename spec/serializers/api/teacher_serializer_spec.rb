@@ -427,6 +427,8 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
 
             expect(mentor_enrolment["induction_end_date"]).to be_nil
 
+            expect(mentor_enrolment["most_recent_induction_period_end_date"]).to be_nil
+
             expect(mentor_enrolment["overall_induction_start_date"]).to be_nil
 
             expect(mentor_enrolment["mentor_funding_end_date"]).to eq(teacher.mentor_became_ineligible_for_funding_on.to_fs(:api))
@@ -493,6 +495,25 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
             it "serializes the deferral" do
               expect(mentor_enrolment["training_status"]).to eq("deferred")
               expect(mentor_enrolment["deferral"]).to eq({ "date" => mentor_training_period.deferred_at.utc.rfc3339, "reason" => "bereavement" })
+            end
+          end
+
+          context "when there is an induction period" do
+            context "when the latest induction period is ongoing" do
+              let!(:first_induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:) }
+
+              it "serializes `most_recent_induction_period_end_date` as nil" do
+                expect(mentor_enrolment["most_recent_induction_period_end_date"]).to be_nil
+              end
+            end
+
+            context "when the latest induction period is closed" do
+              let!(:first_induction_period) { FactoryBot.create(:induction_period, teacher:) }
+              let!(:latest_induction_period) { FactoryBot.create(:induction_period, :pass, teacher:, started_on: 1.week.ago, finished_on: 2.days.ago) }
+
+              it "serializes `most_recent_induction_period_end_date` as nil" do
+                expect(mentor_enrolment["most_recent_induction_period_end_date"]).to be_nil
+              end
             end
           end
         end
