@@ -47,4 +47,7 @@ class AppropriateBodyPeriod < ApplicationRecord
   # TODO: consider removing once view components accept the new AB object not the ABP
   # @return [School]
   delegate :lead_school, to: :appropriate_body, allow_nil: true
+
+  # Predicates
+  def active? = dfe_sign_in_organisation_id.present?
 end
