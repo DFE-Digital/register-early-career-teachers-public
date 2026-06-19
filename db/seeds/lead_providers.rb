@@ -1,4 +1,4 @@
-def describe_lead_provider(lead_provider, years)
+def describe_lead_provider(lead_provider, years, token)
   years_description = if years.any?
                         Colourize.text(years.join(", "), :green)
                       else
@@ -6,6 +6,7 @@ def describe_lead_provider(lead_provider, years)
                       end
 
   print_seed_info("#{lead_provider.name} (#{years_description})", indent: 2)
+  print_seed_info("🔑 Token: #{token}", indent: 4)
 end
 
 lead_providers_data = [
@@ -19,12 +20,20 @@ lead_providers_data = [
 ]
 
 lead_providers_data.each do |data|
-  lead_provider = LeadProvider.find_or_create_by!(data.slice(:name, :vat_registered))
+  lead_provider = FactoryBot.create(:lead_provider, data.slice(:name, :vat_registered))
 
   data[:years].each do |year|
     contract_period = ContractPeriod.find_by!(year:)
     ActiveLeadProvider.find_or_create_by!(lead_provider:, contract_period:)
   end
 
-  describe_lead_provider(lead_provider, data[:years])
+  token = lead_provider.name.parameterize
+
+  FactoryBot.create(:api_token,
+                    lead_provider:,
+                    token:,
+                    description: "A lead provider token for #{lead_provider.name}",
+                    last_used_at: nil)
+
+  describe_lead_provider(lead_provider, data[:years], token)
 end
