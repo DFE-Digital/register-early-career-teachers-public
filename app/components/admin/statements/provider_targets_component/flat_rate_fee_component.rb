@@ -15,7 +15,7 @@ module Admin::Statements
           end
 
           summary_list.with_row do |row|
-            row.with_key(text: "Payment per participant")
+            row.with_key(text: "Fee per declaration")
             row.with_value(text: number_to_pounds(payment_per_participant))
           end
         end
