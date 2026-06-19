@@ -330,7 +330,8 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
       before do
         school.update!(
           last_chosen_training_programme: "provider_led",
-          last_chosen_lead_provider: lead_provider
+          last_chosen_lead_provider: lead_provider,
+          last_chosen_appropriate_body: FactoryBot.build(:appropriate_body_period)
         )
 
         wizard.ect.update!(
@@ -358,6 +359,14 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
 
       it "includes use_previous_ect_choices step" do
         expect(wizard.allowed_steps).to include(:use_previous_ect_choices)
+      end
+
+      context "but the last_chosen_appropriate_body is missing" do
+        before { school.update(last_chosen_appropriate_body: nil) }
+
+        it "does not include use_previous_ect_choices step" do
+          expect(wizard.allowed_steps).not_to include(:use_previous_ect_choices)
+        end
       end
 
       context "and user chooses to use previous choices" do

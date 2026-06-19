@@ -9,8 +9,9 @@ module ReusablePartnershipHelpers
     keyword_init: true
   )
 
-  def build_school_with_reusable_provider_led_partnership(
-    current_year: Time.zone.today.year
+  def build_school_with_previous_provider_led_choices(
+    current_year: Time.zone.today.year,
+    last_chosen_appropriate_body_present: true
   )
     previous_year = current_year - 1
 
@@ -60,13 +61,23 @@ module ReusablePartnershipHelpers
       delivery_partner:
     )
 
-    school = FactoryBot.create(
-      :school,
-      :state_funded,
-      :provider_led_last_chosen,
-      :teaching_school_hub_ab_last_chosen,
-      last_chosen_lead_provider: lead_provider
-    )
+    school = if last_chosen_appropriate_body_present
+               FactoryBot.create(
+                 :school,
+                 :state_funded,
+                 :provider_led_last_chosen,
+                 :teaching_school_hub_ab_last_chosen,
+                 last_chosen_lead_provider: lead_provider
+               )
+             else
+               FactoryBot.create(
+                 :school,
+                 :state_funded,
+                 :provider_led_last_chosen,
+                 last_chosen_appropriate_body: nil,
+                 last_chosen_lead_provider: lead_provider
+               )
+             end
 
     previous_school_partnership = FactoryBot.create(
       :school_partnership,

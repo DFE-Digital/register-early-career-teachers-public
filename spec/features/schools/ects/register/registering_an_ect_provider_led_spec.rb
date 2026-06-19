@@ -24,7 +24,7 @@ RSpec.describe "Registering an ECT with provider-led training" do
   end
 
   def given_i_have_reached_the_training_programme_step
-    context = build_school_with_reusable_provider_led_partnership
+    context = build_school_with_previous_provider_led_choices
 
     @school = context.school
     @current_contract_period = context.current_contract_period
