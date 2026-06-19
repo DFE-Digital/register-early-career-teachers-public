@@ -1,19 +1,27 @@
 RSpec.describe Admin::Statements::ProviderTargetsComponent::BandedFeeComponent, type: :component do
   subject(:component) { described_class.new(contract:) }
 
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+
   let(:banded_fee_structure) do
-    FactoryBot.build_stubbed(
-      :contract_banded_fee_structure,
-      :with_band_terms,
-      recruitment_target: 2500,
-      uplift_fee_per_declaration: 50,
-      setup_fee: 5000,
-      declaration_boundaries: [
-        { min: 1, max: 50 },
-        { min: 51, max: 100 },
-        { min: 101, max: 150 }
-      ]
-    )
+    FactoryBot.build(:contract_banded_fee_structure,
+                     recruitment_target: 2500,
+                     uplift_fee_per_declaration: 50,
+                     setup_fee: 5000,
+                     band_terms: [
+                       FactoryBot.build(:contract_banded_fee_structure_band_term,
+                                        band: active_lead_provider_bands.first),
+                       FactoryBot.build(:contract_banded_fee_structure_band_term,
+                                        band: active_lead_provider_bands.second),
+                       FactoryBot.build(:contract_banded_fee_structure_band_term,
+                                        band: active_lead_provider_bands.third),
+                     ])
+  end
+
+  let(:active_lead_provider_bands) do
+    FactoryBot.create_list(:active_lead_provider_band, 3,
+                           active_lead_provider:,
+                           capacity: 50)
   end
 
   before { render_inline(component) }

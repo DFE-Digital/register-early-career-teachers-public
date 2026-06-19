@@ -29,7 +29,7 @@ module PaymentCalculator
       remaining = recruitment_target
 
       band_terms.sum do |band_term|
-        filled = [remaining, band_term.capacity].min
+        filled = [remaining, band_term.band.capacity].min
         remaining -= filled
 
         filled * band_term.fee_per_declaration * band_term.service_fee_ratio
@@ -47,7 +47,7 @@ module PaymentCalculator
     end
 
     def first_band_term_capacity
-      band_terms.first.capacity
+      band_terms.first.band.capacity
     end
   end
 end

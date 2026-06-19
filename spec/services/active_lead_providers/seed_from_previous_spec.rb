@@ -59,7 +59,7 @@ RSpec.describe ActiveLeadProviders::SeedFromPrevious do
         end
 
         it "builds terms for the new banded_fee_structure" do
-          band_term_attributes = %i[min_declarations max_declarations fee_per_declaration output_fee_ratio service_fee_ratio]
+          band_term_attributes = %i[fee_per_declaration output_fee_ratio service_fee_ratio]
           expect(new_contract.banded_fee_structure.band_terms.map { |t| t.slice(*band_term_attributes) })
             .to match_array(previous_contract.banded_fee_structure.band_terms.map { |t| t.slice(*band_term_attributes) })
           expect(new_contract.banded_fee_structure.band_terms).not_to include(*previous_contract.banded_fee_structure.band_terms)
@@ -177,6 +177,14 @@ private
   def create_subordinate_records(active_lead_provider)
     FactoryBot.create_list(:lead_provider_delivery_partnership, 3, active_lead_provider:)
     contract = FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider:)
+
+    3.times do
+      band = FactoryBot.create(:active_lead_provider_band, active_lead_provider:)
+      FactoryBot.create(:contract_banded_fee_structure_band_term,
+                        banded_fee_structure: contract.banded_fee_structure,
+                        band:)
+    end
+
     contract_year = active_lead_provider.contract_period.year
     date = Date.new(contract_year, 11, 1)
     # Statements span November of contract_year through August three years later

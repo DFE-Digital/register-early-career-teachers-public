@@ -157,11 +157,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_29_150700) do
   end
 
   create_table "contract_banded_fee_structure_band_terms", force: :cascade do |t|
-    t.bigint "band_id"
+    t.bigint "band_id", null: false
     t.bigint "banded_fee_structure_id", null: false
     t.datetime "created_at", null: false
     t.decimal "fee_per_declaration", precision: 12, scale: 2, null: false
-    t.integer "max_declarations", null: false
+    t.integer "max_declarations"
     t.integer "min_declarations", default: 1, null: false
     t.decimal "output_fee_ratio", precision: 3, scale: 2, null: false
     t.decimal "service_fee_ratio", precision: 3, scale: 2, null: false

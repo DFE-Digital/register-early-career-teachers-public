@@ -132,51 +132,58 @@ RSpec.describe "Admin finance statements index", type: :request do
 
       let(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
       let(:lead_provider) { FactoryBot.create(:lead_provider) }
-      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
-      let(:banded_fee_structure) do
-        band_term = FactoryBot.build(:contract_banded_fee_structure_band_term,
-                                     min_declarations: 1,
-                                     max_declarations: 100)
-        FactoryBot.build(:contract_banded_fee_structure, band_terms: [band_term])
+
+      let(:active_lead_provider) do
+        FactoryBot.create(:active_lead_provider,
+                          lead_provider:,
+                          contract_period:)
       end
-      let(:contract) { FactoryBot.create(:contract, :for_ecf, active_lead_provider:, banded_fee_structure:) }
+
+      let(:band) do
+        FactoryBot.create(:active_lead_provider_band,
+                          active_lead_provider:)
+      end
+
+      let(:band_term) do
+        FactoryBot.build(:contract_banded_fee_structure_band_term,
+                         band:)
+      end
+
+      let(:banded_fee_structure) do
+        FactoryBot.build(:contract_banded_fee_structure,
+                         band_terms: [band_term])
+      end
+
+      let(:contract) do
+        FactoryBot.create(:contract, :for_ecf,
+                          active_lead_provider:,
+                          banded_fee_structure:)
+      end
       let!(:statement) do
-        FactoryBot.create(
-          :statement,
-          :paid,
-          contract:,
-          active_lead_provider:,
-          month: 11,
-          year: 2024
-        )
+        FactoryBot.create(:statement, :paid,
+                          contract:,
+                          active_lead_provider:,
+                          month: 11,
+                          year: 2024)
       end
       let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
       let(:school_partnership) do
-        FactoryBot.create(
-          :school_partnership,
-          lead_provider_delivery_partnership: FactoryBot.create(
-            :lead_provider_delivery_partnership,
-            active_lead_provider:,
-            delivery_partner:
-          )
-        )
+        FactoryBot.create(:school_partnership,
+                          lead_provider_delivery_partnership: FactoryBot.create(:lead_provider_delivery_partnership,
+                                                                                active_lead_provider:,
+                                                                                delivery_partner:))
       end
       let(:training_period) do
-        FactoryBot.create(
-          :training_period,
-          :ongoing,
-          school_partnership:,
-          started_on: Date.new(2024, 10, 1),
-          ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing, started_on: Date.new(2024, 10, 1))
-        )
+        FactoryBot.create(:training_period, :ongoing,
+                          school_partnership:,
+                          started_on: Date.new(2024, 10, 1),
+                          ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing,
+                                                                  started_on: Date.new(2024, 10, 1)))
       end
       let!(:declaration) do
-        FactoryBot.create(
-          :declaration,
-          :paid,
-          training_period:,
-          payment_statement: statement
-        )
+        FactoryBot.create(:declaration, :paid,
+                          training_period:,
+                          payment_statement: statement)
       end
       let!(:unrelated_declaration) { FactoryBot.create(:declaration, :paid) }
 
@@ -192,15 +199,11 @@ RSpec.describe "Admin finance statements index", type: :request do
 
       context "when the statement is for service fees" do
         let!(:statement) do
-          FactoryBot.create(
-            :statement,
-            :paid,
-            :service_fee,
-            contract:,
-            active_lead_provider:,
-            month: 11,
-            year: 2024
-          )
+          FactoryBot.create(:statement, :paid, :service_fee,
+                            contract:,
+                            active_lead_provider:,
+                            month: 11,
+                            year: 2024)
         end
 
         it "returns not found" do

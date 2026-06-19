@@ -6,21 +6,22 @@ RSpec.describe Statements::DeclarationSelection do
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
 
   let(:band_max) { 10 }
-  let(:band_terms) do
-    FactoryBot.build_list(:contract_banded_fee_structure_band_term, 1,
-                          min_declarations: 1,
-                          max_declarations: band_max,
-                          fee_per_declaration: 100,
-                          output_fee_ratio: 1.0,
-                          service_fee_ratio: 0.0)
-  end
   let(:banded_fee_structure) do
     FactoryBot.build(:contract_banded_fee_structure,
                      recruitment_target: 10,
                      uplift_fee_per_declaration: 0,
                      monthly_service_fee: 0,
                      setup_fee: 0,
-                     band_terms:)
+                     band_terms: [
+                       FactoryBot.build(:contract_banded_fee_structure_band_term,
+                                        band: active_lead_provider_band)
+                     ])
+  end
+
+  let(:active_lead_provider_band) do
+    FactoryBot.create(:active_lead_provider_band,
+                      active_lead_provider:,
+                      capacity: band_max)
   end
 
   let(:contract) do
@@ -560,24 +561,19 @@ RSpec.describe Statements::DeclarationSelection do
     let(:band_max) { 2 }
 
     let(:qualifying_previous_statement) do
-      FactoryBot.create(
-        :statement,
-        :paid,
-        contract:,
-        active_lead_provider:,
-        month: 10,
-        year: 2024,
-        payment_date: Date.new(2024, 10, 25),
-        deadline_date: Date.new(2024, 9, 30)
-      )
+      FactoryBot.create(:statement, :paid,
+                        contract:,
+                        active_lead_provider:,
+                        month: 10,
+                        year: 2024,
+                        payment_date: Date.new(2024, 10, 25),
+                        deadline_date: Date.new(2024, 9, 30))
     end
     let(:other_lead_provider) { FactoryBot.create(:lead_provider) }
     let(:other_active_lead_provider) do
-      FactoryBot.create(
-        :active_lead_provider,
-        lead_provider: other_lead_provider,
-        contract_period:
-      )
+      FactoryBot.create(:active_lead_provider,
+                        lead_provider: other_lead_provider,
+                        contract_period:)
     end
     let(:other_contract) { FactoryBot.create(:contract, :for_ecf, active_lead_provider: other_active_lead_provider) }
     let(:other_previous_statement) do
