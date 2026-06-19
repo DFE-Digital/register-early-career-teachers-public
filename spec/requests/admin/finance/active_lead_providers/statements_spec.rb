@@ -51,8 +51,17 @@ RSpec.describe "Admin finance active lead provider statements", :enable_finance_
         expect(response).to have_http_status(:ok)
       end
 
-      context "when the contract period has started" do
+      context "when the contract period has started but is not frozen" do
         let(:contract_period) { FactoryBot.create(:contract_period, :current) }
+
+        it "allows the new form" do
+          get new_path
+          expect(response).to have_http_status(:ok)
+        end
+      end
+
+      context "when the contract period is frozen" do
+        let(:contract_period) { FactoryBot.create(:contract_period, :current, :with_payments_frozen) }
 
         it "blocks the new form, redirecting to the index" do
           get new_path
@@ -121,8 +130,18 @@ RSpec.describe "Admin finance active lead provider statements", :enable_finance_
         end
       end
 
-      context "when the contract period has started" do
+      context "when the contract period has started but is not frozen" do
         let(:contract_period) { FactoryBot.create(:contract_period, :current) }
+
+        it "allows the create" do
+          expect {
+            perform_enqueued_jobs { post index_path, params: { statement: params } }
+          }.to change(Statement, :count).by(1)
+        end
+      end
+
+      context "when the contract period is frozen" do
+        let(:contract_period) { FactoryBot.create(:contract_period, :current, :with_payments_frozen) }
 
         it "blocks the create, redirecting to the index" do
           expect {

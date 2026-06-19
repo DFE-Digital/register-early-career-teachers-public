@@ -32,4 +32,4 @@
 
 <%= render Shared::PaginationSummaryComponent.new(pagy: @pagy, record_name: "statements") %>
 
-<%= govuk_button_link_to("Add statement", new_admin_contract_period_active_lead_provider_statement_path(@active_lead_provider.contract_period, @active_lead_provider), disabled: @active_lead_provider.contract_period.started_on_or_before_today?) %>
+<%= govuk_button_link_to("Add statement", new_admin_contract_period_active_lead_provider_statement_path(@active_lead_provider.contract_period, @active_lead_provider), disabled: @active_lead_provider.contract_period.payments_frozen?) %>
