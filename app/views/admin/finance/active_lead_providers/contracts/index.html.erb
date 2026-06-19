@@ -1,33 +1,55 @@
 <% page_data(title: "Contracts", breadcrumbs: @breadcrumbs) %>
 
 <p class="govuk-body">
-  Contracts for <%= @active_lead_provider.lead_provider_name %> in the <%= @active_lead_provider.contract_period_year %> contract period:
+  Contracts for <%= @active_lead_provider.lead_provider_name %> in the <%= @active_lead_provider.contract_period_year %> contract period.
 </p>
 
 <% if @contracts.none? %>
   <p class="govuk-body">No contracts found</p>
 <% else %>
-  <% @contracts.each do |contract| %>
-    <%= govuk_section_break(visible: true, size: "l") %>
-
-    <section class="govuk-!-margin-bottom-9">
-      <h2 class="govuk-heading-l"><%= contract.description %></h2>
-
-      <h3 class="govuk-heading-m">Flat rate fee structure</h3>
-
-      <% if contract.flat_rate_fee_structure.present? %>
-        <%= render Admin::Statements::ProviderTargetsComponent::FlatRateFeeComponent.new(contract:) %>
-      <% else %>
-        <p class="govuk-body">Not applicable</p>
+  <%= govuk_table do |table| %>
+    <% table.with_head do |head| %>
+      <% head.with_row do |row| %>
+        <% row.with_cell(text: "Contract type") %>
+        <% row.with_cell(text: "Created") %>
+        <% row.with_cell(text: "Statement period") %>
+        <% row.with_cell(text: "") if @active_lead_provider.editable? %>
       <% end %>
-
-      <h3 class="govuk-heading-m govuk-!-margin-top-6">Banded fee structure</h3>
-
-      <% if contract.banded_fee_structure.present? %>
-        <%= render Admin::Statements::ProviderTargetsComponent::BandedFeeComponent.new(contract:) %>
-      <% else %>
-        <p class="govuk-body">Not applicable</p>
+    <% end %>
+    <% table.with_body do |body| %>
+      <% @contracts.each do |contract| %>
+        <% body.with_row do |row| %>
+          <% row.with_cell do %>
+            <%= govuk_link_to(
+                  contract.contract_type.humanize.upcase,
+                  admin_contract_period_active_lead_provider_contract_path(@active_lead_provider.contract_period, @active_lead_provider, contract),
+                  visually_hidden_suffix: "contract for #{@active_lead_provider.lead_provider_name} created #{contract.created_at.to_date.to_fs(:govuk)}"
+                ) %>
+          <% end %>
+          <% row.with_cell(text: contract.created_at.to_date.to_fs(:govuk)) %>
+          <% row.with_cell { render Admin::Finance::Contracts::StatementRangeDescription.new(
+                    first_statement: contract.statements.min_by { |s| [s.year, s.month] },
+                    last_statement: contract.statements.max_by { |s| [s.year, s.month] }
+                  ) } %>
+          <% if @active_lead_provider.editable? %>
+            <% row.with_cell do %>
+              <%= govuk_button_to "Delete",
+                    "#",
+                    method: :delete,
+                    secondary: true,
+                    disabled: contract.statements.any?,
+                    visually_hidden_suffix: contract.contract_type.humanize.upcase,
+                    class: "govuk-!-margin-bottom-0" %>
+            <% end %>
+          <% end %>
+        <% end %>
       <% end %>
-    </section>
+    <% end %>
   <% end %>
+<% end %>
+
+<% if @active_lead_provider.editable? %>
+  <div class="govuk-!-text-align-right">
+    <%= govuk_button_link_to "Add contract", "#" %>
+  </div>
 <% end %>

@@ -59,6 +59,10 @@ describe Contract do
     end
   end
 
+  describe "delegations" do
+    it { is_expected.to delegate_method(:editable?).to(:active_lead_provider) }
+  end
+
   describe "immutable active_lead_provider_id" do
     let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
 

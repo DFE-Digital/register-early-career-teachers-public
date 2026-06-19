@@ -50,7 +50,7 @@ module Admin::Statements
               row.with_cell(header: true) { "Band" }
               row.with_cell(header: true, numeric: true, text: "Min")
               row.with_cell(header: true, numeric: true, text: "Max")
-              row.with_cell(header: true, numeric: true, text: "Payment amount per participant")
+              row.with_cell(header: true, numeric: true, text: "Fee per declaration")
             end
           end
 
