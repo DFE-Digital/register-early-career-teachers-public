@@ -190,28 +190,25 @@ describe ECTAtSchoolPeriod do
 
     context "school_reported_appropriate_body_id on :register_ect" do
       context ":register_ect context" do
+        it { is_expected.to validate_presence_of(:school_reported_appropriate_body_id).on(:register_ect) }
+
         context "when the school is independent" do
           context "when national ab chosen" do
-            subject { FactoryBot.create(:ect_at_school_period, :independent_school, :national_ab) }
+            subject { FactoryBot.build_stubbed(:ect_at_school_period, :independent_school, :national_ab) }
 
             it { is_expected.to be_valid(:register_ect) }
           end
 
           context "when teaching school hub ab chosen" do
-            subject { FactoryBot.create(:ect_at_school_period, :independent_school, :teaching_school_hub_ab) }
+            subject { FactoryBot.build_stubbed(:ect_at_school_period, :independent_school, :teaching_school_hub_ab) }
 
             it { is_expected.to be_valid(:register_ect) }
           end
 
           context "when local authority ab chosen" do
-            subject { FactoryBot.build(:ect_at_school_period, :independent_school, :local_authority_ab) }
+            subject { FactoryBot.build_stubbed(:ect_at_school_period, :independent_school, :local_authority_ab) }
 
-            before { subject.valid?(:register_ect) }
-
-            it do
-              expect(subject.errors.messages[:school_reported_appropriate_body_id])
-                .to contain_exactly("Must be national or teaching school hub")
-            end
+            it { is_expected.to have_error(:school_reported_appropriate_body_id, "Must be national or teaching school hub", :register_ect) }
           end
         end
 
@@ -221,12 +218,7 @@ describe ECTAtSchoolPeriod do
           context "when national ab chosen" do
             subject { FactoryBot.build(:ect_at_school_period, :state_funded_school, :national_ab) }
 
-            before { subject.valid?(:register_ect) }
-
-            it do
-              expect(subject.errors.messages[:school_reported_appropriate_body_id])
-                .to contain_exactly("Must be teaching school hub")
-            end
+            it { is_expected.to have_error(:school_reported_appropriate_body_id, "Must be teaching school hub", :register_ect) }
           end
 
           context "when teaching school hub ab chosen" do
@@ -238,12 +230,7 @@ describe ECTAtSchoolPeriod do
           context "when local authority ab chosen" do
             subject { FactoryBot.build(:ect_at_school_period, :state_funded_school, :local_authority_ab) }
 
-            before { subject.valid?(:register_ect) }
-
-            it do
-              expect(subject.errors.messages[:school_reported_appropriate_body_id])
-                .to contain_exactly("Must be teaching school hub")
-            end
+            it { is_expected.to have_error(:school_reported_appropriate_body_id, "Must be teaching school hub", :register_ect) }
           end
         end
       end
