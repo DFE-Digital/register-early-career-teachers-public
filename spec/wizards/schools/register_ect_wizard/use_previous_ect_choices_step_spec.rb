@@ -3,7 +3,7 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
 
   let(:use_previous_ect_choices) { true }
   let(:step_params) { {} }
-  let(:school) { FactoryBot.create(:school) }
+  let(:school) { FactoryBot.create(:school, :teaching_school_hub_ab_last_chosen) }
   let(:store) do
     FactoryBot.build(
       :session_repository,
@@ -154,6 +154,12 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
             expect(step.allowed?).to be(true)
           end
         end
+
+        context "and the last chosen appropriate body is missing" do
+          before { school.update(last_chosen_appropriate_body: nil) }
+
+          it { is_expected.not_to be_allowed }
+        end
       end
 
       context "and previous provider-led training was in a payments-frozen contract period" do
@@ -201,6 +207,12 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
               .and_call_original
 
             expect(step.allowed?).to be(true)
+          end
+
+          context "and the last chosen appropriate body is missing" do
+            before { school.update(last_chosen_appropriate_body: nil) }
+
+            it { is_expected.not_to be_allowed }
           end
         end
 
@@ -526,6 +538,12 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
             expect(step.allowed?).to be(true)
           end
         end
+
+        context "and the last chosen appropriate body is missing" do
+          before { school.update(last_chosen_appropriate_body: nil) }
+
+          it { is_expected.not_to be_allowed }
+        end
       end
 
       context "but there is no reusable partnership and no EOI" do
@@ -615,6 +633,12 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
 
       it "treats reuse as available via school EOI" do
         expect(step.reusable_available?).to be(true)
+      end
+
+      context "and the last chosen appropriate body is missing" do
+        before { school.update(last_chosen_appropriate_body: nil) }
+
+        it { is_expected.not_to be_allowed }
       end
     end
   end
