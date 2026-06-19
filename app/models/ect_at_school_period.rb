@@ -17,13 +17,18 @@ class ECTAtSchoolPeriod < ApplicationRecord
   has_one :latest_mentorship_period, -> { latest_first }, class_name: "MentorshipPeriod"
 
   # Validations
-  validate :appropriate_body_for_independent_school,
-           if: -> { school&.independent? },
-           on: :register_ect
+  with_options on: :register_ect do
+    validates :school_reported_appropriate_body_id, presence: true
 
-  validate :appropriate_body_for_state_funded_school,
-           if: -> { school&.state_funded? },
-           on: :register_ect
+    validate :appropriate_body_active,
+             if: -> { school_reported_appropriate_body.present? }
+
+    validate :appropriate_body_for_independent_school,
+             if: -> { school_reported_appropriate_body.present? && school&.independent? }
+
+    validate :appropriate_body_for_state_funded_school,
+             if: -> { school_reported_appropriate_body.present? && school&.state_funded? }
+  end
 
   validate :teacher_distinct_period
 
@@ -131,14 +136,20 @@ class ECTAtSchoolPeriod < ApplicationRecord
 
 private
 
+  def appropriate_body_active
+    return if school_reported_appropriate_body.active?
+
+    errors.add(:school_reported_appropriate_body_id, "Must be active")
+  end
+
   def appropriate_body_for_independent_school
-    return if school_reported_appropriate_body&.national? || school_reported_appropriate_body&.teaching_school_hub?
+    return if school_reported_appropriate_body.national? || school_reported_appropriate_body.teaching_school_hub?
 
     errors.add(:school_reported_appropriate_body_id, "Must be national or teaching school hub")
   end
 
   def appropriate_body_for_state_funded_school
-    return if school_reported_appropriate_body&.teaching_school_hub?
+    return if school_reported_appropriate_body.teaching_school_hub?
 
     errors.add(:school_reported_appropriate_body_id, "Must be teaching school hub")
   end

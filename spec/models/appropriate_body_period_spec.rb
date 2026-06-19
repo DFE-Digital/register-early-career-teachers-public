@@ -39,6 +39,32 @@ describe AppropriateBodyPeriod do
     end
   end
 
+  describe "predicates" do
+    describe "#active?" do
+      context "when `dfe_sign_in_organisation_id` is present" do
+        subject(:appropriate_body_period) do
+          FactoryBot.build_stubbed(
+            :appropriate_body_period,
+            dfe_sign_in_organisation_id: SecureRandom.uuid
+          )
+        end
+
+        it { is_expected.to be_active }
+      end
+
+      context "when `dfe_sign_in_organisation_id` is missing" do
+        subject(:appropriate_body_period) do
+          FactoryBot.build_stubbed(
+            :appropriate_body_period,
+            dfe_sign_in_organisation_id: nil
+          )
+        end
+
+        it { is_expected.not_to be_active }
+      end
+    end
+  end
+
   describe "validations" do
     subject(:appropriate_body_period) { FactoryBot.build(:appropriate_body_period) }
 
