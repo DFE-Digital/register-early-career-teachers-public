@@ -5,7 +5,7 @@ module TeacherHistories
 
     include TeacherHistories::Indentation
     include TeacherHistories::DateExtractor
-    include TeacherHistories::PeriodDuration
+    include TeacherHistories::PeriodDescription
 
     attr_reader :teacher
 
