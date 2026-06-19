@@ -16,7 +16,9 @@ module PaymentCalculator
     end
 
     # @return [Integer]
-    delegate :capacity, to: :band_term
+    def capacity
+      band_term.band.capacity
+    end
 
     def net_billable_count
       (previous_billable_count + billable_count) - (previous_refundable_count + refundable_count)

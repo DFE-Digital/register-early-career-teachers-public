@@ -1,23 +1,30 @@
 RSpec.describe Admin::Statements::OutputPaymentsComponent, type: :component do
   subject(:component) { described_class.new(statement:) }
 
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
   let(:statement) { FactoryBot.create(:statement, contract:) }
 
-  let(:banded_fee_structure) { FactoryBot.build(:contract_banded_fee_structure, band_terms:) }
-
   let(:band_terms) do
-    [
-      { min: 1, max: 10, fee: 100 },
-      { min: 11, max: 20, fee: 75 },
-      { min: 21, max: 30, fee: 50 },
-    ].map do |attrs|
+    [100, 75, 50].map do |fee_per_declaration|
+      band = FactoryBot.create(:active_lead_provider_band,
+                               active_lead_provider:,
+                               capacity:)
+
       FactoryBot.build(:contract_banded_fee_structure_band_term,
-                       min_declarations: attrs[:min],
-                       max_declarations: attrs[:max],
-                       fee_per_declaration: attrs[:fee],
-                       output_fee_ratio: 0.8,
-                       service_fee_ratio: 0.2)
+                       fee_per_declaration:,
+                       output_fee_ratio:,
+                       service_fee_ratio:,
+                       band:)
     end
+  end
+
+  let(:output_fee_ratio) { 0.8 }
+  let(:service_fee_ratio) { 0.2 }
+  let(:capacity) { 10 }
+
+  let(:banded_fee_structure) do
+    FactoryBot.build(:contract_banded_fee_structure,
+                     band_terms:)
   end
 
   let(:banded_outputs) do
@@ -25,7 +32,7 @@ RSpec.describe Admin::Statements::OutputPaymentsComponent, type: :component do
     billable_counts = { "started" => [10, 8, 5], "completed" => [3, 0, 0] }
 
     declaration_type_outputs = Declaration.declaration_types.keys.flat_map do |declaration_type|
-      band_terms.map.with_index do |band_term, i|
+      banded_fee_structure.band_terms.map.with_index do |band_term, i|
         count = billable_counts.dig(declaration_type, i) || 0
         fee = fee_proportions[declaration_type] * band_term.output_fee_ratio * band_term.fee_per_declaration
 
