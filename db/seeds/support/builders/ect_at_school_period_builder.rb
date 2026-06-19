@@ -2,7 +2,7 @@ module TeacherHistories
   class ECTAtSchoolPeriodBuilder
     include TeacherHistories::DateExtractor
     include TeacherHistories::Indentation
-    include TeacherHistories::PeriodDuration
+    include TeacherHistories::PeriodDescription
 
     attr_reader :ect_at_school_period
 
@@ -15,6 +15,8 @@ module TeacherHistories
     def provider_led_training_period(lead_provider, contract_period, dates, **kwargs, &block)
       started_on, finished_on = extract_date(dates)
 
+      provider_data = build_provider_data(lead_provider:, contract_period:)
+
       training_period = FactoryBot.build(
         :training_period,
         :for_ect,
@@ -22,11 +24,11 @@ module TeacherHistories
         started_on:,
         finished_on:,
         **kwargs,
-        **provider_data(lead_provider:, contract_period:)
+        **provider_data
       )
 
       if training_period.save
-        print_seed_info("📕 trained by #{lead_provider.name} #{describe_period(training_period)}", indent: indent(2))
+        describe_training_period(training_period)
 
         if ect_at_school_period.started_on == training_period.started_on
           Events::Record.record_teacher_registered_as_ect_event!(
@@ -136,11 +138,20 @@ module TeacherHistories
 
   private
 
-    def provider_data(lead_provider:, contract_period:)
-      if (school_partnership = SchoolPartnerships::Search.new(school: ect_at_school_period.school, lead_provider:, contract_period:).school_partnerships.first)
+    def build_provider_data(lead_provider:, contract_period:)
+      # FIXME: could do with a bit more consistency between SchoolPartnerships::Search and LeadProviders::Active on how contract_period is
+      #        used (the year vs the object)
+      case
+      when lead_provider == :auto
+        && (school_partnership = SchoolPartnerships::Search.new(school: ect_at_school_period.school, contract_period:).school_partnerships.first)
+
         { school_partnership: }
-      elsif (expression_of_interest = LeadProviders::Active.new(lead_provider).active_lead_providers(contract_period).first)
+      when (school_partnership = SchoolPartnerships::Search.new(school: ect_at_school_period.school, lead_provider:, contract_period:).school_partnerships.first)
+        { school_partnership: }
+      when (expression_of_interest = LeadProviders::Active.new(lead_provider).active_lead_providers(ContractPeriod.find(contract_period)).first)
         { expression_of_interest: }
+      else
+        fail "No school partnership or expression of interest found"
       end
     end
 

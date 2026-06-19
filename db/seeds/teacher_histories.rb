@@ -192,7 +192,7 @@ end
 
 _freya_allan = teacher(next_trn, "Freya Allan") do
   ect_at_school_period(brookfield_school, "2024-09-01") do
-    training_period(teach_first, 2024, "2024-09-01") do
+    training_period(:auto, 2024, "2024-09-01") do
       declarations(%w[started retained-1 retained-2])
     end
 
@@ -205,5 +205,13 @@ _kelly_macdonald = teacher(next_trn, "Kelly Macdonald") do
 
   ect_at_school_period(abbey_grove_school, "2023-09-01 -> 2026-01-08") do
     school_led_training_period("2023-09-01 -> 2026-01-08")
+  end
+end
+
+_matthew_goode = teacher(next_trn, "Matthew Goode") do
+  description("Expression of interest with teach first")
+
+  ect_at_school_period(mallory_towers, "2025-09-01") do
+    training_period(teach_first, 2025, "2025-09-01")
   end
 end
