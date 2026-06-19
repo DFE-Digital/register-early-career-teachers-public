@@ -199,3 +199,11 @@ _freya_allan = teacher(next_trn, "Freya Allan") do
     mentorship_period(chiwetel_ejiofor, "2024-11-24")
   end
 end
+
+_kelly_macdonald = teacher(next_trn, "Kelly Macdonald") do
+  induction_period(golden_leaf_teaching_school_hub, "2023-08-28")
+
+  ect_at_school_period(abbey_grove_school, "2023-09-01 -> 2026-01-08") do
+    school_led_training_period("2023-09-01 -> 2026-01-08")
+  end
+end
