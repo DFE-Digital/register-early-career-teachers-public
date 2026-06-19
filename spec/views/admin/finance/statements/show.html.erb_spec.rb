@@ -2,16 +2,13 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
   let(:contract_trait) { :for_ecf }
   let!(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
   let(:contract) do
-    FactoryBot.create(
-      :contract,
-      contract_trait,
-      active_lead_provider:,
-      banded_fee_structure:
-    )
+    FactoryBot.create(:contract, contract_trait,
+                      active_lead_provider:,
+                      banded_fee_structure:)
   end
 
   let(:banded_fee_structure) do
-    FactoryBot.build(:contract_banded_fee_structure, :with_band_terms)
+    FactoryBot.build(:contract_banded_fee_structure)
   end
 
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Some LP") }

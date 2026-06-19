@@ -1,7 +1,7 @@
 RSpec.describe PaymentCalculator::Banded::BandAllocator do
   subject(:allocator) do
     described_class.new(
-      band_terms:,
+      band_terms: banded_fee_structure.band_terms,
       billable_declarations: Declaration.where(id: current_billable_ids),
       refundable_declarations: Declaration.where(id: current_refundable_ids),
       previous_billable_declarations: Declaration.where(id: previous_billable_ids),
@@ -10,11 +10,28 @@ RSpec.describe PaymentCalculator::Banded::BandAllocator do
   end
 
   let!(:contract) { FactoryBot.create(:contract, banded_fee_structure:) }
-  let(:banded_fee_structure) { FactoryBot.build(:contract_banded_fee_structure, band_terms: [band_term_a, band_term_b, band_term_c]) }
-  let(:band_term_a) { FactoryBot.build(:contract_banded_fee_structure_band_term, min_declarations: 1, max_declarations: 2) }
-  let(:band_term_b) { FactoryBot.build(:contract_banded_fee_structure_band_term, min_declarations: 3, max_declarations: 4) }
-  let(:band_term_c) { FactoryBot.build(:contract_banded_fee_structure_band_term, min_declarations: 5, max_declarations: 6) }
-  let(:band_terms) { banded_fee_structure.band_terms.order(:min_declarations) }
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+  let(:fee_per_declaration) { 100.0 }
+  let(:banded_fee_structure) do
+    FactoryBot.build(:contract_banded_fee_structure,
+                     band_terms: [
+                       FactoryBot.build(:contract_banded_fee_structure_band_term,
+                                        band: active_lead_provider_bands.first,
+                                        fee_per_declaration:),
+                       FactoryBot.build(:contract_banded_fee_structure_band_term,
+                                        band: active_lead_provider_bands.second,
+                                        fee_per_declaration:),
+                       FactoryBot.build(:contract_banded_fee_structure_band_term,
+                                        band: active_lead_provider_bands.third,
+                                        fee_per_declaration:)
+                     ])
+  end
+
+  let(:active_lead_provider_bands) do
+    FactoryBot.create_list(:active_lead_provider_band, 3,
+                           active_lead_provider:,
+                           capacity: 2)
+  end
 
   let(:current_billable_ids) { [] }
   let(:current_refundable_ids) { [] }
