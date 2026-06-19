@@ -58,9 +58,23 @@ RSpec.describe "admin/finance/active_lead_providers/statements/index.html.erb" d
     expect(rendered).not_to have_selector("a[aria-disabled='true']", text: "Add statement")
   end
 
-  context "when the contract period has already started" do
+  context "when the contract period has already started but is not frozen" do
     let(:contract_period) do
       FactoryBot.create(:contract_period, year: 2020, started_on: Date.new(2020, 6, 1), finished_on: Date.new(2021, 5, 31))
+    end
+
+    it "renders the add button in an enabled state" do
+      render
+
+      expect(rendered).to have_link("Add statement", href: new_admin_contract_period_active_lead_provider_statement_path(contract_period, active_lead_provider))
+      expect(rendered).not_to have_selector("a[aria-disabled='true']", text: "Add statement")
+    end
+  end
+
+  context "when the contract period is frozen" do
+    let(:contract_period) do
+      FactoryBot.create(:contract_period, year: 2020, started_on: Date.new(2020, 6, 1), finished_on: Date.new(2021, 5, 31),
+                                          payments_frozen_at: Time.zone.now)
     end
 
     it "renders the add button in a disabled state" do
