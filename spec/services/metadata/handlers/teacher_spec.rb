@@ -343,6 +343,54 @@ RSpec.describe Metadata::Handlers::Teacher do
             )
           end
 
+          it "updated_at is included in relevant_changes when it is not the only change" do
+            described_class.new(teacher1).refresh_metadata!
+
+            metadata = Metadata::TeacherLeadProvider.find_by!(teacher: teacher1, lead_provider: lead_provider1)
+
+            Metadata::Base.bypass_update_restrictions do
+              metadata.update!(latest_ect_contract_period_year: nil, latest_ect_training_period_id: nil)
+            end
+
+            scope = instance_double(Sentry::Scope, set_context: nil)
+            allow(Sentry).to receive(:with_scope).and_yield(scope)
+
+            handler.track_changes!
+            refresh_metadata
+
+            expect(scope).to have_received(:set_context).with(
+              "metadata_changes",
+              a_hash_including(
+                relevant_changes: a_hash_including(
+                  "updated_at",
+                  "latest_ect_contract_period_year",
+                  "latest_ect_training_period_id"
+                )
+              )
+            )
+          end
+
+          context "when the only change is to ect_assigned_mentor_latest_school_period_id" do
+            it "does not alert on the dangling updated_at change" do
+              described_class.new(teacher1).refresh_metadata!
+
+              metadata = Metadata::TeacherLeadProvider.find_by!(teacher: teacher1, lead_provider: lead_provider1)
+
+              Metadata::Base.bypass_update_restrictions do
+                metadata.update!(ect_assigned_mentor_latest_school_period_id: nil)
+              end
+
+              handler.track_changes!
+
+              scope = instance_double(Sentry::Scope, set_context: nil)
+              allow(Sentry).to receive(:with_scope).and_yield(scope)
+
+              refresh_metadata
+
+              expect(scope).not_to have_received(:set_context)
+            end
+          end
+
           context "when there is also an ongoing mentorship period" do
             let!(:ongoing_mentorship_period) do
               FactoryBot.create(
