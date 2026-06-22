@@ -6,7 +6,8 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Sel
       Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Wizard,
       store:,
       contract_periods:,
-      school_partnerships:
+      school_partnerships:,
+      partnership_selection_required?: partnership_selection_required
     )
   end
   let(:store) { FactoryBot.build(:session_repository) }
@@ -15,6 +16,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Sel
   let(:contract_periods) { ContractPeriod.where(year: available_contract_period.year) }
   let(:available_school_partnership) { FactoryBot.create(:school_partnership) }
   let(:school_partnerships) { SchoolPartnership.where(id: available_school_partnership.id) }
+  let(:partnership_selection_required) { true }
   let(:contract_period_year) { available_contract_period.year }
 
   before do
@@ -84,6 +86,14 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Sel
 
       it "returns no partnerships" do
         expect(step.next_step).to eq(:no_partnerships)
+      end
+    end
+
+    context "when partnership selection is not required" do
+      let(:partnership_selection_required) { false }
+
+      it "returns check answers" do
+        expect(step.next_step).to eq(:check_answers)
       end
     end
   end
