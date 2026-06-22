@@ -72,6 +72,50 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::CurrentAc
     }.not_to(change { Event.where(event_type: "teacher_changes_schedule_training_period").count })
   end
 
+  context "when the current training period only has an expression of interest" do
+    let(:target_school_partnership) { nil }
+    let(:current_active_lead_provider) do
+      FactoryBot.create(:active_lead_provider, contract_period: current_contract_period)
+    end
+    let!(:target_active_lead_provider) do
+      FactoryBot.create(:active_lead_provider, lead_provider: current_active_lead_provider.lead_provider, contract_period: target_contract_period)
+    end
+    let!(:training_period) do
+      FactoryBot.create(
+        :training_period,
+        :ongoing,
+        :with_only_expression_of_interest,
+        ect_at_school_period:,
+        expression_of_interest: current_active_lead_provider,
+        schedule:,
+        started_on:,
+        finished_on:
+      )
+    end
+
+    it "ends the current period and creates a replacement with the equivalent active lead provider" do
+      replacement_training_period = nil
+
+      expect {
+        replacement_training_period = service_call
+      }
+        .to change(TrainingPeriod, :count).by(1)
+        .and change { Event.where(event_type: "teacher_training_period_contract_period_changed").count }.by(1)
+
+      event = Event.where(event_type: "teacher_training_period_contract_period_changed").sole
+
+      expect(training_period.reload.finished_on).to eq(today.yesterday)
+      expect(replacement_training_period.started_on).to eq(today)
+      expect(replacement_training_period.finished_on).to be_nil
+      expect(replacement_training_period.school_partnership).to be_nil
+      expect(replacement_training_period.expression_of_interest).to eq(target_active_lead_provider)
+      expect(replacement_training_period.expression_of_interest.lead_provider).to eq(current_active_lead_provider.lead_provider)
+      expect(replacement_training_period.expression_of_interest_contract_period).to eq(target_contract_period)
+      expect(replacement_training_period.schedule).to eq(target_schedule)
+      expect(event.metadata["new_training_period_id"]).to eq(replacement_training_period.id)
+    end
+  end
+
   context "when the current training period has a future end date" do
     let(:finished_on) { today.next_month }
 
