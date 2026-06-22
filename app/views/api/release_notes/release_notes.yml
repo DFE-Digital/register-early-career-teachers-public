@@ -39,7 +39,7 @@
     - the most recent ended induction period as reported by the ECT's appropriate body
     - null if the ECT has not yet started or is currently serving induction
 
-    When the value changes from null to a date, it indicates that the ECT is no longer serving induction.
+    The ECT is no longer serving induction when the value changes from null to a date.
 
     For mentors the field will always be null.
 
@@ -51,7 +51,7 @@
     
     No action is needed. However, lead providers can use this new attribute to:
 
-    - identify ECTs whose induction has ended unexpectedly
+    - identify ECTs whose inductions have ended unexpectedly
     - follow up with delivery partners and schools to check, for example, if ECTs will continue induction or should be withdrawn from training
 
 
