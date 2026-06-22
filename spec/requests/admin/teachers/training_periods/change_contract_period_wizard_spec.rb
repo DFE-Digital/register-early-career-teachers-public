@@ -14,7 +14,17 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
       school:
     )
   end
-  let(:target_school_partnership) do
+  let!(:target_school_partnership) do
+    FactoryBot.create(
+      :school_partnership,
+      :for_year,
+      year: target_contract_period.year,
+      school:,
+      lead_provider: school_partnership.lead_provider,
+      delivery_partner: school_partnership.delivery_partner
+    )
+  end
+  let(:different_school_partnership) do
     FactoryBot.create(
       :school_partnership,
       :for_year,
@@ -109,6 +119,19 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
 
       expect(response).to redirect_to(path_for_step("select-partnership"))
     end
+
+    context "when there are no partnerships for the current lead provider and delivery partner" do
+      let(:target_school_partnership) { nil }
+
+      it "redirects to the no partnerships page" do
+        post(
+          path_for_step("select-contract-period"),
+          params: { select_contract_period: { contract_period_year: target_contract_period.year } }
+        )
+
+        expect(response).to redirect_to(path_for_step("no-partnerships"))
+      end
+    end
   end
 
   describe "GET select-partnership" do
@@ -142,6 +165,41 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
       select_contract_period_and_partnership
 
       expect(response).to redirect_to(path_for_step("check-answers"))
+    end
+
+    it "validates the selected partnership uses the current lead provider and delivery partner" do
+      post(
+        path_for_step("select-contract-period"),
+        params: { select_contract_period: { contract_period_year: target_contract_period.year } }
+      )
+
+      post(
+        path_for_step("select-partnership"),
+        params: { select_partnership: { school_partnership_id: different_school_partnership.id } }
+      )
+
+      page = Capybara.string(response.body)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(page).to have_text("There is a problem")
+      expect(page).to have_text("Select a partnership")
+    end
+  end
+
+  describe "GET no-partnerships" do
+    let(:target_school_partnership) { nil }
+
+    it "renders the no partnerships page after a contract period has been selected" do
+      post(
+        path_for_step("select-contract-period"),
+        params: { select_contract_period: { contract_period_year: target_contract_period.year } }
+      )
+      follow_redirect!
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("There are no partnerships set up for #{target_contract_period.year}")
+      expect(response.body).to include("You need to add a partnership for #{school.name} in the #{target_contract_period.year} contract period before you can change #{teacher_name}’s contract period.")
+      expect(response.body).to include(admin_school_partnerships_path(school.urn))
     end
   end
 
