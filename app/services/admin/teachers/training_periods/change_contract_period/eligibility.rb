@@ -10,9 +10,15 @@ module Admin
           end
 
           def eligible?
-            return false unless provider_led_with_partnership?
+            return false unless provider_led_with_partnership_or_eoi?
             return false if finished_before_today?
             return false if blocked_by_current_active_period?
+
+            if eoi_only?
+              return current_active_period? if no_future_periods?
+
+              return false
+            end
 
             return current_active_period? if no_future_periods?
             return only_future_period? if no_current_active_period?
@@ -21,7 +27,7 @@ module Admin
           end
 
           def current_active_period_changeable?
-            return false unless provider_led_with_partnership?
+            return false unless provider_led_with_partnership_or_eoi?
             return false if finished_before_today?
             return false unless current_active_period?
             return false unless current_active_period_started_before_today?
@@ -43,9 +49,9 @@ module Admin
             @future_periods ||= relationships.future_periods.to_a
           end
 
-          def provider_led_with_partnership?
+          def provider_led_with_partnership_or_eoi?
             training_period.provider_led_training_programme? &&
-              training_period.school_partnership.present?
+              (training_period.school_partnership.present? || training_period.only_expression_of_interest?)
           end
 
           def blocked_by_current_active_period?
@@ -75,6 +81,10 @@ module Admin
           def same_partnership_as_current_active_period?
             current_active_period.lead_provider_delivery_partnership.present? &&
               current_active_period.lead_provider_delivery_partnership == training_period.lead_provider_delivery_partnership
+          end
+
+          def eoi_only?
+            training_period.only_expression_of_interest?
           end
 
           def current_active_period_started_before_today?
