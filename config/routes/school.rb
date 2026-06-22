@@ -44,6 +44,10 @@ namespace :schools, path: :school do
       concerns :wizardable, wizard: Schools::ECTs::ChangeLeadProviderWizard
     end
 
+    namespace :change_appropriate_body_wizard, path: "change-appropriate-body" do
+      concerns :wizardable, wizard: Schools::ECTs::ChangeAppropriateBodyWizard
+    end
+
     namespace :teacher_leaving_wizard, path: "report-teacher-leaving" do
       concerns :wizardable, wizard: Schools::ECTs::TeacherLeavingWizard
     end
