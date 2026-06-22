@@ -54,13 +54,11 @@ module Metadata::Handlers
     def alert_on_changes(metadata)
       return unless @alert_on_changes
 
-      Rails.logger.warn("[Metadata] (#{metadata.class.name}: #{metadata.id}) - Alert - saved_changes: #{metadata.saved_changes.inspect}")
-
       relevant_changes = alertable_changes(metadata.saved_changes)
 
-      return unless relevant_changes.any?
-
-      Rails.logger.warn("[Metadata] (#{metadata.class.name}: #{metadata.id}) - Alert - relevant_changes: #{relevant_changes.inspect}")
+      # if alertable_changes filters the changes we may be left with updated_at
+      # as the only change and that would then not be relevant on it's own
+      return unless relevant_changes.except(:updated_at).any?
 
       attrs = {
         class: metadata.class.name,
