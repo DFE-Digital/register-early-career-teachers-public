@@ -180,6 +180,48 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe ".record_teacher_merged_events!" do
+    let(:author) { Events::SystemAuthor.new }
+    let(:author_params) { { author_type: "system" } }
+    let(:source) { FactoryBot.create(:teacher, trs_first_name: "Source", trs_last_name: "Teacher") }
+    let(:destination) { FactoryBot.create(:teacher, trs_first_name: "Destination", trs_last_name: "Teacher") }
+
+    it "queues a RecordEventJob on the destination referencing both teachers' api_ids" do
+      Events::Record.record_teacher_merged_events!(author:, source:, destination:)
+
+      expect(RecordEventJob).to have_received(:perform_later).with(
+        hash_including(
+          teacher: destination,
+          event_type: :teacher_merged,
+          heading: "Records were merged into #{Teachers::Name.new(destination).full_name} from #{Teachers::Name.new(source).full_name}",
+          body: a_string_including(source.api_id).and(a_string_including(destination.api_id))
+        )
+      )
+    end
+
+    it "queues a RecordEventJob on the source referencing both teachers' api_ids" do
+      Events::Record.record_teacher_merged_events!(author:, source:, destination:)
+
+      expect(RecordEventJob).to have_received(:perform_later).with(
+        hash_including(
+          teacher: source,
+          event_type: :teacher_merged,
+          heading: "#{Teachers::Name.new(source).full_name} was merged into #{Teachers::Name.new(destination).full_name} and anonymised",
+          body: a_string_including(source.api_id).and(a_string_including(destination.api_id))
+        )
+      )
+    end
+
+    it "appends the supplied note to both event bodies" do
+      Events::Record.record_teacher_merged_events!(author:, source:, destination:, body: "See ticket")
+
+      expect(RecordEventJob).to have_received(:perform_later)
+        .with(hash_including(teacher: destination, body: a_string_ending_with("See ticket")))
+      expect(RecordEventJob).to have_received(:perform_later)
+        .with(hash_including(teacher: source, body: a_string_ending_with("See ticket")))
+    end
+  end
+
   describe ".record_teacher_passes_induction_event!" do
     let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
     let(:mentorship_period) { FactoryBot.create(:mentorship_period, mentee: ect_at_school_period, mentor:) }
