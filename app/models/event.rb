@@ -72,6 +72,7 @@ class Event < ApplicationRecord
     teacher_declaration_payable
     teacher_declaration_paid
     teacher_declaration_clawed_back
+    teacher_appropriate_body_changed
     mentor_completion_status_change
     training_period_assigned_to_school_partnership
     dfe_user_created
