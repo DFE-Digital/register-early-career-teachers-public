@@ -80,10 +80,7 @@ describe Declaration do
       context "when uplift_fee_enabled is false for the contract period" do
         let(:uplift_fees_enabled) { false }
 
-        it "is not valid" do
-          expect(declaration).not_to be_valid
-          expect(declaration.errors[:base]).to include("Uplifts are only applicable to started declarations in an uplift enabled contract period")
-        end
+        it { is_expected.to have_error(:base, "Uplifts are only applicable to started declarations in an uplift enabled contract period") }
 
         context "when uplifts are not present" do
           let(:sparsity_uplift) { nil }
@@ -96,10 +93,7 @@ describe Declaration do
       context "when declaration type is not started" do
         let(:declaration_type) { :completed }
 
-        it "is not valid" do
-          expect(declaration).not_to be_valid
-          expect(declaration.errors[:base]).to include("Uplifts are only applicable to started declarations in an uplift enabled contract period")
-        end
+        it { is_expected.to have_error(:base, "Uplifts are only applicable to started declarations in an uplift enabled contract period") }
       end
     end
 
@@ -159,8 +153,7 @@ describe Declaration do
 
           declaration.declaration_date = milestone.milestone_date.next_day
 
-          expect(declaration).to be_invalid
-          expect(declaration.errors[:declaration_date]).to include("Declaration date must be on or before the milestone date for the same declaration type.")
+          expect(declaration).to have_error(:declaration_date, "Declaration date must be on or before the milestone date for the same declaration type.")
         end
       end
 
@@ -177,28 +170,19 @@ describe Declaration do
           declaration.training_period.schedule = different_schedule
         end
 
-        it "is not valid" do
-          expect(declaration).to be_invalid
-          expect(declaration.errors[:declaration_date]).to include("Declaration date must be on or before the milestone date for the same declaration type.")
-        end
+        it { is_expected.to have_error(:declaration_date, "Declaration date must be on or before the milestone date for the same declaration type.") }
       end
 
       context "when the declaration date is before the milestone start_date" do
         let(:declaration_date) { milestone.start_date - 1.day }
 
-        it "is not valid" do
-          expect(declaration).not_to be_valid
-          expect(declaration.errors[:declaration_date]).to include("Declaration date must be on or after the milestone start date for the same declaration type.")
-        end
+        it { is_expected.to have_error(:declaration_date, "Declaration date must be on or after the milestone start date for the same declaration type.") }
       end
 
       context "when the declaration date is after the milestone_date" do
         let(:declaration_date) { milestone.milestone_date + 1.day }
 
-        it "is not valid" do
-          expect(declaration).not_to be_valid
-          expect(declaration.errors[:declaration_date]).to include("Declaration date must be on or before the milestone date for the same declaration type.")
-        end
+        it { is_expected.to have_error(:declaration_date, "Declaration date must be on or before the milestone date for the same declaration type.") }
       end
 
       describe "contract period consistent across associations" do
@@ -221,10 +205,7 @@ describe Declaration do
           context "when contract periods do not match" do
             subject { FactoryBot.build(:declaration, training_period:, payment_statement: mismatch_statement) }
 
-            it "adds an error to schedule" do
-              expect(subject).to be_invalid
-              expect(subject.errors[:training_period]).to include("Contract period mismatch: training period, payment_statement and clawback_statement must have the same contract period.")
-            end
+            it { is_expected.to have_error(:training_period, "Contract period mismatch: training period, payment_statement and clawback_statement must have the same contract period.") }
           end
         end
 
@@ -238,10 +219,7 @@ describe Declaration do
           context "when contract periods do not match" do
             subject { FactoryBot.build(:declaration, training_period:, clawback_statement: mismatch_statement) }
 
-            it "adds an error to schedule" do
-              expect(subject).to be_invalid
-              expect(subject.errors[:training_period]).to include("Contract period mismatch: training period, payment_statement and clawback_statement must have the same contract period.")
-            end
+            it { is_expected.to have_error(:training_period, "Contract period mismatch: training period, payment_statement and clawback_statement must have the same contract period.") }
           end
         end
       end
@@ -260,10 +238,7 @@ describe Declaration do
         let(:mentee) { FactoryBot.create(:ect_at_school_period, school:, started_on:, finished_on: nil) }
         let(:mentorship_period) { FactoryBot.create(:mentorship_period, mentor:, mentee:, started_on:, finished_on: nil) }
 
-        it "is not valid" do
-          expect(declaration).not_to be_valid
-          expect(declaration.errors[:mentorship_period]).to include("Mentorship period must belong to the trainee")
-        end
+        it { is_expected.to have_error(:mentorship_period, "Mentorship period must belong to the trainee") }
       end
 
       context "when the mentorship_period does belong to the trainee" do
@@ -291,10 +266,7 @@ describe Declaration do
           context "when the declaration_type is #{disallowed_type}" do
             subject { FactoryBot.build(:declaration, training_period:, declaration_type: disallowed_type) }
 
-            it "is not valid" do
-              expect(subject).not_to be_valid
-              expect(subject.errors[:declaration_type]).to include("Only 'started' or 'completed' declaration types are allowed for mentor funding enabled contract periods.")
-            end
+            it { is_expected.to have_error(:declaration_type, "Only 'started' or 'completed' declaration types are allowed for mentor funding enabled contract periods.") }
 
             context "when the training period is for an ECT" do
               let(:training_period) { FactoryBot.create(:training_period, :for_ect) }
