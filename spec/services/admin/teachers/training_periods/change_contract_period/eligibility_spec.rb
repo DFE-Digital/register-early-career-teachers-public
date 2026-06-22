@@ -96,7 +96,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::Eligibili
     end
   end
 
-  context "when the training period has no partnership" do
+  context "when the training period only has an expression of interest" do
     let(:training_period) do
       FactoryBot.create(
         :training_period,
@@ -107,8 +107,34 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::Eligibili
       )
     end
 
-    it "is not eligible" do
-      expect(eligibility).not_to be_eligible
+    it "is eligible" do
+      expect(eligibility).to be_eligible
+    end
+
+    context "when there is a future period" do
+      let(:future_started_on) { today.next_month }
+      let(:finished_on) { future_started_on.yesterday }
+
+      before do
+        FactoryBot.create(
+          :training_period,
+          :with_only_expression_of_interest,
+          ect_at_school_period: FactoryBot.create(
+            :ect_at_school_period,
+            teacher:,
+            school:,
+            started_on: future_started_on,
+            finished_on: nil
+          ),
+          expression_of_interest: training_period.expression_of_interest,
+          started_on: future_started_on,
+          finished_on: nil
+        )
+      end
+
+      it "is not eligible" do
+        expect(eligibility).not_to be_eligible
+      end
     end
   end
 
@@ -243,6 +269,22 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::Eligibili
   describe "#current_active_period_changeable?" do
     it "is changeable for a provider-led active current period with no future periods" do
       expect(eligibility).to be_current_active_period_changeable
+    end
+
+    context "when the provider-led active current period only has an expression of interest" do
+      let(:training_period) do
+        FactoryBot.create(
+          :training_period,
+          :with_only_expression_of_interest,
+          ect_at_school_period:,
+          started_on:,
+          finished_on:
+        )
+      end
+
+      it "is changeable" do
+        expect(eligibility).to be_current_active_period_changeable
+      end
     end
 
     context "when the training period starts today" do
