@@ -5,6 +5,7 @@ module Admin
         class CurrentActivePeriod
           class UnsupportedTrainingPeriodError < StandardError; end
           class ScheduleNotFoundError < StandardError; end
+          class ActiveLeadProviderNotFoundError < StandardError; end
 
           attr_reader :training_period, :contract_period, :school_partnership, :author
 
@@ -24,6 +25,11 @@ module Admin
             if equivalent_schedule.blank?
               raise ScheduleNotFoundError,
                     "No equivalent schedule found for #{training_period.schedule.identifier} in contract period #{contract_period.year}"
+            end
+
+            if training_period.only_expression_of_interest? && equivalent_active_lead_provider.blank?
+              raise ActiveLeadProviderNotFoundError,
+                    "No active lead provider found for #{training_period.expression_of_interest_lead_provider.name} in contract period #{contract_period.year}"
             end
 
             ActiveRecord::Base.transaction do
@@ -78,11 +84,32 @@ module Admin
               period: training_period.at_school_period,
               started_on: Time.zone.today,
               finished_on:,
-              school_partnership:,
-              expression_of_interest: nil,
+              school_partnership: replacement_school_partnership,
+              expression_of_interest: replacement_expression_of_interest,
               schedule: equivalent_schedule,
               author:
             ).call
+          end
+
+          def replacement_school_partnership
+            return if training_period.only_expression_of_interest?
+
+            school_partnership
+          end
+
+          def replacement_expression_of_interest
+            return unless training_period.only_expression_of_interest?
+
+            equivalent_active_lead_provider
+          end
+
+          def equivalent_active_lead_provider
+            return unless training_period.only_expression_of_interest?
+
+            @equivalent_active_lead_provider ||= ActiveLeadProvider.find_by(
+              lead_provider: training_period.expression_of_interest_lead_provider,
+              contract_period:
+            )
           end
 
           def record_contract_period_changed_event!(new_training_period:)
@@ -97,7 +124,7 @@ module Admin
           end
 
           def current_contract_period
-            @current_contract_period ||= training_period.contract_period
+            @current_contract_period ||= training_period.contract_period || training_period.expression_of_interest_contract_period
           end
 
           def track_payments_frozen_year!
