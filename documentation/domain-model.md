@@ -179,6 +179,8 @@ erDiagram
     uuid api_mentor_training_record_id
     datetime api_unfunded_mentor_updated_at
     datetime api_updated_at
+    datetime anonymised_at
+    enum anonymisation_reason
     string corrected_name
     datetime created_at
     date ect_became_ineligible_for_funding_on
