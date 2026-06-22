@@ -3,9 +3,9 @@ TrainingPeriod,136739,delete
 TrainingPeriod,136734,update,"finished_on,2024-06-15,withdrawal_reason,moved_school,withdrawn_at,2025-03-10T16:40:33Z"
 TrainingPeriod,216622,delete
 TrainingPeriod,216619,update,"finished_on,2023-12-21,withdrawal_reason,other,withdrawn_at,2026-02-18T13:00:48Z"
-ECTAtSchoolPeriod,86079,update,"finished_on,2023-12-21,reported_leaving_by_school_id,16862"
 MentorshipPeriod,97533,update,"finished_on,2023-12-21"
+ECTAtSchoolPeriod,86079,update,"finished_on,2023-12-21,reported_leaving_by_school_id,16862"
 TrainingPeriod,130224,delete
 TrainingPeriod,130216,update,"finished_on,2024-03-10,withdrawal_reason,other,withdrawn_at,2026-02-18T12:00:22Z"
-ECTAtSchoolPeriod,4340,update,"finished_on,2024-03-10,reported_leaving_by_school_id,23699"
 MentorshipPeriod,4956,update,"finished_on,2024-03-10"
+ECTAtSchoolPeriod,4340,update,"finished_on,2024-03-10,reported_leaving_by_school_id,23699"
