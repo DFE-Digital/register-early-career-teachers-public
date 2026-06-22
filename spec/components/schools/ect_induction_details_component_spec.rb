@@ -1,4 +1,6 @@
 RSpec.describe Schools::ECTInductionDetailsComponent, type: :component do
+  include Rails.application.routes.url_helpers
+
   let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Alpha Teaching School Hub") }
   let(:teacher) { FactoryBot.create(:teacher, trn: "9876543", trs_first_name: "John", trs_last_name: "Doe") }
   let(:ect) do
@@ -69,6 +71,36 @@ RSpec.describe Schools::ECTInductionDetailsComponent, type: :component do
       expect(page).to have_selector(".govuk-summary-list__key", text: "Appropriate body")
       expect(page).to have_selector(".govuk-summary-list__value", text: "Alpha Teaching School Hub")
       expect(page).not_to have_selector(".govuk-summary-list__value", text: "Not reported")
+    end
+  end
+
+  context "when the teacher does not have an ongoing induction period" do
+    it "renders the change link for the appropriate body" do
+      expect(page).to have_link("Change", href: schools_ects_change_appropriate_body_wizard_edit_path(ect_id: ect.id))
+    end
+  end
+
+  context "when the teacher has an ongoing induction period" do
+    before do
+      FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:)
+      teacher.reload
+      render_inline(described_class.new(ect))
+    end
+
+    it "does not render the change link for the appropriate body" do
+      expect(page).not_to have_link("Change")
+    end
+  end
+
+  context "when the teacher has a finished induction period" do
+    before do
+      FactoryBot.create(:induction_period, teacher:, appropriate_body_period:)
+      teacher.reload
+      render_inline(described_class.new(ect))
+    end
+
+    it "renders the change link for the appropriate body" do
+      expect(page).to have_link("Change", href: schools_ects_change_appropriate_body_wizard_edit_path(ect_id: ect.id))
     end
   end
 end
