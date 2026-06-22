@@ -1,2 +1,3 @@
 object_type,object_id,action,attributes
-MentorshipPeriod,178967,update,"started_on,2024-01-01,finished_on,2026-04-01"
+TrainingPeriod,136739,delete
+TrainingPeriod,136734,update,"finished_on,2024-06-15,withdrawal_reason,moved_school,withdrawn_at,2025-03-10T16:40:33Z"
