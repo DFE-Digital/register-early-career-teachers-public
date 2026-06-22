@@ -10,7 +10,9 @@ module Admin
 
           def self.permitted_params = %i[contract_period_year]
 
-          def next_step = :select_partnership
+          def next_step
+            wizard.school_partnerships.exists? ? :select_partnership : :no_partnerships
+          end
 
         private
 

@@ -5,20 +5,26 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Wiz
   let(:current_contract_period) { FactoryBot.create(:contract_period, year: 2025) }
   let(:target_contract_period) { FactoryBot.create(:contract_period, year: 2026) }
   let(:other_contract_period) { FactoryBot.create(:contract_period, year: 2027) }
+  let(:lead_provider) { FactoryBot.create(:lead_provider) }
+  let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
   let(:school_partnership) do
     FactoryBot.create(
       :school_partnership,
       :for_year,
       year: current_contract_period.year,
-      school:
+      school:,
+      lead_provider:,
+      delivery_partner:
     )
   end
-  let(:target_school_partnership) do
+  let!(:target_school_partnership) do
     FactoryBot.create(
       :school_partnership,
       :for_year,
       year: target_contract_period.year,
-      school:
+      school:,
+      lead_provider:,
+      delivery_partner:
     )
   end
   let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:) }
@@ -53,6 +59,14 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Wiz
       before { store.contract_period_year = target_contract_period.year }
 
       it { is_expected.to eq(%i[select_contract_period select_partnership]) }
+    end
+
+    context "when an available contract period has no partnerships for the current lead provider and delivery partner" do
+      let(:target_school_partnership) { nil }
+
+      before { store.contract_period_year = target_contract_period.year }
+
+      it { is_expected.to eq(%i[select_contract_period no_partnerships]) }
     end
 
     context "when an available contract period and partnership have been selected" do
@@ -140,7 +154,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Wiz
     context "when a contract period has been selected" do
       before { store.contract_period_year = target_contract_period.year }
 
-      it "returns school partnerships for the selected contract period and school" do
+      it "returns school partnerships for the selected contract period, school, lead provider and delivery partner" do
         expect(wizard.school_partnerships).to contain_exactly(target_school_partnership)
       end
     end

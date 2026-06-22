@@ -1,0 +1,16 @@
+<% page_data(
+  title: "There are no partnerships set up for #{@wizard.selected_contract_period.year}",
+  backlink_href: @wizard.previous_step_path
+) %>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <p class="govuk-body">
+      You need to add a partnership for <%= @wizard.school.name %> in the <%= @wizard.selected_contract_period.year %> contract period before you can change <%= @wizard.teacher_name %>’s contract period.
+    </p>
+
+    <p class="govuk-body">
+      <%= govuk_link_to("Add a partnership for #{@wizard.school.name}", admin_school_partnerships_path(@wizard.school.urn)) %>
+    </p>
+  </div>
+</div>
