@@ -17,7 +17,8 @@ RSpec.describe "Release Notes" do
     end
 
     context "with valid slug" do
-      let(:note) { api_release_notes.sample }
+      let(:slug) { "2026-06-17-schedules-can-be-changed-to-reduced-after-ects-have-completed-induction" }
+      let(:note) { api_release_notes.find { it.slug == slug } }
 
       it "renders the note" do
         get(api_guidance_release_note_path(note.slug))
