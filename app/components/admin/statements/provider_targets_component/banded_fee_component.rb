@@ -55,12 +55,12 @@ module Admin::Statements
           end
 
           table.with_body do |body|
-            terms.each do |term|
+            band_terms.each do |band_term|
               body.with_row do |row|
-                row.with_cell { band_label(term) }
-                row.with_cell(numeric: true, text: term.min_declarations)
-                row.with_cell(numeric: true, text: term.max_declarations)
-                row.with_cell(numeric: true, text: number_to_pounds(term.fee_per_declaration))
+                row.with_cell { band_term_label(band_term) }
+                row.with_cell(numeric: true, text: band_term.min_declarations)
+                row.with_cell(numeric: true, text: band_term.max_declarations)
+                row.with_cell(numeric: true, text: number_to_pounds(band_term.fee_per_declaration))
               end
             end
           end
@@ -78,7 +78,7 @@ module Admin::Statements
 
     delegate :recruitment_target,
              :setup_fee,
-             :terms,
+             :band_terms,
              to: :banded_fee_structure
 
     def recruitment_target_label
@@ -97,6 +97,6 @@ module Admin::Statements
     def display_uplifts? = contract.ecf_contract_type?
     def uplift_amount = banded_fee_structure.uplift_fee_per_declaration
 
-    def band_label(term) = "Band #{term.letter}"
+    def band_term_label(band_term) = "Band #{band_term.letter}"
   end
 end

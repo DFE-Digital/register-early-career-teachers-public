@@ -12,10 +12,10 @@ RSpec.describe PaymentCalculator::Banded::Outputs do
   let(:billable_declarations) { Declaration.billable.where.not(id: previous_billable_declarations.pluck(:id)) }
   let(:refundable_declarations) { Declaration.refundable }
   let!(:contract) { FactoryBot.create(:contract, :for_ecf, banded_fee_structure:) }
-  let(:banded_fee_structure) { FactoryBot.build(:contract_banded_fee_structure, terms: [term_a, term_b, term_c]) }
-  let(:term_a) { FactoryBot.build(:contract_banded_fee_structure_band_term, min_declarations: 1, max_declarations: 2, fee_per_declaration: 100.0) }
-  let(:term_b) { FactoryBot.build(:contract_banded_fee_structure_band_term, min_declarations: 3, max_declarations: 4, fee_per_declaration: 100.0) }
-  let(:term_c) { FactoryBot.build(:contract_banded_fee_structure_band_term, min_declarations: 5, max_declarations: 6, fee_per_declaration: 100.0) }
+  let(:banded_fee_structure) { FactoryBot.build(:contract_banded_fee_structure, band_terms: [band_term_a, band_term_b, band_term_c]) }
+  let(:band_term_a) { FactoryBot.build(:contract_banded_fee_structure_band_term, min_declarations: 1, max_declarations: 2, fee_per_declaration: 100.0) }
+  let(:band_term_b) { FactoryBot.build(:contract_banded_fee_structure_band_term, min_declarations: 3, max_declarations: 4, fee_per_declaration: 100.0) }
+  let(:band_term_c) { FactoryBot.build(:contract_banded_fee_structure_band_term, min_declarations: 5, max_declarations: 6, fee_per_declaration: 100.0) }
 
   before do
     FactoryBot.create_list(:declaration, 5, :eligible)

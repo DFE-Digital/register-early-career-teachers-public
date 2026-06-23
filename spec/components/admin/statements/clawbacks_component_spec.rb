@@ -12,32 +12,32 @@ RSpec.describe Admin::Statements::ClawbacksComponent, type: :component do
   end
 
   let(:banded_outputs) do
-    terms = banded_fee_structure.terms
+    band_terms = banded_fee_structure.band_terms
     banded_declaration_type_outputs = [
       double(
         declaration_type: "started",
-        term: terms.first,
+        band_term: band_terms.first,
         refundable_count: 10,
         type_adjusted_fee_per_declaration: 15,
         total_refundable_amount: 150
       ),
       double(
         declaration_type: "started",
-        term: terms.second,
+        band_term: band_terms.second,
         refundable_count: 10,
         type_adjusted_fee_per_declaration: 15,
         total_refundable_amount: 150
       ),
       double(
         declaration_type: "completed",
-        term: terms.first,
+        band_term: band_terms.first,
         refundable_count: 5,
         type_adjusted_fee_per_declaration: 20,
         total_refundable_amount: 100
       ),
       double(
         declaration_type: "completed",
-        term: terms.second,
+        band_term: band_terms.second,
         refundable_count: 0,
         type_adjusted_fee_per_declaration: 20,
         total_refundable_amount: 0

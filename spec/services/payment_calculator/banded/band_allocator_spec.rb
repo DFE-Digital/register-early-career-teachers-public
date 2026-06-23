@@ -1,7 +1,7 @@
 RSpec.describe PaymentCalculator::Banded::BandAllocator do
   subject(:allocator) do
     described_class.new(
-      terms:,
+      band_terms:,
       billable_declarations: Declaration.where(id: current_billable_ids),
       refundable_declarations: Declaration.where(id: current_refundable_ids),
       previous_billable_declarations: Declaration.where(id: previous_billable_ids),
@@ -10,11 +10,11 @@ RSpec.describe PaymentCalculator::Banded::BandAllocator do
   end
 
   let!(:contract) { FactoryBot.create(:contract, banded_fee_structure:) }
-  let(:banded_fee_structure) { FactoryBot.build(:contract_banded_fee_structure, terms: [term_a, term_b, term_c]) }
-  let(:term_a) { FactoryBot.build(:contract_banded_fee_structure_band_term, min_declarations: 1, max_declarations: 2) }
-  let(:term_b) { FactoryBot.build(:contract_banded_fee_structure_band_term, min_declarations: 3, max_declarations: 4) }
-  let(:term_c) { FactoryBot.build(:contract_banded_fee_structure_band_term, min_declarations: 5, max_declarations: 6) }
-  let(:terms) { banded_fee_structure.terms.order(:min_declarations) }
+  let(:banded_fee_structure) { FactoryBot.build(:contract_banded_fee_structure, band_terms: [band_term_a, band_term_b, band_term_c]) }
+  let(:band_term_a) { FactoryBot.build(:contract_banded_fee_structure_band_term, min_declarations: 1, max_declarations: 2) }
+  let(:band_term_b) { FactoryBot.build(:contract_banded_fee_structure_band_term, min_declarations: 3, max_declarations: 4) }
+  let(:band_term_c) { FactoryBot.build(:contract_banded_fee_structure_band_term, min_declarations: 5, max_declarations: 6) }
+  let(:band_terms) { banded_fee_structure.band_terms.order(:min_declarations) }
 
   let(:current_billable_ids) { [] }
   let(:current_refundable_ids) { [] }

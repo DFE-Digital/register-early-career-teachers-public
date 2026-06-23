@@ -17,7 +17,7 @@ FactoryBot.define do
         end
       end
 
-      terms do
+      band_terms do
         declaration_boundaries.map do |boundary|
           association(
             :contract_banded_fee_structure_band_term,

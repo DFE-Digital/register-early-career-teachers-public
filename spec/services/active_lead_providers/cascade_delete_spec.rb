@@ -18,7 +18,7 @@ describe ActiveLeadProviders::CascadeDelete do
   it "destroys the active lead provider with its contracts, fee structures, bands, statements, adjustments and partnerships, leaving delivery partners intact, and records the deleted event" do
     flat_rate_fee_structure_id = flat_rate_fee_structure.id
     banded_fee_structure_id = banded_fee_structure.id
-    term_ids = banded_fee_structure.terms.pluck(:id)
+    band_term_ids = banded_fee_structure.band_terms.pluck(:id)
     delivery_partner = lead_provider_delivery_partnership.delivery_partner
     lead_provider = active_lead_provider.lead_provider
     contract_period = active_lead_provider.contract_period
@@ -29,7 +29,7 @@ describe ActiveLeadProviders::CascadeDelete do
     expect(Contract).not_to exist(contract.id)
     expect(Contract::FlatRateFeeStructure).not_to exist(flat_rate_fee_structure_id)
     expect(Contract::BandedFeeStructure).not_to exist(banded_fee_structure_id)
-    expect(Contract::BandedFeeStructure::BandTerm.where(id: term_ids)).not_to exist
+    expect(Contract::BandedFeeStructure::BandTerm.where(id: band_term_ids)).not_to exist
     expect(Statement).not_to exist(statement.id)
     expect(Statement::Adjustment).not_to exist(statement_adjustment.id)
     expect(LeadProviderDeliveryPartnership).not_to exist(lead_provider_delivery_partnership.id)
