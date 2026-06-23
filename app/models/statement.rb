@@ -56,6 +56,10 @@ class Statement < ApplicationRecord
     end
   end
 
+  def month_year
+    "#{Date::MONTHNAMES[month]} #{year}"
+  end
+
   def shorthand_status
     case status
     when "open"

@@ -48,4 +48,14 @@ class Contract < ApplicationRecord
   def description
     "#{contract_type.humanize.upcase} (created #{created_at.to_fs(:govuk)})"
   end
+
+  def statement_range_description
+    first = statements.min_by { |s| [s.year, s.month] }
+    return "No statements" if first.nil?
+
+    last = statements.max_by { |s| [s.year, s.month] }
+    return first.month_year if first == last
+
+    "#{first.month_year} - #{last.month_year}"
+  end
 end
