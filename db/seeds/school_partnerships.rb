@@ -130,23 +130,3 @@ capita__delivery_partner__2022 =
     describe_school_partnership(sp)
   end
 end
-
-# Create 3 school partnerships for each lead provider and contract period
-ActiveLeadProvider.find_each do |active_lead_provider|
-  3.times do
-    delivery_partner = DeliveryPartner.order("RANDOM()").first
-
-    lead_provider_delivery_partnership =
-      LeadProviderDeliveryPartnership.find_or_create_by!(
-        active_lead_provider:,
-        delivery_partner:
-      )
-
-    school = School.order("RANDOM()").first
-
-    SchoolPartnership.find_or_create_by!(
-      school:,
-      lead_provider_delivery_partnership:
-    )
-  end
-end
