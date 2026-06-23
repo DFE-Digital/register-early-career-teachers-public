@@ -22,7 +22,7 @@
 #     **bold** and _italic_ text
 
 - title: Added new participant attribute 'most_recent_induction_period_end_date'
-  date: 2026-06-22
+  date: 2026-06-23
   tags:
     - new-feature
     - production-release
