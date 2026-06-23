@@ -29,5 +29,6 @@ namespace :api do
     resources :partnerships, only: %i[show index create update], param: :api_id
     resources :schools, only: %i[index show], param: :api_id
     resources :unfunded_mentors, only: %i[index show], path: "unfunded-mentors", param: :api_id
+    resources :mentoring_mentors, only: %i[index show], path: "mentoring-mentors", param: :api_id
   end
 end
