@@ -25,6 +25,6 @@ RSpec.describe Admin::Statements::ProviderTargetsComponent::FlatRateFeeComponent
   end
 
   it "renders the payment per participant" do
-    expect(page).to have_summary_list_row("Payment per participant", value: "£750.00")
+    expect(page).to have_summary_list_row("Fee per declaration", value: "£750.00")
   end
 end

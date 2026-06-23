@@ -1,0 +1,51 @@
+<% page_data(title: @contract.description, breadcrumbs: @breadcrumbs) %>
+
+<%= govuk_summary_list do |summary_list| %>
+  <% summary_list.with_row do |row| %>
+    <% row.with_key(text: "Contract type") %>
+    <% row.with_value(text: @contract.contract_type.humanize.upcase) %>
+  <% end %>
+  <% summary_list.with_row do |row| %>
+    <% row.with_key(text: "Created") %>
+    <% row.with_value(text: @contract.created_at.to_date.to_fs(:govuk)) %>
+  <% end %>
+  <% summary_list.with_row do |row| %>
+    <% row.with_key(text: "VAT rate") %>
+    <% row.with_value(text: number_to_percentage(@contract.vat_rate * 100, precision: 0)) %>
+  <% end %>
+  <% summary_list.with_row do |row| %>
+    <% row.with_key(text: "Statement period") %>
+    <% row.with_value(text: @contract.statement_range_description) %>
+  <% end %>
+<% end %>
+
+<%= govuk_section_break(visible: false, size: "l") %>
+
+<h2 class="govuk-heading-m">Flat rate fee structure</h2>
+
+<% if @contract.flat_rate_fee_structure.present? %>
+  <%= render Admin::Statements::ProviderTargetsComponent::FlatRateFeeComponent.new(contract: @contract) %>
+<% else %>
+  <p class="govuk-body">Not applicable</p>
+<% end %>
+
+<%= govuk_section_break(visible: false, size: "l") %>
+
+<h2 class="govuk-heading-m">Banded fee structure</h2>
+
+<% if @contract.banded_fee_structure.present? %>
+  <%= render Admin::Statements::ProviderTargetsComponent::BandedFeeComponent.new(contract: @contract) %>
+<% else %>
+  <p class="govuk-body">Not applicable</p>
+<% end %>
+
+<% if @contract.editable? %>
+  <div class="govuk-button-group govuk-!-margin-top-6">
+    <%= govuk_button_link_to "Edit", "#" %>
+    <%= govuk_button_to "Delete",
+          "#",
+          method: :delete,
+          secondary: true,
+          disabled: @contract.statements.any? %>
+  </div>
+<% end %>
