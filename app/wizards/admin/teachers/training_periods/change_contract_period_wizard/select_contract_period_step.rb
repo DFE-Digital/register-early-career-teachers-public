@@ -11,6 +11,8 @@ module Admin
           def self.permitted_params = %i[contract_period_year]
 
           def next_step
+            return :check_answers unless wizard.partnership_selection_required?
+
             wizard.school_partnerships.exists? ? :select_partnership : :no_partnerships
           end
 

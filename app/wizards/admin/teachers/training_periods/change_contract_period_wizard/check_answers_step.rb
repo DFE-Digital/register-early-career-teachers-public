@@ -5,9 +5,11 @@ module Admin
         class CheckAnswersStep < Step
           CurrentActivePeriodChange = ::Admin::Teachers::TrainingPeriods::ChangeContractPeriod::CurrentActivePeriod
 
-          self.expected_store_keys = %i[contract_period_year school_partnership_id]
+          self.expected_store_keys = %i[contract_period_year]
 
-          def previous_step = :select_partnership
+          def previous_step
+            wizard.partnership_selection_required? ? :select_partnership : :select_contract_period
+          end
 
           def save!
             service.change_contract_period!
@@ -17,6 +19,9 @@ module Admin
             false
           rescue CurrentActivePeriodChange::ScheduleNotFoundError
             errors.add(:base, "A matching schedule could not be found for the selected contract period")
+            false
+          rescue CurrentActivePeriodChange::ActiveLeadProviderNotFoundError
+            errors.add(:base, "An active lead provider could not be found for the selected contract period")
             false
           end
 
