@@ -78,6 +78,27 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Wiz
       it { is_expected.to eq(%i[select_contract_period select_partnership check_answers]) }
     end
 
+    context "when an EOI only period has a valid contract period selection" do
+      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period: current_contract_period) }
+      let(:training_period) do
+        FactoryBot.create(
+          :training_period,
+          :ongoing,
+          :with_only_expression_of_interest,
+          ect_at_school_period:,
+          expression_of_interest: active_lead_provider,
+          schedule:
+        )
+      end
+
+      before do
+        FactoryBot.create(:active_lead_provider, lead_provider: active_lead_provider.lead_provider, contract_period: target_contract_period)
+        store.contract_period_year = target_contract_period.year
+      end
+
+      it { is_expected.to eq(%i[select_contract_period check_answers]) }
+    end
+
     context "when an unavailable contract period has been selected" do
       before { store.contract_period_year = current_contract_period.year }
 
@@ -122,6 +143,29 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Wiz
       it "keeps the original frozen contract period" do
         expect(wizard.contract_periods)
           .to contain_exactly(contract_period_2022, target_contract_period, other_contract_period)
+      end
+    end
+
+    context "for an EOI only training period" do
+      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period: current_contract_period) }
+      let(:training_period) do
+        FactoryBot.create(
+          :training_period,
+          :ongoing,
+          :with_only_expression_of_interest,
+          ect_at_school_period:,
+          expression_of_interest: active_lead_provider,
+          schedule:
+        )
+      end
+
+      before do
+        FactoryBot.create(:active_lead_provider, lead_provider: active_lead_provider.lead_provider, contract_period: target_contract_period)
+        FactoryBot.create(:active_lead_provider, contract_period: other_contract_period)
+      end
+
+      it "only returns contract periods with an equivalent active lead provider" do
+        expect(wizard.contract_periods).to contain_exactly(target_contract_period)
       end
     end
   end

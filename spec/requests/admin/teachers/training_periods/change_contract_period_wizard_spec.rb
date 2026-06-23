@@ -1,5 +1,6 @@
 RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardController", type: :request do
   include_context "sign in as DfE user"
+  include HaveSummaryListRow
 
   let(:today) { Date.new(2026, 2, 1) }
   let(:teacher) { FactoryBot.create(:teacher) }
@@ -35,6 +36,20 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
   let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:) }
   let(:schedule) { FactoryBot.create(:schedule, contract_period: current_contract_period) }
   let(:target_schedule) { FactoryBot.create(:schedule, contract_period: target_contract_period, identifier: schedule.identifier) }
+  let(:eoi_lead_provider) { FactoryBot.create(:lead_provider) }
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider: eoi_lead_provider, contract_period: current_contract_period) }
+  let!(:target_active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider: eoi_lead_provider, contract_period: target_contract_period) }
+  let(:eoi_only_training_period) do
+    FactoryBot.create(
+      :training_period,
+      :ongoing,
+      :with_only_expression_of_interest,
+      ect_at_school_period:,
+      expression_of_interest: active_lead_provider,
+      schedule:,
+      started_on: today.prev_month
+    )
+  end
   let(:training_period) do
     FactoryBot.create(
       :training_period,
@@ -132,6 +147,19 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
         expect(response).to redirect_to(path_for_step("no-partnerships"))
       end
     end
+
+    context "when the current period only has an expression of interest" do
+      let(:training_period) { eoi_only_training_period }
+
+      it "redirects to check answers" do
+        post(
+          path_for_step("select-contract-period"),
+          params: { select_contract_period: { contract_period_year: target_contract_period.year } }
+        )
+
+        expect(response).to redirect_to(path_for_step("check-answers"))
+      end
+    end
   end
 
   describe "GET select-partnership" do
@@ -225,9 +253,31 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
 
       expect(response).to have_http_status(:ok)
       expect(page).to have_text("Confirm contract period change for #{teacher_name}")
-      expect(page).to have_text(current_contract_period.year.to_s)
-      expect(page).to have_text(target_contract_period.year.to_s)
-      expect(page).to have_text(partnership_name)
+      expect(page).to have_summary_list_row("Existing contract period", value: current_contract_period.year.to_s)
+      expect(page).to have_summary_list_row("New contract period", value: target_contract_period.year.to_s)
+      expect(page).to have_summary_list_row("Partnership", value: partnership_name)
+    end
+
+    context "when the current period only has an expression of interest" do
+      let(:eoi_lead_provider) { FactoryBot.create(:lead_provider, name: "Target Lead Provider") }
+      let(:training_period) { eoi_only_training_period }
+
+      it "renders the CYA page after the contract period has been selected" do
+        post(
+          path_for_step("select-contract-period"),
+          params: { select_contract_period: { contract_period_year: target_contract_period.year } }
+        )
+
+        get path_for_step("check-answers")
+        page = Capybara.string(response.body)
+
+        expect(response).to have_http_status(:ok)
+        expect(page).to have_text("Confirm contract period change for #{teacher_name}")
+        expect(page).to have_summary_list_row("Existing contract period", value: current_contract_period.year.to_s)
+        expect(page).to have_summary_list_row("New contract period", value: target_contract_period.year.to_s)
+        expect(page).to have_summary_list_row("Lead provider", value: "Target Lead Provider")
+        expect(page).to have_summary_list_row("Delivery partner", value: "No delivery partner confirmed")
+      end
     end
   end
 
@@ -262,6 +312,30 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
 
       expect(response).to have_http_status(:unprocessable_content)
       expect(response.body).to include("A matching schedule could not be found for the selected contract period")
+    end
+
+    context "when the current period only has an expression of interest" do
+      let(:training_period) { eoi_only_training_period }
+
+      it "creates a replacement expression of interest only training period" do
+        target_schedule
+
+        post(
+          path_for_step("select-contract-period"),
+          params: { select_contract_period: { contract_period_year: target_contract_period.year } }
+        )
+
+        expect {
+          post path_for_step("check-answers"), params: { check_answers: {} }
+        }.to change { TrainingPeriod.where(ect_at_school_period:).count }.by(1)
+
+        expect(response).to redirect_to(admin_teacher_training_path(teacher))
+        expect(training_period.reload.finished_on).to eq(today.yesterday)
+        expect(replacement_training_period.school_partnership).to be_nil
+        expect(replacement_training_period.expression_of_interest).to eq(target_active_lead_provider)
+        expect(replacement_training_period.expression_of_interest_contract_period).to eq(target_contract_period)
+        expect(replacement_training_period.schedule).to eq(target_schedule)
+      end
     end
   end
 

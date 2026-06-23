@@ -24,6 +24,7 @@ module Admin
             steps = [:select_contract_period]
             return steps unless selected_contract_period_allowed?
 
+            return steps << :check_answers if eoi_only?
             return steps << :no_partnerships unless school_partnerships.exists?
 
             steps << :select_partnership
@@ -52,13 +53,17 @@ module Admin
 
           def contract_periods
             scope = ContractPeriod.enabled.most_recent_first
-            scope = scope.where.not(year: current_contract_period.year) if current_contract_period
+            scope = scope.where.not(year: existing_contract_period.year) if existing_contract_period
 
-            if original_frozen_contract_period_year.in?([2021, 2022])
-              scope.where.not(year: [2021, 2022] - [original_frozen_contract_period_year])
-            else
-              scope.where.not(year: [2021, 2022])
-            end
+            scope = if original_frozen_contract_period_year.in?([2021, 2022])
+                      scope.where.not(year: [2021, 2022] - [original_frozen_contract_period_year])
+                    else
+                      scope.where.not(year: [2021, 2022])
+                    end
+
+            scope = scope.where(year: equivalent_active_lead_providers.select(:contract_period_year)) if eoi_only?
+
+            scope
           end
 
           def selected_contract_period
@@ -108,7 +113,7 @@ module Admin
           end
 
           def existing_contract_period
-            training_period.contract_period
+            training_period.contract_period || training_period.expression_of_interest_contract_period
           end
 
           def selected_partnership_name
@@ -117,10 +122,22 @@ module Admin
             "#{selected_school_partnership.lead_provider.name} & #{selected_school_partnership.delivery_partner.name}"
           end
 
+          def selected_lead_provider_name
+            training_period.expression_of_interest_lead_provider.name
+          end
+
+          def partnership_selection_required?
+            !eoi_only?
+          end
+
         private
 
-          def current_contract_period
-            training_period.contract_period
+          def eoi_only?
+            training_period.only_expression_of_interest?
+          end
+
+          def equivalent_active_lead_providers
+            ActiveLeadProvider.where(lead_provider: training_period.expression_of_interest_lead_provider)
           end
 
           def original_frozen_contract_period_year
