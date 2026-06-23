@@ -169,16 +169,21 @@ RSpec.describe Contract::BandedFeeStructure::BandTerm, type: :model do
         banded_fee_structure = FactoryBot.build(:contract_banded_fee_structure, band_terms:)
         FactoryBot.create(:contract, :for_ecf, active_lead_provider:, banded_fee_structure:)
 
-        new_band_term = FactoryBot.build(:contract_banded_fee_structure_band_term, fee_per_declaration: 150, min_declarations: 1, max_declarations: 2)
-        new_banded_fee_structure = FactoryBot.build(:contract_banded_fee_structure, band_terms: [new_band_term])
+        # Create a second contract with an empty banded fee structure so we can test
+        # adding bands to it individually (autosave now prevents creating a contract
+        # with inconsistent bands in a single save).
+        new_banded_fee_structure = FactoryBot.build(:contract_banded_fee_structure)
         FactoryBot.create(:contract, :for_ecf, active_lead_provider:, banded_fee_structure: new_banded_fee_structure)
 
+        new_band_term = FactoryBot.build(:contract_banded_fee_structure_band_term, banded_fee_structure: new_banded_fee_structure, fee_per_declaration: 150, min_declarations: 1, max_declarations: 2)
         expect(new_band_term).to be_invalid
         expect(new_band_term.errors[:base]).to include(/Band at index 0 is inconsistent across statements for the same active lead provider/)
 
         new_band_term.fee_per_declaration = 100
         expect(new_band_term).to be_valid
         new_band_term.save!
+        # Reload so first_band_min_declarations_is_one sees the saved band term rather than the cached empty collection.
+        new_banded_fee_structure.band_terms.reload
 
         new_band_term = FactoryBot.build(:contract_banded_fee_structure_band_term, banded_fee_structure: new_banded_fee_structure, fee_per_declaration: 150, min_declarations: 3, max_declarations: 5)
         expect(new_band_term).to be_invalid

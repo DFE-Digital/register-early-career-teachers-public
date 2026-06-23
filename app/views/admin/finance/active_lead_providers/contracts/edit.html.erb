@@ -1,0 +1,13 @@
+<% page_data(
+  title: "Edit contract",
+  caption: @active_lead_provider.lead_provider_name,
+  error: @contract.errors.present?,
+  backlink_href: admin_contract_period_active_lead_provider_contract_path(@active_lead_provider.contract_period, @active_lead_provider, @contract)
+) %>
+
+<%= form_with model: @contract,
+              url: admin_contract_period_active_lead_provider_contract_path(@active_lead_provider.contract_period, @active_lead_provider, @contract),
+              method: :patch do |f| %>
+  <%= render "fields", form: f %>
+  <%= f.govuk_submit "Save contract" %>
+<% end %>

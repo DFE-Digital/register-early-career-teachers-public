@@ -1,0 +1,111 @@
+<%= content_for(:error_summary) { form.govuk_error_summary } %>
+
+<%= form.govuk_collection_radio_buttons :contract_type,
+      Contract.contract_types.keys,
+      :itself,
+      ->(type) { type.humanize.upcase },
+      legend: { text: "Contract type", size: "s" } %>
+
+<%= form.govuk_text_field :ecf_contract_version,
+      label: { text: "ECF contract version", size: "s" },
+      width: 10 %>
+
+<%= form.govuk_text_field :ecf_mentor_contract_version,
+      label: { text: "ECF mentor contract version", size: "s" },
+      hint: { text: "Required for ITTECF_ECTP contracts only" },
+      width: 10 %>
+
+<%= form.govuk_text_field :vat_rate,
+      label: { text: "VAT rate (enter as a decimal, e.g. 0.2 for 20%)", size: "s" },
+      width: 5,
+      inputmode: "decimal" %>
+
+<%= govuk_section_break(visible: true, size: "m") %>
+
+<h2 class="govuk-heading-m">Flat rate fee structure</h2>
+
+<p class="govuk-hint">Required for ITTECF_ECTP contracts only. Leave blank for ECF contracts.</p>
+
+<%= form.fields_for :flat_rate_fee_structure do |frs| %>
+  <%= frs.govuk_text_field :recruitment_target,
+        label: { text: "Mentors recruitment target", size: "s" },
+        width: 10,
+        inputmode: "numeric" %>
+
+  <%= frs.govuk_text_field :fee_per_declaration,
+        label: { text: "Fee per declaration (£)", size: "s" },
+        width: 10,
+        inputmode: "decimal" %>
+<% end %>
+
+<%= govuk_section_break(visible: true, size: "m") %>
+
+<h2 class="govuk-heading-m">Banded fee structure</h2>
+
+<%= form.fields_for :banded_fee_structure do |bfs| %>
+  <%= bfs.govuk_text_field :recruitment_target,
+        label: { text: "Recruitment target", size: "s" },
+        width: 10,
+        inputmode: "numeric" %>
+
+  <%= bfs.govuk_text_field :uplift_fee_per_declaration,
+        label: { text: "Uplift fee per declaration (£)", size: "s" },
+        width: 10,
+        inputmode: "decimal" %>
+
+  <%= bfs.govuk_text_field :monthly_service_fee,
+        label: { text: "Monthly service fee (£, optional)", size: "s" },
+        width: 10,
+        inputmode: "decimal" %>
+
+  <%= bfs.govuk_text_field :setup_fee,
+        label: { text: "Setup fee (£)", size: "s" },
+        width: 10,
+        inputmode: "decimal" %>
+
+  <h3 class="govuk-heading-s">Bands</h3>
+
+  <table class="govuk-table">
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header">Band</th>
+        <th scope="col" class="govuk-table__header">Min declarations</th>
+        <th scope="col" class="govuk-table__header">Max declarations</th>
+        <th scope="col" class="govuk-table__header">Service fee (%)</th>
+        <th scope="col" class="govuk-table__header">Output fee (%)</th>
+        <th scope="col" class="govuk-table__header">Fee per declaration (£)</th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      <% bfs.object.bands.each_with_index do |band, index| %>
+        <%= bfs.fields_for :bands, band do |bf| %>
+          <tr class="govuk-table__row" data-controller="band">
+            <th scope="row" class="govuk-table__header"><%= ("A".ord + index).chr %></th>
+            <td class="govuk-table__cell"><%= band.min_declarations %></td>
+            <td class="govuk-table__cell"><%= band.max_declarations %></td>
+            <td class="govuk-table__cell">
+              <%= bf.text_field :service_fee_percentage,
+                    class: "govuk-input govuk-input--width-5",
+                    inputmode: "numeric",
+                    aria: { label: "Band #{("A".ord + index).chr} service fee percentage" },
+                    data: { band_target: "servicePercentage" } %>
+            </td>
+            <td class="govuk-table__cell">
+              <%= bf.text_field :output_fee_percentage,
+                    class: "govuk-input govuk-input--width-5 #{" govuk-input--error" if bf.object.errors[:output_fee_ratio].any?}",
+                    aria: { label: "Band #{("A".ord + index).chr} output fee percentage" },
+                    inputmode: "decimal",
+                    data: { band_target: "outputPercentage", action: "input->band#updateServiceFee" } %>
+            </td>
+            <td class="govuk-table__cell">
+              <%= bf.text_field :fee_per_declaration,
+                    class: "govuk-input govuk-input--width-10 #{" govuk-input--error" if bf.object.errors[:fee_per_declaration].any?}",
+                    inputmode: "decimal",
+                    aria: { label: "Band #{("A".ord + index).chr} fee per declaration" } %>
+            </td>
+          </tr>
+        <% end %>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>

@@ -31,8 +31,8 @@
           <% if @active_lead_provider.editable? %>
             <% row.with_cell do %>
               <%= govuk_button_to "Delete",
-                    "#",
-                    method: :delete,
+                    delete_admin_contract_period_active_lead_provider_contract_path(@active_lead_provider.contract_period, @active_lead_provider, contract),
+                    method: :get,
                     secondary: true,
                     disabled: contract.statements.any?,
                     visually_hidden_suffix: contract.contract_type.humanize.upcase,
@@ -47,6 +47,6 @@
 
 <% if @active_lead_provider.editable? %>
   <div class="govuk-!-text-align-right">
-    <%= govuk_button_link_to "Add contract", "#" %>
+    <%= govuk_button_link_to "Add contract", new_admin_contract_period_active_lead_provider_contract_path(@active_lead_provider.contract_period, @active_lead_provider) %>
   </div>
 <% end %>

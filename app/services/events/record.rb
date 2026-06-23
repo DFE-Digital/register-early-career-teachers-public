@@ -1019,6 +1019,35 @@ module Events
       new(event_type:, author:, heading:, lead_provider:, happened_at:).record_event!
     end
 
+    # Contract Events
+
+    def self.record_contract_created_event!(author:, contract:, happened_at: Time.zone.now)
+      event_type = :contract_created
+      active_lead_provider = contract.active_lead_provider
+      lead_provider = active_lead_provider.lead_provider
+      heading = "Contract created: #{contract.description} for #{lead_provider.name}"
+
+      new(event_type:, author:, heading:, active_lead_provider:, lead_provider:, happened_at:).record_event!
+    end
+
+    def self.record_contract_updated_event!(author:, contract:, modifications:, happened_at: Time.zone.now)
+      event_type = :contract_updated
+      active_lead_provider = contract.active_lead_provider
+      lead_provider = active_lead_provider.lead_provider
+      heading = "Contract updated: #{contract.description} for #{lead_provider.name}"
+
+      new(event_type:, author:, heading:, active_lead_provider:, lead_provider:, happened_at:, modifications:).record_event!
+    end
+
+    def self.record_contract_deleted_event!(author:, active_lead_provider:, happened_at: Time.zone.now)
+      event_type = :contract_deleted
+      lead_provider = active_lead_provider.lead_provider
+      contract_period = active_lead_provider.contract_period
+      heading = "Contract deleted for #{lead_provider.name} in #{contract_period.year}"
+
+      new(event_type:, author:, heading:, active_lead_provider:, lead_provider:, happened_at:).record_event!
+    end
+
     # Delivery Partner Events
 
     def self.record_delivery_partner_created_event!(author:, delivery_partner:, happened_at: Time.zone.now)

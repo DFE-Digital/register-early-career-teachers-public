@@ -1,0 +1,43 @@
+<% contract_path = admin_contract_period_active_lead_provider_contract_path(@active_lead_provider.contract_period, @active_lead_provider, @contract) %>
+
+<% page_data(
+  title: "Delete contract",
+  caption: @active_lead_provider.lead_provider_name,
+  backlink_href: contract_path
+) %>
+
+<%= govuk_summary_list do |summary_list| %>
+  <% summary_list.with_row do |row| %>
+    <% row.with_key(text: "Contract type") %>
+    <% row.with_value(text: @contract.contract_type.humanize.upcase) %>
+  <% end %>
+  <% summary_list.with_row do |row| %>
+    <% row.with_key(text: "Created") %>
+    <% row.with_value(text: @contract.created_at.to_date.to_fs(:govuk)) %>
+  <% end %>
+  <% summary_list.with_row do |row| %>
+    <% row.with_key(text: "Statement period") %>
+    <% row.with_value(text: @contract.statement_range_description) %>
+  <% end %>
+<% end %>
+
+<% if @contract.statements.any? %>
+  <%= govuk_warning_text do %>
+    This contract has statements and cannot be deleted.
+  <% end %>
+
+  <%= govuk_button_link_to "Return to contract", contract_path, secondary: true %>
+<% else %>
+  <%= govuk_warning_text do %>
+    Are you sure you want to delete this contract?<br>
+    This action cannot be undone.
+  <% end %>
+
+  <div class="govuk-button-group">
+    <%= govuk_button_to "Delete contract",
+          admin_contract_period_active_lead_provider_contract_path(@active_lead_provider.contract_period, @active_lead_provider, @contract),
+          method: :delete,
+          warning: true %>
+    <%= govuk_button_link_to "Cancel", contract_path, secondary: true %>
+  </div>
+<% end %>
