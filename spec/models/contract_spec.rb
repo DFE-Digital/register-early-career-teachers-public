@@ -135,18 +135,21 @@ describe Contract do
   describe "#description" do
     subject(:description) { contract.description }
 
-    around { |example| travel_to(Time.zone.local(2026, 1, 15, 14, 30)) { example.run } }
-
-    context "when the contract type is `ITTECF_ECTP`" do
+    context "when the contract type is `ITTECF_ECTP` with no statements" do
       let(:contract) { FactoryBot.create(:contract, :for_ittecf_ectp) }
 
-      it { is_expected.to eq("ITTECF ECTP (created 15 January 2026, 2:30pm)") }
+      it { is_expected.to eq("ITTECF ECTP No statements") }
     end
 
-    context "when the contract type is `ECF`" do
+    context "when the contract type is `ECF` with statements" do
       let(:contract) { FactoryBot.create(:contract, :for_ecf) }
 
-      it { is_expected.to eq("ECF (created 15 January 2026, 2:30pm)") }
+      before do
+        FactoryBot.create(:statement, contract:, month: 1, year: 2025)
+        FactoryBot.create(:statement, contract:, month: 5, year: 2026)
+      end
+
+      it { is_expected.to eq("ECF January 2025 - May 2026") }
     end
   end
 end
