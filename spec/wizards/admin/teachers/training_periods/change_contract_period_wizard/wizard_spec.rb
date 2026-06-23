@@ -161,6 +161,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Wiz
 
       before do
         FactoryBot.create(:active_lead_provider, lead_provider: active_lead_provider.lead_provider, contract_period: target_contract_period)
+        FactoryBot.create(:active_lead_provider, contract_period: other_contract_period)
       end
 
       it "only returns contract periods with an equivalent active lead provider" do
