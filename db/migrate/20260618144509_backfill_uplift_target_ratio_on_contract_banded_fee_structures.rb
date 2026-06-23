@@ -17,5 +17,8 @@ class BackfillUpliftTargetRatioOnContractBandedFeeStructures < ActiveRecord::Mig
     end
   end
 
-  def down = nil
+  def down
+    raise ActiveRecord::IrreversibleMigration,
+          "The original uplift target ratio values cannot be restored"
+  end
 end
