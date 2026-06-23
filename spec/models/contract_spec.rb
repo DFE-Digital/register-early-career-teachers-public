@@ -59,6 +59,10 @@ describe Contract do
     end
   end
 
+  describe "delegations" do
+    it { is_expected.to delegate_method(:editable?).to(:active_lead_provider) }
+  end
+
   describe "immutable active_lead_provider_id" do
     let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
 
@@ -100,6 +104,31 @@ describe Contract do
       let(:vat_registered) { false }
 
       it { is_expected.to eq(0) }
+    end
+  end
+
+  describe "#statement_range_description" do
+    subject(:statement_range_description) { contract.statement_range_description }
+
+    let(:contract) { FactoryBot.create(:contract) }
+
+    context "with no statements" do
+      it { is_expected.to eq("No statements") }
+    end
+
+    context "with a single statement" do
+      before { FactoryBot.create(:statement, contract:, month: 1, year: 2025) }
+
+      it { is_expected.to eq("January 2025") }
+    end
+
+    context "with multiple statements spanning different periods" do
+      before do
+        FactoryBot.create(:statement, contract:, month: 1, year: 2025)
+        FactoryBot.create(:statement, contract:, month: 5, year: 2026)
+      end
+
+      it { is_expected.to eq("January 2025 - May 2026") }
     end
   end
 

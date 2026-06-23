@@ -54,7 +54,7 @@ RSpec.describe Admin::Statements::ProviderTargetsComponent::BandedFeeComponent, 
     it "renders a table of the bands" do
       expect(page).to have_statement_table(
         caption: "Contract bands",
-        headings: ["Band", "Min", "Max", "Payment amount per participant"],
+        headings: ["Band", "Min", "Max", "Fee per declaration"],
         rows: [
           ["Band A", 1, 50, /£\d+\.\d{2}/],
           ["Band B", 51, 100, /£\d+\.\d{2}/],
@@ -92,7 +92,7 @@ RSpec.describe Admin::Statements::ProviderTargetsComponent::BandedFeeComponent, 
     it "renders a table of the bands" do
       expect(page).to have_statement_table(
         caption: "Contract bands",
-        headings: ["Band", "Min", "Max", "Payment amount per participant"],
+        headings: ["Band", "Min", "Max", "Fee per declaration"],
         rows: [
           ["Band A", 1, 50, /£\d+\.\d{2}/],
           ["Band B", 51, 100, /£\d+\.\d{2}/],
