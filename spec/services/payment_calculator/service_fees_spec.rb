@@ -7,9 +7,9 @@ RSpec.describe PaymentCalculator::ServiceFees do
         FactoryBot.build(:contract_banded_fee_structure,
                          recruitment_target: 100,
                          setup_fee: 500,
-                         terms: [term])
+                         band_terms: [band_term])
       end
-      let!(:term) do
+      let!(:band_term) do
         FactoryBot.build(:contract_banded_fee_structure_band_term,
                          min_declarations: 1,
                          max_declarations: 100,
@@ -32,7 +32,7 @@ RSpec.describe PaymentCalculator::ServiceFees do
         FactoryBot.build(:contract_banded_fee_structure,
                          recruitment_target: 150,
                          setup_fee: 500,
-                         terms: [term_a, term_b])
+                         band_terms: [term_a, term_b])
       end
       let!(:term_a) do
         FactoryBot.build(:contract_banded_fee_structure_band_term,
@@ -65,7 +65,7 @@ RSpec.describe PaymentCalculator::ServiceFees do
         FactoryBot.build(:contract_banded_fee_structure,
                          recruitment_target: 50,
                          setup_fee: 500,
-                         terms: [term])
+                         band_terms: [term])
       end
       let!(:term) do
         FactoryBot.build(:contract_banded_fee_structure_band_term,

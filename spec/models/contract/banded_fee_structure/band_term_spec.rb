@@ -123,18 +123,18 @@ RSpec.describe Contract::BandedFeeStructure::BandTerm, type: :model do
         let(:banded_fee_structure) { FactoryBot.build(:contract_banded_fee_structure, :with_band_terms) }
 
         it "is valid if the updated band still has sequential declaration boundaries" do
-          term = banded_fee_structure.terms.last
-          term.max_declarations += 50
+          band_term = banded_fee_structure.band_terms.last
+          band_term.max_declarations += 50
 
-          expect(term).to be_valid
+          expect(band_term).to be_valid
         end
 
         it "is invalid if the updated band no longer has sequential declaration boundaries" do
-          term = banded_fee_structure.terms.last
-          term.min_declarations = 1
+          band_term = banded_fee_structure.band_terms.last
+          band_term.min_declarations = 1
 
-          expect(term).to be_invalid
-          expect(term.errors[:base]).to include("Declaration boundaries must be sequential without gaps")
+          expect(band_term).to be_invalid
+          expect(band_term.errors[:base]).to include("Declaration boundaries must be sequential without gaps")
         end
       end
     end
@@ -144,9 +144,9 @@ RSpec.describe Contract::BandedFeeStructure::BandTerm, type: :model do
 
       it "is valid when creating the first band for the active lead provider" do
         banded_fee_structure = FactoryBot.build(:contract_banded_fee_structure)
-        band = FactoryBot.build(:contract_banded_fee_structure_band_term, banded_fee_structure:)
+        band_term = FactoryBot.build(:contract_banded_fee_structure_band_term, banded_fee_structure:)
         FactoryBot.create(:contract, :for_ecf, active_lead_provider:, banded_fee_structure:)
-        expect(band).to be_valid
+        expect(band_term).to be_valid
       end
 
       it "is valid when creating bands for another contract for the same active lead provider when the bands are consistent" do
@@ -155,55 +155,55 @@ RSpec.describe Contract::BandedFeeStructure::BandTerm, type: :model do
         FactoryBot.create(:contract, :for_ecf, active_lead_provider:, banded_fee_structure:)
 
         new_banded_fee_structure = FactoryBot.build(:contract_banded_fee_structure)
-        new_band = FactoryBot.build(:contract_banded_fee_structure_band_term, banded_fee_structure: new_banded_fee_structure, fee_per_declaration: 100)
+        new_band_term = FactoryBot.build(:contract_banded_fee_structure_band_term, banded_fee_structure: new_banded_fee_structure, fee_per_declaration: 100)
         FactoryBot.create(:contract, :for_ecf, active_lead_provider:, banded_fee_structure: new_banded_fee_structure)
 
-        expect(new_band).to be_valid
+        expect(new_band_term).to be_valid
       end
 
       it "is invalid when creating bands for another contract for the same active lead provider when the bands are not consistent" do
-        terms = [
+        band_terms = [
           FactoryBot.build(:contract_banded_fee_structure_band_term, fee_per_declaration: 100, min_declarations: 1, max_declarations: 2),
           FactoryBot.build(:contract_banded_fee_structure_band_term, fee_per_declaration: 150, min_declarations: 3, max_declarations: 4)
         ]
-        banded_fee_structure = FactoryBot.build(:contract_banded_fee_structure, terms:)
+        banded_fee_structure = FactoryBot.build(:contract_banded_fee_structure, band_terms:)
         FactoryBot.create(:contract, :for_ecf, active_lead_provider:, banded_fee_structure:)
 
-        new_term = FactoryBot.build(:contract_banded_fee_structure_band_term, fee_per_declaration: 150, min_declarations: 1, max_declarations: 2)
-        new_banded_fee_structure = FactoryBot.build(:contract_banded_fee_structure, terms: [new_term])
+        new_band_term = FactoryBot.build(:contract_banded_fee_structure_band_term, fee_per_declaration: 150, min_declarations: 1, max_declarations: 2)
+        new_banded_fee_structure = FactoryBot.build(:contract_banded_fee_structure, band_terms: [new_band_term])
         FactoryBot.create(:contract, :for_ecf, active_lead_provider:, banded_fee_structure: new_banded_fee_structure)
 
-        expect(new_term).to be_invalid
-        expect(new_term.errors[:base]).to include(/Band at index 0 is inconsistent across statements for the same active lead provider/)
+        expect(new_band_term).to be_invalid
+        expect(new_band_term.errors[:base]).to include(/Band at index 0 is inconsistent across statements for the same active lead provider/)
 
-        new_term.fee_per_declaration = 100
-        expect(new_term).to be_valid
-        new_term.save!
+        new_band_term.fee_per_declaration = 100
+        expect(new_band_term).to be_valid
+        new_band_term.save!
 
-        new_term = FactoryBot.build(:contract_banded_fee_structure_band_term, banded_fee_structure: new_banded_fee_structure, fee_per_declaration: 150, min_declarations: 3, max_declarations: 5)
-        expect(new_term).to be_invalid
-        expect(new_term.errors[:base]).to include(/Band at index 1 is inconsistent across statements for the same active lead provider/)
+        new_band_term = FactoryBot.build(:contract_banded_fee_structure_band_term, banded_fee_structure: new_banded_fee_structure, fee_per_declaration: 150, min_declarations: 3, max_declarations: 5)
+        expect(new_band_term).to be_invalid
+        expect(new_band_term.errors[:base]).to include(/Band at index 1 is inconsistent across statements for the same active lead provider/)
 
-        new_term.max_declarations = 4
-        expect(new_term).to be_valid
+        new_band_term.max_declarations = 4
+        expect(new_band_term).to be_valid
       end
 
       it "is invalid when updating a band such that it becomes inconsistent with bands for the same active lead provider" do
-        term = FactoryBot.build(:contract_banded_fee_structure_band_term, fee_per_declaration: 100)
-        banded_fee_structure = FactoryBot.build(:contract_banded_fee_structure, terms: [term])
+        band_term = FactoryBot.build(:contract_banded_fee_structure_band_term, fee_per_declaration: 100)
+        banded_fee_structure = FactoryBot.build(:contract_banded_fee_structure, band_terms: [band_term])
         FactoryBot.create(:contract, :for_ecf, active_lead_provider:, banded_fee_structure:)
 
-        new_term = FactoryBot.build(:contract_banded_fee_structure_band_term, fee_per_declaration: 100)
-        new_banded_fee_structure = FactoryBot.build(:contract_banded_fee_structure, terms: [new_term])
+        new_band_term = FactoryBot.build(:contract_banded_fee_structure_band_term, fee_per_declaration: 100)
+        new_banded_fee_structure = FactoryBot.build(:contract_banded_fee_structure, band_terms: [new_band_term])
         FactoryBot.create(:contract, :for_ecf, active_lead_provider:, banded_fee_structure: new_banded_fee_structure)
 
-        new_term.fee_per_declaration = 150
+        new_band_term.fee_per_declaration = 150
 
-        expect(new_term).to be_invalid
-        expect(new_term.errors[:base]).to include(/Band at index 0 is inconsistent across statements for the same active lead provider/)
+        expect(new_band_term).to be_invalid
+        expect(new_band_term.errors[:base]).to include(/Band at index 0 is inconsistent across statements for the same active lead provider/)
 
-        new_term.fee_per_declaration = 100
-        expect(new_term).to be_valid
+        new_band_term.fee_per_declaration = 100
+        expect(new_band_term).to be_valid
       end
     end
   end
@@ -220,14 +220,14 @@ RSpec.describe Contract::BandedFeeStructure::BandTerm, type: :model do
     end
 
     it "letters bands alphabetically in boundary order" do
-      expect(banded_fee_structure.terms.map(&:letter)).to eq(%w[A B C D])
+      expect(banded_fee_structure.band_terms.map(&:letter)).to eq(%w[A B C D])
     end
   end
 
   describe "#capacity" do
     it "returns max_declarations - min_declarations + 1" do
-      term = FactoryBot.build_stubbed(:contract_banded_fee_structure_band_term, min_declarations: 1, max_declarations: 100)
-      expect(term.capacity).to eq(100)
+      band_term = FactoryBot.build_stubbed(:contract_banded_fee_structure_band_term, min_declarations: 1, max_declarations: 100)
+      expect(band_term.capacity).to eq(100)
     end
   end
 end

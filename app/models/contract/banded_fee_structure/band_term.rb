@@ -57,7 +57,7 @@ class Contract::BandedFeeStructure::BandTerm < ApplicationRecord
   validate :first_band_min_declarations_is_one
   validate :band_consistency_across_active_lead_provider
 
-  def letter = ("A".ord + banded_fee_structure.terms.index(self)).chr
+  def letter = ("A".ord + banded_fee_structure.band_terms.index(self)).chr
 
   # TODO: DEPRECATE Contract::BandedFeeStructure::BandTerm#capacity
   def capacity
@@ -73,9 +73,9 @@ private
 
   # DEPRECATE
   def first_band_min_declarations_is_one
-    first_term = banded_fee_structure&.terms&.first || self
+    first_band_term = banded_fee_structure&.band_terms&.first || self
 
-    return if first_term.min_declarations == 1
+    return if first_band_term.min_declarations == 1
 
     errors.add(:min_declarations, "The first band's min declarations must be 1")
   end
@@ -85,7 +85,7 @@ private
     return unless banded_fee_structure
 
     ordered_terms = banded_fee_structure
-      .terms
+      .band_terms
       .where.not(id:)
       .to_a
       .push(self)
@@ -103,7 +103,7 @@ private
     active_lead_provider = banded_fee_structure&.contract&.active_lead_provider
     return unless active_lead_provider
 
-    terms_for_active_lead_provider = self.class
+    band_terms_for_active_lead_provider = self.class
         .joins(banded_fee_structure: { contract: :active_lead_provider })
         .where(contracts: { active_lead_provider: })
         .where.not(id:)
@@ -111,13 +111,13 @@ private
         .push(self)
 
     attributes_to_ignore = %w[id banded_fee_structure_id created_at updated_at band_id].freeze
-    unique_terms_by_index = terms_for_active_lead_provider
-      .group_by { it.banded_fee_structure.terms.index(it) || it.banded_fee_structure.terms.count }
-      .transform_values { |terms| terms.map { it.attributes.except(*attributes_to_ignore) }.uniq }
+    unique_band_terms_by_index = band_terms_for_active_lead_provider
+      .group_by { it.banded_fee_structure.band_terms.index(it) || it.banded_fee_structure.band_terms.count }
+      .transform_values { |band_terms| band_terms.map { it.attributes.except(*attributes_to_ignore) }.uniq }
 
-    inconsistent_terms = unique_terms_by_index.select { |_, terms| terms.size > 1 }
+    inconsistent_band_terms = unique_band_terms_by_index.select { |_, band_terms| band_terms.size > 1 }
 
-    inconsistent_terms.each_key do |index|
+    inconsistent_band_terms.each_key do |index|
       errors.add(:base, "Band at index #{index} is inconsistent across statements for the same active lead provider")
     end
   end

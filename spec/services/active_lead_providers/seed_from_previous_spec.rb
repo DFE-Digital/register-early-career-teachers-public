@@ -59,10 +59,10 @@ RSpec.describe ActiveLeadProviders::SeedFromPrevious do
         end
 
         it "builds terms for the new banded_fee_structure" do
-          term_attributes = %i[min_declarations max_declarations fee_per_declaration output_fee_ratio service_fee_ratio]
-          expect(new_contract.banded_fee_structure.terms.map { |t| t.slice(*term_attributes) })
-            .to match_array(previous_contract.banded_fee_structure.terms.map { |t| t.slice(*term_attributes) })
-          expect(new_contract.banded_fee_structure.terms).not_to include(*previous_contract.banded_fee_structure.terms)
+          band_term_attributes = %i[min_declarations max_declarations fee_per_declaration output_fee_ratio service_fee_ratio]
+          expect(new_contract.banded_fee_structure.band_terms.map { |t| t.slice(*band_term_attributes) })
+            .to match_array(previous_contract.banded_fee_structure.band_terms.map { |t| t.slice(*band_term_attributes) })
+          expect(new_contract.banded_fee_structure.band_terms).not_to include(*previous_contract.banded_fee_structure.band_terms)
         end
 
         it "builds a new flat_rate_fee_structure for the new contract, based on the previous" do

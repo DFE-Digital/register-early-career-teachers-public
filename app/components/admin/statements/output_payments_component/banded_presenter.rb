@@ -5,7 +5,7 @@ module Admin
         def caption_text = "Early career teacher (ECT) output payments"
         def total_label = "ECTs output payment total"
         def fee_label = "Fee per ECT"
-        def columns = terms.map { "Band #{it.letter}" }
+        def columns = band_terms.map { "Band #{it.letter}" }
 
         def row_pairs
           grouped_outputs.map { |display_type, outputs| row_pair(display_type, outputs) }
@@ -13,12 +13,12 @@ module Admin
 
       private
 
-        delegate :terms, to: :banded_fee_structure
+        delegate :band_terms, to: :banded_fee_structure
 
         def row_pair(display_type, outputs)
-          by_term = outputs.group_by(&:term)
-          counts  = terms.map { |b| by_term[b].sum(&:billable_count).to_s }
-          fees    = terms.map { |b| by_term[b].first.type_adjusted_fee_per_declaration }
+          by_band_term = outputs.group_by(&:band_term)
+          counts  = band_terms.map { |bt| by_band_term[bt].sum(&:billable_count).to_s }
+          fees    = band_terms.map { |bt| by_band_term[bt].first.type_adjusted_fee_per_declaration }
 
           [
             [

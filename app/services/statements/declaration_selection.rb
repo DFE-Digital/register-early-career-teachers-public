@@ -54,7 +54,7 @@ module Statements
       filtered_previous_refundable = calculator.declaration_selector.call(previous_refundable_declarations)
 
       allocations = PaymentCalculator::Banded::BandAllocator.new(
-        terms: calculator.banded_fee_structure.terms,
+        band_terms: calculator.banded_fee_structure.band_terms,
         billable_declarations: filtered_current_billable,
         refundable_declarations: filtered_current_refundable,
         previous_billable_declarations: filtered_previous_billable,
