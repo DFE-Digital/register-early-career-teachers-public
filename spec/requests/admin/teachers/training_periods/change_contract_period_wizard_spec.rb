@@ -94,12 +94,72 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
       expect(response).to have_http_status(:bad_request)
     end
 
-    it "returns bad request when the training period starts in the future" do
+    it "renders the contract period selection page when the training period starts in the future" do
       training_period.update!(started_on: today.next_month, finished_on: nil)
 
       get path_for_step("select-contract-period")
 
-      expect(response).to have_http_status(:bad_request)
+      expect(response).to have_http_status(:ok)
+    end
+
+    context "when the future period has a different LP/DP from the current active period" do
+      let(:current_school) { FactoryBot.create(:school) }
+      let(:future_started_on) { today.next_month }
+      let(:other_delivery_partner) { FactoryBot.create(:delivery_partner) }
+      let(:current_school_partnership) do
+        FactoryBot.create(
+          :school_partnership,
+          :for_year,
+          year: current_contract_period.year,
+          school: current_school,
+          lead_provider: school_partnership.lead_provider,
+          delivery_partner: other_delivery_partner
+        )
+      end
+      let(:current_ect_at_school_period) do
+        FactoryBot.create(
+          :ect_at_school_period,
+          teacher:,
+          school: current_school,
+          started_on: today.prev_year,
+          finished_on: future_started_on.yesterday
+        )
+      end
+      let!(:current_training_period) do
+        FactoryBot.create(
+          :training_period,
+          ect_at_school_period: current_ect_at_school_period,
+          school_partnership: current_school_partnership,
+          schedule:,
+          started_on: today.prev_month,
+          finished_on: future_started_on.yesterday
+        )
+      end
+      let(:future_ect_at_school_period) do
+        FactoryBot.create(
+          :ect_at_school_period,
+          teacher:,
+          school:,
+          started_on: future_started_on,
+          finished_on: nil
+        )
+      end
+      let(:training_period) do
+        FactoryBot.create(
+          :training_period,
+          :ongoing,
+          ect_at_school_period: future_ect_at_school_period,
+          school_partnership:,
+          schedule:,
+          started_on: future_started_on
+        )
+      end
+
+      it "returns bad request" do
+        get path_for_step("select-contract-period")
+
+        expect(response).to have_http_status(:bad_request)
+      end
     end
   end
 
@@ -335,6 +395,76 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
         expect(replacement_training_period.expression_of_interest).to eq(target_active_lead_provider)
         expect(replacement_training_period.expression_of_interest_contract_period).to eq(target_contract_period)
         expect(replacement_training_period.schedule).to eq(target_schedule)
+      end
+    end
+
+    context "when the selected training period starts in the future" do
+      let(:current_school) { FactoryBot.create(:school) }
+      let(:future_started_on) { today.next_month }
+      let(:current_school_partnership) do
+        FactoryBot.create(
+          :school_partnership,
+          school: current_school,
+          lead_provider_delivery_partnership: school_partnership.lead_provider_delivery_partnership
+        )
+      end
+      let(:current_ect_at_school_period) do
+        FactoryBot.create(
+          :ect_at_school_period,
+          teacher:,
+          school: current_school,
+          started_on: today.prev_year,
+          finished_on: future_started_on.yesterday
+        )
+      end
+      let(:future_ect_at_school_period) do
+        FactoryBot.create(
+          :ect_at_school_period,
+          teacher:,
+          school:,
+          started_on: future_started_on,
+          finished_on: nil
+        )
+      end
+      let!(:current_training_period) do
+        FactoryBot.create(
+          :training_period,
+          ect_at_school_period: current_ect_at_school_period,
+          school_partnership: current_school_partnership,
+          schedule:,
+          started_on: today.prev_month,
+          finished_on: future_started_on.yesterday
+        )
+      end
+      let(:training_period) do
+        FactoryBot.create(
+          :training_period,
+          :ongoing,
+          ect_at_school_period: future_ect_at_school_period,
+          school_partnership:,
+          schedule:,
+          started_on: future_started_on
+        )
+      end
+
+      it "applies the contract period change in place and redirects to the training tab" do
+        target_schedule
+        select_contract_period_and_partnership
+
+        expect {
+          post path_for_step("check-answers"), params: { check_answers: {} }
+        }.not_to change(TrainingPeriod, :count)
+
+        expect(response).to redirect_to(admin_teacher_training_path(teacher))
+        expect(training_period.reload.finished_on).to be_nil
+        expect(training_period.school_partnership).to eq(target_school_partnership)
+        expect(training_period.contract_period).to eq(target_contract_period)
+        expect(training_period.schedule).to eq(target_schedule)
+        expect(current_training_period.reload.finished_on).to eq(future_started_on.yesterday)
+
+        follow_redirect!
+
+        expect(response.body).to include("Contract period changed")
       end
     end
   end
