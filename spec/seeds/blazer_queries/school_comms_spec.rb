@@ -11,12 +11,13 @@ RSpec.describe BlazerQueries::SchoolComms do
 
   # Build a school + its GIAS record with full control over the bits the
   # queries filter and select on, avoiding the randomness in the factories.
-  def create_school(urn:, type_name: "Community school", eligible: true, contact_email: nil, **school_attrs)
+  def create_school(urn:, type_name: "Community school", eligible: true, contact_email: nil, status: "open", **school_attrs)
     gias_school = FactoryBot.create(
       :gias_school,
       urn:,
       type_name:,
       eligible:,
+      status:,
       primary_contact_email: contact_email
     )
     FactoryBot.create(:school, urn:, gias_school:, create_contract_period: false, **school_attrs)
@@ -63,6 +64,14 @@ RSpec.describe BlazerQueries::SchoolComms do
       definitions.each do |definition|
         expect(definition[:statement]).to include(
           "gs.type_name NOT IN ('Children''s centre', 'Children''s centre linked site')"
+        )
+      end
+    end
+
+    it "only contacts open and 'proposed to close' schools everywhere (#4130)" do
+      definitions.each do |definition|
+        expect(definition[:statement]).to include(
+          "gs.status IN ('open', 'proposed_to_close')"
         )
       end
     end
@@ -168,6 +177,17 @@ RSpec.describe BlazerQueries::SchoolComms do
       urns = run(name).map { |row| row["urn"].to_i }
 
       expect(urns).to eq [100_013]
+    end
+
+    it "excludes closed and proposed-to-open schools" do
+      create_school(urn: 100_030, status: "open")
+      create_school(urn: 100_031, status: "proposed_to_close")
+      create_school(urn: 100_032, status: "closed")
+      create_school(urn: 100_033, status: "proposed_to_open")
+
+      urns = run(name).map { |row| row["urn"].to_i }
+
+      expect(urns).to contain_exactly(100_030, 100_031)
     end
 
     # Guards against the hand-written eligible_sql drifting from School.eligible.
