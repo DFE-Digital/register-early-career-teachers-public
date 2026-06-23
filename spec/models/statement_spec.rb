@@ -321,6 +321,12 @@ describe Statement do
     end
   end
 
+  describe "#month_year" do
+    subject(:month_year) { FactoryBot.create(:statement, month: 1, year: 2025).month_year }
+
+    it { is_expected.to eq("January 2025") }
+  end
+
   describe "#referenced_by_declarations?" do
     context "when no declaration" do
       subject(:statement) { FactoryBot.create(:statement) }

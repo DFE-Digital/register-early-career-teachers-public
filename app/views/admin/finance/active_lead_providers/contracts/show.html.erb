@@ -15,12 +15,7 @@
   <% end %>
   <% summary_list.with_row do |row| %>
     <% row.with_key(text: "Statement period") %>
-    <% row.with_value do %>
-      <%= render Admin::Finance::Contracts::StatementRangeDescription.new(
-            first_statement: @contract.statements.min_by { |s| [s.year, s.month] },
-            last_statement: @contract.statements.max_by { |s| [s.year, s.month] }
-          ) %>
-    <% end %>
+    <% row.with_value(text: @contract.statement_range_description) %>
   <% end %>
 <% end %>
 
