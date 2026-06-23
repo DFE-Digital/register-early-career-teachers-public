@@ -89,21 +89,45 @@ module API::Teachers
     def school_partnership_exists_if_changing_contract_period
       return if errors[:contract_period_year].any?
       return unless training_period
-      return if contract_period == training_period.contract_period
+      return unless contract_period_changing?
       return if school_partnership
 
       errors.add(:contract_period_year, "You cannot change a participant to this contract_period as you do not have a partnership with the school for the contract_period. Contact the DfE for assistance.")
     end
 
     def school_partnership
-      @school_partnership ||= SchoolPartnership
-        .includes(:lead_provider, :contract_period)
-        .joins(:lead_provider, :contract_period)
-        .find_by(
-          school: training_period.school_partnership.school,
-          lead_providers: { id: training_period.lead_provider.id },
-          contract_periods: { year: contract_period.id }
-        )
+      @school_partnership ||= begin
+        return nil unless existing_school_partnership && active_lead_provider
+
+        return existing_school_partnership unless contract_period_changing?
+
+        school_partnership_with_same_delivery_partner || available_school_partnerships.first
+      end
+    end
+
+    def existing_school_partnership
+      @existing_school_partnership ||= training_period&.school_partnership
+    end
+
+    def school_partnership_with_same_delivery_partner
+      available_school_partnerships
+        .find_by(lead_provider_delivery_partnership: { delivery_partner: existing_school_partnership.delivery_partner })
+    end
+
+    def available_school_partnerships
+      active_lead_provider
+        .school_partnerships
+        .joins(:delivery_partner)
+        .where(school: existing_school_partnership.school)
+        .order(created_at: :desc)
+    end
+
+    def active_lead_provider
+      @active_lead_provider ||= lead_provider.active_lead_providers.find_by(contract_period_year: contract_period.year)
+    end
+
+    def contract_period_changing?
+      contract_period != training_period&.contract_period
     end
 
     def participant_status
