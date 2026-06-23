@@ -61,6 +61,7 @@ module BlazerQueries
             LEFT JOIN dfe_sign_in_organisations dsi ON dsi.urn = s.urn::text
             WHERE #{eligible_sql}
               AND #{not_a_childrens_centre_sql}
+              AND #{open_school_sql}
             ORDER BY gs.name;
           SQL
         }
@@ -84,6 +85,7 @@ module BlazerQueries
             WHERE #{eligible_sql}
               AND #{not_a_childrens_centre_sql}
               AND #{not_opted_out_sql}
+              AND #{open_school_sql}
             ORDER BY gs.name;
           SQL
         }
@@ -105,6 +107,7 @@ module BlazerQueries
             INNER JOIN gias_schools gs ON gs.urn = s.urn
             WHERE #{eligible_sql}
               AND #{not_a_childrens_centre_sql}
+              AND #{open_school_sql}
             ORDER BY gs.name;
           SQL
         }
@@ -127,6 +130,7 @@ module BlazerQueries
             FROM schools s
             INNER JOIN gias_schools gs ON gs.urn = s.urn
             WHERE #{not_a_childrens_centre_sql}
+              AND #{open_school_sql}
               AND #{not_opted_out_sql}
               AND #{has_current_partnership_sql}
               AND #{no_participants_this_period_sql}
@@ -144,6 +148,12 @@ module BlazerQueries
       def not_a_childrens_centre_sql
         list = GIAS::Types::CHILDRENS_CENTRE_TYPES.map { quote it }.join(", ")
         "gs.type_name NOT IN (#{list})"
+      end
+
+      # mirrors GIAS::School#open?
+      def open_school_sql
+        statuses = %w[open proposed_to_close].map { quote it }.join(", ")
+        "gs.status IN (#{statuses})"
       end
 
       def not_opted_out_sql
