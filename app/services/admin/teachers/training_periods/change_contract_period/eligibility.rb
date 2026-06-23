@@ -26,15 +26,6 @@ module Admin
             future_period? && same_partnership_as_current_active_period?
           end
 
-          def current_active_period_changeable?
-            return false unless provider_led_with_partnership_or_eoi?
-            return false if finished_before_today?
-            return false unless current_active_period?
-            return false unless current_active_period_started_before_today?
-
-            no_future_periods?
-          end
-
         private
 
           def relationships
