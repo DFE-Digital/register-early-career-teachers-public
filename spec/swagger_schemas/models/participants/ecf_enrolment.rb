@@ -36,6 +36,18 @@ PARTICIPANT_ECF_ENROLMENT = {
       example: "42a9ef2f-9059-400a-92ff-4830a629d0c5",
       nullable: true
     },
+    mentor_email: {
+      description: "The email of this participant's mentor",
+      type: :string,
+      example: "paula.brown@example.com",
+      nullable: true
+    },
+    mentor_school_urn: {
+      description: "The Unique Reference Number (URN) of the school associated with this participant's mentor",
+      type: :string,
+      example: "123456",
+      nullable: true
+    },
     school_urn: {
       description: "The Unique Reference Number (URN) of the school that submitted this participant",
       type: :string,
