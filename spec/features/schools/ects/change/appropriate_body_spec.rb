@@ -10,6 +10,7 @@ describe "School user can change ECT's appropriate body" do
     when_i_visit_the_ect_page
     then_i_can_change_the_appropriate_body
     and_i_see_the_change_appropriate_body_form
+    and_the_current_appropriate_body_is_not_available
 
     when_i_select_an_appropriate_body("Wrong Appropriate Body")
     and_i_continue
@@ -39,13 +40,15 @@ describe "School user can change ECT's appropriate body" do
       :ongoing,
       teacher: @teacher,
       school: @school,
-      email: "ect@example.com"
+      email: "ect@example.com",
+      school_reported_appropriate_body: @current_ab
     )
   end
 
   def and_there_are_appropriate_bodies
     FactoryBot.create(:appropriate_body_period, name: "New Appropriate Body")
     FactoryBot.create(:appropriate_body_period, name: "Wrong Appropriate Body")
+    @current_ab = FactoryBot.create(:appropriate_body_period, name: "Current Appropriate Body")
   end
 
   def and_i_am_logged_in_as_a_school_user
@@ -70,6 +73,18 @@ describe "School user can change ECT's appropriate body" do
     page.get_by_role("combobox", name: "Enter appropriate body name")
         .first
         .select_option(value: name)
+  end
+
+  def and_the_current_appropriate_body_is_not_available
+    combobox = page
+      .get_by_role("combobox", name: "Enter appropriate body name")
+      .first
+
+    expect(combobox).not_to have_selector(
+      "option",
+      text: "Current Appropriate Body",
+      exact_text: true
+    )
   end
 
   def and_i_continue

@@ -12,7 +12,7 @@
   <%= content_for(:error_summary) { form.govuk_error_summary } %>
 
   <%= form.govuk_collection_select(:appropriate_body_id,
-                                appropriate_bodies_options_for_collection,
+                                @wizard.current_step.appropriate_bodies_except_current,
                                 :id,
                                 :name,
                                 label: { text: "Enter appropriate body name" },
