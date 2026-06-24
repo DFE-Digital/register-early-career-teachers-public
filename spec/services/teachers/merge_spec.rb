@@ -58,7 +58,7 @@ RSpec.describe Teachers::Merge do
         expect(anonymiser).to have_received(:anonymise!)
       end
 
-      it "retains the source teacher's api_id so API consumers can still follow stored references" do
+      it "retains the source teacher's api_id (the recorded id-change maps back to it)" do
         expect { service.merge! }.not_to(change { source.reload.api_id })
       end
 
@@ -71,6 +71,26 @@ RSpec.describe Teachers::Merge do
         expect(change.teacher).to eq(destination)
         expect(change.api_from_teacher_id).to eq(source_api_id)
         expect(change.api_to_teacher_id).to eq(destination.api_id)
+      end
+
+      it "moves the source's existing teacher_id_changes onto the destination" do
+        earlier_change = FactoryBot.create(:teacher_id_change, teacher: source)
+
+        service.merge!
+
+        expect(earlier_change.reload.teacher).to eq(destination)
+      end
+
+      it "surfaces the old participant id on the destination so API consumers can follow it" do
+        lead_provider = FactoryBot.create(:lead_provider)
+        source_api_id = source.api_id
+
+        service.merge!
+
+        response = JSON.parse(API::TeacherSerializer.render(destination.reload, lead_provider_id: lead_provider.id))
+        expect(response["attributes"]["participant_id_changes"]).to include(
+          a_hash_including("from_participant_id" => source_api_id, "to_participant_id" => destination.api_id)
+        )
       end
 
       it "populates the destination's metadata (which the model hooks do not do on reassignment)" do
