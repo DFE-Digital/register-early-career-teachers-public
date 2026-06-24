@@ -61,6 +61,7 @@ class Event < ApplicationRecord
     teacher_defers_training_period
     teacher_resumes_training_period
     teacher_registration_undone
+    teacher_merged
     teacher_withdraws_training_period
     teacher_changes_schedule_training_period
     teacher_training_period_contract_period_changed
