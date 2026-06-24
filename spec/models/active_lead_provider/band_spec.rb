@@ -2,7 +2,7 @@ RSpec.describe ActiveLeadProvider::Band, type: :model do
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
 
   describe "associations" do
-    it { is_expected.to belong_to(:active_lead_provider).required(true) }
+    it { is_expected.to belong_to(:active_lead_provider) }
     it { is_expected.to have_many(:terms).class_name("Contract::BandedFeeStructure::Band").inverse_of(:band) }
   end
 
@@ -13,27 +13,39 @@ RSpec.describe ActiveLeadProvider::Band, type: :model do
 
     it { is_expected.to validate_presence_of(:capacity).with_message("Capacity is required") }
     it { is_expected.to validate_numericality_of(:capacity).is_greater_than(0).only_integer.with_message("Capacity must be a number greater than zero") }
+  end
 
-    describe "#first_band_allocation_order_is_one" do
-      subject(:band) do
-        FactoryBot.build(:active_lead_provider_band, active_lead_provider:, allocation_order:)
+  describe "immutability" do
+    let!(:first_band) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:) }
+
+    context "with only one band" do
+      it "allows changing the capacity of the last band" do
+        first_band.update!(capacity: 999)
+        expect(first_band.reload.capacity).to eq 999
       end
 
-      context "without existing bands" do
-        context "and the first band allocation order is 1" do
-          let(:allocation_order) { 1 }
+      it "prevents changing the allocation order of the last band" do
+        expect { first_band.update!(allocation_order: 2) }.to raise_error(ActiveRecord::ReadonlyAttributeError)
+      end
+    end
 
-          it { is_expected.to be_valid }
-        end
+    context "with multiple bands" do
+      let!(:last_band) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:) }
 
-        context "and the first band allocation order is not 1" do
-          let(:allocation_order) { 2 }
+      it "prevents changing the capacity of a band that is not the last" do
+        expect { first_band.update!(capacity: 999) }.to raise_error(ActiveRecord::RecordNotSaved, /Only the last band can be updated/)
+      end
 
-          it "is invalid" do
-            expect(band).to be_invalid
-            expect(band.errors[:allocation_order]).to include("The first band's allocation order must be 1")
-          end
-        end
+      it "prevents changing the allocation order of a band that is not the last" do
+        expect { first_band.update!(allocation_order: 2) }.to raise_error(ActiveRecord::ReadonlyAttributeError)
+      end
+
+      it "allows deleting the last band" do
+        expect { last_band.destroy! }.to change(described_class, :count).by(-1)
+      end
+
+      it "prevents deleting a band that is not the last" do
+        expect { first_band.destroy! }.to raise_error(ActiveRecord::RecordNotDestroyed, /Only the last band can be destroyed/)
       end
     end
   end
@@ -50,103 +62,22 @@ RSpec.describe ActiveLeadProvider::Band, type: :model do
         FactoryBot.create(:active_lead_provider_band, active_lead_provider:)
       end
 
-      it do
+      it "raises a read-only error" do
         expect { band.allocation_order = 2 }.to raise_error(ActiveRecord::ReadonlyAttributeError)
+        expect { band.update!(allocation_order: 2) }.to raise_error(ActiveRecord::ReadonlyAttributeError)
       end
-    end
-  end
-
-  describe "#editable?" do
-    before do
-      FactoryBot.create(:active_lead_provider_band, active_lead_provider:)
-      FactoryBot.create(:active_lead_provider_band, active_lead_provider:)
-    end
-
-    context "when the band is the last band for the active lead provider" do
-      subject(:band) { active_lead_provider.bands.last }
-
-      it { is_expected.to be_editable }
-    end
-
-    context "when the band is not the last band for the active lead provider" do
-      subject(:band) { active_lead_provider.bands.first }
-
-      it { is_expected.not_to be_editable }
-    end
-  end
-
-  describe "#allocated?" do
-    context "when the band is not persisted" do
-      subject(:band) { FactoryBot.build(:active_lead_provider_band, active_lead_provider:) }
-
-      it { is_expected.not_to be_allocated }
-    end
-
-    context "when the band is persisted" do
-      subject(:band) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:) }
-
-      it { is_expected.to be_allocated }
-    end
-  end
-
-  describe "#first_band?" do
-    subject { band.first_band? }
-
-    context "when the band is allocated the first position" do
-      let(:band) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:) }
-
-      it { is_expected.to be true }
-    end
-
-    context "when unallocated" do
-      let(:band) { FactoryBot.build(:active_lead_provider_band, active_lead_provider:) }
-
-      it { is_expected.to be false }
-    end
-
-    context "when the band is not first" do
-      let(:band) { FactoryBot.build(:active_lead_provider_band, active_lead_provider:) }
-
-      before do
-        FactoryBot.create(:active_lead_provider_band, active_lead_provider:)
-      end
-
-      it { is_expected.to be false }
-    end
-  end
-
-  describe "#previous_band" do
-    subject { band.previous_band }
-
-    context "when not allocated" do
-      let(:band) { FactoryBot.build(:active_lead_provider_band, active_lead_provider:) }
-
-      it { is_expected.to be_nil }
-    end
-
-    context "when the band is allocated the first position" do
-      let(:band) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:) }
-
-      it { is_expected.to be_nil }
-    end
-
-    context "when there are previous bands" do
-      before do
-        FactoryBot.create(:active_lead_provider_band, active_lead_provider:)
-        FactoryBot.create(:active_lead_provider_band, active_lead_provider:, capacity: 123)
-      end
-
-      let(:band) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:) }
-
-      it { is_expected.to have_attributes(active_lead_provider:, allocation_order: 2, capacity: 123) }
     end
   end
 
   describe "#min_declarations" do
     subject { band.min_declarations }
 
-    context "when unallocated" do
-      let(:band) { FactoryBot.build(:active_lead_provider_band, active_lead_provider:) }
+    context "without allocation_order" do
+      let(:band) do
+        FactoryBot.build(:active_lead_provider_band,
+                         active_lead_provider:,
+                         allocation_order: nil)
+      end
 
       it { is_expected.to be_nil }
     end

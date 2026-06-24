@@ -108,7 +108,7 @@ private
         .to_a
         .push(self)
 
-    attributes_to_ignore = %w[id banded_fee_structure_id created_at updated_at contract_band_id].freeze
+    attributes_to_ignore = %w[id banded_fee_structure_id created_at updated_at band_id].freeze
     unique_bands_by_index = bands_for_active_lead_provider
       .group_by { it.banded_fee_structure.bands.index(it) || it.banded_fee_structure.bands.count }
       .transform_values { |bands| bands.map { it.attributes.except(*attributes_to_ignore) }.uniq }
