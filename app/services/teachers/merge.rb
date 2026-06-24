@@ -18,6 +18,7 @@ module Teachers
       ActiveRecord::Base.transaction do
         move_school_periods
         move_induction_records
+        move_teacher_id_changes
         record_teacher_id_change
         refresh_metadata
         record_merge_events
@@ -41,6 +42,10 @@ module Teachers
     def move_induction_records
       source.induction_periods.find_each { |period| period.update!(teacher: destination) }
       source.induction_extensions.find_each { |extension| extension.update!(teacher: destination) }
+    end
+
+    def move_teacher_id_changes
+      source.teacher_id_changes.find_each { |change| change.update!(teacher: destination) }
     end
 
     def record_teacher_id_change
