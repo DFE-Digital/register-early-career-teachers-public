@@ -80,6 +80,11 @@ class API::TeacherSerializer < Blueprinter::Base
           API::Teachers::InductionStatus.new(teacher:).induction_end_date
         end
       end
+      field(:most_recent_induction_period_end_date) do |(training_period, teacher, _)|
+        if training_period.for_ect?
+          API::Teachers::InductionStatus.new(teacher:).most_recent_induction_period_end_date
+        end
+      end
       field(:overall_induction_start_date) do |(training_period, teacher, _)|
         if training_period.for_ect?
           API::Teachers::InductionStatus.new(teacher:).induction_start_date

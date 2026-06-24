@@ -86,4 +86,35 @@ RSpec.describe API::Teachers::InductionStatus, type: :model do
       it { is_expected.not_to be_completed_induction }
     end
   end
+
+  describe "#most_recent_induction_period_end_date" do
+    subject(:end_date) { instance.most_recent_induction_period_end_date }
+
+    context "when a teacher has completed induction" do
+      let(:teacher) { completed_period.teacher }
+      let(:completed_period) { FactoryBot.create(:induction_period, :pass) }
+
+      it { is_expected.to eq completed_period.finished_on }
+    end
+
+    context "when the teacher has an ongoing induction_period" do
+      let(:teacher) { FactoryBot.create(:induction_period, :ongoing).teacher }
+
+      it { is_expected.to be_nil }
+    end
+
+    context "when the teacher has multiple induction periods" do
+      let(:teacher) { closed_period.teacher }
+      let(:closed_period) { FactoryBot.create(:induction_period, finished_on: 10.days.ago) }
+      let!(:latest_period) { FactoryBot.create(:induction_period, :ongoing, started_on: 9.days.ago, teacher:) }
+
+      it { is_expected.to eq latest_period.finished_on }
+    end
+
+    context "when the teacher does not have any induction periods" do
+      let(:teacher) { FactoryBot.create(:teacher) }
+
+      it { is_expected.to be_nil }
+    end
+  end
 end
