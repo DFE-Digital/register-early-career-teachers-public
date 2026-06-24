@@ -5,5 +5,6 @@ class AddTeacherRecordMergedAnonymisationReason < ActiveRecord::Migration[8.1]
 
   def down
     # enum values can't be removed in PostgreSQL
+    raise ActiveRecord::IrreversibleMigration
   end
 end
