@@ -21,6 +21,41 @@
 #
 #     **bold** and _italic_ text
 
+- title: Added new participant attribute 'most_recent_induction_period_end_date'
+  date: 2026-06-23
+  tags:
+    - new-feature
+    - production-release
+    - sandbox-release
+  body: |
+    We’ve added a new attribute to the enrolments section of GET participant responses.
+
+    ## What’s changed
+
+    A new attribute `most_recent_induction_period_end_date` has been added to the enrolments section of GET participant responses.
+
+    For ECTs the date will be:
+
+    - the most recent ended induction period as reported by the ECT's appropriate body
+    - null if the ECT has not yet started or is currently serving induction
+
+    If the ECT is no longer serving induction, the attribute value will be a date.
+
+    For mentors the field will always be null.
+
+    ## Why we’ve made this change
+
+    This attribute makes the ECT’s induction status clearer, specifically whether they’ve stopped serving induction without completing it.
+
+    ## What you need to do
+    
+    No action is needed. However, lead providers can use this new attribute to:
+
+    - identify ECTs whose inductions have ended unexpectedly
+    - follow up with delivery partners and schools to check, for example, if ECTs will continue induction or should be withdrawn from training
+
+
+
 - title: Schedules can be changed to reduced after ECTs have completed induction 
   date: 2026-06-17
   tags:
