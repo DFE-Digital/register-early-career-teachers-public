@@ -150,6 +150,36 @@ module Events
       new(event_type:, author:, teacher:, heading:, body:, happened_at:).record_event!
     end
 
+    def self.record_teacher_merged_events!(author:, source:, destination:, body: nil, zendesk_ticket_id: nil, happened_at: Time.zone.now)
+      source_name = Teachers::Name.new(source).full_name
+      destination_name = Teachers::Name.new(destination).full_name
+
+      common = { event_type: :teacher_merged, author:, zendesk_ticket_id:, happened_at: }
+
+      new(
+        **common,
+        teacher: destination,
+        heading: "Records were merged into #{destination_name} from #{source_name}",
+        body: <<~BODY.squish
+          Records were merged in from #{source_name}
+          (TRN #{source.trn}, participant #{source.api_id}, teacher #{source.id}), which was then anonymised.
+          Destination: #{destination_name} (TRN #{destination.trn}, participant #{destination.api_id}, teacher #{destination.id}).
+          #{body}
+        BODY
+      ).record_event!
+
+      new(
+        **common,
+        teacher: source,
+        heading: "#{source_name} was merged into #{destination_name} and anonymised",
+        body: <<~BODY.squish
+          This record (TRN #{source.trn}, participant #{source.api_id}) was merged into
+          #{destination_name} (TRN #{destination.trn}, participant #{destination.api_id}, teacher #{destination.id}) and anonymised.
+          #{body}
+        BODY
+      ).record_event!
+    end
+
     def self.record_teacher_passes_induction_event!(author:, appropriate_body_period:, induction_period:, ect_at_school_period:, mentorship_period:, training_period:, teacher:, body: nil, zendesk_ticket_id: nil)
       fail(NoInductionPeriod) unless induction_period
 

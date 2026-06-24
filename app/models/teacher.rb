@@ -20,6 +20,7 @@ class Teacher < ApplicationRecord
   }
   enum :anonymisation_reason, {
     registered_in_error: "registered_in_error",
+    teacher_record_merged: "teacher_record_merged",
   }
 
   # Associations
