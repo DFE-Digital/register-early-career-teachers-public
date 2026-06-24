@@ -145,6 +145,19 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::FuturePer
     end
   end
 
+  context "when the training period starts today" do
+    let(:future_started_on) { today }
+
+    it "raises an unsupported training period error" do
+      expect {
+        service_call
+      }.to raise_error(
+        described_class::UnsupportedTrainingPeriodError,
+        "Contract period changes are only supported for eligible future training periods"
+      )
+    end
+  end
+
   context "when there is no equivalent schedule in the selected contract period" do
     let!(:target_schedule) { nil }
 
