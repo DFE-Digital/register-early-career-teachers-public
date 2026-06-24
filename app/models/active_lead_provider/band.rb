@@ -29,7 +29,7 @@ class ActiveLeadProvider::Band < ApplicationRecord
             }
 
   # Callbacks
-  before_update :prevent_update, unless: :last?
+  before_update :abort_update, unless: :last?
   before_destroy :abort_destruction, unless: :last?
   before_validation :assign_allocation_order,
                     on: :create,
@@ -58,12 +58,14 @@ private
     self.allocation_order = active_lead_provider.bands.count + 1
   end
 
-  def prevent_update
-    raise ActiveRecord::RecordNotSaved.new("Only the last band can be updated", self)
+  def abort_update
+    errors.add(:base, "Only the last band can be updated")
+    throw(:abort)
   end
 
   def abort_destruction
-    raise ActiveRecord::RecordNotDestroyed.new("Only the last band can be destroyed", self)
+    errors.add(:base, "Only the last band can be destroyed")
+    throw(:abort)
   end
 
   # @return [Boolean]

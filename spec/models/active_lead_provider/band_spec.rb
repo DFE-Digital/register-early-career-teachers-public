@@ -33,7 +33,8 @@ RSpec.describe ActiveLeadProvider::Band, type: :model do
       let!(:last_band) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:) }
 
       it "prevents changing the capacity of a band that is not the last" do
-        expect { first_band.update!(capacity: 999) }.to raise_error(ActiveRecord::RecordNotSaved, /Only the last band can be updated/)
+        expect { first_band.update!(capacity: 999) }.to raise_error(ActiveRecord::RecordNotSaved)
+        expect(first_band.errors[:base]).to include("Only the last band can be updated")
       end
 
       it "prevents changing the allocation order of a band that is not the last" do
@@ -45,7 +46,8 @@ RSpec.describe ActiveLeadProvider::Band, type: :model do
       end
 
       it "prevents deleting a band that is not the last" do
-        expect { first_band.destroy! }.to raise_error(ActiveRecord::RecordNotDestroyed, /Only the last band can be destroyed/)
+        expect { first_band.destroy! }.to raise_error(ActiveRecord::RecordNotDestroyed)
+        expect(first_band.errors[:base]).to include("Only the last band can be destroyed")
       end
     end
   end
