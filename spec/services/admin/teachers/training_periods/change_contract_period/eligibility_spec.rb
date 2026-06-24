@@ -53,6 +53,15 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::Eligibili
       finished_on:
     )
   end
+  let(:eoi_only_training_period) do
+    FactoryBot.create(
+      :training_period,
+      :with_only_expression_of_interest,
+      ect_at_school_period:,
+      started_on:,
+      finished_on:
+    )
+  end
   let(:current_ect_at_school_period) do
     FactoryBot.create(
       :ect_at_school_period,
@@ -97,44 +106,42 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::Eligibili
   end
 
   context "when the training period only has an expression of interest" do
-    let(:training_period) do
-      FactoryBot.create(
-        :training_period,
-        :with_only_expression_of_interest,
-        ect_at_school_period:,
-        started_on:,
-        finished_on:
-      )
-    end
+    let(:training_period) { eoi_only_training_period }
 
     it "is eligible" do
       expect(eligibility).to be_eligible
     end
+  end
 
-    context "when there is a future period" do
-      let(:future_started_on) { today.next_month }
-      let(:finished_on) { future_started_on.yesterday }
+  context "when there are current and future EOI only periods" do
+    let(:future_started_on) { today.next_month }
+    let(:finished_on) { future_started_on.yesterday }
 
-      before do
-        FactoryBot.create(
-          :training_period,
-          :with_only_expression_of_interest,
-          ect_at_school_period: FactoryBot.create(
-            :ect_at_school_period,
-            teacher:,
-            school:,
-            started_on: future_started_on,
-            finished_on: nil
-          ),
-          expression_of_interest: training_period.expression_of_interest,
+    let(:training_period) { eoi_only_training_period }
+
+    let!(:future_training_period) do
+      FactoryBot.create(
+        :training_period,
+        :with_only_expression_of_interest,
+        ect_at_school_period: FactoryBot.create(
+          :ect_at_school_period,
+          teacher:,
+          school:,
           started_on: future_started_on,
           finished_on: nil
-        )
-      end
+        ),
+        expression_of_interest: training_period.expression_of_interest,
+        started_on: future_started_on,
+        finished_on: nil
+      )
+    end
 
-      it "is not eligible" do
-        expect(eligibility).not_to be_eligible
-      end
+    it "does not make the current period eligible" do
+      expect(eligibility).not_to be_eligible
+    end
+
+    it "makes the future period eligible" do
+      expect(described_class.new(training_period: future_training_period)).to be_eligible
     end
   end
 
