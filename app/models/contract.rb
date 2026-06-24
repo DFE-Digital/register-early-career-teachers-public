@@ -45,9 +45,7 @@ class Contract < ApplicationRecord
     vat_rate
   end
 
-  def description
-    "#{contract_type.humanize.upcase} (created #{created_at.to_fs(:govuk)})"
-  end
+  def description = "#{contract_type.humanize.upcase} #{statement_range_description}"
 
   def statement_range_description
     first = statements.min_by { |s| [s.year, s.month] }
