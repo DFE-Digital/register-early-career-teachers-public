@@ -11,17 +11,13 @@ describe Schools::ECTs::ChangeAppropriateBodyWizard::EditStep, type: :model do
     )
   end
 
-  let(:store) do
-    FactoryBot.build(
-      :session_repository,
-      appropriate_body_id: appropriate_body_period.id.to_s
-    )
-  end
+  let(:store) { FactoryBot.build(:session_repository) }
   let(:author) { FactoryBot.build(:school_user, school_urn: school.urn) }
   let(:school) { FactoryBot.create(:school) }
-  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :national_ab, school:) }
+  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school:, school_reported_appropriate_body:) }
   let(:params) { { appropriate_body_id: appropriate_body_period.id } }
-  let(:appropriate_body_period) { ect_at_school_period.school_reported_appropriate_body }
+  let(:school_reported_appropriate_body) { FactoryBot.create(:appropriate_body_period) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
 
   describe ".permitted_params" do
     it "returns the permitted parameters" do
@@ -41,18 +37,27 @@ describe Schools::ECTs::ChangeAppropriateBodyWizard::EditStep, type: :model do
     end
   end
 
-  describe "validations" do
-    context "when the appropriate body has not changed" do
-      let(:params) { { appropriate_body_id: appropriate_body_period.id } }
+  describe "#appropriate_bodies_except_current" do
+    let!(:other_appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
+    let!(:inactive_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, :inactive) }
 
-      it "is invalid" do
-        expect(current_step).to be_invalid
-        expect(current_step.errors.messages_for(:appropriate_body_id)).to contain_exactly(
-          "You must select a different appropriate body"
-        )
-      end
+    it "returns all active appropriate bodies except the current one" do
+      expect(current_step.appropriate_bodies_except_current).not_to include(ect_at_school_period.school_reported_appropriate_body)
+      expect(current_step.appropriate_bodies_except_current).not_to include(inactive_appropriate_body_period)
+      expect(current_step.appropriate_bodies_except_current).to contain_exactly(other_appropriate_body_period, appropriate_body_period)
     end
 
+    context "when the current appropriate body is nil" do
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school:, school_reported_appropriate_body: nil) }
+
+      it "returns all active appropriate bodies" do
+        expect(current_step.appropriate_bodies_except_current).not_to include(inactive_appropriate_body_period)
+        expect(current_step.appropriate_bodies_except_current).to contain_exactly(other_appropriate_body_period, appropriate_body_period)
+      end
+    end
+  end
+
+  describe "validations" do
     context "when the appropriate body is blank" do
       let(:params) { { appropriate_body_id: "" } }
 
