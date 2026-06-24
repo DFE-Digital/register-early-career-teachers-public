@@ -14,14 +14,9 @@ module Admin
             return false if finished_before_today?
             return false if blocked_by_current_active_period?
 
-            if eoi_only?
-              return current_active_period? if no_future_periods?
-
-              return false
-            end
-
             return current_active_period? if no_future_periods?
             return only_future_period? if no_current_active_period?
+            return future_period? if eoi_only?
 
             future_period? && same_partnership_as_current_active_period?
           end
