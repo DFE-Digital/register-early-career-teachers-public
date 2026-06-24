@@ -1,6 +1,11 @@
 <% content_for :content do %>
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
+    <% if content_for?(:sidebar) %>
+      <div class="govuk-grid-column-one-third">
+        <%= yield(:sidebar) %>
+      </div>
+    <% end %>
+    <div class="govuk-grid-column-two-thirds">
       <%= yield(:page_caption) %>
       <%= yield(:page_header) %>
 
