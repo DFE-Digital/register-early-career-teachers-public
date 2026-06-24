@@ -34,6 +34,11 @@ class Statement < ApplicationRecord
   validate :unique_lead_provider_month_year
   validates :deadline_date, presence: { message: "Deadline date must be specified" }
   validate :deadline_date_in_the_past
+  validates :payment_date,
+            comparison: {
+              greater_than: :deadline_date,
+              message: "Payment date must be later than the deadline date"
+            }
 
   # Scopes
   scope :with_fee_type, ->(fee_type) { where(fee_type:) }

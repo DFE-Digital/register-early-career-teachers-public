@@ -518,7 +518,7 @@ RSpec.describe Statements::DeclarationSelection do
         month: 12,
         year: 2024,
         payment_date: statement.payment_date,
-        deadline_date: Date.new(2024, 11, 30)
+        deadline_date: statement.payment_date.prev_month.beginning_of_month
       )
     end
 
