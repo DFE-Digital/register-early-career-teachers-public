@@ -50,6 +50,18 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
       started_on: today.prev_month
     )
   end
+  let(:future_eoi_only_training_period) do
+    FactoryBot.create(
+      :training_period,
+      :ongoing,
+      :with_only_expression_of_interest,
+      ect_at_school_period:,
+      expression_of_interest: active_lead_provider,
+      schedule:,
+      started_on: today.next_month,
+      finished_on: nil
+    )
+  end
   let(:training_period) do
     FactoryBot.create(
       :training_period,
@@ -220,6 +232,19 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
         expect(response).to redirect_to(path_for_step("check-answers"))
       end
     end
+
+    context "when the future period only has an expression of interest" do
+      let(:training_period) { future_eoi_only_training_period }
+
+      it "redirects to check answers" do
+        post(
+          path_for_step("select-contract-period"),
+          params: { select_contract_period: { contract_period_year: target_contract_period.year } }
+        )
+
+        expect(response).to redirect_to(path_for_step("check-answers"))
+      end
+    end
   end
 
   describe "GET select-partnership" do
@@ -336,6 +361,24 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
         expect(page).to have_summary_list_row("Existing contract period", value: current_contract_period.year.to_s)
         expect(page).to have_summary_list_row("New contract period", value: target_contract_period.year.to_s)
         expect(page).to have_summary_list_row("Lead provider", value: "Target Lead Provider")
+        expect(page).to have_summary_list_row("Delivery partner", value: "No delivery partner confirmed")
+      end
+    end
+
+    context "when the future period only has an expression of interest" do
+      let(:eoi_lead_provider) { FactoryBot.create(:lead_provider, name: "Target Lead Provider") }
+      let(:training_period) { future_eoi_only_training_period }
+
+      it "renders the CYA page after the contract period has been selected" do
+        post(
+          path_for_step("select-contract-period"),
+          params: { select_contract_period: { contract_period_year: target_contract_period.year } }
+        )
+
+        get path_for_step("check-answers")
+        page = Capybara.string(response.body)
+
+        expect(response).to have_http_status(:ok)
         expect(page).to have_summary_list_row("Delivery partner", value: "No delivery partner confirmed")
       end
     end
@@ -465,6 +508,41 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
         follow_redirect!
 
         expect(response.body).to include("Contract period changed")
+      end
+
+      context "when the future period only has an expression of interest" do
+        let(:training_period) { future_eoi_only_training_period }
+        let(:future_eoi_only_training_period) do
+          FactoryBot.create(
+            :training_period,
+            :ongoing,
+            :with_only_expression_of_interest,
+            ect_at_school_period: future_ect_at_school_period,
+            expression_of_interest: active_lead_provider,
+            schedule:,
+            started_on: future_started_on,
+            finished_on: nil
+          )
+        end
+
+        it "applies the contract period change in place and redirects to the training tab" do
+          target_schedule
+
+          post(
+            path_for_step("select-contract-period"),
+            params: { select_contract_period: { contract_period_year: target_contract_period.year } }
+          )
+
+          expect {
+            post path_for_step("check-answers"), params: { check_answers: {} }
+          }.not_to change(TrainingPeriod, :count)
+
+          expect(response).to redirect_to(admin_teacher_training_path(teacher))
+          training_period.reload
+
+          expect(training_period.school_partnership).to be_nil
+          expect(training_period.expression_of_interest).to eq(target_active_lead_provider)
+        end
       end
     end
   end
