@@ -45,7 +45,7 @@ module Admin
         end
 
         def ensure_changeable_training_period
-          unless ChangeContractPeriod::Eligibility.new(training_period: @training_period).current_active_period_changeable?
+          unless ChangeContractPeriod::Eligibility.new(training_period: @training_period).eligible?
             raise ActionController::BadRequest,
                   "Training period is not eligible for contract period change"
           end
