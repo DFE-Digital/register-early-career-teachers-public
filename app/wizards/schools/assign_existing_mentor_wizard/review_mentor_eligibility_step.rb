@@ -19,8 +19,6 @@ module Schools
       end
 
       def create_mentor_training_period!
-        return unless lead_provider
-
         ActiveRecord::Base.transaction do
           training_period = TrainingPeriods::Create.provider_led(
             period: mentor_at_school_period,
