@@ -18,7 +18,7 @@ describe Schools::ECTs::ChangeAppropriateBodyWizard::ConfirmationStep do
   let(:params) { {} }
 
   describe "#previous_step" do
-    it "returns the edit step" do
+    it "returns the check answers step" do
       expect(current_step.previous_step).to eq(:check_answers)
     end
   end

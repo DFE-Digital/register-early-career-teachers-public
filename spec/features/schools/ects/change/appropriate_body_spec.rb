@@ -12,6 +12,10 @@ describe "School user can change ECT's appropriate body" do
     and_i_see_the_change_appropriate_body_form
     and_the_current_appropriate_body_is_not_available
 
+    when_i_enter_a_blank_appropriate_body_name
+    and_i_continue
+    then_i_see_an_error
+
     when_i_select_an_appropriate_body("Wrong Appropriate Body")
     and_i_continue
     then_i_am_asked_to_check_and_confirm_the_change
@@ -23,6 +27,9 @@ describe "School user can change ECT's appropriate body" do
     and_i_continue
     and_i_confirm_the_change
     then_i_see_the_confirmation_message
+
+    when_i_go_back_to_the_ect_page
+    then_i_see_the_new_appropriate_body_is_assigned
   end
 
   def given_there_is_a_school
@@ -75,6 +82,10 @@ describe "School user can change ECT's appropriate body" do
         .select_option(value: name)
   end
 
+  def when_i_enter_a_blank_appropriate_body_name
+    when_i_select_an_appropriate_body("")
+  end
+
   def and_the_current_appropriate_body_is_not_available
     combobox = page
       .get_by_role("combobox", name: "Enter appropriate body name")
@@ -84,6 +95,13 @@ describe "School user can change ECT's appropriate body" do
       "option",
       text: "Current Appropriate Body",
       exact_text: true
+    )
+  end
+
+  def then_i_see_an_error
+    error_summary = page.locator(".govuk-error-summary")
+    expect(error_summary).to have_text(
+      "Select the appropriate body which will be supporting the ECT's induction"
     )
   end
 
@@ -109,5 +127,16 @@ describe "School user can change ECT's appropriate body" do
     expect(success_panel).to have_text(
       "You’ve chosen New Appropriate Body as the new appropriate body for John Doe"
     )
+  end
+
+  def when_i_go_back_to_the_ect_page
+    page.get_by_role("link", name: "Back to John Doe’s details").click
+  end
+
+  def then_i_see_the_new_appropriate_body_is_assigned
+    ab_locator = page.locator(".govuk-summary-list__key", hasText: "Appropriate body")
+    row = page.locator(".govuk-summary-list__row", has: ab_locator)
+
+    expect(row.locator(".govuk-summary-list__value")).to have_text("New Appropriate Body")
   end
 end

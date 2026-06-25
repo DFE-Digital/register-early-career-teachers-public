@@ -9,7 +9,7 @@ module Schools
       private
 
         def new_appropriate_body_period
-          @new_appropriate_body_period ||= AppropriateBodyPeriod.find_by(id: store.appropriate_body_id)
+          @new_appropriate_body_period ||= AppropriateBodyPeriod.find(store.appropriate_body_id)
         end
       end
     end

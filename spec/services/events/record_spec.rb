@@ -2592,11 +2592,12 @@ RSpec.describe Events::Record do
   describe ".record_teacher_appropriate_body_changed!" do
     let(:old_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Old AB") }
     let(:new_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "New AB") }
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
 
     it "queues a RecordEventJob with the correct values" do
       freeze_time do
         Events::Record.record_teacher_appropriate_body_changed!(
-          teacher:,
+          ect_at_school_period:,
           old_appropriate_body_period:,
           new_appropriate_body_period:,
           author:
@@ -2604,7 +2605,8 @@ RSpec.describe Events::Record do
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           hash_including(
-            teacher:,
+            ect_at_school_period:,
+            teacher: ect_at_school_period.teacher,
             appropriate_body_period: new_appropriate_body_period,
             heading: "Appropriate body changed from 'Old AB' to 'New AB'",
             event_type: :teacher_appropriate_body_changed,
@@ -2621,7 +2623,7 @@ RSpec.describe Events::Record do
       it "queues a RecordEventJob with the correct values" do
         freeze_time do
           Events::Record.record_teacher_appropriate_body_changed!(
-            teacher:,
+            ect_at_school_period:,
             old_appropriate_body_period:,
             new_appropriate_body_period:,
             author:
@@ -2629,6 +2631,7 @@ RSpec.describe Events::Record do
 
           expect(RecordEventJob).to have_received(:perform_later).with(
             hash_including(
+              ect_at_school_period:,
               teacher:,
               appropriate_body_period: new_appropriate_body_period,
               heading: "Appropriate body changed from 'Not reported' to 'New AB'",
