@@ -171,9 +171,9 @@ module Events
       new(
         **common,
         teacher: source,
-        heading: "#{source_name} was merged into #{destination_name} and anonymised",
+        heading: "Teacher record was merged into #{destination_name} and anonymised",
         body: <<~BODY.squish
-          This record (TRN #{source.trn}, participant #{source.api_id}) was merged into
+          This record was merged into
           #{destination_name} (TRN #{destination.trn}, participant #{destination.api_id}, teacher #{destination.id}) and anonymised.
           #{body}
         BODY
