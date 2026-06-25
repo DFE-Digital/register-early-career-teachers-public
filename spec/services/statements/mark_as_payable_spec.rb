@@ -1,7 +1,7 @@
 RSpec.describe Statements::MarkAsPayable do
   describe ".mark_all_eligible!" do
     it "marks open statements past their deadline" do
-      statement = FactoryBot.create(:statement, :open, deadline_date: 1.day.ago)
+      statement = FactoryBot.create(:statement, :open, deadline_date: 1.day.ago, payment_date: Time.zone.now)
       eligible_declaration = FactoryBot.create(
         :declaration, :eligible,
         active_lead_provider: statement.contract.active_lead_provider,
@@ -31,13 +31,13 @@ RSpec.describe Statements::MarkAsPayable do
     end
 
     it "ignores statements that are already payable" do
-      statement = FactoryBot.create(:statement, :payable, deadline_date: 1.day.ago)
+      statement = FactoryBot.create(:statement, :payable, deadline_date: 1.day.ago, payment_date: Time.zone.now)
 
       expect { described_class.mark_all_eligible! }.not_to(change { statement.reload.status })
     end
 
     it "ignores statements that are already paid" do
-      statement = FactoryBot.create(:statement, :paid, deadline_date: 1.day.ago)
+      statement = FactoryBot.create(:statement, :paid, deadline_date: 1.day.ago, payment_date: Time.zone.now)
 
       expect { described_class.mark_all_eligible! }.not_to(change { statement.reload.status })
     end
@@ -47,11 +47,19 @@ RSpec.describe Statements::MarkAsPayable do
     subject { described_class.new(statement) }
 
     let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
-    let(:statement) { FactoryBot.create(:statement, :open, deadline_date: 1.day.ago, active_lead_provider:) }
+    let(:statement) do
+      FactoryBot.create(:statement, :open, deadline_date: 1.day.ago, payment_date: Time.zone.now, active_lead_provider:)
+    end
 
     %i[payable paid].each do |status|
       it "raises StatementNotOpenError when statement is #{status}" do
-        statement = FactoryBot.create(:statement, status, deadline_date: 1.day.ago, active_lead_provider:)
+        statement = FactoryBot.create(
+          :statement,
+          status,
+          deadline_date: 1.day.ago,
+          payment_date: Time.zone.now,
+          active_lead_provider:
+        )
 
         expect { described_class.new(statement).mark! }.to raise_error(
           Statements::StatementNotOpenError,
