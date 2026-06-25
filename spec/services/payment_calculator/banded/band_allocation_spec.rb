@@ -2,9 +2,7 @@ RSpec.describe PaymentCalculator::Banded::BandAllocation do
   subject(:allocation) { described_class.new(band_term:, declaration_type: "started") }
 
   let(:band_term) do
-    FactoryBot.build_stubbed(:contract_banded_fee_structure_band_term,
-                             min_declarations: 1,
-                             max_declarations: 100)
+    FactoryBot.build_stubbed(:contract_banded_fee_structure_band_term)
   end
 
   describe "#capacity" do
