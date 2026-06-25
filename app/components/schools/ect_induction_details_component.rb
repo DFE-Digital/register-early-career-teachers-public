@@ -25,7 +25,7 @@ module Schools
     def appropriate_body_row
       {
         key: { text: "Appropriate body" },
-        value: { text: appropriate_body_text },
+        value: { text: appropriate_body_html },
         actions: [change_appropriate_body_link].compact
       }
     end
@@ -63,8 +63,27 @@ module Schools
       ])
     end
 
-    def appropriate_body_text
-      @ect.school_reported_appropriate_body_name.presence || "Not reported"
+    def appropriate_body_html
+      name = @ect.school_reported_appropriate_body_name.presence
+      return "Not reported" if name.nil?
+
+      safe_join([
+        name,
+        tag.br,
+        tag.span(appropriate_body_status, class: "govuk-hint")
+      ])
+    end
+
+    def appropriate_body_status
+      if @ect.claimed_by_school_reported_appropriate_body?
+        safe_join([
+          "This appropriate body has recorded the ECT’s induction.",
+          tag.br,
+          "Contact them if this is wrong or if you want to change the appropriate body."
+        ])
+      else
+        "Awaiting confirmation by the appropriate body"
+      end
     end
 
     def induction_start_date_not_reported_row
