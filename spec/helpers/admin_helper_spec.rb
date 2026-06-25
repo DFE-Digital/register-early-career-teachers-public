@@ -35,4 +35,18 @@ describe AdminHelper do
       expect(timeline[:current]).to be(true)
     end
   end
+
+  describe "#format_uuid" do
+    it "wraps the input in code tags" do
+      uuid = SecureRandom.uuid
+
+      expect(format_uuid(uuid)).to eql("<code>#{uuid}</code>")
+    end
+
+    it "returns nil if the uuid is missing" do
+      uuid = nil
+
+      expect(format_uuid(uuid)).to be_nil
+    end
+  end
 end
