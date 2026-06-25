@@ -24,7 +24,10 @@ lead_providers_data.each do |data|
 
   data[:years].each do |year|
     contract_period = ContractPeriod.find_by!(year:)
-    ActiveLeadProvider.find_or_create_by!(lead_provider:, contract_period:)
+    active_lead_provider = ActiveLeadProvider.find_or_create_by!(lead_provider:, contract_period:)
+    FactoryBot.create_list(:active_lead_provider_band, 3,
+                           active_lead_provider:,
+                           capacity: 81)
   end
 
   token = lead_provider.name.parameterize
