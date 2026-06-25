@@ -68,7 +68,7 @@ closed_school = FactoryBot.create(:gias_school, :with_school, :closed, closed_on
   describe_school(school)
 end
 
-open_school = FactoryBot.create(:gias_school, status: :open, opened_on: Date.new(2026, 3, 31), urn: 9_123_506, name: "Monsters Juniors").tap do |school|
+open_school = FactoryBot.create(:gias_school, status: :open, opened_on: Date.new(2026, 3, 31), urn: 9_123_506, name: "Monsters Junior School").tap do |school|
   describe_school(school)
 end
 

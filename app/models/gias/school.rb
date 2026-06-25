@@ -24,7 +24,7 @@ class GIAS::School < ApplicationRecord
   has_many :successor_links,   -> { where(link_type: GIAS::SchoolLink::SUCCESSOR_LINK_TYPES) },   class_name: "GIAS::SchoolLink", foreign_key: :urn, primary_key: :urn
   has_many :predecessor_links, -> { where(link_type: GIAS::SchoolLink::PREDECESSOR_LINK_TYPES) }, class_name: "GIAS::SchoolLink", foreign_key: :urn, primary_key: :urn
 
-  has_many :successors,   class_name: "GIAS::School", through: :successor_links, source: :to_gias_school
+  has_many :successors, class_name: "GIAS::School", through: :successor_links, source: :to_gias_school
   has_many :predecessors, class_name: "GIAS::School", through: :predecessor_links, source: :from_gias_school
 
   # Validations
@@ -77,15 +77,15 @@ class GIAS::School < ApplicationRecord
     successors.first
   end
 
-  def closeable?
-    closed_status? && successors.empty? && !school_closure_recorded? && closed_on_or_before_today?
+  def can_be_closed?
+    closed_status? && closed_on_or_before_today? && !school_closure_recorded? && successors.empty?
   end
 
-  def openable?
-    open_status? && school_not_yet_opened? && predecessors.empty? && successors.empty? && opened_on_or_before_today?
+  def can_be_opened?
+    open_status? && opened_on_or_before_today? && school_not_yet_opened? && predecessors.empty? && successors.empty?
   end
 
-  def replaceable?
+  def can_be_replaced?
     closed_status? &&
       closed_on_or_before_today? &&
       successors.one? &&
