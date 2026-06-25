@@ -570,6 +570,58 @@ describe ECTAtSchoolPeriod do
     end
   end
 
+  describe "#claimed_by_school_reported_appropriate_body?" do
+    subject(:ect_at_school_period) do
+      FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school_reported_appropriate_body:)
+    end
+
+    let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, :teaching_school_hub) }
+    let(:other_appropriate_body) { FactoryBot.create(:appropriate_body_period, :teaching_school_hub) }
+    let(:teacher) { FactoryBot.create(:teacher) }
+
+    context "when no school reported appropriate body has been set" do
+      let(:school_reported_appropriate_body) { nil }
+
+      it { is_expected.not_to be_claimed_by_school_reported_appropriate_body }
+    end
+
+    context "when no induction period exists" do
+      let(:school_reported_appropriate_body) { appropriate_body_period }
+
+      it { is_expected.not_to be_claimed_by_school_reported_appropriate_body }
+    end
+
+    context "when an ongoing induction period exists for the school reported appropriate body" do
+      let(:school_reported_appropriate_body) { appropriate_body_period }
+
+      before do
+        FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:)
+      end
+
+      it { is_expected.to be_claimed_by_school_reported_appropriate_body }
+    end
+
+    context "when an ongoing induction period exists for a different appropriate body" do
+      let(:school_reported_appropriate_body) { appropriate_body_period }
+
+      before do
+        FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period: other_appropriate_body)
+      end
+
+      it { is_expected.not_to be_claimed_by_school_reported_appropriate_body }
+    end
+
+    context "when only a finished induction period exists for the school reported appropriate body" do
+      let(:school_reported_appropriate_body) { appropriate_body_period }
+
+      before do
+        FactoryBot.create(:induction_period, teacher:, appropriate_body_period:, started_on: 1.year.ago, finished_on: 1.month.ago)
+      end
+
+      it { is_expected.not_to be_claimed_by_school_reported_appropriate_body }
+    end
+  end
+
   describe "#siblings" do
     let!(:teacher) { FactoryBot.create(:teacher) }
     let!(:school) { period_1.school }

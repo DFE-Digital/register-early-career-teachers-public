@@ -31,6 +31,24 @@ _emma_thompson = teacher(next_trn, "Emma Thompson", trs_induction_status: "InPro
   mentor_at_school_period(abbey_grove_school, "2022-09-01")
 end
 
+_olivia_colman = teacher(next_trn, "Olivia Colman", trs_induction_status: "InProgress") do
+  description("ECT awaiting appropriate body confirmation (school reported AB, not yet claimed)")
+
+  ect_at_school_period(abbey_grove_school, "2024-09-01", school_reported_appropriate_body: golden_leaf_teaching_school_hub) do
+    school_led_training_period("2024-09-01")
+  end
+end
+
+_david_tennant = teacher(next_trn, "David Tennant", trs_induction_status: "InProgress") do
+  description("ECT with appropriate body confirmed (induction recorded by school reported AB)")
+
+  induction_period(golden_leaf_teaching_school_hub, "2024-09-01")
+
+  ect_at_school_period(abbey_grove_school, "2024-09-01", school_reported_appropriate_body: golden_leaf_teaching_school_hub) do
+    school_led_training_period("2024-09-01")
+  end
+end
+
 felicity_kendall = teacher(next_trn, "Felicity Kendall") do
   induction_period(golden_leaf_teaching_school_hub, "2023-08-28")
 
