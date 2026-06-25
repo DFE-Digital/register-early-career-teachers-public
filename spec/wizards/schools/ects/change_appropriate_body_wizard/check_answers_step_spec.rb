@@ -74,7 +74,7 @@ describe Schools::ECTs::ChangeAppropriateBodyWizard::CheckAnswersStep do
         old_appropriate_body_period:,
         new_appropriate_body_period:,
         author:,
-        teacher:
+        ect_at_school_period:
       )
 
       current_step.save!

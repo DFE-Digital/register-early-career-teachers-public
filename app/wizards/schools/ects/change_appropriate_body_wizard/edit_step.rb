@@ -17,9 +17,9 @@ module Schools
 
         def appropriate_bodies_except_current
           AppropriateBodyPeriod
-          .active
-          .where.not(id: current_appropriate_body_id)
-          .select(:id, :name)
+            .active
+            .where.not(id: current_appropriate_body_id)
+            .select(:id, :name)
         end
 
       private

@@ -1110,12 +1110,13 @@ module Events
       new(event_type:, author:, heading:, teacher:, training_period:, declaration:, happened_at:).record_event!
     end
 
-    def self.record_teacher_appropriate_body_changed!(author:, teacher:, old_appropriate_body_period:, new_appropriate_body_period:, happened_at: Time.current)
+    def self.record_teacher_appropriate_body_changed!(author:, ect_at_school_period:, old_appropriate_body_period:, new_appropriate_body_period:, happened_at: Time.current)
       event_type = :teacher_appropriate_body_changed
+      teacher = ect_at_school_period.teacher
       old_appropriate_body_name = old_appropriate_body_period&.name || "Not reported"
       heading = TransitionDescription.for("appropriate body", from: old_appropriate_body_name, to: new_appropriate_body_period.name)
 
-      new(event_type:, author:, heading:, teacher:, appropriate_body_period: new_appropriate_body_period, happened_at:).record_event!
+      new(event_type:, author:, heading:, teacher:, ect_at_school_period:, appropriate_body_period: new_appropriate_body_period, happened_at:).record_event!
     end
 
     # Contract periods Events

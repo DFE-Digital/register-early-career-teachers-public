@@ -5,20 +5,21 @@
 ) %>
 
 <p class="govuk-body">
-  We share the ECT's details with the appropriate body to check the ECT has been registered correctly.
+  We share the ECT’s details with the appropriate body to check the ECT has been registered correctly.
 </p>
 
 <%= form_with model: @wizard.current_step, url: @wizard.current_step_path do |form| %>
   <%= content_for(:error_summary) { form.govuk_error_summary } %>
 
   <%= form.govuk_collection_select(:appropriate_body_id,
-                                @wizard.current_step.appropriate_bodies_except_current,
-                                :id,
-                                :name,
-                                label: { text: "Enter appropriate body name" },
-                                options: { include_blank: true },
-                                class: "autocomplete"
-      ) %>
+                                    @wizard.current_step.appropriate_bodies_except_current,
+                                    :id,
+                                    :name,
+                                    label: { text: "Enter appropriate body name" },
+                                    options: { include_blank: true },
+                                    class: "autocomplete"
+                                  ) 
+  %>
   
   <%= govuk_details(summary_text: "What are the roles of an appropriate body, lead provider and delivery partner?") do %>
     <p class="govuk-body">
