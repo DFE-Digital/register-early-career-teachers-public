@@ -49,6 +49,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_22_120000) do
   create_enum "withdrawal_reasons", ["left_teaching_profession", "moved_school", "mentor_no_longer_being_mentor", "switched_to_school_led", "other", "changed_lead_provider"]
   create_enum "working_pattern", ["part_time", "full_time"]
 
+  create_table "active_lead_provider_bands", force: :cascade do |t|
+    t.bigint "active_lead_provider_id", null: false
+    t.integer "allocation_order", null: false
+    t.integer "capacity", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["active_lead_provider_id", "allocation_order"], name: "idx_on_active_lead_provider_id_allocation_order_3a1b864c94", unique: true
+    t.index ["active_lead_provider_id"], name: "index_active_lead_provider_bands_on_active_lead_provider_id"
+  end
+
   create_table "active_lead_providers", force: :cascade do |t|
     t.bigint "contract_period_year", null: false
     t.datetime "created_at", null: false
@@ -147,6 +157,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_22_120000) do
   end
 
   create_table "contract_banded_fee_structure_bands", force: :cascade do |t|
+    t.bigint "band_id"
     t.bigint "banded_fee_structure_id", null: false
     t.datetime "created_at", null: false
     t.decimal "fee_per_declaration", precision: 12, scale: 2, null: false
@@ -155,6 +166,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_22_120000) do
     t.decimal "output_fee_ratio", precision: 3, scale: 2, null: false
     t.decimal "service_fee_ratio", precision: 3, scale: 2, null: false
     t.datetime "updated_at", null: false
+    t.index ["band_id"], name: "index_contract_banded_fee_structure_bands_on_band_id"
+    t.index ["banded_fee_structure_id", "band_id"], name: "idx_on_banded_fee_structure_id_band_id_1c26965993", unique: true
     t.index ["banded_fee_structure_id"], name: "idx_on_banded_fee_structure_id_49a33a0bd5"
   end
 
@@ -933,10 +946,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_22_120000) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  add_foreign_key "active_lead_provider_bands", "active_lead_providers"
   add_foreign_key "active_lead_providers", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "active_lead_providers", "lead_providers"
   add_foreign_key "appropriate_bodies", "dfe_sign_in_organisations"
   add_foreign_key "appropriate_body_periods", "appropriate_bodies"
+  add_foreign_key "contract_banded_fee_structure_bands", "active_lead_provider_bands", column: "band_id"
   add_foreign_key "contract_banded_fee_structure_bands", "contract_banded_fee_structures", column: "banded_fee_structure_id", on_delete: :cascade
   add_foreign_key "contract_banded_fee_structures", "contracts"
   add_foreign_key "contract_flat_rate_fee_structures", "contracts"
