@@ -26,11 +26,15 @@
       <% end %>
     <% end %>
 
-    <%= render Navigation::PrimaryNavigationComponent.new(
-      current_path: request.fullpath,
-      current_user: current_user,
-      inverse: content_for?(:api_guidance_home_header),
-    ) %>
+    <%=
+      govuk_service_navigation(
+        **Navigation::Primary.new(
+          current_path: request.fullpath,
+          current_user: current_user,
+          inverse: content_for?(:api_guidance_home_header),
+        ).govuk_header_arguments
+      )
+    %>
 
     <% if content_for?(:api_guidance_home_header) %>
       <%= yield(:api_guidance_home_header) %>
