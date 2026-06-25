@@ -23,7 +23,8 @@ module Admin
                  FuturePeriodChange::ScheduleNotFoundError
             errors.add(:base, "A matching schedule could not be found for the selected contract period")
             false
-          rescue CurrentActivePeriodChange::ActiveLeadProviderNotFoundError
+          rescue CurrentActivePeriodChange::ActiveLeadProviderNotFoundError,
+                 FuturePeriodChange::ActiveLeadProviderNotFoundError
             errors.add(:base, "An active lead provider could not be found for the selected contract period")
             false
           end

@@ -79,6 +79,19 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Che
           expect(step.errors[:base]).to include("A matching schedule could not be found for the selected contract period")
         end
       end
+
+      context "when the training period has no equivalent active lead provider" do
+        before do
+          allow(change_service).to receive(:change_contract_period!).and_raise(
+            service_class::ActiveLeadProviderNotFoundError
+          )
+        end
+
+        it "adds an active lead provider error" do
+          expect(step.save!).to be(false)
+          expect(step.errors[:base]).to include("An active lead provider could not be found for the selected contract period")
+        end
+      end
     end
 
     context "when using the current active period change service" do

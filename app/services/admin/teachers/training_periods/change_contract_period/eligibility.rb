@@ -14,16 +14,14 @@ module Admin
             return false if finished_before_today?
             return false if blocked_by_current_active_period?
 
-            if eoi_only?
-              return current_active_period? if no_future_periods?
-
-              return false
+            case future_periods.count
+            when 0
+              current_active_period?
+            when 1
+              single_future_period_changeable?
+            else
+              false
             end
-
-            return current_active_period? if no_future_periods?
-            return only_future_period? if no_current_active_period?
-
-            future_period? && same_partnership_as_current_active_period?
           end
 
         private
@@ -53,20 +51,17 @@ module Admin
             current_active_period == training_period
           end
 
-          def no_future_periods?
-            future_periods.empty?
-          end
-
           def no_current_active_period?
             current_active_period.blank?
           end
 
-          def only_future_period?
+          def training_period_is_the_only_future_period?
             future_periods == [training_period]
           end
 
-          def future_period?
-            future_periods.include?(training_period)
+          def single_future_period_changeable?
+            training_period_is_the_only_future_period? &&
+              (no_current_active_period? || eoi_only? || same_partnership_as_current_active_period?)
           end
 
           def same_partnership_as_current_active_period?
