@@ -115,6 +115,8 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::Eligibili
 
   context "when there are current and future EOI only periods" do
     let(:future_started_on) { today.next_month }
+    let(:future_finished_on) { nil }
+    let(:future_at_school_period_finished_on) { nil }
     let(:finished_on) { future_started_on.yesterday }
 
     let(:training_period) { eoi_only_training_period }
@@ -128,11 +130,11 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::Eligibili
           teacher:,
           school:,
           started_on: future_started_on,
-          finished_on: nil
+          finished_on: future_at_school_period_finished_on
         ),
         expression_of_interest: training_period.expression_of_interest,
         started_on: future_started_on,
-        finished_on: nil
+        finished_on: future_finished_on
       )
     end
 
@@ -142,6 +144,34 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::Eligibili
 
     it "makes the future period eligible" do
       expect(described_class.new(training_period: future_training_period)).to be_eligible
+    end
+
+    context "when there is more than one future period" do
+      let(:second_future_started_on) { future_started_on.next_month }
+      let(:future_finished_on) { second_future_started_on.yesterday }
+      let(:future_at_school_period_finished_on) { second_future_started_on.yesterday }
+      let!(:second_future_training_period) do
+        FactoryBot.create(
+          :training_period,
+          :with_only_expression_of_interest,
+          ect_at_school_period: FactoryBot.create(
+            :ect_at_school_period,
+            teacher:,
+            school:,
+            started_on: second_future_started_on,
+            finished_on: nil
+          ),
+          expression_of_interest: training_period.expression_of_interest,
+          started_on: second_future_started_on,
+          finished_on: nil
+        )
+      end
+
+      it "does not make any related periods eligible" do
+        expect(eligibility).not_to be_eligible
+        expect(described_class.new(training_period: future_training_period)).not_to be_eligible
+        expect(described_class.new(training_period: second_future_training_period)).not_to be_eligible
+      end
     end
   end
 
@@ -184,7 +214,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::Eligibili
     let(:second_future_started_on) { started_on.next_month }
     let(:finished_on) { second_future_started_on.yesterday }
 
-    before do
+    let!(:second_future_training_period) do
       FactoryBot.create(
         :training_period,
         ect_at_school_period: FactoryBot.create(
@@ -200,8 +230,9 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::Eligibili
       )
     end
 
-    it "is not eligible" do
+    it "does not make either future period eligible" do
       expect(eligibility).not_to be_eligible
+      expect(described_class.new(training_period: second_future_training_period)).not_to be_eligible
     end
   end
 
@@ -220,6 +251,32 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::Eligibili
 
     it "does not make the current active period eligible" do
       expect(described_class.new(training_period: current_training_period)).not_to be_eligible
+    end
+
+    context "when there is more than one future period" do
+      let(:second_future_started_on) { started_on.next_month }
+      let(:finished_on) { second_future_started_on.yesterday }
+      let!(:second_future_training_period) do
+        FactoryBot.create(
+          :training_period,
+          ect_at_school_period: FactoryBot.create(
+            :ect_at_school_period,
+            teacher:,
+            school:,
+            started_on: second_future_started_on,
+            finished_on: nil
+          ),
+          school_partnership:,
+          started_on: second_future_started_on,
+          finished_on: nil
+        )
+      end
+
+      it "does not make any related periods eligible" do
+        expect(eligibility).not_to be_eligible
+        expect(described_class.new(training_period: current_training_period)).not_to be_eligible
+        expect(described_class.new(training_period: second_future_training_period)).not_to be_eligible
+      end
     end
   end
 
