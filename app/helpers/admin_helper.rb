@@ -48,4 +48,10 @@ module AdminHelper
 
     User::ROLES.map { |k, v| role_option.new(identifier: k, name: v) }
   end
+
+  def format_uuid(uuid)
+    return if uuid.blank?
+
+    tag.code(uuid)
+  end
 end

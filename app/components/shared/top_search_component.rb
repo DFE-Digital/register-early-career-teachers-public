@@ -19,7 +19,7 @@ module Shared
     def call
       form_with(method: :get, url: form_url, html: { class: "app-search-form" }) do |f|
         safe_join([
-          content_tag(:div, class: "govuk-form-group") do
+          tag.div(class: "govuk-form-group") do
             f.govuk_text_field(
               query_param,
               value: search_value,
