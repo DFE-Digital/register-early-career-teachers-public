@@ -14,12 +14,12 @@
 
         summary_list.with_row do |row|
           row.with_key { "Course identifier" }
-          row.with_value { tag.span(declaration_course_identifier(@declaration), class: "app-mono") }
+          row.with_value { tag.code(declaration_course_identifier(@declaration)) }
         end
 
         summary_list.with_row do |row|
           row.with_key { "Declaration type" }
-          row.with_value { tag.span(@declaration.declaration_type, class: "app-mono") }
+          row.with_value { tag.code(@declaration.declaration_type) }
         end
 
         summary_list.with_row do |row|
@@ -44,7 +44,11 @@
 
         summary_list.with_row do |row|
           row.with_key { "Evidence held" }
-          row.with_value { tag.span(@declaration.evidence_type, class: "app-mono") }
+          row.with_value do
+            if @declaration.evidence_type.present?
+              tag.code(@declaration.evidence_type)
+            end
+          end
         end
       end
     %>
