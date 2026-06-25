@@ -169,7 +169,7 @@ module Schools
             text: safe_join(
               [
                 govuk_tag(text: tag_text, colour:),
-                content_tag(:p, message, class: "govuk-body govuk-!-margin-top-2")
+                tag.p(message, class: "govuk-body govuk-!-margin-top-2")
               ]
             )
           }
