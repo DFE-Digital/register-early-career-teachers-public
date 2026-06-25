@@ -7,7 +7,7 @@ module GIAS::Schools
     end
 
     def close!
-      return false unless gias_school.closeable?
+      return false unless gias_school.can_be_closed?
 
       close_school!
 
@@ -26,13 +26,34 @@ module GIAS::Schools
       end
     end
 
-    def destroy_unstarted_periods!
-      unstarted_mentor_at_school_periods.each do |mentor_at_school_period|
-        MentorAtSchoolPeriods::Destroy.call(mentor_at_school_period:, author:, actioned_at: gias_school.closed_on)
+    def finish_ongoing_periods!
+      ect_at_school_periods.ongoing_on(closed_on).each do |ect_at_school_period|
+        ECTAtSchoolPeriods::Finish.new(
+          ect_at_school_period:,
+          finished_on: closed_on,
+          author:,
+          reported_by_school_id:
+        ).finish!
       end
 
-      unstarted_ect_at_school_periods.each do |ect_at_school_period|
-        ECTAtSchoolPeriods::Destroy.call(ect_at_school_period:, author:, actioned_at: gias_school.closed_on)
+      mentor_at_school_periods.ongoing_on(closed_on).each do |mentor_at_school_period|
+        MentorAtSchoolPeriods::Finish.new(
+          teacher: mentor_at_school_period.teacher,
+          reported_by_school_id:,
+          finished_on: closed_on,
+          author:
+        )
+        .finish_periods_at_reported_school!
+      end
+    end
+
+    def destroy_unstarted_periods!
+      mentor_at_school_periods.started_after(closed_on).each do |mentor_at_school_period|
+        MentorAtSchoolPeriods::Destroy.call(mentor_at_school_period:, author:, actioned_at: closed_on)
+      end
+
+      ect_at_school_periods.started_after(closed_on).each do |ect_at_school_period|
+        ECTAtSchoolPeriods::Destroy.call(ect_at_school_period:, author:, actioned_at: closed_on)
       end
     end
 
@@ -41,59 +62,15 @@ module GIAS::Schools
     end
 
     def unstarted_mentorship_periods_at_school
-      unstarted_mentorship_periods_for_ect_at_school_periods + unstarted_mentorship_periods_for_mentor_at_school_periods
-    end
-
-    def unstarted_mentorship_periods_for_ect_at_school_periods
-      MentorshipPeriod.started_after(gias_school.closed_on).joins(:mentee).where(ect_at_school_periods: { school_id: school.id })
-    end
-
-    def unstarted_mentorship_periods_for_mentor_at_school_periods
-      MentorshipPeriod.started_after(gias_school.closed_on).joins(:mentor).where(mentor_at_school_periods: { school_id: school.id })
-    end
-
-    def finish_ongoing_periods!
-      ongoing_ect_at_school_periods.each do |ect_at_school_period|
-        ECTAtSchoolPeriods::Finish.new(
-          ect_at_school_period:,
-          finished_on: gias_school.closed_on,
-          author:,
-          reported_by_school_id:
-        ).finish!
-      end
-
-      ongoing_mentor_at_school_periods.each do |mentor_at_school_period|
-        MentorAtSchoolPeriods::Finish.new(
-          teacher: mentor_at_school_period.teacher,
-          reported_by_school_id:,
-          finished_on: gias_school.closed_on,
-          author:
-        )
-        .finish_periods_at_reported_school!
-      end
-    end
-
-    def unstarted_mentor_at_school_periods
-      mentor_at_school_periods.started_after(gias_school.closed_on)
-    end
-
-    def unstarted_ect_at_school_periods
-      ect_at_school_periods.started_after(gias_school.closed_on)
-    end
-
-    def ongoing_mentor_at_school_periods
-      mentor_at_school_periods.ongoing_on(gias_school.closed_on)
-    end
-
-    def ongoing_ect_at_school_periods
-      ect_at_school_periods.ongoing_on(gias_school.closed_on)
+      MentorshipPeriod.started_after(closed_on).joins(:mentee).where(ect_at_school_periods: { school_id: school.id }) +
+        MentorshipPeriod.started_after(closed_on).joins(:mentor).where(mentor_at_school_periods: { school_id: school.id })
     end
 
     def record_school_closed_event!
       Events::Record.record_school_closed_event!(
         school:,
         gias_school:,
-        happened_at: gias_school.closed_on,
+        happened_at: closed_on,
         author:
       )
     end
@@ -105,6 +82,7 @@ module GIAS::Schools
     def reported_by_school_id = school.id
 
     delegate :school, to: :gias_school
+    delegate :closed_on, to: :gias_school
     delegate :ect_at_school_periods, :mentor_at_school_periods, to: :school
   end
 end

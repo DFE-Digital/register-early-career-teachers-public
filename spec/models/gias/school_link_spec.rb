@@ -20,23 +20,59 @@ describe GIAS::SchoolLink do
 
   describe "link types" do
     it "defines valid link types" do
-      expect(GIAS::SchoolLink::LINK_TYPES).to contain_exactly("Children's Centre Link", "Closure", "Expansion", "Merged - change in age range", "Merged - expansion in school capacity and changer in age range", "Merged - expansion of school capacity", "Other", "Result of Amalgamation", "Sixth Form Centre Link", "Sixth Form Centre School", "Successor", "Successor - amalgamated", "Successor - merged", "Successor - Split School", "Predecessor", "Predecessor - amalgamated", "Predecessor - merged", "Predecessor - Split School")
+      expect(GIAS::SchoolLink::LINK_TYPES).to contain_exactly(
+        "Children's Centre Link",
+        "Closure",
+        "Expansion",
+        "Merged - change in age range",
+        "Merged - expansion in school capacity and changer in age range",
+        "Merged - expansion of school capacity",
+        "Other",
+        "Result of Amalgamation",
+        "Sixth Form Centre Link", "Sixth Form Centre School",
+        "Successor", "Successor - amalgamated",
+        "Successor - merged", "Successor - Split School",
+        "Predecessor",
+        "Predecessor - amalgamated", "Predecessor - merged",
+        "Predecessor - Split School"
+      )
     end
 
     it "defines successor link types" do
-      expect(GIAS::SchoolLink::SUCCESSOR_LINK_TYPES).to contain_exactly("Successor - amalgamated", "Successor - merged", "Successor - Split School", "Successor")
+      expect(GIAS::SchoolLink::SUCCESSOR_LINK_TYPES).to contain_exactly(
+        "Successor - amalgamated",
+        "Successor - merged",
+        "Successor - Split School",
+        "Successor"
+      )
     end
 
     it "defines predecessor link types" do
-      expect(GIAS::SchoolLink::PREDECESSOR_LINK_TYPES).to contain_exactly("Predecessor - amalgamated", "Predecessor - merged", "Predecessor - Split School", "Predecessor")
+      expect(GIAS::SchoolLink::PREDECESSOR_LINK_TYPES).to contain_exactly(
+        "Predecessor - amalgamated",
+        "Predecessor - merged",
+        "Predecessor - Split School",
+        "Predecessor"
+      )
     end
 
     it "defines merge link types" do
-      expect(GIAS::SchoolLink::MERGE_LINK_TYPES).to contain_exactly("Merged - change in age range", "Merged - expansion in school capacity and changer in age range", "Merged - expansion of school capacity")
+      expect(GIAS::SchoolLink::MERGE_LINK_TYPES).to contain_exactly(
+        "Merged - change in age range",
+        "Merged - expansion in school capacity and changer in age range",
+        "Merged - expansion of school capacity"
+      )
     end
 
     it "defines other link types" do
-      expect(GIAS::SchoolLink::OTHER_LINK_TYPES).to contain_exactly("Children's Centre Link", "Closure", "Expansion", "Other", "Result of Amalgamation", "Sixth Form Centre Link", "Sixth Form Centre School")
+      expect(GIAS::SchoolLink::OTHER_LINK_TYPES).to contain_exactly(
+        "Children's Centre Link",
+        "Closure",
+        "Expansion", "Other",
+        "Result of Amalgamation",
+        "Sixth Form Centre Link",
+        "Sixth Form Centre School"
+      )
     end
   end
 

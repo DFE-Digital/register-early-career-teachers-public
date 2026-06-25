@@ -7,7 +7,7 @@ module GIAS::Schools
     end
 
     def replace!
-      return false unless gias_school.replaceable?
+      return false unless gias_school.can_be_replaced?
 
       replace_school!
 
