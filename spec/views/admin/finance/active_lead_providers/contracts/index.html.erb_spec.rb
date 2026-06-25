@@ -4,8 +4,14 @@ RSpec.describe "admin/finance/active_lead_providers/contracts/index.html.erb" do
   let(:contract) { FactoryBot.create(:contract, active_lead_provider:) }
 
   before do
-    create_band_terms_for(contract.banded_fee_structure)
-    create_band_terms_for(ecf_contract.banded_fee_structure)
+    3.times do
+      FactoryBot.create(:contract_banded_fee_structure_band_term,
+                        band: FactoryBot.create(:active_lead_provider_band,
+                                                active_lead_provider:,
+                                                capacity: 2),
+                        banded_fee_structure: contract.banded_fee_structure,
+                        fee_per_declaration: 100.0)
+    end
 
     assign(:active_lead_provider, active_lead_provider)
     assign(:contracts, [contract])
@@ -63,20 +69,6 @@ RSpec.describe "admin/finance/active_lead_providers/contracts/index.html.erb" do
 
       expect(rendered).to have_content("No contracts found")
       expect(rendered).not_to have_css(".govuk-table")
-    end
-  end
-
-private
-
-  def create_band_terms_for(banded_fee_structure)
-    3.times do
-      band = FactoryBot.create(:active_lead_provider_band,
-                               active_lead_provider:,
-                               capacity: 2)
-      FactoryBot.create(:contract_banded_fee_structure_band_term,
-                        banded_fee_structure:,
-                        band:,
-                        fee_per_declaration: 100.0)
     end
   end
 end
