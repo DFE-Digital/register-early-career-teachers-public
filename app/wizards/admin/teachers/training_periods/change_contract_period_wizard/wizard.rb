@@ -52,7 +52,13 @@ module Admin
           delegate :school, to: :training_period
 
           def contract_periods
-            scope = ContractPeriod.enabled.most_recent_first
+            scope = if original_frozen_contract_period_year.in?([2021, 2022])
+                      ContractPeriod.enabled.or(ContractPeriod.where(year: original_frozen_contract_period_year))
+                    else
+                      ContractPeriod.enabled
+                    end
+
+            scope = scope.most_recent_first
             scope = scope.where.not(year: existing_contract_period.year) if existing_contract_period
 
             scope = if original_frozen_contract_period_year.in?([2021, 2022])
