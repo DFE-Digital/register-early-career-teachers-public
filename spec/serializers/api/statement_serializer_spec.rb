@@ -11,7 +11,7 @@ describe API::StatementSerializer, type: :serializer do
       month: 7,
       year: 2023,
       deadline_date: Date.new(2023, 7, 1),
-      payment_date: Date.new(2023, 7, 1),
+      payment_date: Date.new(2023, 7, 2),
       created_at:,
       api_updated_at:
     )
@@ -34,7 +34,7 @@ describe API::StatementSerializer, type: :serializer do
       expect(attributes["month"]).to eq("July")
       expect(attributes["year"]).to eq("2023")
       expect(attributes["cut_off_date"]).to eq("2023-07-01")
-      expect(attributes["payment_date"]).to eq("2023-07-01")
+      expect(attributes["payment_date"]).to eq("2023-07-02")
       expect(attributes["created_at"]).to eq(created_at.utc.rfc3339)
       expect(attributes["updated_at"]).to eq(api_updated_at.utc.rfc3339)
     end
