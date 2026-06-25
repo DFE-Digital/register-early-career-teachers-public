@@ -43,9 +43,9 @@ RSpec.describe API::Statements::Query do
     end
 
     it "orders statements by payment date in ascending order" do
-      statement1 = FactoryBot.create(:statement, payment_date: 2.days.ago)
-      statement2 = FactoryBot.create(:statement, payment_date: 1.day.ago)
-      statement3 = FactoryBot.create(:statement, payment_date: Time.zone.now)
+      statement1 = FactoryBot.create(:statement, deadline_date: 3.days.ago, payment_date: 2.days.ago)
+      statement2 = FactoryBot.create(:statement, deadline_date: 2.days.ago, payment_date: 1.day.ago)
+      statement3 = FactoryBot.create(:statement, deadline_date: 1.day.ago, payment_date: Time.zone.now)
 
       query = described_class.new
 
@@ -220,8 +220,8 @@ RSpec.describe API::Statements::Query do
     end
 
     describe "ordering" do
-      let!(:statement1) { FactoryBot.create(:statement, year: 2025, month: 4, payment_date: "2024-01-01") }
-      let!(:statement2) { FactoryBot.create(:statement, year: 2024, month: 8, payment_date: "2025-01-01") }
+      let!(:statement1) { FactoryBot.create(:statement, year: 2025, month: 4, deadline_date: "2023-12-01", payment_date: "2024-01-01") }
+      let!(:statement2) { FactoryBot.create(:statement, year: 2024, month: 8, deadline_date: "2024-12-01", payment_date: "2025-01-01") }
 
       describe "default order" do
         it "returns statements in correct order" do

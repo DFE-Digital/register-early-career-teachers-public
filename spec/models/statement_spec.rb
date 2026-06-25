@@ -24,6 +24,7 @@ describe Statement do
     it { is_expected.not_to allow_value(nil).for(:status).with_message("Choose a valid status") }
     it { is_expected.to validate_inclusion_of(:fee_type).in_array(described_class.fee_types.keys).with_message("Fee type must be output or service") }
     it { is_expected.to validate_inclusion_of(:status).in_array(described_class.statuses.keys).with_message("Choose a valid status") }
+    it { is_expected.to validate_comparison_of(:payment_date).is_greater_than(:deadline_date).with_message("Payment date must be later than the deadline date") }
 
     describe "uniqueness of month and year for the same active lead provider" do
       let(:active_lead_provider) { contract.active_lead_provider }
@@ -40,7 +41,7 @@ describe Statement do
       it "is valid to create another statement with the same month and year for a different active lead provider" do
         other_active_lead_provider = FactoryBot.create(:active_lead_provider)
         other_contract = FactoryBot.create(:contract, active_lead_provider: other_active_lead_provider)
-        statement = described_class.new(contract: other_contract, month: 5, year: 2024, deadline_date: Date.new(2024, 5, 1).prev_day)
+        statement = described_class.new(contract: other_contract, month: 5, year: 2024, deadline_date: Date.new(2024, 5, 1).prev_day, payment_date: Date.new(2024, 5, 25))
 
         expect(statement).to be_valid
       end
