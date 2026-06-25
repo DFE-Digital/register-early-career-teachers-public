@@ -1,13 +1,5 @@
 @use "govuk-frontend/dist/govuk" as *;
 
-.app-code {
-  padding: 2px 5px;
-  font-family: monospace;
-  background-color: $govuk-template-background-colour;
-  white-space: pre-wrap;
-  font-size: 0.8em;
-}
-
 .app-teachers-filters {
   @include govuk-media-query($from: tablet) {
     align-items: flex-end;
