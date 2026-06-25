@@ -22,7 +22,7 @@
 
     sl.with_row do |row|
       row.with_key(text: 'DfE Sign-in organisation ID')
-      row.with_value(text: tag.code(appropriate_body.dfe_sign_in_organisation_id))
+      row.with_value(text: helpers.format_uuid(appropriate_body.dfe_sign_in_organisation_id))
       row.with_action(
         text: 'View',
         href: admin_dsi_org_path(appropriate_body.dfe_sign_in_organisation.uuid),

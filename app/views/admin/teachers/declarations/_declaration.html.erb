@@ -1,7 +1,7 @@
 <%= govuk_details do |details| %>
   <% details.with_summary_html do %>
     <span class="govuk-details__summary-text govuk-!-margin-right-2"><%= declaration.declaration_type %></span>
-    <span class="govuk-body app-mono"><%= declaration.api_id %></span>
+    <%= format_uuid(declaration.api_id) %>
     <%= declaration_state_tag(declaration) %>
   <% end %>
 
