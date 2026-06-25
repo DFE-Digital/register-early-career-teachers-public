@@ -8,7 +8,7 @@ module GIAS
       end
 
       def open!
-        return false unless gias_school.openable?
+        return false unless gias_school.can_be_opened?
 
         open_school!
 

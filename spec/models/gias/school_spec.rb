@@ -135,7 +135,17 @@ describe GIAS::School do
 
       let(:gias_school) { FactoryBot.create(:gias_school) }
 
-      context "when the school has one successor" do
+      context "when the school has no links" do
+        it { is_expected.to be_nil }
+      end
+
+      context "when the school has no successor links" do
+        before { FactoryBot.create(:gias_school_link, :predecessor, from_gias_school: gias_school) }
+
+        it { is_expected.to be_nil }
+      end
+
+      context "when the school has one successor link" do
         let(:successor) { FactoryBot.create(:gias_school) }
 
         before { FactoryBot.create(:gias_school_link, :successor, from_gias_school: gias_school, to_gias_school: successor) }
@@ -162,26 +172,16 @@ describe GIAS::School do
 
         it { is_expected.to eq(successor) }
       end
-
-      context "when the school has no links" do
-        it { is_expected.to be_nil }
-      end
-
-      context "when the school has no successor links" do
-        before { FactoryBot.create(:gias_school_link, :predecessor, from_gias_school: gias_school) }
-
-        it { is_expected.to be_nil }
-      end
     end
 
-    describe "#closeable?" do
-      subject { gias_school }
+    describe "#can_be_closed?" do
+      subject { gias_school.can_be_closed? }
 
       let(:gias_school) { FactoryBot.create(:gias_school, status: :closed, closed_on:) }
       let(:closed_on) { Date.current }
 
       context "when the school has closed today, has no successors and no closure event recorded" do
-        it { is_expected.to be_closeable }
+        it { is_expected.to be_truthy }
       end
 
       context "when the school has closed today but has a successor" do
@@ -189,7 +189,7 @@ describe GIAS::School do
           FactoryBot.create(:gias_school_link, :successor, from_gias_school: gias_school)
         end
 
-        it { is_expected.not_to be_closeable }
+        it { is_expected.to be_falsy }
       end
 
       context "when the school has closed today but has a closure event recorded" do
@@ -199,36 +199,36 @@ describe GIAS::School do
           FactoryBot.create(:event, event_type: :school_closed, school: gias_school.school)
         end
 
-        it { is_expected.not_to be_closeable }
+        it { is_expected.to be_falsy }
       end
 
       context "when the school is not closed" do
         let(:gias_school) { FactoryBot.create(:gias_school, status: :proposed_to_close) }
 
-        it { is_expected.not_to be_closeable }
+        it { is_expected.to be_falsy }
       end
 
       context "when the school closed in the past but it has not yet been recorded" do
         let(:closed_on) { Date.yesterday }
 
-        it { is_expected.to be_closeable }
+        it { is_expected.to be_truthy }
       end
 
       context "when the school closes in the future" do
         let(:closed_on) { Date.tomorrow }
 
-        it { is_expected.not_to be_closeable }
+        it { is_expected.to be_falsy }
       end
     end
 
-    describe "#openable?" do
-      subject { gias_school }
+    describe "#can_be_opened?" do
+      subject { gias_school.can_be_opened? }
 
       let(:gias_school) { FactoryBot.create(:gias_school, status: :open, opened_on:) }
       let(:opened_on) { Date.current }
 
       context "when the school is open, has no predecessors or successors and no associated school" do
-        it { is_expected.to be_openable }
+        it { is_expected.to be_truthy }
       end
 
       context "when the school is open but has a predecessor" do
@@ -236,7 +236,7 @@ describe GIAS::School do
           FactoryBot.create(:gias_school_link, :predecessor, from_gias_school: gias_school)
         end
 
-        it { is_expected.not_to be_openable }
+        it { is_expected.to be_falsy }
       end
 
       context "when the school is open but has a successor" do
@@ -244,42 +244,42 @@ describe GIAS::School do
           FactoryBot.create(:gias_school_link, :successor, from_gias_school: gias_school)
         end
 
-        it { is_expected.not_to be_openable }
+        it { is_expected.to be_falsy }
       end
 
       context "when the school is open but already has an associated school" do
         let(:gias_school) { FactoryBot.create(:gias_school, :with_school, status: :open) }
 
-        it { is_expected.not_to be_openable }
+        it { is_expected.to be_falsy }
       end
 
       context "when the school is not open" do
-        let(:gias_school) { FactoryBot.create(:gias_school, status: :closed) }
+        let(:gias_school) { FactoryBot.create(:gias_school, status: :proposed_to_open) }
 
-        it { is_expected.not_to be_openable }
+        it { is_expected.to be_falsy }
       end
 
       context "when the school opens in the future" do
         let(:opened_on) { Date.tomorrow }
 
-        it { is_expected.not_to be_openable }
+        it { is_expected.to be_falsy }
       end
 
       context "when the school opened in the past but it has not yet been associated with a school record" do
         let(:opened_on) { Date.yesterday }
 
-        it { is_expected.to be_openable }
+        it { is_expected.to be_truthy }
       end
     end
 
-    describe "#replaceable?" do
-      subject { gias_school }
+    describe "#can_be_replaced?" do
+      subject { gias_school.can_be_replaced? }
 
       context "when the school is closed" do
         let(:gias_school) { FactoryBot.create(:gias_school, status: :closed, closed_on:) }
         let(:closed_on) { Date.current }
 
-        it { is_expected.not_to be_replaceable }
+        it { is_expected.to be_falsy }
 
         context "when there is a unique successor" do
           let(:successor) { FactoryBot.create(:gias_school, status: :open, opened_on:) }
@@ -290,37 +290,37 @@ describe GIAS::School do
           end
 
           context "when the successor is open without an associated school" do
-            it { is_expected.to be_replaceable }
+            it { is_expected.to be_truthy }
           end
 
           context "when the school closed in the past but it has not yet been recorded and the successor is open without an associated school" do
             let(:closed_on) { Date.yesterday }
 
-            it { is_expected.to be_replaceable }
+            it { is_expected.to be_truthy }
           end
 
           context "when the successor is not open" do
             let(:successor) { FactoryBot.create(:gias_school, status: :proposed_to_open, opened_on:) }
 
-            it { is_expected.not_to be_replaceable }
+            it { is_expected.to be_falsy }
           end
 
           context "when the successor already has an associated school" do
             let(:successor) { FactoryBot.create(:gias_school, :with_school, status: :open, opened_on:) }
 
-            it { is_expected.not_to be_replaceable }
+            it { is_expected.to be_falsy }
           end
 
           context "when the successor opens in the future" do
             let(:opened_on) { Date.tomorrow }
 
-            it { is_expected.not_to be_replaceable }
+            it { is_expected.to be_falsy }
           end
 
           context "when the successor opened in the past but it has not yet been associated with a school record" do
             let(:opened_on) { Date.yesterday }
 
-            it { is_expected.to be_replaceable }
+            it { is_expected.to be_truthy }
           end
         end
 
@@ -332,7 +332,7 @@ describe GIAS::School do
               FactoryBot.create(:gias_school_link, :successor_merged, from_gias_school: gias_school, to_gias_school: successor)
             end
 
-            it { is_expected.not_to be_replaceable }
+            it { is_expected.to be_falsy }
           end
 
           context "when the school is being amalgamated" do
@@ -340,7 +340,7 @@ describe GIAS::School do
               FactoryBot.create(:gias_school_link, :successor_amalgamated, from_gias_school: gias_school, to_gias_school: successor)
             end
 
-            it { is_expected.not_to be_replaceable }
+            it { is_expected.to be_falsy }
           end
 
           context "when the school is being split" do
@@ -348,7 +348,7 @@ describe GIAS::School do
               FactoryBot.create(:gias_school_link, :successor_split, from_gias_school: gias_school, to_gias_school: successor)
             end
 
-            it { is_expected.not_to be_replaceable }
+            it { is_expected.to be_falsy }
           end
 
           context "when there are multiple successors" do
@@ -357,7 +357,7 @@ describe GIAS::School do
               FactoryBot.create(:gias_school_link, :successor, from_gias_school: gias_school)
             end
 
-            it { is_expected.not_to be_replaceable }
+            it { is_expected.to be_falsy }
           end
         end
       end
@@ -365,13 +365,13 @@ describe GIAS::School do
       context "when the school is not closed" do
         let(:gias_school) { FactoryBot.create(:gias_school, status: :proposed_to_close) }
 
-        it { is_expected.not_to be_replaceable }
+        it { is_expected.to be_falsy }
       end
 
       context "when the school closes in the future" do
         let(:gias_school) { FactoryBot.create(:gias_school, status: :closed, closed_on: Date.tomorrow) }
 
-        it { is_expected.not_to be_replaceable }
+        it { is_expected.to be_falsy }
       end
     end
 

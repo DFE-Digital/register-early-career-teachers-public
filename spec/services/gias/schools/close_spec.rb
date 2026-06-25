@@ -4,7 +4,7 @@ RSpec.describe GIAS::Schools::Close do
 
     let(:gias_school) { FactoryBot.create(:gias_school, :with_school, status: :closed, closed_on:) }
     let(:closed_on) { Date.current }
-    let(:closeable) { true }
+    let(:can_be_closed) { true }
     let(:school) { gias_school.school }
     let!(:mentors) { FactoryBot.create_list(:mentor_at_school_period, 3, :ongoing, :with_training_period, school:) }
     let!(:ects) { FactoryBot.create_list(:ect_at_school_period, 3, :ongoing, :with_training_period, school:) }
@@ -17,7 +17,7 @@ RSpec.describe GIAS::Schools::Close do
     before do
       create_mentorship_period(ects.first, mentors.first)
 
-      allow(gias_school).to receive(:closeable?).and_return(closeable)
+      allow(gias_school).to receive(:can_be_closed?).and_return(can_be_closed)
 
       allow(MentorAtSchoolPeriods::Finish).to receive(:new).and_return(mentor_finish_service)
       allow(mentor_finish_service).to receive(:finish_periods_at_reported_school!)
@@ -152,8 +152,8 @@ RSpec.describe GIAS::Schools::Close do
       end
     end
 
-    context "when the school is not closeable" do
-      let(:closeable) { false }
+    context "when the school cannot be closed" do
+      let(:can_be_closed) { false }
 
       it { is_expected.to be_falsy }
 

@@ -9,11 +9,11 @@ RSpec.describe GIAS::Schools::Replace do
     let(:link_type) { :successor_unique }
 
     before do
-      allow(gias_school).to receive(:replaceable?).and_return(replaceable)
+      allow(gias_school).to receive(:can_be_replaced?).and_return(can_be_replaced)
     end
 
-    context "when the school is replaceable" do
-      let(:replaceable) { true }
+    context "when the school can be replaced" do
+      let(:can_be_replaced) { true }
 
       it { is_expected.to be_truthy }
 
@@ -32,12 +32,12 @@ RSpec.describe GIAS::Schools::Replace do
           author: an_instance_of(Events::SystemAuthor)
         ).once
 
-        service
+        subject
       end
     end
 
-    context "when the school is not replaceable" do
-      let(:replaceable) { false }
+    context "when the school is cannot be replaced" do
+      let(:can_be_replaced) { false }
 
       it { is_expected.to be_falsy }
 
@@ -46,7 +46,11 @@ RSpec.describe GIAS::Schools::Replace do
       end
 
       it "does not record a school changed event" do
-        expect { subject }.not_to change(Event, :count)
+        allow(Events::Record).to receive(:record_school_changed_event!)
+
+        subject
+
+        expect(Events::Record).not_to have_received(:record_school_changed_event!)
       end
     end
   end
