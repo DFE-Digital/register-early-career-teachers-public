@@ -116,8 +116,8 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Wiz
   end
 
   describe "#contract_periods" do
-    let!(:contract_period_2021) { FactoryBot.create(:contract_period, year: 2021) }
-    let!(:contract_period_2022) { FactoryBot.create(:contract_period, year: 2022) }
+    let!(:contract_period_2021) { FactoryBot.create(:contract_period, year: 2021, enabled: false) }
+    let!(:contract_period_2022) { FactoryBot.create(:contract_period, year: 2022, enabled: false) }
     let!(:disabled_contract_period) { FactoryBot.create(:contract_period, year: 2028, enabled: false) }
 
     it "returns enabled contract periods excluding the current and frozen years" do
@@ -129,7 +129,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Wiz
         teacher.update!(ect_payments_frozen_year: contract_period_2021.year)
       end
 
-      it "keeps the original frozen contract period" do
+      it "includes the original disabled frozen contract period and excludes the other disabled years" do
         expect(wizard.contract_periods)
           .to contain_exactly(contract_period_2021, target_contract_period, other_contract_period)
       end
@@ -140,7 +140,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Wiz
         teacher.update!(ect_payments_frozen_year: contract_period_2022.year)
       end
 
-      it "keeps the original frozen contract period" do
+      it "includes the original disabled frozen contract period and excludes the other disabled years" do
         expect(wizard.contract_periods)
           .to contain_exactly(contract_period_2022, target_contract_period, other_contract_period)
       end
