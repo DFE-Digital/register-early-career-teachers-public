@@ -97,6 +97,6 @@ module Admin::Statements
     def uplift_target_ratio = banded_fee_structure.uplift_target_ratio
     def uplift_target_percentage = uplift_target_ratio * 100
     def uplift_amount = banded_fee_structure.uplift_fee_per_declaration
-    def band_term_label(band_term) = "Band #{band_term.letter}"
+    def band_term_label(band_term) = "Band #{band_term.band.letter}"
   end
 end

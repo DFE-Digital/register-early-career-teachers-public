@@ -43,31 +43,4 @@ RSpec.describe Contract::BandedFeeStructure::BandTerm, type: :model do
       end
     end
   end
-
-  describe "#letter" do
-    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
-
-    let(:banded_fee_structure) do
-      FactoryBot.build(:contract_banded_fee_structure,
-                       band_terms: [
-                         FactoryBot.build(:contract_banded_fee_structure_band_term,
-                                          band: active_lead_provider_bands.first),
-                         FactoryBot.build(:contract_banded_fee_structure_band_term,
-                                          band: active_lead_provider_bands.second),
-                         FactoryBot.build(:contract_banded_fee_structure_band_term,
-                                          band: active_lead_provider_bands.third),
-                         FactoryBot.build(:contract_banded_fee_structure_band_term,
-                                          band: active_lead_provider_bands.fourth)
-                       ])
-    end
-
-    let(:active_lead_provider_bands) do
-      FactoryBot.create_list(:active_lead_provider_band, 4,
-                             active_lead_provider:)
-    end
-
-    it "letters bands alphabetically in boundary order" do
-      expect(banded_fee_structure.band_terms.map(&:letter)).to eq(%w[A B C D])
-    end
-  end
 end
