@@ -41,19 +41,19 @@ module API::Teachers::MentoringMentors
     end
 
     def where_lead_provider_is(lead_provider_id)
-      mentor_teacher_ids_for_the_lead_provider = Metadata::TeacherLeadProvider
-        .joins(ect_assigned_mentor_latest_school_period: :teacher)
+      @scope = scope.where(id: Metadata::TeacherLeadProvider
+        .joins(:ect_assigned_mentor_latest_school_period)
+        .joins(:latest_ect_training_period)
         .where(lead_provider_id:)
-        .select(MentorAtSchoolPeriod.arel_table[:teacher_id])
-
-      @scope = scope
-        .where(id: mentor_teacher_ids_for_the_lead_provider)
+        .where(ect_assigned_mentor_latest_school_period: { finished_on: nil })
+        .where(latest_ect_training_period: { finished_on: nil })
+        .select("ect_assigned_mentor_latest_school_period.teacher_id"))
     end
 
     def where_updated_since(updated_since)
       return if ignore?(filter: updated_since)
 
-      @scope = scope.where(api_unfunded_mentor_updated_at: updated_since..)
+      @scope = scope.where(api_updated_at: updated_since..)
     end
 
     def set_sort_by(sort)
