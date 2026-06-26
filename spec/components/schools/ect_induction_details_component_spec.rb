@@ -3,11 +3,9 @@ RSpec.describe Schools::ECTInductionDetailsComponent, type: :component do
 
   let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Alpha Teaching School Hub") }
   let(:teacher) { FactoryBot.create(:teacher, trn: "9876543", trs_first_name: "John", trs_last_name: "Doe") }
-  let(:school) { FactoryBot.create(:school) }
   let(:ect) do
     FactoryBot.create(:ect_at_school_period,
                       teacher:,
-                      school:,
                       school_reported_appropriate_body: appropriate_body_period,
                       started_on: Date.new(2023, 9, 1))
   end
@@ -77,44 +75,8 @@ RSpec.describe Schools::ECTInductionDetailsComponent, type: :component do
   end
 
   context "when the teacher does not have an ongoing induction period" do
-    context "when the teacher's school is an independent school" do
-      let(:school) { FactoryBot.create(:school, :independent) }
-
-      it "renders the change link for the appropriate body" do
-        expect(page).to have_link("Change", href: schools_ects_change_appropriate_body_wizard_independent_school_path(ect_id: ect.id))
-      end
-    end
-
-    context "when the teacher's school is a state school" do
-      let(:school) { FactoryBot.create(:school, :state_funded) }
-
-      it "renders the change link for the appropriate body" do
-        expect(page).to have_link("Change", href: schools_ects_change_appropriate_body_wizard_state_school_path(ect_id: ect.id))
-      end
-    end
-  end
-
-  context "when the teacher has a finished induction period" do
-    before do
-      FactoryBot.create(:induction_period, teacher:, appropriate_body_period:)
-      teacher.reload
-      render_inline(described_class.new(ect))
-    end
-
-    context "when the teacher's school is an independent school" do
-      let(:school) { FactoryBot.create(:school, :independent) }
-
-      it "renders the change link for the appropriate body" do
-        expect(page).to have_link("Change", href: schools_ects_change_appropriate_body_wizard_independent_school_path(ect_id: ect.id))
-      end
-    end
-
-    context "when the teacher's school is a state school" do
-      let(:school) { FactoryBot.create(:school, :state_funded) }
-
-      it "renders the change link for the appropriate body" do
-        expect(page).to have_link("Change", href: schools_ects_change_appropriate_body_wizard_state_school_path(ect_id: ect.id))
-      end
+    it "renders the change link for the appropriate body" do
+      expect(page).to have_link("Change", href: schools_ects_change_appropriate_body_wizard_edit_path(ect_id: ect.id))
     end
   end
 
@@ -127,6 +89,18 @@ RSpec.describe Schools::ECTInductionDetailsComponent, type: :component do
 
     it "does not render the change link for the appropriate body" do
       expect(page).not_to have_link("Change")
+    end
+  end
+
+  context "when the teacher has a finished induction period" do
+    before do
+      FactoryBot.create(:induction_period, teacher:, appropriate_body_period:)
+      teacher.reload
+      render_inline(described_class.new(ect))
+    end
+
+    it "renders the change link for the appropriate body" do
+      expect(page).to have_link("Change", href: schools_ects_change_appropriate_body_wizard_edit_path(ect_id: ect.id))
     end
   end
 end

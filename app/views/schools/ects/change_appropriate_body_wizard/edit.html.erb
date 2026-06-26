@@ -11,15 +11,11 @@
 <%= form_with model: @wizard.current_step, url: @wizard.current_step_path do |form| %>
   <%= content_for(:error_summary) { form.govuk_error_summary } %>
 
-  <%= form.govuk_collection_select(:appropriate_body_id,
-                                    @wizard.current_step.appropriate_bodies_except_current,
-                                    :id,
-                                    :name,
-                                    label: { text: "Enter appropriate body name" },
-                                    options: { include_blank: true },
-                                    class: "autocomplete"
-                                  ) 
-  %>
+  <% if @wizard.ect_at_school_period.school.independent? %>
+    <%= render "independent_school", form: form %>
+  <% else %>
+    <%= render "state_school", form: form %>
+  <% end %>
   
   <%= govuk_details(summary_text: "What are the roles of an appropriate body, lead provider and delivery partner?") do %>
     <p class="govuk-body">

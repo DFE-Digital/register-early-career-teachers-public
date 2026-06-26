@@ -2,10 +2,7 @@ module Schools
   module ECTs
     module ChangeAppropriateBodyWizard
       class CheckAnswersStep < Step
-        def previous_step
-          school.independent? ? :independent_school_step : :state_school_step
-        end
-
+        def previous_step = :edit
         def next_step = :confirmation
 
         def old_appropriate_body_name

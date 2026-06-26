@@ -5,9 +5,9 @@ describe "Schools::ECTs::ChangeAppropriateBodyWizardController" do
   let(:current_appropriate_body) { FactoryBot.create(:appropriate_body_period) }
 
   describe "GET #new" do
-    it_behaves_like "an induction redirectable route"
+    subject { get path_for_step("edit") }
 
-    subject { get path_for_step("state-school") }
+    it_behaves_like "an induction redirectable route"
 
     context "when not signed in" do
       it "redirects to the root page" do
@@ -30,18 +30,6 @@ describe "Schools::ECTs::ChangeAppropriateBodyWizardController" do
     context "when signed in as school user" do
       before { sign_in_as(:school_user, school:) }
 
-      it "renders the state school step" do
-        get path_for_step("state-school")
-
-        expect(response).to have_http_status(:ok)
-      end
-
-      it "renders the independent school step" do
-        get path_for_step("independent-school")
-
-        expect(response).to have_http_status(:ok)
-      end
-
       context "when the current_step is invalid" do
         it "returns not found" do
           get path_for_step("nope")
@@ -49,22 +37,42 @@ describe "Schools::ECTs::ChangeAppropriateBodyWizardController" do
           expect(response).to have_http_status(:not_found)
         end
       end
-    end
 
-    context "when signed in as a non-state school user" do
-      # let(:school) { FactoryBot.create(:school, :independent) }
+      context "when the school user is from an independent school" do
+        let(:school) { FactoryBot.create(:school, :independent) }
 
-      before { sign_in_as(:school_user, school:) }
+        it "renders the step" do
+          subject
 
-      it "renders the independent school step" do
-        get path_for_step("independent-school")
+          expect(response).to have_http_status(:ok)
+        end
 
-        expect(response).to have_http_status(:ok)
+        it "allows the user to select an ISTIP appropriate body" do
+          subject
+
+          expect(response.body).to include("What type of appropriate body will be supporting")
+        end
+      end
+
+      context "when the school user is from a state school" do
+        let(:school) { FactoryBot.create(:school, :state_funded) }
+
+        it "renders the step" do
+          subject
+
+          expect(response).to have_http_status(:ok)
+        end
+
+        it "does not allow the user to select an ISTIP appropriate body" do
+          subject
+
+          expect(response.body).not_to include("What type of appropriate body will be supporting")
+        end
       end
     end
   end
 
-  xdescribe "POST #create" do
+  describe "POST #create" do
     subject { post(path_for_step("edit"), params:) }
 
     let(:params) { { edit: { appropriate_body_id: } } }
@@ -142,7 +150,7 @@ describe "Schools::ECTs::ChangeAppropriateBodyWizardController" do
           post path_for_step("check-answers")
 
           expect(response).to redirect_to(path_for_step("confirmation"))
-          # expect(Events::Record).to have_received(:record_teacher_appropriate_body_changed!)
+          expect(Events::Record).to have_received(:record_teacher_appropriate_body_changed!)
         end
       end
     end
