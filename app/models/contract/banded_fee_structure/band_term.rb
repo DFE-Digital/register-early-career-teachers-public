@@ -31,7 +31,16 @@ class Contract::BandedFeeStructure::BandTerm < ApplicationRecord
   validate :sum_of_ratios_equals_one,
            if: -> { output_fee_ratio? && service_fee_ratio? }
 
+  validate :band_belongs_to_contracts_active_lead_provider
+
 private
+
+  def band_belongs_to_contracts_active_lead_provider
+    return unless band && banded_fee_structure&.contract
+    return if band.active_lead_provider == banded_fee_structure.contract.active_lead_provider
+
+    errors.add(:band, "must belong to the contract's active lead provider")
+  end
 
   def sum_of_ratios_equals_one
     errors.add(:base, "Sum of ratios must equal 1") unless

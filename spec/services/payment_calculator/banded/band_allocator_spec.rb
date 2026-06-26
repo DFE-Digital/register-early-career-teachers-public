@@ -9,7 +9,7 @@ RSpec.describe PaymentCalculator::Banded::BandAllocator do
     )
   end
 
-  let!(:contract) { FactoryBot.create(:contract, banded_fee_structure:) }
+  let!(:contract) { FactoryBot.create(:contract, banded_fee_structure:, active_lead_provider:) }
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
   let(:fee_per_declaration) { 100.0 }
   let(:banded_fee_structure) do
