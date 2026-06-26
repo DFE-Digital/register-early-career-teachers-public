@@ -24,7 +24,7 @@ RSpec.describe Declarations::Clawback do
 
   before do
     # make payment statement precede clawback statement
-    declaration.payment_statement.update!(deadline_date: Date.yesterday)
+    declaration.payment_statement.update!(deadline_date: Date.yesterday, payment_date: Date.current)
   end
 
   describe "#clawback" do
