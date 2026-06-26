@@ -96,6 +96,6 @@ module Admin::Statements
 
     def display_uplifts? = contract.ecf_contract_type?
     def uplift_amount = banded_fee_structure.uplift_fee_per_declaration
-    def band_term_label(band_term) = "Band #{band_term.letter}"
+    def band_term_label(band_term) = "Band #{band_term.band.letter}"
   end
 end

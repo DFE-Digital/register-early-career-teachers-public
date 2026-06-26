@@ -65,7 +65,7 @@ module Admin
 
         case calculator
         when PaymentCalculator::Banded
-          "#{declaration_type_label} (Band #{declaration_type_output.band_term.letter})"
+          "#{declaration_type_label} (Band #{declaration_type_output.band_term.band.letter})"
         when PaymentCalculator::FlatRate
           declaration_type_label
         end

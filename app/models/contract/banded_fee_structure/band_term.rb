@@ -32,8 +32,6 @@ class Contract::BandedFeeStructure::BandTerm < ApplicationRecord
   validate :sum_of_ratios_equals_one,
            if: -> { output_fee_ratio? && service_fee_ratio? }
 
-  def letter = ("A".ord + banded_fee_structure.band_terms.index(self)).chr
-
 private
 
   def sum_of_ratios_equals_one
