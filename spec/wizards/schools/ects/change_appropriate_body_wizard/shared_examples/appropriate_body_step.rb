@@ -1,30 +1,4 @@
-describe Schools::ECTs::ChangeAppropriateBodyWizard::EditStep, type: :model do
-  subject(:current_step) { wizard.current_step }
-
-  let(:wizard) do
-    Schools::ECTs::ChangeAppropriateBodyWizard::Wizard.new(
-      current_step: :edit,
-      step_params: ActionController::Parameters.new(edit: params),
-      author:,
-      store:,
-      ect_at_school_period:
-    )
-  end
-
-  let(:store) { FactoryBot.build(:session_repository) }
-  let(:author) { FactoryBot.build(:school_user, school_urn: school.urn) }
-  let(:school) { FactoryBot.create(:school) }
-  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school:, school_reported_appropriate_body:) }
-  let(:params) { { appropriate_body_id: appropriate_body_period.id.to_s } }
-  let(:school_reported_appropriate_body) { FactoryBot.create(:appropriate_body_period) }
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
-
-  describe ".permitted_params" do
-    it "returns the permitted parameters" do
-      expect(described_class.permitted_params).to contain_exactly(:appropriate_body_id)
-    end
-  end
-
+RSpec.shared_examples "a change appropriate body step" do |_step_name|
   describe "#previous_step" do
     it "raises an error" do
       expect { current_step.previous_step }.to raise_error(NotImplementedError)
@@ -40,6 +14,7 @@ describe Schools::ECTs::ChangeAppropriateBodyWizard::EditStep, type: :model do
   describe "#appropriate_bodies_except_current" do
     let!(:other_appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
     let!(:inactive_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, :inactive) }
+    let!(:national_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, :istip) }
 
     it "does not include inactive appropriate bodies" do
       expect(current_step.appropriate_bodies_except_current).not_to include(inactive_appropriate_body_period)
@@ -47,6 +22,10 @@ describe Schools::ECTs::ChangeAppropriateBodyWizard::EditStep, type: :model do
 
     it "does not include the current appropriate body" do
       expect(current_step.appropriate_bodies_except_current).not_to include(ect_at_school_period.school_reported_appropriate_body)
+    end
+
+    it "does not include national appropriate bodies" do
+      expect(current_step.appropriate_bodies_except_current).not_to include(national_appropriate_body_period)
     end
 
     it "returns active appropriate bodies which can be selected" do
@@ -58,6 +37,10 @@ describe Schools::ECTs::ChangeAppropriateBodyWizard::EditStep, type: :model do
 
       it "does not include inactive appropriate bodies" do
         expect(current_step.appropriate_bodies_except_current).not_to include(inactive_appropriate_body_period)
+      end
+
+      it "does not include national appropriate bodies" do
+        expect(current_step.appropriate_bodies_except_current).not_to include(national_appropriate_body_period)
       end
 
       it "returns active appropriate bodies which can be selected" do
