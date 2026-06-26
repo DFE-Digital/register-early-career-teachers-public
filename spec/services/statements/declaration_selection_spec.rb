@@ -6,51 +6,42 @@ RSpec.describe Statements::DeclarationSelection do
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
 
   let(:band_max) { 10 }
-  let(:bands) do
-    FactoryBot.build_list(
-      :contract_banded_fee_structure_band,
-      1,
-      min_declarations: 1,
-      max_declarations: band_max,
-      fee_per_declaration: 100,
-      output_fee_ratio: 1.0,
-      service_fee_ratio: 0.0
-    )
+  let(:band_terms) do
+    FactoryBot.build_list(:contract_banded_fee_structure_band_term, 1,
+                          min_declarations: 1,
+                          max_declarations: band_max,
+                          fee_per_declaration: 100,
+                          output_fee_ratio: 1.0,
+                          service_fee_ratio: 0.0)
   end
   let(:banded_fee_structure) do
-    FactoryBot.build(
-      :contract_banded_fee_structure,
-      recruitment_target: 10,
-      uplift_fee_per_declaration: 0,
-      monthly_service_fee: 0,
-      setup_fee: 0,
-      bands:
-    )
+    FactoryBot.build(:contract_banded_fee_structure,
+                     recruitment_target: 10,
+                     uplift_fee_per_declaration: 0,
+                     monthly_service_fee: 0,
+                     setup_fee: 0,
+                     band_terms:)
   end
 
   let(:contract) do
     FactoryBot.create(:contract, :for_ecf, active_lead_provider:, banded_fee_structure:)
   end
   let(:statement) do
-    FactoryBot.create(
-      :statement,
-      contract:,
-      active_lead_provider:,
-      month: 11,
-      year: 2024,
-      payment_date: Date.new(2024, 11, 25),
-      deadline_date: Date.new(2024, 10, 31)
-    )
+    FactoryBot.create(:statement,
+                      contract:,
+                      active_lead_provider:,
+                      month: 11,
+                      year: 2024,
+                      payment_date: Date.new(2024, 11, 25),
+                      deadline_date: Date.new(2024, 10, 31))
   end
 
   let(:school_partnership) do
-    FactoryBot.create(
-      :school_partnership,
-      lead_provider_delivery_partnership: FactoryBot.create(
-        :lead_provider_delivery_partnership,
-        active_lead_provider:
-      )
-    )
+    FactoryBot.create(:school_partnership,
+                      lead_provider_delivery_partnership: FactoryBot.create(
+                        :lead_provider_delivery_partnership,
+                        active_lead_provider:
+                      ))
   end
   let(:started_on) { Date.new(2024, 10, 1) }
   let(:default_training_period_attrs) do

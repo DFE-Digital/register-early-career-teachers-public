@@ -3,7 +3,7 @@ RSpec.describe ActiveLeadProvider::Band, type: :model do
 
   describe "associations" do
     it { is_expected.to belong_to(:active_lead_provider) }
-    it { is_expected.to have_many(:terms).class_name("Contract::BandedFeeStructure::Band").inverse_of(:band) }
+    it { is_expected.to have_many(:band_terms).class_name("Contract::BandedFeeStructure::BandTerm").inverse_of(:band) }
   end
 
   describe "validations" do
