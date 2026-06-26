@@ -136,7 +136,7 @@ RSpec.describe ActiveLeadProvider::Band, type: :model do
   end
 
   describe "#letter" do
-    let(:contract) { FactoryBot.create(:contract, :for_ecf) }
+    let(:contract) { FactoryBot.create(:contract, :for_ecf, active_lead_provider:) }
     let(:active_lead_provider_bands) do
       FactoryBot.create_list(:active_lead_provider_band, 6,
                              active_lead_provider:)
