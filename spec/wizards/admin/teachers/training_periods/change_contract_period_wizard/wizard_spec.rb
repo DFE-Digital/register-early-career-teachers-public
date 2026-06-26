@@ -116,57 +116,23 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Wiz
   end
 
   describe "#contract_periods" do
-    let!(:contract_period_2021) { FactoryBot.create(:contract_period, year: 2021, enabled: false) }
-    let!(:contract_period_2022) { FactoryBot.create(:contract_period, year: 2022, enabled: false) }
-    let!(:disabled_contract_period) { FactoryBot.create(:contract_period, year: 2028, enabled: false) }
-
-    it "returns enabled contract periods excluding the current and frozen years" do
-      expect(wizard.contract_periods).to contain_exactly(target_contract_period, other_contract_period)
+    let(:contract_periods) { [target_contract_period] }
+    let(:available_contract_periods) do
+      instance_double(
+        Admin::Teachers::TrainingPeriods::ChangeContractPeriod::AvailableContractPeriods,
+        contract_periods:
+      )
     end
 
-    context "when the original frozen contract period is 2021" do
-      before do
-        teacher.update!(ect_payments_frozen_year: contract_period_2021.year)
-      end
+    it "delegates to AvailableContractPeriods" do
+      allow(Admin::Teachers::TrainingPeriods::ChangeContractPeriod::AvailableContractPeriods)
+        .to receive(:new)
+        .and_return(available_contract_periods)
 
-      it "includes the original disabled frozen contract period and excludes the other disabled years" do
-        expect(wizard.contract_periods)
-          .to contain_exactly(contract_period_2021, target_contract_period, other_contract_period)
-      end
-    end
-
-    context "when the original frozen contract period is 2022" do
-      before do
-        teacher.update!(ect_payments_frozen_year: contract_period_2022.year)
-      end
-
-      it "includes the original disabled frozen contract period and excludes the other disabled years" do
-        expect(wizard.contract_periods)
-          .to contain_exactly(contract_period_2022, target_contract_period, other_contract_period)
-      end
-    end
-
-    context "for an EOI only training period" do
-      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period: current_contract_period) }
-      let(:training_period) do
-        FactoryBot.create(
-          :training_period,
-          :ongoing,
-          :with_only_expression_of_interest,
-          ect_at_school_period:,
-          expression_of_interest: active_lead_provider,
-          schedule:
-        )
-      end
-
-      before do
-        FactoryBot.create(:active_lead_provider, lead_provider: active_lead_provider.lead_provider, contract_period: target_contract_period)
-        FactoryBot.create(:active_lead_provider, contract_period: other_contract_period)
-      end
-
-      it "only returns contract periods with an equivalent active lead provider" do
-        expect(wizard.contract_periods).to contain_exactly(target_contract_period)
-      end
+      expect(wizard.contract_periods).to eq(contract_periods)
+      expect(Admin::Teachers::TrainingPeriods::ChangeContractPeriod::AvailableContractPeriods)
+        .to have_received(:new)
+        .with(training_period: wizard.training_period)
     end
   end
 
