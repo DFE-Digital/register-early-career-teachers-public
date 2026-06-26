@@ -34,6 +34,7 @@ class ActiveLeadProviders::SeedFromPrevious
     # This is a large graph, so let's make all or nothing...
     ActiveRecord::Base.transaction do
       create_new_delivery_partnerships
+      create_new_bands
       create_new_contract
     end
   end
@@ -58,6 +59,10 @@ private
     previous_lead_provider_delivery_partnerships.empty? ||
       previous_contracts.empty? || previous_statements.empty?
   end
+  
+  def previous_lead_provider_bands
+    previous_activation&.bands || []
+  end
 
   def active_lead_provider_populated?
     active_lead_provider.lead_provider_delivery_partnerships.any? ||
@@ -69,7 +74,13 @@ private
       active_lead_provider.lead_provider_delivery_partnerships.create!(delivery_partner: previous_partnership.delivery_partner)
     end
   end
-
+  
+  def create_new_bands
+    previous_lead_provider_bands.each do |previous_band|
+      active_lead_provider.bands.create!(previous_band.slice(:allocation_order, :capacity))
+    end  
+  end
+  
   def create_new_contract
     # Bands and fee structures validate by querying the database for their
     # already-persisted siblings (see create_banded_fee_structure), so the graph

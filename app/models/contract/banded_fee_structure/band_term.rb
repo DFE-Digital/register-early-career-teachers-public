@@ -10,25 +10,30 @@ class Contract::BandedFeeStructure::BandTerm < ApplicationRecord
              class_name: "ActiveLeadProvider::Band",
              optional: true
 
-  # Validations
+  def min_declarations = band&.min_declarations || self[:min_declarations]
+  def max_declarations = band&.max_declarations || self[:max_declarations]
 
-  # DEPRECATE
+  before_save :populate_deprecated_declaration_boundaries
+
+  # Validations
+  # DEPRECATE: only applies to band terms without a linked ActiveLeadProvider::Band
   validates :min_declarations,
             presence: { message: "Min declarations is required" },
             numericality: {
               greater_than: 0,
               only_integer: true,
               message: "Min declarations must be a number greater than zero"
-            }
-  # DEPRECATE
+            },
+            if: -> { band.nil? }
+  # DEPRECATE: only applies to band terms without a linked ActiveLeadProvider::Band
   validates :max_declarations,
             presence: { message: "Max declarations is required" },
             numericality: {
               greater_than: :min_declarations,
               only_integer: true,
               message: "Max declarations must be a number greater than min declarations"
-            }
-
+            },
+            if: -> { band.nil? }
   validates :fee_per_declaration,
             presence: { message: "Fee per declaration is required" },
             numericality: {
@@ -81,6 +86,13 @@ class Contract::BandedFeeStructure::BandTerm < ApplicationRecord
   end
 
 private
+
+  def populate_deprecated_declaration_boundaries
+    return unless band
+
+    self[:min_declarations] = band.min_declarations
+    self[:max_declarations] = band.max_declarations
+  end
 
   def sum_of_ratios_equals_one
     errors.add(:base, "Sum of ratios must equal 1") unless

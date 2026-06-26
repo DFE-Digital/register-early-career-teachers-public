@@ -9,10 +9,14 @@ RSpec.describe ActiveLeadProviders::SeedFromPrevious do
   # given a lead provider, active in both periods...
   let(:teach_first) { FactoryBot.create(:lead_provider, name: "Teach First") }
   let(:teach_first_activation_2026) { FactoryBot.create(:active_lead_provider, lead_provider: teach_first, contract_period: contract_period_2026) }
-  let!(:teach_first_activation_2025) { FactoryBot.create(:active_lead_provider, lead_provider: teach_first, contract_period: contract_period_2025) }
+  let(:teach_first_activation_2025) { FactoryBot.create(:active_lead_provider, lead_provider: teach_first, contract_period: contract_period_2025) }
+
+  let(:teach_first_activation_2025_bands) { FactoryBot.create_list(:active_lead_provider_band, 3, active_lead_provider: teach_first_activation_2025) }
+  let!(:teach_first_activation_2026_bands) { FactoryBot.create_list(:active_lead_provider_band, 3, active_lead_provider: teach_first_activation_2026) }
 
   describe "building subordinates from the previous activation's subordinate records" do
     before do
+      teach_first_activation_2025_bands
       create_subordinate_records(teach_first_activation_2025)
       service.call
     end
@@ -103,8 +107,6 @@ RSpec.describe ActiveLeadProviders::SeedFromPrevious do
   end
 
   context "when there is no previous activation for the lead provider" do
-    before { teach_first_activation_2025.destroy! }
-
     it "raises an error" do
       expect { service.call }
         .to raise_error(described_class::PreviousActiveLeadProviderError, /No previous activation found in 2025 for Teach First/)
@@ -177,6 +179,9 @@ private
   def create_subordinate_records(active_lead_provider)
     FactoryBot.create_list(:lead_provider_delivery_partnership, 3, active_lead_provider:)
     contract = FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider:)
+    active_lead_provider.bands.each do |alp_band|
+      FactoryBot.create(:contract_banded_fee_structure_band, banded_fee_structure: contract.banded_fee_structure, band: alp_band)
+    end
     contract_year = active_lead_provider.contract_period.year
     date = Date.new(contract_year, 11, 1)
     # Statements span November of contract_year through August three years later

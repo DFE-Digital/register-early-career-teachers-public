@@ -80,7 +80,7 @@ module Admin::Finance::ActiveLeadProviders
 
     def set_contract
       @contract = @active_lead_provider.contracts
-        .includes(:statements, :flat_rate_fee_structure, banded_fee_structure: :band_terms)
+        .includes(:statements, :flat_rate_fee_structure, banded_fee_structure: { band_terms: :band })
         .find(params.expect(:id))
     end
 
@@ -106,15 +106,13 @@ module Admin::Finance::ActiveLeadProviders
               :monthly_service_fee,
               :setup_fee,
               {
-                bands_attributes: %i[
+                bands_attributes: [%i[
                   id
-                  min_declarations
-                  max_declarations
+                  band_id
                   fee_per_declaration
                   output_fee_percentage
                   service_fee_percentage
-                  _destroy
-                ]
+                ]]
               },
             ],
             flat_rate_fee_structure_attributes: %i[

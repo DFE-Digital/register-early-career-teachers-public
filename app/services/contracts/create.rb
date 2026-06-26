@@ -10,6 +10,7 @@ module Contracts
 
     def call
       contract = active_lead_provider.contracts.build(params)
+  
       contract.save!
       Events::Record.record_contract_created_event!(author:, contract:)
       contract
