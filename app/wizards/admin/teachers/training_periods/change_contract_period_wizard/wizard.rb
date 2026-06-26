@@ -3,8 +3,6 @@ module Admin
     module TrainingPeriods
       module ChangeContractPeriodWizard
         class Wizard < ApplicationWizard
-          class UnexpectedTrainingPeriodTypeError < StandardError; end
-
           PartnershipOption = Data.define(:id, :name)
 
           attr_accessor :store, :teacher_id, :training_period_id, :author
@@ -52,24 +50,9 @@ module Admin
           delegate :school, to: :training_period
 
           def contract_periods
-            scope = if original_frozen_contract_period_year.in?([2021, 2022])
-                      ContractPeriod.enabled.or(ContractPeriod.where(year: original_frozen_contract_period_year))
-                    else
-                      ContractPeriod.enabled
-                    end
-
-            scope = scope.most_recent_first
-            scope = scope.where.not(year: existing_contract_period.year) if existing_contract_period
-
-            scope = if original_frozen_contract_period_year.in?([2021, 2022])
-                      scope.where.not(year: [2021, 2022] - [original_frozen_contract_period_year])
-                    else
-                      scope.where.not(year: [2021, 2022])
-                    end
-
-            scope = scope.where(year: equivalent_active_lead_providers.select(:contract_period_year)) if eoi_only?
-
-            scope
+            ChangeContractPeriod::AvailableContractPeriods
+              .new(training_period:)
+              .contract_periods
           end
 
           def selected_contract_period
@@ -140,20 +123,6 @@ module Admin
 
           def eoi_only?
             training_period.only_expression_of_interest?
-          end
-
-          def equivalent_active_lead_providers
-            ActiveLeadProvider.where(lead_provider: training_period.expression_of_interest_lead_provider)
-          end
-
-          def original_frozen_contract_period_year
-            if training_period.for_ect?
-              teacher.ect_payments_frozen_year
-            elsif training_period.for_mentor?
-              teacher.mentor_payments_frozen_year
-            else
-              raise UnexpectedTrainingPeriodTypeError, "Training period was neither ECT nor Mentor"
-            end
           end
 
           def selected_contract_period_allowed?
