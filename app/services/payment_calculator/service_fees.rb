@@ -13,7 +13,7 @@ module PaymentCalculator
 
   private
 
-    delegate :recruitment_target, :setup_fee, :bands, to: :banded_fee_structure
+    delegate :recruitment_target, :setup_fee, :band_terms, to: :banded_fee_structure
 
     # Total service fee = band service fees - setup fee deduction.
     #
@@ -28,26 +28,26 @@ module PaymentCalculator
     def band_totals
       remaining = recruitment_target
 
-      bands.sum do |band|
-        filled = [remaining, band.capacity].min
+      band_terms.sum do |band_term|
+        filled = [remaining, band_term.capacity].min
         remaining -= filled
 
-        filled * band.fee_per_declaration * band.service_fee_ratio
+        filled * band_term.fee_per_declaration * band_term.service_fee_ratio
       end
     end
 
     # Deducts setup_fee proportionally based on how many Band A slots are filled.
     # When Band A is fully filled this equals the full setup_fee.
     def setup_fee_deduction
-      filled_in_first_band * setup_fee / first_band_capacity.to_d
+      filled_in_first_band_term * setup_fee / first_band_term_capacity.to_d
     end
 
-    def filled_in_first_band
-      [recruitment_target, first_band_capacity].min
+    def filled_in_first_band_term
+      [recruitment_target, first_band_term_capacity].min
     end
 
-    def first_band_capacity
-      bands.first.capacity
+    def first_band_term_capacity
+      band_terms.first.capacity
     end
   end
 end

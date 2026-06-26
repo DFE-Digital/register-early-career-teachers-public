@@ -17,12 +17,13 @@ module PaymentCalculator
       "extended-3" => 0.15,
     }.freeze
 
+    # @return [PaymentCalculator::Banded::BandAllocation]
     attribute :band_allocation
 
-    delegate :declaration_type, :band, :billable_count, :refundable_count, to: :band_allocation
+    delegate :declaration_type, :band_term, :billable_count, :refundable_count, to: :band_allocation
 
     def type_adjusted_fee_per_declaration
-      fee_proportion * band.output_fee_ratio * band.fee_per_declaration
+      fee_proportion * band_term.output_fee_ratio * band_term.fee_per_declaration
     end
 
     def total_billable_amount = billable_count * type_adjusted_fee_per_declaration

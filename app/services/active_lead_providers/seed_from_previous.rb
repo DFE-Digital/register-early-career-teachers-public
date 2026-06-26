@@ -93,7 +93,7 @@ private
 
     previous_fee_structure.dup.tap do |new_fee_structure|
       new_fee_structure.contract_id = nil
-      previous_fee_structure.bands.each { |band| new_fee_structure.bands << band.dup }
+      previous_fee_structure.band_terms.each { |term| new_fee_structure.band_terms << term.dup }
     end
   end
 

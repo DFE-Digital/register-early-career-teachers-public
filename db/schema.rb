@@ -156,7 +156,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_22_120000) do
     t.index ["creator_id"], name: "index_blazer_queries_on_creator_id"
   end
 
-  create_table "contract_banded_fee_structure_bands", force: :cascade do |t|
+  create_table "contract_banded_fee_structure_band_terms", force: :cascade do |t|
     t.bigint "band_id"
     t.bigint "banded_fee_structure_id", null: false
     t.datetime "created_at", null: false
@@ -166,9 +166,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_22_120000) do
     t.decimal "output_fee_ratio", precision: 3, scale: 2, null: false
     t.decimal "service_fee_ratio", precision: 3, scale: 2, null: false
     t.datetime "updated_at", null: false
-    t.index ["band_id"], name: "index_contract_banded_fee_structure_bands_on_band_id"
-    t.index ["banded_fee_structure_id", "band_id"], name: "idx_on_banded_fee_structure_id_band_id_1c26965993", unique: true
-    t.index ["banded_fee_structure_id"], name: "idx_on_banded_fee_structure_id_49a33a0bd5"
+    t.index ["band_id"], name: "index_contract_banded_fee_structure_band_terms_on_band_id"
+    t.index ["banded_fee_structure_id", "band_id"], name: "idx_on_banded_fee_structure_id_band_id_04f5837f9d", unique: true
+    t.index ["banded_fee_structure_id"], name: "idx_on_banded_fee_structure_id_f857ec5b02"
   end
 
   create_table "contract_banded_fee_structures", force: :cascade do |t|
@@ -951,8 +951,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_22_120000) do
   add_foreign_key "active_lead_providers", "lead_providers"
   add_foreign_key "appropriate_bodies", "dfe_sign_in_organisations"
   add_foreign_key "appropriate_body_periods", "appropriate_bodies"
-  add_foreign_key "contract_banded_fee_structure_bands", "active_lead_provider_bands", column: "band_id"
-  add_foreign_key "contract_banded_fee_structure_bands", "contract_banded_fee_structures", column: "banded_fee_structure_id", on_delete: :cascade
+  add_foreign_key "contract_banded_fee_structure_band_terms", "active_lead_provider_bands", column: "band_id"
+  add_foreign_key "contract_banded_fee_structure_band_terms", "contract_banded_fee_structures", column: "banded_fee_structure_id", on_delete: :cascade
   add_foreign_key "contract_banded_fee_structures", "contracts"
   add_foreign_key "contract_flat_rate_fee_structures", "contracts"
   add_foreign_key "contracts", "active_lead_providers"

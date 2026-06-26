@@ -6,8 +6,8 @@ class ActiveLeadProvider::Band < ApplicationRecord
   # Associations
   belongs_to :active_lead_provider
 
-  has_many :terms,
-           class_name: "Contract::BandedFeeStructure::Band", # TODO: rename to BandTerms
+  has_many :band_terms,
+           class_name: "Contract::BandedFeeStructure::BandTerm",
            inverse_of: :band
 
   # Validations

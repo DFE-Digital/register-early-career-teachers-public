@@ -4,43 +4,40 @@ RSpec.describe Admin::Statements::ClawbacksComponent, type: :component do
   let(:statement) { FactoryBot.create(:statement, contract:) }
 
   let(:banded_fee_structure) do
-    FactoryBot.build_stubbed(
-      :contract_banded_fee_structure,
-      :with_bands,
-      declaration_boundaries: [
-        { min: 1, max: 10 },
-        { min: 11, max: 20 },
-      ]
-    )
+    FactoryBot.build_stubbed(:contract_banded_fee_structure, :with_band_terms,
+                             declaration_boundaries: [
+                               { min: 1, max: 10 },
+                               { min: 11, max: 20 },
+                             ])
   end
 
   let(:banded_outputs) do
-    bands = banded_fee_structure.bands
+    band_terms = banded_fee_structure.band_terms
     banded_declaration_type_outputs = [
       double(
         declaration_type: "started",
-        band: bands.first,
+        band_term: band_terms.first,
         refundable_count: 10,
         type_adjusted_fee_per_declaration: 15,
         total_refundable_amount: 150
       ),
       double(
         declaration_type: "started",
-        band: bands.second,
+        band_term: band_terms.second,
         refundable_count: 10,
         type_adjusted_fee_per_declaration: 15,
         total_refundable_amount: 150
       ),
       double(
         declaration_type: "completed",
-        band: bands.first,
+        band_term: band_terms.first,
         refundable_count: 5,
         type_adjusted_fee_per_declaration: 20,
         total_refundable_amount: 100
       ),
       double(
         declaration_type: "completed",
-        band: bands.second,
+        band_term: band_terms.second,
         refundable_count: 0,
         type_adjusted_fee_per_declaration: 20,
         total_refundable_amount: 0
@@ -218,10 +215,8 @@ RSpec.describe Admin::Statements::ClawbacksComponent, type: :component do
 private
 
   def band(from:, to:)
-    FactoryBot.build_stubbed(
-      :contract_banded_fee_structure_band,
-      min_declarations: from,
-      max_declarations: to
-    )
+    FactoryBot.build_stubbed(:contract_banded_fee_structure_band_term,
+                             min_declarations: from,
+                             max_declarations: to)
   end
 end
