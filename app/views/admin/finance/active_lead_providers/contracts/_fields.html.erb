@@ -79,6 +79,7 @@
     <tbody class="govuk-table__body">
       <% bfs.object.bands.each_with_index do |band, index| %>
         <%= bfs.fields_for :bands, band do |bf| %>
+          <%= bf.hidden_field :band_id %>
           <tr class="govuk-table__row" data-controller="band">
             <th scope="row" class="govuk-table__header"><%= ("A".ord + index).chr %></th>
             <td class="govuk-table__cell"><%= band.min_declarations %></td>

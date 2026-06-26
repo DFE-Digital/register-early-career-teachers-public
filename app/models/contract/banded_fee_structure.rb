@@ -5,12 +5,12 @@ class Contract::BandedFeeStructure < ApplicationRecord
   belongs_to :contract
 
   has_many :band_terms,
-           -> { order(min_declarations: :asc) },
+           -> { left_joins(:band).order("active_lead_provider_bands.allocation_order ASC, contract_banded_fee_structure_band_terms.min_declarations ASC") },
            class_name: "Contract::BandedFeeStructure::BandTerm",
            inverse_of: :banded_fee_structure,
            dependent: :destroy
 
-  accepts_nested_attributes_for :bands, allow_destroy: true
+  accepts_nested_attributes_for :bands
 
   # Validations
   validates :contract_id, uniqueness: { message: "Contract with the same banded fee structure already exist" }

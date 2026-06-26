@@ -51,6 +51,8 @@ module Admin::Statements
               row.with_cell(header: true, numeric: true, text: "Min")
               row.with_cell(header: true, numeric: true, text: "Max")
               row.with_cell(header: true, numeric: true, text: "Fee per declaration")
+              row.with_cell(header: true, numeric: true, text: "Output fee")
+              row.with_cell(header: true, numeric: true, text: "Service fee")
             end
           end
 
@@ -61,6 +63,8 @@ module Admin::Statements
                 row.with_cell(numeric: true, text: band_term.min_declarations)
                 row.with_cell(numeric: true, text: band_term.max_declarations)
                 row.with_cell(numeric: true, text: number_to_pounds(band_term.fee_per_declaration))
+                row.with_cell(numeric: true, text: number_to_percentage(band_term.output_fee_percentage, precision: 0))
+                row.with_cell(numeric: true, text: number_to_percentage(band_term.service_fee_percentage, precision: 0))
               end
             end
           end
