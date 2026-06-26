@@ -3,11 +3,20 @@ module Schools
     module ChangeAppropriateBodyWizard
       class EditStep < Step
         attribute :appropriate_body_id, :string
+        attribute :appropriate_body_type, :string
 
         validates :appropriate_body_id,
-                  presence: { message: "Select the appropriate body which will be supporting the ECT's induction" }
+                  presence: {
+                    message: "Select the appropriate body which will be supporting the ECT's induction"
+                  }
 
-        def self.permitted_params = [:appropriate_body_id]
+        def initialize(opts = {})
+          super(**opts)
+
+          set_national_appropriate_body_id
+        end
+
+        def self.permitted_params = %i[appropriate_body_id appropriate_body_type]
 
         def next_step = :check_answers
 
@@ -24,6 +33,13 @@ module Schools
         end
 
       private
+
+        def set_national_appropriate_body_id
+          return unless ect_at_school_period.school.independent?
+          return unless appropriate_body_type == "national"
+
+          self.appropriate_body_id = AppropriateBodies::Search.istip.id.to_s
+        end
 
         def pre_populate_attributes
           self.appropriate_body_id = store.appropriate_body_id
