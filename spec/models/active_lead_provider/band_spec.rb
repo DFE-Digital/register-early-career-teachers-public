@@ -136,31 +136,23 @@ RSpec.describe ActiveLeadProvider::Band, type: :model do
   end
 
   describe "#letter" do
-    let(:banded_fee_structure) do
-      FactoryBot.build(:contract_banded_fee_structure,
-                       band_terms: [
-                         FactoryBot.build(:contract_banded_fee_structure_band_term,
-                                          band: active_lead_provider_bands.first),
-                         FactoryBot.build(:contract_banded_fee_structure_band_term,
-                                          band: active_lead_provider_bands.second),
-                         FactoryBot.build(:contract_banded_fee_structure_band_term,
-                                          band: active_lead_provider_bands.third),
-                         FactoryBot.build(:contract_banded_fee_structure_band_term,
-                                          band: active_lead_provider_bands.fourth)
-                       ])
-    end
-
+    let(:contract) { FactoryBot.create(:contract, :for_ecf) }
     let(:active_lead_provider_bands) do
-      FactoryBot.create_list(:active_lead_provider_band, 4,
+      FactoryBot.create_list(:active_lead_provider_band, 6,
                              active_lead_provider:)
     end
 
-    let(:band_letters) do
-      banded_fee_structure.band_terms.map { |band_term| band_term.band.letter }
+    before do
+      active_lead_provider_bands.each do |band|
+        FactoryBot.create(:contract_banded_fee_structure_band_term,
+                          banded_fee_structure: contract.banded_fee_structure,
+                          band:)
+      end
     end
 
-    it "letters bands alphabetically in boundary order" do
-      expect(band_letters).to eq(%w[A B C D])
+    it "bands alphabetically in allocation order" do
+      expect(active_lead_provider.bands.map(&:letter)).to eq(%w[A B C D E F])
+      expect(contract.banded_fee_structure.bands.map(&:letter)).to eq(%w[A B C D E F])
     end
   end
 end

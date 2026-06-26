@@ -1,7 +1,7 @@
 RSpec.describe PaymentCalculator::Banded::BandAllocator do
   subject(:allocator) do
     described_class.new(
-      band_terms: banded_fee_structure.band_terms,
+      bands: banded_fee_structure.bands,
       billable_declarations: Declaration.where(id: current_billable_ids),
       refundable_declarations: Declaration.where(id: current_refundable_ids),
       previous_billable_declarations: Declaration.where(id: previous_billable_ids),
