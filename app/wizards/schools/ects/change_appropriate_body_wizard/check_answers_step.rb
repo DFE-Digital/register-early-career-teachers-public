@@ -2,7 +2,10 @@ module Schools
   module ECTs
     module ChangeAppropriateBodyWizard
       class CheckAnswersStep < Step
-        def previous_step = :edit
+        def previous_step
+          school.independent? ? :independent_school_step : :state_school_step
+        end
+
         def next_step = :confirmation
 
         def old_appropriate_body_name
@@ -10,6 +13,7 @@ module Schools
         end
 
         delegate :name, to: :new_appropriate_body_period, prefix: :new_appropriate_body
+        delegate :school, to: :ect_at_school_period
 
         def save!
           ApplicationRecord.transaction do

@@ -25,8 +25,20 @@ describe Schools::ECTs::ChangeAppropriateBodyWizard::CheckAnswersStep do
   let(:old_appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
 
   describe "#previous_step" do
-    it "returns the edit step" do
-      expect(current_step.previous_step).to eq(:edit)
+    context "when the school is independent" do
+      let(:school) { FactoryBot.create(:school, :independent) }
+
+      it "returns the independent school step" do
+        expect(current_step.previous_step).to eq(:independent_school_step)
+      end
+    end
+
+    context "when the school is not independent" do
+      let(:school) { FactoryBot.create(:school, :state_funded) }
+
+      it "returns the state school step" do
+        expect(current_step.previous_step).to eq(:state_school_step)
+      end
     end
   end
 

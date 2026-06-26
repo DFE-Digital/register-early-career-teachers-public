@@ -17,6 +17,7 @@ module Schools
 
         def appropriate_bodies_except_current
           AppropriateBodyPeriod
+            .teaching_school_hub
             .active
             .where.not(id: current_appropriate_body_id)
             .select(:id, :name)

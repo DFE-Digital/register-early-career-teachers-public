@@ -77,7 +77,9 @@ module Schools
     end
 
     def change_appropriate_body_path
-      schools_ects_change_appropriate_body_wizard_edit_path(ect_id: @ect.id)
+      return schools_ects_change_appropriate_body_wizard_independent_school_path(ect_id: @ect.id) if @ect.school.independent?
+
+      schools_ects_change_appropriate_body_wizard_state_school_path(ect_id: @ect.id)
     end
   end
 end

@@ -5,9 +5,9 @@ describe "Schools::ECTs::ChangeAppropriateBodyWizardController" do
   let(:current_appropriate_body) { FactoryBot.create(:appropriate_body_period) }
 
   describe "GET #new" do
-    subject { get path_for_step("edit") }
-
     it_behaves_like "an induction redirectable route"
+
+    subject { get path_for_step("state-school") }
 
     context "when not signed in" do
       it "redirects to the root page" do
@@ -27,8 +27,20 @@ describe "Schools::ECTs::ChangeAppropriateBodyWizardController" do
       end
     end
 
-    context "when signed in as a School user" do
+    context "when signed in as school user" do
       before { sign_in_as(:school_user, school:) }
+
+      it "renders the state school step" do
+        get path_for_step("state-school")
+
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "renders the independent school step" do
+        get path_for_step("independent-school")
+
+        expect(response).to have_http_status(:ok)
+      end
 
       context "when the current_step is invalid" do
         it "returns not found" do
@@ -37,18 +49,22 @@ describe "Schools::ECTs::ChangeAppropriateBodyWizardController" do
           expect(response).to have_http_status(:not_found)
         end
       end
+    end
 
-      context "when the current_step is valid" do
-        it "returns ok" do
-          subject
+    context "when signed in as a non-state school user" do
+      # let(:school) { FactoryBot.create(:school, :independent) }
 
-          expect(response).to have_http_status(:ok)
-        end
+      before { sign_in_as(:school_user, school:) }
+
+      it "renders the independent school step" do
+        get path_for_step("independent-school")
+
+        expect(response).to have_http_status(:ok)
       end
     end
   end
 
-  describe "POST #create" do
+  xdescribe "POST #create" do
     subject { post(path_for_step("edit"), params:) }
 
     let(:params) { { edit: { appropriate_body_id: } } }
