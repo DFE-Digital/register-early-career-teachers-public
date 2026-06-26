@@ -11,9 +11,12 @@ RSpec.describe PaymentCalculator::Banded::Outputs do
   let(:previous_refundable_declarations) { Declaration.none }
   let(:billable_declarations) { Declaration.billable.where.not(id: previous_billable_declarations.pluck(:id)) }
   let(:refundable_declarations) { Declaration.refundable }
-  let!(:contract) { FactoryBot.create(:contract, :for_ecf, banded_fee_structure:) }
-
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+  let!(:contract) do
+    FactoryBot.create(:contract, :for_ecf,
+                      banded_fee_structure:,
+                      active_lead_provider:)
+  end
   let(:fee_per_declaration) { 100.0 }
   let(:banded_fee_structure) do
     FactoryBot.build(:contract_banded_fee_structure, band_terms: [

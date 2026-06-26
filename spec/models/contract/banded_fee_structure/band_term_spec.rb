@@ -42,5 +42,36 @@ RSpec.describe Contract::BandedFeeStructure::BandTerm, type: :model do
         it { is_expected.to be_valid }
       end
     end
+
+    describe "#band_belongs_to_contracts_active_lead_provider" do
+      subject(:band_term) do
+        FactoryBot.create(:contract_banded_fee_structure_band_term,
+                          banded_fee_structure: contract.banded_fee_structure,
+                          band:)
+      end
+
+      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+      let!(:contract) { FactoryBot.create(:contract, :for_ecf, active_lead_provider:) }
+
+      context "when the band and contract ALP match" do
+        let!(:band) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:) }
+
+        it "is valid" do
+          expect(band.active_lead_provider).to eq(contract.active_lead_provider)
+          expect(band_term).to be_valid
+        end
+      end
+
+      context "when the band and contract ALP do not match" do
+        let!(:band) { FactoryBot.create(:active_lead_provider_band) }
+
+        it "raises an error" do
+          expect(band.active_lead_provider).not_to eq(contract.active_lead_provider)
+          expect { band_term }.to raise_error(
+            ActiveRecord::RecordInvalid, "Validation failed: Band must belong to the contract's active lead provider"
+          )
+        end
+      end
+    end
   end
 end

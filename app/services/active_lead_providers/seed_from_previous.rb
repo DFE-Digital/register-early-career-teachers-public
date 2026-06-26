@@ -71,10 +71,12 @@ private
   end
 
   def create_new_contract
-    # Bands and fee structures validate by querying the database for their
-    # already-persisted siblings (see create_banded_fee_structure), so the graph
-    # has to be created as it's built — assembling it in memory and saving once
-    # would run those validations before the siblings exist.
+    # The banded fee structure cannot be attached after the contract is saved because
+    # Contract validates its presence at creation time, and the duped fee structure's
+    # old contract_id cannot simply be nulled as it violates a DB constraint.
+    #
+    # This ensures the contract_id is populated at save and avoids cross-ALP band references.
+    #
     previous_contract = previous_latest_contract
 
     active_lead_provider.contracts.create!(
@@ -91,18 +93,25 @@ private
   def build_banded_fee_structure(previous_fee_structure)
     return unless previous_fee_structure
 
-    previous_fee_structure.dup.tap do |new_fee_structure|
-      new_fee_structure.contract_id = nil
-      previous_fee_structure.band_terms.each { |term| new_fee_structure.band_terms << term.dup }
+    new_fee_structure = previous_fee_structure.dup
+
+    previous_fee_structure.band_terms.each do |previous_term|
+      new_band = active_lead_provider.bands.create!(capacity: previous_term.band.capacity)
+      new_fee_structure.band_terms.build(
+        band: new_band,
+        fee_per_declaration: previous_term.fee_per_declaration,
+        output_fee_ratio: previous_term.output_fee_ratio,
+        service_fee_ratio: previous_term.service_fee_ratio
+      )
     end
+
+    new_fee_structure
   end
 
   def build_flat_rate_fee_structure(previous_fee_structure)
     return unless previous_fee_structure
 
-    previous_fee_structure.dup.tap do |new_fee_structure|
-      new_fee_structure.contract_id = nil
-    end
+    previous_fee_structure.dup
   end
 
   def build_new_statements
