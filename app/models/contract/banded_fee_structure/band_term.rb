@@ -9,7 +9,6 @@ class Contract::BandedFeeStructure::BandTerm < ApplicationRecord
              class_name: "ActiveLeadProvider::Band"
 
   # Validations
-
   validates :fee_per_declaration,
             presence: { message: "Fee per declaration is required" },
             numericality: {
