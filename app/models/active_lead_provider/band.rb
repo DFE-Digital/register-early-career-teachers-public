@@ -50,6 +50,11 @@ class ActiveLeadProvider::Band < ApplicationRecord
     min_declarations + capacity - 1
   end
 
+  # @return [String] A, B, C...
+  def letter
+    ("A".ord + allocation_order - 1).chr
+  end
+
 private
 
   # Read-only
