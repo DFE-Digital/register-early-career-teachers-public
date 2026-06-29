@@ -1,4 +1,6 @@
 RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
+  include Rails.application.routes.url_helpers
+
   subject(:rendered) { render_inline(described_class.new(training_period:, show_api_row: true)) }
 
   describe "provider-led training periods" do
@@ -259,6 +261,57 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
     it "does not show the API data row" do
       expect(rendered_content).not_to have_css("dt", text: "API response")
       expect(rendered_content).not_to include("data")
+    end
+  end
+
+  describe "contract period change link" do
+    context "when the training period is an eligible ECT period" do
+      let(:training_period) do
+        FactoryBot.create(
+          :training_period,
+          :ongoing,
+          ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing)
+        )
+      end
+
+      before { rendered }
+
+      it "shows a change link for the contract period row" do
+        expect(rendered_content).to have_link(
+          "Change",
+          href: admin_teacher_training_period_change_contract_period_wizard_select_contract_period_path(training_period.teacher.id, training_period.id)
+        )
+      end
+    end
+
+    context "when the training period is an eligible mentor period" do
+      let(:training_period) do
+        FactoryBot.create(
+          :training_period,
+          :for_mentor,
+          :ongoing,
+          mentor_at_school_period: FactoryBot.create(:mentor_at_school_period, :ongoing)
+        )
+      end
+
+      before { rendered }
+
+      it "shows a change link for the contract period row" do
+        expect(rendered_content).to have_link(
+          "Change",
+          href: admin_teacher_training_period_change_contract_period_wizard_select_contract_period_path(training_period.teacher.id, training_period.id)
+        )
+      end
+    end
+
+    context "when the training period is ineligible" do
+      let(:training_period) { FactoryBot.create(:training_period, :finished) }
+
+      before { rendered }
+
+      it "does not show a change link for the contract period row" do
+        expect(rendered_content).not_to have_link("Change")
+      end
     end
   end
 
