@@ -79,6 +79,9 @@ RSpec.describe PaymentCalculator::FlatRate do
   end
   let(:fee_proportions) { { started: 0.5, completed: 0.5 } }
 
+  it { is_expected.to be_flat_rate }
+  it { is_expected.not_to be_banded }
+
   describe "#total_amount" do
     subject(:total_amount) { flat_rate.total_amount(with_vat:) }
 
