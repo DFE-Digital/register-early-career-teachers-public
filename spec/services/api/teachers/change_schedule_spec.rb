@@ -229,7 +229,14 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
             end
 
             context "when the contract period year is not changing" do
-              it "changes the schedule via change schedule service" do
+              before do
+                # More recent school partnership with a different delivery partner.
+                travel_to(1.month.from_now) do
+                  FactoryBot.create(:school_partnership, :for_year, year: contract_period_year, lead_provider:, school: school_partnership.school)
+                end
+              end
+
+              it "changes schedule, retaining the school partnership on their existing training period" do
                 instance.change_schedule
 
                 expect(service).to have_received(:change_schedule).once
@@ -238,12 +245,54 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
 
             context "when the contract period year is changing" do
               let(:contract_period) { FactoryBot.create(:contract_period, year: training_period.contract_period.year + 1) }
-              let(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, year: contract_period_year, lead_provider:, school: training_period.school_partnership.school) }
+              let(:delivery_partner) { training_period.school_partnership.delivery_partner }
+              let(:school) { training_period.school_partnership.school }
+              let(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, year: contract_period_year, lead_provider:, delivery_partner:, school:) }
 
-              it "changes the schedule via change schedule service" do
-                instance.change_schedule
+              context "when a school partnership exists with the same delivery partner" do
+                before do
+                  # More recent school partnership with a different delivery partner.
+                  travel_to(1.month.from_now) do
+                    other_delivery_partner = FactoryBot.create(:delivery_partner)
+                    FactoryBot.create(:school_partnership, :for_year, year: contract_period_year, lead_provider:, delivery_partner: other_delivery_partner, school:)
+                  end
 
-                expect(service).to have_received(:change_schedule).once
+                  # More recent school partnership with the same delivery partner and different lead provider.
+                  travel_to(1.month.from_now) do
+                    other_lead_provider = FactoryBot.create(:lead_provider)
+                    FactoryBot.create(:school_partnership, :for_year, year: contract_period_year, lead_provider: other_lead_provider, delivery_partner:, school:)
+                  end
+                end
+
+                it "changes schedule, moving to a school partnership with the same delivery partner" do
+                  instance.change_schedule
+
+                  expect(service).to have_received(:change_schedule).once
+                end
+              end
+
+              context "when a school partnership does not exist with the same delivery partner" do
+                let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
+                let(:school_partnership) do
+                  travel_to(1.week.from_now) do
+                    other_delivery_partner = FactoryBot.create(:delivery_partner)
+                    FactoryBot.create(:school_partnership, :for_year, year: contract_period_year, lead_provider:, delivery_partner: other_delivery_partner, school:)
+                  end
+                end
+
+                before do
+                  # More recent school partnership with the same delivery partner and lead provider but different school.
+                  travel_to(1.month.from_now) do
+                    other_school = FactoryBot.create(:school)
+                    FactoryBot.create(:school_partnership, :for_year, year: contract_period_year, lead_provider:, delivery_partner:, school: other_school)
+                  end
+                end
+
+                it "changes schedule, moving to the most recently created school partnership" do
+                  instance.change_schedule
+
+                  expect(service).to have_received(:change_schedule).once
+                end
               end
             end
 
@@ -251,7 +300,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
               let(:contract_period_year) { nil }
               let(:schedule) { FactoryBot.create(:schedule, identifier: schedule_identifier, contract_period: training_period.contract_period) }
 
-              it "uses to their current contract period year" do
+              it "changes schedule, using their current contract period year" do
                 instance.change_schedule
 
                 expect(service).to have_received(:change_schedule).once
@@ -264,7 +313,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
 
               before { teacher.update!("#{trainee_type}_payments_frozen_year": contract_period.year) }
 
-              it "changes the schedule via change schedule service" do
+              it "changes schedule, moving back to a frozen contract period" do
                 instance.change_schedule
 
                 expect(service).to have_received(:change_schedule).once
