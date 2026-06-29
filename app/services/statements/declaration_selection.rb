@@ -29,10 +29,8 @@ module Statements
 
     def selected_ids_for(calculator)
       case calculator
-      when PaymentCalculator::Banded
-        selected_ids_for_banded(calculator)
-      when PaymentCalculator::FlatRate
-        selected_ids_for_flat_rate(calculator)
+      when PaymentCalculator::Banded   then selected_ids_for_banded(calculator)
+      when PaymentCalculator::FlatRate then selected_ids_for_flat_rate(calculator)
       else
         raise UnsupportedCalculatorError, "Unsupported calculator: #{calculator.class.name}"
       end

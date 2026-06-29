@@ -94,6 +94,9 @@ RSpec.describe PaymentCalculator::Banded do
 
   let(:declaration_selector) { ->(declarations) { declarations } }
 
+  it { is_expected.to be_banded }
+  it { is_expected.not_to be_flat_rate }
+
   describe "#outputs" do
     let(:previous_training_period) do
       FactoryBot.create(:training_period, :for_ect, :with_active_lead_provider,

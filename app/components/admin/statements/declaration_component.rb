@@ -11,13 +11,9 @@ module Admin
 
       def count_header_text(calculator)
         return "Total" if ecf_contract?
+        return "ECTs" if calculator.banded?
 
-        case calculator
-        when PaymentCalculator::Banded
-          "ECTs"
-        when PaymentCalculator::FlatRate
-          "Mentors"
-        end
+        "Mentors"
       end
 
     private
@@ -46,11 +42,11 @@ module Admin
       end
 
       def banded_calculator
-        calculators.find { it.is_a? PaymentCalculator::Banded }
+        calculators.find(&:banded?)
       end
 
       def flat_rate_calculator
-        calculators.find { it.is_a? PaymentCalculator::FlatRate }
+        calculators.find(&:flat_rate?)
       end
 
       def declarations_count(calculator, type)

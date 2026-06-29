@@ -28,7 +28,7 @@ module Admin
 
       def uplifts
         raise ArgumentError, "Expected exactly 1 calculator for ECF contract type" unless calculators.one?
-        raise ArgumentError, "Expected Banded calculator for ECF contract type" unless calculators.first.is_a?(PaymentCalculator::Banded)
+        raise ArgumentError, "Expected Banded calculator for ECF contract type" unless calculators.first.banded?
 
         @uplifts ||= calculators.first.uplifts
       end
