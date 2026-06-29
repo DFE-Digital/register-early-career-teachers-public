@@ -27,8 +27,4 @@ RSpec.describe "admin/appropriate_bodies/show.html.erb" do
   it "displays counts of current ECTs and bulk uploads" do
     expect(rendered).to have_css(".govuk-summary-list__value", exact_text: "0", count: 2)
   end
-
-  it "links to appropriate body timeline", skip: "disabled for manual testing" do
-    expect(rendered).to have_link("Timeline of events", href: admin_appropriate_body_timeline_path(appropriate_body_period))
-  end
 end
