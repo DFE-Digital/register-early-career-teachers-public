@@ -30,10 +30,14 @@
       <% end %>
     <% end %>
 
-    <%= render Navigation::PrimaryNavigationComponent.new(
-      current_path: request.fullpath,
-      current_user: current_user,
-    ) %>
+    <%=
+      govuk_service_navigation(
+        **Navigation::Primary.new(
+          current_path: request.fullpath,
+          current_user: current_user,
+        ).govuk_header_arguments
+      )
+    %>
 
     <div class="govuk-width-container">
       <%= environment_specific_phase_banner %>
