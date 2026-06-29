@@ -1,6 +1,6 @@
 ```mermaid
 erDiagram
-  Contract_BandedFeeStructure_Band {
+  Contract_BandedFeeStructure_BandTerm {
     integer id
     integer band_id
     integer banded_fee_structure_id
@@ -12,8 +12,8 @@ erDiagram
     decimal service_fee_ratio
     datetime updated_at
   }
-  Contract_BandedFeeStructure_Band }o--|| Contract_BandedFeeStructure : belongs_to
-  Contract_BandedFeeStructure_Band }o--|| ActiveLeadProvider_Band : belongs_to
+  Contract_BandedFeeStructure_BandTerm }o--|| Contract_BandedFeeStructure : belongs_to
+  Contract_BandedFeeStructure_BandTerm }o--|| ActiveLeadProvider_Band : belongs_to
   Contract_FlatRateFeeStructure {
     integer id
     integer contract_id
