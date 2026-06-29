@@ -58,7 +58,7 @@ module Admin
       end
 
       def banded
-        @banded ||= calculators.find { |c| c.is_a? PaymentCalculator::Banded }
+        @banded ||= calculators.find(&:banded?)
       end
 
       def total_manual_adjustments_amount
