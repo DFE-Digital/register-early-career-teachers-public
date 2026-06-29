@@ -1,0 +1,78 @@
+RSpec.describe "Mentoring mentors API", type: :request do
+  include MentorshipPeriodHelpers
+
+  let(:serializer) { API::Teachers::MentoringMentorSerializer }
+  let(:serializer_options) { { lead_provider_id: lead_provider.id } }
+  let(:query) { API::Teachers::MentoringMentors::Query }
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+  let(:lead_provider) { active_lead_provider.lead_provider }
+
+  def create_resource(active_lead_provider:)
+    lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
+    school_partnership = FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:)
+
+    other_active_lead_provider = FactoryBot.create(
+      :active_lead_provider,
+      lead_provider: FactoryBot.create(:lead_provider),
+      contract_period_year: active_lead_provider.contract_period_year
+    )
+    other_lead_provider_delivery_partnership = FactoryBot.create(
+      :lead_provider_delivery_partnership,
+      active_lead_provider: other_active_lead_provider
+    )
+
+    mentor_school_partnership = SchoolPartnership.find_or_create_by!(
+      school: school_partnership.school,
+      lead_provider_delivery_partnership: other_lead_provider_delivery_partnership
+    )
+
+    # Unfunded mentor associated with the lead provider (should be returned)
+    create_mentorship_period_for(
+      mentee_school_partnership: school_partnership,
+      mentor_school_partnership:,
+      refresh_metadata: true
+    ).mentor.teacher
+  end
+
+  describe "#index" do
+    let(:path) { api_v3_mentoring_mentors_path }
+
+    def apply_expected_order(resources)
+      resources.sort_by(&:created_at)
+    end
+
+    it_behaves_like "a token authenticated endpoint", :get
+    it_behaves_like "an index endpoint"
+    it_behaves_like "a paginated endpoint"
+    it_behaves_like "a filter by updated_since endpoint" do
+      def set_updated_at(resource:, value:)
+        resource.update_columns(api_updated_at: value)
+      end
+    end
+    it_behaves_like "a sortable endpoint" do
+      def set_updated_at(resource:, value:)
+        resource.update_columns(api_updated_at: value)
+      end
+
+      def transform_sort_attribute(sort_attribute)
+        if sort_attribute == "updated_at"
+          "api_updated_at"
+        else
+          sort_attribute
+        end
+      end
+    end
+    it_behaves_like "a N+1 queries free endpoint", :get
+  end
+
+  describe "#show" do
+    let(:resource) { create_resource(active_lead_provider:) }
+    let(:path_id) { resource.api_id }
+    let(:path) { api_v3_mentoring_mentor_path(path_id) }
+
+    it_behaves_like "a token authenticated endpoint", :get
+    it_behaves_like "a show endpoint"
+    it_behaves_like "a does not filter by updated_since endpoint"
+    it_behaves_like "a N+1 queries free endpoint", :get
+  end
+end
