@@ -1257,6 +1257,19 @@ module Events
       new(event_type:, author:, heading:, school:, happened_at:, metadata:).record_event!
     end
 
+    def self.record_school_merged_event!(author:, school:, old_gias_school:, new_gias_school:, happened_at: Time.zone.now)
+      event_type = :school_merged
+      heading = "#{old_gias_school.school.name} (#{old_gias_school.urn}) was merged into #{school.name} (#{new_gias_school.urn}) in GIAS"
+      metadata = {
+        old_gias_school_urn: old_gias_school.urn,
+        old_gias_school_name: old_gias_school.name,
+        new_gias_school_urn: new_gias_school.urn,
+        new_gias_school_name: new_gias_school.name,
+      }
+
+      new(event_type:, author:, heading:, school:, happened_at:, metadata:).record_event!
+    end
+
   private
 
     def attributes

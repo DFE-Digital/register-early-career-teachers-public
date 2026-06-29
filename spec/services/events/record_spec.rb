@@ -2951,4 +2951,33 @@ RSpec.describe Events::Record do
       end
     end
   end
+
+  describe ".record_school_merged_event!" do
+    let(:old_gias_school) { FactoryBot.create(:gias_school, :with_school, name: "Springfield Elementary", urn: "123456") }
+    let(:new_gias_school) { FactoryBot.create(:gias_school, :with_school, name: "Shelbyville Elementary", urn: "654321") }
+    let(:school) { new_gias_school.school }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        metadata = {
+          old_gias_school_name: "Springfield Elementary",
+          new_gias_school_name: "Shelbyville Elementary",
+          old_gias_school_urn: 123_456,
+          new_gias_school_urn: 654_321
+        }
+
+
+        Events::Record.record_school_merged_event!(author:, school:, old_gias_school:, new_gias_school:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          school:,
+          heading: "Springfield Elementary (123456) was merged into Shelbyville Elementary (654321) in GIAS",
+          event_type: :school_merged,
+          happened_at: Time.zone.now,
+          metadata:,
+          **author_params
+        )
+      end
+    end
+  end
 end

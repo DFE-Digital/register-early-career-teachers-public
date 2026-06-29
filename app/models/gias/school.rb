@@ -23,6 +23,7 @@ class GIAS::School < ApplicationRecord
 
   has_many :successor_links,   -> { where(link_type: GIAS::SchoolLink::SUCCESSOR_LINK_TYPES) },   class_name: "GIAS::SchoolLink", foreign_key: :urn, primary_key: :urn
   has_many :predecessor_links, -> { where(link_type: GIAS::SchoolLink::PREDECESSOR_LINK_TYPES) }, class_name: "GIAS::SchoolLink", foreign_key: :urn, primary_key: :urn
+  has_many :merger_link, -> { where(link_type: GIAS::SchoolLink::MERGE_LINK_TYPES) }, class_name: "GIAS::SchoolLink", foreign_key: :urn, primary_key: :urn
 
   has_many :successors, class_name: "GIAS::School", through: :successor_links, source: :to_gias_school
   has_many :predecessors, class_name: "GIAS::School", through: :predecessor_links, source: :from_gias_school
@@ -78,25 +79,42 @@ class GIAS::School < ApplicationRecord
   end
 
   def can_be_closed?
-    closed_status? && closed_on_or_before_today? && !school_closure_recorded? && successors.empty?
+    closed_status? &&
+      closed_on_or_before_today? &&
+      !school_closure_recorded? &&
+      successors.empty?
   end
 
   def can_be_opened?
-    open_status? && opened_on_or_before_today? && school_not_yet_opened? && predecessors.empty? && successors.empty?
+    open_status? &&
+      opened_on_or_before_today? &&
+      school_not_yet_opened? &&
+      predecessors.empty? &&
+      successors.empty?
   end
 
   def can_be_replaced?
     closed_status? &&
       closed_on_or_before_today? &&
-      successors.one? &&
-      successor.open_status? &&
-      successor.opened_on_or_before_today? &&
+      has_one_open_successor? &&
       successor.school_not_yet_opened? &&
       school_replaced?
   end
 
+  def can_be_merged?
+    closed_status? &&
+      closed_on_or_before_today? &&
+      has_one_open_successor? &&
+      successor.school_already_opened? &&
+      school_merged? 
+  end
+
   def school_not_yet_opened?
     school.blank?
+  end
+
+  def school_already_opened?
+    school.present?
   end
 
   def closed_on_or_before_today?
@@ -117,7 +135,17 @@ private
     Event.where(school:, event_type: :school_closed).exists?
   end
 
+  def has_one_open_successor?
+    successors.one? &&
+      successor.open_status? &&
+      successor.opened_on_or_before_today?
+  end
+
   def school_replaced?
     successor_links.where(link_type: GIAS::SchoolLink::SUCESSOR).exists?
+  end
+
+  def school_merged?
+    successor_links.where(link_type: GIAS::SchoolLink::SUCCESSOR_MERGED).exists?
   end
 end

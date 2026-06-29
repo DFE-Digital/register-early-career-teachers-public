@@ -27,6 +27,7 @@ class Event < ApplicationRecord
     school_opened
     school_closed
     school_changed
+    school_merged
     statement_adjustment_added
     statement_adjustment_deleted
     statement_adjustment_updated
