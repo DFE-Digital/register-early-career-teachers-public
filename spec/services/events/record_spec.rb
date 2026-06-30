@@ -2589,6 +2589,62 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe ".record_teacher_appropriate_body_changed!" do
+    let(:old_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Old AB") }
+    let(:new_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "New AB") }
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        Events::Record.record_teacher_appropriate_body_changed!(
+          ect_at_school_period:,
+          old_appropriate_body_period:,
+          new_appropriate_body_period:,
+          author:
+        )
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          hash_including(
+            ect_at_school_period:,
+            teacher: ect_at_school_period.teacher,
+            appropriate_body_period: new_appropriate_body_period,
+            heading: "Appropriate body changed from 'Old AB' to 'New AB'",
+            event_type: :teacher_appropriate_body_changed,
+            happened_at: Time.zone.now,
+            **author_params
+          )
+        )
+      end
+    end
+
+    context "when the teacher has no previous appropriate body" do
+      let(:old_appropriate_body_period) { nil }
+
+      it "queues a RecordEventJob with the correct values" do
+        freeze_time do
+          Events::Record.record_teacher_appropriate_body_changed!(
+            ect_at_school_period:,
+            old_appropriate_body_period:,
+            new_appropriate_body_period:,
+            author:
+          )
+
+          expect(RecordEventJob).to have_received(:perform_later).with(
+            hash_including(
+              ect_at_school_period:,
+              teacher:,
+              appropriate_body_period: new_appropriate_body_period,
+              heading: "Appropriate body changed from 'Not reported' to 'New AB'",
+              event_type: :teacher_appropriate_body_changed,
+              happened_at: Time.zone.now,
+              **author_params
+            )
+          )
+        end
+      end
+    end
+  end
+
   describe ".record_school_user_signs_in_event!" do
     let(:school) { FactoryBot.create(:school) }
     let(:school_user) do

@@ -1,0 +1,31 @@
+<% page_data(
+    title: "Appropriate body updated for #{@wizard.teacher_full_name}",
+    header: false
+) %>
+
+<%= govuk_panel(
+  title_text: <<~TXT.squish
+    You’ve chosen #{@wizard.current_step.new_appropriate_body_name} as
+    the new appropriate body for #{@wizard.teacher_full_name}
+  TXT
+) %>
+
+<h2 class="govuk-heading-m">
+  What happens next?
+</h2>
+
+<p class="govuk-body">
+  We’ll let <%= @wizard.current_step.new_appropriate_body_name %> know they’re now the appropriate body for <%= @wizard.teacher_full_name %>’s induction.
+</p>
+
+<p class="govuk-body">
+  They’ll contact us to confirm the change.
+</p>
+
+<p class="govuk-body">
+  <%= govuk_link_to(
+    "Back to #{@wizard.teacher_full_name}’s details",
+    schools_ect_path(@wizard.ect_at_school_period),
+    no_visited_state: true
+  ) %>
+</p>
