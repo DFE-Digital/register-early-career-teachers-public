@@ -276,6 +276,7 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
         let(:training_period) do
           FactoryBot.create(
             :training_period,
+            :provider_led,
             :ongoing,
             ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing)
           )
@@ -296,6 +297,7 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
           FactoryBot.create(
             :training_period,
             :for_mentor,
+            :provider_led,
             :ongoing,
             mentor_at_school_period: FactoryBot.create(:mentor_at_school_period, :ongoing)
           )
@@ -317,6 +319,7 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
       let(:training_period) do
         FactoryBot.create(
           :training_period,
+          :provider_led,
           :ongoing,
           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing)
         )
