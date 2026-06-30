@@ -1791,6 +1791,38 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe ".record_school_partnership_recreated_event!" do
+    let(:old_school_partnership) { FactoryBot.create(:school_partnership) }
+    let(:new_school_partnership) { FactoryBot.create(:school_partnership) }
+
+    before { allow(RecordEventJob).to receive(:perform_later) }
+
+    it "queues RecordEventJob with correct payload" do
+      freeze_time do
+        Events::Record.record_school_partnership_recreated_event!(
+          author:, old_school_partnership:, new_school_partnership: 
+        )
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          hash_including(
+            event_type: :school_partnership_reused,
+            school_partnership: new_school_partnership,
+            school: new_school_partnership.school,
+            lead_provider: new_school_partnership.lead_provider,
+            delivery_partner: new_school_partnership.delivery_partner,
+            
+            happened_at: Time.zone.now,
+            metadata: hash_including(
+              old_school_partnership:,
+              old_school: old_school_partnership.school,
+            ),
+            **author_params
+          )
+        )
+      end
+    end
+  end
+
   describe ".record_statement_adjustment_updated_event!" do
     let(:statement) { FactoryBot.create(:statement) }
     let(:statement_adjustment) { FactoryBot.create(:statement_adjustment, statement:) }
