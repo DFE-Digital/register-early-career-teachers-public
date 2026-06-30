@@ -1,5 +1,5 @@
 module SchoolPartnerships
-  class Move
+  class Recreate
     class SameSchoolError < StandardError; end
     attr_reader :school_partnership, :school, :author
 
@@ -21,11 +21,10 @@ module SchoolPartnerships
         )
 
         if new_school_partnership.previously_new_record?
-          Events::Record.record_school_partnership_moved_event!(
+          Events::Record.record_school_partnership_recreated_event!(
             author:,
             old_school_partnership: school_partnership,
             new_school_partnership:,
-            happened_at: Time.current
           )
         end
 
