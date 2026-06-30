@@ -785,6 +785,36 @@ module Events
       ).record_event!
     end
 
+    def self.record_school_partnership_recreated_event!(author:, old_school_partnership:, new_school_partnership:, happened_at: Time.zone.now)
+      event_type = :school_partnership_recreated
+
+      old_school = old_school_partnership.school
+      school = new_school_partnership.school
+      school_partnership = new_school_partnership
+      delivery_partner = new_school_partnership.delivery_partner
+      lead_provider = new_school_partnership.lead_provider
+      contract_period = new_school_partnership.contract_period
+
+      heading = "School partnership with #{lead_provider.name} and #{delivery_partner.name} in #{contract_period.year} at #{old_school.name} was recreated at #{school.name}."
+
+      metadata = {
+        old_school_partnership:,
+        old_school:
+      }
+
+      new(
+        event_type:,
+        author:,
+        heading:,
+        school_partnership:,
+        delivery_partner:,
+        school:,
+        lead_provider:,
+        happened_at:,
+        metadata:
+      ).record_event!
+    end
+
     def self.record_school_partnership_updated_event!(author:, school_partnership:, previous_delivery_partner:, modifications:)
       event_type = :school_partnership_updated
       school = school_partnership.school

@@ -20,6 +20,7 @@ class Event < ApplicationRecord
     school_partnership_created
     school_partnership_reused
     school_partnership_updated
+    school_partnership_recreated
     school_eligibility_changed
     school_user_signs_in
     school_induction_tutor_confirmed
