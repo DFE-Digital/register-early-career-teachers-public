@@ -1,0 +1,17 @@
+<% page_data(title: "Bands", breadcrumbs: @breadcrumbs) %>
+
+<p class="govuk-body">
+  Bands for <%= @active_lead_provider.lead_provider_name %> in the <%= @active_lead_provider.contract_period_year %> contract period.
+</p>
+
+<% if @bands.none? %>
+  <p class="govuk-body">No bands found</p>
+<% else %>
+  <p>Bands live here!!</p>
+<% end %>
+
+<% if bands_can_be_added? %>
+  <div class="govuk-!-text-align-right">
+    <%= govuk_button_link_to "Add band", "#" %>
+  </div>
+<% end %>
