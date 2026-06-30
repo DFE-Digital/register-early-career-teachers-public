@@ -12,22 +12,56 @@ def describe_mentorship_period(mp)
   print_seed_info("#{mentor_name} mentoring #{ect_name} at #{mp.mentor.school.gias_school.name}", indent: 2)
 end
 
-def populate_school(gias_school)
+def teacher(...) = TeacherHistories::TeacherBuilder.teacher(...)
+
+def populate_school(gias_school, counter = 0)
   school = gias_school.school
   closed_on = gias_school.closed_on || Date.current
-  mentors = FactoryBot.create_list(:mentor_at_school_period, 2, :ongoing, :with_training_period, school:)
-  mentees = FactoryBot.create_list(:ect_at_school_period, 2, :ongoing, :with_training_period, school:)
-  mentors << FactoryBot.create(:mentor_at_school_period, :with_training_period, school:, started_on: 1.week.from_now)
-  mentees << FactoryBot.create(:ect_at_school_period, :with_training_period, school:, started_on: 1.week.from_now)
 
+  rp2025 = ContractPeriod.find_by!(year: 2025)
+  rp2026 = ContractPeriod.find_by!(year: 2026)
+
+  lead_provider = LeadProvider.find_by!(name: "Ambition Institute")
+  delivery_partner = DeliveryPartner.find_by!(name: "Artisan Education Group")
+
+  [rp2025, rp2026].each do |contract_period|
+    active_lead_provider = ActiveLeadProvider.find_by!(lead_provider:, contract_period:)
+    lead_provider_delivery_partnership = LeadProviderDeliveryPartnership.find_or_create_by!(active_lead_provider:, delivery_partner:)
+    SchoolPartnership.find_or_create_by!(school:, lead_provider_delivery_partnership:)
+  end
+
+  start_dates = ["2025-09-05", "2025-12-05", 1.week.from_now.to_date.to_s]
+  contract_periods = [2025, 2025, 2026]
   finished_dates = [closed_on - 1.day, nil, nil]
-  (0..2).each do |i|
-    mentee = mentees[i]
-    mentor = mentors[i]
+
+  mentees = []
+  mentors = []
+
+  2.times do |i|
+    start_date = start_dates[i]
+    contract_period = contract_periods[i]
+    mentees << teacher(9_000_000 + counter, "Teacher #{counter += 1}") do
+      ect_at_school_period(school, start_date) do
+        training_period(lead_provider, contract_period, start_date)
+      end
+    end
+
+    mentors << teacher(9_000_000 + counter, "Teacher #{counter += 1}") do
+      mentor_at_school_period(school, start_date) do
+        training_period(lead_provider, contract_period, start_date)
+      end
+    end
+  end
+
+  (0..1).each do |i|
+    mentee = mentees[i].ect_at_school_periods.first
+    mentor = mentors[i].mentor_at_school_periods.first
     finished_on = finished_dates[i]
 
     create_mentorship(mentee:, mentor:, finished_on:)
   end
+
+  counter
 end
 
 def create_mentorship(mentee:, mentor:, finished_on:)
@@ -72,9 +106,11 @@ open_school = FactoryBot.create(:gias_school, status: :open, opened_on: Date.new
   describe_school(school)
 end
 
-populate_school(closed_school)
-populate_school(monsters_college)
-populate_school(primary_school)
+counter = 0
+
+counter = populate_school(closed_school, counter)
+counter = populate_school(monsters_college, counter)
+populate_school(primary_school, counter)
 
 print_seed_info("\n🌱 Closures:")
 print_seed_info("🔒 #{Colourize.text(closed_school.name, :yellow)} (URN: #{Colourize.text(closed_school.urn, :yellow)}) closed on #{Colourize.text(closed_school.closed_on, :yellow)}", indent: 2)
