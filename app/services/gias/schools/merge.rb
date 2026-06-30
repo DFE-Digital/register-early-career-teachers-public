@@ -19,7 +19,6 @@ module GIAS
 
       def merge_school!
         ActiveRecord::Base.transaction do
-          move_unstarted_mentorship_periods!
           move_unstarted_periods!
           split_ongoing_periods!
   
@@ -28,13 +27,34 @@ module GIAS
         end
       end
 
-      def move_unstarted_mentorship_periods!
-      end
-
       def move_unstarted_periods!
       end
 
       def split_ongoing_periods!
+      end
+
+      def recreate_confirmed_partnerships!
+        partnerships_to_recreate.each do |school_partnership|
+          SchoolPartnerships::Move(school_partnership:, new_school:, author:).call!
+        end
+      end
+
+      def move_unstarted_periods!
+        mentor_at_school_periods.started_after(closed_on).each do |mentor_at_school_period|
+          mentor_at_school_period.update!(school: new_school)
+        end
+  
+        ect_at_school_periods.started_after(closed_on).each do |ect_at_school_period|
+          ect_at_school_period.update!(school: new_school)
+        end
+      end
+
+      def ongoing_periods
+        mentor_at_school_periods.ongoing_on(closed_on) + ect_at_school_periods.ongoing_on(closed_on)
+      end
+
+      def partnerships_to_recreate
+        ongoing_periods.school_partnerships.distinct
       end
 
       def record_school_merged_event!
@@ -48,6 +68,10 @@ module GIAS
 
       def author
         Events::SystemAuthor.new
+      end
+
+      def new_school
+        gias_school.successor.school
       end
     end
   end
