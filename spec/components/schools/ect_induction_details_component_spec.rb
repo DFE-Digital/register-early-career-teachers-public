@@ -77,76 +77,80 @@ RSpec.describe Schools::ECTInductionDetailsComponent, type: :component do
     end
   end
 
-  context "when the teacher does not have an ongoing induction period" do
-    it "renders the change link for the appropriate body" do
-      expect(page).to have_link("Change", href: schools_ects_change_appropriate_body_wizard_edit_path(ect_id: ect.id))
+  describe "change appropriate body link" do
+    context "when the teacher does not have an ongoing induction period" do
+      it "renders the change link for the appropriate body" do
+        expect(page).to have_link("Change", href: schools_ects_change_appropriate_body_wizard_edit_path(ect_id: ect.id))
+      end
+    end
+
+    context "when the teacher has an ongoing induction period" do
+      before do
+        FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:)
+        teacher.reload
+        render_inline(described_class.new(ect))
+      end
+
+      it "does not render the change link for the appropriate body" do
+        expect(page).not_to have_link("Change")
+      end
+    end
+
+    context "when the teacher has a finished induction period" do
+      before do
+        FactoryBot.create(:induction_period, teacher:, appropriate_body_period:)
+        teacher.reload
+        render_inline(described_class.new(ect))
+      end
+
+      it "renders the change link for the appropriate body" do
+        expect(page).to have_link("Change", href: schools_ects_change_appropriate_body_wizard_edit_path(ect_id: ect.id))
+      end
     end
   end
 
-  context "when the teacher has an ongoing induction period" do
-    before do
-      FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:)
-      teacher.reload
-      render_inline(described_class.new(ect))
+  describe "appropriate body status" do
+    context "when the school reported appropriate body has not claimed the induction" do
+      it "shows the awaiting confirmation hint" do
+        expect(page).to have_selector(".govuk-summary-list__value", text: "Alpha Teaching School Hub")
+        expect(page).to have_text(awaiting_confirmation_hint)
+        expect(page).not_to have_text(confirmed_hint)
+      end
     end
 
-    it "does not render the change link for the appropriate body" do
-      expect(page).not_to have_link("Change")
-    end
-  end
+    context "when the school reported appropriate body has claimed the induction" do
+      let!(:induction_period) do
+        FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:, started_on: Date.new(2023, 9, 1))
+      end
 
-  context "when the teacher has a finished induction period" do
-    before do
-      FactoryBot.create(:induction_period, teacher:, appropriate_body_period:)
-      teacher.reload
-      render_inline(described_class.new(ect))
-    end
+      before do
+        teacher.reload
+        render_inline(described_class.new(ect))
+      end
 
-    it "renders the change link for the appropriate body" do
-      expect(page).to have_link("Change", href: schools_ects_change_appropriate_body_wizard_edit_path(ect_id: ect.id))
-    end
-  end
-
-  context "when the school reported appropriate body has not claimed the induction" do
-    it "shows the awaiting confirmation hint" do
-      expect(page).to have_selector(".govuk-summary-list__value", text: "Alpha Teaching School Hub")
-      expect(page).to have_text(awaiting_confirmation_hint)
-      expect(page).not_to have_text(confirmed_hint)
-    end
-  end
-
-  context "when the school reported appropriate body has claimed the induction" do
-    let!(:induction_period) do
-      FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:, started_on: Date.new(2023, 9, 1))
+      it "shows the confirmed hint" do
+        expect(page).to have_selector(".govuk-summary-list__value", text: "Alpha Teaching School Hub")
+        expect(page).to have_text(confirmed_hint)
+        expect(page).not_to have_text(awaiting_confirmation_hint)
+      end
     end
 
-    before do
-      teacher.reload
-      render_inline(described_class.new(ect))
-    end
+    context "when an appropriate body other than the one the school reported has claimed the induction" do
+      let(:other_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Beta Teaching School Hub") }
+      let!(:induction_period) do
+        FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period: other_appropriate_body_period, started_on: Date.new(2023, 9, 1))
+      end
 
-    it "shows the confirmed hint" do
-      expect(page).to have_selector(".govuk-summary-list__value", text: "Alpha Teaching School Hub")
-      expect(page).to have_text(confirmed_hint)
-      expect(page).not_to have_text(awaiting_confirmation_hint)
-    end
-  end
+      before do
+        teacher.reload
+        render_inline(described_class.new(ect))
+      end
 
-  context "when an appropriate body other than the one the school reported has claimed the induction" do
-    let(:other_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Beta Teaching School Hub") }
-    let!(:induction_period) do
-      FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period: other_appropriate_body_period, started_on: Date.new(2023, 9, 1))
-    end
-
-    before do
-      teacher.reload
-      render_inline(described_class.new(ect))
-    end
-
-    it "still shows the awaiting confirmation hint for the school reported appropriate body" do
-      expect(page).to have_selector(".govuk-summary-list__value", text: "Alpha Teaching School Hub")
-      expect(page).to have_text(awaiting_confirmation_hint)
-      expect(page).not_to have_text(confirmed_hint)
+      it "still shows the awaiting confirmation hint for the school reported appropriate body" do
+        expect(page).to have_selector(".govuk-summary-list__value", text: "Alpha Teaching School Hub")
+        expect(page).to have_text(awaiting_confirmation_hint)
+        expect(page).not_to have_text(confirmed_hint)
+      end
     end
   end
 end
