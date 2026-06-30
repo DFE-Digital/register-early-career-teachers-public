@@ -765,23 +765,17 @@ module Events
     def self.record_school_partnership_recreated_event!(author:, old_school_partnership:, new_school_partnership:, happened_at: Time.zone.now)
       event_type = :school_partnership_recreated
 
-      
-      
-      old_school          = old_school_partnership.school
-      school          = new_school_partnership.school
+      old_school = old_school_partnership.school
+      school = new_school_partnership.school
       school_partnership  = new_school_partnership
       delivery_partner    = new_school_partnership.delivery_partner
       lead_provider       = new_school_partnership.lead_provider
       contract_period     = new_school_partnership.contract_period
 
-      old_name = "#{old_school.name} partnered with #{old_school_partnership.delivery_partner.name} (via #{old_school_partnership.lead_provider.name}) for #{old_school_partnership.contract_period.year}"
-      new_name = "#{school.name} partnered with #{new_school_partnership.delivery_partner.name} (via #{new_school_partnership.lead_provider.name}) for #{new_school_partnership.contract_period.year}"
-
-      heading = TransitionDescription.for("appropriate body", from: old_name, to: new_name)
-
+      heading = "School partnership with #{lead_provider.name} and #{delivery_partner.name} in #{contract_period.year} at #{old_school.name} was recreated at #{school.name}."
 
       metadata = {
-        old_school_partnership: ,
+        old_school_partnership:,
         old_school: old_school_partnership.school
       }
 

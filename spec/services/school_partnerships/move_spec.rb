@@ -1,5 +1,3 @@
-require "rails_helper"
-
 RSpec.describe SchoolPartnerships::Move do
   subject(:move_school_partnership) do
     described_class.new(
@@ -16,7 +14,7 @@ RSpec.describe SchoolPartnerships::Move do
     FactorBot.create(:lead_provider_delivery_partnership)
   end
   let(:school_partnership) do
-    FactorBot.create(:school_partnership, :with_active_lead_provider, school: old_school, lead_provider_delivery_partnership: )
+    FactorBot.create(:school_partnership, :with_active_lead_provider, school: old_school, lead_provider_delivery_partnership:)
   end
 
   before do

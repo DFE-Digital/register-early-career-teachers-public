@@ -16,9 +16,9 @@ module SchoolPartnerships
 
       ActiveRecord::Base.transaction do
         new_school_partnership = SchoolPartnership.find_or_create_by(
-            school:,
-            lead_provider_delivery_partnership:
-          )
+          school:,
+          lead_provider_delivery_partnership:
+        )
 
         if new_school_partnership.previously_new_record?
           Events::Record.record_school_partnership_moved_event!(
@@ -32,7 +32,7 @@ module SchoolPartnerships
         new_school_partnership
       end
     end
-    private
+
     delegate :lead_provider_delivery_partnership, to: :school_partnership
   end
 end
