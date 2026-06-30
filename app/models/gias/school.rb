@@ -106,7 +106,7 @@ class GIAS::School < ApplicationRecord
       closed_on_or_before_today? &&
       has_one_open_successor? &&
       successor.school_already_opened? &&
-      school_merged? 
+      school_merged?
   end
 
   def school_not_yet_opened?

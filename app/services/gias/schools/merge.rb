@@ -21,13 +21,9 @@ module GIAS
         ActiveRecord::Base.transaction do
           move_unstarted_periods!
           split_ongoing_periods!
-  
-          
+
           record_school_merged_event!
         end
-      end
-
-      def move_unstarted_periods!
       end
 
       def split_ongoing_periods!
@@ -43,7 +39,7 @@ module GIAS
         mentor_at_school_periods.started_after(closed_on).each do |mentor_at_school_period|
           mentor_at_school_period.update!(school: new_school)
         end
-  
+
         ect_at_school_periods.started_after(closed_on).each do |ect_at_school_period|
           ect_at_school_period.update!(school: new_school)
         end
