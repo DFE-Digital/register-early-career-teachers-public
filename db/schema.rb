@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_22_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_29_150700) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -424,7 +424,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_22_120000) do
     t.index ["appropriate_body_period_id"], name: "index_induction_periods_on_appropriate_body_period_id"
     t.index ["teacher_id"], name: "index_induction_periods_on_teacher_id"
     t.index ["teacher_id"], name: "index_induction_periods_one_outcome_per_teacher", unique: true, where: "(outcome IS NOT NULL)"
-    t.check_constraint "finished_on > started_on", name: "period_length_greater_than_zero"
+    t.check_constraint "finished_on >= started_on", name: "finished_on_not_before_started_on"
   end
 
   create_table "lead_provider_delivery_partnerships", force: :cascade do |t|
