@@ -58,11 +58,19 @@ RSpec.describe ActiveLeadProviders::SeedFromPrevious do
           expect(new_contract.banded_fee_structure).not_to eq(previous_contract.banded_fee_structure)
         end
 
-        it "builds terms for the new banded_fee_structure" do
+        it "builds terms for the new banded_fee_structure, based on the previous" do
           band_term_attributes = %i[fee_per_declaration output_fee_ratio service_fee_ratio]
           expect(new_contract.banded_fee_structure.band_terms.map { |t| t.slice(*band_term_attributes) })
-            .to match_array(previous_contract.banded_fee_structure.band_terms.map { |t| t.slice(*band_term_attributes) })
+          .to match_array(previous_contract.banded_fee_structure.band_terms.map { |t| t.slice(*band_term_attributes) })
           expect(new_contract.banded_fee_structure.band_terms).not_to include(*previous_contract.banded_fee_structure.band_terms)
+        end
+
+        it "builds bands for the new banded_fee_structure, based on the previous" do
+          band_attributes = %i[allocation_order capacity]
+          expect(new_contract.banded_fee_structure.bands.map { |t| t.slice(*band_attributes) })
+            .to match_array(previous_contract.banded_fee_structure.bands.map { |t| t.slice(*band_attributes) })
+          expect(new_contract.banded_fee_structure.bands).not_to include(*previous_contract.banded_fee_structure.bands)
+          expect(new_contract.banded_fee_structure.bands.first.active_lead_provider.lead_provider).to eq(previous_contract.banded_fee_structure.bands.first.active_lead_provider.lead_provider)
         end
 
         it "builds a new flat_rate_fee_structure for the new contract, based on the previous" do
