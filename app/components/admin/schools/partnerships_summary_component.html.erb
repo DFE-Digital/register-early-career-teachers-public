@@ -4,7 +4,7 @@
 
     <% school_partnerships_by_year[year].each do |school_partnership| %>
       <%= govuk_summary_card(title: school_partnership_title(school_partnership)) do |card| %>
-        <%= card.with_summary_list do |list| %>
+        <%= card.with_summary_list(actions: false) do |list| %>
           <% list.with_row do |row| %>
             <% row.with_key(text: "Lead provider") %>
             <% row.with_value(text: school_partnership.lead_provider.name) %>
