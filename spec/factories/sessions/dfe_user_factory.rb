@@ -8,7 +8,7 @@ FactoryBot.define do
       new(email:)
     end
 
-    sequence(:email) { |n| "admin.user.#{n}@example.com" }
+    sequence(:email) { |n| "admin.user.#{n}@education.gov.uk" }
     sequence(:name) { |n| "Admin User #{n}" }
 
     role { User::ROLES.keys.sample.to_s }

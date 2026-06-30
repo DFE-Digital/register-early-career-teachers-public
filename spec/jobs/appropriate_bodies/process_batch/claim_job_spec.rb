@@ -5,7 +5,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::ClaimJob, type: :job do
 
   include_context "test TRS API returns a teacher"
 
-  let(:author) { FactoryBot.create(:user, name: "Barry Cryer", email: "barry@not-a-clue.co.uk") }
+  let(:author) { FactoryBot.create(:user, name: "Barry Cryer", email: "barry.cryer@education.gov.uk") }
 
   let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let(:pending_induction_submission_batch) do

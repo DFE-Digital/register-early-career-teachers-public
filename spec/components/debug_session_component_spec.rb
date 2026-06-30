@@ -42,7 +42,7 @@ RSpec.describe DebugSessionComponent, type: :component do
         expect(rendered_content).to have_text("Type")
         expect(rendered_content).to have_text("Sessions::Users::DfEUser")
         expect(rendered_content).to have_text("Email")
-        expect(rendered_content).to have_text("@example.com")
+        expect(rendered_content).to have_text(current_user.email)
         expect(rendered_content).to have_text("Last active at")
         expect(rendered_content).to have_text("1999-01-01 00:00:01 +0100")
         expect(rendered_content).to have_text("Role")
