@@ -23,24 +23,22 @@ module Schools
     end
 
     def appropriate_body_row
-      return appropriate_body_without_change_link_row unless can_change_appropriate_body?
+      {
+        key: { text: "Appropriate body" },
+        value: { text: appropriate_body_text },
+        actions: [change_appropriate_body_link].compact
+      }
+    end
 
-      change_link = { actions: [{
+    def change_appropriate_body_link
+      return unless @ect.teacher.ongoing_induction_period.nil?
+
+      {
         text: "Change",
         visually_hidden_text: "appropriate body",
         href: change_appropriate_body_path,
         classes: "govuk-link--no-visited-state"
-      }] }
-
-      appropriate_body_without_change_link_row.merge(change_link)
-    end
-
-    def appropriate_body_without_change_link_row
-      { key: { text: "Appropriate body" }, value: { text: appropriate_body_text } }
-    end
-
-    def can_change_appropriate_body?
-      @ect.teacher.ongoing_induction_period.nil?
+      }
     end
 
     def induction_start_date_row
