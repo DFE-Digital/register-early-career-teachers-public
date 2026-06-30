@@ -61,7 +61,7 @@ module Admin
 
         return declaration_type_label if calculator.flat_rate?
 
-        "#{declaration_type_label} (Band #{declaration_type_output.band_term.band.letter})"
+        "#{declaration_type_label} (Band #{declaration_type_output.band_term.letter})"
       end
 
       delegate :number_to_pounds, to: :helpers

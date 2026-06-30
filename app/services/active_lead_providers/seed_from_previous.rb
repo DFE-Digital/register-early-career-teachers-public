@@ -96,7 +96,7 @@ private
     new_fee_structure = previous_fee_structure.dup
 
     previous_fee_structure.band_terms.each do |previous_term|
-      new_band = active_lead_provider.bands.create!(capacity: previous_term.band.capacity)
+      new_band = active_lead_provider.bands.create!(capacity: previous_term.capacity)
       new_fee_structure.band_terms.build(
         band: new_band,
         fee_per_declaration: previous_term.fee_per_declaration,
