@@ -122,7 +122,6 @@ private
     )
     @training_period = FactoryBot.create(
       :training_period,
-      :ongoing,
       :with_only_expression_of_interest,
       ect_at_school_period: @ect_at_school_period,
       expression_of_interest: current_active_lead_provider,
