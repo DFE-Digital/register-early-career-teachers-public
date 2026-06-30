@@ -11,7 +11,7 @@ module Statements
       statement.fee_type = FeeTypeForMonth.new(month: statement.month).call
 
       ActiveRecord::Base.transaction do
-        statement.save!
+        statement.save!(context: :service_create)
         Events::Record.record_statement_created_event!(author:, statement:)
       end
 

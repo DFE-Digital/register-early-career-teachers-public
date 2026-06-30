@@ -14,8 +14,8 @@ describe Statements::Create do
       contract_id: contract.id,
       month: 11,
       year: contract_period.year,
-      deadline_date: Date.new(contract_period.year, 11, 1),
-      payment_date: Date.new(contract_period.year, 12, 25)
+      deadline_date: Date.new(contract_period.year + 1, 11, 1),
+      payment_date: Date.new(contract_period.year + 1, 12, 25)
     }
   end
 
@@ -49,6 +49,15 @@ describe Statements::Create do
 
   context "when the statement is invalid" do
     let(:params) { super().merge(month: 99) }
+
+    it "raises ActiveRecord::RecordInvalid and does not create a statement" do
+      expect { subject.call }.to raise_error(ActiveRecord::RecordInvalid)
+      expect(Statement.count).to eq(0)
+    end
+  end
+
+  context "when the deadline date is in the past" do
+    let(:params) { super().merge(deadline_date: Date.yesterday) }
 
     it "raises ActiveRecord::RecordInvalid and does not create a statement" do
       expect { subject.call }.to raise_error(ActiveRecord::RecordInvalid)
