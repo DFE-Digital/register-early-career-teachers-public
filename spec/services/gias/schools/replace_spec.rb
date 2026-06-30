@@ -34,6 +34,56 @@ RSpec.describe GIAS::Schools::Replace do
 
         subject
       end
+
+      context "when there are ECTs at the school" do
+        let!(:old_school_name) { Schools::Name.new(gias_school.school).name_and_urn }
+
+        before do
+          FactoryBot.create_list(:ect_at_school_period, 2, school: gias_school.school)
+        end
+
+        it "records an event for each ECT moved" do
+          allow(Events::Record).to receive(:record_teacher_ect_at_school_period_moved_school!)
+
+          subject
+
+          gias_school.school.ect_at_school_periods.each do |ect|
+            expect(Events::Record).to have_received(:record_teacher_ect_at_school_period_moved_school!).with(
+              teacher: ect.teacher,
+              ect_at_school_period: ect,
+              new_school: successor_gias_school.school,
+              old_school_name:,
+              happened_at: successor_gias_school.opened_on,
+              author: an_instance_of(Events::SystemAuthor)
+            ).once
+          end
+        end
+      end
+
+      context "when there are Mentors at the school" do
+        let!(:old_school_name) { Schools::Name.new(gias_school.school).name_and_urn }
+
+        before do
+          FactoryBot.create_list(:mentor_at_school_period, 2, school: gias_school.school)
+        end
+
+        it "records an event for each Mentor moved" do
+          allow(Events::Record).to receive(:record_teacher_mentor_at_school_period_moved_school!)
+
+          subject
+
+          gias_school.school.mentor_at_school_periods.each do |mentor|
+            expect(Events::Record).to have_received(:record_teacher_mentor_at_school_period_moved_school!).with(
+              teacher: mentor.teacher,
+              mentor_at_school_period: mentor,
+              new_school: successor_gias_school.school,
+              old_school_name:,
+              happened_at: successor_gias_school.opened_on,
+              author: an_instance_of(Events::SystemAuthor)
+            ).once
+          end
+        end
+      end
     end
 
     context "when the school is cannot be replaced" do
@@ -46,11 +96,33 @@ RSpec.describe GIAS::Schools::Replace do
       end
 
       it "does not record a school changed event" do
-        allow(Events::Record).to receive(:record_school_changed_event!)
+        expect(Events::Record).not_to receive(:record_school_changed_event!)
 
         subject
+      end
 
-        expect(Events::Record).not_to have_received(:record_school_changed_event!)
+      context "when there are ECTs at the school" do
+        before do
+          FactoryBot.create_list(:ect_at_school_period, 2, school: gias_school.school)
+        end
+
+        it "does not record an event for each ECT moved" do
+          expect(Events::Record).not_to receive(:record_teacher_ect_at_school_period_moved_school!)
+
+          subject
+        end
+      end
+
+      context "when there are Mentors at the school" do
+        before do
+          FactoryBot.create_list(:mentor_at_school_period, 2, school: gias_school.school)
+        end
+
+        it "does not record an event for each Mentor moved" do
+          expect(Events::Record).not_to receive(:record_teacher_mentor_at_school_period_moved_school!)
+
+          subject
+        end
       end
     end
   end

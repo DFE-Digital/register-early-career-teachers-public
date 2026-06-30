@@ -853,6 +853,67 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe ".record_teacher_ect_at_school_period_moved!" do
+    let(:old_gias_school) { FactoryBot.create(:gias_school, :with_school, urn: "1234567", name: "Monsters Junior School") }
+    let(:new_gias_school) { FactoryBot.create(:gias_school, :with_school, urn: "7654321", name: "James P. Sullivan High School") }
+    let(:old_school) { old_gias_school.school }
+    let(:new_school) { new_gias_school.school }
+    let(:old_school_name) { Schools::Name.new(old_school).name_and_urn }
+
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, school: old_school) }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        Events::Record.record_teacher_ect_at_school_period_moved_school!(author:, teacher:, ect_at_school_period:, old_school_name:, new_school:)
+
+        metadata = { old_school_name: }
+
+        heading = "Rhys Ifans's ECT at school period at Monsters Junior School (1234567) was moved to James P. Sullivan High School (7654321)"
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          teacher:,
+          ect_at_school_period:,
+          school: new_school,
+          metadata:,
+          heading:,
+          event_type: :teacher_ect_at_school_period_moved_school,
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      end
+    end
+  end
+
+  describe ".record_teacher_mentor_at_school_period_moved!" do
+    let(:old_gias_school) { FactoryBot.create(:gias_school, :with_school, urn: "1234567", name: "Monsters College") }
+    let(:new_gias_school) { FactoryBot.create(:gias_school, :with_school, urn: "7654321", name: "Abigail Hardscrabble High School for Girls") }
+    let(:old_school) { old_gias_school.school }
+    let(:new_school) { new_gias_school.school }
+    let(:old_school_name) { Schools::Name.new(old_school).name_and_urn }
+
+    let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school: old_school) }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        Events::Record.record_teacher_mentor_at_school_period_moved_school!(author:, teacher:, mentor_at_school_period:, old_school_name:, new_school:)
+
+        metadata = { old_school_name: }
+        heading = "Rhys Ifans's Mentor at school period at Monsters College (1234567) was moved to Abigail Hardscrabble High School for Girls (7654321)"
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          teacher:,
+          mentor_at_school_period:,
+          school: new_school,
+          metadata:,
+          heading:,
+          event_type: :teacher_mentor_at_school_period_moved_school,
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      end
+    end
+  end
+
   describe ".record_teacher_starts_training_period_event" do
     let(:started_on) { Date.new(2023, 7, 20) }
     let(:started_on_param) { { started_on: } }
