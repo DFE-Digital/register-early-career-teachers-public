@@ -33,10 +33,10 @@ RSpec.describe "Sessions", type: :request do
   end
 
   describe "POST /auth/:provider/callback" do
-    let(:email) { Faker::Internet.email }
     let(:first_name) { Faker::Name.first_name }
     let(:last_name) { Faker::Name.last_name }
     let(:name) { [first_name, last_name].join(" ").strip }
+    let(:email) { "#{name.parameterize}@education.gov.uk" }
     let(:dfe_sign_in_organisation_name) { Faker::Company.name }
     let(:dfe_sign_in_organisation_id) { Faker::Internet.uuid }
     let(:dfe_sign_in_user_id) { Faker::Internet.uuid }
