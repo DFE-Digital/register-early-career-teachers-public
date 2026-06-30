@@ -183,7 +183,7 @@ module Admin
       end
 
       def contract_period_change_action
-        return unless change_contract_period_eligible?
+        return unless finance_user_can_change_contract_period?
 
         {
           text: "Change",
@@ -197,6 +197,10 @@ module Admin
         @change_contract_period_eligible ||= Admin::Teachers::TrainingPeriods::ChangeContractPeriod::Eligibility
           .new(training_period:)
           .eligible?
+      end
+
+      def finance_user_can_change_contract_period?
+        Current.user&.finance_access? && change_contract_period_eligible?
       end
 
       def summary_row(label, value, action: nil)

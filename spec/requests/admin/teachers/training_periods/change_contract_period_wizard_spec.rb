@@ -1,5 +1,5 @@
 RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardController", type: :request do
-  include_context "sign in as DfE user"
+  include_context "sign in as finance DfE user"
   include HaveSummaryListRow
 
   let(:today) { Date.new(2026, 2, 1) }
@@ -542,6 +542,62 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
 
           expect(training_period.school_partnership).to be_nil
           expect(training_period.expression_of_interest).to eq(target_active_lead_provider)
+        end
+      end
+    end
+  end
+
+  describe "authorisation" do
+    let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
+    let(:school_partnership) do
+      FactoryBot.create(
+        :school_partnership,
+        :for_year,
+        year: contract_period.year,
+        school:
+      )
+    end
+    let(:schedule) { FactoryBot.create(:schedule, contract_period:) }
+
+    describe "GET select-contract-period" do
+      context "when signed in as a non finance DfE user" do
+        include_context "sign in as DfE user"
+
+        before do
+          get path_for_step("select-contract-period")
+        end
+
+        it "returns unauthorized" do
+          expect(response).to have_http_status(:unauthorized)
+        end
+
+        it "renders the finance access error message" do
+          expect(response.body).to include(
+            "This is to access financial information for Register early career teachers. To gain access, contact the product team."
+          )
+        end
+      end
+    end
+
+    describe "POST select-contract-period" do
+      context "when signed in as a non-finance DfE user" do
+        include_context "sign in as DfE user"
+
+        before do
+          post(
+            path_for_step("select-contract-period"),
+            params: { select_contract_period: { contract_period_year: "" } }
+          )
+        end
+
+        it "returns unauthorized" do
+          expect(response).to have_http_status(:unauthorized)
+        end
+
+        it "renders the finance access error message" do
+          expect(response.body).to include(
+            "This is to access financial information for Register early career teachers. To gain access, contact the product team."
+          )
         end
       end
     end

@@ -8,7 +8,7 @@ describe "Admin changes a teacher's contract period" do
     and_there_is_a_teacher
     and_there_are_contract_periods_and_schedules
     and_there_is_a_current_active_provider_led_training_period
-    and_i_am_logged_in_as_an_admin
+    and_i_am_logged_in_as_a_finance_user
 
     when_i_visit_the_training_tab
     then_i_can_start_the_contract_period_change_journey
@@ -30,7 +30,7 @@ describe "Admin changes a teacher's contract period" do
     and_there_is_a_teacher
     and_there_are_contract_periods_and_schedules
     and_there_is_a_future_starting_eoi_only_training_period
-    and_i_am_logged_in_as_an_admin
+    and_i_am_logged_in_as_a_finance_user
 
     when_i_visit_the_training_tab
     then_i_can_start_the_contract_period_change_journey
@@ -134,8 +134,8 @@ private
     @original_training_period_count = TrainingPeriod.where(ect_at_school_period: @ect_at_school_period).count
   end
 
-  def and_i_am_logged_in_as_an_admin
-    sign_in_as_dfe_user(role: :admin)
+  def and_i_am_logged_in_as_a_finance_user
+    sign_in_as_dfe_user(role: :finance)
   end
 
   def when_i_visit_the_training_tab

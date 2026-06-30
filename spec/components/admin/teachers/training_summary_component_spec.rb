@@ -3,6 +3,12 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
 
   subject(:rendered) { render_inline(described_class.new(training_period:, show_api_row: true)) }
 
+  let(:current_user) { FactoryBot.build_stubbed(:user, :finance) }
+
+  before do
+    allow(Current).to receive(:user).and_return(current_user)
+  end
+
   describe "provider-led training periods" do
     let(:teacher) { metadata.teacher }
 
@@ -265,7 +271,49 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
   end
 
   describe "contract period change link" do
-    context "when the training period is an eligible ECT period" do
+    context "when the user has finance access and the training period is eligible" do
+      context "when the training period is an eligible ECT period" do
+        let(:training_period) do
+          FactoryBot.create(
+            :training_period,
+            :ongoing,
+            ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing)
+          )
+        end
+
+        before { rendered }
+
+        it "shows a change link for the contract period row" do
+          expect(rendered_content).to have_link(
+            "Change",
+            href: admin_teacher_training_period_change_contract_period_wizard_select_contract_period_path(training_period.teacher.id, training_period.id)
+          )
+        end
+      end
+
+      context "when the training period is an eligible mentor period" do
+        let(:training_period) do
+          FactoryBot.create(
+            :training_period,
+            :for_mentor,
+            :ongoing,
+            mentor_at_school_period: FactoryBot.create(:mentor_at_school_period, :ongoing)
+          )
+        end
+
+        before { rendered }
+
+        it "shows a change link for the contract period row" do
+          expect(rendered_content).to have_link(
+            "Change",
+            href: admin_teacher_training_period_change_contract_period_wizard_select_contract_period_path(training_period.teacher.id, training_period.id)
+          )
+        end
+      end
+    end
+
+    context "when the user does not have finance access" do
+      let(:current_user) { FactoryBot.build_stubbed(:user, :admin) }
       let(:training_period) do
         FactoryBot.create(
           :training_period,
@@ -276,31 +324,8 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
 
       before { rendered }
 
-      it "shows a change link for the contract period row" do
-        expect(rendered_content).to have_link(
-          "Change",
-          href: admin_teacher_training_period_change_contract_period_wizard_select_contract_period_path(training_period.teacher.id, training_period.id)
-        )
-      end
-    end
-
-    context "when the training period is an eligible mentor period" do
-      let(:training_period) do
-        FactoryBot.create(
-          :training_period,
-          :for_mentor,
-          :ongoing,
-          mentor_at_school_period: FactoryBot.create(:mentor_at_school_period, :ongoing)
-        )
-      end
-
-      before { rendered }
-
-      it "shows a change link for the contract period row" do
-        expect(rendered_content).to have_link(
-          "Change",
-          href: admin_teacher_training_period_change_contract_period_wizard_select_contract_period_path(training_period.teacher.id, training_period.id)
-        )
+      it "does not show a change link for the contract period row" do
+        expect(rendered_content).not_to have_link("Change")
       end
     end
 

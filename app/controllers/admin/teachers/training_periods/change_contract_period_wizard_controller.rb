@@ -8,6 +8,7 @@ module Admin
 
         include WizardStoreRescuable
 
+        before_action :authorise_finance
         before_action :set_teacher
         before_action :set_training_period
         before_action :ensure_changeable_training_period
@@ -36,6 +37,13 @@ module Admin
 
         def set_teacher
           @teacher = Teacher.find(params[:teacher_id])
+        end
+
+        def authorise_finance
+          return if current_user&.finance_access?
+
+          @unauthorised_context = :finance
+          render "errors/unauthorised", status: :unauthorized
         end
 
         def set_training_period
