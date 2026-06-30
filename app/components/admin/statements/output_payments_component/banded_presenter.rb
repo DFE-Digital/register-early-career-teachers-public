@@ -5,7 +5,7 @@ module Admin
         def caption_text = "Early career teacher (ECT) output payments"
         def total_label = "ECTs output payment total"
         def fee_label = "Fee per ECT"
-        def columns = band_terms.map { "Band #{it.band.letter}" }
+        def columns = band_terms.map { "Band #{it.letter}" }
 
         def row_pairs
           grouped_outputs.map { |display_type, outputs| row_pair(display_type, outputs) }
