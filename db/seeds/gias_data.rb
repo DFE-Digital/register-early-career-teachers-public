@@ -37,7 +37,7 @@ def populate_school(gias_school, counter = 0)
   mentees = []
   mentors = []
 
-  2.times do |i|
+  3.times do |i|
     start_date = start_dates[i]
     contract_period = contract_periods[i]
     mentees << teacher(9_000_000 + counter, "Teacher #{counter += 1}") do
@@ -53,7 +53,7 @@ def populate_school(gias_school, counter = 0)
     end
   end
 
-  (0..1).each do |i|
+  (0..2).each do |i|
     mentee = mentees[i].ect_at_school_periods.first
     mentor = mentors[i].mentor_at_school_periods.first
     finished_on = finished_dates[i]

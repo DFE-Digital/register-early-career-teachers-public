@@ -58,7 +58,13 @@ module GIAS::Schools
     end
 
     def destroy_unstarted_mentorship_periods!
-      unstarted_mentorship_periods_at_school.each(&:destroy!)
+      unstarted_mentorship_periods_at_school.uniq.each do |mentorship_period|
+        # Load the mentee's teacher before destruction so the after-commit metadata refresh can still access it.
+        mentorship_period.association(:mentee).load_target
+        mentorship_period.mentee.association(:teacher).load_target
+
+        mentorship_period.destroy!
+      end
     end
 
     def unstarted_mentorship_periods_at_school
