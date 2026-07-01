@@ -140,16 +140,6 @@ module Events
       new(event_type:, modifications:, author:, appropriate_body_period:, teacher:, heading:, happened_at:, body:, zendesk_ticket_id:).record_event!
     end
 
-    def self.record_school_reported_appropriate_body_updated_event!(author:, teacher:, ect_at_school_period:, appropriate_body_period:, old_appropriate_body_name:, happened_at: Time.zone.now)
-      event_type = :school_reported_appropriate_body_updated
-      teacher_name = Teachers::Name.new(teacher).full_name
-      new_appropriate_body_name = appropriate_body_period.name
-      heading = "#{teacher_name}’s appropriate body was updated to #{new_appropriate_body_name}"
-      modifications = { "appropriate_body" => [old_appropriate_body_name, new_appropriate_body_name] }
-
-      new(event_type:, author:, heading:, teacher:, ect_at_school_period:, school: ect_at_school_period.school, appropriate_body_period:, modifications:, happened_at:).record_event!
-    end
-
     # Teacher Status Events
 
     def self.record_undo_registration_event!(author:, teacher:, reason:, happened_at: Time.zone.now)

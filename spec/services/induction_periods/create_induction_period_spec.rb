@@ -199,65 +199,6 @@ describe InductionPeriods::CreateInductionPeriod do
       end
     end
 
-    context "when the teacher has a current ECT at school period reported by a different appropriate body" do
-      let(:other_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, :teaching_school_hub) }
-      let!(:ect_at_school_period) do
-        FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school_reported_appropriate_body: other_appropriate_body_period)
-      end
-
-      it "updates the school reported appropriate body to the claiming appropriate body" do
-        expect { subject.create_induction_period! }
-          .to change { ect_at_school_period.reload.school_reported_appropriate_body }
-          .from(other_appropriate_body_period)
-          .to(appropriate_body_period)
-      end
-
-      it "records a school_reported_appropriate_body_updated event with the change" do
-        subject.create_induction_period!
-
-        perform_enqueued_jobs
-
-        expect(Event.all.map(&:event_type)).to include("induction_period_opened", "school_reported_appropriate_body_updated")
-
-        event = Event.find_by(event_type: "school_reported_appropriate_body_updated")
-        expect(event.teacher).to eql(teacher)
-        expect(event.ect_at_school_period).to eql(ect_at_school_period)
-        expect(event.appropriate_body_period).to eql(appropriate_body_period)
-        expect(event.metadata).to eql("appropriate_body" => [other_appropriate_body_period.name, appropriate_body_period.name])
-        expect(event.modifications).to include("Appropriate body changed from '#{other_appropriate_body_period.name}' to '#{appropriate_body_period.name}'")
-      end
-    end
-
-    context "when the teacher's current ECT at school period already reports the claiming appropriate body" do
-      let!(:ect_at_school_period) do
-        FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school_reported_appropriate_body: appropriate_body_period)
-      end
-
-      it "does not change the school reported appropriate body" do
-        expect { subject.create_induction_period! }
-          .not_to(change { ect_at_school_period.reload.school_reported_appropriate_body })
-      end
-
-      it "does not record a school_reported_appropriate_body_updated event" do
-        subject.create_induction_period!
-
-        perform_enqueued_jobs
-
-        expect(Event.all.map(&:event_type)).to include("induction_period_opened")
-        expect(Event.all.map(&:event_type)).not_to include("school_reported_appropriate_body_updated")
-      end
-    end
-
-    context "when the teacher has no ECT at school period" do
-      it "only records the induction_period_opened event" do
-        subject.create_induction_period!
-
-        perform_enqueued_jobs
-
-        expect(Event.all.map(&:event_type)).to match_array(%w[induction_period_opened])
-      end
-    end
-
     context "when the induction period is invalid" do
       before do
         allow(Events::Record)

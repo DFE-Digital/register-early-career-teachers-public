@@ -22,7 +22,6 @@ module InductionPeriods
       ActiveRecord::Base.transaction do
         induction_period.save!
         record_event or raise ActiveRecord::Rollback
-        update_school_reported_appropriate_body!
       end
 
       set_eligibility_for_funding!
@@ -51,26 +50,6 @@ module InductionPeriods
       )
 
       true
-    end
-
-    def update_school_reported_appropriate_body!
-      ect_at_school_period = teacher.ect_at_school_periods.current_or_future.earliest_first.first
-      return if ect_at_school_period.nil?
-
-      new_appropriate_body_period = induction_period.appropriate_body_period
-      return if ect_at_school_period.school_reported_appropriate_body_id == new_appropriate_body_period.id
-
-      old_appropriate_body_name = ect_at_school_period.school_reported_appropriate_body_name
-
-      ect_at_school_period.update!(school_reported_appropriate_body: new_appropriate_body_period)
-
-      Events::Record.record_school_reported_appropriate_body_updated_event!(
-        author:,
-        teacher:,
-        ect_at_school_period:,
-        appropriate_body_period: new_appropriate_body_period,
-        old_appropriate_body_name:
-      )
     end
 
     def notify_trs_of_new_induction_start

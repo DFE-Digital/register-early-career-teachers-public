@@ -21,7 +21,6 @@ class Event < ApplicationRecord
     school_partnership_reused
     school_partnership_updated
     school_eligibility_changed
-    school_reported_appropriate_body_updated
     school_user_signs_in
     school_induction_tutor_confirmed
     school_induction_tutor_updated
