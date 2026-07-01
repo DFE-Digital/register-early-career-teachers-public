@@ -146,8 +146,28 @@ RSpec.describe Schools::ECTInductionDetailsComponent, type: :component do
         render_inline(described_class.new(ect))
       end
 
-      it "still shows the awaiting confirmation hint for the school reported appropriate body" do
+      it "shows the claiming appropriate body with the confirmed hint" do
+        expect(page).to have_selector(".govuk-summary-list__value", text: "Beta Teaching School Hub")
+        expect(page).not_to have_selector(".govuk-summary-list__value", text: "Alpha Teaching School Hub")
+        expect(page).to have_text(confirmed_hint)
+        expect(page).not_to have_text(awaiting_confirmation_hint)
+      end
+    end
+
+    context "when an ongoing induction period predates this school placement (claimed before registration, or carried over from a previous school)" do
+      let(:other_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Beta Teaching School Hub") }
+      let!(:induction_period) do
+        FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period: other_appropriate_body_period, started_on: Date.new(2022, 9, 1))
+      end
+
+      before do
+        teacher.reload
+        render_inline(described_class.new(ect))
+      end
+
+      it "still shows the school reported appropriate body with the awaiting confirmation hint" do
         expect(page).to have_selector(".govuk-summary-list__value", text: "Alpha Teaching School Hub")
+        expect(page).not_to have_selector(".govuk-summary-list__value", text: "Beta Teaching School Hub")
         expect(page).to have_text(awaiting_confirmation_hint)
         expect(page).not_to have_text(confirmed_hint)
       end

@@ -98,12 +98,6 @@ class ECTAtSchoolPeriod < ApplicationRecord
 
   def school_reported_appropriate_body_type = school_reported_appropriate_body&.body_type
 
-  def claimed_by_school_reported_appropriate_body?
-    return false if school_reported_appropriate_body_id.nil?
-
-    teacher.induction_periods.ongoing.exists?(appropriate_body_period_id: school_reported_appropriate_body_id)
-  end
-
   def siblings
     return ECTAtSchoolPeriod.none unless teacher
 

@@ -41,6 +41,19 @@ module Schools
       }
     end
 
+    # The ongoing induction period that represents an AB claiming the ECT for
+    # *this* school placement (i.e. started within this placement's dates).
+    # Claims recorded before the school registered the ECT, or carried over from
+    # a previous school, are excluded, so the school keeps seeing its reported
+    # appropriate body as provisional until it's confirmed for this placement.
+    def claiming_induction_period
+      @claiming_induction_period ||=
+        @ect.teacher.induction_periods.ongoing
+            .where(started_on: @ect.started_on..@ect.finished_on)
+            .order(started_on: :desc)
+            .first
+    end
+
     def induction_start_date_row
       date = induction_start_date
       return induction_start_date_not_reported_row if date.blank?
@@ -64,26 +77,31 @@ module Schools
     end
 
     def appropriate_body_html
+      return claimed_appropriate_body_html if claiming_induction_period
+
       name = @ect.school_reported_appropriate_body_name.presence
       return "Not reported" if name.nil?
 
       safe_join([
         name,
         tag.br,
-        tag.span(appropriate_body_status, class: "govuk-hint")
+        tag.span("Awaiting confirmation by the appropriate body", class: "govuk-hint")
       ])
     end
 
-    def appropriate_body_status
-      if @ect.claimed_by_school_reported_appropriate_body?
-        safe_join([
-          "This appropriate body has recorded the ECT’s induction.",
-          tag.br,
-          "Contact them if this is wrong or if you want to change the appropriate body."
-        ])
-      else
-        "Awaiting confirmation by the appropriate body"
-      end
+    def claimed_appropriate_body_html
+      safe_join([
+        claiming_induction_period.appropriate_body_name,
+        tag.br,
+        tag.span(
+          safe_join([
+            "This appropriate body has recorded the ECT’s induction.",
+            tag.br,
+            "Contact them if this is wrong or if you want to change the appropriate body."
+          ]),
+          class: "govuk-hint"
+        )
+      ])
     end
 
     def induction_start_date_not_reported_row
