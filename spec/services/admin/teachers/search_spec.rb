@@ -31,6 +31,28 @@ RSpec.describe Admin::Teachers::Search do
       end
     end
 
+    context "when TRS name parts are blank or placeholder values" do
+      let!(:teacher_with_blank_first_name) do
+        FactoryBot.create(:teacher, trs_first_name: "", trs_last_name: "Smith")
+      end
+
+      let!(:teacher_with_placeholder_first_name) do
+        FactoryBot.create(:teacher, trs_first_name: ".", trs_last_name: "Taylor")
+      end
+
+      let!(:teacher_with_no_name) do
+        FactoryBot.create(:teacher, trs_first_name: "", trs_last_name: "")
+      end
+
+      it "orders teachers by the displayed full name fallbacks" do
+        expect(teacher_scope).to eq([
+          teacher_with_blank_first_name,
+          teacher_with_placeholder_first_name,
+          teacher_with_no_name
+        ])
+      end
+    end
+
     context "when it is an exact 7 digit TRN" do
       let(:query_string) { "1234567" }
       let!(:teacher) { FactoryBot.create(:teacher, trn: "1234567") }
