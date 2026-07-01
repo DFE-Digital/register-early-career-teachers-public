@@ -66,6 +66,7 @@ module ECTAtSchoolPeriods
           .teacher
           .ect_training_periods
           .provider_led_training_programme
+          .where(ect_at_school_periods: { school_id: @ect_at_school_period.school_id })
           .where("training_periods.started_on < ?", date_of_transition)
           .latest_first
           .first
