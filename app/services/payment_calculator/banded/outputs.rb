@@ -11,7 +11,8 @@ module PaymentCalculator
 
     def declaration_type_outputs
       @declaration_type_outputs ||= band_allocations_by_declaration_type.map do |band_allocation|
-        Banded::DeclarationTypeOutput.new(band_allocation:)
+        band_term = banded_fee_structure.band_terms.find_by(band: band_allocation.band)
+        Banded::DeclarationTypeOutput.new(band_allocation:, band_term:)
       end
     end
 
@@ -35,7 +36,7 @@ module PaymentCalculator
 
     def band_allocator
       Banded::BandAllocator.new(
-        band_terms:,
+        bands:,
         billable_declarations:,
         refundable_declarations:,
         previous_billable_declarations:,
@@ -47,6 +48,6 @@ module PaymentCalculator
       @band_allocations_by_declaration_type ||= band_allocator.band_allocations_by_declaration_type
     end
 
-    delegate :band_terms, to: :banded_fee_structure, private: true
+    delegate :bands, to: :banded_fee_structure, private: true
   end
 end

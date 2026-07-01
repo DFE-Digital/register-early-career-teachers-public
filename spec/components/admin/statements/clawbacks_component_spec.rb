@@ -3,41 +3,46 @@ RSpec.describe Admin::Statements::ClawbacksComponent, type: :component do
 
   let(:statement) { FactoryBot.create(:statement, contract:) }
 
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+
   let(:banded_fee_structure) do
-    FactoryBot.build_stubbed(:contract_banded_fee_structure, :with_band_terms,
-                             declaration_boundaries: [
-                               { min: 1, max: 10 },
-                               { min: 11, max: 20 },
-                             ])
+    FactoryBot.build(:contract_banded_fee_structure,
+                     band_terms: [
+                       FactoryBot.build(:contract_banded_fee_structure_band_term,
+                                        band: FactoryBot.create(:active_lead_provider_band,
+                                                                active_lead_provider:)),
+                       FactoryBot.build(:contract_banded_fee_structure_band_term,
+                                        band: FactoryBot.create(:active_lead_provider_band,
+                                                                active_lead_provider:)),
+                     ])
   end
 
   let(:banded_outputs) do
-    band_terms = banded_fee_structure.band_terms
     banded_declaration_type_outputs = [
       double(
         declaration_type: "started",
-        band_term: band_terms.first,
+        band_term: banded_fee_structure.band_terms.first,
         refundable_count: 10,
         type_adjusted_fee_per_declaration: 15,
         total_refundable_amount: 150
       ),
       double(
         declaration_type: "started",
-        band_term: band_terms.second,
+        band_term: banded_fee_structure.band_terms.second,
         refundable_count: 10,
         type_adjusted_fee_per_declaration: 15,
         total_refundable_amount: 150
       ),
       double(
         declaration_type: "completed",
-        band_term: band_terms.first,
+        band_term: banded_fee_structure.band_terms.first,
         refundable_count: 5,
         type_adjusted_fee_per_declaration: 20,
         total_refundable_amount: 100
       ),
       double(
         declaration_type: "completed",
-        band_term: band_terms.second,
+        band_term: banded_fee_structure.band_terms.second,
         refundable_count: 0,
         type_adjusted_fee_per_declaration: 20,
         total_refundable_amount: 0
@@ -210,13 +215,5 @@ RSpec.describe Admin::Statements::ClawbacksComponent, type: :component do
         )
       end
     end
-  end
-
-private
-
-  def band(from:, to:)
-    FactoryBot.build_stubbed(:contract_banded_fee_structure_band_term,
-                             min_declarations: from,
-                             max_declarations: to)
   end
 end

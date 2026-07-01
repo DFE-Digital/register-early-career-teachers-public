@@ -54,105 +54,74 @@ RSpec.describe PaymentCalculator::Banded do
   end
 
   let(:banded_fee_structure) do
-    FactoryBot.build(
-      :contract_banded_fee_structure,
-      :with_band_terms,
-      monthly_service_fee: 1_000,
-      setup_fee: 500,
-      uplift_fee_per_declaration: 50,
-      recruitment_target: 100,
-      declaration_boundaries: [{ min: 1, max: 200 }]
-    )
+    FactoryBot.build(:contract_banded_fee_structure,
+                     monthly_service_fee: 1_000,
+                     setup_fee: 500,
+                     uplift_fee_per_declaration: 50,
+                     recruitment_target: 100)
   end
 
   let(:ect_training_period) do
-    FactoryBot.create(
-      :training_period,
-      :for_ect,
-      :with_active_lead_provider,
-      active_lead_provider:
-    )
+    FactoryBot.create(:training_period, :for_ect, :with_active_lead_provider,
+                      active_lead_provider:)
   end
   let(:mentor_training_period) do
-    FactoryBot.create(
-      :training_period,
-      :for_mentor,
-      :with_active_lead_provider,
-      active_lead_provider:
-    )
+    FactoryBot.create(:training_period, :for_mentor,
+                      :with_active_lead_provider,
+                      active_lead_provider:)
   end
   let!(:billable_declaration) do
-    FactoryBot.create(
-      :declaration,
-      :payable,
-      declaration_type: :started,
-      training_period: ect_training_period,
-      payment_statement: statement_july
-    )
+    FactoryBot.create(:declaration, :payable,
+                      declaration_type: :started,
+                      training_period: ect_training_period,
+                      payment_statement: statement_july)
   end
   let!(:refundable_declaration) do
-    FactoryBot.create(
-      :declaration,
-      payment_status: :paid,
-      clawback_status: :awaiting_clawback,
-      declaration_type: :completed,
-      training_period: ect_training_period,
-      payment_statement: statement_may,
-      clawback_statement: statement_july
-    )
+    FactoryBot.create(:declaration,
+                      payment_status: :paid,
+                      clawback_status: :awaiting_clawback,
+                      declaration_type: :completed,
+                      training_period: ect_training_period,
+                      payment_statement: statement_may,
+                      clawback_statement: statement_july)
   end
   let!(:non_billable_declaration) do
-    FactoryBot.create(
-      :declaration,
-      :no_payment,
-      declaration_type: :completed,
-      training_period: ect_training_period,
-      payment_statement: statement_july
-    )
+    FactoryBot.create(:declaration, :no_payment,
+                      declaration_type: :completed,
+                      training_period: ect_training_period,
+                      payment_statement: statement_july)
   end
 
   let(:declaration_selector) { ->(declarations) { declarations } }
 
   describe "#outputs" do
     let(:previous_training_period) do
-      FactoryBot.create(
-        :training_period,
-        :for_ect,
-        :with_active_lead_provider,
-        active_lead_provider:
-      )
+      FactoryBot.create(:training_period, :for_ect, :with_active_lead_provider,
+                        active_lead_provider:)
     end
 
     let!(:previous_billable_declaration) do
-      FactoryBot.create(
-        :declaration,
-        :payable,
-        declaration_type: :started,
-        training_period: previous_training_period,
-        payment_statement: statement_june
-      )
+      FactoryBot.create(:declaration, :payable,
+                        declaration_type: :started,
+                        training_period: previous_training_period,
+                        payment_statement: statement_june)
     end
 
     let!(:previous_refundable_declaration) do
-      FactoryBot.create(
-        :declaration,
-        payment_status: :paid,
-        clawback_status: :awaiting_clawback,
-        declaration_type: :completed,
-        training_period: previous_training_period,
-        payment_statement: statement_may,
-        clawback_statement: statement_june
-      )
+      FactoryBot.create(:declaration,
+                        payment_status: :paid,
+                        clawback_status: :awaiting_clawback,
+                        declaration_type: :completed,
+                        training_period: previous_training_period,
+                        payment_statement: statement_may,
+                        clawback_statement: statement_june)
     end
 
     let!(:previous_non_billable_declaration) do
-      FactoryBot.create(
-        :declaration,
-        :no_payment,
-        declaration_type: "retained-1",
-        training_period: previous_training_period,
-        payment_statement: statement_june
-      )
+      FactoryBot.create(:declaration, :no_payment,
+                        declaration_type: "retained-1",
+                        training_period: previous_training_period,
+                        payment_statement: statement_june)
     end
 
     it "initializes with the current statement billable declarations" do

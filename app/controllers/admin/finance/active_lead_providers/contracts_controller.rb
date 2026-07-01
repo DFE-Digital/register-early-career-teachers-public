@@ -35,7 +35,13 @@ module Admin::Finance::ActiveLeadProviders
 
     def set_contract
       @contract = @active_lead_provider.contracts
-        .includes(:statements, :flat_rate_fee_structure, banded_fee_structure: :band_terms)
+        .includes(
+          :statements,
+          :flat_rate_fee_structure,
+          banded_fee_structure: {
+            band_terms: :band
+          }
+        )
         .find(params.expect(:id))
     end
   end
