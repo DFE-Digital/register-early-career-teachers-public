@@ -31,11 +31,12 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
     )
   end
 
-  def stub_school_led_school_choice(school:, appropriate_body_id:)
+  def stub_school_led_school_choice(school:, appropriate_body:)
     allow(school).to receive_messages(
       provider_led_training_programme_chosen?: false,
       school_led_training_programme_chosen?: true,
-      last_chosen_appropriate_body_id: appropriate_body_id
+      last_chosen_appropriate_body: appropriate_body,
+      last_chosen_appropriate_body_id: appropriate_body&.id
     )
   end
 
@@ -575,7 +576,7 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
       let!(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, :national) }
 
       before do
-        stub_school_led_school_choice(school:, appropriate_body_id: appropriate_body_period.id)
+        stub_school_led_school_choice(school:, appropriate_body: appropriate_body_period)
       end
 
       it "is allowed (product expectation for school-led)" do
@@ -585,7 +586,7 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
 
     context "when school-led is chosen but last chosen appropriate body is missing" do
       before do
-        stub_school_led_school_choice(school:, appropriate_body_id: nil)
+        stub_school_led_school_choice(school:, appropriate_body: nil)
       end
 
       it "is not allowed" do
@@ -868,7 +869,7 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
 
       before do
         allow(step.ect).to receive(:update).and_return(true)
-        stub_school_led_school_choice(school:, appropriate_body_id: appropriate_body_period.id)
+        stub_school_led_school_choice(school:, appropriate_body: appropriate_body_period)
       end
 
       it "does not set school_partnership_to_reuse_id" do
