@@ -30,6 +30,10 @@ module BlazerQueries
 
       delegate :quote, to: "ActiveRecord::Base.connection", private: true
 
+      def current_date_sql
+        "(CURRENT_TIMESTAMP AT TIME ZONE 'Europe/London')::date"
+      end
+
       def registrations_opening
         {
           name: "Comms: Registrations opening (June)",
@@ -158,12 +162,12 @@ module BlazerQueries
 
       def not_opted_out_sql
         "(s.opted_out_of_reminder_emails_until IS NULL " \
-          "OR s.opted_out_of_reminder_emails_until < CURRENT_DATE)"
+          "OR s.opted_out_of_reminder_emails_until < #{current_date_sql})"
       end
 
       # Date range of the contract period that contains today.
       def current_contract_period_range_sql
-        "(SELECT cp.range FROM contract_periods cp WHERE cp.range @> CURRENT_DATE)"
+        "(SELECT cp.range FROM contract_periods cp WHERE cp.range @> #{current_date_sql})"
       end
 
       # School has at least one partnership in the current contract period.
@@ -175,7 +179,7 @@ module BlazerQueries
           "INNER JOIN active_lead_providers alp " \
           "ON alp.id = lpdp.active_lead_provider_id " \
           "INNER JOIN contract_periods cp ON cp.year = alp.contract_period_year " \
-          "WHERE sp.school_id = s.id AND cp.range @> CURRENT_DATE)"
+          "WHERE sp.school_id = s.id AND cp.range @> #{current_date_sql})"
       end
 
       # ...but no ECT or mentor was at the school during the current contract period.

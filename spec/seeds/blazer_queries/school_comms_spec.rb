@@ -60,6 +60,15 @@ RSpec.describe BlazerQueries::SchoolComms do
       expect(statements).to all(satisfy { |statement| statement.exclude?("https://https://") })
     end
 
+    it "uses a time zone aware SQL current date" do
+      statement = definitions.find { |definition| definition[:name] == "Comms: Start of term reminder (September)" }
+                             .fetch(:statement)
+
+      expect(statement).to include("(CURRENT_TIMESTAMP AT TIME ZONE 'Europe/London')::date")
+      expect(statement).not_to include("CURRENT_DATE")
+      expect(statement).not_to include("'#{Date.current}'::date")
+    end
+
     it "excludes children's centres and their linked sites everywhere (#2501)" do
       definitions.each do |definition|
         expect(definition[:statement]).to include(
