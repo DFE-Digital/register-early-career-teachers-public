@@ -193,6 +193,33 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
       end
     end
 
+    describe "training period status inset text" do
+      subject { page }
+
+      let(:teacher) { training_period.teacher }
+      let(:teacher_name) { Teachers::Name.new(teacher).full_name }
+
+      before { rendered }
+
+      context "when the training period is active" do
+        let(:training_period) { FactoryBot.create(:training_period, :provider_led, :for_ect) }
+
+        it { is_expected.not_to have_css(".govuk-inset-text") }
+      end
+
+      context "when the training period is deferred" do
+        let(:training_period) { FactoryBot.create(:training_period, :provider_led, :for_ect, :deferred) }
+
+        it { is_expected.to have_css(".govuk-inset-text", text: "#{teacher_name} has been deferred from this training period by the lead provider.") }
+      end
+
+      context "when the training period is withdrawn" do
+        let(:training_period) { FactoryBot.create(:training_period, :provider_led, :for_ect, :withdrawn) }
+
+        it { is_expected.to have_css(".govuk-inset-text", text: "#{teacher_name} has been withdrawn from this training period by the lead provider.") }
+      end
+    end
+
     context "when the component is rendering a subsequent row" do
       subject(:rendered) { render_inline(described_class.new(training_period:, show_api_row: false)) }
 
