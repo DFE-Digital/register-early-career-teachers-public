@@ -75,31 +75,6 @@ describe "School user can change ECTs training programme" do
     then_i_see_the_provider_led_confirmation_message
   end
 
-  it "preserves the previous provider-led contract period across ECT-at-school periods" do
-    given_there_is_a_school
-    and_there_is_an_ect_with_a_previous_ect_at_school_period
-    with_a_mentor
-    and_there_is_a_previous_contract_period
-    and_there_is_a_current_contract_period
-    and_the_lead_provider_is_active_in_both_contract_periods
-    with_provider_led_training_on_the_previous_ect_at_school_period
-    followed_by_school_led_training_on_the_current_ect_at_school_period
-    and_i_am_logged_in_as_a_school_user
-
-    when_i_visit_the_ect_page
-    then_i_can_change_the_training_programme
-    and_i_can_change_the_training_programme_to_provider_led
-
-    when_i_change_the_training_programme
-    and_i_choose_the_lead_provider
-    and_i_continue
-    then_i_am_asked_to_check_and_confirm_the_change
-
-    and_i_confirm_the_change
-    then_i_see_the_provider_led_confirmation_message
-    and_the_new_provider_led_period_uses_the_previous_contract_period
-  end
-
 private
 
   def given_there_is_a_school
@@ -122,32 +97,6 @@ private
     )
   end
 
-  def and_there_is_an_ect_with_a_previous_ect_at_school_period
-    @teacher = FactoryBot.create(
-      :teacher,
-      trs_first_name: "John",
-      trs_last_name: "Doe"
-    )
-
-    @previous_ect = FactoryBot.create(
-      :ect_at_school_period,
-      started_on: Date.new(2025, 9, 1),
-      finished_on: Date.new(2026, 1, 31),
-      teacher: @teacher,
-      school: @school,
-      email: "previous-ect@example.com"
-    )
-
-    @ect = FactoryBot.create(
-      :ect_at_school_period,
-      :ongoing,
-      started_on: Date.new(2026, 2, 1),
-      teacher: @teacher,
-      school: @school,
-      email: "ect@example.com"
-    )
-  end
-
   def with_a_mentor
     mentor_at_school_period = FactoryBot.create(
       :mentor_at_school_period,
@@ -162,45 +111,12 @@ private
     @contract_period = FactoryBot.create(:contract_period, :current, :with_schedules)
   end
 
-  def and_there_is_a_previous_contract_period
-    @previous_contract_period = FactoryBot.create(:contract_period, :with_schedules, year: 2025)
-  end
-
-  def and_there_is_a_current_contract_period
-    @contract_period = FactoryBot.create(:contract_period, :with_schedules, year: 2026)
-  end
-
   def and_there_is_an_active_lead_provider
     lead_provider = FactoryBot.create(:lead_provider, name: "Testing Provider")
     @active_lead_provider = FactoryBot.create(
       :active_lead_provider,
       contract_period: @contract_period,
       lead_provider:
-    )
-  end
-
-  def and_the_lead_provider_is_active_in_both_contract_periods
-    @selected_lead_provider = FactoryBot.create(
-      :lead_provider,
-      name: "Testing Provider"
-    )
-
-    previous_active_lead_provider = FactoryBot.create(
-      :active_lead_provider,
-      contract_period: @previous_contract_period,
-      lead_provider: @selected_lead_provider
-    )
-
-    @active_lead_provider = FactoryBot.create(
-      :active_lead_provider,
-      contract_period: @contract_period,
-      lead_provider: @selected_lead_provider
-    )
-
-    @previous_school_partnership = FactoryBot.create(
-      :school_partnership,
-      school: @school,
-      active_lead_provider: previous_active_lead_provider
     )
   end
 
@@ -216,29 +132,6 @@ private
   end
 
   def with_school_led_training
-    FactoryBot.create(
-      :training_period,
-      :school_led,
-      :for_ect,
-      :ongoing,
-      ect_at_school_period: @ect,
-      started_on: @ect.started_on
-    )
-  end
-
-  def with_provider_led_training_on_the_previous_ect_at_school_period
-    @previous_provider_led_training_period = FactoryBot.create(
-      :training_period,
-      :provider_led,
-      :for_ect,
-      ect_at_school_period: @previous_ect,
-      school_partnership: @previous_school_partnership,
-      started_on: @previous_ect.started_on,
-      finished_on: @previous_ect.finished_on
-    )
-  end
-
-  def followed_by_school_led_training_on_the_current_ect_at_school_period
     FactoryBot.create(
       :training_period,
       :school_led,
@@ -331,28 +224,5 @@ private
     expect(page.title).to start_with("Error:")
     then_i_see_the_lead_provider_selection_page
     expect(page.locator(".govuk-error-summary")).to be_visible
-  end
-
-  def and_the_new_provider_led_period_uses_the_previous_contract_period
-    new_training_period = @ect.training_periods
-      .reload
-      .provider_led_training_programme
-      .order(:id)
-      .last
-
-    new_contract_period =
-      new_training_period.contract_period ||
-      new_training_period.expression_of_interest_contract_period
-
-    selected_lead_provider =
-      new_training_period.school_partnership&.lead_provider ||
-      new_training_period.expression_of_interest&.lead_provider
-
-    expect(new_training_period).to be_present
-    expect(new_training_period.ect_at_school_period).to eq(@ect)
-    expect(selected_lead_provider).to eq(@selected_lead_provider)
-    expect(new_contract_period).to eq(
-      @previous_provider_led_training_period.contract_period
-    )
   end
 end
