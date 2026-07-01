@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  VALID_EMAIL_SUFFIX = "@education.gov.uk"
+
   ROLES = {
     admin: "Admin",
     user_manager: "User manager",
@@ -16,6 +18,8 @@ class User < ApplicationRecord
             presence: { message: "Enter an email address" },
             uniqueness: { message: "Email address already used, enter another" },
             notify_email: true
+  validate :ensure_email_belongs_to_dfe, if: -> { email.present? }
+
   validates :otp_school_urn,
             reference_number_format: {
               allow_blank: true,
@@ -41,5 +45,13 @@ class User < ApplicationRecord
 
   def finance_access?
     finance?
+  end
+
+private
+
+  def ensure_email_belongs_to_dfe
+    return if email.downcase.ends_with?(VALID_EMAIL_SUFFIX)
+
+    errors.add(:email, %(Enter an '@education.gov.uk' email address))
   end
 end
