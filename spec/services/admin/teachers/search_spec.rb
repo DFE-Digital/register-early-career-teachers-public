@@ -15,6 +15,22 @@ RSpec.describe Admin::Teachers::Search do
       it { is_expected.to contain_exactly(teacher, other_teacher) }
     end
 
+    context "when a corrected name changes alphabetical ordering" do
+      let!(:teacher_with_corrected_name) do
+        FactoryBot.create(
+          :teacher,
+          trs_first_name: "Zelda",
+          trs_last_name: "Zimmer",
+          corrected_name: "Aaron Aardvark"
+        )
+      end
+      let!(:other_teacher) { FactoryBot.create(:teacher, trs_first_name: "Bob", trs_last_name: "Builder") }
+
+      it "orders teachers by the displayed full name" do
+        expect(teacher_scope).to eq([teacher_with_corrected_name, other_teacher])
+      end
+    end
+
     context "when it is an exact 7 digit TRN" do
       let(:query_string) { "1234567" }
       let!(:teacher) { FactoryBot.create(:teacher, trn: "1234567") }
