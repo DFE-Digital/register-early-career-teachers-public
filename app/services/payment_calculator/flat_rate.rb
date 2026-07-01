@@ -8,6 +8,9 @@ module PaymentCalculator
     attribute :declaration_selector
     attribute :fee_proportions
 
+    def banded? = false
+    def flat_rate? = true
+
     def total_amount(with_vat: false)
       if with_vat
         outputs.total_net_amount + vat_amount

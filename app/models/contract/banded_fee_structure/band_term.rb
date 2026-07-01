@@ -33,6 +33,8 @@ class Contract::BandedFeeStructure::BandTerm < ApplicationRecord
 
   validate :band_belongs_to_contracts_active_lead_provider
 
+  delegate :capacity, :min_declarations, :max_declarations, :letter, to: :band
+
 private
 
   def band_belongs_to_contracts_active_lead_provider

@@ -9,6 +9,7 @@ module PaymentCalculator
     attribute :contract
     attribute :statement
 
+    # @return [Array<PaymentCalculator::FlatRate, PaymentCalculator::Banded>]
     def calculators
       raise ArgumentError, "statement must be provided" if statement.blank?
 

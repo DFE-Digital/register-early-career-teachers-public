@@ -19,11 +19,10 @@ RSpec.describe Admin::Statements::UpliftFeesComponent, type: :component do
 
   before do
     resolver = instance_double(PaymentCalculator::Resolver)
-    banded = instance_double(PaymentCalculator::Banded)
+    banded = instance_double(PaymentCalculator::Banded, banded?: true)
 
     allow(PaymentCalculator::Resolver).to receive(:new).and_return(resolver)
     allow(resolver).to receive(:calculators).and_return([banded])
-    allow(banded).to receive(:is_a?).with(PaymentCalculator::Banded).and_return(true)
     allow(banded).to receive(:uplifts).and_return(uplifts)
 
     render_inline(component)

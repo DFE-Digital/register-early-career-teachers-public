@@ -7,6 +7,9 @@ module PaymentCalculator
     attribute :banded_fee_structure
     attribute :declaration_selector
 
+    def banded? = true
+    def flat_rate? = false
+
     def outputs
       @outputs ||= Banded::Outputs.new(
         billable_declarations: filtered_billable_declarations,
