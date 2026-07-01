@@ -29,6 +29,18 @@ module TeacherHistories
 
       if training_period.save
         describe_training_period(training_period)
+
+        if mentor_at_school_period.started_on == training_period.started_on
+          Events::Record.record_teacher_registered_as_mentor_event!(
+            author:,
+            school: mentor_at_school_period.school,
+            teacher: mentor_at_school_period.teacher,
+            mentor_at_school_period:,
+            training_period:,
+            lead_provider:,
+            happened_at: mentor_at_school_period.started_on
+          )
+        end
       else
         print_seed_info("Error messages: #{training_period.errors.messages}", error: true, indent: indent(2))
 
@@ -48,6 +60,10 @@ module TeacherHistories
       elsif (expression_of_interest = LeadProviders::Active.new(lead_provider).active_lead_providers(contract_period).first)
         { expression_of_interest: }
       end
+    end
+
+    def author
+      Events::SystemAuthor.new
     end
   end
 end
