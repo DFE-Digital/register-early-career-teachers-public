@@ -211,12 +211,12 @@ module Admin
         <<~SQL.squish
           LOWER(
             COALESCE(
-              NULLIF(teachers.corrected_name, ''),
+              NULLIF(TRIM(teachers.corrected_name), ''),
               NULLIF(
                 CONCAT_WS(
                   ' ',
-                  NULLIF(teachers.trs_first_name, '.'),
-                  NULLIF(teachers.trs_last_name, '.')
+                  NULLIF(NULLIF(TRIM(teachers.trs_first_name), ''), '.'),
+                  NULLIF(NULLIF(TRIM(teachers.trs_last_name), ''), '.')
                 ),
                 ''
               ),
