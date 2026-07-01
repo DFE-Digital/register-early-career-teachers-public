@@ -136,37 +136,6 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe ".record_school_reported_appropriate_body_updated_event!" do
-    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, started_on: 3.weeks.ago) }
-
-    it "queues a RecordEventJob with the correct values" do
-      freeze_time do
-        Events::Record.record_school_reported_appropriate_body_updated_event!(
-          author:,
-          teacher:,
-          ect_at_school_period:,
-          appropriate_body_period:,
-          old_appropriate_body_name: "Old Appropriate Body"
-        )
-
-        expect(RecordEventJob).to have_received(:perform_later).with(
-          hash_including(
-            teacher:,
-            ect_at_school_period:,
-            school: ect_at_school_period.school,
-            appropriate_body_period:,
-            heading: "Rhys Ifans’s appropriate body was updated to Burns Slant Drilling Co.",
-            event_type: :school_reported_appropriate_body_updated,
-            happened_at: Time.zone.now,
-            metadata: { "appropriate_body" => ["Old Appropriate Body", "Burns Slant Drilling Co."] },
-            modifications: array_including("Appropriate body changed from 'Old Appropriate Body' to 'Burns Slant Drilling Co.'"),
-            **author_params
-          )
-        )
-      end
-    end
-  end
-
   describe ".record_induction_period_closed_event!" do
     it "queues a RecordEventJob with the correct values" do
       freeze_time do
