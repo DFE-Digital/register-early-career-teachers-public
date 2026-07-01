@@ -49,6 +49,16 @@ _david_tennant = teacher(next_trn, "David Tennant", trs_induction_status: "InPro
   end
 end
 
+_maggie_smith = teacher(next_trn, "Maggie Smith", trs_induction_status: "InProgress") do
+  description("ECT with an ongoing induction period that predates this registration (claimed before/at a previous school) - school reported AB still shows as awaiting")
+
+  induction_period(umber_teaching_school_hub, "2023-09-01")
+
+  ect_at_school_period(abbey_grove_school, "2024-09-01", school_reported_appropriate_body: golden_leaf_teaching_school_hub) do
+    school_led_training_period("2024-09-01")
+  end
+end
+
 felicity_kendall = teacher(next_trn, "Felicity Kendall") do
   induction_period(golden_leaf_teaching_school_hub, "2023-08-28")
 
