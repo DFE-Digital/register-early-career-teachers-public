@@ -3,6 +3,10 @@ class Statement < ApplicationRecord
 
   VALID_FEE_TYPES = %w[output service].freeze
 
+  # In factories and seed data we need to be able to create statements with
+  # a deadline date in the past, so we allow this to be overridden in those cases.
+  attr_accessor :allow_creation_with_past_deadline_date
+
   # Associations
   belongs_to :contract
   has_many :adjustments, dependent: :destroy
@@ -33,7 +37,7 @@ class Statement < ApplicationRecord
   validates :api_id, uniqueness: { case_sensitive: false, message: "API id already exists for another statement" }
   validate :unique_lead_provider_month_year
   validates :deadline_date, presence: { message: "Deadline date must be specified" }
-  validates :deadline_date, comparison: { greater_than: Date.current, message: "Deadline date must be in the future" }, on: :service_create
+  validates :deadline_date, comparison: { greater_than: Date.current, message: "Deadline date must be in the future" }, on: :create, unless: :allow_creation_with_past_deadline_date
   validate :deadline_date_remains_in_future, on: :update
   validate :deadline_date_in_the_past, if: :payable_or_paid?
   validates :payment_date,
