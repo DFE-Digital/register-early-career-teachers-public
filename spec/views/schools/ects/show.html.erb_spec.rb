@@ -122,9 +122,9 @@ RSpec.describe "schools/ects/show.html.erb" do
       expect(subject).to have_css("h2.govuk-heading-m", text: "Induction details")
     end
 
-    it "shows appropriate body" do
+    it "shows the appropriate body that has claimed the induction" do
       expect(subject).to have_css("dt.govuk-summary-list__key", text: "Appropriate body")
-      expect(subject).to have_css("dd.govuk-summary-list__value", text: "Requested AB")
+      expect(subject).to have_css("dd.govuk-summary-list__value", text: "Alpha Teaching School Hub")
     end
 
     it "shows induction start date" do
