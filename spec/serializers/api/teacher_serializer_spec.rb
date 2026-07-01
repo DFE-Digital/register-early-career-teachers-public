@@ -148,6 +148,12 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
             expect(ect_enrolment["mentor_id"]).to be_present
             expect(ect_enrolment["mentor_id"]).to eq(latest_mentorship_period.mentor.teacher.api_id)
 
+            expect(ect_enrolment["mentor_email"]).to be_present
+            expect(ect_enrolment["mentor_email"]).to eq(latest_mentorship_period.mentor.email)
+
+            expect(ect_enrolment["mentor_school_urn"]).to be_present
+            expect(ect_enrolment["mentor_school_urn"]).to eq(latest_mentorship_period.mentor.school.urn.to_s)
+
             expect(ect_enrolment["school_urn"]).to be_present
             expect(ect_enrolment["school_urn"]).to eq(ect_training_period.school_partnership.school.urn.to_s)
 
@@ -230,6 +236,14 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
 
             it "serializes `mentor_id` as nil" do
               expect(ect_enrolment["mentor_id"]).to be_nil
+            end
+
+            it "serializes `mentor_email` as nil" do
+              expect(ect_enrolment["mentor_email"]).to be_nil
+            end
+
+            it "serializes `mentor_school_urn` as nil" do
+              expect(ect_enrolment["mentor_school_urn"]).to be_nil
             end
           end
 
@@ -398,6 +412,8 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
             expect(mentor_enrolment["email"]).to eq(mentor_at_school_period.email)
 
             expect(mentor_enrolment["mentor_id"]).to be_nil
+            expect(mentor_enrolment["mentor_email"]).to be_nil
+            expect(mentor_enrolment["mentor_school_urn"]).to be_nil
 
             expect(mentor_enrolment["school_urn"]).to be_present
             expect(mentor_enrolment["school_urn"]).to eq(mentor_training_period.school_partnership.school.urn.to_s)
