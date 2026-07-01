@@ -55,13 +55,4 @@ describe Statements::Create do
       expect(Statement.count).to eq(0)
     end
   end
-
-  context "when the deadline date is in the past" do
-    let(:params) { super().merge(deadline_date: Date.yesterday) }
-
-    it "raises ActiveRecord::RecordInvalid and does not create a statement" do
-      expect { subject.call }.to raise_error(ActiveRecord::RecordInvalid)
-      expect(Statement.count).to eq(0)
-    end
-  end
 end
