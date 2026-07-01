@@ -34,17 +34,21 @@ module Schools
         provider_led_reusable? || school_led_reusable?
       end
 
+      def previous_appropriate_body_active?
+        school.last_chosen_appropriate_body&.active? == true
+      end
+
       def provider_led_reusable?
         return false unless school.provider_led_training_programme_chosen?
         return false if school.last_chosen_lead_provider.blank?
-        return false if school.last_chosen_appropriate_body_id.blank?
+        return false unless previous_appropriate_body_active?
 
         reusable_partnership_id.present? || reusable_expression_of_interest?
       end
 
       def school_led_reusable?
         school.school_led_training_programme_chosen? &&
-          school.last_chosen_appropriate_body_id.present?
+          previous_appropriate_body_active?
       end
 
       def reusable_partnership_id
