@@ -41,8 +41,8 @@ RSpec.describe "admin/finance/active_lead_providers/contracts/index.html.erb" do
     end
   end
 
-  context "when the contract period is not editable" do
-    let(:contract_period) { FactoryBot.create(:contract_period, :current) }
+  context "when the contract period is payments frozen" do
+    let(:contract_period) { FactoryBot.create(:contract_period, :with_payments_frozen) }
 
     it "does not show delete buttons or an add contract link" do
       render
