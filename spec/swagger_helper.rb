@@ -129,6 +129,12 @@ RSpec.configure do |config|
           UnfundedMentorResponse: UNFUNDED_MENTOR_RESPONSE,
           UnfundedMentorsResponse: UNFUNDED_MENTORS_RESPONSE,
 
+          # Mentoring mentors
+          MentoringMentor: MENTORING_MENTOR,
+          MentoringMentorsFilter: MENTORING_MENTORS_FILTER,
+          MentoringMentorResponse: MENTORING_MENTOR_RESPONSE,
+          MentoringMentorsResponse: MENTORING_MENTORS_RESPONSE,
+
         }
       }
     }

@@ -3257,3 +3257,72 @@ components:
           type: array
           items:
             "$ref": "#/components/schemas/UnfundedMentor"
+    MentoringMentor:
+      description: A mentor that is mentoring
+      type: object
+      required:
+      - id
+      - type
+      - attributes
+      properties:
+        id:
+          "$ref": "#/components/schemas/IDAttribute"
+        type:
+          description: The data type.
+          type: string
+          example: mentoring-mentor
+          enum:
+          - mentoring-mentor
+        attributes:
+          properties:
+            full_name:
+              description: The full name of this mentoring mentor
+              type: string
+              nullable: false
+              example: John Doe
+            email:
+              description: The email address registered for this mentoring mentor
+              type: string
+              example: jane.smith@example.com
+            teacher_reference_number:
+              description: The Teacher Reference Number (TRN) for this mentoring mentor
+              type: string
+              nullable: true
+              example: '1234567'
+            created_at:
+              description: The date and time the mentoring mentor was created
+              type: string
+              format: date-time
+              example: '2021-05-31T02:22:32.000Z'
+            updated_at:
+              description: The date and time the mentoring mentor was last updated
+              type: string
+              format: date-time
+              example: '2021-05-31T02:22:32.000Z'
+    MentoringMentorsFilter:
+      description: Filter mentoring mentors to return more specific results
+      type: object
+      properties:
+        updated_since:
+          description: Return only records that have been updated since this date
+            and time (ISO 8601 date format)
+          type: string
+          example: '2021-05-13T11:21:55Z'
+    MentoringMentorResponse:
+      description: A single mentoring mentor.
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          "$ref": "#/components/schemas/MentoringMentor"
+    MentoringMentorsResponse:
+      description: A list of mentoring mentors.
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          type: array
+          items:
+            "$ref": "#/components/schemas/MentoringMentor"
