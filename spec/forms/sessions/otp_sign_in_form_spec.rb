@@ -5,7 +5,7 @@ RSpec.describe Sessions::OTPSignInForm, type: :model do
   describe "#code_is_verified" do
     subject(:form) { Sessions::OTPSignInForm.new(email:, code:) }
 
-    let(:email) { "bob@example.com" }
+    let(:email) { "bob@education.gov.uk" }
     let(:code) { "123456" }
     let(:result) { 987_654 }
     let!(:user) { FactoryBot.create(:user, email:) }

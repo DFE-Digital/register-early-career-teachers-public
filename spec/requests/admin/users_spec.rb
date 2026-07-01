@@ -46,13 +46,13 @@ RSpec.describe "Admin::Users" do
     it "returns unauthorised for PATCH /admin/users/:id and does not update the user" do
       user_record = FactoryBot.create(:user)
 
-      patch admin_user_path(user_record), params: { user: { email: "hacked@example.com" } }
+      patch admin_user_path(user_record), params: { user: { email: "hacked@education.gov.uk" } }
 
       aggregate_failures do
         expect(response).to have_http_status(:unauthorized)
         expect(response.body).to include("You are not authorised to access this page")
         expect(response.body).to include(error_message)
-        expect(user_record.reload.email).not_to eq("hacked@example.com")
+        expect(user_record.reload.email).not_to eq("hacked@education.gov.uk")
       end
     end
   end
@@ -177,7 +177,7 @@ RSpec.describe "Admin::Users" do
 
     describe "PATCH /admin/users" do
       let(:user_record) { FactoryBot.create(:user) }
-      let(:new_email_address) { "joey@example.com" }
+      let(:new_email_address) { "joey@education.gov.uk" }
       let(:update_user_params) { { email: new_email_address } }
 
       it "updates the user record and records an event" do

@@ -1,7 +1,7 @@
 describe "Sessions::Users::DfEUserImpersonatingSchoolUser" do
   subject(:dfe_user_impersonating_school_user) { Sessions::Users::DfEUserImpersonatingSchoolUser.new(email: user.email, school_urn:, original_type:) }
 
-  let(:email) { "timothy.dalton@example.org" }
+  let(:email) { "timothy.dalton@education.gov.uk" }
   let(:user) { FactoryBot.create(:user, email:, name: "Timothy Dalton") }
   let(:school_urn) { 100_007 }
   let!(:school) { FactoryBot.create(:school, urn: school_urn) }

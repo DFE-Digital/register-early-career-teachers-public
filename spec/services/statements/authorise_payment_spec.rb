@@ -1,7 +1,7 @@
 RSpec.describe Statements::AuthorisePayment do
   subject { described_class.new(statement:, author:) }
 
-  let(:user)      { FactoryBot.create(:user, email: "test@example.com", name: "Test User") }
+  let(:user)      { FactoryBot.create(:user, :finance) }
   let(:author)    { Sessions::Users::DfEPersona.new(email: user.email) }
 
   let!(:statement) { FactoryBot.create(:statement, :payable, deadline_date: Date.yesterday) }

@@ -22,7 +22,7 @@ RSpec.describe NotifyEmailValidator, type: :model do
       email@double--hyphen.com
     ]
     valid_email_addresses.each do |email|
-      expect(User.new(name: "Geoff Capes", email:)).to be_valid
+      expect(NotifyEmailValidator.valid?(email)).to be(true)
     end
   end
 
@@ -61,7 +61,7 @@ RSpec.describe NotifyEmailValidator, type: :model do
       "incorrect-punycode@xn---something.com",
     ]
     invalid_email_addresses.each do |email|
-      expect(User.new(name: "Brian Jacks", email:)).not_to be_valid
+      expect(NotifyEmailValidator.valid?(email)).to be(false)
     end
   end
 end
