@@ -50,7 +50,7 @@ module Schools
       @claiming_induction_period ||=
         @ect.teacher.induction_periods.ongoing
             .where(started_on: @ect.started_on..@ect.finished_on)
-            .order(started_on: :desc)
+            .latest_first
             .first
     end
 
