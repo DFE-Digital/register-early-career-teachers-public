@@ -327,8 +327,6 @@
   - id
   - banded_fee_structure_id
   - band_id
-  - min_declarations # DEPRECATE
-  - max_declarations # DEPRECATE
   - fee_per_declaration
   - output_fee_ratio
   - service_fee_ratio
