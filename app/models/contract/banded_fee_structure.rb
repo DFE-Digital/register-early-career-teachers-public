@@ -10,6 +10,8 @@ class Contract::BandedFeeStructure < ApplicationRecord
            inverse_of: :banded_fee_structure,
            dependent: :destroy
 
+  accepts_nested_attributes_for :bands, allow_destroy: true
+
   # Validations
   validates :contract_id, uniqueness: { message: "Contract with the same banded fee structure already exist" }
 

@@ -15,6 +15,9 @@ class Contract < ApplicationRecord
   has_one :banded_fee_structure, class_name: "Contract::BandedFeeStructure", inverse_of: :contract, dependent: :destroy
   has_many :statements, inverse_of: :contract
 
+  accepts_nested_attributes_for :banded_fee_structure
+  accepts_nested_attributes_for :flat_rate_fee_structure, reject_if: :all_blank
+
   # Validations
   validates :active_lead_provider, presence: { message: "An active lead provider must be set" }
   validates :contract_type,

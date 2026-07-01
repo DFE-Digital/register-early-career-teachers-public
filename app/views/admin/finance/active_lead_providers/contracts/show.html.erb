@@ -41,10 +41,10 @@
 
 <% if @contract.editable? %>
   <div class="govuk-button-group govuk-!-margin-top-6">
-    <%= govuk_button_link_to "Edit", "#" %>
+    <%= govuk_button_link_to "Edit", edit_admin_contract_period_active_lead_provider_contract_path(@active_lead_provider.contract_period, @active_lead_provider, @contract) %>
     <%= govuk_button_to "Delete",
-          "#",
-          method: :delete,
+          delete_admin_contract_period_active_lead_provider_contract_path(@active_lead_provider.contract_period, @active_lead_provider, @contract),
+          method: :get,
           secondary: true,
           disabled: @contract.statements.any? %>
   </div>
