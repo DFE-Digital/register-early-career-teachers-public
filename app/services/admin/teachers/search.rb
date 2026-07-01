@@ -206,6 +206,8 @@ module Admin
       end
 
       def display_name_order_sql
+        # Mirrors Teachers::Name in SQL so ordering and pagination use the same
+        # display name logic used by the UI.
         <<~SQL.squish
           LOWER(
             COALESCE(
