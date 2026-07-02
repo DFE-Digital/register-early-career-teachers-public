@@ -27,7 +27,10 @@ FactoryBot.define do
     month { month_year_pair[:month] }
     year { month_year_pair[:year] }
     deadline_date { Date.new(year, month, 1).prev_day }
-    payment_date { Date.new(year, month, 25) }
+    payment_date do
+      payment_month = deadline_date.next_month
+      Date.new(payment_month.year, payment_month.month, 25)
+    end
     output_fee
 
     trait :open do

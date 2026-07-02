@@ -17,6 +17,25 @@ describe User do
     [1_234, 1_234_567, "abc123", -12_345].each do |urn|
       it { is_expected.not_to allow_value(urn).for(:otp_school_urn).with_message("URN must be 5 or 6 numbers") }
     end
+
+    describe "email addresses must end with @education.gov.uk" do
+      [
+        "julius.hibbert@education.gov.uk",
+        "MARVIN.MONROE@EDUCATION.GOV.UK",
+      ].each do |valid_email_address|
+        it { is_expected.to allow_value(valid_email_address).for(:email) }
+      end
+
+      let(:validation_message) { %(Enter an '@education.gov.uk' email address) }
+
+      [
+        "julius.hibbert@justice.gov.uk",
+        "nick.riviera@hotmail.com",
+        "marvin.monroe@fakeeducation.gov.uk",
+      ].each do |invalid_email_address|
+        it { is_expected.not_to allow_value(invalid_email_address).for(:email).with_message(validation_message) }
+      end
+    end
   end
 
   describe "associations" do

@@ -20,7 +20,7 @@ RSpec.describe Sessions::User do
       let(:fake_user_session) do
         {
           "type" => "Sessions::Users::AppropriateBodyUser",
-          "email" => "ab_user@example.com",
+          "email" => "ab_user@education.gov.uk",
           "name" => "Christopher Lee",
           "last_active_at" => last_active_at,
           "dfe_sign_in_organisation_id" => dfe_sign_in_organisation_id,
@@ -32,7 +32,7 @@ RSpec.describe Sessions::User do
       it "instantiates a Sessions::Users::AppropriateBodyUser" do
         expect(session_user).to be_a(Sessions::Users::AppropriateBodyUser)
         expect(session_user.name).to eql("Christopher Lee")
-        expect(session_user.email).to eql("ab_user@example.com")
+        expect(session_user.email).to eql("ab_user@education.gov.uk")
         expect(session_user.last_active_at).to eql(last_active_at)
         expect(session_user.appropriate_body_period_id).to be(appropriate_body_period.id)
       end
@@ -43,7 +43,7 @@ RSpec.describe Sessions::User do
       let(:fake_user_session) do
         {
           "type" => "Sessions::Users::AppropriateBodyPersona",
-          "email" => "ab_persona@example.com",
+          "email" => "ab_persona@education.gov.uk",
           "name" => "Christopher Lee",
           "last_active_at" => last_active_at,
           "appropriate_body_period_id" => appropriate_body_period.id
@@ -53,18 +53,18 @@ RSpec.describe Sessions::User do
       it "instantiates a Sessions::Users::AppropriateBodyPersona" do
         expect(session_user).to be_a(Sessions::Users::AppropriateBodyPersona)
         expect(session_user.name).to eql("Christopher Lee")
-        expect(session_user.email).to eql("ab_persona@example.com")
+        expect(session_user.email).to eql("ab_persona@education.gov.uk")
         expect(session_user.last_active_at).to eql(last_active_at)
         expect(session_user.appropriate_body_period_id).to be(appropriate_body_period.id)
       end
     end
 
     context "when user session stores an existing db dfe user" do
-      let!(:dfe_user) { FactoryBot.create(:user, :admin, name: "Christopher Lee", email: "dfe_user@example.com") }
+      let!(:dfe_user) { FactoryBot.create(:user, :admin, name: "Christopher Lee", email: "dfe_user@education.gov.uk") }
       let(:fake_user_session) do
         {
           "type" => "Sessions::Users::DfEUser",
-          "email" => "dfe_user@example.com",
+          "email" => "dfe_user@education.gov.uk",
           "last_active_at" => last_active_at
         }
       end
@@ -72,17 +72,17 @@ RSpec.describe Sessions::User do
       it "instantiates a Sessions::Users::DfEUser" do
         expect(session_user).to be_a(Sessions::Users::DfEUser)
         expect(session_user.name).to eql("Christopher Lee")
-        expect(session_user.email).to eql("dfe_user@example.com")
+        expect(session_user.email).to eql("dfe_user@education.gov.uk")
         expect(session_user.last_active_at).to eql(last_active_at)
       end
     end
 
     context "when user session stores a dfe persona" do
-      let!(:dfe_user) { FactoryBot.create(:user, :admin, name: "Christopher Lee", email: "dfe_persona@example.com") }
+      let!(:dfe_user) { FactoryBot.create(:user, :admin, name: "Christopher Lee", email: "dfe_persona@education.gov.uk") }
       let(:fake_user_session) do
         {
           "type" => "Sessions::Users::DfEPersona",
-          "email" => "dfe_persona@example.com",
+          "email" => "dfe_persona@education.gov.uk",
           "last_active_at" => last_active_at
         }
       end
@@ -90,7 +90,7 @@ RSpec.describe Sessions::User do
       it "instantiates a Sessions::Users::DfEPersona" do
         expect(session_user).to be_a(Sessions::Users::DfEPersona)
         expect(session_user.name).to eql("Christopher Lee")
-        expect(session_user.email).to eql("dfe_persona@example.com")
+        expect(session_user.email).to eql("dfe_persona@education.gov.uk")
         expect(session_user.last_active_at).to eql(last_active_at)
       end
     end
@@ -102,7 +102,7 @@ RSpec.describe Sessions::User do
       let(:fake_user_session) do
         {
           "type" => "Sessions::Users::SchoolUser",
-          "email" => "school_user@example.com",
+          "email" => "school_user@education.gov.uk",
           "name" => "Christopher Lee",
           "last_active_at" => last_active_at,
           "school_urn" => school_urn,
@@ -114,7 +114,7 @@ RSpec.describe Sessions::User do
 
       it "instantiates a Sessions::Users::SchoolUser" do
         expect(session_user).to be_a(Sessions::Users::SchoolUser)
-        expect(session_user.email).to eql("school_user@example.com")
+        expect(session_user.email).to eql("school_user@education.gov.uk")
         expect(session_user.name).to eql("Christopher Lee")
         expect(session_user.last_active_at).to eql(last_active_at)
         expect(session_user.school_urn).to eql(school_urn)

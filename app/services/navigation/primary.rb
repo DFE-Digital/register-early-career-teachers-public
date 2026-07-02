@@ -1,5 +1,7 @@
 module Navigation
-  class PrimaryNavigationComponent < ApplicationComponent
+  class Primary
+    include Rails.application.routes.url_helpers
+
     attr_accessor :current_path, :current_user, :inverse
 
     def initialize(current_path:, current_user: nil, inverse: false)
@@ -8,15 +10,8 @@ module Navigation
       @inverse = inverse
     end
 
-    def call
-      govuk_service_navigation(
-        service_name:,
-        service_url:,
-        current_path:,
-        navigation_id:,
-        navigation_items:,
-        inverse:
-      )
+    def govuk_header_arguments
+      { service_name:, service_url:, current_path:, navigation_id:, navigation_items:, inverse: }
     end
 
   private

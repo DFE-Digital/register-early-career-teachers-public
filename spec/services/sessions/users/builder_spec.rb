@@ -98,6 +98,7 @@ RSpec.describe Sessions::Users::Builder do
     end
 
     context "when the provider is a persona" do
+      let(:email) { "example.user@education.gov.uk" }
       let(:provider) { "persona" }
 
       context "and personas are not enabled" do
@@ -179,6 +180,7 @@ RSpec.describe Sessions::Users::Builder do
     end
 
     context "with an unknown provider" do
+      let(:email) { "example.user@education.gov.uk" }
       let(:provider) { "any_other_provider" }
       let(:uid) { email }
       let(:appropriate_body_period_id) { nil }

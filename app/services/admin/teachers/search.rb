@@ -13,7 +13,7 @@ module Admin
 
       def teacher_scope
         preload_associations(filtered_teacher_scope)
-          .reorder(:trs_first_name, :trs_last_name, :id)
+          .reorder(Arel.sql(display_name_order_sql), :id)
       end
 
     private
@@ -203,6 +203,27 @@ module Admin
         {
           latest_training_period: :schedule
         }
+      end
+
+      def display_name_order_sql
+        # Mirrors Teachers::Name in SQL so ordering and pagination use the same
+        # display name logic used by the UI.
+        <<~SQL.squish
+          LOWER(
+            COALESCE(
+              NULLIF(TRIM(teachers.corrected_name), ''),
+              NULLIF(
+                CONCAT_WS(
+                  ' ',
+                  NULLIF(NULLIF(TRIM(teachers.trs_first_name), ''), '.'),
+                  NULLIF(NULLIF(TRIM(teachers.trs_last_name), ''), '.')
+                ),
+                ''
+              ),
+              'Unknown'
+            )
+          )
+        SQL
       end
     end
   end
