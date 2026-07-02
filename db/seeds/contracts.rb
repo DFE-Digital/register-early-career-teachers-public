@@ -16,11 +16,27 @@ ActiveLeadProvider
 
     active_lead_providers.map do |active_lead_provider|
       number_of_contracts = Faker::Number.between(from: 1, to: 3)
-      contracts = if active_lead_provider.contract_period.mentor_funding_enabled? && active_lead_provider.contract_period.year > 2024
-                    FactoryBot.create_list(:contract, number_of_contracts, :for_ittecf_ectp, active_lead_provider:)
-                  else
-                    FactoryBot.create_list(:contract, number_of_contracts, :for_ecf, active_lead_provider:)
-                  end
+      contracts =
+        if active_lead_provider.contract_period.mentor_funding_enabled? &&
+            active_lead_provider.contract_period.year > 2024
+          FactoryBot.create_list(:contract, number_of_contracts, :for_ittecf_ectp,
+                                 active_lead_provider:)
+        else
+          FactoryBot.create_list(:contract, number_of_contracts, :for_ecf,
+                                 active_lead_provider:)
+        end
+
+      contracts.each do |contract|
+        next unless contract.banded_fee_structure
+
+        contract.active_lead_provider.bands.each do |band|
+          contract.banded_fee_structure.band_terms.find_or_create_by!(band:) do |term|
+            term.fee_per_declaration = Faker::Number.between(from: 20, to: 200)
+            term.output_fee_ratio = 0.8
+            term.service_fee_ratio = 0.2
+          end
+        end
+      end
 
       describe_contracts(active_lead_provider, contracts)
     end

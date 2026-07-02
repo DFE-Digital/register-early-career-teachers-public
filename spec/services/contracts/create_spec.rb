@@ -2,6 +2,7 @@ describe Contracts::Create do
   subject(:service) { described_class.new(author:, active_lead_provider:, params:) }
 
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+  let(:alp_band) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:) }
   let(:user) { FactoryBot.create(:user, :admin) }
   let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
   let(:params) do
@@ -14,8 +15,13 @@ describe Contracts::Create do
         uplift_fee_per_declaration: 50,
         monthly_service_fee: 5_000,
         setup_fee: 10_000,
-        bands_attributes: [
-          { min_declarations: 1, max_declarations: 100, fee_per_declaration: 200, output_fee_ratio: 0.75, service_fee_ratio: 0.25 },
+        band_terms_attributes: [
+          {
+            band_id: alp_band.id,
+            fee_per_declaration: 200,
+            output_fee_ratio: 0.75,
+            service_fee_ratio: 0.25
+          },
         ],
       },
       flat_rate_fee_structure_attributes: {

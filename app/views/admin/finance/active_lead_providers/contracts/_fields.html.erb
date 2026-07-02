@@ -77,29 +77,36 @@
       </tr>
     </thead>
     <tbody class="govuk-table__body">
-      <% bfs.object.bands.each_with_index do |band, index| %>
-        <%= bfs.fields_for :bands, band do |bf| %>
+      <% bfs.object.band_terms.each_with_index do |band_term, index| %>
+        <%= bfs.fields_for :band_terms, band_term do |bt| %>
           <tr class="govuk-table__row" data-controller="band">
-            <th scope="row" class="govuk-table__header"><%= ("A".ord + index).chr %></th>
-            <td class="govuk-table__cell"><%= band.min_declarations %></td>
-            <td class="govuk-table__cell"><%= band.max_declarations %></td>
+            <th scope="row" class="govuk-table__header">
+              <%= ("A".ord + index).chr %>
+              <%= bt.hidden_field :band_id %>
+            </th>
             <td class="govuk-table__cell">
-              <%= bf.text_field :service_fee_percentage,
+              <%= band_term.min_declarations %>
+            </td>
+            <td class="govuk-table__cell">
+              <%= band_term.max_declarations %>
+            </td>
+            <td class="govuk-table__cell">
+              <%= bt.text_field :service_fee_percentage,
                     class: "govuk-input govuk-input--width-5",
                     inputmode: "numeric",
                     aria: { label: "Band #{("A".ord + index).chr} service fee percentage" },
                     data: { band_target: "servicePercentage" } %>
             </td>
             <td class="govuk-table__cell">
-              <%= bf.text_field :output_fee_percentage,
-                    class: "govuk-input govuk-input--width-5 #{" govuk-input--error" if bf.object.errors[:output_fee_ratio].any?}",
+              <%= bt.text_field :output_fee_percentage,
+                    class: "govuk-input govuk-input--width-5 #{" govuk-input--error" if bt.object.errors[:output_fee_ratio].any?}",
                     aria: { label: "Band #{("A".ord + index).chr} output fee percentage" },
                     inputmode: "decimal",
                     data: { band_target: "outputPercentage", action: "input->band#updateServiceFee" } %>
             </td>
             <td class="govuk-table__cell">
-              <%= bf.text_field :fee_per_declaration,
-                    class: "govuk-input govuk-input--width-10 #{" govuk-input--error" if bf.object.errors[:fee_per_declaration].any?}",
+              <%= bt.text_field :fee_per_declaration,
+                    class: "govuk-input govuk-input--width-10 #{" govuk-input--error" if bt.object.errors[:fee_per_declaration].any?}",
                     inputmode: "decimal",
                     aria: { label: "Band #{("A".ord + index).chr} fee per declaration" } %>
             </td>
