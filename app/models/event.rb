@@ -14,6 +14,8 @@ class Event < ApplicationRecord
     induction_period_opened
     induction_period_reopened
     induction_period_updated
+    otp_account_locked
+    otp_account_unlocked
     lead_provider_api_token_created
     lead_provider_api_token_revoked
     lead_provider_delivery_partnership_added
