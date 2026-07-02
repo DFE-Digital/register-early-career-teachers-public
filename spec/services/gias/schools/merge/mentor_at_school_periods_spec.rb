@@ -1,0 +1,410 @@
+RSpec.describe GIAS::Schools::Merge::MentorAtSchoolPeriods do
+  subject(:service) do
+    described_class.merge!(
+      periods:,
+      target_period:
+    )
+  end
+
+  let(:author) { Events::SystemAuthor.new }
+  let(:predecessor_gias_school) { FactoryBot.create(:gias_school, :with_school) }
+  let(:gias_school) { FactoryBot.create(:gias_school, :with_school) }
+  let(:predecessor_school) { predecessor_gias_school.school }
+  let(:school) { gias_school.school }
+
+  let(:teacher) { FactoryBot.create(:teacher) }
+
+  let(:started_on) { Date.new(2025, 1, 1) }
+  let(:finished_on) { Date.new(2025, 12, 31) }
+
+  let(:first_period) { FactoryBot.create(:mentor_at_school_period,  teacher:, school: predecessor_school, started_on:, finished_on: Date.new(2025, 12, 31)) }
+  let(:second_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school:, started_on: Date.new(2025, 4, 1), finished_on: Date.new(2025, 9, 30)) }
+
+  let(:target_period) { second_period }
+
+  let(:periods) { [first_period, second_period] }
+
+  describe "#merge!" do
+    context "when no school partnerships need to be created at the destination school" do
+      let!(:first_training_period) { FactoryBot.create(:training_period, :for_mentor,  :with_only_expression_of_interest, mentor_at_school_period: first_period) }
+      let!(:second_training_period) { FactoryBot.create(:training_period, :for_mentor, :with_only_expression_of_interest, mentor_at_school_period: second_period) }
+
+      context "when there is one mentor_at_school_period at each school that overlaps" do
+        let(:training_periods) { [first_training_period, second_training_period] }
+
+        context "when neither period is ongoing" do
+          it "changes the start date" do
+            expect { service }.to change(target_period, :started_on).to(started_on)
+          end
+
+          it "changes the end date" do
+            expect { service }.to change(target_period, :finished_on).to(finished_on)
+          end
+
+          it "points training periods to the target period" do
+            service
+
+            training_periods.each do |training_period|
+              expect(training_period.mentor_at_school_period).to eq(target_period)
+            end
+          end
+
+          it "merges the periods" do
+            expect { service }.to change(MentorAtSchoolPeriod, :count).by(-1)
+
+            expect(MentorAtSchoolPeriod.exists?(first_period.id)).to be(false)
+            expect(MentorAtSchoolPeriod.exists?(target_period.id)).to be(true)
+          end
+        end
+
+        context "when the period at the destination school is ongoing" do
+          let(:second_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school:, started_on: Date.new(2025, 7, 1), finished_on: nil) }
+
+          it "changes the start date" do
+            expect { service }.to change(target_period, :started_on).to(started_on)
+          end
+
+          it "points training periods to the target period" do
+            service
+
+            training_periods.each do |training_period|
+              expect(training_period.mentor_at_school_period).to eq(target_period)
+            end
+          end
+
+          it "merges the periods" do
+            expect { service }.to change(MentorAtSchoolPeriod, :count).by(-1)
+
+            expect(MentorAtSchoolPeriod.exists?(first_period.id)).to be(false)
+            expect(MentorAtSchoolPeriod.exists?(target_period.id)).to be(true)
+          end
+        end
+
+        context "when the period at the original school is ongoing" do
+          let(:first_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school: predecessor_school, started_on:, finished_on: nil) }
+
+          it "changes the start date" do
+            expect { service }.to change(target_period, :started_on).to(started_on)
+          end
+
+          it "changes the end date" do
+            expect { service }.to change(target_period, :finished_on).to(nil)
+          end
+
+          it "points training periods to the target period" do
+            service
+
+            training_periods.each do |training_period|
+              expect(training_period.mentor_at_school_period).to eq(target_period)
+            end
+          end
+
+          it "merges the periods" do
+            expect { service }.to change(MentorAtSchoolPeriod, :count).by(-1)
+
+            expect(MentorAtSchoolPeriod.exists?(first_period.id)).to be(false)
+            expect(MentorAtSchoolPeriod.exists?(target_period.id)).to be(true)
+          end
+        end
+      end
+
+      context "when there are two mentor periods at the destination school" do
+        let(:first_period) { FactoryBot.create(:mentor_at_school_period,  teacher:, school: predecessor_school, started_on:, finished_on: Date.new(2025, 6, 30)) }
+        let(:second_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school:, started_on: Date.new(2025, 4, 1), finished_on: Date.new(2025, 7, 31)) }
+        let(:third_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school:, started_on: Date.new(2025, 9, 1), finished_on: Date.new(2025, 12, 31)) }
+        let!(:third_training_period) { FactoryBot.create(:training_period, :for_mentor, :with_only_expression_of_interest, mentor_at_school_period: third_period) }
+
+        let(:training_periods) { [first_training_period, second_training_period, third_training_period] }
+        let(:periods) { [first_period, second_period, third_period] }
+
+        context "when no periods are ongoing" do
+          it "changes the start date" do
+            expect { service }.to change(target_period, :started_on).to(started_on)
+          end
+
+          it "changes the end date" do
+            expect { service }.to change(target_period, :finished_on).to(finished_on)
+          end
+
+          it "points training periods to the target period" do
+            service
+
+            training_periods.each do |training_period|
+              expect(training_period.mentor_at_school_period).to eq(target_period)
+            end
+          end
+
+          it "merges the periods" do
+            expect { service }.to change(MentorAtSchoolPeriod, :count).by(-2)
+
+            expect(MentorAtSchoolPeriod.exists?(first_period.id)).to be(false)
+            expect(MentorAtSchoolPeriod.exists?(target_period.id)).to be(true)
+          end
+        end
+
+        context "when the period at the destination school is ongoing" do
+          let(:third_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school:, started_on: Date.new(2025, 9, 1), finished_on: nil) }
+
+          it "changes the start date" do
+            expect { service }.to change(target_period, :started_on).to(started_on)
+          end
+
+          it "changes the end date" do
+            expect { service }.to change(target_period, :finished_on).to(nil)
+          end
+
+          it "points training periods to the target period" do
+            service
+
+            training_periods.each do |training_period|
+              expect(training_period.mentor_at_school_period).to eq(target_period)
+            end
+          end
+
+          it "merges the periods" do
+            expect { service }.to change(MentorAtSchoolPeriod, :count).by(-2)
+
+            expect(MentorAtSchoolPeriod.exists?(first_period.id)).to be(false)
+            expect(MentorAtSchoolPeriod.exists?(target_period.id)).to be(true)
+          end
+        end
+
+        context "when the period at the original school is ongoing" do
+          let(:first_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school: predecessor_school, started_on:, finished_on: nil) }
+
+          it "changes the start date" do
+            expect { service }.to change(target_period, :started_on).to(started_on)
+          end
+
+          it "changes the end date" do
+            expect { service }.to change(target_period, :finished_on).to(nil)
+          end
+
+          it "points training periods to the target period" do
+            service
+
+            training_periods.each do |training_period|
+              expect(training_period.mentor_at_school_period).to eq(target_period)
+            end
+          end
+
+          it "merges the periods" do
+            expect { service }.to change(MentorAtSchoolPeriod, :count).by(-2)
+
+            expect(MentorAtSchoolPeriod.exists?(first_period.id)).to be(false)
+            expect(MentorAtSchoolPeriod.exists?(target_period.id)).to be(true)
+          end
+        end
+      end
+
+      context "when there are two mentor periods at the original school" do
+        let(:first_period) { FactoryBot.create(:mentor_at_school_period,  teacher:, school: predecessor_school, started_on:, finished_on: Date.new(2025, 6, 30)) }
+        let(:second_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school:, started_on: Date.new(2025, 4, 1), finished_on: Date.new(2025, 11, 30)) }
+        let(:third_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school: predecessor_school, started_on: Date.new(2025, 9, 1), finished_on: Date.new(2025, 12, 31)) }
+        let!(:third_training_period) { FactoryBot.create(:training_period, :for_mentor, :with_only_expression_of_interest, mentor_at_school_period: third_period) }
+
+        let(:training_periods) { [first_training_period, second_training_period, third_training_period] }
+        let(:periods) { [first_period, second_period, third_period] }
+
+        context "when no periods are ongoing" do
+          it "changes the start date" do
+            expect { service }.to change(target_period, :started_on).to(started_on)
+          end
+
+          it "changes the end date" do
+            expect { service }.to change(target_period, :finished_on).to(finished_on)
+          end
+
+          it "points training periods to the target period" do
+            service
+
+            training_periods.each do |training_period|
+              expect(training_period.mentor_at_school_period).to eq(target_period)
+            end
+          end
+
+          it "merges the periods" do
+            expect { service }.to change(MentorAtSchoolPeriod, :count).by(-2)
+
+            expect(MentorAtSchoolPeriod.exists?(first_period.id)).to be(false)
+            expect(MentorAtSchoolPeriod.exists?(target_period.id)).to be(true)
+          end
+        end
+
+        context "when the period at the destination school is ongoing" do
+          let(:second_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school:, started_on: Date.new(2025, 4, 1), finished_on: nil) }
+
+          it "changes the start date" do
+            expect { service }.to change(target_period, :started_on).to(started_on)
+          end
+
+          it "points training periods to the target period" do
+            service
+
+            training_periods.each do |training_period|
+              expect(training_period.mentor_at_school_period).to eq(target_period)
+            end
+          end
+
+          it "merges the periods" do
+            expect { service }.to change(MentorAtSchoolPeriod, :count).by(-2)
+
+            expect(MentorAtSchoolPeriod.exists?(first_period.id)).to be(false)
+            expect(MentorAtSchoolPeriod.exists?(target_period.id)).to be(true)
+          end
+        end
+
+        context "when the period at the original school is ongoing" do
+          let(:third_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school: predecessor_school, started_on: Date.new(2025, 9, 1), finished_on: nil) }
+
+          it "changes the start date" do
+            expect { service }.to change(target_period, :started_on).to(started_on)
+          end
+
+          it "changes the end date" do
+            expect { service }.to change(target_period, :finished_on).to(nil)
+          end
+
+          it "points training periods to the target period" do
+            service
+
+            training_periods.each do |training_period|
+              expect(training_period.mentor_at_school_period).to eq(target_period)
+            end
+          end
+
+          it "merges the periods" do
+            expect { service }.to change(MentorAtSchoolPeriod, :count).by(-2)
+
+            expect(MentorAtSchoolPeriod.exists?(first_period.id)).to be(false)
+            expect(MentorAtSchoolPeriod.exists?(target_period.id)).to be(true)
+          end
+        end
+
+        context "when both periods are ongoing" do
+          let(:second_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school:, started_on: Date.new(2025, 4, 1), finished_on: nil) }
+          let(:third_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school: predecessor_school, started_on: Date.new(2025, 9, 1), finished_on: nil) }
+
+          it "changes the start date" do
+            expect { service }.to change(target_period, :started_on).to(started_on)
+          end
+
+          it "points training periods to the target period" do
+            service
+
+            training_periods.each do |training_period|
+              expect(training_period.mentor_at_school_period).to eq(target_period)
+            end
+          end
+
+          it "merges the periods" do
+            expect { service }.to change(MentorAtSchoolPeriod, :count).by(-2)
+
+            expect(MentorAtSchoolPeriod.exists?(first_period.id)).to be(false)
+            expect(MentorAtSchoolPeriod.exists?(target_period.id)).to be(true)
+          end
+        end
+      end
+    end
+
+    context "when a school partnership needs to be reassigned at the destination school" do
+      let!(:first_training_period) { FactoryBot.create(:training_period, :for_mentor, :with_school_partnership, mentor_at_school_period: first_period) }
+      let!(:second_training_period) { FactoryBot.create(:training_period, :for_mentor, :with_only_expression_of_interest, mentor_at_school_period: second_period) }
+
+      context "when the partnership exists at the destination school" do
+        let(:lead_provider_delivery_partnership) { first_training_period.school_partnership.lead_provider_delivery_partnership }
+        let!(:partnership_at_destination_school) { FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:) }
+
+        it "moves the school partnership to the destination school" do
+          service
+
+          expect(first_training_period.school_partnership).to eq(partnership_at_destination_school)
+        end
+      end
+
+      context "when the partnership does not exist at the destination school" do
+        let(:school_partnership) { FactoryBot.create(:school_partnership, school: predecessor_school) }
+        let!(:first_training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period: first_period, school_partnership:) }
+
+        it "creates a new school partnership at the destination school" do
+          expect { service }.to change(SchoolPartnership, :count).by(1)
+
+          expect(first_training_period.school_partnership.school).to eq(school)
+          expect(first_training_period.school_partnership.lead_provider_delivery_partnership).to eq(school_partnership.lead_provider_delivery_partnership)
+        end
+      end
+
+      context "when there are two training periods using the same school partnership" do
+        let(:school_partnership) { FactoryBot.create(:school_partnership, school: predecessor_school) }
+        let(:first_period) { FactoryBot.create(:mentor_at_school_period,  teacher:, school: predecessor_school, started_on:, finished_on: Date.new(2025, 6, 30)) }
+        let(:third_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school: predecessor_school, started_on: Date.new(2025, 9, 1), finished_on: Date.new(2025, 12, 31)) }
+        let!(:third_training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period: third_period, school_partnership:) }
+        let!(:first_training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period: first_period, school_partnership:) }
+
+        let(:periods) { [first_period, second_period, third_period] }
+
+        it "creates one new school partnership at the destination school" do
+          expect(third_training_period.reload.school_partnership).to eq(first_training_period.reload.school_partnership)
+
+          expect { service }.to change(SchoolPartnership, :count).by(1)
+
+          expect(third_training_period.reload.school_partnership).to eq(first_training_period.reload.school_partnership)
+          expect(third_training_period.school_partnership.school).to eq(school)
+          expect(first_training_period.school_partnership.school).to eq(school)
+        end
+      end
+
+      context "when there are two training periods using a different school partnership" do
+        let(:first_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school: predecessor_school, started_on:, finished_on: Date.new(2025, 6, 30)) }
+        let(:third_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school: predecessor_school, started_on: Date.new(2025, 9, 1), finished_on: Date.new(2025, 12, 31)) }
+        let!(:third_training_period) { FactoryBot.create(:training_period, :with_school_partnership, :for_mentor, mentor_at_school_period: third_period) }
+        let!(:first_training_period) { FactoryBot.create(:training_period, :with_school_partnership, :for_mentor, mentor_at_school_period: first_period) }
+
+        let(:periods) { [first_period, second_period, third_period] }
+
+        it "creates one new school partnership at the destination school" do
+          expect { service }.to change(SchoolPartnership, :count).by(2)
+
+          expect(third_training_period.school_partnership.school).to eq(school)
+          expect(first_training_period.school_partnership.school).to eq(school)
+        end
+      end
+    end
+
+    context "when there is a mentorship period that needs to be reassigned" do
+      let(:mentee) { FactoryBot.create(:ect_at_school_period, school: predecessor_school, started_on:, finished_on:) }
+      let!(:mentorship_period) { FactoryBot.create(:mentorship_period, mentor: first_period, mentee:, started_on:, finished_on: Date.new(2025, 6, 30)) }
+
+      it "changes the mentorship period to point to the target period" do
+        service
+
+        expect(mentorship_period.mentor).to eq(target_period)
+      end
+    end
+
+    context "when there is an event that needs to be reassigned" do
+      let!(:event) { FactoryBot.create(:event, mentor_at_school_period: first_period) }
+
+      it "changes the event to point to the target period" do
+        expect { service }.to change { event.reload.mentor_at_school_period }.to(target_period)
+      end
+
+      context "when the event is linked to the predecessor school" do
+        let!(:event) { FactoryBot.create(:event, mentor_at_school_period: first_period, school: predecessor_school) }
+
+        it "changes the event to point to the target period" do
+          expect { service }.to change { event.reload.school }.to(school)
+        end
+      end
+
+      context "when the event is linked to a school partnership" do
+        let!(:first_training_period) { FactoryBot.create(:training_period, :for_mentor, :with_school_partnership, mentor_at_school_period: first_period) }
+        let!(:event) { FactoryBot.create(:event, mentor_at_school_period: first_period, school_partnership: first_training_period.school_partnership) }
+
+        it "changes the event to point to the target period" do
+          expect { service }.to change { event.reload.mentor_at_school_period }.to(target_period)
+        end
+      end
+    end
+  end
+end

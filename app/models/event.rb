@@ -50,6 +50,7 @@ class Event < ApplicationRecord
     teacher_mentor_at_school_period_deleted
     teacher_ect_at_school_period_moved_school
     teacher_mentor_at_school_period_moved_school
+    teacher_mentor_at_school_periods_merged
     teacher_registered_as_mentor
     teacher_left_school_as_mentor
     teacher_starts_being_mentored
