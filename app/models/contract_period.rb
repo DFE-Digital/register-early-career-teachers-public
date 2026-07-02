@@ -67,6 +67,10 @@ class ContractPeriod < ApplicationRecord
     started_on <= Time.zone.today
   end
 
+  def finished_on_before_today?
+    finished_on < Time.zone.today
+  end
+
   def payments_frozen?
     payments_frozen_at.present? && payments_frozen_at <= Time.zone.now
   end
