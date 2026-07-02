@@ -14,18 +14,31 @@ module Admin
           if show_move_partnership_link?
             card.with_action { helpers.govuk_link_to("Move to a different partnership", move_partnership_path) }
           end
-          card.with_summary_list(actions: false) do |list|
-            rows.each do |row|
-              list.with_row do |r|
-                r.with_key(text: row[:key][:text]) if row[:key].present?
-                r.with_value(text: row[:value][:text])
+
+          helpers.safe_join([
+            status_inset_text,
+            helpers.govuk_summary_list(actions: false) do |list|
+              rows.each do |row|
+                list.with_row do |r|
+                  r.with_key(text: row.dig(:key, :text)) if row[:key].present?
+                  r.with_value(text: row.dig(:value, :text))
+                end
               end
             end
-          end
+          ].compact)
         end
       end
 
     private
+
+      def status_inset_text
+        case training_period.status
+        when :deferred
+          helpers.govuk_inset_text(text: "#{helpers.teacher_full_name(teacher)} has been deferred from this training period by the lead provider.")
+        when :withdrawn
+          helpers.govuk_inset_text(text: "#{helpers.teacher_full_name(teacher)} has been withdrawn from this training period by the lead provider.")
+        end
+      end
 
       def rows
         if training_period.provider_led_training_programme?
