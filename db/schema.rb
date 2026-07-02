@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_29_150700) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_02_090522) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -484,6 +484,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_29_150700) do
   end
 
   create_table "mentorship_periods", force: :cascade do |t|
+    t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
     t.datetime "created_at", null: false
     t.uuid "ecf_end_induction_record_id"
     t.uuid "ecf_start_induction_record_id"
@@ -494,6 +495,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_29_150700) do
     t.date "started_on", null: false
     t.datetime "updated_at", null: false
     t.index "ect_at_school_period_id, ((finished_on IS NULL))", name: "idx_on_ect_at_school_period_id_finished_on_IS_NULL_afd5cf131d", unique: true, where: "(finished_on IS NULL)"
+    t.index ["api_id"], name: "index_mentorship_periods_on_api_id", unique: true
     t.index ["ect_at_school_period_id", "started_on"], name: "index_mentorship_periods_on_ect_at_school_period_id_started_on", unique: true
     t.index ["ect_at_school_period_id"], name: "index_mentorship_periods_on_ect_at_school_period_id"
     t.index ["mentor_at_school_period_id", "ect_at_school_period_id", "started_on"], name: "idx_on_mentor_at_school_period_id_ect_at_school_per_d69dffeecc", unique: true
