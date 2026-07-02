@@ -274,6 +274,7 @@ erDiagram
     daterange range
     date started_on
     datetime updated_at
+    uuid api_id
   }
   MentorshipPeriod }o--|| ECTAtSchoolPeriod : belongs_to
   MentorshipPeriod }o--|| MentorAtSchoolPeriod : belongs_to

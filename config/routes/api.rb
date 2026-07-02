@@ -21,6 +21,8 @@ namespace :api do
       end
     end
 
+    resources :mentorship_periods, only: %i[index], path: "mentorship-periods"
+
     resources :declarations, only: %i[create show index], param: :api_id, path: "participant-declarations" do
       member { put :void, path: "void" }
     end
