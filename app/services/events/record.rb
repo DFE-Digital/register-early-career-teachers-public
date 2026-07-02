@@ -1088,6 +1088,20 @@ module Events
       new(event_type:, author:, user:, heading:, modifications:, happened_at:).record_event!
     end
 
+    def self.record_otp_account_locked_event!(user:, modifications:, author: Events::SystemAuthor.new, happened_at: Time.zone.now)
+      event_type = :otp_account_locked
+      heading = "#{user.name}’s account was locked after too many failed OTP attempts"
+
+      new(event_type:, author:, user:, heading:, modifications:, happened_at:).record_event!
+    end
+
+    def self.record_otp_account_unlocked_event!(author:, user:, modifications:, happened_at: Time.zone.now)
+      event_type = :otp_account_unlocked
+      heading = "#{user.name}’s account was unlocked"
+
+      new(event_type:, author:, user:, heading:, modifications:, happened_at:).record_event!
+    end
+
     # Declarations events
 
     def self.record_declaration_created_event!(author:, teacher:, lead_provider:, declaration:)
