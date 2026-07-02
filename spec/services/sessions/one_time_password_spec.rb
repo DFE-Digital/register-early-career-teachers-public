@@ -162,7 +162,7 @@ RSpec.describe Sessions::OneTimePassword do
       it "does not increment failed attempts when the account is locked" do
         code = service.generate
         user.update!(otp_failed_attempts: 10, otp_locked_at: Time.zone.now)
-        
+
         expect { service.verify(code:) }.not_to change { user.reload.otp_failed_attempts }
       end
     end
