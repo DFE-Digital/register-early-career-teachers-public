@@ -41,7 +41,7 @@ module TeacherHistories
           )
         end
 
-        if ect_at_school_period.finished_on == training_period.finished_on
+        if !ect_at_school_period.ongoing? && ect_at_school_period.finished_on == training_period.finished_on
           Events::Record.record_teacher_left_school_as_ect!(
             author:,
             school: ect_at_school_period.school,
