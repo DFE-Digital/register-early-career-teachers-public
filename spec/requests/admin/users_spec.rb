@@ -55,6 +55,20 @@ RSpec.describe "Admin::Users" do
         expect(user_record.reload.email).not_to eq("hacked@education.gov.uk")
       end
     end
+
+    it "returns unauthorised for PATCH /admin/users/:id/unlock-otp-sign-in and does not unlock the user" do
+      user_record = FactoryBot.create(:user, otp_failed_attempts: 10, otp_locked_at: Time.zone.now)
+
+      patch unlock_otp_sign_in_admin_user_path(user_record)
+
+      aggregate_failures do
+        expect(response).to have_http_status(:unauthorized)
+        expect(response.body).to include("You are not authorised to access this page")
+        expect(response.body).to include(error_message)
+        expect(user_record.reload.otp_locked_at).to be_present
+        expect(user_record.otp_failed_attempts).to eq(10)
+      end
+    end
   end
 
   context "when signed in as a user manager" do
@@ -172,6 +186,26 @@ RSpec.describe "Admin::Users" do
       it "shows the user details on the page" do
         get admin_user_path(user_record)
         expect(response.body).to include(user_record.name)
+      end
+    end
+
+    describe "PATCH /admin/users/:id/unlock-otp-sign-in" do
+      let(:user_record) { FactoryBot.create(:user, otp_failed_attempts: 10, otp_locked_at: Time.zone.now) }
+      let(:service) { instance_double(Sessions::UnlockOTPAccount, unlock: true) }
+
+      before do
+        allow(Sessions::UnlockOTPAccount).to receive(:new).and_return(service)
+      end
+
+      it "uses the unlock service and redirects back to the user page" do
+        patch unlock_otp_sign_in_admin_user_path(user_record)
+
+        aggregate_failures do
+          expect(Sessions::UnlockOTPAccount).to have_received(:new).with(author: an_instance_of(Sessions::Users::DfEPersona), user: user_record)
+          expect(service).to have_received(:unlock)
+          expect(response).to redirect_to(admin_user_path(user_record))
+          expect(flash[:alert]).to eq("#{user_record.name} can now sign in with OTP")
+        end
       end
     end
 

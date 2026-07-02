@@ -10,7 +10,11 @@ namespace :admin do
   # Background jobs dashboard
   mount MissionControl::Jobs::Engine, at: "jobs"
 
-  resources :users
+  resources :users do
+    member do
+      patch :unlock_otp_sign_in, path: "unlock-otp-sign-in"
+    end
+  end
   resources :batches, only: %i[index], path: "bulk" # all activity
 
   resources :organisations, only: %i[index] do

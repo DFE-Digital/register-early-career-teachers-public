@@ -40,6 +40,36 @@ RSpec.describe Sessions::OTPSignInForm, type: :model do
       end
     end
 
+    context "when the account is locked" do
+      before { user.update!(otp_locked_at: Time.zone.now) }
+
+      it "does not verify the code" do
+        expect(mock_otp_service).not_to receive(:verify)
+        form.valid?(:verify)
+      end
+
+      it "adds a locked error" do
+        expect(form.valid?(:verify)).to be false
+        expect(form.errors.messages[:code]).to include "Your account is locked, please contact support"
+      end
+    end
+
+    context "when the account is locked by this verification attempt" do
+      let(:result) { nil }
+
+      before do
+        allow(mock_otp_service).to receive(:verify).with(code:) do
+          form.user.update!(otp_locked_at: Time.zone.now)
+          result
+        end
+      end
+
+      it "adds a locked error" do
+        expect(form.valid?(:verify)).to be false
+        expect(form.errors.messages[:code]).to include "Your account is locked, please contact support"
+      end
+    end
+
     context "when there is no matching user" do
       let!(:user) { nil }
 

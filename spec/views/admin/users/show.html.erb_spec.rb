@@ -37,8 +37,30 @@ describe "admin/users/show.html.erb" do
     expect(rendered).to have_css("dd", text: "Admin")
   end
 
+  it "displays whether the account is locked for OTP sign-in" do
+    expect(rendered).to have_css("dt", text: "Account locked")
+    expect(rendered).to have_css("dd", text: "No")
+  end
+
+  it "does not display an unlock OTP sign-in button" do
+    expect(rendered).not_to have_button("Unlock OTP sign-in")
+  end
+
   it "does not display the otp school URN row when otp school sign-in flag is disabled" do
     expect(rendered).not_to have_css("dt", text: "School URN for OTP sign-in")
+  end
+
+  context "when the user is locked out of OTP sign-in" do
+    let(:user) { FactoryBot.create(:user, role, otp_locked_at: Time.zone.now) }
+
+    it "displays that the account is locked for OTP sign-in" do
+      expect(rendered).to have_css("dt", text: "Account locked")
+      expect(rendered).to have_css("dd", text: "Yes")
+    end
+
+    it "displays an unlock OTP sign-in button" do
+      expect(rendered).to have_button("Unlock OTP sign-in")
+    end
   end
 
   context "when the user is a user manager user" do
