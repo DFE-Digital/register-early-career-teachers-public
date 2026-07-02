@@ -378,6 +378,29 @@ module Events
       new(event_type:, author:, heading:, teacher:, school:, happened_at:).record_event!
     end
 
+    def self.record_teacher_ect_at_school_period_moved_school!(author:, teacher:, ect_at_school_period:, old_school_name:, new_school:, happened_at: Time.zone.now)
+      event_type = :teacher_ect_at_school_period_moved_school
+      teacher_name = Teachers::Name.new(teacher).full_name
+      new_school_name = Schools::Name.new(new_school).name_and_urn
+
+      heading = "#{teacher_name}'s ECT at school period at #{old_school_name} was moved to #{new_school_name}"
+
+      metadata = { old_school_name: }
+
+      new(event_type:, author:, heading:, teacher:, ect_at_school_period:, school: new_school, metadata:, happened_at:).record_event!
+    end
+
+    def self.record_teacher_mentor_at_school_period_moved_school!(author:, teacher:, mentor_at_school_period:, old_school_name:, new_school:, happened_at: Time.zone.now)
+      event_type = :teacher_mentor_at_school_period_moved_school
+      teacher_name = Teachers::Name.new(teacher).full_name
+      new_school_name = Schools::Name.new(new_school).name_and_urn
+      heading = "#{teacher_name}'s Mentor at school period at #{old_school_name} was moved to #{new_school_name}"
+
+      metadata = { old_school_name: }
+
+      new(event_type:, author:, heading:, teacher:, mentor_at_school_period:, school: new_school, metadata:, happened_at:).record_event!
+    end
+
     def self.record_teacher_starts_training_period_event!(author:, training_period:, ect_at_school_period:, mentor_at_school_period:, teacher:, school:, happened_at:)
       if ect_at_school_period.present? && mentor_at_school_period.present?
         fail(ArgumentError, "either ect_at_school_period or mentor_at_school_period permitted, not both")
@@ -1227,6 +1250,48 @@ module Events
         happened_at: Time.zone.now,
         modifications:
       ).record_event!
+    end
+
+    # School Events
+
+    def self.record_school_opened_event!(author:, school:, gias_school:, happened_at: Time.zone.now)
+      event_type = :school_opened
+      school_name = Schools::Name.new(school).name_and_urn
+
+      heading = "#{school_name} opened"
+      metadata = {
+        gias_school_urn: gias_school.urn,
+        gias_school_name: gias_school.name,
+      }
+
+      new(event_type:, author:, heading:, school:, happened_at:, metadata:).record_event!
+    end
+
+    def self.record_school_closed_event!(author:, school:, gias_school:, happened_at: Time.zone.now)
+      event_type = :school_closed
+      school_name = Schools::Name.new(school).name_and_urn
+
+      heading = "#{school_name} closed"
+      metadata = {
+        gias_school_urn: gias_school.urn,
+        gias_school_name: gias_school.name,
+      }
+
+      new(event_type:, author:, heading:, school:, happened_at:, metadata:).record_event!
+    end
+
+    def self.record_school_changed_event!(author:, school:, old_gias_school:, new_gias_school:, happened_at: Time.zone.now)
+      event_type = :school_changed
+
+      heading = "#{school.name} changed in GIAS (#{new_gias_school.urn} changed from #{old_gias_school.urn})"
+      metadata = {
+        old_gias_school_urn: old_gias_school.urn,
+        old_gias_school_name: old_gias_school.name,
+        new_gias_school_urn: new_gias_school.urn,
+        new_gias_school_name: new_gias_school.name,
+      }
+
+      new(event_type:, author:, heading:, school:, happened_at:, metadata:).record_event!
     end
 
   private
