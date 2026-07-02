@@ -163,7 +163,7 @@ RSpec.describe Sessions::OneTimePassword do
         code = service.generate
         user.update!(otp_failed_attempts: 10, otp_locked_at: Time.zone.now)
 
-        expect { service.verify(code:) }.not_to change { user.reload.otp_failed_attempts }
+        expect { service.verify(code:) }.not_to(change { user.reload.otp_failed_attempts })
       end
     end
   end
