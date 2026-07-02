@@ -4,7 +4,8 @@ module Admin::Finance::ActiveLeadProviders
 
     before_action :set_active_lead_provider
     before_action :set_contract, only: %i[show edit update delete destroy]
-    before_action :redirect_unless_editable, only: %i[new create edit update delete destroy]
+    before_action :redirect_unless_editable, only: %i[edit update]
+    before_action :redirect_if_finished, only: %i[new create delete destroy]
 
     def index
       @breadcrumbs = {
@@ -74,7 +75,7 @@ module Admin::Finance::ActiveLeadProviders
 
     def set_active_lead_provider
       @active_lead_provider = ActiveLeadProvider
-        .includes(:contract_period, :lead_provider)
+        .includes(:contract_period, :lead_provider, :bands)
         .find(params.expect(:active_lead_provider_id))
     end
 
@@ -84,7 +85,9 @@ module Admin::Finance::ActiveLeadProviders
           :statements,
           :flat_rate_fee_structure,
           banded_fee_structure: {
-            band_terms: :band
+            band_terms: {
+              band: { active_lead_provider: :bands }
+            }
           }
         )
         .find(params.expect(:id))
@@ -95,6 +98,13 @@ module Admin::Finance::ActiveLeadProviders
         redirect_to contracts_path,
                     flash: { error: "Contracts cannot be changed once the contract period has started" }
       end
+    end
+
+    def redirect_if_finished
+      return unless @active_lead_provider.finished_on_before_today?
+
+      redirect_to contracts_path,
+                  flash: { error: "Contracts cannot be changed once the contract period has finished" }
     end
 
     def contract_params
