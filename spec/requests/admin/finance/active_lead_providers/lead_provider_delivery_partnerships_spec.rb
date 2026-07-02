@@ -35,8 +35,8 @@ RSpec.describe "Admin finance active lead provider lead provider delivery partne
         expect(response).to have_http_status(:ok)
       end
 
-      context "when the contract period has started" do
-        let(:contract_period) { FactoryBot.create(:contract_period, :current) }
+      context "when the contract period is payments frozen" do
+        let(:contract_period) { FactoryBot.create(:contract_period, :with_payments_frozen) }
 
         it "renders the delivery partnerships index page" do
           get index_path
@@ -60,8 +60,8 @@ RSpec.describe "Admin finance active lead provider lead provider delivery partne
         expect(response).to have_http_status(:ok)
       end
 
-      context "when the contract period has started" do
-        let(:contract_period) { FactoryBot.create(:contract_period, :current) }
+      context "when the contract period is payments frozen" do
+        let(:contract_period) { FactoryBot.create(:contract_period, :with_payments_frozen) }
 
         it "blocks the new form, redirecting to the index" do
           get new_path
@@ -100,8 +100,8 @@ RSpec.describe "Admin finance active lead provider lead provider delivery partne
         end
       end
 
-      context "when the contract period has started" do
-        let(:contract_period) { FactoryBot.create(:contract_period, :current) }
+      context "when the contract period is payments frozen" do
+        let(:contract_period) { FactoryBot.create(:contract_period, :with_payments_frozen) }
 
         it "blocks the create, redirecting to the index" do
           expect {
@@ -143,8 +143,8 @@ RSpec.describe "Admin finance active lead provider lead provider delivery partne
         end
       end
 
-      context "when the contract period has started" do
-        let(:contract_period) { FactoryBot.create(:contract_period, :current) }
+      context "when the contract period is payments frozen" do
+        let(:contract_period) { FactoryBot.create(:contract_period, :with_payments_frozen) }
 
         it "blocks the delete page, redirecting to the index" do
           get delete_path
@@ -183,8 +183,8 @@ RSpec.describe "Admin finance active lead provider lead provider delivery partne
         end
       end
 
-      context "when the contract period has started" do
-        let(:contract_period) { FactoryBot.create(:contract_period, :current) }
+      context "when the contract period is payments frozen" do
+        let(:contract_period) { FactoryBot.create(:contract_period, :with_payments_frozen) }
 
         it "blocks the destroy, redirecting to the index" do
           lead_provider_delivery_partnership

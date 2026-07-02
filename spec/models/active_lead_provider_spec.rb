@@ -20,6 +20,20 @@ describe ActiveLeadProvider do
     it { is_expected.to validate_uniqueness_of(:contract_period_year).scoped_to(:lead_provider_id).with_message("Contract period and lead provider must be unique") }
   end
 
+  describe "#editable?" do
+    subject { FactoryBot.create(:active_lead_provider, contract_period:) }
+
+    let(:contract_period) { FactoryBot.create(:contract_period) }
+
+    it { is_expected.to be_editable }
+
+    context "when the contract period is payments frozen" do
+      let(:contract_period) { FactoryBot.create(:contract_period, :with_payments_frozen) }
+
+      it { is_expected.not_to be_editable }
+    end
+  end
+
   describe "scopes" do
     let!(:rp_1) { FactoryBot.create(:contract_period) }
     let!(:rp_2) { FactoryBot.create(:contract_period) }

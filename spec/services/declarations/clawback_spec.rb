@@ -23,8 +23,9 @@ RSpec.describe Declarations::Clawback do
   end
 
   before do
-    # make payment statement precede clawback statement
-    declaration.payment_statement.update!(deadline_date: Date.yesterday, payment_date: Date.current)
+    # make payment statement precede clawback statement, avoiding
+    # validation rules around deadline_date.
+    declaration.payment_statement.update_columns(deadline_date: Date.yesterday, payment_date: Date.current)
   end
 
   describe "#clawback" do

@@ -3,6 +3,10 @@ class Statement < ApplicationRecord
 
   VALID_FEE_TYPES = %w[output service].freeze
 
+  # In factories and seed data we need to be able to create statements with
+  # a deadline date in the past, so we allow this to be overridden in those cases.
+  attr_accessor :allow_creation_with_past_deadline_date
+
   # Associations
   belongs_to :contract
   has_many :adjustments, dependent: :destroy
@@ -33,7 +37,9 @@ class Statement < ApplicationRecord
   validates :api_id, uniqueness: { case_sensitive: false, message: "API id already exists for another statement" }
   validate :unique_lead_provider_month_year
   validates :deadline_date, presence: { message: "Deadline date must be specified" }
-  validate :deadline_date_in_the_past
+  validates :deadline_date, comparison: { greater_than: Date.current, message: "Deadline date must be in the future" }, on: :create, unless: :allow_creation_with_past_deadline_date
+  validate :deadline_date_remains_in_future, on: :update
+  validate :deadline_date_in_the_past, if: :payable_or_paid?
   validates :payment_date,
             comparison: {
               greater_than: :deadline_date,
@@ -110,8 +116,18 @@ private
     errors.add(:base, "Statement with the same month and year already exists for this active lead provider")
   end
 
+  def payable_or_paid?
+    payable? || paid?
+  end
+
+  def deadline_date_remains_in_future
+    return unless will_save_change_to_deadline_date?
+    return if deadline_date.after?(Date.current)
+
+    errors.add(:deadline_date, "Deadline date must remain in the future")
+  end
+
   def deadline_date_in_the_past
-    return unless payable? || paid?
     return if deadline_date.before?(Date.current)
 
     errors.add(:deadline_date, "Deadline date must be in the past")

@@ -34,17 +34,27 @@ RSpec.describe "admin/finance/active_lead_providers/statements/show.html.erb" do
     expect(rendered).not_to have_selector("a[aria-disabled='true']")
   end
 
-  context "when the contract period has started" do
-    let(:contract_period) do
-      FactoryBot.create(:contract_period, year: 2020, started_on: Date.new(2020, 6, 1), finished_on: Date.new(2021, 5, 31))
-    end
-    let(:statement) { FactoryBot.create(:statement, :open, :output_fee, active_lead_provider:, month: 11, year: 2020) }
+  context "when the contract period is payments frozen" do
+    let(:contract_period) { FactoryBot.create(:contract_period, :with_payments_frozen) }
+    let(:statement) { FactoryBot.create(:statement, :open, :output_fee, active_lead_provider:) }
 
     it "renders the Edit and Delete buttons in a disabled state" do
       render
 
       expect(rendered).to have_selector("a[disabled], a[aria-disabled='true']", text: "Edit statement")
       expect(rendered).to have_selector("a[disabled], a[aria-disabled='true']", text: "Delete statement")
+    end
+  end
+
+  context "when the contract period is not payments frozen" do
+    let(:contract_period) { FactoryBot.create(:contract_period) }
+    let(:statement) { FactoryBot.create(:statement, :open, :output_fee, active_lead_provider:) }
+
+    it "renders the Edit and Delete buttons in an enabled state" do
+      render
+
+      expect(rendered).to have_selector("a:not([disabled])", text: "Edit statement")
+      expect(rendered).to have_selector("a:not([disabled])", text: "Delete statement")
     end
   end
 end

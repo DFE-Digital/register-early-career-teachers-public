@@ -21,6 +21,7 @@ FactoryBot.define do
       end
     end
 
+    allow_creation_with_past_deadline_date { true }
     contract { association(:contract, :for_ittecf_ectp, active_lead_provider:) }
     api_id { SecureRandom.uuid }
 

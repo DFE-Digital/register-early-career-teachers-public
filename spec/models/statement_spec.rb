@@ -10,7 +10,7 @@ describe Statement do
   end
 
   describe "validations" do
-    subject { FactoryBot.create(:statement) }
+    subject { FactoryBot.create(:statement, allow_creation_with_past_deadline_date: false) }
 
     it { is_expected.to validate_presence_of(:contract).with_message("Contract is required") }
     it { is_expected.to validate_presence_of(:fee_type).with_message("Enter a fee type") }
@@ -25,6 +25,13 @@ describe Statement do
     it { is_expected.to validate_inclusion_of(:fee_type).in_array(described_class.fee_types.keys).with_message("Fee type must be output or service") }
     it { is_expected.to validate_inclusion_of(:status).in_array(described_class.statuses.keys).with_message("Choose a valid status") }
     it { is_expected.to validate_comparison_of(:payment_date).is_greater_than(:deadline_date).with_message("Payment date must be later than the deadline date") }
+    it { is_expected.to validate_comparison_of(:deadline_date).is_greater_than(Date.current).on(:create).with_message("Deadline date must be in the future") }
+
+    context "when allow_creation_with_past_deadline_date is true" do
+      subject { FactoryBot.build(:statement, allow_creation_with_past_deadline_date: true) }
+
+      it { is_expected.not_to validate_comparison_of(:deadline_date) }
+    end
 
     describe "uniqueness of month and year for the same active lead provider" do
       let(:active_lead_provider) { contract.active_lead_provider }
@@ -41,9 +48,25 @@ describe Statement do
       it "is valid to create another statement with the same month and year for a different active lead provider" do
         other_active_lead_provider = FactoryBot.create(:active_lead_provider)
         other_contract = FactoryBot.create(:contract, active_lead_provider: other_active_lead_provider)
-        statement = described_class.new(contract: other_contract, month: 5, year: 2024, deadline_date: Date.new(2024, 5, 1).prev_day, payment_date: Date.new(2024, 5, 25))
+        statement = FactoryBot.build(:statement, contract: other_contract, month: 5, year: 2024, deadline_date: Date.new(2024, 5, 1).prev_day, payment_date: Date.new(2024, 5, 25))
 
         expect(statement).to be_valid
+      end
+    end
+
+    describe "deadline date remains in the future when updating" do
+      subject(:statement) { FactoryBot.create(:statement, deadline_date: 1.day.from_now.to_date) }
+
+      it "allows updates when the deadline_date remains in the future" do
+        statement.deadline_date = 2.days.from_now
+
+        expect(statement).to be_valid
+      end
+
+      it "prevents updates when the deadline_date is changed to a past date" do
+        statement.deadline_date = 1.day.ago
+
+        expect(statement).to have_error(:deadline_date, "Deadline date must remain in the future")
       end
     end
 

@@ -35,5 +35,6 @@ class ActiveLeadProvider < ApplicationRecord
   }
 
   delegate :name, to: :lead_provider, prefix: true
-  delegate :editable?, to: :contract_period
+
+  def editable? = !contract_period.payments_frozen?
 end

@@ -9,7 +9,7 @@
 
 <%= render "statement", statement: @statement %>
 
-<% disabled = contract_period.started_on_or_before_today? %>
+<% disabled = !@active_lead_provider.editable? %>
 
 <div class="govuk-button-group">
   <%= govuk_button_link_to("Edit statement",

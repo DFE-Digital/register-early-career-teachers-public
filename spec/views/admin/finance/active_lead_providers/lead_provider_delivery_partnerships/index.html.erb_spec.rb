@@ -36,9 +36,9 @@ RSpec.describe "admin/finance/active_lead_providers/lead_provider_delivery_partn
     expect(rendered).not_to have_selector("a[aria-disabled='true']", text: "Add delivery partner")
   end
 
-  context "when the contract period has already started" do
+  context "when the contract period is payments frozen" do
     let(:contract_period) do
-      FactoryBot.create(:contract_period, year: 2020, started_on: Date.new(2020, 6, 1), finished_on: Date.new(2021, 5, 31))
+      FactoryBot.create(:contract_period, :with_payments_frozen)
     end
 
     it "hides remove buttons and renders the add button in a disabled state" do
