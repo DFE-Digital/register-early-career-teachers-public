@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_29_150700) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_02_065431) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -938,6 +938,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_29_150700) do
     t.datetime "created_at", null: false
     t.citext "email", null: false
     t.string "name", null: false
+    t.integer "otp_failed_attempts", default: 0, null: false
+    t.datetime "otp_locked_at"
     t.integer "otp_school_urn"
     t.string "otp_secret"
     t.datetime "otp_verified_at"
