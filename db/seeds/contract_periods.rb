@@ -35,6 +35,11 @@ end
     enabled: true,
     mentor_funding_enabled: true,
     detailed_evidence_types_enabled: true,
+    uplift_fees_enabled: false },
+  { year: 2027,
+    enabled: true,
+    mentor_funding_enabled: true,
+    detailed_evidence_types_enabled: true,
     uplift_fees_enabled: false }
 ].each do |data|
   FactoryBot.create(:contract_period,

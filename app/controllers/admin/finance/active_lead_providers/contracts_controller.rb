@@ -112,14 +112,15 @@ module Admin::Finance::ActiveLeadProviders
               :monthly_service_fee,
               :setup_fee,
               {
-                bands_attributes: %i[
-                  id
-                  min_declarations
-                  max_declarations
-                  fee_per_declaration
-                  output_fee_percentage
-                  service_fee_percentage
-                  _destroy
+                band_terms_attributes: [
+                  %i[
+                    id
+                    band_id
+                    fee_per_declaration
+                    output_fee_percentage
+                    service_fee_percentage
+                    _destroy
+                  ]
                 ]
               },
             ],

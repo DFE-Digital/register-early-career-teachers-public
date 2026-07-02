@@ -1,10 +1,10 @@
 describe PaymentCalculator::Resolver do
-  describe "#calculators" do
-    let(:statement) { FactoryBot.create(:statement, :open) }
+  let(:statement) { FactoryBot.create(:statement, :open, contract:, active_lead_provider: contract.active_lead_provider) }
 
+  describe "#calculators" do
     context "when contract type is `ittecf_ectp`" do
       let(:contract) { FactoryBot.create(:contract, :for_ittecf_ectp) }
-      let(:statement) { FactoryBot.create(:statement, :open, contract:, active_lead_provider: contract.active_lead_provider) }
+
       let(:calculators) { described_class.new(contract:, statement:).calculators }
 
       it "returns two calculators" do
@@ -12,7 +12,7 @@ describe PaymentCalculator::Resolver do
       end
 
       describe "`FlatRate` calculator (for Mentors)" do
-        subject(:flat_rate_calculator) { calculators.first }
+        subject(:flat_rate_calculator) { calculators.last }
 
         it { is_expected.to be_a(PaymentCalculator::FlatRate) }
 
@@ -43,7 +43,7 @@ describe PaymentCalculator::Resolver do
       end
 
       describe "`Banded` calculator (for ECTs)" do
-        subject(:banded_calculator) { calculators.last }
+        subject(:banded_calculator) { calculators.first }
 
         it { is_expected.to be_a(PaymentCalculator::Banded) }
 
@@ -74,7 +74,7 @@ describe PaymentCalculator::Resolver do
 
     context "when contract type is `ecf`" do
       let(:contract) { FactoryBot.create(:contract, :for_ecf) }
-      let(:statement) { FactoryBot.create(:statement, :open, contract:, active_lead_provider: contract.active_lead_provider) }
+
       let(:calculators) { described_class.new(contract:, statement:).calculators }
 
       it "returns one calculator" do
@@ -113,7 +113,6 @@ describe PaymentCalculator::Resolver do
 
     context "when contract is omitted" do
       let(:contract) { FactoryBot.create(:contract, :for_ecf) }
-      let(:statement) { FactoryBot.create(:statement, :open, contract:, active_lead_provider: contract.active_lead_provider) }
 
       it "uses statement.contract" do
         calculators = described_class.new(statement:).calculators
@@ -126,18 +125,18 @@ describe PaymentCalculator::Resolver do
 
     context "when a matching contract is explicitly provided" do
       let(:contract) { FactoryBot.create(:contract, :for_ittecf_ectp) }
-      let(:statement) { FactoryBot.create(:statement, :open, contract:, active_lead_provider: contract.active_lead_provider) }
 
       it "uses the explicit contract successfully" do
         calculators = described_class.new(statement:, contract:).calculators
 
         expect(calculators.size).to eq(2)
-        expect(calculators.map(&:class)).to eq([PaymentCalculator::FlatRate, PaymentCalculator::Banded])
+        expect(calculators.map(&:class)).to eq([PaymentCalculator::Banded, PaymentCalculator::FlatRate])
       end
     end
 
     context "when the provided contract does not match statement.contract" do
       let(:other_contract) { FactoryBot.create(:contract, :for_ecf) }
+      let(:statement) { FactoryBot.create(:statement, :open) }
 
       it "raises ContractMismatchError" do
         expect { described_class.new(statement:, contract: other_contract).calculators }
@@ -147,7 +146,6 @@ describe PaymentCalculator::Resolver do
 
     context "when contract type is not supported" do
       let(:contract) { FactoryBot.create(:contract, :for_ittecf_ectp) }
-      let(:statement) { FactoryBot.create(:statement, :open, contract:, active_lead_provider: contract.active_lead_provider) }
 
       it "raises ContractTypeNotSupportedError" do
         allow(contract).to receive(:contract_type).and_return("unsupported")
