@@ -51,6 +51,10 @@ FactoryBot.define do
       status { %w[closed proposed_to_open].sample }
     end
 
+    trait(:closed) do
+      status { "closed" }
+    end
+
     # location
     trait(:in_england) do
       in_england { true }
