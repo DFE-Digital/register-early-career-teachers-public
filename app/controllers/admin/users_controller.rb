@@ -41,6 +41,14 @@ module Admin
       end
     end
 
+    def unlock_otp_sign_in
+      user = User.find(params[:id])
+
+      Sessions::UnlockOTPAccount.new(author: current_user, user:).unlock
+
+      redirect_to admin_user_path(user), alert: "#{user.name} can now sign in with OTP"
+    end
+
   private
 
     def user_params

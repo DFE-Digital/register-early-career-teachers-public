@@ -53,6 +53,8 @@ erDiagram
     datetime otp_verified_at
     enum role
     datetime updated_at
+    integer otp_failed_attempts
+    datetime otp_locked_at
   }
   TrainingPeriod {
     integer id

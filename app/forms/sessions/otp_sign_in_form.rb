@@ -28,7 +28,18 @@ module Sessions
 
       errors.add(:code, "Enter the 6-digit code from the email") and return unless /\A\d{6}\z/.match?(code)
 
-      errors.add(:code, "The code entered is invalid") unless user && otp.verify(code:)
+      if user&.otp_locked_at.present?
+        errors.add(:code, "Your account is locked, please contact support")
+        return
+      end
+
+      return if user && otp.verify(code:)
+
+      if user&.otp_locked_at.present?
+        errors.add(:code, "Your account is locked, please contact support")
+      else
+        errors.add(:code, "The code entered is invalid")
+      end
     end
 
     def otp

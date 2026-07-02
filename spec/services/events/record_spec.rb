@@ -2295,6 +2295,58 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe ".record_otp_account_locked_event!" do
+    let(:author_params) { { author_type: "system" } }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        raw_modifications = {
+          "otp_failed_attempts" => [9, 10],
+          "otp_locked_at" => [nil, Time.zone.now],
+        }
+
+        Events::Record.record_otp_account_locked_event!(user: another_dfe_user, modifications: raw_modifications)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          hash_including(
+            user: another_dfe_user,
+            modifications: anything,
+            metadata: raw_modifications,
+            heading: "Ian Richardson’s account was locked after too many failed OTP attempts",
+            happened_at: Time.zone.now,
+            event_type: :otp_account_locked,
+            **author_params
+          )
+        )
+      end
+    end
+  end
+
+  describe ".record_otp_account_unlocked_event!" do
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        raw_modifications = {
+          "otp_failed_attempts" => [10, 0],
+          "otp_locked_at" => [1.hour.ago, nil],
+        }
+
+        Events::Record.record_otp_account_unlocked_event!(author:, user: another_dfe_user, modifications: raw_modifications)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          hash_including(
+            user: another_dfe_user,
+            modifications: anything,
+            metadata: raw_modifications,
+            heading: "Ian Richardson’s account was unlocked",
+            happened_at: Time.zone.now,
+            event_type: :otp_account_unlocked,
+            **author_params
+          )
+        )
+      end
+    end
+  end
+
   describe ".record_teacher_set_funding_eligibility_event!" do
     it "queues a RecordEventJob with the correct values" do
       freeze_time do
