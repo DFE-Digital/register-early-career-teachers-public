@@ -24,6 +24,9 @@ class Event < ApplicationRecord
     school_user_signs_in
     school_induction_tutor_confirmed
     school_induction_tutor_updated
+    school_opened
+    school_closed
+    school_changed
     statement_adjustment_added
     statement_adjustment_deleted
     statement_adjustment_updated
@@ -42,6 +45,8 @@ class Event < ApplicationRecord
     teacher_left_school_as_ect
     teacher_ect_at_school_period_deleted
     teacher_mentor_at_school_period_deleted
+    teacher_ect_at_school_period_moved_school
+    teacher_mentor_at_school_period_moved_school
     teacher_registered_as_mentor
     teacher_left_school_as_mentor
     teacher_starts_being_mentored
@@ -72,6 +77,7 @@ class Event < ApplicationRecord
     teacher_declaration_payable
     teacher_declaration_paid
     teacher_declaration_clawed_back
+    teacher_appropriate_body_changed
     mentor_completion_status_change
     training_period_assigned_to_school_partnership
     dfe_user_created

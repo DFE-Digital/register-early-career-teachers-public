@@ -1,0 +1,9 @@
+<%= form.govuk_collection_select(:appropriate_body_id,
+                                    @wizard.current_step.appropriate_bodies_except_current,
+                                    :id,
+                                    :name,
+                                    label: { text: "Enter appropriate body name" },
+                                    options: { include_blank: true },
+                                    class: "autocomplete"
+                                  ) 
+%>

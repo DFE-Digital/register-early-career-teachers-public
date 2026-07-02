@@ -1,6 +1,6 @@
 ---
 - name: Velma Dinkley
-  email: velma@example.com
+  email: velma.dinkley@education.gov.uk
   appropriate_body_name: Golden Leaf Teaching School Hub
   school_name: Null
   dfe_staff: No
@@ -9,7 +9,7 @@
   type: Appropriate body user
 
 - name: Fred Jones
-  email: freddy@example.com
+  email: freddy.jones@education.gov.uk
   appropriate_body_name: Umber Teaching School Hub
   school_name: Null
   dfe_staff: No
@@ -18,7 +18,7 @@
   type: Appropriate body user
 
 - name: Daphne Blake
-  email: daphne@example.com
+  email: daphne.blake@education.gov.uk
   appropriate_body_name: Null
   dfe_staff: Yes
   school_name: Null
@@ -28,7 +28,7 @@
   role: user_manager
 
 - name: Norville Rogers
-  email: shaggy@example.com
+  email: shaggy.rogers@education.gov.uk
   appropriate_body_name: Null
   dfe_staff: Yes
   school_name: Null
@@ -38,7 +38,7 @@
   role: admin
 
 - name: Scrooge McDuck
-  email: scrooge@example.com
+  email: scrooge.mcduck@education.gov.uk
   appropriate_body_name: Null
   dfe_staff: Yes
   school_name: Null
@@ -48,7 +48,7 @@
   role: finance
 
 - name: Bob Belcher
-  email: bob@example.com
+  email: bob.belcher@education.gov.uk
   appropriate_body_name: Null
   dfe_staff: No
   school_name: Abbey Grove School
@@ -58,7 +58,7 @@
   type: School user
 
 - name: Serena Moon
-  email: serena@example.com
+  email: serena.moon@education.gov.uk
   appropriate_body_name: Null
   dfe_staff: No
   school_name: Brookfield School
@@ -68,7 +68,7 @@
   type: School user
 
 - name: Felix Starling
-  email: felix@example.com
+  email: felix.starling@education.gov.uk
   appropriate_body_name: Null
   dfe_staff: No
   school_name: Greyfriars School
