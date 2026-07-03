@@ -5,7 +5,7 @@ ECF is a framework of standards to help early career teachers succeed at the sta
 ## Workflows
 
 [![App deployment](https://github.com/DFE-Digital/register-early-career-teachers-public/actions/workflows/deploy.yml/badge.svg)](https://github.com/DFE-Digital/register-early-career-teachers/actions/workflows/deploy.yml)
-[![Service manual deployment](https://github.com/DFE-Digital/register-early-career-teachers-public/actions/workflows/publish-documentation.yml/badge.svg)](https://github.com/DFE-Digital/register-early-career-teachers/actions/workflows/publish-documentation.yml)
+[![Service manual deployment](https://github.com/DFE-Digital/register-early-career-teachers-public/actions/workflows/publish-documentation.yml/badge.svg)](https://github.com/DFE-Digital/register-early-career-teachers-public/actions/workflows/publish-documentation.yml)
 
 ## Documentation
 
