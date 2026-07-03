@@ -199,7 +199,6 @@
   "spec/views/admin/finance/authorisations/new.html.erb_spec.rb": 0.6819575520000853,
   "spec/components/admin/teachers/school_summary_component_spec.rb": 1.295602108999901,
   "spec/wizards/schools/register_mentor_wizard/registration_store/status_spec.rb": 0.2681641389999641,
-  "spec/services/schools/populate_previous_choices_spec.rb": 0.6820735620000278,
   "spec/views/schools/register_ect_wizard/not_found.html.erb_spec.rb": 0.02607194100005472,
   "spec/validators/immutable_once_set_validator_spec.rb": 0.03265669699999307,
   "spec/requests/appropriate_bodies/claim_an_ect/check_ect_spec.rb": 0.1761080750000019,
