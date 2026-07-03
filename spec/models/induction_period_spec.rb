@@ -115,7 +115,7 @@ RSpec.describe InductionPeriod do
 
         it_behaves_like "a declarative metadata model",
                         on_event: %i[create destroy update],
-                        when_changing: %i[outcome]
+                        when_changing: %i[outcome finished_on]
       end
 
       describe "#touch_teacher?" do
