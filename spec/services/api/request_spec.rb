@@ -176,13 +176,11 @@ RSpec.describe API::Request do
           }
         end
 
-        let(:original_excluded_paths) { DfE::Analytics.config.excluded_paths }
-
-        before do
+        around do |example|
+          original_excluded_paths = DfE::Analytics.config.excluded_paths
           DfE::Analytics.config.excluded_paths = [%r{^/school/opt-out-of-reminder-emails(?:[/?].*)?$}]
-        end
-
-        after do
+          example.run
+        ensure
           DfE::Analytics.config.excluded_paths = original_excluded_paths
         end
 
