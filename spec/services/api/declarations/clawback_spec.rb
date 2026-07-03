@@ -43,7 +43,7 @@ RSpec.describe API::Declarations::Clawback, type: :model do
 
     before do
       payment_statement = declaration.payment_statement
-      payment_statement.update!(deadline_date: Date.yesterday)
+      payment_statement.update!(deadline_date: Date.yesterday, payment_date: Date.tomorrow)
       Statement.where("deadline_date > ?", payment_statement.deadline_date).destroy_all
     end
 
@@ -81,7 +81,7 @@ RSpec.describe API::Declarations::Clawback, type: :model do
   context "when the declaration's payment statement deadline date is in the past" do
     let(:declaration) { FactoryBot.create(:declaration, :paid) }
 
-    before { declaration.payment_statement.update!(deadline_date: Date.yesterday) }
+    before { declaration.payment_statement.update!(deadline_date: Date.yesterday, payment_date: Date.tomorrow) }
 
     it { is_expected.to have_one_error_only }
 
