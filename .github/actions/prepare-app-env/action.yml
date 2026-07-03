@@ -50,14 +50,11 @@ runs:
         path: ~/.cache/ms-playwright
         key: playwright-browsers-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
+    # System dependencies (install-deps) are only installed on a cache miss;
+    # GitHub-hosted Ubuntu runner images already ship the libraries Chromium needs.
     - name: Install Playwright Chromium and dependencies
       if: ${{ inputs.skip-node == 'false' && inputs.prepare-test-database == 'true' && steps.playwright-cache.outputs.cache-hit != 'true' }}
       run: ./node_modules/.bin/playwright install --with-deps chromium
-      shell: bash
-
-    - name: Install dependencies for Playwright Chromium
-      if: ${{ inputs.skip-node == 'false' && inputs.prepare-test-database == 'true' && steps.playwright-cache.outputs.cache-hit == 'true' }}
-      run: ./node_modules/.bin/playwright install-deps chromium
       shell: bash
 
     - name: Prepare test database
@@ -65,7 +62,19 @@ runs:
       shell: bash
       run: bin/rails db:create db:schema:load
 
-    - name: Prepare assets
+    - name: Cache compiled assets
       if: inputs.prepare-assets == 'true'
+      id: assets-cache
+      uses: actions/cache@v4
+      with:
+        path: app/assets/builds
+        key: assets-builds-${{ runner.os }}-${{ hashFiles('package.json', 'package-lock.json', 'app/assets/javascripts/**', 'app/javascript/**', 'app/assets/stylesheets/**') }}
+
+    - name: Prepare assets
+      if: ${{ inputs.prepare-assets == 'true' && steps.assets-cache.outputs.cache-hit != 'true' }}
       shell: bash
+      env:
+        # node_modules are already installed; skip the npm install prereq of
+        # the jsbundling/cssbundling build tasks
+        SKIP_YARN_INSTALL: "true"
       run: bin/rails spec:prepare
