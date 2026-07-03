@@ -4,23 +4,29 @@ RSpec.describe APISeedData::ECTScenarios do
   let(:environment) { "sandbox" }
   let(:logger) { instance_double(Logger, info: nil, "formatter=" => nil, "level=" => nil) }
 
-  let(:contract_period_2023) { FactoryBot.create(:contract_period, year: 2023) }
-  let(:contract_period_2024) { FactoryBot.create(:contract_period, year: 2024) }
-  let(:contract_period_2025) { FactoryBot.create(:contract_period, year: 2025) }
+  let_it_be(:contract_period_2023) { FactoryBot.create(:contract_period, year: 2023) }
+  let_it_be(:contract_period_2024) { FactoryBot.create(:contract_period, year: 2024) }
+  let_it_be(:contract_period_2025) { FactoryBot.create(:contract_period, year: 2025) }
+
+  before_all do
+    DeclarativeUpdates.skip(:metadata, :touch) do
+      FactoryBot.create_list(:lead_provider, 2).each do |lead_provider|
+        FactoryBot.create_list(:lead_provider_delivery_partnership, 3, :for_year, lead_provider:, year: 2023)
+        FactoryBot.create_list(:lead_provider_delivery_partnership, 3, :for_year, lead_provider:, year: 2024)
+        FactoryBot.create_list(:lead_provider_delivery_partnership, 3, :for_year, lead_provider:, year: 2025)
+      end
+
+      plant_api_seed_support_data(
+        APISeedData::Schools,
+        APISeedData::SchoolPartnerships,
+        APISeedData::SchedulesAndMilestones
+      )
+    end
+  end
 
   before do
     allow(Logger).to receive(:new).with($stdout) { logger }
     allow(Rails).to receive(:env) { environment.inquiry }
-
-    # Create support data
-    FactoryBot.create_list(:lead_provider, 2).each do |lead_provider|
-      FactoryBot.create_list(:lead_provider_delivery_partnership, 3, :for_year, lead_provider:, year: contract_period_2023.year)
-      FactoryBot.create_list(:lead_provider_delivery_partnership, 3, :for_year, lead_provider:, year: contract_period_2024.year)
-      FactoryBot.create_list(:lead_provider_delivery_partnership, 3, :for_year, lead_provider:, year: contract_period_2025.year)
-    end
-    APISeedData::Schools.new.plant
-    APISeedData::SchoolPartnerships.new.plant
-    APISeedData::SchedulesAndMilestones.new.plant
   end
 
   describe "#plant" do

@@ -801,6 +801,7 @@ GEM
       attr_required (>= 0.0.5)
       faraday (~> 2.0)
       faraday-follow_redirects
+    test-prof (1.6.1)
     thor (1.5.0)
     timeout (0.6.1)
     traces (0.18.2)
@@ -940,6 +941,7 @@ DEPENDENCIES
   solid_queue
   stackprof
   state_machines-activerecord
+  test-prof
   turbo-rails
   tzinfo-data
   webmock

@@ -4,31 +4,32 @@ RSpec.describe APISeedData::ParticipantScenarios do
   let(:environment) { "sandbox" }
   let(:logger) { instance_double(Logger, info: nil, "formatter=" => nil, "level=" => nil) }
 
-  let(:contract_period_2024) { FactoryBot.create(:contract_period, year: 2024) }
-  let(:contract_period_2025) { FactoryBot.create(:contract_period, year: 2025) }
+  before_all do
+    DeclarativeUpdates.skip(:metadata, :touch) do
+      contract_period_2024 = FactoryBot.create(:contract_period, year: 2024)
+      contract_period_2025 = FactoryBot.create(:contract_period, year: 2025)
+
+      FactoryBot.create_list(:lead_provider, 2).each do |lead_provider|
+        FactoryBot.create_list(:lead_provider_delivery_partnership, 5, :for_year, lead_provider:, year: contract_period_2024.year)
+        FactoryBot.create_list(:lead_provider_delivery_partnership, 5, :for_year, lead_provider:, year: contract_period_2025.year)
+      end
+      FactoryBot.create_list(:appropriate_body, 5)
+
+      plant_api_seed_support_data(
+        APISeedData::Contracts,
+        APISeedData::Statements,
+        APISeedData::Schools,
+        APISeedData::SchoolPartnerships,
+        APISeedData::SchedulesAndMilestones
+      )
+    end
+  end
 
   before do
     stub_const("#{described_class}::NUMBER_OF_RECORDS_PER_SCENARIO", 1)
 
     allow(Logger).to receive(:new).with($stdout) { logger }
     allow(Rails).to receive(:env) { environment.inquiry }
-
-    ignored_logger = instance_double(Logger, info: nil, "formatter=" => nil, "level=" => nil)
-    allow(Logger).to receive(:new).with($stdout) { ignored_logger }
-
-    # Create support data
-    FactoryBot.create_list(:lead_provider, 2).each do |lead_provider|
-      FactoryBot.create_list(:lead_provider_delivery_partnership, 5, :for_year, lead_provider:, year: contract_period_2024.year)
-      FactoryBot.create_list(:lead_provider_delivery_partnership, 5, :for_year, lead_provider:, year: contract_period_2025.year)
-    end
-    FactoryBot.create_list(:appropriate_body, 5)
-    APISeedData::Contracts.new.plant
-    APISeedData::Statements.new.plant
-    APISeedData::Schools.new.plant
-    APISeedData::SchoolPartnerships.new.plant
-    APISeedData::SchedulesAndMilestones.new.plant
-
-    allow(Logger).to receive(:new).with($stdout) { logger }
   end
 
   describe "#plant" do
