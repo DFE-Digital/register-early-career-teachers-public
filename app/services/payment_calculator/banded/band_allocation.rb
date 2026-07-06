@@ -1,13 +1,13 @@
 module PaymentCalculator
   class Banded::BandAllocation
-    attr_reader :band_term, :declaration_type,
+    attr_reader :band, :declaration_type,
                 :previous_billable_count, :previous_refundable_count,
                 :billable_count, :refundable_count
 
-    # @param band_term [Contract::BandedFeeStructure::BandTerm]
+    # @param band [ActiveLeadProvider::Band]
     # @param declaration_type [String]
-    def initialize(band_term:, declaration_type:)
-      @band_term = band_term
+    def initialize(band:, declaration_type:)
+      @band = band
       @declaration_type = declaration_type
       @previous_billable_count = 0
       @previous_refundable_count = 0
@@ -16,7 +16,7 @@ module PaymentCalculator
     end
 
     # @return [Integer]
-    delegate :capacity, to: :band_term
+    delegate :capacity, to: :band
 
     def net_billable_count
       (previous_billable_count + billable_count) - (previous_refundable_count + refundable_count)

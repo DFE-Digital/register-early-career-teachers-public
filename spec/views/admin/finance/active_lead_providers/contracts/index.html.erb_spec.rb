@@ -4,6 +4,15 @@ RSpec.describe "admin/finance/active_lead_providers/contracts/index.html.erb" do
   let(:contract) { FactoryBot.create(:contract, active_lead_provider:) }
 
   before do
+    3.times do
+      FactoryBot.create(:contract_banded_fee_structure_band_term,
+                        band: FactoryBot.create(:active_lead_provider_band,
+                                                active_lead_provider:,
+                                                capacity: 2),
+                        banded_fee_structure: contract.banded_fee_structure,
+                        fee_per_declaration: 100.0)
+    end
+
     assign(:active_lead_provider, active_lead_provider)
     assign(:contracts, [contract])
     assign(:breadcrumbs, {

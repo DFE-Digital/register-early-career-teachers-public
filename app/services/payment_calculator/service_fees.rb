@@ -29,7 +29,7 @@ module PaymentCalculator
       remaining = recruitment_target
 
       band_terms.sum do |band_term|
-        filled = [remaining, band_term.capacity].min
+        filled = [remaining, band_term.band.capacity].min
         remaining -= filled
 
         filled * band_term.fee_per_declaration * band_term.service_fee_ratio
@@ -39,15 +39,15 @@ module PaymentCalculator
     # Deducts setup_fee proportionally based on how many Band A slots are filled.
     # When Band A is fully filled this equals the full setup_fee.
     def setup_fee_deduction
-      filled_in_first_band_term * setup_fee / first_band_term_capacity.to_d
+      first_band_allocation_count * setup_fee / first_band_capacity.to_d
     end
 
-    def filled_in_first_band_term
-      [recruitment_target, first_band_term_capacity].min
+    def first_band_allocation_count
+      [recruitment_target, first_band_capacity].min
     end
 
-    def first_band_term_capacity
-      band_terms.first.capacity
+    def first_band_capacity
+      band_terms.first.band.capacity
     end
   end
 end

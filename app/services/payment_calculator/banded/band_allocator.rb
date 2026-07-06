@@ -21,9 +21,7 @@ module PaymentCalculator
     include ActiveModel::Model
     include ActiveModel::Attributes
 
-    # ordered by :allocation_order
-    attribute :band_terms                       # ordered bands by min/max count
-
+    attribute :bands                            # ordered by allocation_order
     attribute :billable_declarations            # current statement billable
     attribute :refundable_declarations          # current statement refundable
     attribute :previous_billable_declarations   # previous statements billable
@@ -42,8 +40,8 @@ module PaymentCalculator
     def build_band_allocations_by_declaration_type
       # Initialize band allocations for every (declaration_type, band) pair
       declaration_types.flat_map do |declaration_type|
-        allocations = band_terms.map do |band_term|
-          Banded::BandAllocation.new(band_term:, declaration_type:)
+        allocations = bands.map do |band|
+          Banded::BandAllocation.new(band:, declaration_type:)
         end
 
         # Run allocate for each declaration type
