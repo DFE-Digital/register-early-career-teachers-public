@@ -95,6 +95,10 @@ class GIAS::School < ApplicationRecord
       school_replaced?
   end
 
+  def can_be_merged?
+    false
+  end
+
   def school_not_yet_opened?
     school.blank?
   end
