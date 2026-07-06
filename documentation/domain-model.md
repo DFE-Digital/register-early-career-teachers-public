@@ -32,6 +32,7 @@ erDiagram
     decimal setup_fee
     datetime updated_at
     decimal uplift_fee_per_declaration
+    decimal uplift_target_ratio
   }
   Contract_BandedFeeStructure }o--|| Contract : belongs_to
   ActiveLeadProvider_Band {
@@ -48,13 +49,13 @@ erDiagram
     datetime created_at
     citext email
     string name
+    integer otp_failed_attempts
+    datetime otp_locked_at
     integer otp_school_urn
     string otp_secret
     datetime otp_verified_at
     enum role
     datetime updated_at
-    integer otp_failed_attempts
-    datetime otp_locked_at
   }
   TrainingPeriod {
     integer id
