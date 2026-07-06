@@ -1,5 +1,6 @@
 RSpec.describe ActiveLeadProvider::Band, type: :model do
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+  let(:contract_period) { FactoryBot.create(:contract_period, :next) }
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
 
   describe "associations" do
     it { is_expected.to belong_to(:active_lead_provider) }
@@ -141,6 +142,92 @@ RSpec.describe ActiveLeadProvider::Band, type: :model do
     it "bands alphabetically in allocation order" do
       expect(contract.active_lead_provider.bands.map(&:letter)).to eq(%w[A B C D E F])
       expect(contract.banded_fee_structure.bands.map(&:letter)).to eq(%w[A B C D E F])
+    end
+  end
+
+  describe "adding a new band" do
+    context "when the contract period has not started" do
+      it "permits adding a band" do
+        expect {
+          active_lead_provider.bands.create(capacity: 400)
+        }.to change(ActiveLeadProvider::Band, :count).by(1)
+      end
+
+      context "when there is a contract in place" do
+        let!(:contract) { FactoryBot.create(:contract, active_lead_provider:) }
+
+        it "prevents adding a band" do
+          expect {
+            active_lead_provider.bands.create(capacity: 400)
+          }.not_to change(ActiveLeadProvider::Band, :count)
+        end
+      end
+    end
+
+    context "when the contract period has started" do
+      it "prevents adding a band" do
+        travel_to(contract_period.started_on + 1.day) do
+          expect {
+            active_lead_provider.bands.create(capacity: 400)
+          }.not_to change(ActiveLeadProvider::Band, :count)
+        end
+      end
+
+      context "when there is a contract in place" do
+        let!(:contract) { FactoryBot.create(:contract, active_lead_provider:) }
+
+        it "prevents adding a band" do
+          travel_to(contract_period.started_on + 1.day) do
+            expect {
+              active_lead_provider.bands.create(capacity: 400)
+            }.not_to change(ActiveLeadProvider::Band, :count)
+          end
+        end
+      end
+    end
+  end
+
+  describe "removing the last band" do
+    let!(:existing_band) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:) }
+
+    context "when the contract period has not started" do
+      it "permits removing a band" do
+        expect {
+          existing_band.destroy!
+        }.to change(ActiveLeadProvider::Band, :count).by(-1)
+      end
+
+      context "when there is a contract in place" do
+        let!(:contract) { FactoryBot.create(:contract, active_lead_provider:) }
+
+        it "prevents removing a band" do
+          expect {
+            existing_band.destroy
+          }.not_to change(ActiveLeadProvider::Band, :count)
+        end
+      end
+    end
+
+    context "when the contract period has started" do
+      it "prevents removing a band" do
+        travel_to(contract_period.started_on + 1.day) do
+          expect {
+            existing_band.destroy
+          }.not_to change(ActiveLeadProvider::Band, :count)
+        end
+      end
+
+      context "when there is a contract in place" do
+        let!(:contract) { FactoryBot.create(:contract, active_lead_provider:) }
+
+        it "prevents adding a band" do
+          travel_to(contract_period.started_on + 1.day) do
+            expect {
+              existing_band.destroy
+            }.not_to change(ActiveLeadProvider::Band, :count)
+          end
+        end
+      end
     end
   end
 end

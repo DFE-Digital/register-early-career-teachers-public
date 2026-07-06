@@ -35,6 +35,9 @@ class ActiveLeadProvider::Band < ApplicationRecord
                     on: :create,
                     if: -> { active_lead_provider.present? }
 
+  before_create :abort_if_contracted_or_inside_contract_period
+  before_destroy :abort_if_contracted_or_inside_contract_period
+
   # @return [Integer, nil]
   def min_declarations
     return nil unless has_allocation_order?
@@ -62,6 +65,16 @@ private
     self.allocation_order = active_lead_provider.bands.count + 1
   end
 
+  # @return [Boolean]
+  def first?
+    allocation_order == 1
+  end
+
+  # @return [Boolean]
+  def last?
+    active_lead_provider.bands.last == self
+  end
+
   def abort_update
     errors.add(:base, "Only the last band can be updated")
     throw(:abort)
@@ -72,19 +85,16 @@ private
     throw(:abort)
   end
 
+  def abort_if_contracted_or_inside_contract_period
+    unless active_lead_provider.present? && Admin::Finance::Bands.new(active_lead_provider:).bands_can_be_added_and_removed?
+      errors.add(:base, "Bands cannot be added or removed once a contract is in place or the contract period has begun")
+      throw(:abort)
+    end
+  end
+
   # @return [Boolean]
   def has_allocation_order?
     allocation_order.present? && persisted?
-  end
-
-  # @return [Boolean]
-  def first?
-    allocation_order == 1
-  end
-
-  # @return [Boolean]
-  def last?
-    active_lead_provider.bands.last == self
   end
 
   # @return [Integer]
