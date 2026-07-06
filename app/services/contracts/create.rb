@@ -9,10 +9,12 @@ module Contracts
     end
 
     def call
-      contract = active_lead_provider.contracts.build(params)
-      contract.save!
-      Events::Record.record_contract_created_event!(author:, contract:)
-      contract
+      ActiveRecord::Base.transaction do
+        contract = active_lead_provider.contracts.build(params)
+        contract.save!
+        Events::Record.record_contract_created_event!(author:, contract:)
+        contract
+      end
     end
   end
 end
