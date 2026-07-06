@@ -38,15 +38,25 @@ RSpec.describe "DfE Analytics", type: :request do
     end
 
     it "does not send a web request event for GET /healthcheck" do
-      expect { get "/healthcheck" }.not_to have_sent_analytics_event_types(:web_request)
+      allow(DfE::Analytics::SendEvents).to receive(:do)
+
+      get "/healthcheck"
+
+      expect(DfE::Analytics::SendEvents).not_to have_received(:do)
+        .with(array_including(hash_including({ "request_path" => /healthcheck/ })))
     end
 
     context "when logged in as admin" do
       include_context "sign in as DfE user"
 
       it "does not send a web request event for GET /admin" do
-        expect { get "/admin" }.not_to have_sent_analytics_event_types(:web_request)
-        expect { get "/admin/teachers" }.not_to have_sent_analytics_event_types(:web_request)
+        allow(DfE::Analytics::SendEvents).to receive(:do)
+
+        get "/admin"
+        get "/admin/teachers"
+
+        expect(DfE::Analytics::SendEvents).not_to have_received(:do)
+          .with(array_including(hash_including({ "request_path" => /admin/ })))
       end
     end
   end
