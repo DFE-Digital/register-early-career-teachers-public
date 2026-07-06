@@ -1,8 +1,7 @@
 describe Admin::Finance::Bands do
   subject(:band_service) { described_class.new(active_lead_provider:) }
 
-  let(:started_on) { 1.month.from_now }
-  let(:contract_period) { FactoryBot.create(:contract_period, started_on:) }
+  let(:contract_period) { FactoryBot.create(:contract_period, :next) }
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
 
   let!(:band_1) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:) }
@@ -40,10 +39,12 @@ describe Admin::Finance::Bands do
     end
 
     context "when the contract period has started" do
-      let(:started_on) { 1.month.ago }
-
       context "when there are no contracts for the provider" do
-        it { is_expected.to be_falsey }
+        it "returns false" do
+          travel_to(contract_period.started_on + 1.day) do
+            expect(subject).to be false
+          end
+        end
       end
 
       context "when there are contracts for the provider" do
@@ -51,7 +52,11 @@ describe Admin::Finance::Bands do
           FactoryBot.create(:contract, active_lead_provider:)
         end
 
-        it { is_expected.to be_falsey }
+        it "returns false" do
+          travel_to(contract_period.started_on + 1.day) do
+            expect(subject).to be false
+          end
+        end
       end
     end
   end
@@ -59,13 +64,13 @@ describe Admin::Finance::Bands do
   describe "#editable?" do
     context "when the band is the last in the allocation order" do
       it "is expected to be true" do
-        expect(band_service.editable?(band: band_2)).to be_truthy
+        expect(band_service).to be_editable(band: band_2)
       end
     end
 
     context "when the band is not the last in the allocation order" do
       it "is expected to be false" do
-        expect(band_service.editable?(band: band_1)).to be_falsey
+        expect(band_service).not_to be_editable(band: band_1)
       end
     end
   end
@@ -75,12 +80,13 @@ describe Admin::Finance::Bands do
       context "when there are no contracts for the provider" do
         context "when the band is the last in the allocation order" do
           it "is expected to be true" do
-            expect(band_service.deletable_band?(band: band_2)).to be_truthy
+            expect(band_service).to be_deletable_band(band: band_2)
           end
         end
+
         context "when the band is not the last in the allocation order" do
           it "is expected to be false" do
-            expect(band_service.deletable_band?(band: band_1)).to be_falsey
+            expect(band_service).not_to be_deletable_band(band: band_1)
           end
         end
       end
@@ -92,29 +98,33 @@ describe Admin::Finance::Bands do
 
         context "when the band is the last in the allocation order" do
           it "is expected to be false" do
-            expect(band_service.deletable_band?(band: band_2)).to be_falsey
+            expect(band_service).not_to be_deletable_band(band: band_2)
           end
         end
+
         context "when the band is not the last in the allocation order" do
           it "is expected to be false" do
-            expect(band_service.deletable_band?(band: band_1)).to be_falsey
+            expect(band_service).not_to be_deletable_band(band: band_1)
           end
         end
       end
     end
 
     context "when the contract period has started" do
-      let(:started_on) { 1.month.ago }
-
       context "when there are no contracts for the provider" do
         context "when the band is the last in the allocation order" do
           it "is expected to be false" do
-            expect(band_service.deletable_band?(band: band_2)).to be_falsey
+            travel_to(contract_period.started_on + 1.day) do
+              expect(band_service).not_to be_deletable_band(band: band_2)
+            end
           end
         end
+
         context "when the band is not the last in the allocation order" do
           it "is expected to be false" do
-            expect(band_service.deletable_band?(band: band_1)).to be_falsey
+            travel_to(contract_period.started_on + 1.day) do
+              expect(band_service).not_to be_deletable_band(band: band_1)
+            end
           end
         end
       end
@@ -126,12 +136,17 @@ describe Admin::Finance::Bands do
 
         context "when the band is the last in the allocation order" do
           it "is expected to be false" do
-            expect(band_service.deletable_band?(band: band_2)).to be_falsey
+            travel_to(contract_period.started_on + 1.day) do
+              expect(band_service).not_to be_deletable_band(band: band_2)
+            end
           end
         end
+
         context "when the band is not the last in the allocation order" do
           it "is expected to be false" do
-            expect(band_service.deletable_band?(band: band_1)).to be_falsey
+            travel_to(contract_period.started_on + 1.day) do
+              expect(band_service).not_to be_deletable_band(band: band_1)
+            end
           end
         end
       end
@@ -141,13 +156,13 @@ describe Admin::Finance::Bands do
   describe "#last?" do
     context "when the band is the last in the allocation order" do
       it "is expected to be true" do
-        expect(band_service.deletable_band?(band: band_2)).to be_truthy
+        expect(band_service).to be_deletable_band(band: band_2)
       end
     end
 
     context "when the band is not the last in the allocation order" do
       it "is expected to be false" do
-        expect(band_service.deletable_band?(band: band_1)).to be_falsey
+        expect(band_service).not_to be_deletable_band(band: band_1)
       end
     end
   end
@@ -165,17 +180,17 @@ describe Admin::Finance::Bands do
       it "raises an error" do
         expect {
           band_service.delete!(band: band_1)
-        }.to raise_error.with_message("Band cannot be deleted")
+        }.to raise_error(RuntimeError).with_message("Band cannot be deleted")
       end
     end
 
     context "when the contract period has started" do
-      let(:started_on) { 1.month.ago }
-
       it "raises an error" do
-        expect {
-          band_service.delete!(band: band_2)
-        }.to raise_error.with_message("Band cannot be deleted")
+        travel_to(contract_period.started_on + 1.day) do
+          expect {
+            band_service.delete!(band: band_2)
+          }.to raise_error(RuntimeError).with_message("Band cannot be deleted")
+        end
       end
     end
 
@@ -187,7 +202,7 @@ describe Admin::Finance::Bands do
       it "raises an error" do
         expect {
           band_service.delete!(band: band_2)
-        }.to raise_error.with_message("Band cannot be deleted")
+        }.to raise_error(RuntimeError).with_message("Band cannot be deleted")
       end
     end
   end

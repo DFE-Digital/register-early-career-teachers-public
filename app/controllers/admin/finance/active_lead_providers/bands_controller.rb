@@ -1,6 +1,5 @@
 module Admin::Finance::ActiveLeadProviders
   class BandsController < Admin::Finance::BaseController
-
     before_action :set_active_lead_provider
     before_action :set_band, only: %i[edit update delete]
     before_action :redirect_if_contracted_or_inside_contract_period, only: %i[create delete]
@@ -76,7 +75,7 @@ module Admin::Finance::ActiveLeadProviders
     end
 
     def band_params
-      params.require(:active_lead_provider_band).permit(:capacity)
+      params.expect(active_lead_provider_band: [:capacity])
     end
 
     def contract_period
@@ -86,7 +85,7 @@ module Admin::Finance::ActiveLeadProviders
     def editable?(band:)
       bands_service.editable?(band:)
     end
-    
+
     def deletable?(band:)
       bands_service.deletable_band?(band:)
     end

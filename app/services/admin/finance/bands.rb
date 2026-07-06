@@ -26,7 +26,7 @@ module Admin::Finance
     def bands_can_be_deleted?
       no_contracts_and_contract_period_not_started?
     end
-    
+
     def deletable_band?(band:)
       last?(band:) && bands_can_be_deleted?
     end
