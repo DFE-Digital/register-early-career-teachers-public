@@ -51,6 +51,6 @@
   <% end %>
 <% end %>
 
-<% if bands_can_be_added? %>
-  <%= govuk_button_link_to "Add band", new_admin_contract_period_active_lead_provider_band_path(@active_lead_provider) %>
+<% if bands_can_be_added?(active_lead_provider: @active_lead_provider) %>
+  <%= govuk_button_link_to "Add band", new_admin_contract_period_active_lead_provider_band_path(@active_lead_provider.contract_period, @active_lead_provider) %>
 <% end %>

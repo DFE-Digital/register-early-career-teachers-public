@@ -1,5 +1,7 @@
 module Admin::Finance::ActiveLeadProviders
   class BandsController < Admin::Finance::BaseController
+    include BandsHelper
+
     before_action :set_active_lead_provider
     before_action :set_band, only: %i[edit update delete]
     before_action :redirect_if_contracted_or_inside_contract_period, only: %i[create delete]
@@ -70,7 +72,7 @@ module Admin::Finance::ActiveLeadProviders
         "Finance" => admin_finance_path,
         "Contract periods" => admin_contract_periods_path,
         @active_lead_provider.contract_period_year.to_s => admin_contract_period_path(contract_period),
-        @active_lead_provider.lead_provider_name => admin_contract_period_active_lead_providers_path(contract_period, @active_lead_provider),
+        @active_lead_provider.lead_provider_name => admin_contract_period_active_lead_provider_bands_path(contract_period, @active_lead_provider),
       }.merge(extras)
     end
 
@@ -82,43 +84,13 @@ module Admin::Finance::ActiveLeadProviders
       @contract_period ||= @active_lead_provider.contract_period
     end
 
-    def editable?(band:)
-      bands_service.editable?(band:)
-    end
-
-    def deletable?(band:)
-      bands_service.deletable_band?(band:)
-    end
-
-    def label_for(band:)
-      bands_service.label_for(band:)
-    end
-
-    def capacity_description_for(band:)
-      bands_service.capacity_description_for(band:)
-    end
-
-    def bands_can_be_added?
-      bands_service.bands_can_be_added?
-    end
-
-    def bands_can_be_deleted?
-      bands_service.bands_can_be_deleted?
-    end
-
-    def bands_service
-      @bands_service ||= Admin::Finance::Bands.new(active_lead_provider: @active_lead_provider)
-    end
-
     def redirect_if_contracted_or_inside_contract_period
-      unless bands_service.bands_can_be_added?
+      unless bands_can_be_added?(active_lead_provider: @active_lead_provider)
         redirect_to admin_contract_period_active_lead_provider_bands_path(contract_period, @active_lead_provider),
                     flash: {
                       error: "Bands cannot be added or removed once contracts have been added or the contract period has started"
                     }
       end
     end
-
-    helper_method :bands_can_be_added?, :bands_can_be_deleted?, :editable?, :deletable?, :label_for, :capacity_description_for
   end
 end

@@ -1,4 +1,6 @@
 RSpec.describe "admin/finance/active_lead_providers/contracts/index.html.erb" do
+  include BandsHelper
+
   let(:contract_period) { FactoryBot.create(:contract_period, :next) }
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
   let(:contract) { FactoryBot.create(:contract, active_lead_provider:) }
