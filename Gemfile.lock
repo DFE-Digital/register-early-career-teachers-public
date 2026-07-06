@@ -109,6 +109,7 @@ GEM
       base64
       gyoku (>= 0.4.0)
       nokogiri
+    amazing_print (2.0.0)
     asciidoctor (2.0.26)
     ast (2.4.3)
     async (2.39.0)
@@ -877,6 +878,7 @@ PLATFORMS
   x86_64-linux-musl
 
 DEPENDENCIES
+  amazing_print
   asciidoctor
   async-http-faraday
   base32
