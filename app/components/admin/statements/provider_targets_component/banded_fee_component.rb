@@ -57,8 +57,8 @@ module Admin::Statements
             band_terms.each do |band_term|
               body.with_row do |row|
                 row.with_cell { band_term_label(band_term) }
-                row.with_cell(numeric: true, text: band_term.min_declarations)
-                row.with_cell(numeric: true, text: band_term.max_declarations)
+                row.with_cell(numeric: true, text: band_term.band.min_declarations)
+                row.with_cell(numeric: true, text: band_term.band.max_declarations)
                 row.with_cell(numeric: true, text: number_to_pounds(band_term.fee_per_declaration))
               end
             end
@@ -97,7 +97,6 @@ module Admin::Statements
     def uplift_target_ratio = banded_fee_structure.uplift_target_ratio
     def uplift_target_percentage = uplift_target_ratio * 100
     def uplift_amount = banded_fee_structure.uplift_fee_per_declaration
-
-    def band_term_label(band_term) = "Band #{band_term.letter}"
+    def band_term_label(band_term) = "Band #{band_term.band.letter}"
   end
 end

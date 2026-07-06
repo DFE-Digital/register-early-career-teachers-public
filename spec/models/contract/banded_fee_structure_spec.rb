@@ -1,7 +1,6 @@
 RSpec.describe Contract::BandedFeeStructure, type: :model do
   describe "associations" do
-    # TODO: DEPRECATE min/max
-    it { is_expected.to have_many(:band_terms).order(min_declarations: :asc).class_name("Contract::BandedFeeStructure::BandTerm").inverse_of(:banded_fee_structure).dependent(:destroy) }
+    it { is_expected.to have_many(:band_terms).order(band_id: :asc).class_name("Contract::BandedFeeStructure::BandTerm").inverse_of(:banded_fee_structure).dependent(:destroy) }
     it { is_expected.to belong_to(:contract) }
   end
 

@@ -12,9 +12,7 @@ RSpec.describe Statements::DeclarationsCSV do
   let(:banded_fee_structure) do
     FactoryBot.build(:contract_banded_fee_structure).tap do |structure|
       FactoryBot.build(:contract_banded_fee_structure_band_term,
-                       banded_fee_structure: structure,
-                       min_declarations: 1,
-                       max_declarations: 100)
+                       banded_fee_structure: structure)
     end
   end
   let(:contract) { FactoryBot.create(:contract, :for_ecf, active_lead_provider:, banded_fee_structure:) }
