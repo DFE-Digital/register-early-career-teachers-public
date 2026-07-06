@@ -1,12 +1,15 @@
 RSpec.describe Admin::Statements::ProviderTargetsComponent::BandedFeeComponent, type: :component do
   subject(:component) { described_class.new(contract:) }
 
+  let(:uplift_target_ratio) { 0.33 }
+
   let(:banded_fee_structure) do
     FactoryBot.build_stubbed(
       :contract_banded_fee_structure,
       :with_band_terms,
       recruitment_target: 2500,
       uplift_fee_per_declaration: 50,
+      uplift_target_ratio:,
       setup_fee: 5000,
       declaration_boundaries: [
         { min: 1, max: 50 },
@@ -43,6 +46,18 @@ RSpec.describe Admin::Statements::ProviderTargetsComponent::BandedFeeComponent, 
       expect(page).to have_summary_list_row("Uplift target", value: "33%")
     end
 
+    context "when the uplift target ratio is missing" do
+      let(:uplift_target_ratio) { nil }
+
+      it "does not render the uplift target" do
+        expect(page).not_to have_summary_list_row("Uplift target")
+      end
+
+      it "does not render the uplift amount" do
+        expect(page).not_to have_summary_list_row("Uplift amount")
+      end
+    end
+
     it "renders the uplift amount" do
       expect(page).to have_summary_list_row("Uplift amount", value: "£50.00")
     end
@@ -61,6 +76,15 @@ RSpec.describe Admin::Statements::ProviderTargetsComponent::BandedFeeComponent, 
           ["Band C", 101, 150, /£\d+\.\d{2}/]
         ]
       )
+    end
+
+    context "when the uplift target ratio is not the default" do
+      let(:uplift_target_ratio) { 0.4 }
+
+      it "renders the uplift target from the banded fee structure" do
+        expect(page).to have_summary_list_row("Uplift target", value: "40%")
+        expect(page).not_to have_summary_list_row("Uplift target", value: "33%")
+      end
     end
   end
 

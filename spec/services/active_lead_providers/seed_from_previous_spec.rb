@@ -52,7 +52,7 @@ RSpec.describe ActiveLeadProviders::SeedFromPrevious do
 
       describe "contract fee structures" do
         it "builds a new banded_fee_structure for the new contract, based on the previous" do
-          fee_attributes = %i[recruitment_target setup_fee uplift_fee_per_declaration monthly_service_fee]
+          fee_attributes = %i[recruitment_target setup_fee uplift_fee_per_declaration uplift_target_ratio monthly_service_fee]
           expect(new_contract.banded_fee_structure.slice(*fee_attributes))
             .to eq(previous_contract.banded_fee_structure.slice(*fee_attributes))
           expect(new_contract.banded_fee_structure).not_to eq(previous_contract.banded_fee_structure)
