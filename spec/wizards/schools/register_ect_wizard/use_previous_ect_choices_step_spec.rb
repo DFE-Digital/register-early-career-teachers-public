@@ -598,7 +598,7 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
       end
 
       it "is not allowed" do
-        expect(step.allowed?).to be(false)
+        expect(step).not_to be_allowed
       end
     end
 
@@ -608,7 +608,7 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
       end
 
       it "is not allowed" do
-        expect(step.allowed?).to be(false)
+        expect(step).not_to be_allowed
       end
     end
 
