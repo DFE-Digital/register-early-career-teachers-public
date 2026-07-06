@@ -74,4 +74,26 @@ RSpec.describe Contract::BandedFeeStructure::BandTerm, type: :model do
       end
     end
   end
+
+  describe "delegation" do
+    subject(:band_term) { contract.banded_fee_structure.band_terms.first }
+
+    let(:contract) { FactoryBot.create(:contract, :for_ecf, :with_bands_and_band_terms) }
+
+    it "#letter" do
+      expect(band_term.letter).to eq(band_term.band.letter)
+    end
+
+    it "#min_declarations" do
+      expect(band_term.min_declarations).to eq(band_term.band.min_declarations)
+    end
+
+    it "#max_declarations" do
+      expect(band_term.max_declarations).to eq(band_term.band.max_declarations)
+    end
+
+    it "#capacity" do
+      expect(band_term.capacity).to eq(band_term.band.capacity)
+    end
+  end
 end

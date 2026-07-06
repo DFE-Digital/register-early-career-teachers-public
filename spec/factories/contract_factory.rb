@@ -18,5 +18,18 @@ FactoryBot.define do
       association :banded_fee_structure, factory: :contract_banded_fee_structure, strategy: :build
       association :flat_rate_fee_structure, factory: :contract_flat_rate_fee_structure, strategy: :build
     end
+
+    trait :with_bands_and_band_terms do
+      after(:create) do |contract, evaluator|
+        active_lead_provider = evaluator.active_lead_provider || contract.active_lead_provider
+
+        FactoryBot.create_list(:active_lead_provider_band, 6,
+                               active_lead_provider:).each do |band|
+          FactoryBot.create(:contract_banded_fee_structure_band_term,
+                            banded_fee_structure: contract.banded_fee_structure,
+                            band:)
+        end
+      end
+    end
   end
 end
