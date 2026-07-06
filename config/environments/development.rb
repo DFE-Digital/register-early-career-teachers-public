@@ -42,6 +42,13 @@ Rails.application.configure do
     }
   )
 
+  config.semantic_logger.application = "RECT"
+  config.semantic_logger.backtrace_level = :fatal
+  config.rails_semantic_logger.appenders do |appenders|
+    appenders.add(file_name: "log/development.log", formatter: :color, level: :debug)
+    appenders.add(io: $stdout, formatter: :color, level: :info)
+  end
+
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
 
