@@ -21,7 +21,7 @@ class InductionPeriod < ApplicationRecord
 
   refresh_metadata -> { teacher },
                    on_event: %i[create destroy update],
-                   when_changing: %i[outcome]
+                   when_changing: %i[outcome finished_on]
 
   # Validations
   validates :appropriate_body_period_id, presence: { message: "Select an appropriate body" }
