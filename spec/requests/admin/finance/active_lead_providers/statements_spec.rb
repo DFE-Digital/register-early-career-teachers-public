@@ -51,7 +51,7 @@ RSpec.describe "Admin finance active lead provider statements", :enable_finance_
         expect(response).to have_http_status(:ok)
       end
 
-      context "when the contract period has started but is not frozen" do
+      context "when the contract period is not frozen" do
         let(:contract_period) { FactoryBot.create(:contract_period, :current) }
 
         it "allows the new form" do
@@ -130,7 +130,7 @@ RSpec.describe "Admin finance active lead provider statements", :enable_finance_
         end
       end
 
-      context "when the contract period has started but is not frozen" do
+      context "when the contract period is not frozen" do
         let(:contract_period) { FactoryBot.create(:contract_period, :current) }
 
         it "allows the create" do
@@ -195,8 +195,8 @@ RSpec.describe "Admin finance active lead provider statements", :enable_finance_
         expect(response).to have_http_status(:ok)
       end
 
-      context "when the contract period has started" do
-        let(:contract_period) { FactoryBot.create(:contract_period, :current) }
+      context "when the contract period is frozen" do
+        let(:contract_period) { FactoryBot.create(:contract_period, :current, :with_payments_frozen) }
 
         it "blocks the edit form, redirecting to the index" do
           get edit_path
@@ -251,8 +251,8 @@ RSpec.describe "Admin finance active lead provider statements", :enable_finance_
         end
       end
 
-      context "when the contract period has started" do
-        let(:contract_period) { FactoryBot.create(:contract_period, :current) }
+      context "when the contract period is frozen" do
+        let(:contract_period) { FactoryBot.create(:contract_period, :current, :with_payments_frozen) }
 
         it "blocks the update, redirecting to the index" do
           original_payment_date = statement.payment_date
@@ -286,8 +286,8 @@ RSpec.describe "Admin finance active lead provider statements", :enable_finance_
         expect(response).to have_http_status(:ok)
       end
 
-      context "when the contract period has started" do
-        let(:contract_period) { FactoryBot.create(:contract_period, :current) }
+      context "when the contract period is frozen" do
+        let(:contract_period) { FactoryBot.create(:contract_period, :current, :with_payments_frozen) }
 
         it "blocks the delete confirmation, redirecting to the index" do
           get delete_path
@@ -332,8 +332,8 @@ RSpec.describe "Admin finance active lead provider statements", :enable_finance_
         end
       end
 
-      context "when the contract period has started" do
-        let(:contract_period) { FactoryBot.create(:contract_period, :current) }
+      context "when the contract period is frozen" do
+        let(:contract_period) { FactoryBot.create(:contract_period, :current, :with_payments_frozen) }
 
         it "blocks the destroy, redirecting to the index" do
           expect {

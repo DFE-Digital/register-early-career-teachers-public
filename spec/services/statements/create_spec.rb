@@ -14,8 +14,8 @@ describe Statements::Create do
       contract_id: contract.id,
       month: 11,
       year: contract_period.year,
-      deadline_date: Date.new(contract_period.year, 11, 1),
-      payment_date: Date.new(contract_period.year, 12, 25)
+      deadline_date: Date.new(contract_period.year + 1, 11, 1),
+      payment_date: Date.new(contract_period.year + 1, 12, 25)
     }
   end
 
