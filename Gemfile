@@ -25,6 +25,7 @@ gem "govuk_design_system_formbuilder", "6.3.0"
 gem "govuk_markdown"
 
 gem "mail-notify"
+gem "rails_semantic_logger"
 
 gem "sentry-rails"
 gem "sentry-ruby"
@@ -67,13 +68,10 @@ gem "diffy"
 gem "zendesk_api", "~> 3.1", ">= 3.1.1"
 
 group :development do
+  gem "amazing_print"
   gem "better_errors"
   gem "binding_of_caller"
   gem "pg_query"
-end
-
-group :production, :review, :staging, :sandbox, :paritycheck, :migration do
-  gem "rails_semantic_logger"
 end
 
 group :test do
