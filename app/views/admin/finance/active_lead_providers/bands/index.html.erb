@@ -7,11 +7,50 @@
 <% if @bands.none? %>
   <p class="govuk-body">No bands found</p>
 <% else %>
-  <p>Bands live here!!</p>
+  <%= govuk_table do |table| %>
+    <% table.with_head do |head| %>
+      <% head.with_row do |row| %>
+        <% row.with_cell(text: "Band") %>
+        <% row.with_cell(text: "Capacity") %>
+        <% row.with_cell(text: "Declaration range") %>
+        <% row.with_cell(text: "") %>
+      <% end %>
+    <% end %>
+    <% table.with_body do |body| %>
+      <% @bands.each do |band| %>
+        <% body.with_row do |row| %>
+          <% row.with_cell(text: label_for(band:)) %>
+          <% row.with_cell(text: band.capacity) %>
+          <% row.with_cell(text: capacity_description_for(band:)) %>
+          <% row.with_cell(numeric: true) do %>
+            <% if editable?(band:) %>
+                <%= govuk_link_to(
+                  "Change",
+                  edit_admin_contract_period_active_lead_provider_band_path(@active_lead_provider.contract_period, @active_lead_provider, band),
+                  secondary: true,
+                  no_visited_state: true,
+                  visually_hidden_suffix: label_for(band:),
+                  class: "govuk-!-margin-bottom-0")
+                %>
+              <% if deletable?(band:) %>
+              <div class="govuk-button-group govuk-!-margin-bottom-0">
+                  <%= govuk_button_link_to(
+                    "Delete",
+                    delete_admin_contract_period_active_lead_provider_band_path(@active_lead_provider.contract_period, @active_lead_provider, band),
+                    warning: true,
+                    visually_hidden_suffix: label_for(band:),
+                    class: "govuk-!-margin-bottom-0")
+                  %>
+              </div>
+                <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
 <% end %>
 
 <% if bands_can_be_added? %>
-  <div class="govuk-!-text-align-right">
-    <%= govuk_button_link_to "Add band", "#" %>
-  </div>
+  <%= govuk_button_link_to "Add band", new_admin_contract_period_active_lead_provider_band_path(@active_lead_provider) %>
 <% end %>
