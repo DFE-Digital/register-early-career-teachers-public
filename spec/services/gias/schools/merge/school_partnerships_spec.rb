@@ -1,10 +1,10 @@
-RSpec.describe SchoolPartnerships::Recreate do
-  subject(:recreate_school_partnership) do
-    described_class.new(
-      school_partnership:,
-      school: new_school,
+RSpec.describe GIAS::Schools::Merge::SchoolPartnerships do
+  subject(:resolve) do
+    described_class.resolve(
+      existing_school_partnership: school_partnership,
+      school_without_partnership: new_school,
       author:
-    ).call
+    )
   end
 
   let(:author) { Events::SystemAuthor.new }
@@ -23,16 +23,16 @@ RSpec.describe SchoolPartnerships::Recreate do
 
   context "when the destination school does not have a matching partnership" do
     it "creates a school partnership for the destination school" do
-      expect { recreate_school_partnership }.to change(SchoolPartnership, :count).by(1)
+      expect { subject }.to change(SchoolPartnership, :count).by(1)
 
-      expect(recreate_school_partnership).to have_attributes(
+      expect(subject).to have_attributes(
         school: new_school,
         lead_provider_delivery_partnership:
       )
     end
 
     it "records a school partnership recreated event" do
-      new_school_partnership = recreate_school_partnership
+      new_school_partnership = subject
 
       expect(Events::Record)
         .to have_received(:record_school_partnership_recreated_event!)
@@ -48,15 +48,15 @@ RSpec.describe SchoolPartnerships::Recreate do
     let!(:existing_school_partnership) { FactoryBot.create(:school_partnership, school: new_school, lead_provider_delivery_partnership:) }
 
     it "does not create another school partnership" do
-      expect { recreate_school_partnership }.not_to change(SchoolPartnership, :count)
+      expect { subject }.not_to change(SchoolPartnership, :count)
     end
 
     it "returns the existing school partnership" do
-      expect(recreate_school_partnership).to eq(existing_school_partnership)
+      expect(subject).to eq(existing_school_partnership)
     end
 
     it "does not record a school partnership recreated event" do
-      recreate_school_partnership
+      subject
 
       expect(Events::Record).not_to have_received(:record_school_partnership_recreated_event!)
     end
@@ -70,16 +70,16 @@ RSpec.describe SchoolPartnerships::Recreate do
     let!(:existing_school_partnership) { FactoryBot.create(:school_partnership, school: new_school, lead_provider_delivery_partnership: other_lead_provider_delivery_partnership) }
 
     it "creates a school partnership for the destination school" do
-      expect { recreate_school_partnership }.to change(SchoolPartnership, :count).by(1)
+      expect { subject }.to change(SchoolPartnership, :count).by(1)
 
-      expect(recreate_school_partnership).to have_attributes(
+      expect(subject).to have_attributes(
         school: new_school,
         lead_provider_delivery_partnership:
       )
     end
 
     it "records a school partnership recreated event" do
-      new_school_partnership = recreate_school_partnership
+      new_school_partnership = subject
 
       expect(Events::Record)
         .to have_received(:record_school_partnership_recreated_event!)
@@ -95,7 +95,7 @@ RSpec.describe SchoolPartnerships::Recreate do
     let(:new_school) { old_school }
 
     it "raises a SameSchoolError" do
-      expect { recreate_school_partnership }.to raise_error(described_class::SameSchoolError)
+      expect { subject }.to raise_error(described_class::SameSchoolError)
     end
   end
 
@@ -103,7 +103,7 @@ RSpec.describe SchoolPartnerships::Recreate do
     let(:school_partnership) { nil }
 
     it "returns nil" do
-      expect(recreate_school_partnership).to be_nil
+      expect(subject).to be_nil
     end
   end
 
@@ -111,7 +111,7 @@ RSpec.describe SchoolPartnerships::Recreate do
     let(:new_school) { nil }
 
     it "returns nil" do
-      expect(recreate_school_partnership).to be_nil
+      expect(subject).to be_nil
     end
   end
 end

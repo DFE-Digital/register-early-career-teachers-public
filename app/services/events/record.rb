@@ -785,8 +785,8 @@ module Events
       ).record_event!
     end
 
-    def self.record_school_partnership_recreated_event!(author:, old_school_partnership:, new_school_partnership:, happened_at: Time.zone.now)
-      event_type = :school_partnership_recreated
+    def self.record_school_partnership_created_for_gias_merge_event!(author:, old_school_partnership:, new_school_partnership:, happened_at: Time.zone.now)
+      event_type = :school_partnership_created_for_gias_merge
 
       old_school = old_school_partnership.school
       school = new_school_partnership.school
@@ -795,7 +795,7 @@ module Events
       lead_provider = new_school_partnership.lead_provider
       contract_period = new_school_partnership.contract_period
 
-      heading = "School partnership with #{lead_provider.name} and #{delivery_partner.name} in #{contract_period.year} at #{old_school.name} was recreated at #{school.name}."
+      heading = "School partnership with #{lead_provider.name} and #{delivery_partner.name} in #{contract_period.year} at #{old_school.name} was created at #{school.name} for GIAS merge."
 
       metadata = {
         old_school_partnership:,

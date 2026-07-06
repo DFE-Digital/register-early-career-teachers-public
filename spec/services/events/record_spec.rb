@@ -1852,7 +1852,7 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe ".record_school_partnership_recreated_event!" do
+  describe ".record_school_partnership_created_for_gias_merge_event!" do
     let(:lead_provider) { FactoryBot.create(:lead_provider, name: "LP") }
     let(:delivery_partner) { FactoryBot.create(:delivery_partner, name: "DP") }
     let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, :for_year, year: 2025, lead_provider:, delivery_partner:) }
@@ -1868,15 +1868,15 @@ RSpec.describe Events::Record do
 
     it "queues RecordEventJob with correct payload" do
       freeze_time do
-        Events::Record.record_school_partnership_recreated_event!(
+        Events::Record.record_school_partnership_created_for_gias_merge_event!(
           author:, old_school_partnership:, new_school_partnership:
         )
 
-        heading = "School partnership with LP and DP in 2025 at Old School was recreated at New School."
+        heading = "School partnership with LP and DP in 2025 at Old School was created at New School for GIAS merge."
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           hash_including(
-            event_type: :school_partnership_recreated,
+            event_type: :school_partnership_created_for_gias_merge,
             school_partnership: new_school_partnership,
             school: new_school_partnership.school,
             lead_provider: new_school_partnership.lead_provider,
