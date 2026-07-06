@@ -29,7 +29,7 @@ class ActiveLeadProvider::Band < ApplicationRecord
             }
 
   # Callbacks
-  before_update :abort_update, unless: :last?
+  # before_update :abort_update, unless: :last?
   before_destroy :abort_destruction, unless: :last?
   before_validation :assign_allocation_order,
                     on: :create,
