@@ -1,9 +1,10 @@
 RSpec.describe "Declarations API", :with_metadata, :with_touches, type: :request do
   let(:serializer) { API::DeclarationSerializer }
+  let(:lead_provider) { active_lead_provider.lead_provider }
   let(:serializer_options) { { lead_provider_id: lead_provider.id } }
   let(:query) { API::Declarations::Query }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
-  let(:lead_provider) { active_lead_provider.lead_provider }
+
+  let_it_be(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
 
   def create_resource(active_lead_provider:, teacher: nil, declaration_trait: :no_payment)
     lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
@@ -38,7 +39,8 @@ RSpec.describe "Declarations API", :with_metadata, :with_touches, type: :request
   end
 
   describe "#show" do
-    let(:resource) { create_resource(active_lead_provider:) }
+    # refind: examples exercise the endpoint against a reloaded copy of the record
+    let_it_be(:resource, refind: true) { create_resource(active_lead_provider:) }
     let(:path_id) { resource.api_id }
     let(:path) { api_v3_declaration_path(path_id) }
 
@@ -53,18 +55,9 @@ RSpec.describe "Declarations API", :with_metadata, :with_touches, type: :request
 
   describe "#create" do
     let(:path) { api_v3_declarations_path }
-    let(:service) { API::Declarations::Create }
-    let(:resource_type) { Declaration }
-    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, :for_year, year: 2024) }
-    let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
-    let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
-    let(:teacher) { FactoryBot.create(:teacher) }
-    let(:schedule) { FactoryBot.create(:schedule, contract_period: school_partnership.contract_period) }
-    let(:milestone) { FactoryBot.create(:milestone, declaration_type: :started, schedule:) }
     let(:declaration_date) do
       Faker::Date.between(from: milestone.start_date, to: milestone.milestone_date)
     end
-
     let(:service_args) do
       {
         lead_provider_id: lead_provider.id,
@@ -75,7 +68,6 @@ RSpec.describe "Declarations API", :with_metadata, :with_touches, type: :request
         teacher_type:
       }
     end
-
     let(:params) do
       {
         data: {
@@ -91,16 +83,26 @@ RSpec.describe "Declarations API", :with_metadata, :with_touches, type: :request
       }
     end
     let(:declaration_type) { "started" }
+    let(:service) { API::Declarations::Create }
+    let(:resource_type) { Declaration }
+
+    let_it_be(:active_lead_provider) { FactoryBot.create(:active_lead_provider, :for_year, year: 2024) }
+    let_it_be(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+    let_it_be(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
+    # refind: the create endpoint touches the teacher (e.g. api_updated_at); give each example a fresh instance
+    let_it_be(:teacher, refind: true) { FactoryBot.create(:teacher) }
+    let_it_be(:schedule) { FactoryBot.create(:schedule, contract_period: school_partnership.contract_period) }
+    let_it_be(:milestone) { FactoryBot.create(:milestone, declaration_type: :started, schedule:) }
 
     %i[ect mentor].each do |teacher_type|
       context "for #{teacher_type}" do
-        let(:at_school_period) do
+        let_it_be(:at_school_period) do
           FactoryBot.create(:"#{teacher_type}_at_school_period",
                             started_on: 6.months.ago,
                             finished_on: 2.weeks.from_now,
                             teacher:)
         end
-        let!(:training_period) do
+        let_it_be(:training_period) do
           FactoryBot.create(:training_period, :"for_#{teacher_type}", :active,
                             "#{teacher_type}_at_school_period": at_school_period,
                             started_on: at_school_period.started_on.tomorrow,
@@ -146,7 +148,8 @@ RSpec.describe "Declarations API", :with_metadata, :with_touches, type: :request
 
     Declaration::VOIDABLE_PAYMENT_STATUSES.each do |status|
       context "when the declaration is in a `voidable` status: #{status}" do
-        let(:resource) { travel_to(3.days.from_now) { create_resource(active_lead_provider:, declaration_trait: status.to_sym) } }
+        # refind: the void endpoint mutates the declaration; give each example a fresh instance
+        let_it_be(:resource, refind: true) { travel_to(3.days.from_now) { create_resource(active_lead_provider:, declaration_trait: status.to_sym) } }
         let(:service) { API::Declarations::Void }
 
         it_behaves_like "a token authenticated endpoint", :put
@@ -157,7 +160,12 @@ RSpec.describe "Declarations API", :with_metadata, :with_touches, type: :request
     end
 
     context "when the declaration is in `paid` status" do
-      let(:resource) { travel_to(3.days.from_now) { create_resource(active_lead_provider:, declaration_trait: :paid) } }
+      # Pin the contract period to the next year so the paid statement's
+      # deadline (capped at 31 Oct of the contract year) resolves to the
+      # travelled date and stays in the future.
+      let_it_be(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period: FactoryBot.create(:contract_period, :next)) }
+      # refind: the clawback endpoint mutates the declaration
+      let_it_be(:resource, refind: true) { travel_to(3.days.from_now) { create_resource(active_lead_provider:, declaration_trait: :paid) } }
       let(:service) { API::Declarations::Clawback }
 
       it_behaves_like "a token authenticated endpoint", :put
@@ -167,7 +175,7 @@ RSpec.describe "Declarations API", :with_metadata, :with_touches, type: :request
     end
 
     context "when the declaration is in `voided` status" do
-      let(:resource) { travel_to(3.days.from_now) { create_resource(active_lead_provider:, declaration_trait: :voided) } }
+      let_it_be(:resource, refind: true) { travel_to(3.days.from_now) { create_resource(active_lead_provider:, declaration_trait: :voided) } }
 
       it "returns a 422 response" do
         authenticated_api_put(path, params:)
@@ -179,7 +187,8 @@ RSpec.describe "Declarations API", :with_metadata, :with_touches, type: :request
     end
 
     context "when the declaration is a previous declaration for a different lead provider" do
-      let(:resource) { travel_to(3.days.from_now) { create_resource(active_lead_provider: FactoryBot.create(:active_lead_provider)) } }
+      # refind: the before block mutates the resource's associated records
+      let_it_be(:resource, refind: true) { travel_to(3.days.from_now) { create_resource(active_lead_provider: FactoryBot.create(:active_lead_provider)) } }
 
       before do
         # Close training periods for other lead providers.

@@ -1,5 +1,5 @@
 RSpec.describe "Schools API", :with_metadata, type: :request do
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+  let_it_be(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
   let(:lead_provider) { active_lead_provider.lead_provider }
   let(:contract_period) { active_lead_provider.contract_period }
   let(:serializer) { API::SchoolSerializer }
@@ -49,7 +49,7 @@ RSpec.describe "Schools API", :with_metadata, type: :request do
   end
 
   describe "#show" do
-    let(:resource) { create_resource(active_lead_provider:) }
+    let_it_be(:resource) { create_resource(active_lead_provider:) }
     let(:path_id) { resource.api_id }
     let(:path) { api_v3_school_path(path_id, filter: { cohort: contract_period.id }) }
 
