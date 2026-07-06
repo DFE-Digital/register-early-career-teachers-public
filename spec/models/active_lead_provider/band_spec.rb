@@ -136,22 +136,10 @@ RSpec.describe ActiveLeadProvider::Band, type: :model do
   end
 
   describe "#letter" do
-    let(:contract) { FactoryBot.create(:contract, :for_ecf, active_lead_provider:) }
-    let(:active_lead_provider_bands) do
-      FactoryBot.create_list(:active_lead_provider_band, 6,
-                             active_lead_provider:)
-    end
-
-    before do
-      active_lead_provider_bands.each do |band|
-        FactoryBot.create(:contract_banded_fee_structure_band_term,
-                          banded_fee_structure: contract.banded_fee_structure,
-                          band:)
-      end
-    end
+    let(:contract) { FactoryBot.create(:contract, :for_ecf, :with_bands_and_band_terms) }
 
     it "bands alphabetically in allocation order" do
-      expect(active_lead_provider.bands.map(&:letter)).to eq(%w[A B C D E F])
+      expect(contract.active_lead_provider.bands.map(&:letter)).to eq(%w[A B C D E F])
       expect(contract.banded_fee_structure.bands.map(&:letter)).to eq(%w[A B C D E F])
     end
   end
