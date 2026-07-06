@@ -19,6 +19,11 @@ end
     description: nil,
   },
   {
+    name: "Events",
+    statement: "SELECT author_name, event_type, heading, body, created_at FROM events order by created_at desc",
+    description: "Event timeline"
+  },
+  {
     name: "Jobs",
     statement: "SELECT * FROM solid_queue_jobs;",
     description: "SolidQueue activity",

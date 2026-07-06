@@ -9,11 +9,13 @@ module Contracts
     end
 
     def call
-      contract.assign_attributes(params)
-      modifications = collect_modifications
-      contract.save!
-      Events::Record.record_contract_updated_event!(author:, contract:, modifications:)
-      contract
+      ActiveRecord::Base.transaction do
+        contract.assign_attributes(params)
+        modifications = collect_modifications
+        contract.save!
+        Events::Record.record_contract_updated_event!(author:, contract:, modifications:)
+        contract
+      end
     end
 
   private
