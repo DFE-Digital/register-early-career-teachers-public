@@ -10,6 +10,8 @@ module Admin
       end
 
       def call
+        summary_rows = rows
+
         govuk_summary_card(title: card_title) do |card|
           if show_move_partnership_link?
             card.with_action { helpers.govuk_link_to("Move to a different partnership", move_partnership_path) }
@@ -17,11 +19,12 @@ module Admin
 
           helpers.safe_join([
             status_inset_text,
-            helpers.govuk_summary_list(actions: false) do |list|
-              rows.each do |row|
+            helpers.govuk_summary_list(actions: summary_rows.any? { |row| row[:action].present? }) do |list|
+              summary_rows.each do |row|
                 list.with_row do |r|
                   r.with_key(text: row.dig(:key, :text)) if row[:key].present?
                   r.with_value(text: row.dig(:value, :text))
+                  r.with_action(**row[:action]) if row[:action].present?
                 end
               end
             end
@@ -55,7 +58,7 @@ module Admin
           summary_row("Lead provider", lead_provider_text),
           summary_row("Delivery partner", delivery_partner_text),
           summary_row("School", training_school_name),
-          summary_row("Contract period", contract_period_text),
+          summary_row("Contract period", contract_period_text, action: contract_period_change_action),
           training_programme_row,
           summary_row("Schedule", schedule_text),
           summary_row("Start date", start_date_text),
@@ -192,10 +195,28 @@ module Admin
           training_period.finished_on.nil?
       end
 
-      def summary_row(label, value)
+      def contract_period_change_action
+        return unless change_contract_period_eligible?
+
+        {
+          text: "Change",
+          href: admin_teacher_training_period_change_contract_period_wizard_select_contract_period_path(training_period.teacher_id, training_period),
+          visually_hidden_text: "contract period",
+          classes: "govuk-link--no-visited-state"
+        }
+      end
+
+      def change_contract_period_eligible?
+        @change_contract_period_eligible ||= Admin::Teachers::TrainingPeriods::ChangeContractPeriod::Eligibility
+          .new(training_period:)
+          .eligible?
+      end
+
+      def summary_row(label, value, action: nil)
         {
           key: { text: label },
-          value: { text: value.presence || not_available_text }
+          value: { text: value.presence || not_available_text },
+          action:
         }
       end
 
