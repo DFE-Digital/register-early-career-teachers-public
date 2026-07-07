@@ -16,26 +16,14 @@ module Admin
 
       private
 
-        def flat_rate
-          @flat_rate ||= flat_rate_calculator
-        end
-
-        def flat_rate_calculator
-          raise ArgumentError, "Expected exactly 2 calculators for ITTECF ECTP contract type" unless calculators.count == 2
-
-          flat_rate_calculator = calculators.find { |c| c.is_a? PaymentCalculator::FlatRate }
-
-          raise ArgumentError, "Expected flat rate calculator for IITECF ECTP contract type" unless flat_rate_calculator
-
-          flat_rate_calculator
-        end
+        delegate :flat_rate_calculator, to: :calculators, private: true
 
         def mentors_outputs
-          @mentors_outputs ||= flat_rate.outputs.total_billable_amount
+          @mentors_outputs ||= flat_rate_calculator.outputs.total_billable_amount
         end
 
         def mentors_clawbacks
-          @mentors_clawbacks ||= -flat_rate.outputs.total_refundable_amount
+          @mentors_clawbacks ||= -flat_rate_calculator.outputs.total_refundable_amount
         end
       end
     end

@@ -22,32 +22,7 @@ module Admin
         contract.ecf_contract_type?
       end
 
-      def calculators
-        PaymentCalculator::Resolver.new(statement:, contract:).calculators
-      end
-
-      def ordered_calculators
-        case contract.contract_type
-        when "ecf"
-          raise ArgumentError, "Expected one banded calculator for ECF contract type" unless calculators.one? && banded_calculator
-
-          [banded_calculator]
-        when "ittecf_ectp"
-          raise ArgumentError, "Expected banded and flat rate calculator for ITTECF ECTP contract type" unless flat_rate_calculator && banded_calculator
-
-          [banded_calculator, flat_rate_calculator]
-        else
-          raise ArgumentError
-        end
-      end
-
-      def banded_calculator
-        calculators.find(&:banded?)
-      end
-
-      def flat_rate_calculator
-        calculators.find(&:flat_rate?)
-      end
+      delegate :calculators, to: :statement, private: true
 
       def declarations_count(calculator, type)
         calculator.outputs.declaration_type_outputs

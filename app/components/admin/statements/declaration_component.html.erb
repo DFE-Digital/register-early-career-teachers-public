@@ -6,7 +6,7 @@
     table.with_head do |head|
       head.with_row do |row|
         row.with_cell(header: true) { "" }
-        ordered_calculators.each do |calculator|
+        calculators.each do |calculator|
           row.with_cell(header: true, numeric: true) { count_header_text(calculator) }
         end
       end
@@ -16,7 +16,7 @@
        %w[started retained completed extended].each do |type|
         body.with_row do |row|
           row.with_cell { type.capitalize }
-          ordered_calculators.each do |calculator|
+          calculators.each do |calculator|
             if calculator.is_a?(PaymentCalculator::FlatRate) && type.in?(%w[retained extended])
               row.with_cell(numeric: true) { "-" }
             else
@@ -28,14 +28,14 @@
 
       body.with_row do |row|
         row.with_cell { "Clawbacks" }
-        ordered_calculators.each do |calculator|
+        calculators.each do |calculator|
           row.with_cell(numeric: true) { refunded_count(calculator).to_s }
         end
       end
 
       body.with_row do |row|
         row.with_cell { "Voided" }
-        ordered_calculators.each do |calculator|
+        calculators.each do |calculator|
           row.with_cell(numeric: true) { voided_count(calculator).to_s }
         end
       end

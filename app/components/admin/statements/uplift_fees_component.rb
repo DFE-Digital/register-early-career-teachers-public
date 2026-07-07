@@ -20,17 +20,10 @@ module Admin
 
     private
 
-      delegate :contract, to: :statement
-
-      def calculators
-        @calculators ||= PaymentCalculator::Resolver.new(contract:, statement:).calculators
-      end
+      delegate :contract, :calculators, to: :statement
 
       def uplifts
-        raise ArgumentError, "Expected exactly 1 calculator for ECF contract type" unless calculators.one?
-        raise ArgumentError, "Expected Banded calculator for ECF contract type" unless calculators.first.banded?
-
-        @uplifts ||= calculators.first.uplifts
+        @uplifts ||= calculators.banded_calculator.uplifts
       end
     end
   end
