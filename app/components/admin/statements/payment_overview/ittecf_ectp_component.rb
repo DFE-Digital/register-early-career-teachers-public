@@ -21,7 +21,7 @@ module Admin
         end
 
         def flat_rate_calculator
-          raise ArgumentError, "Expected exactly 2 calculators for ECF contract type" unless calculators.count == 2
+          raise ArgumentError, "Expected exactly 2 calculators for ITTECF ECTP contract type" unless calculators.count == 2
 
           flat_rate_calculator = calculators.find { |c| c.is_a? PaymentCalculator::FlatRate }
 

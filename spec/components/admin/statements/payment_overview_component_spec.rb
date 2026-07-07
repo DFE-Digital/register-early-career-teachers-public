@@ -15,7 +15,7 @@ RSpec.describe Admin::Statements::PaymentOverviewComponent, type: :component do
     context "when the statement is for an ITTECF contract" do
       let(:contract) { FactoryBot.create(:contract, :for_ittecf_ectp) }
 
-      it "returns the ECF component for ecf contracts" do
+      it "returns the ITTECF component for ITTECF contracts" do
         expect(subject.for(statement:)).to be_a(Admin::Statements::PaymentOverview::IttecfEctpComponent)
       end
     end
@@ -23,7 +23,7 @@ RSpec.describe Admin::Statements::PaymentOverviewComponent, type: :component do
     context "when the statement is for an ECF contract" do
       let(:contract) { FactoryBot.create(:contract, :for_ecf) }
 
-      it "returns the ITTECF component for ittecf contracts" do
+      it "returns the ECF component for ECF contracts" do
         expect(subject.for(statement:)).to be_a(Admin::Statements::PaymentOverview::ECFComponent)
       end
     end
