@@ -70,14 +70,16 @@ module Admin
           def school_partnerships
             return SchoolPartnership.none unless selected_contract_period
 
-            SchoolPartnerships::Search
-              .new(
-                school:,
-                contract_period: selected_contract_period,
-                lead_provider: training_period.lead_provider,
-                delivery_partner: training_period.delivery_partner
+            if future_period_with_current_active_period?
+              return SchoolPartnership.none unless same_partnership_as_current_active_period?
+
+              school_partnership_search(
+                lead_provider: current_active_period.lead_provider,
+                delivery_partner: current_active_period.delivery_partner
               )
-              .school_partnerships
+            else
+              school_partnership_search
+            end
           end
 
           def partnership_options
@@ -123,6 +125,29 @@ module Admin
 
           def eoi_only?
             training_period.only_expression_of_interest?
+          end
+
+          def school_partnership_search(lead_provider: :ignore, delivery_partner: :ignore)
+            SchoolPartnerships::Search
+              .new(
+                school:,
+                contract_period: selected_contract_period,
+                lead_provider:,
+                delivery_partner:
+              )
+              .school_partnerships
+          end
+
+          def same_partnership_as_current_active_period?
+            current_active_period.lead_provider_delivery_partnership == training_period.lead_provider_delivery_partnership
+          end
+
+          def future_period_with_current_active_period?
+            current_active_period.present? && training_period.started_on > Time.zone.today
+          end
+
+          def current_active_period
+            @current_active_period ||= ::TrainingPeriods::RelatedPeriods.new(training_period:).current_active_period
           end
 
           def selected_contract_period_allowed?
