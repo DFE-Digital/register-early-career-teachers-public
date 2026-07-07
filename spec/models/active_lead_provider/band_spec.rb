@@ -32,7 +32,7 @@ RSpec.describe ActiveLeadProvider::Band, type: :model do
     context "with multiple bands" do
       let!(:last_band) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:) }
 
-      it "prevents changing the capacity of a band that is not the last", skip: "whilst backfilling" do
+      it "prevents changing the capacity of a band that is not the last" do
         expect { first_band.update!(capacity: 999) }.to raise_error(ActiveRecord::RecordNotSaved)
         expect(first_band.errors[:base]).to include("Only the last band can be updated")
       end
