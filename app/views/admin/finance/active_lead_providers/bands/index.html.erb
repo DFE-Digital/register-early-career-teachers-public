@@ -23,7 +23,8 @@
           <% row.with_cell(text: band.capacity) %>
           <% row.with_cell(text: capacity_description_for(band:)) %>
           <% row.with_cell(numeric: true) do %>
-            <% if editable?(band:) %>
+            <div class="govuk-button-group govuk-!-margin-bottom-0">
+              <% if editable?(band:) %>
                 <%= govuk_link_to(
                   "Change",
                   edit_admin_contract_period_active_lead_provider_band_path(@active_lead_provider.contract_period, @active_lead_provider, band),
@@ -32,18 +33,17 @@
                   visually_hidden_suffix: label_for(band:),
                   class: "govuk-!-margin-bottom-0")
                 %>
+              <% end %>
               <% if deletable?(band:) %>
-              <div class="govuk-button-group govuk-!-margin-bottom-0">
-                  <%= govuk_button_link_to(
-                    "Delete",
-                    delete_admin_contract_period_active_lead_provider_band_path(@active_lead_provider.contract_period, @active_lead_provider, band),
-                    warning: true,
-                    visually_hidden_suffix: label_for(band:),
-                    class: "govuk-!-margin-bottom-0")
-                  %>
-              </div>
-                <% end %>
-            <% end %>
+                <%= govuk_button_link_to(
+                  "Delete",
+                  delete_admin_contract_period_active_lead_provider_band_path(@active_lead_provider.contract_period, @active_lead_provider, band),
+                  warning: true,
+                  visually_hidden_suffix: label_for(band:),
+                  class: "govuk-!-margin-bottom-0")
+                %>
+              <% end %>
+            </div>
           <% end %>
         <% end %>
       <% end %>
