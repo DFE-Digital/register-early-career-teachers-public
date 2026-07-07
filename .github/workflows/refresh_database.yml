@@ -15,7 +15,6 @@ on:
         default: migration
         options:
           - migration
-          - paritycheck
         required: true
       exclude-jobs:
         description: Exclude jobs tables
