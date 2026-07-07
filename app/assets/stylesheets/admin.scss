@@ -205,7 +205,6 @@ code {
 }
 
 pre {
-  background: $govuk-template-background-colour;
   white-space: pre-wrap;
   @include govuk-font($size: 16);
 
