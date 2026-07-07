@@ -1,6 +1,6 @@
 # Environments
 
-There are three permanent environments for RECT, plus a review app for the life of each pull request and two migration-related environments:
+There are three permanent environments for RECT, plus a review app for the life of each pull request and the migration environment, which was originally used to test data migrated from ECF1 but is now used to test ad hoc data fixing scripts.
 
 | Environment  | URL                                                                 | Used by                          | Purpose                                               | Deployment trigger                     | Azure space | Deployed commit                                                                  |
 |--------------|-----------------------------------------------------------------------|----------------------------------|-------------------------------------------------------|----------------------------------------|-------------|---------------------------------------------------------------------------------|
@@ -9,4 +9,3 @@ There are three permanent environments for RECT, plus a review app for the life 
 | Staging      | https://staging.register-early-career-teachers.education.gov.uk                    | Team members                     | Production-like environment without real data         | Merge to `main`                        | test        | [View](https://staging.register-early-career-teachers.education.gov.uk/healthcheck)            |
 | Review       | https://cpd-ec2-review-PR-NUMBER-web.test.teacherservices.cloud      | Team members                     | Review changes prior to merging                       | Open a PR (auto-destroyed on merge/close) | test      | Per-app                                                                         |
 | Migration    | https://cpd-ec2-migration-web.teacherservices.cloud                  | Team members                     | Testing data migration from ECF                       | Manually deploy via CI                  | production  | [View](https://cpd-ec2-migration-web.teacherservices.cloud/healthcheck)          |
-| ParityCheck  | https://cpd-ec2-paritycheck-web.teacherservices.cloud                | Team members                     | Testing parity with ECF API endpoints                 | Manually deploy via CI                  | production  | [View](https://cpd-ec2-paritycheck-web.teacherservices.cloud/healthcheck)        |

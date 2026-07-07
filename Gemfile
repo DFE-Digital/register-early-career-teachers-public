@@ -97,7 +97,7 @@ group :development, :test do
   gem "rubocop-rspec_rails", require: false
 end
 
-group :development, :test, :review, :staging, :sandbox, :paritycheck do
+group :development, :test, :review, :staging, :sandbox do
   gem "factory_bot_rails"
   gem "faker"
 end
