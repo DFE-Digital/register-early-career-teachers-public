@@ -361,8 +361,28 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
         expect(wizard.allowed_steps).to include(:use_previous_ect_choices)
       end
 
-      context "but the last_chosen_appropriate_body is missing" do
+      context "but the last chosen appropriate body is missing" do
         before { school.update(last_chosen_appropriate_body: nil) }
+
+        it "does not include use_previous_ect_choices step" do
+          expect(wizard.allowed_steps).not_to include(:use_previous_ect_choices)
+        end
+      end
+
+      context "but the last chosen appropriate body is inactive" do
+        let(:inactive_appropriate_body) do
+          FactoryBot.create(
+            :appropriate_body_period,
+            :teaching_school_hub,
+            dfe_sign_in_organisation_id: nil
+          )
+        end
+
+        before do
+          school.update!(
+            last_chosen_appropriate_body: inactive_appropriate_body
+          )
+        end
 
         it "does not include use_previous_ect_choices step" do
           expect(wizard.allowed_steps).not_to include(:use_previous_ect_choices)
