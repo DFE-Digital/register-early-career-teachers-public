@@ -15,5 +15,3 @@ staging: *redis
 production: *redis
 
 migration: *redis
-
-paritycheck: *redis

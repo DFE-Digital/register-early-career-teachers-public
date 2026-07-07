@@ -1,7 +1,0 @@
-AZURE_RESOURCE_PREFIX=s189p01
-AZURE_SUBSCRIPTION=s189-teacher-services-cloud-production
-CONFIG=paritycheck
-CONFIG_SHORT=pc
-ENVIRONMENT=paritycheck
-KV_PURGE_PROTECTION=false
-TERRAFORM_MODULES_TAG=testing
