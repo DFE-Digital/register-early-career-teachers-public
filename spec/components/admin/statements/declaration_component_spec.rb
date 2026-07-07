@@ -115,21 +115,6 @@ RSpec.describe Admin::Statements::DeclarationComponent, type: :component do
       .and_return(flat_rate_outputs)
   end
 
-  context "when no calculators are returned" do
-    let(:contract) { FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider:, contract_period:) }
-    let(:resolver) { instance_double(PaymentCalculator::Resolver, calculators: []) }
-
-    before do
-      allow(PaymentCalculator::Resolver)
-        .to receive(:new)
-        .and_return(resolver)
-    end
-
-    it "raises an error" do
-      expect { subject }.to raise_error(ArgumentError)
-    end
-  end
-
   context "when one calculator is returned (ECF contract)" do
     let(:contract_trait) { :for_ecf }
 

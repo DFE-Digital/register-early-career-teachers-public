@@ -99,49 +99,4 @@ RSpec.describe Admin::Statements::PaymentOverview::IttecfEctpComponent, type: :c
       end
     end
   end
-
-  context "when no calculators are returned" do
-    let(:resolver) { instance_double(PaymentCalculator::Resolver, calculators: []) }
-
-    before do
-      allow(PaymentCalculator::Resolver)
-        .to receive(:new)
-        .and_return(resolver)
-    end
-
-    it "raises an error when trying to access flat_rate calculator" do
-      expect { component.send(:flat_rate) }.to raise_error(ArgumentError)
-    end
-  end
-
-  context "when more than two calculators are returned" do
-    let(:resolver) { instance_double(PaymentCalculator::Resolver, calculators: [flat_rate_calculator, banded_calculator, banded_calculator]) }
-    let(:banded_calculator) { instance_double(PaymentCalculator::Banded) }
-    let(:flat_rate_calculator) { instance_double(PaymentCalculator::FlatRate) }
-
-    before do
-      allow(PaymentCalculator::Resolver)
-        .to receive(:new)
-        .and_return(resolver)
-    end
-
-    it "raises an error when trying to access flat_rate calculator" do
-      expect { component.send(:flat_rate) }.to raise_error(ArgumentError, "Expected exactly 2 calculators for ECF contract type")
-    end
-  end
-
-  context "when no flatrate calculators are returned" do
-    let(:resolver) { instance_double(PaymentCalculator::Resolver, calculators: [banded_calculator, banded_calculator]) }
-    let(:banded_calculator) { instance_double(PaymentCalculator::Banded) }
-
-    before do
-      allow(PaymentCalculator::Resolver)
-        .to receive(:new)
-        .and_return(resolver)
-    end
-
-    it "raises an error when trying to access flat_rate calculator" do
-      expect { component.send(:flat_rate) }.to raise_error(ArgumentError, "Expected flat rate calculator for IITECF ECTP contract type")
-    end
-  end
 end

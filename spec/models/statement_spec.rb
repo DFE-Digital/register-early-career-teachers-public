@@ -370,4 +370,36 @@ describe Statement do
       it { is_expected.to be_referenced_by_declarations }
     end
   end
+
+  describe "#calculators" do
+    it "returns a PaymentCalculator::Collection" do
+      statement = FactoryBot.create(:statement)
+
+      expect(statement.calculators).to be_a(PaymentCalculator::Collection)
+    end
+
+    context "for an ECF contract" do
+      subject(:calculators) { FactoryBot.create(:statement, contract:).calculators }
+
+      let(:contract) { FactoryBot.create(:contract, :for_ecf) }
+
+      it "exposes only the banded calculator" do
+        expect(calculators.to_a).to all(be_banded)
+        expect(calculators.banded_calculator).to be_a(PaymentCalculator::Banded)
+        expect { calculators.flat_rate_calculator }.to raise_error(PaymentCalculator::Collection::MissingCalculatorError)
+      end
+    end
+
+    context "for an ITTECF ECTP contract" do
+      subject(:calculators) { FactoryBot.create(:statement, contract:).calculators }
+
+      let(:contract) { FactoryBot.create(:contract, :for_ittecf_ectp) }
+
+      it "returns both calculators, banded first" do
+        expect(calculators.map(&:banded?)).to eq([true, false])
+        expect(calculators.banded_calculator).to be_a(PaymentCalculator::Banded)
+        expect(calculators.flat_rate_calculator).to be_a(PaymentCalculator::FlatRate)
+      end
+    end
+  end
 end

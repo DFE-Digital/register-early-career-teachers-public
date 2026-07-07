@@ -66,10 +66,7 @@ module Admin
 
       delegate :number_to_pounds, to: :helpers
       delegate :contract, to: :statement, private: true
-
-      def calculators
-        @calculators ||= PaymentCalculator::Resolver.new(statement:, contract:).calculators
-      end
+      delegate :calculators, to: :statement
     end
   end
 end

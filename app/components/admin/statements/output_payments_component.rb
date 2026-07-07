@@ -17,10 +17,7 @@ module Admin
       delegate :contract, to: :statement, private: true
 
       def calculators
-        @calculators ||= PaymentCalculator::Resolver
-          .new(statement:, contract:)
-          .calculators
-          .map { presenter_for(it) }
+        @calculators ||= statement.calculators.map { presenter_for(it) }
       end
 
       def presenter_for(calculator)

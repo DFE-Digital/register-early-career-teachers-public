@@ -3,6 +3,8 @@ module Admin
     class PaymentOverviewComponent < ApplicationComponent
       delegate :number_to_pounds, to: :helpers
       delegate :contract, to: :statement
+      delegate :calculators, to: :statement, private: true
+      delegate :banded_calculator, to: :calculators, private: true
 
       attr_reader :statement
 
@@ -53,28 +55,20 @@ module Admin
         calculators.sum(&:vat_amount)
       end
 
-      def calculators
-        @calculators ||= PaymentCalculator::Resolver.new(statement:, contract:).calculators
-      end
-
-      def banded
-        @banded ||= calculators.find(&:banded?)
-      end
-
       def total_manual_adjustments_amount
-        @total_manual_adjustments_amount ||= banded.total_manual_adjustments_amount
+        @total_manual_adjustments_amount ||= banded_calculator.total_manual_adjustments_amount
       end
 
       def monthly_service_fee
-        @monthly_service_fee ||= banded.monthly_service_fee
+        @monthly_service_fee ||= banded_calculator.monthly_service_fee
       end
 
       def outputs
-        @outputs ||= banded.outputs.total_billable_amount
+        @outputs ||= banded_calculator.outputs.total_billable_amount
       end
 
       def clawbacks
-        @clawbacks ||= -banded.outputs.total_refundable_amount
+        @clawbacks ||= -banded_calculator.outputs.total_refundable_amount
       end
     end
   end
