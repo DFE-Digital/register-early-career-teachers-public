@@ -380,6 +380,77 @@ RSpec.describe GIAS::Schools::Merge::MentorAtSchoolPeriods do
 
         expect(mentorship_period.mentor).to eq(target_period)
       end
+
+      context "when the mentee has training periods" do
+        let!(:training_period) { FactoryBot.create(:training_period, :with_school_partnership, :for_ect, ect_at_school_period: mentee, started_on:, finished_on: Date.new(2025, 6, 30)) }
+
+        context "when the mentee's training period has a school partnership that needs to be reassigned" do
+          it "changes the mentorship period to point to the target period" do
+            service
+
+            expect(mentorship_period.mentor).to eq(target_period)
+          end
+
+          it "recreates the mentee's school partnership at the destination school" do
+            expect{ service }.to change(SchoolPartnership, :count).by(1)
+
+            expect(training_period.school_partnership.school).to eq(school)
+          end
+
+          it "moves the mentee period to the new school" do
+            service
+
+            expect(mentee.reload.school).to eq(school)
+          end
+        end
+
+        context "when the mentee's training period has a school partnership that already exists at the destination school" do
+          let!(:training_period) { FactoryBot.create(:training_period, :with_school_partnership, :for_ect, ect_at_school_period: mentee, started_on:, finished_on: Date.new(2025, 6, 30)) }
+          let!(:existing_partnership) { FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership: training_period.school_partnership.lead_provider_delivery_partnership) }
+
+          it "changes the mentorship period to point to the target period" do
+            service
+
+            expect(mentorship_period.mentor).to eq(target_period)
+          end
+
+          it "uses the existing partnership" do
+            expect{ service }.not_to change(SchoolPartnership, :count)
+
+            expect(training_period.school_partnership).to eq(existing_partnership)
+          end
+
+          it "moves the mentee period to the new school" do
+            service
+
+            expect(mentee.reload.school).to eq(school)
+          end
+
+        end
+
+        context "when the mentee's training period only has an expression of interest" do
+          let(:expression_of_interest) { FactoryBot.create(:active_lead_provider, :for_year, year: 2025) }
+          let!(:training_period) { FactoryBot.create(:training_period, :with_no_school_partnership, :for_ect, expression_of_interest:, ect_at_school_period: mentee, started_on:, finished_on: Date.new(2025, 6, 30)) }
+          
+          it "changes the mentorship period to point to the target period" do
+            service
+
+            expect(mentorship_period.mentor).to eq(target_period)
+          end
+
+          it "does not change the expression of interest" do
+            expect{ service }.not_to change(training_period, :expression_of_interest)
+
+            expect(training_period.school_partnership).to be_nil
+          end
+
+          it "moves the mentee period to the new school" do
+            service
+
+            expect(mentee.reload.school).to eq(school)
+          end
+        end
+      end
     end
 
     context "when there is an event that needs to be reassigned" do
