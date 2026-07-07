@@ -29,7 +29,8 @@ module API
 
       def serializer_options
         @serializer_options ||= {
-          lead_provider_id: current_lead_provider.id
+          lead_provider_id: current_lead_provider.id,
+          view: :v4,
         }
       end
 
@@ -46,7 +47,7 @@ module API
       end
 
       def to_json(obj)
-        API::V4::DeliveryPartnerSerializer.render(obj, root: "data", **serializer_options)
+        API::DeliveryPartnerSerializer.render(obj, root: "data", **serializer_options)
       end
     end
   end
