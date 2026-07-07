@@ -74,12 +74,18 @@ module GIAS
           end
         end
 
-        # Will this break if the mentee has training periods etc?
         def update_mentorship_periods
           mentorship_periods.each do |mentorship_period|
             mentorship_period.mentee.training_periods.each do |training_period|
               training_period.school_partnership = new_partnership_for(training_period) if reassignment_required?(training_period, :ect_at_school_period)
             end
+
+            mentorship_period.mentee.events.each do |event|
+              event.school_partnership = new_partnership_for(event) if reassignment_required?(event, :ect_at_school_period)
+              event.school = school if event.school.present?
+              event.mentor_at_school_period = target_period
+            end
+
             mentorship_period.mentee.school = school
             mentorship_period.mentor = target_period
           end
@@ -95,9 +101,10 @@ module GIAS
 
         def reassignment_required?(object, period_type)
           return false unless object.respond_to?(period_type) && object.respond_to?(:school_partnership)
+
           at_school_period = object.send(period_type)
           return false if at_school_period.nil?
-          
+
           (at_school_period.school != school) && object.school_partnership.present?
         end
 
@@ -105,9 +112,9 @@ module GIAS
           return unless object.respond_to?(:school_partnership) && object.school_partnership.present?
 
           GIAS::Schools::Merge::SchoolPartnerships.resolve!(
-            existing_school_partnership: object.school_partnership, 
+            existing_school_partnership: object.school_partnership,
             school_without_partnership: school
-            )
+          )
         end
 
         def finished_on

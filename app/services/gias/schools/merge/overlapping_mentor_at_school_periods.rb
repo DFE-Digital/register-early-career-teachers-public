@@ -10,7 +10,7 @@ module GIAS
           @groups = []
         end
 
-        def self.find(...) = new(...).find 
+        def self.find(...) = new(...).find
 
         def find
           group_mentor_at_school_periods
