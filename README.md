@@ -19,7 +19,6 @@ ECF is a framework of standards to help early career teachers succeed at the sta
 * [Setup guide](./documentation/setup.md)
 * [DfE Sign In](./documentation/dfe-sign-in.md)
 * [State machines](./documentation/state-machines.md)
-* [Parity check](./documentation/parity-check.md)
 * [CSV processing](./documentation/csv-processing.md)
 * [Metadata](./documentation/metadata.md)
 * [API tokens](./documentation/api-tokens.md)
