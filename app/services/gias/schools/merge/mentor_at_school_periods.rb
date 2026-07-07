@@ -25,7 +25,6 @@ module GIAS
             events.each(&:save!)
 
             mentorship_periods.each do |mentorship_period|
-              # mentorship_period.mentee.training_periods.each(&:save!)
               mentorship_period.mentee.save!
               mentorship_period.save!
             end
@@ -76,17 +75,8 @@ module GIAS
 
         def update_mentorship_periods
           mentorship_periods.each do |mentorship_period|
-            mentorship_period.mentee.training_periods.each do |training_period|
-              training_period.school_partnership = new_partnership_for(training_period) if reassignment_required?(training_period, :ect_at_school_period)
-            end
-
-            mentorship_period.mentee.events.each do |event|
-              event.school_partnership = new_partnership_for(event) if reassignment_required?(event, :ect_at_school_period)
-              event.school = school if event.school.present?
-              event.mentor_at_school_period = target_period
-            end
-
-            mentorship_period.mentee.school = school
+            GIAS::Schools::Merge::Period.prepare(period: mentorship_period.mentee, school:)
+        
             mentorship_period.mentor = target_period
           end
         end

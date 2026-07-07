@@ -26,8 +26,12 @@ module GIAS::Schools
           end
         end
 
-        remaining_at_school_periods.each do |period|
-          period.update!(school: successor.school)
+        school.mentor_at_school_periods.reload.each do |period|
+          GIAS::Schools::Merge::Period.move!(period:, school: successor.school)
+        end
+
+        school.ect_at_school_periods.reload.each do |period|
+          GIAS::Schools::Merge::Period.move!(period:, school: successor.school)
         end
 
         record_school_merged_event!
@@ -36,6 +40,24 @@ module GIAS::Schools
 
     def overlapping_mentor_at_school_periods(teacher)
       GIAS::Schools::Merge::OverlappingMentorAtSchoolPeriods.find(teacher:, schools:)
+    end
+
+    def reassignment_required?(object, period_type)
+      return false unless object.respond_to?(period_type) && object.respond_to?(:school_partnership)
+
+      at_school_period = object.send(period_type)
+      return false if at_school_period.nil?
+
+      (at_school_period.school != new_school) && object.school_partnership.present?
+    end
+
+    def new_partnership_for(object)
+      return unless object.respond_to?(:school_partnership) && object.school_partnership.present?
+
+      GIAS::Schools::Merge::SchoolPartnerships.resolve!(
+        existing_school_partnership: object.school_partnership,
+        school_without_partnership: new_school
+      )
     end
 
     def record_school_merged_event!

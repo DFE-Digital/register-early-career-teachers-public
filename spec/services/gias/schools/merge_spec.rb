@@ -2,20 +2,15 @@ RSpec.describe GIAS::Schools::Merge do
   describe "#merge!" do
     subject(:merge_school) { described_class.new(gias_school).merge! }
 
-    let(:old_school) { FactoryBot.create(:school) }
-    let(:new_school) { FactoryBot.create(:school) }
+    let(:old_school) { gias_school.school }
+    let(:new_school) { successor_gias_school.school }
 
-    let(:gias_school) { FactoryBot.create(:gias_school, :closed, school: old_school) }
+    let(:gias_school) { FactoryBot.create(:gias_school, :with_school, :closed) }
+    
 
-    let(:successor_gias_school) { FactoryBot.create(:gias_school, :open, school: new_school) }
+    let(:successor_gias_school) { FactoryBot.create(:gias_school, :with_school, :open) }
 
-    let!(:successor_link) do
-      FactoryBot.create(
-        :gias_school_link,
-        from_gias_school: gias_school,
-        to_gias_school: successor_gias_school
-      )
-    end
+    let!(:school_link) { FactoryBot.create(:gias_school_link, :successor_merged, from_gias_school: gias_school, to_gias_school: successor_gias_school) }
 
     let(:teacher) { FactoryBot.create(:teacher) }
 
