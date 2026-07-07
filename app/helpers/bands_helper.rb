@@ -1,10 +1,10 @@
 module BandsHelper
   def label_for(band:)
-    Admin::Finance::Bands.new(active_lead_provider: band.active_lead_provider).label_for(band:)
+    "Band #{band.letter}"
   end
 
   def capacity_description_for(band:)
-    Admin::Finance::Bands.new(active_lead_provider: band.active_lead_provider).capacity_description_for(band:)
+    "#{band.min_declarations} - #{band.max_declarations}"
   end
 
   def editable?(band:)

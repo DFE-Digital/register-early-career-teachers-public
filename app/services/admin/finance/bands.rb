@@ -6,14 +6,6 @@ module Admin::Finance
       @active_lead_provider = active_lead_provider
     end
 
-    def label_for(band:)
-      "Band #{band.letter}"
-    end
-
-    def capacity_description_for(band:)
-      "#{band.min_declarations} - #{band.max_declarations}"
-    end
-
     def bands_can_be_added?
       no_contracts_and_contract_period_not_started?
     end
