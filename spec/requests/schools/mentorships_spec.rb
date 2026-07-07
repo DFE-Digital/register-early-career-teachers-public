@@ -171,7 +171,7 @@ RSpec.describe "Create mentorship of an ECT to a mentor" do
       end
 
       it "instantiates a new Schools::AssignMentorForm and renders the page" do
-        Schools::AssignMentor.new(ect: ect_at_school_period, mentor:, author:).assign!
+        Schools::AssignMentor.new(ect_at_school_period:, mentor_at_school_period: mentor, author:).assign!
         allow(Schools::AssignMentorForm).to receive(:new).and_call_original
 
         subject

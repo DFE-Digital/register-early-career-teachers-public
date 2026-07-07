@@ -21,8 +21,8 @@ module Schools
         store.lead_provider_id = lead_provider_id
 
         AssignMentor.new(
-          ect: wizard.context.ect_at_school_period,
-          mentor: wizard.context.mentor_at_school_period,
+          ect_at_school_period: wizard.context.ect_at_school_period,
+          mentor_at_school_period: wizard.context.mentor_at_school_period,
           author: wizard.author
         ).assign!
 
