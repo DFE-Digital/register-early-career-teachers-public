@@ -35,10 +35,6 @@ staging: test-cluster
 migration: production-cluster
 	$(eval include config/global_config/migration.sh)
 
-.PHONY: paritycheck
-paritycheck: production-cluster
-	$(eval include config/global_config/paritycheck.sh)
-
 .PHONY: sandbox
 sandbox: production-cluster
 	$(eval include config/global_config/sandbox.sh)
