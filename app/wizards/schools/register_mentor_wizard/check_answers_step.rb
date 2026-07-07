@@ -46,7 +46,11 @@ module Schools
 
       def persist
         ActiveRecord::Base.transaction do
-          AssignMentor.new(ect:, author:, mentor: mentor.register!(author:)).assign!
+          AssignMentor.new(
+            ect_at_school_period: ect,
+            mentor_at_school_period: mentor.register!(author:),
+            author:
+          ).assign!
         end
       rescue StandardError => e
         mentor.registered = false

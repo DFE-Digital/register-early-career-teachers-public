@@ -121,7 +121,13 @@ describe Schools::RegisterMentorWizard::CheckAnswersStep, type: :model do
       end
 
       it "assigns the created mentor to the ECT" do
-        expect(Schools::AssignMentor).to have_received(:new).with(ect: wizard.ect, mentor: new_mentor, author:)
+        expect(Schools::AssignMentor)
+          .to have_received(:new)
+          .with(
+            ect_at_school_period: wizard.ect,
+            mentor_at_school_period: new_mentor,
+            author:
+          )
       end
     end
   end

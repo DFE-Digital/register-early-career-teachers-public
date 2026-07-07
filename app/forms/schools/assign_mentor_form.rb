@@ -34,7 +34,7 @@ module Schools
     end
 
     def assign!(author:)
-      AssignMentor.new(ect:, mentor:, author:).assign!
+      AssignMentor.new(ect_at_school_period: ect, mentor_at_school_period: mentor, author:).assign!
       true
     rescue StandardError => e
       errors.add(:base, e.to_s)
