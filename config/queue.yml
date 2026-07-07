@@ -62,9 +62,6 @@ migration: &migration
       processes: 2
       polling_interval: 0.1
 
-paritycheck:
-  <<: *migration
-
 non_production: &non_production
   workers:
     # Dedicated critical queues
