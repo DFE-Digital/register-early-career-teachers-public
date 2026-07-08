@@ -182,22 +182,6 @@ RSpec.describe Schools::AssignMentor do
           end
         end
 
-        context "current mentorship starts yesterday", skip: "yesterday isn't a special case anymore" do
-          let(:mentorship_period_started_on) { Date.yesterday }
-
-          it "ends current mentorship of the ect" do
-            expect { service.assign! }.to change { current_mentorship.reload.finished_on }.from(nil).to(Time.zone.today)
-          end
-
-          it "adds a new mentorship for the ect with the new mentor starting tomorrow" do
-            expect(ECTAtSchoolPeriods::Mentorship.new(mentee).current_mentor).to eq(current_mentor)
-            expect { service.assign! }.to change(MentorshipPeriod, :count).from(1).to(2)
-
-            expect(ECTAtSchoolPeriods::Mentorship.new(mentee.reload).latest_mentor).to eq(new_mentor)
-            expect(ECTAtSchoolPeriods::Mentorship.new(mentee).latest_mentorship_period.started_on).to eq(Date.tomorrow)
-          end
-        end
-
         context "current mentorship has started" do
           let(:mentee_started_on) { new_mentor_started_on - 1.day }
           let(:mentor_started_on) { new_mentor_started_on - 1.day }
