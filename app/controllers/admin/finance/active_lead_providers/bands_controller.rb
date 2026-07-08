@@ -17,15 +17,13 @@ module Admin::Finance::ActiveLeadProviders
     end
 
     def create
-      @band = @active_lead_provider.bands.new(band_params)
+      @band = Admin::Finance::Bands::Create.new(author: current_user, active_lead_provider: @active_lead_provider, capacity: band_params[:capacity])
 
-      if @band.valid?
-        @band.save!
-        redirect_to admin_contract_period_active_lead_provider_bands_path(contract_period, @active_lead_provider), notice: "#{label_for(band: @band)} added"
-      else
-        set_breadcrumbs
-        render :new, status: :unprocessable_content
-      end
+      redirect_to bands_path, notice: "#{label_for(band: @band)} added"
+    rescue ActiveRecord::RecordInvalid => e
+      @band = e.record
+      set_breadcrumbs
+      render :new, status: :unprocessable_content
     end
 
     def edit
@@ -33,24 +31,25 @@ module Admin::Finance::ActiveLeadProviders
     end
 
     def update
-      @band.assign_attributes(band_params)
-      if @band.valid?
-        @band.save!
-        redirect_to admin_contract_period_active_lead_provider_bands_path(@active_lead_provider), notice: "Band updated"
-      else
-        set_breadcrumbs(description_for(@band) => "#")
-        render :edit
-      end
+      Admin::Finance::Bands::Update.new(
+        author: current_user,
+        band: @band,
+        capacity: band_params[:capacity]
+      ).call
+
+      redirect_to bands_path, notice: "Band updated"
+    rescue ActiveRecord::RecordInvalid
+      set_breadcrumbs(label_for(band: @band) => "#")
+      render :edit, status: :unprocessable_content
     end
 
     def delete
-      if deletable?(band: @band)
-        label = label_for(band: @band)
-        bands_service.delete!(band: @band)
-        redirect_to admin_contract_period_active_lead_provider_bands_path(@active_lead_provider), notice: "#{label} deleted"
-      else
-        redirect_to admin_contract_period_active_lead_provider_bands_path(@active_lead_provider), notice: "This band cannot be deleted"
-      end
+      label = label_for(band: @band)
+      Admin::Finance::Bands::Destroy.new(author: current_user, band: @band).call
+
+      redirect_to bands_path, notice: "#{label} deleted"
+    rescue Admin::Finance::Bands::Destroy::DeletionError => e
+      redirect_to bands_path, flash: { error: e.message }
     end
 
   private
@@ -72,7 +71,7 @@ module Admin::Finance::ActiveLeadProviders
         "Finance" => admin_finance_path,
         "Contract periods" => admin_contract_periods_path,
         @active_lead_provider.contract_period_year.to_s => admin_contract_period_path(contract_period),
-        @active_lead_provider.lead_provider_name => admin_contract_period_active_lead_provider_bands_path(contract_period, @active_lead_provider),
+        @active_lead_provider.lead_provider_name => bands_path,
       }.merge(extras)
     end
 
@@ -85,12 +84,20 @@ module Admin::Finance::ActiveLeadProviders
     end
 
     def redirect_if_contracted_or_inside_contract_period
-      unless bands_can_be_added?(active_lead_provider: @active_lead_provider)
+      unless @active_lead_provider.bands_can_be_added_and_removed?
         redirect_to admin_contract_period_active_lead_provider_bands_path(contract_period, @active_lead_provider),
                     flash: {
                       error: "Bands cannot be added or removed once contracts have been added or the contract period has started"
                     }
       end
+    end
+
+    def band_path(band)
+      admin_contract_period_active_lead_provider_band_path(contract_period, @active_lead_provider, band)
+    end
+
+    def bands_path
+      admin_contract_period_active_lead_provider_bands_path(contract_period, @active_lead_provider)
     end
   end
 end
