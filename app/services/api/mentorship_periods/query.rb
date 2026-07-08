@@ -21,7 +21,10 @@ module API::MentorshipPeriods
         .strict_loading
         .includes(
           mentee: %i[teacher school],
-          mentor: :teacher
+          mentor: [
+            :teacher,
+            { training_periods: :lead_provider }
+          ]
         )
     end
 

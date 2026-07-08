@@ -19,8 +19,14 @@ module API
         }
       end
 
+      def serializer_options
+        @serializer_options ||= {
+          lead_provider_id: current_lead_provider.id
+        }
+      end
+
       def to_json(obj)
-        API::MentorshipPeriodsSerializer.render(obj, root: "data")
+        API::MentorshipPeriodsSerializer.render(obj, root: "data", **serializer_options)
       end
     end
   end

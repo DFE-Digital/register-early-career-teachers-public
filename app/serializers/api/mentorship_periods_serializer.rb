@@ -20,6 +20,16 @@ class API::MentorshipPeriodsSerializer < Blueprinter::Base
     end
 
     field(:mentor_full_name) { |mentorship_period| Teachers::Name.new(mentorship_period.mentor.teacher).full_name }
+
+    field(:mentor_training_status) do |mentorship_period, options|
+      actively_training = mentorship_period.mentor.training_periods.any? { it.lead_provider&.id == options[:lead_provider_id] }
+
+      if actively_training
+        :actively_training
+      else
+        :not_actively_training
+      end
+    end
   end
 
   identifier :api_id, name: :id
