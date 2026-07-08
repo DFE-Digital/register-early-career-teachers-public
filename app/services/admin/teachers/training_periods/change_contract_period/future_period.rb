@@ -59,8 +59,8 @@ module Admin
           def training_period_attributes
             {
               school_partnership: replacement_school_partnership,
+              expression_of_interest: replacement_expression_of_interest,
               schedule: equivalent_schedule,
-              **expression_of_interest_attributes
             }
           end
 
@@ -70,10 +70,10 @@ module Admin
             school_partnership
           end
 
-          def expression_of_interest_attributes
-            return {} unless training_period.only_expression_of_interest?
+          def replacement_expression_of_interest
+            return unless training_period.only_expression_of_interest?
 
-            { expression_of_interest: equivalent_active_lead_provider }
+            equivalent_active_lead_provider
           end
 
           def equivalent_active_lead_provider
