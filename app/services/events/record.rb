@@ -1062,11 +1062,10 @@ module Events
       new(event_type:, author:, heading:, active_lead_provider:, lead_provider:, happened_at:, modifications:).record_event!
     end
 
-    def self.record_contract_deleted_event!(author:, active_lead_provider:, happened_at: Time.zone.now)
+    def self.record_contract_deleted_event!(author:, contract:, active_lead_provider:, happened_at: Time.zone.now)
       event_type = :contract_deleted
       lead_provider = active_lead_provider.lead_provider
-      contract_period = active_lead_provider.contract_period
-      heading = "Contract deleted for #{lead_provider.name} in #{contract_period.year}"
+      heading = "Contract deleted: #{contract.description} for #{lead_provider.name}"
 
       new(event_type:, author:, heading:, active_lead_provider:, lead_provider:, happened_at:).record_event!
     end

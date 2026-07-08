@@ -21,7 +21,7 @@ describe Contracts::Destroy do
     expect(Contract).not_to exist(contract.id)
     expect(Contract::BandedFeeStructure).not_to exist(banded_fee_structure_id)
     expect(Contract::BandedFeeStructure::BandTerm.where(id: band_term_ids)).not_to exist
-    expect(Events::Record).to have_received(:record_contract_deleted_event!).with(author:, active_lead_provider:)
+    expect(Events::Record).to have_received(:record_contract_deleted_event!).with(author:, contract:, active_lead_provider:)
   end
 
   context "when the contract has statements" do

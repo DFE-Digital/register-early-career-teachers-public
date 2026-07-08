@@ -23,6 +23,9 @@ RSpec.describe Contracts::Update do
                       active_lead_provider:)
   end
 
+  let(:output_fee_percentage) { 80 }
+  let(:service_fee_percentage) { 20 }
+
   let(:params) do
     {
       ecf_contract_version: "updated-version",
@@ -34,8 +37,8 @@ RSpec.describe Contracts::Update do
             id: band_term.id,
             band_id: band_term.band_id,
             fee_per_declaration: 9_999,
-            output_fee_percentage: 80,
-            service_fee_percentage: 20,
+            output_fee_percentage:,
+            service_fee_percentage:,
           },
         ],
       },
@@ -118,6 +121,16 @@ RSpec.describe Contracts::Update do
           )
         )
       )
+    end
+  end
+
+  context "when the fee percentages do not total 100%" do
+    let(:output_fee_percentage) { 99 }
+    let(:service_fee_percentage) { 2 }
+
+    it "does not update the contract or create an event" do
+      expect { service.call }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Banded fee structure band terms Sum of ratios must equal 1")
+      expect(Events::Record).not_to have_received(:record_contract_updated_event!)
     end
   end
 end
