@@ -56,7 +56,20 @@ module ECTAtSchoolPeriods
     attr_reader :school, :lead_provider
 
     def training_period_for_switch
-      @ect_at_school_period.current_or_next_training_period || @ect_at_school_period.latest_training_period
+      @ect_at_school_period.current_or_next_training_period ||
+        @ect_at_school_period.latest_training_period
+    end
+
+    def most_recent_provider_led_period
+      @most_recent_provider_led_period ||=
+        @ect_at_school_period
+          .teacher
+          .ect_training_periods
+          .provider_led_training_programme
+          .where(ect_at_school_periods: { school_id: @ect_at_school_period.school_id })
+          .where("training_periods.started_on < ?", date_of_transition)
+          .latest_first
+          .first
     end
 
     def handle_training_period_for_switch!
