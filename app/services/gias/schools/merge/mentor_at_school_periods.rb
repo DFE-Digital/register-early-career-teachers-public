@@ -7,12 +7,11 @@ module GIAS
         class StartAfterEnd < StandardError; end
         class MissingSchoolPartnership < StandardError; end
 
-        attr_reader :periods,
-                    :target_period
+        attr_reader :periods, :target_school
 
-        def initialize(periods:, target_period:)
+        def initialize(periods:, target_school:)
           @periods = periods
-          @target_period = target_period
+          @target_school = target_school
         end
 
         def self.merge!(...) = new(...).merge!
@@ -50,6 +49,12 @@ module GIAS
           update_events
         end
 
+        def target_period
+          @target_period ||= periods.reverse.find do |period|
+            period.school == target_school
+          end
+        end
+
         def redundant_periods
           @redundant_periods ||= periods.excluding(target_period)
         end
@@ -76,7 +81,6 @@ module GIAS
         def update_mentorship_periods
           mentorship_periods.each do |mentorship_period|
             GIAS::Schools::Merge::Period.prepare(period: mentorship_period.mentee, school: target_school)
-        
             mentorship_period.mentor = target_period
           end
         end
@@ -116,9 +120,9 @@ module GIAS
         end
 
         def target_included?
-          return if periods.include?(target_period)
+          return if target_period.present?
 
-          raise TargetNotIncluded, "Target period must be included in the periods being merged"
+          raise TargetNotIncluded, "A period for the target school must be included in the periods being merged"
         end
 
         def start_before_end?
@@ -133,8 +137,6 @@ module GIAS
 
           raise DifferentTeacher, "All periods must belong to the same teacher"
         end
-
-        def target_school = target_period.school
       end
     end
   end

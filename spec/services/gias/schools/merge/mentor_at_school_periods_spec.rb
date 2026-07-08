@@ -2,7 +2,7 @@ RSpec.describe GIAS::Schools::Merge::MentorAtSchoolPeriods do
   subject(:service) do
     described_class.merge!(
       periods:,
-      target_period:
+      target_school: 
     )
   end
 
@@ -10,7 +10,7 @@ RSpec.describe GIAS::Schools::Merge::MentorAtSchoolPeriods do
   let(:predecessor_gias_school) { FactoryBot.create(:gias_school, :with_school) }
   let(:gias_school) { FactoryBot.create(:gias_school, :with_school) }
   let(:predecessor_school) { predecessor_gias_school.school }
-  let(:school) { gias_school.school }
+  let(:target_school) { gias_school.school }
 
   let(:teacher) { FactoryBot.create(:teacher) }
 
@@ -18,7 +18,7 @@ RSpec.describe GIAS::Schools::Merge::MentorAtSchoolPeriods do
   let(:finished_on) { Date.new(2025, 12, 31) }
 
   let(:first_period) { FactoryBot.create(:mentor_at_school_period,  teacher:, school: predecessor_school, started_on:, finished_on: Date.new(2025, 12, 31)) }
-  let(:second_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school:, started_on: Date.new(2025, 4, 1), finished_on: Date.new(2025, 9, 30)) }
+  let(:second_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school: target_school, started_on: Date.new(2025, 4, 1), finished_on: Date.new(2025, 9, 30)) }
 
   let(:target_period) { second_period }
 
@@ -58,7 +58,7 @@ RSpec.describe GIAS::Schools::Merge::MentorAtSchoolPeriods do
         end
 
         context "when the period at the destination school is ongoing" do
-          let(:second_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school:, started_on: Date.new(2025, 7, 1), finished_on: nil) }
+          let(:second_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school: target_school, started_on: Date.new(2025, 7, 1), finished_on: nil) }
 
           it "changes the start date" do
             expect { service }.to change(target_period, :started_on).to(started_on)
@@ -110,8 +110,8 @@ RSpec.describe GIAS::Schools::Merge::MentorAtSchoolPeriods do
 
       context "when there are two mentor periods at the destination school" do
         let(:first_period) { FactoryBot.create(:mentor_at_school_period,  teacher:, school: predecessor_school, started_on:, finished_on: Date.new(2025, 6, 30)) }
-        let(:second_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school:, started_on: Date.new(2025, 4, 1), finished_on: Date.new(2025, 7, 31)) }
-        let(:third_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school:, started_on: Date.new(2025, 9, 1), finished_on: Date.new(2025, 12, 31)) }
+        let(:second_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school: target_school, started_on: Date.new(2025, 4, 1), finished_on: Date.new(2025, 7, 31)) }
+        let(:third_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school: target_school, started_on: Date.new(2025, 9, 1), finished_on: Date.new(2025, 12, 31)) }
         let!(:third_training_period) { FactoryBot.create(:training_period, :for_mentor, :with_only_expression_of_interest, mentor_at_school_period: third_period) }
 
         let(:training_periods) { [first_training_period, second_training_period, third_training_period] }
@@ -143,7 +143,7 @@ RSpec.describe GIAS::Schools::Merge::MentorAtSchoolPeriods do
         end
 
         context "when the period at the destination school is ongoing" do
-          let(:third_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school:, started_on: Date.new(2025, 9, 1), finished_on: nil) }
+          let(:third_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school: target_school, started_on: Date.new(2025, 9, 1), finished_on: nil) }
 
           it "changes the start date" do
             expect { service }.to change(target_period, :started_on).to(started_on)
@@ -199,7 +199,7 @@ RSpec.describe GIAS::Schools::Merge::MentorAtSchoolPeriods do
 
       context "when there are two mentor periods at the original school" do
         let(:first_period) { FactoryBot.create(:mentor_at_school_period,  teacher:, school: predecessor_school, started_on:, finished_on: Date.new(2025, 6, 30)) }
-        let(:second_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school:, started_on: Date.new(2025, 4, 1), finished_on: Date.new(2025, 11, 30)) }
+        let(:second_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school: target_school, started_on: Date.new(2025, 4, 1), finished_on: Date.new(2025, 11, 30)) }
         let(:third_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school: predecessor_school, started_on: Date.new(2025, 9, 1), finished_on: Date.new(2025, 12, 31)) }
         let!(:third_training_period) { FactoryBot.create(:training_period, :for_mentor, :with_only_expression_of_interest, mentor_at_school_period: third_period) }
 
@@ -232,7 +232,7 @@ RSpec.describe GIAS::Schools::Merge::MentorAtSchoolPeriods do
         end
 
         context "when the period at the destination school is ongoing" do
-          let(:second_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school:, started_on: Date.new(2025, 4, 1), finished_on: nil) }
+          let(:second_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school: target_school, started_on: Date.new(2025, 4, 1), finished_on: nil) }
 
           it "changes the start date" do
             expect { service }.to change(target_period, :started_on).to(started_on)
@@ -282,7 +282,7 @@ RSpec.describe GIAS::Schools::Merge::MentorAtSchoolPeriods do
         end
 
         context "when both periods are ongoing" do
-          let(:second_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school:, started_on: Date.new(2025, 4, 1), finished_on: nil) }
+          let(:second_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school: target_school, started_on: Date.new(2025, 4, 1), finished_on: nil) }
           let(:third_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school: predecessor_school, started_on: Date.new(2025, 9, 1), finished_on: nil) }
 
           it "changes the start date" do
@@ -313,7 +313,7 @@ RSpec.describe GIAS::Schools::Merge::MentorAtSchoolPeriods do
 
       context "when the partnership exists at the destination school" do
         let(:lead_provider_delivery_partnership) { first_training_period.school_partnership.lead_provider_delivery_partnership }
-        let!(:partnership_at_destination_school) { FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:) }
+        let!(:partnership_at_destination_school) { FactoryBot.create(:school_partnership, school: target_school, lead_provider_delivery_partnership:) }
 
         it "moves the school partnership to the destination school" do
           service
@@ -329,7 +329,7 @@ RSpec.describe GIAS::Schools::Merge::MentorAtSchoolPeriods do
         it "creates a new school partnership at the destination school" do
           expect { service }.to change(SchoolPartnership, :count).by(1)
 
-          expect(first_training_period.school_partnership.school).to eq(school)
+          expect(first_training_period.school_partnership.school).to eq(target_school)
           expect(first_training_period.school_partnership.lead_provider_delivery_partnership).to eq(school_partnership.lead_provider_delivery_partnership)
         end
       end
@@ -349,8 +349,8 @@ RSpec.describe GIAS::Schools::Merge::MentorAtSchoolPeriods do
           expect { service }.to change(SchoolPartnership, :count).by(1)
 
           expect(third_training_period.reload.school_partnership).to eq(first_training_period.reload.school_partnership)
-          expect(third_training_period.school_partnership.school).to eq(school)
-          expect(first_training_period.school_partnership.school).to eq(school)
+          expect(third_training_period.school_partnership.school).to eq(target_school)
+          expect(first_training_period.school_partnership.school).to eq(target_school)
         end
       end
 
@@ -365,8 +365,8 @@ RSpec.describe GIAS::Schools::Merge::MentorAtSchoolPeriods do
         it "creates one new school partnership at the destination school" do
           expect { service }.to change(SchoolPartnership, :count).by(2)
 
-          expect(third_training_period.school_partnership.school).to eq(school)
-          expect(first_training_period.school_partnership.school).to eq(school)
+          expect(third_training_period.school_partnership.school).to eq(target_school)
+          expect(first_training_period.school_partnership.school).to eq(target_school)
         end
       end
     end
@@ -394,13 +394,13 @@ RSpec.describe GIAS::Schools::Merge::MentorAtSchoolPeriods do
           it "recreates the mentee's school partnership at the destination school" do
             expect { service }.to change(SchoolPartnership, :count).by(1)
 
-            expect(training_period.school_partnership.school).to eq(school)
+            expect(training_period.school_partnership.school).to eq(target_school)
           end
 
           it "moves the mentee period to the new school" do
             service
 
-            expect(mentee.reload.school).to eq(school)
+            expect(mentee.reload.school).to eq(target_school)
           end
         end
 
@@ -423,7 +423,7 @@ RSpec.describe GIAS::Schools::Merge::MentorAtSchoolPeriods do
           it "moves the mentee period to the new school" do
             service
 
-            expect(mentee.reload.school).to eq(school)
+            expect(mentee.reload.school).to eq(target_school)
           end
         end
 
@@ -446,7 +446,7 @@ RSpec.describe GIAS::Schools::Merge::MentorAtSchoolPeriods do
           it "moves the mentee period to the new school" do
             service
 
-            expect(mentee.reload.school).to eq(school)
+            expect(mentee.reload.school).to eq(target_school)
           end
         end
       end
@@ -467,13 +467,13 @@ RSpec.describe GIAS::Schools::Merge::MentorAtSchoolPeriods do
           it "recreates the school partnership at the destination school" do
             expect { service }.to change(SchoolPartnership, :count).by(1)
 
-            expect(event.reload.school_partnership.school).to eq(school)
+            expect(event.reload.school_partnership.school).to eq(target_school)
           end
 
           it "moves the event to the new school" do
             service
 
-            expect(event.reload.school).to eq(school)
+            expect(event.reload.school).to eq(target_school)
           end
         end
 
@@ -483,7 +483,7 @@ RSpec.describe GIAS::Schools::Merge::MentorAtSchoolPeriods do
           it "moves the event to the new school" do
             service
 
-            expect(event.reload.school).to eq(school)
+            expect(event.reload.school).to eq(target_school)
           end
         end
       end
@@ -500,7 +500,7 @@ RSpec.describe GIAS::Schools::Merge::MentorAtSchoolPeriods do
         let!(:event) { FactoryBot.create(:event, mentor_at_school_period: first_period, school: predecessor_school) }
 
         it "changes the event to point to the target period" do
-          expect { service }.to change { event.reload.school }.to(school)
+          expect { service }.to change { event.reload.school }.to(target_school)
         end
       end
 
