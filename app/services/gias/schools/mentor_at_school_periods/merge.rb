@@ -1,7 +1,7 @@
 module GIAS
   module Schools
-    class Merge
-      class MentorAtSchoolPeriods
+    module MentorAtSchoolPeriods
+      class Merge
         class DifferentTeacher < StandardError; end
         class TargetNotIncluded < StandardError; end
         class StartAfterEnd < StandardError; end
@@ -14,9 +14,9 @@ module GIAS
           @target_school = target_school
         end
 
-        def self.merge!(...) = new(...).merge!
+        def self.call(...) = new(...).call
 
-        def merge!
+        def call
           prepare
 
           ActiveRecord::Base.transaction do
@@ -80,7 +80,7 @@ module GIAS
 
         def update_mentorship_periods
           mentorship_periods.each do |mentorship_period|
-            GIAS::Schools::Merge::Period.prepare(period: mentorship_period.mentee, school: target_school)
+            GIAS::Schools::Merge::Period.prepare(period: mentorship_period.mentee, target_school:)
             mentorship_period.mentor = target_period
           end
         end
@@ -94,7 +94,7 @@ module GIAS
         end
 
         def new_partnership_for(object)
-          GIAS::Schools::Merge::SchoolPartnership.reassign!(object:, period_type: :mentor_at_school_period, target_school:)
+          GIAS::Schools::SchoolPartnerships::Transfer.call(object:, period_type: :mentor_at_school_period, target_school:)
         end
 
         def finished_on

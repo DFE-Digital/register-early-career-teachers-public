@@ -1,6 +1,6 @@
-RSpec.describe GIAS::Schools::Merge::SchoolPartnership do
-  subject(:reassign) do
-    described_class.reassign!(
+RSpec.describe GIAS::Schools::SchoolPartnerships::Transfer do
+  subject(:service) do
+    described_class.call(
       object:,
       target_school:,
       period_type:,
@@ -44,16 +44,16 @@ RSpec.describe GIAS::Schools::Merge::SchoolPartnership do
 
   context "when reassignment is required" do
     it "creates a school partnership for the target school" do
-      expect { reassign }.to change(::SchoolPartnership, :count).by(1)
+      expect { service }.to change(::SchoolPartnership, :count).by(1)
 
-      expect(reassign).to have_attributes(
+      expect(service).to have_attributes(
         school: target_school,
         lead_provider_delivery_partnership:
       )
     end
 
     it "records a school partnership recreated event" do
-      new_school_partnership = reassign
+      new_school_partnership = service
 
       expect(Events::Record)
         .to have_received(:record_school_partnership_recreated_event!)
@@ -75,15 +75,15 @@ RSpec.describe GIAS::Schools::Merge::SchoolPartnership do
     end
 
     it "does not create another school partnership" do
-      expect { reassign }.not_to change(::SchoolPartnership, :count)
+      expect { service }.not_to change(::SchoolPartnership, :count)
     end
 
     it "returns the existing school partnership" do
-      expect(reassign).to eq(existing_target_school_partnership)
+      expect(service).to eq(existing_target_school_partnership)
     end
 
     it "does not record a school partnership recreated event" do
-      reassign
+      service
 
       expect(Events::Record)
         .not_to have_received(:record_school_partnership_recreated_event!)
@@ -113,16 +113,16 @@ RSpec.describe GIAS::Schools::Merge::SchoolPartnership do
     end
 
     it "creates a school partnership for the target school" do
-      expect { reassign }.to change(::SchoolPartnership, :count).by(1)
+      expect { service }.to change(::SchoolPartnership, :count).by(1)
 
-      expect(reassign).to have_attributes(
+      expect(service).to have_attributes(
         school: target_school,
         lead_provider_delivery_partnership:
       )
     end
 
     it "records a school partnership recreated event" do
-      new_school_partnership = reassign
+      new_school_partnership = service
 
       expect(Events::Record)
         .to have_received(:record_school_partnership_recreated_event!)
@@ -138,15 +138,15 @@ RSpec.describe GIAS::Schools::Merge::SchoolPartnership do
     let(:source_school) { target_school }
 
     it "does not create a school partnership" do
-      expect { reassign }.not_to change(::SchoolPartnership, :count)
+      expect { service }.not_to change(::SchoolPartnership, :count)
     end
 
     it "returns nil" do
-      expect(reassign).to be_nil
+      expect(service).to be_nil
     end
 
     it "does not record an event" do
-      reassign
+      service
 
       expect(Events::Record)
         .not_to have_received(:record_school_partnership_recreated_event!)
@@ -157,15 +157,15 @@ RSpec.describe GIAS::Schools::Merge::SchoolPartnership do
     let(:source_school_partnership) { nil }
 
     it "does not create a school partnership" do
-      expect { reassign }.not_to change(::SchoolPartnership, :count)
+      expect { service }.not_to change(::SchoolPartnership, :count)
     end
 
     it "returns nil" do
-      expect(reassign).to be_nil
+      expect(service).to be_nil
     end
 
     it "does not record an event" do
-      reassign
+      service
 
       expect(Events::Record)
         .not_to have_received(:record_school_partnership_recreated_event!)
@@ -176,15 +176,15 @@ RSpec.describe GIAS::Schools::Merge::SchoolPartnership do
     let(:target_school) { nil }
 
     it "does not create a school partnership" do
-      expect { reassign }.not_to change(::SchoolPartnership, :count)
+      expect { service }.not_to change(::SchoolPartnership, :count)
     end
 
     it "returns nil" do
-      expect(reassign).to be_nil
+      expect(service).to be_nil
     end
 
     it "does not record an event" do
-      reassign
+      service
 
       expect(Events::Record)
         .not_to have_received(:record_school_partnership_recreated_event!)
@@ -195,15 +195,15 @@ RSpec.describe GIAS::Schools::Merge::SchoolPartnership do
     let(:period) { nil }
 
     it "does not create a school partnership" do
-      expect { reassign }.not_to change(::SchoolPartnership, :count)
+      expect { service }.not_to change(::SchoolPartnership, :count)
     end
 
     it "returns nil" do
-      expect(reassign).to be_nil
+      expect(service).to be_nil
     end
 
     it "does not record an event" do
-      reassign
+      service
 
       expect(Events::Record)
         .not_to have_received(:record_school_partnership_recreated_event!)
@@ -222,9 +222,9 @@ RSpec.describe GIAS::Schools::Merge::SchoolPartnership do
     end
 
     it "uses the ECT at-school period to determine whether reassignment is required" do
-      expect { reassign }.to change(::SchoolPartnership, :count).by(1)
+      expect { service }.to change(::SchoolPartnership, :count).by(1)
 
-      expect(reassign).to have_attributes(
+      expect(service).to have_attributes(
         school: target_school,
         lead_provider_delivery_partnership:
       )
@@ -235,7 +235,7 @@ RSpec.describe GIAS::Schools::Merge::SchoolPartnership do
     let(:object) { double("object", mentor_at_school_period: period) }
 
     it "raises an InvalidObject error" do
-      expect { reassign }.to raise_error(described_class::InvalidObject)
+      expect { service }.to raise_error(described_class::InvalidObject)
     end
   end
 
@@ -243,7 +243,7 @@ RSpec.describe GIAS::Schools::Merge::SchoolPartnership do
     let(:period_type) { :invalid_period }
 
     it "raises an InvalidPeriodType error" do
-      expect { reassign }.to raise_error(described_class::InvalidPeriodType)
+      expect { service }.to raise_error(described_class::InvalidPeriodType)
     end
   end
 
@@ -256,7 +256,7 @@ RSpec.describe GIAS::Schools::Merge::SchoolPartnership do
     end
 
     it "raises an InvalidPeriodType error" do
-      expect { reassign }.to raise_error(described_class::InvalidPeriodType)
+      expect { service }.to raise_error(described_class::InvalidPeriodType)
     end
   end
 end

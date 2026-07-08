@@ -1,6 +1,6 @@
 module GIAS::Schools
-  class Merge
-    class SchoolPartnership
+  module SchoolPartnerships
+    class Transfer
       class InvalidObject < StandardError; end
       class InvalidPeriodType < StandardError; end
 
@@ -19,9 +19,9 @@ module GIAS::Schools
         raise InvalidPeriodType unless object.respond_to?(period_type)
       end
 
-      def self.reassign!(...) = new(...).reassign!
+      def self.call(...) = new(...).call
 
-      def reassign!
+      def call
         return unless reassignment_required?
 
         create_school_partnership_at_target_school!
@@ -39,7 +39,7 @@ module GIAS::Schools
 
       def create_school_partnership_at_target_school!
         ActiveRecord::Base.transaction do
-          target_school_partnership = ::SchoolPartnership.find_or_create_by!(
+          target_school_partnership = SchoolPartnership.find_or_create_by!(
             school: target_school,
             lead_provider_delivery_partnership:
           )

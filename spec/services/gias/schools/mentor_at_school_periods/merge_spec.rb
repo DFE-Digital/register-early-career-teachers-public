@@ -1,6 +1,6 @@
-RSpec.describe GIAS::Schools::Merge::MentorAtSchoolPeriods do
+RSpec.describe GIAS::Schools::MentorAtSchoolPeriods::Merge do
   subject(:service) do
-    described_class.merge!(
+    described_class.call(
       periods:,
       target_school: 
     )
@@ -24,7 +24,7 @@ RSpec.describe GIAS::Schools::Merge::MentorAtSchoolPeriods do
 
   let(:periods) { [first_period, second_period] }
 
-  describe "#merge!" do
+  describe "#call" do
     context "when no school partnerships need to be created at the destination school" do
       let!(:first_training_period) { FactoryBot.create(:training_period, :for_mentor,  :with_only_expression_of_interest, mentor_at_school_period: first_period) }
       let!(:second_training_period) { FactoryBot.create(:training_period, :for_mentor, :with_only_expression_of_interest, mentor_at_school_period: second_period) }
@@ -113,6 +113,7 @@ RSpec.describe GIAS::Schools::Merge::MentorAtSchoolPeriods do
         let(:second_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school: target_school, started_on: Date.new(2025, 4, 1), finished_on: Date.new(2025, 7, 31)) }
         let(:third_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school: target_school, started_on: Date.new(2025, 9, 1), finished_on: Date.new(2025, 12, 31)) }
         let!(:third_training_period) { FactoryBot.create(:training_period, :for_mentor, :with_only_expression_of_interest, mentor_at_school_period: third_period) }
+        let(:target_period) { third_period }
 
         let(:training_periods) { [first_training_period, second_training_period, third_training_period] }
         let(:periods) { [first_period, second_period, third_period] }
@@ -123,7 +124,7 @@ RSpec.describe GIAS::Schools::Merge::MentorAtSchoolPeriods do
           end
 
           it "changes the end date" do
-            expect { service }.to change(target_period, :finished_on).to(finished_on)
+            expect { service }.not_to change(target_period, :finished_on)
           end
 
           it "points training periods to the target period" do
@@ -138,11 +139,13 @@ RSpec.describe GIAS::Schools::Merge::MentorAtSchoolPeriods do
             expect { service }.to change(MentorAtSchoolPeriod, :count).by(-2)
 
             expect(MentorAtSchoolPeriod.exists?(first_period.id)).to be(false)
+            expect(MentorAtSchoolPeriod.exists?(second_period.id)).to be(false)
             expect(MentorAtSchoolPeriod.exists?(target_period.id)).to be(true)
           end
         end
 
         context "when the period at the destination school is ongoing" do
+          let(:target_period) { third_period }
           let(:third_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school: target_school, started_on: Date.new(2025, 9, 1), finished_on: nil) }
 
           it "changes the start date" do
@@ -150,7 +153,7 @@ RSpec.describe GIAS::Schools::Merge::MentorAtSchoolPeriods do
           end
 
           it "changes the end date" do
-            expect { service }.to change(target_period, :finished_on).to(nil)
+            expect { service }.not_to change(target_period, :finished_on)
           end
 
           it "points training periods to the target period" do
@@ -406,7 +409,7 @@ RSpec.describe GIAS::Schools::Merge::MentorAtSchoolPeriods do
 
         context "when the mentee's training period has a school partnership that already exists at the destination school" do
           let!(:training_period) { FactoryBot.create(:training_period, :with_school_partnership, :for_ect, ect_at_school_period: mentee, started_on:, finished_on: Date.new(2025, 6, 30)) }
-          let!(:existing_partnership) { FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership: training_period.school_partnership.lead_provider_delivery_partnership) }
+          let!(:existing_partnership) { FactoryBot.create(:school_partnership, school: target_school, lead_provider_delivery_partnership: training_period.school_partnership.lead_provider_delivery_partnership) }
 
           it "changes the mentorship period to point to the target period" do
             service

@@ -1,7 +1,7 @@
 module GIAS
   module Schools
-    class Merge
-      class OverlappingMentorAtSchoolPeriods
+    module MentorAtSchoolPeriods
+      class Overlapping
         attr_reader :teacher, :schools, :groups
 
         def initialize(teacher:, schools:)

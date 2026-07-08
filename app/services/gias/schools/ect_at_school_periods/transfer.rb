@@ -1,7 +1,7 @@
 module GIAS
   module Schools
-    class Merge
-      class Period
+    module ECTAtSchoolPeriods
+      class Transfer
 
         attr_reader :period, :target_school
 
@@ -25,13 +25,7 @@ module GIAS
           prepare 
           
           ActiveRecord::Base.transaction do
-            training_periods.each(&:save!)
-            events.each(&:save!)
-
-            mentorship_periods.each do |mentorship_period|
-              mentorship_period.mentee.save!
-              mentorship_period.save!
-            end
+            update_related_records!
 
             period.save!
           end
@@ -39,14 +33,11 @@ module GIAS
 
         private
 
-        def update_mentorship_periods
-          return unless period_type == :mentor_at_school_period
-
-          mentorship_periods.each do |mentorship_period|
-            GIAS::Schools::Merge::Period.move(period: mentorship_period.mentee, target_school:)
-          end
+        def update_related_records!
+          training_periods.each(&:save!)
+          events.each(&:save!)
         end
-
+        
         def update_training_periods
           training_periods.each do |training_period|
             training_period.school_partnership = new_partnership_for(training_period)
@@ -64,16 +55,8 @@ module GIAS
           GIAS::Schools::SchoolPartnerships::Transfer.call(object:, period_type:, target_school:)
         end
 
-        def period_type
-          case period
-          when ECTAtSchoolPeriod
-            :ect_at_school_period
-          when MentorAtSchoolPeriod
-            :mentor_at_school_period
-          else
-            raise ArgumentError, "Unsupported period type: #{period.class.name}"
-          end
-        end
+        def period_type = :ect_at_school_period
+       
 
         delegate :training_periods, to: :period
         delegate :events, to: :period
