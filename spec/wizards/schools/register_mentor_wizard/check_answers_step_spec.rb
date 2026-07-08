@@ -113,21 +113,43 @@ describe Schools::RegisterMentorWizard::CheckAnswersStep, type: :model do
         allow(wizard.current_step).to receive(:valid?).and_return(true)
         allow(subject.mentor).to receive(:register!).and_return(new_mentor)
         allow(Schools::AssignMentor).to receive(:new).and_return(double(assign!: true))
-        subject.save!
       end
 
       it "registers the mentor" do
+        subject.save!
         expect(subject.mentor).to have_received(:register!)
       end
 
-      it "assigns the created mentor to the ECT" do
-        expect(Schools::AssignMentor)
-          .to have_received(:new)
-          .with(
-            ect_at_school_period: wizard.ect,
-            mentor_at_school_period: new_mentor,
-            author:
-          )
+      context "when the mentor is mentoring only at the new school" do
+        before { store.mentoring_at_new_school_only = "yes" }
+
+        it "assigns the created mentor to the ECT" do
+          subject.save!
+          expect(Schools::AssignMentor)
+            .to have_received(:new)
+            .with(
+              ect_at_school_period: wizard.ect,
+              mentor_at_school_period: new_mentor,
+              author:,
+              mentoring_at_new_school_only: true
+            )
+        end
+      end
+
+      context "when the mentor is continuing to mentor at their current school" do
+        before { store.mentoring_at_new_school_only = "no" }
+
+        it "assigns the created mentor to the ECT" do
+          subject.save!
+          expect(Schools::AssignMentor)
+            .to have_received(:new)
+            .with(
+              ect_at_school_period: wizard.ect,
+              mentor_at_school_period: new_mentor,
+              author:,
+              mentoring_at_new_school_only: false
+            )
+        end
       end
     end
   end
