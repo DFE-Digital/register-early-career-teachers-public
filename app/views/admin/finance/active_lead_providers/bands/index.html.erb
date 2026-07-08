@@ -24,7 +24,7 @@
           <% row.with_cell(text: capacity_description_for(band:)) %>
           <% row.with_cell(numeric: true) do %>
             <div class="govuk-button-group govuk-!-margin-bottom-0">
-              <% if editable?(band:) %>
+              <% if band.editable? %>
                 <%= govuk_link_to(
                   "Change",
                   edit_admin_contract_period_active_lead_provider_band_path(@active_lead_provider.contract_period, @active_lead_provider, band),
@@ -34,7 +34,7 @@
                   class: "govuk-!-margin-bottom-0")
                 %>
               <% end %>
-              <% if deletable?(band:) %>
+              <% if band.deletable? %>
                 <%= govuk_button_link_to(
                   "Delete",
                   delete_admin_contract_period_active_lead_provider_band_path(@active_lead_provider.contract_period, @active_lead_provider, band),
@@ -51,6 +51,6 @@
   <% end %>
 <% end %>
 
-<% if bands_can_be_added?(active_lead_provider: @active_lead_provider) %>
+<% if @active_lead_provider.bands_can_be_added_and_removed? %>
   <%= govuk_button_link_to "Add band", new_admin_contract_period_active_lead_provider_band_path(@active_lead_provider.contract_period, @active_lead_provider) %>
 <% end %>

@@ -38,4 +38,8 @@ class ActiveLeadProvider < ApplicationRecord
   delegate :finished_on_before_today?, to: :contract_period
 
   def editable? = !contract_period.payments_frozen?
+
+  def bands_can_be_added_and_removed?
+    contracts.none? && contract_period.started_on.future?
+  end
 end

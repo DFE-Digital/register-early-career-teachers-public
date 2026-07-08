@@ -38,6 +38,8 @@ class ActiveLeadProvider::Band < ApplicationRecord
   before_create :abort_if_contracted_or_inside_contract_period
   before_destroy :abort_if_contracted_or_inside_contract_period
 
+  delegate :bands_can_be_added_and_removed?, to: :active_lead_provider
+
   # @return [Integer, nil]
   def min_declarations
     return nil unless has_allocation_order?
@@ -58,6 +60,18 @@ class ActiveLeadProvider::Band < ApplicationRecord
     ("A".ord + allocation_order - 1).chr
   end
 
+  def last?
+    active_lead_provider.bands.last == self
+  end
+
+  def editable?
+    last?
+  end
+
+  def deletable?
+    last? && bands_can_be_added_and_removed?
+  end
+
 private
 
   # Read-only
@@ -68,11 +82,6 @@ private
   # @return [Boolean]
   def first?
     allocation_order == 1
-  end
-
-  # @return [Boolean]
-  def last?
-    active_lead_provider.bands.last == self
   end
 
   def abort_update
@@ -86,8 +95,8 @@ private
   end
 
   def abort_if_contracted_or_inside_contract_period
-    unless active_lead_provider.present? && Admin::Finance::Bands.new(active_lead_provider:).bands_can_be_added_and_removed?
-      errors.add(:base, "Bands cannot be added or removed once a contract is in place or the contract period has begun")
+    unless active_lead_provider.present? && bands_can_be_added_and_removed?
+      errors.add(:base, "Bands cannot be added or deleted once a contract is in place or the contract period has begun")
       throw(:abort)
     end
   end
