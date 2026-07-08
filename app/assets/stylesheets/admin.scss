@@ -213,3 +213,9 @@ pre {
     padding-inline: initial;
   }
 }
+
+.app-input-read-only {
+  background-color: transparent;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
