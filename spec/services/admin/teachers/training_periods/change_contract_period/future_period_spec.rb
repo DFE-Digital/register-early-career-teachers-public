@@ -122,6 +122,32 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::FuturePer
     end
   end
 
+  context "when the future training period has a school partnership and stale expression of interest" do
+    let!(:training_period) do
+      FactoryBot.create(
+        :training_period,
+        ect_at_school_period: future_ect_at_school_period,
+        expression_of_interest: school_partnership.active_lead_provider,
+        school_partnership:,
+        schedule:,
+        started_on: future_started_on,
+        finished_on: future_finished_on
+      )
+    end
+
+    it "clears the expression of interest when updating the partnership" do
+      expect {
+        service_call
+      }.to change { training_period.reload.expression_of_interest_id }
+        .from(school_partnership.active_lead_provider.id)
+        .to(nil)
+
+      expect(training_period.school_partnership).to eq(target_school_partnership)
+      expect(training_period.contract_period).to eq(target_contract_period)
+      expect(training_period.schedule).to eq(target_schedule)
+    end
+  end
+
   context "when the future training period only has an expression of interest" do
     let(:target_school_partnership) { nil }
     let(:current_active_lead_provider) do
