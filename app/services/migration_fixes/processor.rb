@@ -41,6 +41,7 @@ private
 
   def update!(target_object, attrs)
     return if attrs.blank?
+
     orig_readonly_attrs = []
 
     if update_readonly_attrs
