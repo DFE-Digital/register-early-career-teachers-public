@@ -39,8 +39,6 @@ module GIAS
 
         private
 
-        
-
         def update_mentorship_periods
           return unless period_type == :mentor_at_school_period
 
