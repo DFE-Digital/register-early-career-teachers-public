@@ -1,8 +1,9 @@
 class MigrationFixes::Processor
-  attr_reader :batch_refs
+  attr_reader :batch_refs, :update_readonly_attrs
 
-  def initialize
+  def initialize(update_readonly_attrs: false)
     @batch_refs = {}
+    @update_readonly_attrs = update_readonly_attrs
   end
 
   def process!(data_change: {})
@@ -40,8 +41,21 @@ private
 
   def update!(target_object, attrs)
     return if attrs.blank?
+    orig_readonly_attrs = []
+
+    if update_readonly_attrs
+      # hacky workaround as there doesn't seem to be another way to do this other
+      # than perhaps raw sql
+      orig_readonly_attrs = target_object.class._attr_readonly
+      target_object.class._attr_readonly = []
+    end
 
     target_object.update!(**attrs)
+
+    if orig_readonly_attrs.present?
+      # this reverts after the session anyway but belt and braces
+      target_object.class._attr_readonly = orig_readonly_attrs
+    end
   end
 
   def delete!(target_object)
