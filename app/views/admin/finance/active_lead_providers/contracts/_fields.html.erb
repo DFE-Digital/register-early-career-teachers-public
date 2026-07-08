@@ -92,8 +92,10 @@
             </td>
             <td class="govuk-table__cell">
               <%= bt.text_field :service_fee_percentage,
-                    class: "govuk-input govuk-input--width-5",
+                    class: "govuk-input govuk-input--width-5 app-input-read-only",
                     inputmode: "numeric",
+                    readonly: true,
+                    tabindex: -1,
                     aria: { label: "Band #{("A".ord + index).chr} service fee percentage" },
                     data: { band_target: "servicePercentage" } %>
             </td>
@@ -101,7 +103,7 @@
               <%= bt.text_field :output_fee_percentage,
                     class: "govuk-input govuk-input--width-5 #{" govuk-input--error" if bt.object.errors[:output_fee_ratio].any?}",
                     aria: { label: "Band #{("A".ord + index).chr} output fee percentage" },
-                    inputmode: "decimal",
+                    inputmode: "numeric",
                     data: { band_target: "outputPercentage", action: "input->band#updateServiceFee" } %>
             </td>
             <td class="govuk-table__cell">
