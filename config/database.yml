@@ -27,7 +27,7 @@ production_default: &production_default
 
 development:
   <<: *default
-  database: ecf2_development
+  database: ecf2_snapshot
 
 test:
   primary:

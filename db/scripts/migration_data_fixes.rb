@@ -12,15 +12,12 @@
 csv_log = nil
 
 begin
-  if ENV[IGNORE_ATTR_READONLY].present?
-    Rails.logger.warn("Ignoring attr_readonly attributes")
-    Rails.config.active_record.raise_on_attr_readonly = false
-  end
+  update_readonly_attrs = ENV["UPDATE_READONLY_ATTRS"].present?
 
   csv_file = Rails.root.join("db/scripts/migration_data_fixes.csv")
   csv_log = CSV.open(Rails.root.join("tmp/migration_data_fixes_log-#{Time.zone.now.to_fs(:iso8601)}.csv"), "w")
   csv_log << %w[object_type object_id action attributes errors]
-  processor = MigrationFixes::Processor.new
+  processor = MigrationFixes::Processor.new(update_readonly_attrs:)
 
   CSV.foreach(csv_file, headers: true, header_converters: :symbol) do |row|
     processor.process!(data_change: row.to_h)
