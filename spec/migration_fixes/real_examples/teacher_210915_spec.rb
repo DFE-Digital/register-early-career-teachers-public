@@ -11,8 +11,8 @@ describe "Real data check for teacher 210915 (missing training period and declar
   let!(:school_partnership) { FactoryBot.create(:school_partnership, id: 47_614, school: school_1, lead_provider_delivery_partnership: lpdp) }
   let(:contract_period) { FactoryBot.create(:contract_period, year: 2023, mentor_funding_enabled: false) }
   let!(:schedule) { FactoryBot.create(:schedule, id: 54, identifier: "ecf-standard-september", contract_period:) }
-  let!(:statement_1) { FactoryBot.create(:statement, id: 628, contract_period:) }
-  let!(:statement_2) { FactoryBot.create(:statement, id: 220, contract_period:) }
+  let!(:statement_1) { FactoryBot.create(:statement, id: 628, active_lead_provider:) }
+  let!(:statement_2) { FactoryBot.create(:statement, id: 220, active_lead_provider:) }
 
   let(:migration_fixes) do
     [
