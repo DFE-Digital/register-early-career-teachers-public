@@ -2,10 +2,11 @@ module Schools
   class AssignMentor
     attr_reader :ect_at_school_period, :mentor_at_school_period, :mentorship_period, :author
 
-    def initialize(ect_at_school_period:, mentor_at_school_period:, author:)
+    def initialize(ect_at_school_period:, mentor_at_school_period:, author:, mentoring_at_new_school_only: false)
       @ect_at_school_period = ect_at_school_period
       @mentor_at_school_period = mentor_at_school_period
       @author = author
+      @mentoring_at_new_school_only = mentoring_at_new_school_only
     end
 
     def assign!
@@ -53,7 +54,7 @@ module Schools
 
     def earliest_possible_start
       possible_dates = [ect_at_school_period.started_on, mentor_at_school_period.started_on]
-      possible_dates.push(Date.current) unless mentor_moving_schools?
+      possible_dates.push(Date.current) unless newly_registered_mentor_moving_schools?
       possible_dates.compact.max
     end
 
@@ -61,16 +62,7 @@ module Schools
       [ect_at_school_period.finished_on, mentor_at_school_period.finished_on].compact.min
     end
 
-    def mentor_moving_schools? = previous_school_mentor_at_school_periods.exists?
-
-    def previous_school_mentor_at_school_periods
-      finishes_in_the_future_scope = ::MentorAtSchoolPeriod.finished_on_or_after(mentor_at_school_period.started_on.yesterday)
-      ongoing_or_finished_in_future_scope = ::MentorAtSchoolPeriod.ongoing.or(finishes_in_the_future_scope)
-      ::MentorAtSchoolPeriod
-        .where(teacher: mentor_at_school_period.teacher)
-        .where.not(school: ect_at_school_period.school)
-        .merge(ongoing_or_finished_in_future_scope)
-    end
+    def newly_registered_mentor_moving_schools? = !!@mentoring_at_new_school_only
 
     def record_events!
       Events::Record.record_teacher_starts_being_mentored_event!(

@@ -1,6 +1,11 @@
 RSpec.describe Schools::AssignMentor do
   subject(:service) do
-    described_class.new(ect_at_school_period: mentee, mentor_at_school_period: new_mentor, author:)
+    described_class.new(
+      ect_at_school_period: mentee,
+      mentor_at_school_period: new_mentor,
+      mentoring_at_new_school_only:,
+      author:
+    )
   end
 
   let(:mentee_started_on) { 3.years.ago }
@@ -10,14 +15,11 @@ RSpec.describe Schools::AssignMentor do
   let(:mentee) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: mentee_started_on) }
   let(:new_mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: new_mentor_started_on, school: mentee.school) }
   let(:author) { FactoryBot.create(:school_user, school_urn: mentee.school.urn) }
+  let(:mentoring_at_new_school_only) { false }
 
   describe "#assign!" do
     context "when the new mentor is moving schools" do
-      let(:previous_school) { FactoryBot.create(:school) }
-
-      before do
-        FactoryBot.create(:mentor_at_school_period, :ongoing, school: previous_school, teacher: new_mentor.teacher)
-      end
+      let(:mentoring_at_new_school_only) { true }
 
       context "when there is a mentorship period" do
         let(:current_mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: mentor_started_on, school: mentee.school) }
@@ -131,6 +133,8 @@ RSpec.describe Schools::AssignMentor do
     end
 
     context "when the new mentor is not moving schools" do
+      let(:mentoring_at_new_school_only) { false }
+
       context "when there is a mentorship period" do
         let(:current_mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, school: mentee.school, started_on: mentor_started_on) }
         let!(:current_mentorship) { FactoryBot.create(:mentorship_period, :ongoing, mentee:, mentor: current_mentor, started_on: mentorship_period_started_on) }
@@ -422,69 +426,6 @@ RSpec.describe Schools::AssignMentor do
             school: mentee.school
           )
         )
-      end
-    end
-  end
-
-  describe "#mentor_moving_schools?" do
-    context "when there are no previous mentor at school periods for this teacher" do
-      before do
-        FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: mentor_started_on)
-      end
-
-      it "returns false" do
-        expect(service.send(:mentor_moving_schools?)).to be false
-      end
-    end
-
-    context "when there are mentor at school periods for other teachers which finish in the future" do
-      before do
-        FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: mentor_started_on, finished_on: 1.month.from_now)
-      end
-
-      it "returns false" do
-        expect(service.send(:mentor_moving_schools?)).to be false
-      end
-    end
-
-    context "when the new mentor teacher has an ongoing mentor at school period at another school" do
-      before do
-        FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: mentor_started_on, teacher: new_mentor.teacher)
-      end
-
-      it "returns true" do
-        expect(service.send(:mentor_moving_schools?)).to be true
-      end
-    end
-
-    context "when the new mentor teacher has an ongoing mentor at school period at several other schools" do
-      before do
-        FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: mentor_started_on, teacher: new_mentor.teacher)
-        FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: mentor_started_on, teacher: new_mentor.teacher)
-      end
-
-      it "returns true" do
-        expect(service.send(:mentor_moving_schools?)).to be true
-      end
-    end
-
-    context "when the new mentor teacher has an ongoing mentor at school period at another school which finishes in the future" do
-      before do
-        FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: mentor_started_on, finished_on: 1.month.from_now, teacher: new_mentor.teacher)
-      end
-
-      it "returns true" do
-        expect(service.send(:mentor_moving_schools?)).to be true
-      end
-    end
-
-    context "when the new mentor teacher has an ongoing mentor at school period at another school which finish in the past" do
-      before do
-        FactoryBot.create(:mentor_at_school_period, started_on: mentor_started_on, finished_on: 1.month.ago, teacher: new_mentor.teacher)
-      end
-
-      it "returns true" do
-        expect(service.send(:mentor_moving_schools?)).to be true
       end
     end
   end

@@ -49,7 +49,8 @@ module Schools
           AssignMentor.new(
             ect_at_school_period: ect,
             mentor_at_school_period: mentor.register!(author:),
-            author:
+            author:,
+            mentoring_at_new_school_only: mentoring_at_new_school_only?
           ).assign!
         end
       rescue StandardError => e
