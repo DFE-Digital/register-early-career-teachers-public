@@ -68,14 +68,14 @@ module GIAS
 
         def update_training_periods
           training_periods.each do |training_period|
-            training_period.school_partnership = new_partnership_for(training_period) if reassignment_required?(training_period, :mentor_at_school_period)
+            training_period.school_partnership = new_partnership_for(training_period)
             training_period.mentor_at_school_period = target_period
           end
         end
 
         def update_mentorship_periods
           mentorship_periods.each do |mentorship_period|
-            GIAS::Schools::Merge::Period.prepare(period: mentorship_period.mentee, school:)
+            GIAS::Schools::Merge::Period.prepare(period: mentorship_period.mentee, school: target_school)
         
             mentorship_period.mentor = target_period
           end
@@ -83,28 +83,14 @@ module GIAS
 
         def update_events
           events.each do |event|
-            event.school_partnership = new_partnership_for(event) if reassignment_required?(event, :mentor_at_school_period)
-            event.school = school if event.school.present?
+            event.school_partnership = new_partnership_for(event)
+            event.school = target_school if event.school.present?
             event.mentor_at_school_period = target_period
           end
         end
 
-        def reassignment_required?(object, period_type)
-          return false unless object.respond_to?(period_type) && object.respond_to?(:school_partnership)
-
-          at_school_period = object.send(period_type)
-          return false if at_school_period.nil?
-
-          (at_school_period.school != school) && object.school_partnership.present?
-        end
-
         def new_partnership_for(object)
-          return unless object.respond_to?(:school_partnership) && object.school_partnership.present?
-
-          GIAS::Schools::Merge::SchoolPartnerships.resolve!(
-            existing_school_partnership: object.school_partnership,
-            school_without_partnership: school
-          )
+          GIAS::Schools::Merge::SchoolPartnership.reassign!(object:, period_type: :mentor_at_school_period, target_school:)
         end
 
         def finished_on
@@ -148,7 +134,7 @@ module GIAS
           raise DifferentTeacher, "All periods must belong to the same teacher"
         end
 
-        delegate :school, to: :target_period
+        def target_school = target_period.school
       end
     end
   end

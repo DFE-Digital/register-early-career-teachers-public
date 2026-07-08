@@ -3,11 +3,11 @@ module GIAS
     class Merge
       class Period
 
-        attr_reader :period, :school
+        attr_reader :period, :target_school
 
-        def initialize(period:, school:)
+        def initialize(period:, target_school:)
           @period = period
-          @school = school
+          @target_school = target_school
         end
 
         def self.move!(...) = new(...).move!
@@ -18,7 +18,7 @@ module GIAS
           update_mentorship_periods
           update_events
 
-          period.assign_attributes(school:)
+          period.assign_attributes(school: target_school)
         end
 
         def move!
@@ -43,39 +43,25 @@ module GIAS
           return unless period_type == :mentor_at_school_period
 
           mentorship_periods.each do |mentorship_period|
-            GIAS::Schools::Merge::Period.move(period: mentorship_period.mentee, school:)
+            GIAS::Schools::Merge::Period.move(period: mentorship_period.mentee, target_school:)
           end
         end
 
         def update_training_periods
           training_periods.each do |training_period|
-            training_period.school_partnership = new_partnership_for(training_period) if reassignment_required?(training_period, period_type)
+            training_period.school_partnership = new_partnership_for(training_period)
           end
         end
 
         def update_events
           events.each do |event|
-            event.school_partnership = new_partnership_for(event) if reassignment_required?(event, :period)
-            event.school = school if event.school.present?
+            event.school_partnership = new_partnership_for(event)
+            event.school = target_school if event.school.present?
           end
         end
 
-        def reassignment_required?(object, period_type)
-          return false unless object.respond_to?(period_type) && object.respond_to?(:school_partnership)
-
-          at_school_period = object.send(period_type)
-          return false if at_school_period.nil?
-
-          (at_school_period.school != school) && object.school_partnership.present?
-        end
-
         def new_partnership_for(object)
-          return unless object.respond_to?(:school_partnership) && object.school_partnership.present?
-
-          GIAS::Schools::Merge::SchoolPartnerships.resolve!(
-            existing_school_partnership: object.school_partnership,
-            school_without_partnership: school
-          )
+          GIAS::Schools::Merge::SchoolPartnership.reassign!(object:, period_type:, target_school:)
         end
 
         def period_type
