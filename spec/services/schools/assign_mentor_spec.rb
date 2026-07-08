@@ -216,6 +216,84 @@ RSpec.describe Schools::AssignMentor do
       end
     end
 
+    context "when the mentor moved schools in the past" do
+      let!(:mentee) do
+        FactoryBot.create(
+          :ect_at_school_period,
+          :ongoing,
+          started_on: 1.year.ago
+        )
+      end
+      let(:new_mentor) do
+        FactoryBot.create(
+          :mentor_at_school_period,
+          :ongoing,
+          started_on: 9.months.ago,
+          school: mentee.school
+        )
+      end
+      let!(:new_mentor_previous_period) do
+        FactoryBot.create(
+          :mentor_at_school_period,
+          started_on: 2.years.ago,
+          finished_on: new_mentor.started_on.prev_day,
+          teacher: new_mentor.teacher,
+          school: FactoryBot.create(:school)
+        )
+      end
+
+      context "and the ECT has a current mentorship and a previous mentorship " \
+              "that overlaps the date the new mentor joined the school" do
+        let(:previous_mentor) do
+          FactoryBot.create(
+            :mentor_at_school_period,
+            started_on: 2.years.ago,
+            finished_on: mentee.started_on + 3.months,
+            school: mentee.school
+          )
+        end
+        let!(:previous_mentorship_period) do
+          FactoryBot.create(
+            :mentorship_period,
+            started_on: mentee.started_on,
+            finished_on: previous_mentor.finished_on,
+            mentee:,
+            mentor: previous_mentor
+          )
+        end
+        let(:current_mentor) do
+          FactoryBot.create(
+            :mentor_at_school_period,
+            :ongoing,
+            started_on: 3.years.ago,
+            school: mentee.school
+          )
+        end
+        let!(:current_mentorship_period) do
+          FactoryBot.create(
+            :mentorship_period,
+            :ongoing,
+            started_on: previous_mentorship_period.finished_on.next_day,
+            mentee:,
+            mentor: current_mentor
+          )
+        end
+
+        it "finishes the current mentorship period" do
+          expect { service.assign! }
+            .to change { current_mentorship_period.reload.finished_on }
+            .from(nil).to(Date.yesterday)
+        end
+
+        it "assigns the new mentor" do
+          expect { service.assign! }.to change(MentorshipPeriod, :count).by(1)
+          new_mentorship = ECTAtSchoolPeriods::Mentorship.new(mentee.reload)
+          expect(new_mentorship.current_mentor).to eq(new_mentor)
+          expect(new_mentorship.current_or_next_mentorship_period.started_on).to eq(Date.current)
+        end
+      end
+    end
+
     describe "future dates" do
       context "when the mentee (ECT) start date is in the future" do
         let(:mentee_started_on) { 3.weeks.from_now.to_date }
