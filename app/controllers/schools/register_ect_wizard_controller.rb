@@ -23,7 +23,7 @@ module Schools
       if @wizard.save!
         redirect_to @wizard.next_step_path
       else
-        render current_step
+        render current_step, status: :unprocessable_content
       end
     end
 
