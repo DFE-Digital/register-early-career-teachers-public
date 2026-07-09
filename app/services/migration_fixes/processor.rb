@@ -52,11 +52,9 @@ private
     end
 
     target_object.update!(**attrs)
-
-    if orig_readonly_attrs.present?
-      # this reverts after the session anyway but belt and braces
-      target_object.class._attr_readonly = orig_readonly_attrs
-    end
+  ensure
+    # this reverts after the session anyway but belt and braces
+    target_object.class._attr_readonly = orig_readonly_attrs if orig_readonly_attrs.present?
   end
 
   def delete!(target_object)
