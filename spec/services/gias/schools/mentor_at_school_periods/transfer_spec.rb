@@ -5,77 +5,85 @@ RSpec.describe GIAS::Schools::MentorAtSchoolPeriods::Transfer do
   let(:predecessor_school) { predecessor_gias_school.school }
   let(:target_school) { gias_school.school }
 
-  let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period,  school: predecessor_school) }
+  let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period,  school: predecessor_school, started_on:, finished_on:) }
 
-  describe ".prepare" do
-    subject(:prepare) { described_class.prepare(period: mentor_at_school_period, target_school:) }
+  let(:started_on) { Date.new(2025, 1, 1) }
+  let(:finished_on) { Date.new(2025, 12, 31) }
+
+  describe ".call" do
+    subject { described_class.call(period: mentor_at_school_period, target_school:) }
 
     it "updates the mentor_at_school_period's school to the target school" do
-      prepare
+      subject
       expect(mentor_at_school_period.school).to eq(target_school)
     end
 
     context "when the mentor_at_school_period has associated training periods" do
-
       context "when there are no school partnerships which need moving" do
+        let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :with_only_expression_of_interest, mentor_at_school_period:) }
+
+        it "updates the mentor_at_school_period's school to the target school but makes no change to the training_period" do
+          expect { subject }.not_to change { training_period }
+
+          expect(mentor_at_school_period.school).to eq(target_school)
+        end
       end
 
       context "when there are school partnerships which need moving" do
-      end
-    end
+        let(:lead_provider_delivery_partnership) { training_period.school_partnership.lead_provider_delivery_partnership }
+        let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :with_school_partnership, mentor_at_school_period:) }
 
-    context "when the mentor_at_school_period has associated mentorship periods" do
-      context "when there are no school partnerships which need moving" do
-      end
+        it "updates the training_period to have a matching school partnership at the target school" do
+          subject
 
-      context "when there are school partnerships which need moving" do
+          expect(training_period.school_partnership.school).to eq(target_school)
+          expect(training_period.school_partnership.lead_provider_delivery_partnership).to eq(lead_provider_delivery_partnership)
+        end
       end
     end
 
     context "when the mentor_at_school_period has associated events" do
-      context "when there are no school partnerships which need moving" do
-      end
-
-      context "when there are school partnerships which need moving" do
-      end
-    end
-
-      
-  end
-
-  describe ".move!" do
-    subject(:move!) { described_class.move!(period: mentor_at_school_period, target_school:) }
-
-    it "updates the mentor_at_school_period's school to the target school" do
-      move!
-      
-      expect(mentor_at_school_period.reload.school).to eq(target_school)
-    end
-
-    context "when the mentor_at_school_period has associated training periods" do
-
-      context "when there are no school partnerships which need moving" do
-      end
-
-      context "when there are school partnerships which need moving" do
+      context "when there is an event that needs to be reassigned" do
+        context "when the event is linked to the predecessor school" do
+          let!(:event) { FactoryBot.create(:event, mentor_at_school_period:, school: predecessor_school) }
+  
+          it "changes the event to point to the target period" do
+            expect { subject }.to change { event.reload.school }.to(target_school)
+          end
+        end
+  
+        context "when the event is linked to a school partnership" do
+          let(:training_period) { FactoryBot.create(:training_period, :for_mentor, :with_school_partnership, mentor_at_school_period:) }
+          let!(:event) { FactoryBot.create(:event, mentor_at_school_period:, school_partnership: training_period.school_partnership) }
+  
+          it "changes the event to point to the target period" do
+            expect { subject }.to change { event.reload.school_partnership.school }.to(target_school)
+          end
+        end
       end
     end
 
     context "when the mentor_at_school_period has associated mentorship periods" do
-      context "when there are no school partnerships which need moving" do
+      let(:ect_at_school_periods) { FactoryBot.create_list(:ect_at_school_period, 2, school: predecessor_school, started_on:, finished_on:) }
+      let(:mentor) { mentor_at_school_period }
+
+      before do
+        ect_at_school_periods.each do |mentee|
+          FactoryBot.create(:mentorship_period, mentor:, mentee:, started_on:, finished_on:)
+        end
       end
 
-      context "when there are school partnerships which need moving" do
-      end
-    end
+      it "calls GIAS::Schools::ECTAtSchoolPeriods::Transfer for each mentorship_period's mentee" do
+        ect_at_school_periods.each do |mentee|
+          allow(GIAS::Schools::ECTAtSchoolPeriods::Transfer).to receive(:call).and_call_original
+        end
 
-    context "when the mentor_at_school_period has associated events" do
-      context "when there are no school partnerships which need moving" do
-      end
+        subject
 
-      context "when there are school partnerships which need moving" do
+        ect_at_school_periods.each do |mentee|
+          expect(GIAS::Schools::ECTAtSchoolPeriods::Transfer).to have_received(:call).with(period: mentee, target_school:)
+        end
       end
     end
   end
-   
 end

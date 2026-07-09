@@ -9,18 +9,9 @@ module GIAS
           @target_school = target_school
         end
 
-        def self.move!(...) = new(...).move!
-        def self.prepare(...) = new(...).prepare
+        def self.call(...) = new(...).call
 
-        def prepare
-          update_training_periods
-          update_mentorship_periods
-          update_events
-
-          period.assign_attributes(school: target_school)
-        end
-
-        def move!
+        def call
           prepare 
           
           ActiveRecord::Base.transaction do
@@ -31,6 +22,14 @@ module GIAS
         end
 
         private
+
+        def prepare
+          update_training_periods
+          update_mentorship_periods
+          update_events
+
+          period.assign_attributes(school: target_school)
+        end
 
         def update_related_records!
           training_periods.each(&:save!)
@@ -44,7 +43,7 @@ module GIAS
 
         def update_mentorship_periods
           mentorship_periods.each do |mentorship_period|
-            GIAS::Schools::ECTAtSchoolPeriods::Transfer.move!(period: mentorship_period.mentee, target_school:)
+            GIAS::Schools::ECTAtSchoolPeriods::Transfer.call(period: mentorship_period.mentee, target_school:)
           end
         end
 
