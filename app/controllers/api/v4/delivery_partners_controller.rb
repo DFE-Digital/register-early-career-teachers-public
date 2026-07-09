@@ -6,13 +6,10 @@ module API
           contract_period_years: extract_conditions(contract_period_years, type: :integer),
           sort:
         }
-        paginated_delivery_partners = paginate(delivery_partners_query(conditions:).delivery_partners)
+        delivery_partners = delivery_partners_query(conditions:).delivery_partners
+        paginated_delivery_partners = paginate(serializer.preload_associations(delivery_partners))
 
         render json: to_json(paginated_delivery_partners)
-      end
-
-      def show
-        render json: to_json(delivery_partners_query.delivery_partner_by_api_id(api_id))
       end
 
     private
@@ -30,7 +27,6 @@ module API
       def serializer_options
         @serializer_options ||= {
           lead_provider_id: current_lead_provider.id,
-          view: :v4,
         }
       end
 
@@ -47,7 +43,11 @@ module API
       end
 
       def to_json(obj)
-        API::DeliveryPartnerSerializer.render(obj, root: "data", **serializer_options)
+        serializer.render(obj, root: "data", **serializer_options)
+      end
+
+      def serializer
+        API::V4::DeliveryPartnerSerializer
       end
     end
   end

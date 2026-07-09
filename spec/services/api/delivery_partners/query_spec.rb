@@ -3,34 +3,6 @@ RSpec.describe API::DeliveryPartners::Query do
     before { FactoryBot.create(:delivery_partner) }
   end
 
-  describe "preloading relationships" do
-    shared_examples "preloaded associations" do
-      it { expect(result.association(:active_lead_providers)).to be_loaded }
-    end
-
-    let(:instance) { described_class.new }
-    let!(:delivery_partner) { FactoryBot.create(:delivery_partner) }
-    let(:lead_provider) { FactoryBot.create(:lead_provider) }
-
-    describe "#delivery_partners" do
-      subject(:result) { instance.delivery_partners.first }
-
-      include_context "preloaded associations"
-    end
-
-    describe "#delivery_partner_by_api_id" do
-      subject(:result) { instance.delivery_partner_by_api_id(delivery_partner.api_id) }
-
-      include_context "preloaded associations"
-    end
-
-    describe "#delivery_partner_by_id" do
-      subject(:result) { instance.delivery_partner_by_id(delivery_partner.id) }
-
-      include_context "preloaded associations"
-    end
-  end
-
   describe "#delivery_partners" do
     it "returns all delivery partners" do
       delivery_partners = FactoryBot.create_list(:delivery_partner, 3)

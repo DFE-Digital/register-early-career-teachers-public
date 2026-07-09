@@ -6,7 +6,9 @@ module API::DeliveryPartners
 
     def initialize(lead_provider_id: :ignore, contract_period_years: :ignore, sort: { created_at: :asc })
       @lead_provider_id = lead_provider_id
-      @scope = DeliveryPartner.distinct
+      @scope = DeliveryPartner
+        .strict_loading
+        .distinct
 
       where_lead_provider_is(lead_provider_id)
       where_contract_period_year_in(contract_period_years)
@@ -14,28 +16,22 @@ module API::DeliveryPartners
     end
 
     def delivery_partners
-      preload_associations(block_given? ? yield(scope) : scope)
+      scope
     end
 
     def delivery_partner_by_api_id(api_id)
-      return preload_associations(scope).find_by!(api_id:) if api_id.present?
+      return scope.find_by!(api_id:) if api_id.present?
 
       fail(ArgumentError, "api_id needed")
     end
 
     def delivery_partner_by_id(id)
-      return preload_associations(scope).find(id) if id.present?
+      return scope.find(id) if id.present?
 
       fail(ArgumentError, "id needed")
     end
 
   private
-
-    def preload_associations(results)
-      results
-        .strict_loading
-        .includes(:active_lead_providers)
-    end
 
     def where_lead_provider_is(lead_provider_id)
       return if ignore?(filter: lead_provider_id)
