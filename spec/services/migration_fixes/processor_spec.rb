@@ -57,6 +57,29 @@ describe MigrationFixes::Processor do
         expect(result.withdrawn_at).to eq(withdrawn_at)
         expect(result.withdrawal_reason).to eq "moved_school"
       end
+
+      context "when it attempts to update a attr_readonly attribute" do
+        let!(:target_object) { FactoryBot.create(:declaration) }
+        let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
+
+        let(:attributes) { "delivery_partner_when_created_id,#{delivery_partner.id}" }
+
+        it "raises an error" do
+          expect {
+            processor.process!(data_change:)
+          }.to raise_error ActiveRecord::ReadonlyAttributeError
+        end
+
+        context "when update_readonly_attrs is set" do
+          subject(:processor) { described_class.new(update_readonly_attrs: true) }
+
+          it "updates the attribute correctly" do
+            result = processor.process!(data_change:)
+
+            expect(result.delivery_partner_when_created_id).to eq(delivery_partner.id)
+          end
+        end
+      end
     end
 
     context "when the action is 'delete'" do
