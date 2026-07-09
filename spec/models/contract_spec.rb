@@ -23,10 +23,10 @@ describe Contract do
     describe ".most_recent_first" do
       let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
       let(:other_active_lead_provider) { FactoryBot.create(:active_lead_provider) }
-      let!(:contract_1) { FactoryBot.create(:contract, active_lead_provider:) }
-      let!(:contract_2) { FactoryBot.create(:contract, active_lead_provider:) }
-      let!(:contract_3) { FactoryBot.create(:contract, active_lead_provider:) }
-      let!(:contract_4) { FactoryBot.create(:contract, active_lead_provider: other_active_lead_provider) }
+      let!(:contract_1) { FactoryBot.create(:contract, active_lead_provider:, created_at: 4.days.ago) }
+      let!(:contract_2) { FactoryBot.create(:contract, active_lead_provider:, created_at: 3.days.ago) }
+      let!(:contract_3) { FactoryBot.create(:contract, active_lead_provider:, created_at: 2.days.ago) }
+      let!(:contract_4) { FactoryBot.create(:contract, active_lead_provider: other_active_lead_provider, created_at: 1.day.ago) }
 
       let(:result) { described_class.most_recent_first }
 

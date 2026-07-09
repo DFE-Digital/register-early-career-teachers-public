@@ -70,6 +70,40 @@ RSpec.describe "Admin finance active lead provider contracts", type: :request do
                              active_lead_provider:)
     end
 
+    let(:flat_rate_fee_structure_attributes) do
+      {
+        recruitment_target: "100",
+        fee_per_declaration: "500",
+      }
+    end
+
+    let(:banded_fee_structure_attributes) do
+      {
+        recruitment_target: "100",
+        uplift_fee_per_declaration: "50",
+        setup_fee: "1000",
+        band_terms_attributes: {
+          "0" => {
+            band_id: alp_bands[0].id,
+            service_fee_percentage: "20",
+            output_fee_percentage: "80",
+            fee_per_declaration: "100"
+          },
+          "1" => {
+            band_id: alp_bands[1].id,
+            service_fee_percentage: "20",
+            output_fee_percentage: "80",
+            fee_per_declaration: "100"
+          },
+          "2" => {
+            band_id: alp_bands[2].id,
+            service_fee_percentage: "20",
+            output_fee_percentage: "80",
+            fee_per_declaration: "100"
+          },
+        },
+      }
+    end
     let(:contract_params) do
       {
         contract: {
@@ -77,35 +111,8 @@ RSpec.describe "Admin finance active lead provider contracts", type: :request do
           ecf_contract_version: "1",
           ecf_mentor_contract_version: "2",
           vat_rate: "0.2",
-          flat_rate_fee_structure_attributes: {
-            recruitment_target: "100",
-            fee_per_declaration: "500",
-          },
-          banded_fee_structure_attributes: {
-            recruitment_target: "100",
-            uplift_fee_per_declaration: "50",
-            setup_fee: "1000",
-            band_terms_attributes: {
-              "0" => {
-                band_id: alp_bands[0].id,
-                service_fee_percentage: "20",
-                output_fee_percentage: "80",
-                fee_per_declaration: "100"
-              },
-              "1" => {
-                band_id: alp_bands[1].id,
-                service_fee_percentage: "20",
-                output_fee_percentage: "80",
-                fee_per_declaration: "100"
-              },
-              "2" => {
-                band_id: alp_bands[2].id,
-                service_fee_percentage: "20",
-                output_fee_percentage: "80",
-                fee_per_declaration: "100"
-              },
-            },
-          },
+          flat_rate_fee_structure_attributes:,
+          banded_fee_structure_attributes:
         },
       }
     end
@@ -134,6 +141,24 @@ RSpec.describe "Admin finance active lead provider contracts", type: :request do
         expect(response).to redirect_to(admin_contract_period_active_lead_provider_contract_path(contract_period, active_lead_provider, created_contract))
         expect(created_contract.banded_fee_structure.band_terms.size).to eq(3)
         expect(created_contract.flat_rate_fee_structure.fee_per_declaration).to eq(500)
+        expect(created_contract.flat_rate_fee_structure.recruitment_target).to eq(100)
+      end
+
+      context "and the submission omits flat-rate attributes" do
+        let(:flat_rate_fee_structure_attributes) do
+          {
+            recruitment_target: "",
+            fee_per_declaration: "",
+          }
+        end
+
+        it "still renders flat-rate fields" do
+          post contracts_path, params: contract_params
+
+          expect(response.status).to eq(422)
+          expect(response.body).to include("contract[flat_rate_fee_structure_attributes][recruitment_target]")
+          expect(response.body).to include("contract[flat_rate_fee_structure_attributes][fee_per_declaration]")
+        end
       end
 
       context "when editing the current contract period" do
