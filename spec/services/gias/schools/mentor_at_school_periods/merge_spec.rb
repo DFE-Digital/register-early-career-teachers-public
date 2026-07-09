@@ -2,7 +2,7 @@ RSpec.describe GIAS::Schools::MentorAtSchoolPeriods::Merge do
   subject(:service) do
     described_class.call(
       periods:,
-      target_school: 
+      target_school:
     )
   end
 

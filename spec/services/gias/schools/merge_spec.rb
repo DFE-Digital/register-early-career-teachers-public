@@ -6,7 +6,6 @@ RSpec.describe GIAS::Schools::Merge do
     let(:new_school) { successor_gias_school.school }
 
     let(:gias_school) { FactoryBot.create(:gias_school, :with_school, :closed) }
-    
 
     let(:successor_gias_school) { FactoryBot.create(:gias_school, :with_school, :open) }
 

@@ -5,7 +5,7 @@ RSpec.describe GIAS::Schools::MentorAtSchoolPeriods::Transfer do
   let(:predecessor_school) { predecessor_gias_school.school }
   let(:target_school) { gias_school.school }
 
-  let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period,  school: predecessor_school, started_on:, finished_on:) }
+  let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school: predecessor_school, started_on:, finished_on:) }
 
   let(:started_on) { Date.new(2025, 1, 1) }
   let(:finished_on) { Date.new(2025, 12, 31) }
@@ -23,7 +23,7 @@ RSpec.describe GIAS::Schools::MentorAtSchoolPeriods::Transfer do
         let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :with_only_expression_of_interest, mentor_at_school_period:) }
 
         it "updates the mentor_at_school_period's school to the target school but makes no change to the training_period" do
-          expect { subject }.not_to change { training_period }
+          expect { subject }.not_to(change { training_period })
 
           expect(mentor_at_school_period.school).to eq(target_school)
         end
@@ -46,16 +46,16 @@ RSpec.describe GIAS::Schools::MentorAtSchoolPeriods::Transfer do
       context "when there is an event that needs to be reassigned" do
         context "when the event is linked to the predecessor school" do
           let!(:event) { FactoryBot.create(:event, mentor_at_school_period:, school: predecessor_school) }
-  
+
           it "changes the event to point to the target period" do
             expect { subject }.to change { event.reload.school }.to(target_school)
           end
         end
-  
+
         context "when the event is linked to a school partnership" do
           let(:training_period) { FactoryBot.create(:training_period, :for_mentor, :with_school_partnership, mentor_at_school_period:) }
           let!(:event) { FactoryBot.create(:event, mentor_at_school_period:, school_partnership: training_period.school_partnership) }
-  
+
           it "changes the event to point to the target period" do
             expect { subject }.to change { event.reload.school_partnership.school }.to(target_school)
           end
@@ -74,7 +74,7 @@ RSpec.describe GIAS::Schools::MentorAtSchoolPeriods::Transfer do
       end
 
       it "calls GIAS::Schools::ECTAtSchoolPeriods::Transfer for each mentorship_period's mentee" do
-        ect_at_school_periods.each do |mentee|
+        ect_at_school_periods.each do |_mentee|
           allow(GIAS::Schools::ECTAtSchoolPeriods::Transfer).to receive(:call).and_call_original
         end
 

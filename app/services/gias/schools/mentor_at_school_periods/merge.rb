@@ -80,7 +80,7 @@ module GIAS
 
         def update_mentorship_periods
           mentorship_periods.each do |mentorship_period|
-            GIAS::Schools::ECTAtSchoolPeriods::Transfer.move!(period: mentorship_period.mentee, target_school:)
+            GIAS::Schools::ECTAtSchoolPeriods::Transfer.call(period: mentorship_period.mentee, target_school:)
             mentorship_period.mentor = target_period
           end
         end

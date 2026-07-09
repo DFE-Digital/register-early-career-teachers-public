@@ -25,11 +25,11 @@ module GIAS::Schools
         end
 
         school.mentor_at_school_periods.reload.each do |period|
-          GIAS::Schools::MentorAtSchoolPeriods::Transfer.move!(period:, target_school:)
+          GIAS::Schools::MentorAtSchoolPeriods::Transfer.call(period:, target_school:)
         end
 
         school.ect_at_school_periods.reload.each do |period|
-          GIAS::Schools::ECTAtSchoolPeriods::Transfer.move!(period:, target_school:)
+          GIAS::Schools::ECTAtSchoolPeriods::Transfer.call(period:, target_school:)
         end
 
         record_school_merged_event!

@@ -2,65 +2,12 @@ module GIAS
   module Schools
     module ECTAtSchoolPeriods
       class Transfer
+        include Periods::Transferable
 
-        attr_reader :period, :target_school
-
-        def initialize(period:, target_school:)
-          @period = period
-          @target_school = target_school
-        end
-
-        def self.call(...) = new(...).call
-
-        def call
-          prepare 
-          
-          ActiveRecord::Base.transaction do
-            update_related_records!
-
-            period.save!
-          end
-        end
-
-        private
-
-        def prepare
-          update_training_periods
-          update_events
-
-          period.assign_attributes(school: target_school)
-        end
-
-        def update_related_records!
-          training_periods.each(&:save!)
-          events.each(&:save!)
-        end
-        
-        def update_training_periods
-          training_periods.each do |training_period|
-            training_period.school_partnership = new_partnership_for(training_period)
-          end
-        end
-
-        def update_events
-          events.each do |event|
-            event.school_partnership = new_partnership_for(event)
-            event.school = target_school if event.school.present?
-          end
-        end
-
-        def new_partnership_for(object)
-          GIAS::Schools::SchoolPartnerships::Transfer.call(object:, period_type:, target_school:)
-        end
+      private
 
         def period_type = :ect_at_school_period
-       
-
-        delegate :training_periods, to: :period
-        delegate :events, to: :period
-        delegate :mentorship_periods, to: :period
       end
     end
   end
 end
-

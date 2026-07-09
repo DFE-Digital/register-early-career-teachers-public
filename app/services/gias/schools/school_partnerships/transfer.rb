@@ -30,9 +30,9 @@ module GIAS::Schools
     private
 
       def reassignment_required?
-        return false unless target_school.present?
-        return false unless source_school_partnership.present?
-        return false unless period.present?
+        return false if target_school.blank?
+        return false if source_school_partnership.blank?
+        return false if period.blank?
 
         source_school != target_school
       end
@@ -61,7 +61,6 @@ module GIAS::Schools
       def period = object.send(period_type)
 
       delegate :lead_provider_delivery_partnership, to: :source_school_partnership
-
     end
   end
 end
