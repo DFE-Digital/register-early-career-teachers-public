@@ -1,4 +1,5 @@
 RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Wizard do
+  let(:today) { Date.new(2026, 2, 1) }
   let(:store) { FactoryBot.build(:session_repository) }
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:school) { FactoryBot.create(:school) }
@@ -48,6 +49,10 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Wiz
     )
   end
 
+  around do |example|
+    travel_to(today) { example.run }
+  end
+
   describe "#allowed_steps" do
     subject { wizard.allowed_steps }
 
@@ -61,7 +66,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Wiz
       it { is_expected.to eq(%i[select_contract_period select_partnership]) }
     end
 
-    context "when an available contract period has no partnerships for the current lead provider and delivery partner" do
+    context "when an available contract period has no partnerships for the school" do
       let(:target_school_partnership) { nil }
 
       before { store.contract_period_year = target_contract_period.year }
@@ -139,6 +144,14 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Wiz
   describe "#school_partnerships" do
     let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Target lead provider") }
     let(:delivery_partner) { FactoryBot.create(:delivery_partner, name: "Target delivery partner") }
+    let!(:different_school_partnership) do
+      FactoryBot.create(
+        :school_partnership,
+        :for_year,
+        year: target_contract_period.year,
+        school:
+      )
+    end
     let!(:target_school_partnership) do
       FactoryBot.create(
         :school_partnership,
@@ -164,8 +177,53 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Wiz
     context "when a contract period has been selected" do
       before { store.contract_period_year = target_contract_period.year }
 
-      it "returns school partnerships for the selected contract period, school, lead provider and delivery partner" do
-        expect(wizard.school_partnerships).to contain_exactly(target_school_partnership)
+      it "returns school partnerships for the selected contract period and school" do
+        expect(wizard.school_partnerships).to contain_exactly(target_school_partnership, different_school_partnership)
+      end
+
+      context "when the selected training period starts in the future and has a current active period" do
+        let(:future_started_on) { today.next_month }
+        let(:current_school_partnership) { school_partnership }
+        let!(:current_training_period) do
+          FactoryBot.create(
+            :training_period,
+            :provider_led,
+            ect_at_school_period:,
+            school_partnership: current_school_partnership,
+            schedule:,
+            started_on: today.prev_month,
+            finished_on: future_started_on.yesterday
+          )
+        end
+        let(:training_period) do
+          FactoryBot.create(
+            :training_period,
+            :provider_led,
+            ect_at_school_period:,
+            school_partnership:,
+            schedule:,
+            started_on: future_started_on
+          )
+        end
+
+        it "returns school partnerships for the selected contract period, school and current active LP/DP" do
+          expect(wizard.school_partnerships).to contain_exactly(target_school_partnership)
+        end
+
+        context "when the future period has a different LP/DP from the current active period" do
+          let(:current_school_partnership) do
+            FactoryBot.create(
+              :school_partnership,
+              :for_year,
+              year: current_contract_period.year,
+              school:
+            )
+          end
+
+          it "returns no school partnerships" do
+            expect(wizard.school_partnerships).to be_empty
+          end
+        end
       end
     end
   end
