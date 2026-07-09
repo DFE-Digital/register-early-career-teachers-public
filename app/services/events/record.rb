@@ -1361,6 +1361,34 @@ module Events
       ).record_event!
     end
 
+    def self.record_active_lead_provider_band_updated_event!(author:, band:, modifications:)
+      event_type = :band_updated
+      active_lead_provider = band.active_lead_provider
+      lead_provider = active_lead_provider.lead_provider
+      contract_period = active_lead_provider.contract_period
+      heading = "Band #{band.letter} updated for #{lead_provider.name} for #{contract_period.year}"
+
+      new(
+        event_type:,
+        author:,
+        heading:,
+        active_lead_provider:,
+        lead_provider:,
+        contract_period:,
+        happened_at: Time.zone.now,
+        modifications:
+      ).record_event!
+    end
+
+    def self.record_active_lead_provider_band_deleted_event!(author:, active_lead_provider:, band_letter:)
+      event_type = :band_deleted
+      contract_period = active_lead_provider.contract_period
+      lead_provider = active_lead_provider.lead_provider
+      heading = "Band #{band_letter} deleted for #{lead_provider.name} for #{contract_period.year}"
+
+      new(event_type:, author:, heading:, contract_period:, lead_provider:, active_lead_provider:, happened_at: Time.zone.now).record_event!
+    end
+
   private
 
     def attributes

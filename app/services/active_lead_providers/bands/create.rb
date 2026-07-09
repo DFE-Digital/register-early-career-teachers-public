@@ -1,8 +1,10 @@
-module Admin::Finance::Bands
+module ActiveLeadProviders::Bands
   class Create
+    attr_reader :author, :band
+
     def initialize(author:, active_lead_provider:, capacity:)
       @author = author
-      @band = active_lead_provider.bands.new(capacity:)
+      @band = ActiveLeadProvider::Band.new(active_lead_provider:, capacity:)
     end
 
     def create!
@@ -13,11 +15,6 @@ module Admin::Finance::Bands
       end
 
       band
-    end
-
-  private
-
-    def record_event!
     end
   end
 end

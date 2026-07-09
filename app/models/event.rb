@@ -98,6 +98,9 @@ class Event < ApplicationRecord
     contract_created
     contract_updated
     contract_deleted
+    band_added
+    band_updated
+    band_deleted
   ].freeze
 
   belongs_to :author, class_name: "User"

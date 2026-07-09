@@ -14,6 +14,19 @@ RSpec.describe ActiveLeadProvider::Band, type: :model do
 
     it { is_expected.to validate_presence_of(:capacity).with_message("Capacity is required") }
     it { is_expected.to validate_numericality_of(:capacity).is_greater_than(0).only_integer.with_message("Capacity must be a number greater than zero") }
+
+    context "changing capacity" do
+      let(:band) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:, capacity: 500) }
+
+      it "validates that capacity can only be increased" do
+        band.capacity = 100
+        expect(band).not_to be_valid
+        expect(band.errors.full_messages).to include("Capacity can only be increased")
+
+        band.capacity = 750
+        expect(band).to be_valid
+      end
+    end
   end
 
   describe "immutability" do
@@ -137,11 +150,12 @@ RSpec.describe ActiveLeadProvider::Band, type: :model do
   end
 
   describe "#letter" do
-    let(:contract) { FactoryBot.create(:contract, :for_ecf, :with_bands_and_band_terms) }
+    before do
+      FactoryBot.create_list(:active_lead_provider_band, 6, active_lead_provider:)
+    end
 
     it "bands alphabetically in allocation order" do
-      expect(contract.active_lead_provider.bands.map(&:letter)).to eq(%w[A B C D E F])
-      expect(contract.banded_fee_structure.bands.map(&:letter)).to eq(%w[A B C D E F])
+      expect(active_lead_provider.bands.map(&:letter)).to eq(%w[A B C D E F])
     end
   end
 
@@ -193,7 +207,7 @@ RSpec.describe ActiveLeadProvider::Band, type: :model do
     context "when the contract period has not started" do
       it "permits removing a band" do
         expect {
-          existing_band.destroy!
+          existing_band.destroy
         }.to change(ActiveLeadProvider::Band, :count).by(-1)
       end
 

@@ -17,7 +17,7 @@ module Admin::Finance::ActiveLeadProviders
     end
 
     def create
-      @band = Admin::Finance::Bands::Create.new(author: current_user, active_lead_provider: @active_lead_provider, capacity: band_params[:capacity])
+      @band = ActiveLeadProviders::Bands::Create.new(author: current_user, active_lead_provider: @active_lead_provider, capacity: band_params[:capacity]).create!
 
       redirect_to bands_path, notice: "#{label_for(band: @band)} added"
     rescue ActiveRecord::RecordInvalid => e
@@ -31,11 +31,11 @@ module Admin::Finance::ActiveLeadProviders
     end
 
     def update
-      Admin::Finance::Bands::Update.new(
+      ActiveLeadProviders::Bands::Update.new(
         author: current_user,
         band: @band,
         capacity: band_params[:capacity]
-      ).call
+      ).update!
 
       redirect_to bands_path, notice: "Band updated"
     rescue ActiveRecord::RecordInvalid
@@ -45,10 +45,10 @@ module Admin::Finance::ActiveLeadProviders
 
     def delete
       label = label_for(band: @band)
-      Admin::Finance::Bands::Destroy.new(author: current_user, band: @band).call
+      ActiveLeadProviders::Bands::Destroy.new(author: current_user, band: @band).destroy!
 
       redirect_to bands_path, notice: "#{label} deleted"
-    rescue Admin::Finance::Bands::Destroy::DeletionError => e
+    rescue ActiveLeadProviders::Bands::Destroy::DeletionError => e
       redirect_to bands_path, flash: { error: e.message }
     end
 
