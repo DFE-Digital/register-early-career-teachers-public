@@ -26,7 +26,7 @@
 
 <p class="govuk-hint">Required for ITTECF_ECTP contracts only. Leave blank for ECF contracts.</p>
 
-<%= form.fields_for :flat_rate_fee_structure do |frs| %>
+<%= form.fields_for :flat_rate_fee_structure, form.object.flat_rate_fee_structure || Contract::FlatRateFeeStructure.new do |frs| %>
   <%= frs.govuk_text_field :recruitment_target,
         label: { text: "Mentors recruitment target", size: "s" },
         width: 10,
@@ -65,32 +65,29 @@
 
   <h3 class="govuk-heading-s">Bands</h3>
 
-  <table class="govuk-table">
-    <thead class="govuk-table__head">
-      <tr class="govuk-table__row">
-        <th scope="col" class="govuk-table__header">Band</th>
-        <th scope="col" class="govuk-table__header">Min declarations</th>
-        <th scope="col" class="govuk-table__header">Max declarations</th>
-        <th scope="col" class="govuk-table__header">Service fee (%)</th>
-        <th scope="col" class="govuk-table__header">Output fee (%)</th>
-        <th scope="col" class="govuk-table__header">Fee per declaration (£)</th>
-      </tr>
-    </thead>
-    <tbody class="govuk-table__body">
+  <%= govuk_table do |table| %>
+    <% table.with_head do |head| %>
+      <% head.with_row do |row| %>
+        <% row.with_cell(text: "Band") %>
+        <% row.with_cell(text: "Min declarations") %>
+        <% row.with_cell(text: "Max declarations") %>
+        <% row.with_cell(text: "Service fee (%)") %>
+        <% row.with_cell(text: "Output fee (%)") %>
+        <% row.with_cell(text: "Fee per declaration (£)") %>
+      <% end %>
+    <% end %>
+
+    <% table.with_body do |body| %>
       <% bfs.object.band_terms.each_with_index do |band_term, index| %>
         <%= bfs.fields_for :band_terms, band_term do |bt| %>
-          <tr class="govuk-table__row" data-controller="band">
-            <th scope="row" class="govuk-table__header">
+          <% body.with_row(html_attributes: { data: { controller: "band" } }) do |row| %>
+            <% row.with_cell(header: true) do %>
               <%= ("A".ord + index).chr %>
               <%= bt.hidden_field :band_id %>
-            </th>
-            <td class="govuk-table__cell">
-              <%= band_term.min_declarations %>
-            </td>
-            <td class="govuk-table__cell">
-              <%= band_term.max_declarations %>
-            </td>
-            <td class="govuk-table__cell">
+            <% end %>
+            <% row.with_cell(text: band_term.min_declarations.to_s) %>
+            <% row.with_cell(text: band_term.max_declarations.to_s) %>
+            <% row.with_cell do %>
               <%= bt.text_field :service_fee_percentage,
                     class: "govuk-input govuk-input--width-5 app-input-read-only",
                     inputmode: "numeric",
@@ -98,23 +95,23 @@
                     tabindex: -1,
                     aria: { label: "Band #{("A".ord + index).chr} service fee percentage" },
                     data: { band_target: "servicePercentage" } %>
-            </td>
-            <td class="govuk-table__cell">
+            <% end %>
+            <% row.with_cell do %>
               <%= bt.text_field :output_fee_percentage,
                     class: "govuk-input govuk-input--width-5 #{" govuk-input--error" if bt.object.errors[:output_fee_ratio].any?}",
                     aria: { label: "Band #{("A".ord + index).chr} output fee percentage" },
                     inputmode: "numeric",
                     data: { band_target: "outputPercentage", action: "input->band#updateServiceFee" } %>
-            </td>
-            <td class="govuk-table__cell">
+            <% end %>
+            <% row.with_cell do %>
               <%= bt.text_field :fee_per_declaration,
                     class: "govuk-input govuk-input--width-10 #{" govuk-input--error" if bt.object.errors[:fee_per_declaration].any?}",
                     inputmode: "decimal",
                     aria: { label: "Band #{("A".ord + index).chr} fee per declaration" } %>
-            </td>
-          </tr>
+            <% end %>
+          <% end %>
         <% end %>
       <% end %>
-    </tbody>
-  </table>
+    <% end %>
+  <% end %>
 <% end %>
