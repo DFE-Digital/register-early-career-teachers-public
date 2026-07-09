@@ -207,7 +207,7 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
       expect(response).to redirect_to(path_for_step("select-partnership"))
     end
 
-    context "when there are no partnerships for the current lead provider and delivery partner" do
+    context "when there are no partnerships for the school" do
       let(:target_school_partnership) { nil }
 
       it "redirects to the no partnerships page" do
@@ -280,7 +280,7 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
       expect(response).to redirect_to(path_for_step("check-answers"))
     end
 
-    it "validates the selected partnership uses the current lead provider and delivery partner" do
+    it "accepts a selected partnership with a different lead provider and delivery partner" do
       post(
         path_for_step("select-contract-period"),
         params: { select_contract_period: { contract_period_year: target_contract_period.year } }
@@ -291,11 +291,50 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
         params: { select_partnership: { school_partnership_id: different_school_partnership.id } }
       )
 
-      page = Capybara.string(response.body)
+      expect(response).to redirect_to(path_for_step("check-answers"))
+    end
 
-      expect(response).to have_http_status(:unprocessable_content)
-      expect(page).to have_text("There is a problem")
-      expect(page).to have_text("Select a partnership")
+    context "when the selected training period starts in the future and has a current active period" do
+      let(:future_started_on) { today.next_month }
+      let!(:current_training_period) do
+        FactoryBot.create(
+          :training_period,
+          :provider_led,
+          ect_at_school_period:,
+          school_partnership:,
+          schedule:,
+          started_on: today.prev_month,
+          finished_on: future_started_on.yesterday
+        )
+      end
+      let(:training_period) do
+        FactoryBot.create(
+          :training_period,
+          :provider_led,
+          ect_at_school_period:,
+          school_partnership:,
+          schedule:,
+          started_on: future_started_on
+        )
+      end
+
+      it "validates the selected partnership uses the current active lead provider and delivery partner" do
+        post(
+          path_for_step("select-contract-period"),
+          params: { select_contract_period: { contract_period_year: target_contract_period.year } }
+        )
+
+        post(
+          path_for_step("select-partnership"),
+          params: { select_partnership: { school_partnership_id: different_school_partnership.id } }
+        )
+
+        page = Capybara.string(response.body)
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(page).to have_text("There is a problem")
+        expect(page).to have_text("Select a partnership")
+      end
     end
   end
 
