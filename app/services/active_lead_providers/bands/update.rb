@@ -1,4 +1,4 @@
-module Admin::Finance::Bands
+module ActiveLeadProviders::Bands
   class Update
     attr_reader :band, :author, :capacity
 
@@ -8,14 +8,13 @@ module Admin::Finance::Bands
       @capacity = capacity
     end
 
-    def call
+    def update!
       band.assign_attributes(capacity:)
-      band.changes
+      modifications = band.changes
 
       ActiveRecord::Base.transaction do
         band.save!
-        # TODO:
-        # Events::Record.record_active_lead_provider_band_updated_event!(author:, band:, modifications:)
+        Events::Record.record_active_lead_provider_band_updated_event!(author:, band:, modifications:)
       end
 
       band
