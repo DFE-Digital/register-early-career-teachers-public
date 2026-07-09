@@ -1347,8 +1347,6 @@ module Events
       lead_provider = active_lead_provider.lead_provider
       contract_period = active_lead_provider.contract_period
       heading = "Band #{band.letter} added to #{lead_provider.name} for #{contract_period.year}"
-      #
-      # TODO: add band to Event record
 
       new(
         event_type:,
