@@ -117,20 +117,18 @@ namespace :admin do
 
         resource :search_declarations, only: :show, path: "search-declarations"
 
-        constraints -> { Rails.application.config.enable_finance_contract_periods } do
-          resources :contract_periods, except: %i[destroy], path: "contract-periods" do
-            resources :schedules, only: %i[index show new create destroy] do
-              resources :milestones, only: %i[new create destroy]
-            end
+        resources :contract_periods, except: %i[destroy], path: "contract-periods" do
+          resources :schedules, only: %i[index show new create destroy] do
+            resources :milestones, only: %i[new create destroy]
+          end
 
-            resources :active_lead_providers, only: %i[index new create destroy], path: "active-lead-providers" do
-              resources :statements, only: %i[index show new create edit update destroy], controller: "active_lead_providers/statements" do
-                member { get :delete }
-              end
-              resources :contracts, only: %i[index show], controller: "active_lead_providers/contracts"
-              resources :lead_provider_delivery_partnerships, only: %i[index new create destroy], controller: "active_lead_providers/lead_provider_delivery_partnerships" do
-                member { get :delete }
-              end
+          resources :active_lead_providers, only: %i[index new create destroy], path: "active-lead-providers" do
+            resources :statements, only: %i[index show new create edit update destroy], controller: "active_lead_providers/statements" do
+              member { get :delete }
+            end
+            resources :contracts, only: %i[index show], controller: "active_lead_providers/contracts"
+            resources :lead_provider_delivery_partnerships, only: %i[index new create destroy], controller: "active_lead_providers/lead_provider_delivery_partnerships" do
+              member { get :delete }
             end
           end
         end

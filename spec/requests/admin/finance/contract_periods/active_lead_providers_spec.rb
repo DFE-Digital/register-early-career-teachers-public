@@ -1,4 +1,4 @@
-RSpec.describe "Admin active lead providers", :enable_finance_contract_periods, type: :request do
+RSpec.describe "Admin active lead providers", type: :request do
   let(:contract_period) { FactoryBot.create(:contract_period, :next) }
   let(:index_path) { admin_contract_period_active_lead_providers_path(contract_period) }
   let(:started_error) { "Active lead providers cannot be changed once the contract period has started" }

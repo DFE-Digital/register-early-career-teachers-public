@@ -42,11 +42,6 @@ RSpec.configure do |config|
     allow(Schools::RegistrationWindow).to receive(:closed?).and_return(false)
   end
 
-  # Opening registration contract periods
-  config.before(:each, :enable_finance_contract_periods) do
-    allow(Rails.application.config).to receive(:enable_finance_contract_periods).and_return(true)
-  end
-
   config.before do
     # RIAB: new data model
     allow(Rails.application.config).to receive(:enable_teaching_school_hubs).and_return(true)
