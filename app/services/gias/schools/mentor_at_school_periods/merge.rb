@@ -1,0 +1,103 @@
+module GIAS
+  module Schools
+    module MentorAtSchoolPeriods
+      class Merge
+        attr_reader :periods, :predecessor_school, :successor_school
+
+        def initialize(periods:, predecessor_school:, successor_school:)
+          @periods = periods
+          @predecessor_school = predecessor_school
+          @successor_school = successor_school
+        end
+
+        def self.call(**args) = new(**args).call
+
+        def call
+          ActiveRecord::Base.transaction do
+            successor_period.assign_attributes(started_on:, finished_on:)
+
+            update_mentorship_periods
+            update_training_periods
+            update_events
+
+            redundant_periods.each do |period|
+              period.training_periods.reset
+              period.destroy!
+            end
+
+            successor_period.save!
+          end
+        end
+
+      private
+
+        def successor_period
+          @successor_period ||= periods.reverse.find do |period|
+            period.school == successor_school
+          end
+        end
+
+        def redundant_periods
+          @redundant_periods ||= periods.excluding(successor_period)
+        end
+
+        def training_periods
+          @training_periods ||= redundant_periods.flat_map(&:training_periods).uniq
+        end
+
+        def mentorship_periods
+          @mentorship_periods ||= redundant_periods.flat_map(&:mentorship_periods).uniq
+        end
+
+        def events
+          @events ||= redundant_periods.flat_map(&:events).uniq
+        end
+
+        def update_training_periods
+          training_periods.each do |training_period|
+            new_partnership = new_partnership_for(training_period)
+            training_period.school_partnership = new_partnership if new_partnership
+            training_period.mentor_at_school_period = successor_period
+            training_period.save!
+          end
+        end
+
+        def update_mentorship_periods
+          mentorship_periods.each do |mentorship_period|
+            GIAS::Schools::ECTAtSchoolPeriods::Transfer.call(period: mentorship_period.mentee, predecessor_school:, successor_school:)
+            mentorship_period.mentor = successor_period
+            mentorship_period.save!
+          end
+        end
+
+        def update_events
+          events.each do |event|
+            new_partnership = new_partnership_for(event)
+            event.school_partnership = new_partnership if new_partnership
+            event.school = successor_school if event.school.present?
+            event.mentor_at_school_period = successor_period
+            event.save!
+          end
+        end
+
+        def new_partnership_for(object)
+          GIAS::Schools::SchoolPartnerships::Transfer.call(object:, successor_school:)
+        end
+
+        def finished_on
+          @finished_on ||= calculate_finished_on
+        end
+
+        def calculate_finished_on
+          return nil if periods.any?(&:ongoing?)
+
+          periods.map(&:finished_on).compact.max
+        end
+
+        def started_on
+          @started_on ||= periods.map(&:started_on).min
+        end
+      end
+    end
+  end
+end
