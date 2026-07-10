@@ -4,7 +4,7 @@ module Admin
       delegate :can_authorise_payment?,
                to: :statement
 
-      attr_accessor :statement
+      attr_reader :statement
 
       def initialize(statement:)
         @statement = statement
