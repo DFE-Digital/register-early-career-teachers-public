@@ -2,7 +2,9 @@ def describe_contracts(active_lead_provider, contracts)
   colour = active_lead_provider.contract_period.mentor_funding_enabled? ? :magenta : :cyan
   contracts_summary = contracts
     .group_by(&:contract_type)
-    .map { |type, contracts| "#{contracts.size} #{type.to_s.humanize.upcase}" }
+    .map { |type, contracts|
+      "#{contracts.size} #{type.to_s.humanize.upcase} with #{contracts.first.banded_fee_structure.band_terms.size} bands"
+    }
     .join(", ")
   print_seed_info("Contracts for #{active_lead_provider.contract_period.year}: #{contracts_summary}", indent: 2, colour:)
 end
@@ -16,11 +18,25 @@ ActiveLeadProvider
 
     active_lead_providers.map do |active_lead_provider|
       number_of_contracts = Faker::Number.between(from: 1, to: 3)
-      contracts = if active_lead_provider.contract_period.mentor_funding_enabled? && active_lead_provider.contract_period.year > 2024
-                    FactoryBot.create_list(:contract, number_of_contracts, :for_ittecf_ectp, active_lead_provider:)
-                  else
-                    FactoryBot.create_list(:contract, number_of_contracts, :for_ecf, active_lead_provider:)
-                  end
+      contracts =
+        if active_lead_provider.contract_period.mentor_funding_enabled? &&
+            active_lead_provider.contract_period.year > 2024
+
+          FactoryBot.create_list(:contract, number_of_contracts, :for_ittecf_ectp,
+                                 active_lead_provider:)
+
+        else
+          FactoryBot.create_list(:contract, number_of_contracts, :for_ecf,
+                                 active_lead_provider:)
+        end
+
+      contracts.each do |contract|
+        active_lead_provider.bands.each do |band|
+          FactoryBot.create(:contract_banded_fee_structure_band_term,
+                            banded_fee_structure: contract.banded_fee_structure,
+                            band:)
+        end
+      end
 
       describe_contracts(active_lead_provider, contracts)
     end
