@@ -33,5 +33,6 @@ namespace :api do
 
   namespace :v4 do
     resources :delivery_partners, only: %i[index], path: "delivery-partners", param: :api_id
+    resources :partnerships, only: %i[create], param: :api_id
   end
 end

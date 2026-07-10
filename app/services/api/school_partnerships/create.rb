@@ -13,11 +13,9 @@ module API::SchoolPartnerships
     validates :lead_provider_id, presence: { message: "Enter a '#/lead_provider_id'." }
     validates :delivery_partner_api_id, presence: { message: "Enter a '#/delivery_partner_api_id'." }
     validate :contract_period_exists
-    validate :contract_period_started
     validate :contract_period_enabled
     validate :lead_provider_exists
     validate :school_exists
-    validate :school_is_eligible
     validate :delivery_partner_exists
     validate :lead_provider_delivery_partnership_exists
     validate :school_partnership_does_not_already_exists
@@ -26,7 +24,7 @@ module API::SchoolPartnerships
     def create
       return false unless valid?
 
-      SchoolPartnerships::Create.new(
+      SchoolPartnerships::V3::Create.new(
         author: Events::LeadProviderAPIAuthor.new(lead_provider:),
         school:,
         lead_provider_delivery_partnership:
@@ -79,12 +77,6 @@ module API::SchoolPartnerships
       return if errors[:school_api_id].any?
 
       errors.add(:school_api_id, "The '#/school_api_id' you have entered is invalid. Check school details and try again. Contact the DfE for support if you are unable to find the '#/school_api_id'.") unless school
-    end
-
-    def school_is_eligible
-      return if errors[:school_api_id].any?
-
-      errors.add(:school_api_id, "The school you have entered is currently ineligible for DfE funding. Contact the school for more information.") unless school&.eligible?
     end
 
     def school_partnership_does_not_already_exists
