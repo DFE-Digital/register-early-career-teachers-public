@@ -16,8 +16,8 @@ module Admin
       delegate :number_to_pounds, to: :helpers
       delegate :contract, to: :statement, private: true
 
-      def calculators
-        @calculators ||= statement.calculators.map { presenter_for(it) }
+      def output_payment_tables
+        @output_payment_tables ||= statement.calculators.map { presenter_for(it) }
       end
 
       def presenter_for(calculator)
