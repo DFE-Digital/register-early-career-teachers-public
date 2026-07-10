@@ -1,8 +1,8 @@
-<% calculators.each do |calculator| %>
+<% clawback_tables.each do |clawback_table| %>
   <div class="finance-panel govuk-!-margin-top-5 govuk-!-margin-bottom-5">
     <%=
       govuk_table do |table|
-        table.with_caption(text: caption_text(calculator), size: "m")
+        table.with_caption(text: clawback_table.caption_text, size: "m")
         table.with_head do |head|
           head.with_row do |row|
             row.with_cell(header: true) { "Payment type" }
@@ -13,12 +13,12 @@
         end
 
         table.with_body do |body|
-          rows(calculator).each do |clawback|
+          clawback_table.rows.each do |line|
             body.with_row do |row|
-              row.with_cell { clawback.payment_type }
-              row.with_cell { clawback.refundable_count.to_s }
-              row.with_cell(numeric: true) { number_to_pounds(-clawback.fee_per_declaration) }
-              row.with_cell(numeric: true) { number_to_pounds(-clawback.total_refundable_amount) }
+              row.with_cell { line.payment_type }
+              row.with_cell { line.refundable_count.to_s }
+              row.with_cell(numeric: true) { number_to_pounds(-line.fee_per_declaration) }
+              row.with_cell(numeric: true) { number_to_pounds(-line.total_refundable_amount) }
             end
           end
         end
@@ -29,7 +29,7 @@
       Total
     </div>
     <div class="govuk-!-text-align-right govuk-heading-s">
-      <%= number_to_pounds(-total(calculator)) %>
+      <%= number_to_pounds(-clawback_table.total_refundable_amount) %>
     </div>
   </div>
 <% end %>
