@@ -1,7 +1,7 @@
 module Admin
   module Statements
     class DeclarationComponent < ApplicationComponent
-      attr_accessor :statement
+      attr_reader :statement
 
       delegate :contract, to: :statement
 

@@ -8,7 +8,7 @@ module Admin
                :total_billable_amount,
                to: :uplifts
 
-      attr_accessor :statement
+      attr_reader :statement
 
       def initialize(statement:)
         @statement = statement

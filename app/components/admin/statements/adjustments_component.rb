@@ -6,7 +6,7 @@ module Admin
       delegate :adjustment_editable?,
                to: :statement
 
-      attr_accessor :statement
+      attr_reader :statement
 
       def initialize(statement:)
         @statement = statement
