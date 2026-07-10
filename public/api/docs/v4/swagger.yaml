@@ -1,0 +1,2146 @@
+---
+openapi: 3.0.1
+info:
+  title: Lead Provider API
+  version: v4
+externalDocs:
+  description: Find out more about Swagger
+  url: https://swagger.io/
+paths:
+  "/api/v4/delivery-partners":
+    get:
+      summary: Retrieve multiple delivery partners
+      tags:
+      - Delivery Partners
+      security:
+      - api_key: []
+      parameters:
+      - name: filter
+        in: query
+        required: false
+        schema:
+          "$ref": "#/components/schemas/DeliveryPartnersFilter"
+        style: deepObject
+      - name: page
+        in: query
+        required: false
+        schema:
+          "$ref": "#/components/schemas/PaginationFilter"
+        style: deepObject
+      - name: sort
+        in: query
+        required: false
+        schema:
+          "$ref": "#/components/schemas/SortingTimestamps"
+      responses:
+        '200':
+          description: A list of delivery partners
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/DeliveryPartnersResponse"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnauthorisedResponse"
+components:
+  securitySchemes:
+    api_key:
+      type: http
+      scheme: bearer
+      description: Bearer token
+  schemas:
+    IDAttribute:
+      description: The unique ID of the resource.
+      type: string
+      format: uuid
+      example: d0b4a32e-a272-489e-b30a-cb17131457fc
+    UnauthorisedResponse:
+      description: Authorization information is missing or invalid.
+      type: object
+      properties:
+        error:
+          type: string
+          example: 'HTTP Token: Access denied'
+    NotFoundResponse:
+      description: The requested resource was not found.
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              title:
+                type: string
+                example: Resource not found
+              detail:
+                type: string
+                example: Nothing could be found for the provided details
+    BadRequestResponse:
+      description: The request body did not match the expected payload.
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              title:
+                type: string
+                example: Bad request
+              detail:
+                type: string
+                example: Correct JSON data structure required. See API docs for reference.
+    UnprocessableContentResponse:
+      description: The payload was not valid. See the errors for more information.
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              title:
+                type: string
+                example: example_attribute
+              detail:
+                type: string
+                example: An '#/example_attribute' must be specified.
+    PaginationFilter:
+      description: Pagination options to navigate through the list of results.
+      type: object
+      properties:
+        page:
+          type: integer
+          description: The page number to paginate to in the collection. If no value
+            is specified it defaults to the first page.
+          example: 1
+        per_page:
+          type: integer
+          description: The number of items to display on a page. Defaults to 100.
+            Maximum is 3000, if the value is greater that the maximum allowed it will
+            fallback to 3000.
+          example: 10
+    SortingTimestamps:
+      description: Sort records being returned.
+      enum:
+      - created_at
+      - "-created_at"
+      - updated_at
+      - "-updated_at"
+      example: created_at
+    School:
+      description: The data attributes associated with a school
+      type: object
+      required:
+      - id
+      - type
+      - attributes
+      properties:
+        id:
+          "$ref": "#/components/schemas/IDAttribute"
+        type:
+          description: The data type.
+          type: string
+          example: school
+          enum:
+          - school
+        attributes:
+          properties:
+            name:
+              description: The name of the school
+              type: string
+              nullable: false
+              example: School Example
+            urn:
+              description: The Unique Reference Number (URN) of the school
+              type: string
+              nullable: false
+              example: '123456'
+            cohort:
+              description: Indicates which call-off contract funds this participant's
+                training. 2021 indicates a participant that has started, or will start,
+                their training in the 2021/22 academic year.
+              type: string
+              nullable: false
+              example: '2021'
+            in_partnership:
+              description: Whether or not the school already has an active partnership,
+                if it is doing a provider-led training programme
+              type: boolean
+              nullable: false
+              example: false
+            induction_programme_choice:
+              description: The induction programme the school offers
+              type: string
+              nullable: false
+              example: not_yet_known
+              enum:
+              - school_led
+              - provider_led
+              - not_yet_known
+            expression_of_interest:
+              description: Whether or not the school has expressed interest in doing
+                a provider-led training programme for participants
+              type: boolean
+              nullable: false
+              example: false
+            induction_tutor_name:
+              description: The name of the person nominated by this school to coordinate
+                the registration of ECTs and mentors
+              type: string
+              nullable: true
+              example: John Doe
+            induction_tutor_email:
+              description: The induction tutor's email address
+              type: string
+              nullable: true
+              example: john.doe@example.com
+            created_at:
+              description: The date and time the school was created
+              type: string
+              format: date-time
+              example: '2021-05-31T02:22:32.000Z'
+            updated_at:
+              description: The last time a change was made to this school record by
+                the DfE
+              type: string
+              format: date-time
+              example: '2021-05-31T02:22:32.000Z'
+    SchoolsFilter:
+      description: Filter schools to return more specific results
+      type: object
+      required:
+      - cohort
+      properties:
+        cohort:
+          description: Return schools within the specified cohort.
+          type: string
+          example: '2021'
+          required: true
+        urn:
+          description: Return a school with the specified Unique Reference Number
+            (URN).
+          type: string
+          example: '106286'
+        updated_since:
+          description: Return only records that have been updated since this date
+            and time (ISO 8601 date format)
+          type: string
+          example: '2021-05-13T11:21:55Z'
+    SchoolFilter:
+      description: Filter schools to return more specific results
+      type: object
+      required:
+      - cohort
+      properties:
+        cohort:
+          description: Return schools within the specified cohort.
+          type: string
+          example: '2021'
+    SchoolResponse:
+      description: A single school.
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          "$ref": "#/components/schemas/School"
+    SchoolsResponse:
+      description: A list of schools for the given cohort.
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          type: array
+          items:
+            "$ref": "#/components/schemas/School"
+    Statement:
+      description: A financial statement.
+      type: object
+      required:
+      - id
+      - type
+      - attributes
+      properties:
+        id:
+          "$ref": "#/components/schemas/IDAttribute"
+        type:
+          description: The data type.
+          type: string
+          example: statement
+          enum:
+          - statement
+        attributes:
+          properties:
+            month:
+              description: The calendar month which corresponds to the financial statement.
+              type: string
+              nullable: false
+              example: May
+            year:
+              description: The calendar year which corresponds to the financial statement.
+              type: string
+              nullable: false
+              example: '2022'
+            cohort:
+              description: The cohort, for example, 2021 or 2025, which the statement
+                funds.
+              type: string
+              nullable: false
+              example: '2021'
+            cut_off_date:
+              description: The milestone cut off or review point for the statement.
+              type: string
+              nullable: false
+              example: '2022-04-30'
+            payment_date:
+              description: The date we expect to pay you for any declarations attached
+                to the statement, which are eligible for payment.
+              type: string
+              nullable: false
+              example: '2022-05-25'
+            paid:
+              description: Indicates whether the DfE has paid providers for any declarations
+                attached to the statement.
+              type: boolean
+              nullable: false
+              example: true
+            created_at:
+              description: The date the statement was created.
+              type: string
+              format: date-time
+              example: '2021-05-31T02:22:32.000Z'
+            updated_at:
+              description: The date the statement was last updated.
+              type: string
+              format: date-time
+              example: '2021-05-31T02:22:32.000Z'
+    StatementsFilter:
+      description: Filter statements to return more specific results
+      type: object
+      properties:
+        cohort:
+          description: Return statements associated to the specified cohort or cohorts.
+            This is a comma delimited string of years.
+          type: string
+          example: '2021,2022'
+        updated_since:
+          description: Return only records that have been updated since this date
+            and time (ISO 8601 date format)
+          type: string
+          example: '2021-05-13T11:21:55Z'
+    StatementResponse:
+      description: A financial statement.
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          "$ref": "#/components/schemas/Statement"
+    StatementsResponse:
+      description: A list of financial statements.
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Statement"
+    Declaration:
+      description: A participant declaration.
+      type: object
+      required:
+      - id
+      - type
+      - attributes
+      properties:
+        id:
+          "$ref": "#/components/schemas/IDAttribute"
+        type:
+          description: The data type.
+          type: string
+          example: participant-declaration
+          enum:
+          - participant-declaration
+        attributes:
+          properties:
+            participant_id:
+              description: The unique identifier of the participant.
+              type: string
+              format: uuid
+              nullable: false
+              example: 7a8fef46-3c43-42c0-b3d5-1ba5904ba562
+            declaration_type:
+              description: The event declaration type.
+              type: string
+              nullable: false
+              enum:
+              - started
+              - retained-1
+              - retained-2
+              - retained-3
+              - retained-4
+              - completed
+              - extended-1
+              - extended-2
+              - extended-3
+              example: started
+            declaration_date:
+              description: The event declaration date.
+              type: string
+              format: date-time
+              nullable: false
+              example: '2021-05-31T02:22:32.000Z'
+            course_identifier:
+              description: The type of course the participant is enrolled in.
+              type: string
+              nullable: false
+              enum:
+              - ecf-induction
+              - ecf-mentor
+              example: ecf-induction
+            state:
+              description: Indicates the state of this payment declaration.
+              type: string
+              nullable: false
+              enum:
+              - submitted
+              - eligible
+              - payable
+              - paid
+              - voided
+              - awaiting-clawback
+              - clawed-back
+              example: submitted
+            updated_at:
+              description: The date the declaration was last updated.
+              type: string
+              format: date-time
+              nullable: false
+              example: '2021-05-31T02:22:32.000Z'
+            created_at:
+              description: The date the declaration was created.
+              type: string
+              format: date-time
+              nullable: false
+              example: '2021-05-31T02:22:32.000Z'
+            delivery_partner_id:
+              description: Unique ID of the delivery partner associated with the participant
+                at the time the declaration was created.
+              type: string
+              format: uuid
+              nullable: false
+              example: 9e35e998-c63a-4136-89c4-e9e18e72e887
+            statement_id:
+              description: Unique ID of the statement the declaration will be paid
+                as part of.
+              type: string
+              format: uuid
+              nullable: true
+              example: cd3a12347-7308-4879-942a-c4a70ced400a
+            clawback_statement_id:
+              description: Unique ID of the statement to which the declaration will
+                be clawed back on, if any.
+              type: string
+              format: uuid
+              nullable: true
+              example:
+            ineligible_for_funding_reason:
+              description: If the declaration is ineligible, the reason why.
+              type: string
+              nullable: true
+              enum:
+              - duplicate_declaration
+              example:
+            mentor_id:
+              description: Unique ID of the ECT’s mentor.
+              type: string
+              format: uuid
+              nullable: true
+              example:
+            uplift_paid:
+              description: If participant is eligible for uplift, whether it has been
+                paid as part of this declaration.
+              type: boolean
+              nullable: false
+              example: false
+            evidence_held:
+              description: The type of evidence the lead provider holds on their platform
+                to demonstrate the participant has met the retention criteria for
+                the current milestone period.
+              type: string
+              nullable: true
+              enum:
+              - training-event-attended
+              - self-study-material-completed
+              - materials-engaged-with-offline
+              - 75-percent-engagement-met
+              - 75-percent-engagement-met-reduced-induction
+              - one-term-induction
+              - other
+              example: training-event-attended
+            lead_provider_name:
+              description: The name of the provider that submitted the declaration.
+              type: string
+              nullable: false
+              example: Example Provider
+    DeclarationCreate:
+      description: A participant declaration.
+      type: object
+      required:
+      - id
+      - type
+      - attributes
+      properties:
+        id:
+          "$ref": "#/components/schemas/IDAttribute"
+        type:
+          description: The data type.
+          type: string
+          example: participant-declaration
+          enum:
+          - participant-declaration
+        attributes:
+          properties:
+            participant_id:
+              description: The unique identifier of the participant.
+              type: string
+              format: uuid
+              nullable: false
+              example: 7a8fef46-3c43-42c0-b3d5-1ba5904ba562
+            declaration_type:
+              description: The event declaration type.
+              type: string
+              nullable: false
+              enum:
+              - started
+              - retained-1
+              - retained-2
+              - retained-3
+              - retained-4
+              - completed
+              - extended-1
+              - extended-2
+              - extended-3
+              example: started
+            declaration_date:
+              description: The event declaration date.
+              type: string
+              format: date-time
+              nullable: false
+              example: '2021-05-31T02:22:32.000Z'
+            course_identifier:
+              description: The type of course the participant is enrolled in.
+              type: string
+              nullable: false
+              enum:
+              - ecf-induction
+              - ecf-mentor
+              example: ecf-induction
+            state:
+              description: Indicates the state of this payment declaration.
+              type: string
+              nullable: false
+              enum:
+              - submitted
+              - eligible
+              - payable
+              - paid
+              - voided
+              - awaiting-clawback
+              - clawed-back
+              example: submitted
+            updated_at:
+              description: The date the declaration was last updated.
+              type: string
+              format: date-time
+              nullable: false
+              example: '2021-05-31T02:22:32.000Z'
+            created_at:
+              description: The date the declaration was created.
+              type: string
+              format: date-time
+              nullable: false
+              example: '2021-05-31T02:22:32.000Z'
+            delivery_partner_id:
+              description: Unique ID of the delivery partner associated with the participant
+                at the time the declaration was created.
+              type: string
+              format: uuid
+              nullable: false
+              example: 9e35e998-c63a-4136-89c4-e9e18e72e887
+            statement_id:
+              description: Unique ID of the statement the declaration will be paid
+                as part of.
+              type: string
+              format: uuid
+              nullable: true
+              example: cd3a12347-7308-4879-942a-c4a70ced400a
+            clawback_statement_id:
+              description: Unique ID of the statement to which the declaration will
+                be clawed back on, if any.
+              type: string
+              format: uuid
+              nullable: true
+              example:
+            ineligible_for_funding_reason:
+              description: If the declaration is ineligible, the reason why.
+              type: string
+              nullable: true
+              enum:
+              - duplicate_declaration
+              example:
+            mentor_id:
+              description: Unique ID of the ECT’s mentor.
+              type: string
+              format: uuid
+              nullable: true
+              example:
+            uplift_paid:
+              description: If participant is eligible for uplift, whether it has been
+                paid as part of this declaration.
+              type: boolean
+              nullable: false
+              example: false
+            evidence_held:
+              description: The type of evidence the lead provider holds on their platform
+                to demonstrate the participant has met the retention criteria for
+                the current milestone period. For retained-2 declarations, providers
+                will need to confirm if the engagement threshold has been reached
+                and only accept either the ‘75-percent-engagement-met’ or ‘75-percent-engagement-met-reduced-induction’
+                values.
+              type: string
+              nullable: true
+              enum:
+              - training-event-attended
+              - self-study-material-completed
+              - materials-engaged-with-offline
+              - 75-percent-engagement-met
+              - 75-percent-engagement-met-reduced-induction
+              - one-term-induction
+              - other
+              example: training-event-attended
+            lead_provider_name:
+              description: The name of the provider that submitted the declaration.
+              type: string
+              nullable: false
+              example: Example Provider
+    DeclarationsFilter:
+      description: Refine participant declarations to return.
+      type: object
+      properties:
+        cohort:
+          description: Return participant declarations associated to the specified
+            cohort or cohorts. This is a comma delimited string of years.
+          type: string
+          example: '2021,2022'
+        participant_id:
+          description: Return participant declarations associated to the specified
+            participant ID. This is a comma delimited string where multiple participant
+            IDs can be specified.
+          type: string
+          example: 7a8fef46-3c43-42c0-b3d5-1ba5904ba562,7e727981-db9d-40d7-9e42-27eff7d66a19
+        delivery_partner_id:
+          description: Return participant declarations associated to the specified
+            delivery partner or delivery partners. This is a comma delimited string
+            of delivery partner IDs.
+          type: string
+          example: 42a9ef2f-9059-400a-92ff-4830a629d0c5,92f6e54b-57fe-4a62-89cc-e83d6b0f734b
+        updated_since:
+          description: Return only records that have been updated since this date
+            and time (ISO 8601 date format).
+          type: string
+          example: '2021-05-13T11:21:55Z'
+    DeclarationResponse:
+      description: A participant declaration.
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          "$ref": "#/components/schemas/Declaration"
+    DeclarationsResponse:
+      description: A list of participant declarations.
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Declaration"
+    DeclarationCreateRequest:
+      description: A participant declaration request
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          type: object
+          anyOf:
+          - "$ref": "#/components/schemas/DeclarationPre2025DataRequest"
+          - "$ref": "#/components/schemas/DeclarationPost2024ECTDataRequest"
+          - "$ref": "#/components/schemas/DeclarationPost2024MentorDataRequest"
+      example:
+        data:
+          type: participant-declaration
+          attributes:
+            participant_id: 3452b1a6-cbaa-422f-9ca9-40afa28583a2
+            declaration_type: retained-1
+            declaration_date: '2021-05-31T02:21:32.000Z'
+            course_identifier: ecf-induction
+            evidence_held: training-event-attended
+    DeclarationCreateResponse:
+      description: A participant declaration.
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          "$ref": "#/components/schemas/DeclarationCreate"
+    DeclarationPre2025DataRequest:
+      description: A participant declaration data request for participants in cohort
+        2024 and previous years
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - participant-declaration
+        attributes:
+          type: object
+          anyOf:
+          - "$ref": "#/components/schemas/DeclarationPre2025StartedAttributes"
+          - "$ref": "#/components/schemas/DeclarationPre2025RetainedAttributes"
+          - "$ref": "#/components/schemas/DeclarationPre2025CompletedAttributes"
+          - "$ref": "#/components/schemas/DeclarationPre2025ExtendedAttributes"
+    DeclarationPre2025StartedAttributes:
+      description: An ECF started participant declaration
+      type: object
+      required:
+      - participant_id
+      - declaration_type
+      - declaration_date
+      - course_identifier
+      additionalProperties: false
+      properties:
+        participant_id:
+          description: The unique ID of the participant
+          type: string
+          format: uuid
+          example: 3452b1a6-cbaa-422f-9ca9-40afa28583a2
+        declaration_type:
+          description: The event declaration type
+          type: string
+          enum:
+          - started
+          example: started
+        declaration_date:
+          description: The event declaration date
+          type: string
+          format: date-time
+          example: '2021-05-31T02:21:32.000Z'
+        course_identifier:
+          description: The type of course the participant is enrolled in
+          type: string
+          enum:
+          - ecf-induction
+          - ecf-mentor
+          example: ecf-induction
+    DeclarationPre2025RetainedAttributes:
+      description: An ECF participant retained declaration
+      type: object
+      required:
+      - participant_id
+      - declaration_type
+      - declaration_date
+      - course_identifier
+      - evidence_held
+      additionalProperties: false
+      properties:
+        participant_id:
+          description: The unique ID of the participant
+          type: string
+          format: uuid
+          example: 3452b1a6-cbaa-422f-9ca9-40afa28583a2
+        declaration_type:
+          description: The event declaration type
+          type: string
+          enum:
+          - retained-1
+          - retained-2
+          - retained-3
+          - retained-4
+          example: retained-1
+        declaration_date:
+          description: The event declaration date
+          type: string
+          format: date-time
+          example: '2021-05-31T02:21:32.000Z'
+        course_identifier:
+          description: The type of course the participant is enrolled in
+          type: string
+          enum:
+          - ecf-induction
+          - ecf-mentor
+          example: ecf-induction
+        evidence_held:
+          description: The type of evidence the lead provider holds on their platform
+            to demonstrate the participant has met the retention criteria for the
+            current milestone period.
+          type: string
+          enum:
+          - training-event-attended
+          - self-study-material-completed
+          - other
+          example: training-event-attended
+    DeclarationPre2025CompletedAttributes:
+      description: An ECF completed participant declaration
+      type: object
+      required:
+      - participant_id
+      - declaration_type
+      - declaration_date
+      - course_identifier
+      - evidence_held
+      additionalProperties: false
+      properties:
+        participant_id:
+          description: The unique ID of the participant
+          type: string
+          format: uuid
+          example: 3452b1a6-cbaa-422f-9ca9-40afa28583a2
+        declaration_type:
+          description: The event declaration type
+          type: string
+          enum:
+          - completed
+          example: completed
+        declaration_date:
+          description: The event declaration date
+          type: string
+          format: date-time
+          example: '2021-05-31T02:21:32.000Z'
+        course_identifier:
+          description: The type of course the participant is enrolled in
+          type: string
+          enum:
+          - ecf-induction
+          - ecf-mentor
+          example: ecf-induction
+        evidence_held:
+          description: The type of evidence the lead provider holds on their platform
+            to demonstrate the participant has met the retention criteria for the
+            current milestone period.
+          type: string
+          enum:
+          - training-event-attended
+          - self-study-material-completed
+          - other
+          example: training-event-attended
+    DeclarationPre2025ExtendedAttributes:
+      description: An ECF extended participant declaration
+      type: object
+      required:
+      - participant_id
+      - declaration_type
+      - declaration_date
+      - course_identifier
+      - evidence_held
+      additionalProperties: false
+      properties:
+        participant_id:
+          description: The unique ID of the participant
+          type: string
+          format: uuid
+          example: 3452b1a6-cbaa-422f-9ca9-40afa28583a2
+        declaration_type:
+          description: The event declaration type
+          type: string
+          enum:
+          - extended-1
+          - extended-2
+          - extended-3
+          example: extended-1
+        declaration_date:
+          description: The event declaration date
+          type: string
+          format: date-time
+          example: '2021-05-31T02:21:32.000Z'
+        course_identifier:
+          description: The type of course the participant is enrolled in
+          type: string
+          enum:
+          - ecf-induction
+          - ecf-mentor
+          example: ecf-induction
+        evidence_held:
+          description: The type of evidence the lead provider holds on their platform
+            to demonstrate the participant has met the retention criteria for the
+            current milestone period.
+          type: string
+          enum:
+          - training-event-attended
+          - self-study-material-completed
+          - other
+          example: training-event-attended
+    DeclarationPost2024ECTDataRequest:
+      description: A participant declaration data request for ECT participants from
+        cohort 2025 onwards
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - participant-declaration
+        attributes:
+          type: object
+          anyOf:
+          - "$ref": "#/components/schemas/DeclarationPost2024ECTStartedAttributes"
+          - "$ref": "#/components/schemas/DeclarationPost2024ECTRetainedAttributes"
+          - "$ref": "#/components/schemas/DeclarationPost2024ECTCompletedAttributes"
+          - "$ref": "#/components/schemas/DeclarationPost2024ECTExtendedAttributes"
+    DeclarationPost2024ECTStartedAttributes:
+      description: An ECT started declaration
+      type: object
+      required:
+      - participant_id
+      - declaration_type
+      - declaration_date
+      - course_identifier
+      - evidence_held
+      additionalProperties: false
+      properties:
+        participant_id:
+          description: The unique ID of the participant
+          type: string
+          format: uuid
+          example: 3452b1a6-cbaa-422f-9ca9-40afa28583a2
+        declaration_type:
+          description: The event declaration type
+          type: string
+          enum:
+          - started
+          example: started
+        declaration_date:
+          description: The event declaration date
+          type: string
+          format: date-time
+          example: '2021-05-31T02:21:32.000Z'
+        course_identifier:
+          description: The type of course the participant is enrolled in
+          type: string
+          enum:
+          - ecf-induction
+          example: ecf-induction
+        evidence_held:
+          description: The type of evidence the lead provider holds on their platform
+            to demonstrate the participant has met the retention criteria for the
+            current milestone period.
+          type: string
+          enum:
+          - training-event-attended
+          - self-study-material-completed
+          - materials-engaged-with-offline
+          - other
+          example: training-event-attended
+    DeclarationPost2024ECTRetainedAttributes:
+      description: An ECT retained declaration
+      type: object
+      required:
+      - participant_id
+      - declaration_type
+      - declaration_date
+      - course_identifier
+      - evidence_held
+      additionalProperties: false
+      properties:
+        participant_id:
+          description: The unique ID of the participant
+          type: string
+          format: uuid
+          example: 3452b1a6-cbaa-422f-9ca9-40afa28583a2
+        declaration_type:
+          description: The event declaration type
+          type: string
+          enum:
+          - retained-1
+          - retained-2
+          - retained-3
+          - retained-4
+          example: retained-1
+        declaration_date:
+          description: The event declaration date
+          type: string
+          format: date-time
+          example: '2021-05-31T02:21:32.000Z'
+        course_identifier:
+          description: The type of course the participant is enrolled in
+          type: string
+          enum:
+          - ecf-induction
+          example: ecf-induction
+        evidence_held:
+          description: The type of evidence the lead provider holds on their platform
+            to demonstrate the participant has met the retention criteria for the
+            current milestone period. For retained-2 declarations, providers will
+            need to confirm if the engagement threshold has been reached and only
+            accept either the '75-percent-engagement-met' or '75-percent-engagement-met-reduced-induction'
+            values.
+          type: string
+          enum:
+          - training-event-attended
+          - self-study-material-completed
+          - materials-engaged-with-offline
+          - other
+          - 75-percent-engagement-met
+          - 75-percent-engagement-met-reduced-induction
+          example: training-event-attended
+    DeclarationPost2024ECTCompletedAttributes:
+      description: An ECT completed declaration
+      type: object
+      required:
+      - participant_id
+      - declaration_type
+      - declaration_date
+      - course_identifier
+      - evidence_held
+      additionalProperties: false
+      properties:
+        participant_id:
+          description: The unique ID of the participant
+          type: string
+          format: uuid
+          example: 3452b1a6-cbaa-422f-9ca9-40afa28583a2
+        declaration_type:
+          description: The event declaration type
+          type: string
+          enum:
+          - completed
+          example: completed
+        declaration_date:
+          description: The event declaration date
+          type: string
+          format: date-time
+          example: '2021-05-31T02:21:32.000Z'
+        course_identifier:
+          description: The type of course the participant is enrolled in
+          type: string
+          enum:
+          - ecf-induction
+          example: ecf-induction
+        evidence_held:
+          description: The type of evidence the lead provider holds on their platform
+            to demonstrate the participant has met the retention criteria for the
+            current milestone period.
+          type: string
+          enum:
+          - 75-percent-engagement-met
+          - 75-percent-engagement-met-reduced-induction
+          - one-term-induction
+          example: 75-percent-engagement-met
+    DeclarationPost2024ECTExtendedAttributes:
+      description: An ECT extended declaration
+      type: object
+      required:
+      - participant_id
+      - declaration_type
+      - declaration_date
+      - course_identifier
+      - evidence_held
+      additionalProperties: false
+      properties:
+        participant_id:
+          description: The unique ID of the participant
+          type: string
+          format: uuid
+          example: 3452b1a6-cbaa-422f-9ca9-40afa28583a2
+        declaration_type:
+          description: The event declaration type
+          type: string
+          enum:
+          - extended-1
+          - extended-2
+          - extended-3
+          example: extended-1
+        declaration_date:
+          description: The event declaration date
+          type: string
+          format: date-time
+          example: '2021-05-31T02:21:32.000Z'
+        course_identifier:
+          description: The type of course the participant is enrolled in
+          type: string
+          enum:
+          - ecf-induction
+          example: ecf-induction
+        evidence_held:
+          description: The type of evidence the lead provider holds on their platform
+            to demonstrate the participant has met the retention criteria for the
+            current milestone period.
+          type: string
+          enum:
+          - training-event-attended
+          - self-study-material-completed
+          - materials-engaged-with-offline
+          - other
+          example: training-event-attended
+    DeclarationPost2024MentorDataRequest:
+      description: A participant declaration data request for mentor participants
+        from cohort 2025 onwards
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - participant-declaration
+        attributes:
+          type: object
+          anyOf:
+          - "$ref": "#/components/schemas/DeclarationPost2024MentorStartedAttributes"
+          - "$ref": "#/components/schemas/DeclarationPost2024MentorCompletedAttributes"
+    DeclarationPost2024MentorStartedAttributes:
+      description: A mentor started declaration
+      type: object
+      required:
+      - participant_id
+      - declaration_type
+      - declaration_date
+      - course_identifier
+      additionalProperties: false
+      properties:
+        participant_id:
+          description: The unique ID of the participant
+          type: string
+          format: uuid
+          example: 3452b1a6-cbaa-422f-9ca9-40afa28583a2
+        declaration_type:
+          description: The event declaration type
+          type: string
+          enum:
+          - started
+          example: started
+        declaration_date:
+          description: The event declaration date
+          type: string
+          format: date-time
+          example: '2021-05-31T02:21:32.000Z'
+        course_identifier:
+          description: The type of course the participant is enrolled in
+          type: string
+          enum:
+          - ecf-mentor
+          example: ecf-mentor
+        evidence_held:
+          description: The type of evidence the lead provider holds on their platform
+            to demonstrate the participant has met the retention criteria for the
+            current milestone period.
+          type: string
+          enum:
+          - training-event-attended
+          - self-study-material-completed
+          - materials-engaged-with-offline
+          - other
+          example: training-event-attended
+    DeclarationPost2024MentorCompletedAttributes:
+      description: A mentor completed declaration
+      type: object
+      required:
+      - participant_id
+      - declaration_type
+      - declaration_date
+      - course_identifier
+      - evidence_held
+      additionalProperties: false
+      properties:
+        participant_id:
+          description: The unique ID of the participant
+          type: string
+          format: uuid
+          example: 3452b1a6-cbaa-422f-9ca9-40afa28583a2
+        declaration_type:
+          description: The event declaration type
+          type: string
+          enum:
+          - completed
+          example: completed
+        declaration_date:
+          description: The event declaration date
+          type: string
+          format: date-time
+          example: '2021-05-31T02:21:32.000Z'
+        course_identifier:
+          description: The type of course the participant is enrolled in
+          type: string
+          enum:
+          - ecf-mentor
+          example: ecf-mentor
+        evidence_held:
+          description: The type of evidence the lead provider holds on their platform
+            to demonstrate the participant has met the retention criteria for the
+            current milestone period.
+          type: string
+          enum:
+          - 75-percent-engagement-met
+          - 75-percent-engagement-met-reduced-induction
+          example: 75-percent-engagement-met
+    DeliveryPartner:
+      description: A delivery partner.
+      type: object
+      required:
+      - id
+      - type
+      - attributes
+      properties:
+        id:
+          "$ref": "#/components/schemas/IDAttribute"
+        type:
+          description: The data type.
+          type: string
+          example: delivery-partner
+          enum:
+          - delivery-partner
+        attributes:
+          properties:
+            name:
+              description: The name of the delivery partner you are working with.
+              type: string
+              nullable: false
+              example: Awesome Delivery Partner Ltd
+            created_at:
+              description: The date and time the delivery partner was created.
+              type: string
+              format: date-time
+              example: '2021-05-31T02:22:32.000Z'
+            updated_at:
+              description: The date and time the delivery partner was last updated.
+              type: string
+              format: date-time
+              example: '2021-05-31T02:22:32.000Z'
+            lead_providers:
+              description: The lead providers associated with the delivery partner.
+              type: array
+              nullable: false
+              example:
+              - Lead Provider 1
+              - Lead Provider 2
+    DeliveryPartnersFilter:
+      description: Filter delivery partners to return more specific results
+      type: object
+      properties:
+        cohort:
+          description: Return delivery partners from the specified cohort or cohorts.
+            This is a comma delimited string of years.
+          type: string
+          example: '2021,2022'
+    DeliveryPartnerResponse:
+      description: A delivery partner.
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          "$ref": "#/components/schemas/DeliveryPartner"
+    DeliveryPartnersResponse:
+      description: A list of delivery partners.
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          type: array
+          items:
+            "$ref": "#/components/schemas/DeliveryPartner"
+    Partnership:
+      description: A partnership.
+      type: object
+      required:
+      - id
+      - type
+      - attributes
+      properties:
+        id:
+          "$ref": "#/components/schemas/IDAttribute"
+        type:
+          description: The data type.
+          type: string
+          example: partnership
+          enum:
+          - partnership
+        attributes:
+          properties:
+            cohort:
+              description: The cohort for which you are reporting the partnership
+              type: string
+              example: 2021
+            urn:
+              description: The Unique Reference Number (URN) of the school you are
+                partnered with
+              type: string
+              example: '123456'
+            school_id:
+              description: The unique ID of the school you are partnered with
+              type: string
+              format: uuid
+              example: dd4a11347-7308-4879-942a-c4a70ced400v
+            delivery_partner_id:
+              description: The unique ID of the delivery partner you are working with
+                for this partnership
+              type: string
+              format: uuid
+              example: cd3a12347-7308-4879-942a-c4a70ced400a
+            delivery_partner_name:
+              description: The name of the delivery partner you are working with for
+                this partnership
+              type: string
+              example: Delivery Partner Example
+            induction_tutor_name:
+              description: The name of the induction tutor at the school you are in
+                partnership with
+              type: string
+              nullable: true
+              example: John Doe
+            induction_tutor_email:
+              description: The email address of the induction tutor at the school
+                you are in partnership with
+              type: string
+              nullable: true
+              example: john.doe@example.com
+            participants_currently_training:
+              description: The number of participants currently in training
+              type: integer
+              example: 10
+            updated_at:
+              description: The date the partnership was last updated
+              type: string
+              format: date-time
+              example: '2021-05-31T02:22:32.000Z'
+            created_at:
+              description: The date the partnership was reported by you
+              type: string
+              format: date-time
+              example: '2021-05-31T02:22:32.000Z'
+    PartnershipsFilter:
+      description: Filter partnerships to return more specific results
+      type: object
+      properties:
+        cohort:
+          description: Return partnerships within the specified cohorts. This is a
+            comma delimited string of years.
+          type: string
+          example: '2021,2022'
+        updated_since:
+          description: Return only records that have been updated since this date
+            and time (ISO 8601 date format)
+          type: string
+          example: '2021-05-13T11:21:55Z'
+        delivery_partner_id:
+          description: Return partnerships associated to the specified delivery partner
+            or delivery partners. This is a comma delimited string of delivery partner
+            IDs.
+          type: string
+          example: 42a9ef2f-9059-400a-92ff-4830a629d0c5,92f6e54b-57fe-4a62-89cc-e83d6b0f734b
+    PartnershipResponse:
+      description: A single partnership.
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          "$ref": "#/components/schemas/Partnership"
+    PartnershipCreateRequest:
+      description: A partnership request
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          description: A partnership
+          type: object
+          required:
+          - type
+          - attributes
+          properties:
+            type:
+              type: string
+              required: true
+              enum:
+              - partnership
+              example: partnership
+            attributes:
+              description: A partnership request attributes
+              type: object
+              required:
+              - cohort
+              - delivery_partner_id
+              - school_id
+              properties:
+                cohort:
+                  description: The cohort for which you are reporting the partnership
+                  required: true
+                  nullable: false
+                  type: string
+                  example: '2022'
+                school_id:
+                  description: The Unique ID of the school you are partnering with
+                  required: true
+                  nullable: false
+                  type: string
+                  example: 24b61d1c-ad95-4000-aee0-afbdd542294a
+                delivery_partner_id:
+                  description: The unique ID of the delivery partner you will work
+                    with for this school partnership
+                  required: true
+                  nullable: false
+                  type: string
+                  example: db2fbf67-b7b7-454f-a1b7-0020411e2314
+    PartnershipUpdateRequest:
+      description: A partnership update request
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          description: A partnership update
+          type: object
+          required:
+          - type
+          - attributes
+          properties:
+            type:
+              type: string
+              required: true
+              enum:
+              - partnership
+              example: partnership
+            attributes:
+              description: A partnership update request attributes
+              type: object
+              required:
+              - delivery_partner_id
+              properties:
+                delivery_partner_id:
+                  description: The unique ID of the delivery partner you will work
+                    with for this school partnership
+                  required: true
+                  nullable: false
+                  type: string
+                  example: db2fbf67-b7b7-454f-a1b7-0020411e2314
+    PartnershipsResponse:
+      description: A list of partnerships.
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Partnership"
+    Participant:
+      description: A participant.
+      type: object
+      required:
+      - id
+      - type
+      - attributes
+      properties:
+        id:
+          "$ref": "#/components/schemas/IDAttribute"
+        type:
+          description: The data type.
+          type: string
+          example: participant
+          enum:
+          - participant
+        attributes:
+          properties:
+            full_name:
+              description: The full name of the participant
+              type: string
+              nullable: false
+              example: John Doe
+            teacher_reference_number:
+              description: The Teacher Reference Number (TRN) for this participant
+              type: string
+              nullable: true
+              example: '1234567'
+            ecf_enrolments:
+              type: array
+              nullable: false
+              items:
+                "$ref": "#/components/schemas/ParticipantECFEnrolment"
+            participant_id_changes:
+              type: array
+              nullable: false
+              items:
+                "$ref": "#/components/schemas/ParticipantIDChange"
+            updated_at:
+              description: The date and time the participant was last updated.
+              type: string
+              format: date-time
+              example: '2021-05-31T02:22:32.000Z'
+    ParticipantsFilter:
+      description: Filter participants to return more specific results
+      type: object
+      properties:
+        cohort:
+          description: Return participants from the specified cohort or cohorts. This
+            is a comma delimited string of years.
+          type: string
+          example: '2021,2022'
+        updated_since:
+          description: Return only records that have been updated since this date
+            and time (ISO 8601 date format)
+          type: string
+          example: '2021-05-13T11:21:55Z'
+        training_status:
+          description: Return participants with the specified training status
+          type: string
+          enum:
+          - withdrawn
+          - deferred
+          - active
+        from_participant_id:
+          description: Return participants that have this from participant ID
+          type: string
+          format: uuid
+          example: 42a9ef2f-9059-400a-92ff-4830a629d0c5
+    ParticipantResponse:
+      description: A participant.
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          "$ref": "#/components/schemas/Participant"
+    ParticipantWithdrawRequest:
+      description: Withdraw a participant from training
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          description: A participant withdrawal
+          type: object
+          required:
+          - type
+          - attributes
+          properties:
+            type:
+              type: string
+              required: true
+              enum:
+              - participant-withdraw
+              example: participant-withdraw
+            attributes:
+              description: A participant withdrawal action
+              type: object
+              required:
+              - reason
+              - course_identifier
+              properties:
+                reason:
+                  description: The reason for the withdrawal
+                  type: string
+                  required: true
+                  enum:
+                  - left-teaching-profession
+                  - moved-school
+                  - mentor-no-longer-being-mentor
+                  - switched-to-school-led
+                  - changed-lead-provider
+                  - other
+                  example: left-teaching-profession
+                course_identifier:
+                  description: The type of course the participant is enrolled in
+                  type: string
+                  required: true
+                  enum:
+                  - ecf-mentor
+                  - ecf-induction
+                  example: ecf-mentor
+    ParticipantDeferRequest:
+      description: Defer a participant from training
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          description: A participant deferral
+          type: object
+          required:
+          - type
+          - attributes
+          properties:
+            type:
+              type: string
+              required: true
+              enum:
+              - participant-defer
+              example: participant-defer
+            attributes:
+              description: A participant deferral action
+              type: object
+              required:
+              - reason
+              - course_identifier
+              properties:
+                reason:
+                  description: The reason for the deferral
+                  type: string
+                  required: true
+                  enum:
+                  - bereavement
+                  - long-term-sickness
+                  - parental-leave
+                  - career-break
+                  - other
+                  example: left-teaching-profession
+                course_identifier:
+                  description: The type of course the participant is enrolled in
+                  type: string
+                  required: true
+                  enum:
+                  - ecf-mentor
+                  - ecf-induction
+                  example: ecf-mentor
+    ParticipantResumeRequest:
+      description: Resume a participant's training
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          description: A participant resumption
+          type: object
+          required:
+          - type
+          - attributes
+          properties:
+            type:
+              type: string
+              required: true
+              enum:
+              - participant-resume
+              example: participant-resume
+            attributes:
+              description: A participant resumption action
+              type: object
+              required:
+              - course_identifier
+              properties:
+                course_identifier:
+                  description: The type of course the participant is enrolled in
+                  type: string
+                  required: true
+                  enum:
+                  - ecf-mentor
+                  - ecf-induction
+                  example: ecf-mentor
+    ParticipantChangeScheduleRequest:
+      description: Notify that a participant is changing training schedule
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          description: The change schedule request for a participant
+          type: object
+          required:
+          - type
+          - attributes
+          properties:
+            type:
+              type: string
+              required: true
+              enum:
+              - participant-change-schedule
+              example: participant-change-schedule
+            attributes:
+              description: A participant change schedule action
+              type: object
+              required:
+              - schedule_identifier
+              - course_identifier
+              properties:
+                schedule_identifier:
+                  description: The new schedule of the participant
+                  type: string
+                  required: true
+                  enum:
+                  - ecf-standard-january
+                  - ecf-standard-april
+                  - ecf-standard-september
+                  - ecf-extended-january
+                  - ecf-extended-april
+                  - ecf-extended-september
+                  - ecf-reduced-january
+                  - ecf-reduced-april
+                  - ecf-reduced-september
+                  - ecf-replacement-january
+                  - ecf-replacement-april
+                  - ecf-replacement-september
+                  example: ecf-extended-september
+                course_identifier:
+                  description: The type of course the participant is enrolled in
+                  type: string
+                  required: true
+                  enum:
+                  - ecf-mentor
+                  - ecf-induction
+                  example: ecf-mentor
+                cohort:
+                  description: Providers may not change the current value for ECF
+                    participants. Indicates which call-off contract funds this participant’s
+                    training. 2021 indicates a participant that has started, or will
+                    start, their training in the 2021/22 academic year.
+                  type: string
+                  required: false
+                  example: '2021'
+    ParticipantsResponse:
+      description: A list of participants.
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Participant"
+    ParticipantECFEnrolment:
+      description: The details of a participant enrolment
+      type: object
+      required:
+      - training_record_id
+      - email
+      - school_urn
+      - participant_type
+      - working_pattern
+      - cohort
+      - training_status
+      - participant_status
+      - eligible_for_funding
+      - pupil_premium_uplift
+      - sparsity_uplift
+      - schedule_identifier
+      - delivery_partner_id
+      - created_at
+      properties:
+        training_record_id:
+          description: The unique identifier of this participant's training record.
+            Should the DfE dedupe a participant, this value will not change.
+          type: string
+          format: uuid
+          example: 42a9ef2f-9059-400a-92ff-4830a629d0c5
+        email:
+          description: The email address registered for this participant
+          type: string
+          example: jane.smith@example.com
+        mentor_id:
+          description: The unique identifier of this participant's mentor
+          type: string
+          format: uuid
+          example: 42a9ef2f-9059-400a-92ff-4830a629d0c5
+          nullable: true
+        school_urn:
+          description: The Unique Reference Number (URN) of the school that submitted
+            this participant
+          type: string
+          example: '123456'
+        participant_type:
+          description: The type of participant this record refers to
+          type: string
+          enum:
+          - ect
+          - mentor
+          example: ect
+        working_pattern:
+          description: The current working pattern of an ECT. Reported as full or
+            part-time by the school.
+          type: string
+          enum:
+          - full_time
+          - part_time
+          example: full_time
+          nullable: true
+        cohort:
+          description: Indicates which call-off contract funds this participant's
+            training. 2021 indicates a participant that has started, or will start,
+            their training in the 2021/22 academic year.
+          type: string
+          example: '2021'
+        training_status:
+          description: The training status of this participant, indicated by a lead
+            provider deferring, withdrawing or resuming a participant's training.
+          type: string
+          example: active
+          enum:
+          - active
+          - deferred
+          - withdrawn
+        participant_status:
+          description: Indicates if a participant has started at a school yet or a
+            school or lead provider has reported they have stopped training.
+          type: string
+          enum:
+          - active
+          - joining
+          - leaving
+          - left
+          example: active
+        eligible_for_funding:
+          description: Indicates whether this participant has become eligible to receive
+            DfE funded induction
+          type: boolean
+          example: true
+          nullable: true
+        pupil_premium_uplift:
+          description: Indicates whether this ECT qualifies for an uplift payment
+            due to pupil premium. It does not apply to mentors.
+          type: boolean
+          example: true
+        sparsity_uplift:
+          description: Indicates whether this ECT qualifies for an uplift payment
+            due to sparsity. It does not apply to mentors.
+          type: boolean
+          example: true
+        schedule_identifier:
+          description: The schedule of the participant
+          type: string
+          enum:
+          - ecf-standard-january
+          - ecf-standard-april
+          - ecf-standard-september
+          - ecf-extended-january
+          - ecf-extended-april
+          - ecf-extended-september
+          - ecf-reduced-january
+          - ecf-reduced-april
+          - ecf-reduced-september
+          - ecf-replacement-january
+          - ecf-replacement-april
+          - ecf-replacement-september
+          example: ecf-standard-january
+        delivery_partner_id:
+          description: Unique ID of the delivery partner associated with the participant
+          type: string
+          format: uuid
+          example: 42a9ef2f-9059-400a-92ff-4830a629d0c5
+        withdrawal:
+          description: The details of a participant withdrawal
+          type: object
+          required:
+          - reason
+          - date
+          properties:
+            reason:
+              description: The reason a participant was withdrawn
+              type: string
+              enum:
+              - left-teaching-profession
+              - moved-school
+              - mentor-no-longer-being-mentor
+              - switched-to-school-led
+              - changed-lead-provider
+              - other
+              example: moved-school
+            date:
+              description: The date and time the participant was withdrawn
+              type: string
+              format: date-time
+              example: '2021-05-31T02:22:32.000Z'
+          nullable: true
+        deferral:
+          description: The details of a participant deferral
+          type: object
+          required:
+          - reason
+          - date
+          properties:
+            reason:
+              description: The reason a participant was deferred
+              type: string
+              enum:
+              - bereavement
+              - long-term-sickness
+              - parental-leave
+              - career-break
+              - other
+              example: career-break
+            date:
+              description: The date and time the participant was deferred
+              type: string
+              format: date-time
+              example: '2021-05-31T02:22:32.000Z'
+          nullable: true
+        created_at:
+          description: The date and time the participant was created
+          type: string
+          format: date-time
+          example: '2023-01-01T00:00:00Z'
+        induction_end_date:
+          description: The date when an ECT has passed or failed their induction.
+          type: string
+          format: date
+          example: '2023-01-01'
+          nullable: true
+        most_recent_induction_period_end_date:
+          description: The end date of the most recent induction period for this participant
+          type: string
+          nullable: true
+          format: date
+          example: '2025-05-31'
+        overall_induction_start_date:
+          description: The date the participant started their induction, reported
+            by their appropriate body.
+          type: string
+          format: date
+          example: '2023-01-01'
+          nullable: true
+        mentor_funding_end_date:
+          description: The participant mentor training completion date
+          type: string
+          format: date
+          example: '2023-01-01'
+          nullable: true
+        cohort_changed_after_payments_frozen:
+          description: Identify participants that migrated to a new cohort as payments
+            were frozen on their original cohort
+          type: boolean
+          example: true
+        mentor_ineligible_for_funding_reason:
+          description: The reason why funding for a mentor's training has ended
+          type: string
+          nullable: true
+          enum:
+          - completed_declaration_received
+          - completed_during_early_roll_out
+          - started_not_completed
+          example: completed_declaration_received
+    ParticipantIDChange:
+      description: The details of a participant ID change
+      type: object
+      required:
+      - from_participant_id
+      - to_participant_id
+      - changed_at
+      properties:
+        from_participant_id:
+          description: The unique identifier of the changed from participant training
+            record
+          type: string
+          format: uuid
+          example: 23dd8d66-e11f-4139-9001-86b4f9abcb02
+        to_participant_id:
+          description: The unique identifier of the changed to participant training
+            record
+          type: string
+          format: uuid
+          example: ac3d1243-7308-4879-942a-c4a70ced400a
+        changed_at:
+          description: The date and time the participant ID change was made
+          type: string
+          format: date_time
+          example: '2023-01-01T12:00:00Z'
+    ParticipantTransfer:
+      description: A participant transfer
+      type: object
+      required:
+      - id
+      - type
+      - attributes
+      properties:
+        id:
+          "$ref": "#/components/schemas/IDAttribute"
+        type:
+          description: The data type.
+          type: string
+          example: participant-transfer
+          enum:
+          - participant-transfer
+        attributes:
+          properties:
+            transfers:
+              type: array
+              items:
+                "$ref": "#/components/schemas/ParticipantTransfersTransfer"
+            updated_at:
+              description: The date and time the participant transfer was last updated
+              type: string
+              format: date-time
+              example: '2021-05-31T02:22:32.000Z'
+    ParticipantTransfersTransfer:
+      description: A participant transfer, transfer
+      type: object
+      required:
+      - training_record_id
+      - transfer_type
+      - status
+      - leaving
+      properties:
+        training_record_id:
+          description: The unique identifier of this participant's training record.
+            Should the DfE dedupe a participant, this value will not change.
+          type: string
+          format: uuid
+          example: 42a9ef2f-9059-400a-92ff-4830a629d0c5
+        transfer_type:
+          description: The type of transfer between schools
+          type: string
+          enum:
+          - new_school
+          - new_provider
+          - unknown
+          example: new_provider
+        status:
+          description: The status of the transfer, if both leaving and joining SIT
+            have completed their journeys or only one has
+          type: string
+          enum:
+          - incomplete
+          - complete
+          example: complete
+        created_at:
+          description: The date and time the participant transfer was created
+          type: string
+          format: date
+          example: '2021-05-31'
+        leaving:
+          type: object
+          required:
+          - school_urn
+          properties:
+            school_urn:
+              description: The URN of the school the participant is leaving
+              type: string
+              example: '123456'
+            provider:
+              description: The name of the provider the participant is leaving
+              type: string
+              example: Example Institute
+            date:
+              description: The date the participant will be leaving the school
+              type: string
+              format: date
+              example: '2021-05-31'
+        joining:
+          type: object
+          nullable: true
+          required:
+          - school_urn
+          properties:
+            school_urn:
+              description: The URN of the school the participant is joining
+              type: string
+              example: '654321'
+            provider:
+              description: The name of the provider the participant is joining
+              type: string
+              example: Example Institute
+            date:
+              description: The date the participant will be joining the school
+              type: string
+              format: date
+              example: '2021-06-01'
+    ParticipantsTransfersResponse:
+      description: A list of transfers
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          type: array
+          items:
+            "$ref": "#/components/schemas/ParticipantTransfer"
+    ParticipantsTransfersFilter:
+      description: Filter participant transfers to return more specific results
+      type: object
+      properties:
+        updated_since:
+          description: Return only records that have been updated since this date
+            and time (ISO 8601 date format)
+          type: string
+          example: '2021-05-13T11:21:55Z'
+    ParticipantTransfersResponse:
+      description: Transfers for a given participant
+      tyoe: object
+      required:
+      - data
+      properties:
+        data:
+          "$ref": "#/components/schemas/ParticipantTransfer"
+    UnfundedMentor:
+      description: An unfunded mentor
+      type: object
+      required:
+      - id
+      - type
+      - attributes
+      properties:
+        id:
+          "$ref": "#/components/schemas/IDAttribute"
+        type:
+          description: The data type.
+          type: string
+          example: unfunded-mentor
+          enum:
+          - unfunded-mentor
+        attributes:
+          properties:
+            full_name:
+              description: The full name of this unfunded mentor
+              type: string
+              nullable: false
+              example: John Doe
+            email:
+              description: The email address registered for this unfunded mentor
+              type: string
+              example: jane.smith@example.com
+            teacher_reference_number:
+              description: The Teacher Reference Number (TRN) for this unfunded mentor
+              type: string
+              nullable: true
+              example: '1234567'
+            created_at:
+              description: The date and time the unfunded mentor was created
+              type: string
+              format: date-time
+              example: '2021-05-31T02:22:32.000Z'
+            updated_at:
+              description: The date and time the unfunded mentor was last updated
+              type: string
+              format: date-time
+              example: '2021-05-31T02:22:32.000Z'
+    UnfundedMentorsFilter:
+      description: Filter unfunded mentors to return more specific results
+      type: object
+      properties:
+        updated_since:
+          description: Return only records that have been updated since this date
+            and time (ISO 8601 date format)
+          type: string
+          example: '2021-05-13T11:21:55Z'
+    UnfundedMentorResponse:
+      description: A single unfunded mentor.
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          "$ref": "#/components/schemas/UnfundedMentor"
+    UnfundedMentorsResponse:
+      description: A list of unfunded mentors.
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          type: array
+          items:
+            "$ref": "#/components/schemas/UnfundedMentor"

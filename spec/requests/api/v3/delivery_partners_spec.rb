@@ -1,5 +1,5 @@
 RSpec.describe "Delivery partners API", :with_metadata, type: :request do
-  let(:serializer) { API::DeliveryPartnerSerializer }
+  let(:serializer) { API::V3::DeliveryPartnerSerializer }
   let(:serializer_options) { { lead_provider_id: lead_provider.id } }
   let(:query) { API::DeliveryPartners::Query }
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }

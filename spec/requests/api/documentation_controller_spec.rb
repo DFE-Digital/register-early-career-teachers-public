@@ -12,6 +12,12 @@ RSpec.describe "Lead provider API docs", type: :request do
   context "with v4" do
     let(:version) { "v4" }
 
+    it { is_expected.to have_http_status :success }
+  end
+
+  context "with v5" do
+    let(:version) { "v5" }
+
     it { is_expected.to have_http_status :not_found }
   end
 
