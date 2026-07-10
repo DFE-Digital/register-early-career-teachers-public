@@ -1852,6 +1852,48 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe ".record_school_partnership_recreated_event!" do
+    let(:lead_provider) { FactoryBot.create(:lead_provider, name: "LP") }
+    let(:delivery_partner) { FactoryBot.create(:delivery_partner, name: "DP") }
+    let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, :for_year, year: 2025, lead_provider:, delivery_partner:) }
+
+    let(:old_gias_school) { FactoryBot.create(:gias_school, :with_school, name: "Old School") }
+    let(:new_gias_school) { FactoryBot.create(:gias_school, :with_school, name: "New School") }
+    let(:old_school) { old_gias_school.school }
+    let(:new_school) { new_gias_school.school }
+    let(:old_school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school: old_school) }
+    let(:new_school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school: new_school) }
+
+    before { allow(RecordEventJob).to receive(:perform_later) }
+
+    it "queues RecordEventJob with correct payload" do
+      freeze_time do
+        Events::Record.record_school_partnership_recreated_event!(
+          author:, old_school_partnership:, new_school_partnership:
+        )
+
+        heading = "School partnership with LP and DP in 2025 at Old School was recreated at New School."
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          hash_including(
+            event_type: :school_partnership_recreated,
+            school_partnership: new_school_partnership,
+            school: new_school_partnership.school,
+            lead_provider: new_school_partnership.lead_provider,
+            delivery_partner: new_school_partnership.delivery_partner,
+            heading:,
+            happened_at: Time.zone.now,
+            metadata: hash_including(
+              old_school_partnership:,
+              old_school: old_school_partnership.school
+            ),
+            **author_params
+          )
+        )
+      end
+    end
+  end
+
   describe ".record_statement_adjustment_updated_event!" do
     let(:statement) { FactoryBot.create(:statement) }
     let(:statement_adjustment) { FactoryBot.create(:statement_adjustment, statement:) }
