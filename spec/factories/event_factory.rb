@@ -8,6 +8,9 @@ FactoryBot.define do
     author_type { :appropriate_body_user }
     event_type { Event::EVENT_TYPES.sample }
 
+    association :school
+    association :school_partnership
+
     trait(:dfe_staff_user) do
       association :user
       author_type { :dfe_staff_user }
@@ -27,6 +30,10 @@ FactoryBot.define do
 
     trait :with_ect_at_school_period do
       ect_at_school_period
+    end
+
+    trait :with_mentor_at_school_period do
+      mentor_at_school_period
     end
 
     trait :with_training_period do
