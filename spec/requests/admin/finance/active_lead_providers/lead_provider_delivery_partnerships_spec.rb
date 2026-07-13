@@ -1,4 +1,4 @@
-RSpec.describe "Admin finance active lead provider lead provider delivery partnerships", :enable_finance_contract_periods, type: :request do
+RSpec.describe "Admin finance active lead provider lead provider delivery partnerships", type: :request do
   let(:contract_period) { FactoryBot.create(:contract_period, :next) }
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:, lead_provider:) }

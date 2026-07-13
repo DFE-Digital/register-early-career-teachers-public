@@ -2,16 +2,7 @@ RSpec.describe "Admin finance milestones", type: :request do
   let(:contract_period) { FactoryBot.create(:contract_period, :next) }
   let(:schedule) { FactoryBot.create(:schedule, contract_period:) }
 
-  context "when disabled" do
-    include_context "sign in as finance DfE user"
-
-    it "returns 404 not found" do
-      get "/admin/finance/contract-periods/#{contract_period.id}/schedules/#{schedule.id}/milestones/new"
-      expect(response).to have_http_status(:not_found)
-    end
-  end
-
-  describe "GET /admin/finance/contract-periods/:contract_period_id/schedules/:schedule_id/milestones/new", :enable_finance_contract_periods do
+  describe "GET /admin/finance/contract-periods/:contract_period_id/schedules/:schedule_id/milestones/new" do
     let(:new_path) { new_admin_contract_period_schedule_milestone_path(contract_period, schedule) }
 
     context "when not authenticated" do
@@ -60,7 +51,7 @@ RSpec.describe "Admin finance milestones", type: :request do
     end
   end
 
-  describe "POST /admin/finance/contract-periods/:contract_period_id/schedules/:schedule_id/milestones/:id", :enable_finance_contract_periods do
+  describe "POST /admin/finance/contract-periods/:contract_period_id/schedules/:schedule_id/milestones/:id" do
     let(:index_path) { admin_contract_period_schedule_milestones_path(contract_period, schedule) }
 
     let(:start_date) { 1.day.after(contract_period.started_on) }
@@ -136,7 +127,7 @@ RSpec.describe "Admin finance milestones", type: :request do
     end
   end
 
-  describe "DELETE /admin/finance/contract-periods/:contract_period_id/schedules/:schedule_id/milestones/:id", :enable_finance_contract_periods do
+  describe "DELETE /admin/finance/contract-periods/:contract_period_id/schedules/:schedule_id/milestones/:id" do
     let!(:milestone) { FactoryBot.create(:milestone, schedule:) }
     let(:destroy_path) { admin_contract_period_schedule_milestone_path(contract_period, schedule, milestone) }
 

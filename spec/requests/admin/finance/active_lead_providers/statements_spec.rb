@@ -1,4 +1,4 @@
-RSpec.describe "Admin finance active lead provider statements", :enable_finance_contract_periods, type: :request do
+RSpec.describe "Admin finance active lead provider statements", type: :request do
   include ActiveJob::TestHelper
 
   let(:contract_period) { FactoryBot.create(:contract_period, :next) }
