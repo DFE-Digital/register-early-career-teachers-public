@@ -1384,7 +1384,15 @@ module Events
       lead_provider = active_lead_provider.lead_provider
       heading = "Band #{band_letter} deleted for #{lead_provider.name} for #{contract_period.year}"
 
-      new(event_type:, author:, heading:, contract_period:, lead_provider:, active_lead_provider:, happened_at: Time.zone.now).record_event!
+      new(
+        event_type:,
+        author:,
+        heading:,
+        active_lead_provider:,
+        lead_provider:,
+        contract_period:,
+        happened_at: Time.zone.now
+      ).record_event!
     end
 
   private

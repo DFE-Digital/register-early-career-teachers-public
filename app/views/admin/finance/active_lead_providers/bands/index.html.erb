@@ -19,9 +19,9 @@
     <% table.with_body do |body| %>
       <% @bands.each do |band| %>
         <% body.with_row do |row| %>
-          <% row.with_cell(text: label_for(band:)) %>
+          <% row.with_cell(text: band_label(band:)) %>
           <% row.with_cell(text: band.capacity) %>
-          <% row.with_cell(text: capacity_description_for(band:)) %>
+          <% row.with_cell(text: band_capacity_description(band:)) %>
           <% row.with_cell(numeric: true) do %>
             <div class="govuk-button-group govuk-!-margin-bottom-0">
               <% if band.editable? %>
@@ -30,16 +30,17 @@
                   edit_admin_contract_period_active_lead_provider_band_path(@active_lead_provider.contract_period, @active_lead_provider, band),
                   secondary: true,
                   no_visited_state: true,
-                  visually_hidden_suffix: label_for(band:),
+                  visually_hidden_suffix: band_label(band:),
                   class: "govuk-!-margin-bottom-0")
                 %>
               <% end %>
               <% if band.deletable? %>
-                <%= govuk_button_link_to(
+                <%= govuk_button_to(
                   "Delete",
-                  delete_admin_contract_period_active_lead_provider_band_path(@active_lead_provider.contract_period, @active_lead_provider, band),
+                  admin_contract_period_active_lead_provider_band_path(@active_lead_provider.contract_period, @active_lead_provider, band),
+                  method: :delete,
                   warning: true,
-                  visually_hidden_suffix: label_for(band:),
+                  visually_hidden_suffix: band_label(band:),
                   class: "govuk-!-margin-bottom-0")
                 %>
               <% end %>

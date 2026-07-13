@@ -5,17 +5,17 @@ describe BandsHelper, type: :helper do
   let!(:band_1) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:) }
   let!(:band_2) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:) }
 
-  describe "#label_for" do
+  describe "#band_label" do
     it "returns a label for the band using its letter" do
-      expect(label_for(band: band_1)).to eq "Band A"
-      expect(label_for(band: band_2)).to eq "Band B"
+      expect(band_label(band: band_1)).to eq "Band A"
+      expect(band_label(band: band_2)).to eq "Band B"
     end
   end
 
-  describe "#capacity_description_for" do
+  describe "#band_capacity_description" do
     it "returns a string with the capacity range for the band" do
-      expect(capacity_description_for(band: band_1)).to eq "1 - 100"
-      expect(capacity_description_for(band: band_2)).to eq "101 - 200"
+      expect(band_capacity_description(band: band_1)).to eq "1 - 100"
+      expect(band_capacity_description(band: band_2)).to eq "101 - 200"
     end
   end
 end

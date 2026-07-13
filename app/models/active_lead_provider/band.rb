@@ -30,17 +30,19 @@ class ActiveLeadProvider::Band < ApplicationRecord
               message: "Capacity must be a number greater than zero"
             }
 
-  validate :capacity_change_increases_value
+  validate :capacity_can_only_increase
+
+  validate :bands_can_be_added_and_removed, on: :create, unless: :allow_creation_when_contracted_or_after_contract_period_start
 
   # Callbacks
   before_update :abort_update, unless: :last?
   before_destroy :abort_destruction, unless: :last?
+
   before_validation :assign_allocation_order,
                     on: :create,
                     if: -> { active_lead_provider.present? }
 
-  before_create :abort_if_contracted_or_inside_contract_period, unless: :allow_creation_when_contracted_or_after_contract_period_start
-  before_destroy :abort_if_contracted_or_inside_contract_period
+  before_destroy :abort_unless_bands_can_be_added_and_removed
 
   delegate :bands_can_be_added_and_removed?, to: :active_lead_provider
 
@@ -98,14 +100,18 @@ private
     throw(:abort)
   end
 
-  def abort_if_contracted_or_inside_contract_period
+  def abort_unless_bands_can_be_added_and_removed
+    bands_can_be_added_and_removed
+    throw(:abort) if errors.any?
+  end
+
+  def bands_can_be_added_and_removed
     unless active_lead_provider.present? && bands_can_be_added_and_removed?
       errors.add(:base, "Bands cannot be added or deleted once a contract is in place or the contract period has begun")
-      throw(:abort)
     end
   end
 
-  def capacity_change_increases_value
+  def capacity_can_only_increase
     old_capacity, new_capacity = capacity_change_to_be_saved
 
     if old_capacity.present? && new_capacity.present? && new_capacity < old_capacity
