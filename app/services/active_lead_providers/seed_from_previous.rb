@@ -81,8 +81,6 @@ private
 
     active_lead_provider.contracts.create!(
       contract_type: previous_contract.contract_type,
-      ecf_contract_version: previous_contract.ecf_contract_version,
-      ecf_mentor_contract_version: previous_contract.ecf_mentor_contract_version,
       banded_fee_structure: build_banded_fee_structure(previous_contract.banded_fee_structure),
       flat_rate_fee_structure: build_flat_rate_fee_structure(previous_contract.flat_rate_fee_structure),
       statements: build_new_statements,
