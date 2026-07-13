@@ -1398,6 +1398,23 @@ module Events
       new(event_type:, author:, heading:, school:, happened_at:, metadata:).record_event!
     end
 
+    def self.record_school_merged_event!(author:, school:, predecessor_gias_school:, successor_gias_school:, happened_at: Time.zone.now)
+      event_type = :school_merged
+
+      predecessor_gias_school_name = Schools::Name.new(predecessor_gias_school.school).name_and_urn
+      successor_gias_school_name = Schools::Name.new(successor_gias_school.school).name_and_urn
+
+      heading = "#{predecessor_gias_school_name} was merged into #{successor_gias_school_name} in GIAS"
+      metadata = {
+        predecessor_gias_school_urn: predecessor_gias_school.urn,
+        predecessor_gias_school_name: predecessor_gias_school.name,
+        successor_gias_school_urn: successor_gias_school.urn,
+        successor_gias_school_name: successor_gias_school.name,
+      }
+
+      new(event_type:, author:, heading:, school:, happened_at:, metadata:).record_event!
+    end
+
     ## band events
 
     def self.record_active_lead_provider_band_added_event!(author:, band:)
