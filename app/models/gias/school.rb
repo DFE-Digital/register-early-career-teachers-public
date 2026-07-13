@@ -92,7 +92,18 @@ class GIAS::School < ApplicationRecord
       successor.open_status? &&
       successor.opened_on_or_before_today? &&
       successor.school_not_yet_opened? &&
-      school_replaced?
+      school_being_replaced?
+  end
+
+  def can_be_merged?
+    closed_status? &&
+      closed_on_or_before_today? &&
+      !school_merger_recorded? &&
+      successors.one? &&
+      successor.open_status? &&
+      successor.opened_on_or_before_today? &&
+      successor.school.present? &&
+      school_being_merged?
   end
 
   def school_not_yet_opened?
@@ -117,7 +128,15 @@ private
     Event.where(school:, event_type: :school_closed).exists?
   end
 
-  def school_replaced?
+  def school_merger_recorded?
+    Event.where(school:, event_type: :school_merged).exists?
+  end
+
+  def school_being_replaced?
     successor_links.where(link_type: GIAS::SchoolLink::SUCESSOR).exists?
+  end
+
+  def school_being_merged?
+    successor_links.where(link_type: GIAS::SchoolLink::SUCCESSOR_MERGED).exists?
   end
 end
