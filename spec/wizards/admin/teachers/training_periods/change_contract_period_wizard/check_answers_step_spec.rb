@@ -5,7 +5,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Che
     instance_double(
       Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Wizard,
       store:,
-      partnership_selection_required?: partnership_selection_required,
+      partnership_selection_step_required?: partnership_selection_step_required,
       training_period:,
       selected_contract_period:,
       selected_school_partnership:,
@@ -13,7 +13,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Che
     )
   end
   let(:store) { FactoryBot.build(:session_repository) }
-  let(:partnership_selection_required) { true }
+  let(:partnership_selection_step_required) { true }
   let(:today) { Date.new(2026, 2, 1) }
   let(:started_on) { today.next_month }
   let(:training_period) { instance_double(TrainingPeriod, started_on:) }
@@ -27,7 +27,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Che
     end
 
     context "when the partnership selection is skipped" do
-      let(:partnership_selection_required) { false }
+      let(:partnership_selection_step_required) { false }
 
       it "returns select contract period" do
         expect(step.previous_step).to eq(:select_contract_period)

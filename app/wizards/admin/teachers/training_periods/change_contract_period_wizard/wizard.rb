@@ -24,6 +24,7 @@ module Admin
 
             return steps << :check_answers if eoi_only?
             return steps << :no_partnerships unless school_partnerships.exists?
+            return steps << :check_answers if single_school_partnership
 
             steps << :select_partnership
             return steps unless selected_school_partnership_allowed?
@@ -62,6 +63,7 @@ module Admin
           end
 
           def selected_school_partnership
+            return single_school_partnership if single_school_partnership
             return if store.school_partnership_id.blank?
 
             @selected_school_partnership ||= school_partnerships.find_by(id: store.school_partnership_id)
@@ -117,8 +119,12 @@ module Admin
             training_period.expression_of_interest_lead_provider.name
           end
 
-          def partnership_selection_required?
+          def partnership_details_required?
             !eoi_only?
+          end
+
+          def partnership_selection_step_required?
+            partnership_details_required? && school_partnerships.many?
           end
 
         private
@@ -150,12 +156,19 @@ module Admin
             @current_active_period ||= ::TrainingPeriods::RelatedPeriods.new(training_period:).current_active_period
           end
 
+          def single_school_partnership
+            partnerships = school_partnerships.limit(2).to_a
+            partnerships.first if partnerships.one?
+          end
+
           def selected_contract_period_allowed?
             store.contract_period_year.present? &&
               contract_periods.where(year: store.contract_period_year).exists?
           end
 
           def selected_school_partnership_allowed?
+            return true if single_school_partnership.present?
+
             store.school_partnership_id.present? &&
               school_partnerships.where(id: store.school_partnership_id).exists?
           end

@@ -7,7 +7,8 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Sel
       store:,
       contract_periods:,
       school_partnerships:,
-      partnership_selection_required?: partnership_selection_required
+      partnership_details_required?: partnership_details_required,
+      partnership_selection_step_required?: partnership_selection_step_required
     )
   end
   let(:store) { FactoryBot.build(:session_repository) }
@@ -15,8 +16,10 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Sel
   let(:other_contract_period) { FactoryBot.create(:contract_period, year: 2027) }
   let(:contract_periods) { ContractPeriod.where(year: available_contract_period.year) }
   let(:available_school_partnership) { FactoryBot.create(:school_partnership) }
-  let(:school_partnerships) { SchoolPartnership.where(id: available_school_partnership.id) }
-  let(:partnership_selection_required) { true }
+  let(:other_school_partnership) { FactoryBot.create(:school_partnership) }
+  let(:school_partnerships) { SchoolPartnership.where(id: [available_school_partnership.id, other_school_partnership.id]) }
+  let(:partnership_details_required) { true }
+  let(:partnership_selection_step_required) { true }
   let(:contract_period_year) { available_contract_period.year }
 
   before do
@@ -81,16 +84,26 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Sel
       expect(step.next_step).to eq(:select_partnership)
     end
 
+    context "when only one school partnership is available" do
+      let(:school_partnerships) { SchoolPartnership.where(id: available_school_partnership.id) }
+      let(:partnership_selection_step_required) { false }
+
+      it "returns check answers" do
+        expect(step.next_step).to eq(:check_answers)
+      end
+    end
+
     context "when no school partnership is available" do
       let(:school_partnerships) { SchoolPartnership.none }
+      let(:partnership_selection_step_required) { false }
 
       it "returns no partnerships" do
         expect(step.next_step).to eq(:no_partnerships)
       end
     end
 
-    context "when partnership selection is not required" do
-      let(:partnership_selection_required) { false }
+    context "when partnership details are not required" do
+      let(:partnership_details_required) { false }
 
       it "returns check answers" do
         expect(step.next_step).to eq(:check_answers)
