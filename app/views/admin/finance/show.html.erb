@@ -31,21 +31,19 @@
       Search for declarations by declaration ID.
     </p>
 
-    <% if Rails.application.config.enable_finance_contract_periods %>
-      <%= govuk_section_break(visible:true, size: "l") %>
+    <%= govuk_section_break(visible:true, size: "l") %>
 
-      <h2 class="govuk-heading-m">
-        <%= govuk_link_to(
-              "Contract periods",
-              admin_contract_periods_path,
-              no_visited_state: true,
-              no_underline: true
-            ) %>
-      </h2>
+    <h2 class="govuk-heading-m">
+      <%= govuk_link_to(
+            "Contract periods",
+            admin_contract_periods_path,
+            no_visited_state: true,
+            no_underline: true
+          ) %>
+    </h2>
 
-      <p class="govuk-body">
-        View and manage contract periods.
-      </p>
-    <% end %>
+    <p class="govuk-body">
+      View and manage contract periods.
+    </p>
   </div>
 </div>

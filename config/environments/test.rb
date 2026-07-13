@@ -75,7 +75,6 @@ Rails.application.configure do
   config.enable_fake_trs_api = false
   config.dfe_sign_in_enabled = true
   config.enable_test_guidance = false
-  config.enable_finance_contract_periods = false
   config.active_job.queue_adapter = :test
 
   # Custom config

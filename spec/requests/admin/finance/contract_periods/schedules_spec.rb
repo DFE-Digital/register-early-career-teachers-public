@@ -2,16 +2,7 @@ RSpec.describe "Admin finance schedules", type: :request do
   let(:contract_period) { FactoryBot.create(:contract_period, :next) }
   let(:index_path) { admin_contract_period_schedules_path(contract_period) }
 
-  context "when disabled" do
-    include_context "sign in as finance DfE user"
-
-    it "returns 404 not found" do
-      get index_path
-      expect(response).to have_http_status(:not_found)
-    end
-  end
-
-  describe "GET /admin/finance/contract-periods/:contract_period_id/schedules", :enable_finance_contract_periods do
+  describe "GET /admin/finance/contract-periods/:contract_period_id/schedules" do
     context "when not authenticated" do
       it "redirects to sign in page" do
         get index_path
@@ -79,7 +70,7 @@ RSpec.describe "Admin finance schedules", type: :request do
     end
   end
 
-  describe "GET /admin/finance/contract-periods/:contract_period_id/schedules/new", :enable_finance_contract_periods do
+  describe "GET /admin/finance/contract-periods/:contract_period_id/schedules/new" do
     let(:new_path) { new_admin_contract_period_schedule_path(contract_period) }
 
     context "when not authenticated" do
@@ -128,7 +119,7 @@ RSpec.describe "Admin finance schedules", type: :request do
     end
   end
 
-  describe "GET /admin/finance/contract-periods/:contract_period_id/schedules/:id", :enable_finance_contract_periods do
+  describe "GET /admin/finance/contract-periods/:contract_period_id/schedules/:id" do
     let(:schedule) { FactoryBot.create(:schedule, contract_period:) }
     let(:show_path) { admin_contract_period_schedule_path(contract_period, schedule) }
 
@@ -167,7 +158,7 @@ RSpec.describe "Admin finance schedules", type: :request do
     end
   end
 
-  describe "POST /admin/finance/contract-periods/:contract_period_id/schedules/:id", :enable_finance_contract_periods do
+  describe "POST /admin/finance/contract-periods/:contract_period_id/schedules/:id" do
     let(:params) do
       { schedule: { identifier: "ecf-standard-january" } }
     end
@@ -231,7 +222,7 @@ RSpec.describe "Admin finance schedules", type: :request do
     end
   end
 
-  describe "DELETE /admin/finance/contract-periods/:contract_period_id/schedules/:id", :enable_finance_contract_periods do
+  describe "DELETE /admin/finance/contract-periods/:contract_period_id/schedules/:id" do
     let!(:schedule) { FactoryBot.create(:schedule, contract_period:, identifier: "ecf-standard-january") }
     let(:destroy_path) { admin_contract_period_schedule_path(contract_period, schedule) }
 
