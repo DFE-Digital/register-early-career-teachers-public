@@ -2,7 +2,10 @@ describe ActiveLeadProviders::CascadeDelete do
   subject(:service) { described_class.new(active_lead_provider:, author:) }
 
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
-  let!(:contract) { FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider:) }
+  let!(:contract) do
+    FactoryBot.create(:contract, :for_ittecf_ectp, :with_bands_and_band_terms,
+                      active_lead_provider:)
+  end
   let(:flat_rate_fee_structure) { contract.flat_rate_fee_structure }
   let(:banded_fee_structure) { contract.banded_fee_structure }
   let!(:statement) { FactoryBot.create(:statement, contract:, active_lead_provider:) }
@@ -19,6 +22,7 @@ describe ActiveLeadProviders::CascadeDelete do
     flat_rate_fee_structure_id = flat_rate_fee_structure.id
     banded_fee_structure_id = banded_fee_structure.id
     band_term_ids = banded_fee_structure.band_terms.pluck(:id)
+    band_ids = active_lead_provider.bands.pluck(:id)
     delivery_partner = lead_provider_delivery_partnership.delivery_partner
     lead_provider = active_lead_provider.lead_provider
     contract_period = active_lead_provider.contract_period
@@ -30,6 +34,7 @@ describe ActiveLeadProviders::CascadeDelete do
     expect(Contract::FlatRateFeeStructure).not_to exist(flat_rate_fee_structure_id)
     expect(Contract::BandedFeeStructure).not_to exist(banded_fee_structure_id)
     expect(Contract::BandedFeeStructure::BandTerm.where(id: band_term_ids)).not_to exist
+    expect(ActiveLeadProvider::Band.where(id: band_ids)).not_to exist
     expect(Statement).not_to exist(statement.id)
     expect(Statement::Adjustment).not_to exist(statement_adjustment.id)
     expect(LeadProviderDeliveryPartnership).not_to exist(lead_provider_delivery_partnership.id)
