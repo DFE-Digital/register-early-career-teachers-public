@@ -95,6 +95,9 @@ class Event < ApplicationRecord
     schedule_deleted
     milestone_added
     milestone_deleted
+    contract_created
+    contract_updated
+    contract_deleted
   ].freeze
 
   belongs_to :author, class_name: "User"

@@ -3120,4 +3120,82 @@ RSpec.describe Events::Record do
       end
     end
   end
+
+  describe "contracts" do
+    let(:lead_provider) do
+      FactoryBot.create(:lead_provider,
+                        name: "XYZ")
+    end
+    let(:active_lead_provider) do
+      FactoryBot.create(:active_lead_provider,
+                        lead_provider:)
+    end
+    let(:contract) do
+      FactoryBot.create(:contract, :for_ittecf_ectp, :with_bands_and_band_terms,
+                        active_lead_provider:)
+    end
+
+    describe ".record_contract_created_event!" do
+      it "queues a RecordEventJob with the correct values" do
+        freeze_time do
+          Events::Record.record_contract_created_event!(author:, contract:)
+
+          expect(RecordEventJob).to have_received(:perform_later).with(
+            active_lead_provider:,
+            lead_provider:,
+            heading: "Contract created: ITTECF ECTP No statements for XYZ",
+            event_type: :contract_created,
+            happened_at: Time.zone.now,
+            **author_params
+          )
+        end
+      end
+    end
+
+    describe ".record_contract_updated_event!" do
+      let(:modifications) do
+        {
+          "ecf_contract_version" => %w[1 2],
+          "banded_recruitment_target" => [1000, 2000],
+        }
+      end
+
+      it "queues a RecordEventJob with the correct values" do
+        freeze_time do
+          Events::Record.record_contract_updated_event!(author:, contract:, modifications:)
+
+          expect(RecordEventJob).to have_received(:perform_later).with(
+            active_lead_provider:,
+            lead_provider:,
+            heading: "Contract updated: ITTECF ECTP No statements for XYZ",
+            event_type: :contract_updated,
+            happened_at: Time.zone.now,
+            modifications: [
+              "ECF contract version changed from '1' to '2'",
+              "Banded recruitment target changed from '1000' to '2000'",
+            ],
+            metadata: modifications,
+            **author_params
+          )
+        end
+      end
+    end
+
+    describe ".record_contract_deleted_event!" do
+      it "queues a RecordEventJob with the correct values" do
+        freeze_time do
+          Events::Record.record_contract_deleted_event!(author:, contract:, active_lead_provider:)
+
+          expect(RecordEventJob).to have_received(:perform_later).with(
+            active_lead_provider:,
+            lead_provider:,
+            heading: "Contract deleted: ITTECF ECTP No statements for XYZ",
+            event_type: :contract_deleted,
+            happened_at: Time.zone.now,
+            **author_params
+          )
+        end
+      end
+    end
+  end
 end

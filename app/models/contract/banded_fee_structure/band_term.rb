@@ -35,6 +35,22 @@ class Contract::BandedFeeStructure::BandTerm < ApplicationRecord
 
   delegate :capacity, :min_declarations, :max_declarations, :letter, to: :band
 
+  def output_fee_percentage
+    (output_fee_ratio * 100).to_i if output_fee_ratio
+  end
+
+  def output_fee_percentage=(val)
+    self.output_fee_ratio = val.present? ? val.to_d / 100 : nil
+  end
+
+  def service_fee_percentage
+    (service_fee_ratio * 100).to_i if service_fee_ratio
+  end
+
+  def service_fee_percentage=(val)
+    self.service_fee_ratio = val.present? ? val.to_d / 100 : nil
+  end
+
 private
 
   def band_belongs_to_contracts_active_lead_provider

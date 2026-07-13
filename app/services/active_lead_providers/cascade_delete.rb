@@ -24,6 +24,7 @@ module ActiveLeadProviders
         destroy_statements!
         destroy_contracts!
         destroy_lead_provider_delivery_partnerships!
+        destroy_active_lead_provider_bands!
         active_lead_provider.destroy!
       end
 
@@ -54,6 +55,16 @@ module ActiveLeadProviders
 
     def destroy_contracts!
       active_lead_provider.contracts.destroy_all
+    end
+
+    # Bands enforce that only the last band can be destroyed.
+    # During cascade delete we remove them from last to first,
+    # resetting the association after each so the next band is now last.
+    def destroy_active_lead_provider_bands!
+      active_lead_provider.bands.reverse_each do |band|
+        band.destroy!
+        active_lead_provider.bands.reset
+      end
     end
 
     def destroy_lead_provider_delivery_partnerships!

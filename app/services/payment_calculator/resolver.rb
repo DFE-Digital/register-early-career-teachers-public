@@ -9,7 +9,7 @@ module PaymentCalculator
     attribute :contract
     attribute :statement
 
-    # @return [Array<PaymentCalculator::FlatRate, PaymentCalculator::Banded>]
+    # @return [Array<PaymentCalculator::Banded, PaymentCalculator::FlatRate>] in canonical display order
     def calculators
       raise ArgumentError, "statement must be provided" if statement.blank?
 
@@ -19,16 +19,16 @@ module PaymentCalculator
       case resolved_contract.contract_type
       when "ittecf_ectp"
         [
+          Banded.new(
+            statement:,
+            banded_fee_structure: resolved_contract.banded_fee_structure,
+            declaration_selector: ->(declarations) { declarations.ects }
+          ),
           FlatRate.new(
             statement:,
             flat_rate_fee_structure: resolved_contract.flat_rate_fee_structure,
             declaration_selector: ->(declarations) { declarations.mentors.with_declaration_types(%i[started completed]) },
             fee_proportions: { started: 0.5, completed: 0.5 }
-          ),
-          Banded.new(
-            statement:,
-            banded_fee_structure: resolved_contract.banded_fee_structure,
-            declaration_selector: ->(declarations) { declarations.ects }
           )
         ]
       when "ecf"

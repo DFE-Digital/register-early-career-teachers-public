@@ -15,6 +15,9 @@ class Contract < ApplicationRecord
   has_one :banded_fee_structure, class_name: "Contract::BandedFeeStructure", inverse_of: :contract, dependent: :destroy
   has_many :statements, inverse_of: :contract
 
+  # Scopes
+  scope :most_recent_first, -> { order(created_at: :desc) }
+
   # Validations
   validates :active_lead_provider, presence: { message: "An active lead provider must be set" }
   validates :contract_type,
@@ -36,6 +39,9 @@ class Contract < ApplicationRecord
     validates :banded_fee_structure, presence: { message: "Banded fee structure must be provided for ECF contracts" }
     validates :ecf_contract_version, presence: { message: "ECF contract version must be provided for ECF contracts" }
   end
+
+  accepts_nested_attributes_for :banded_fee_structure
+  accepts_nested_attributes_for :flat_rate_fee_structure, reject_if: :all_blank
 
   delegate :editable?, to: :active_lead_provider
 

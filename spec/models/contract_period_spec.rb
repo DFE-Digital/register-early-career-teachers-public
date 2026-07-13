@@ -310,30 +310,58 @@ describe ContractPeriod do
   end
 
   describe "#started_on_or_before_today?" do
-    let(:today) { Time.zone.today }
+    subject { contract_period.started_on_or_before_today? }
+
+    let(:contract_period) do
+      FactoryBot.create(:contract_period,
+                        started_on:,
+                        finished_on: 2.months.from_now)
+    end
 
     context "when contract period started in the past" do
-      let(:contract_period) { FactoryBot.create(:contract_period, started_on: 1.month.ago, finished_on: 1.month.from_now) }
+      let(:started_on) { 1.month.ago }
 
-      it "returns true" do
-        expect(contract_period.started_on_or_before_today?).to be true
-      end
+      it { is_expected.to be true }
     end
 
     context "when contract period starts today" do
-      let(:contract_period) { FactoryBot.create(:contract_period, started_on: today, finished_on: 1.month.from_now) }
+      let(:started_on) { Time.zone.today }
 
-      it "returns true" do
-        expect(contract_period.started_on_or_before_today?).to be true
-      end
+      it { is_expected.to be true }
     end
 
     context "when contract period starts in the future" do
-      let(:contract_period) { FactoryBot.create(:contract_period, started_on: 1.month.from_now, finished_on: 2.months.from_now) }
+      let(:started_on) { 1.month.from_now }
 
-      it "returns false" do
-        expect(contract_period.started_on_or_before_today?).to be false
-      end
+      it { is_expected.to be false }
+    end
+  end
+
+  describe "#finished_on_before_today?" do
+    subject { contract_period.finished_on_before_today? }
+
+    let(:contract_period) do
+      FactoryBot.create(:contract_period,
+                        started_on: 2.weeks.ago,
+                        finished_on:)
+    end
+
+    context "when contract period finished in the past" do
+      let(:finished_on) { 1.week.ago }
+
+      it { is_expected.to be true }
+    end
+
+    context "when contract period finishes today" do
+      let(:finished_on) { Time.zone.today }
+
+      it { is_expected.to be false }
+    end
+
+    context "when contract period finishes in the future" do
+      let(:finished_on) { 1.week.from_now }
+
+      it { is_expected.to be false }
     end
   end
 
