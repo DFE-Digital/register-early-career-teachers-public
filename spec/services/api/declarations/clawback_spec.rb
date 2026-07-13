@@ -43,7 +43,9 @@ RSpec.describe API::Declarations::Clawback, type: :model do
 
     before do
       payment_statement = declaration.payment_statement
-      payment_statement.update!(deadline_date: Date.yesterday, payment_date: Date.tomorrow)
+      # Update columns to bypass validation that ensures deadline_date
+      # is only ever set to a future date.
+      payment_statement.update_columns(deadline_date: Date.yesterday, payment_date: Date.tomorrow)
       Statement.where("deadline_date > ?", payment_statement.deadline_date).destroy_all
     end
 
