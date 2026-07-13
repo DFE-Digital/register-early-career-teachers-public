@@ -170,4 +170,35 @@ describe ActiveLeadProvider do
       end
     end
   end
+
+  describe "#bands_can_be_added_and_removed?" do
+    subject { active_lead_provider.bands_can_be_added_and_removed? }
+
+    let(:contract_period) { FactoryBot.create(:contract_period, :next) }
+    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
+
+    context "when there are no contracts" do
+      context "and the contract period has not started" do
+        it { is_expected.to be true }
+      end
+
+      context "and the contract period has started" do
+        it { travel_to(contract_period.started_on) { is_expected.to be false } }
+      end
+    end
+
+    context "when there are contracts" do
+      before do
+        FactoryBot.create(:contract, active_lead_provider:)
+      end
+
+      context "and the contract period has not started" do
+        it { is_expected.to be false }
+      end
+
+      context "and the contract period has started" do
+        it { travel_to(contract_period.started_on) { is_expected.to be false } }
+      end
+    end
+  end
 end

@@ -1,5 +1,5 @@
 <%
-  page_data(title: "Change capacity of #{label_for(band: @band)}",
+  page_data(title: "Change capacity of #{band_label(band: @band)}",
             breadcrumbs: @breadcrumbs,
             error: @band.errors.present?,
             backlink_href: admin_contract_period_active_lead_provider_bands_path(@active_lead_provider.contract_period, @active_lead_provider))

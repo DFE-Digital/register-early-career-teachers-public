@@ -34,20 +34,20 @@ RSpec.describe "admin/finance/active_lead_providers/bands/index.html.erb" do
   end
 
   context "when the contract period is editable" do
-    it "shows a delete link and an add band link" do
+    it "shows a delete button and an add band link" do
       render
 
-      expect(rendered).to have_link("Delete Band B")
+      expect(rendered).to have_button("Delete Band B")
       expect(rendered).to have_link("Add band")
     end
   end
 
   context "when the contract period is not editable" do
-    it "does not show delete or add band links" do
+    it "does not show delete button or add band link" do
       travel_to contract_period.started_on do
         render
 
-        expect(rendered).not_to have_link("Delete Band B")
+        expect(rendered).not_to have_button("Delete Band B")
         expect(rendered).not_to have_link("Add band")
       end
     end

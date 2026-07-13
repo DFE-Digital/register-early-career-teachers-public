@@ -3,8 +3,10 @@ module Admin::Finance::ActiveLeadProviders
     include BandsHelper
 
     before_action :set_active_lead_provider
-    before_action :set_band, only: %i[edit update delete]
-    before_action :redirect_if_contracted_or_inside_contract_period, only: %i[create delete]
+    before_action :set_band, only: %i[edit update destroy]
+    before_action :redirect_unless_bands_can_be_added_and_removed, only: %i[create destroy]
+    before_action :redirect_unless_band_is_editable, only: %i[edit update]
+    before_action :redirect_unless_band_is_deletable, only: %i[destroy]
 
     def index
       set_breadcrumbs
@@ -19,7 +21,7 @@ module Admin::Finance::ActiveLeadProviders
     def create
       @band = ActiveLeadProviders::Bands::Create.new(author: current_user, active_lead_provider: @active_lead_provider, capacity: band_params[:capacity]).create!
 
-      redirect_to bands_path, notice: "#{label_for(band: @band)} added"
+      redirect_to bands_path, notice: "#{band_label(band: @band)} added"
     rescue ActiveRecord::RecordInvalid => e
       @band = e.record
       set_breadcrumbs
@@ -27,7 +29,7 @@ module Admin::Finance::ActiveLeadProviders
     end
 
     def edit
-      set_breadcrumbs(label_for(band: @band) => "#")
+      set_breadcrumbs(band_label(band: @band) => "#")
     end
 
     def update
@@ -39,12 +41,12 @@ module Admin::Finance::ActiveLeadProviders
 
       redirect_to bands_path, notice: "Band updated"
     rescue ActiveRecord::RecordInvalid
-      set_breadcrumbs(label_for(band: @band) => "#")
+      set_breadcrumbs(band_label(band: @band) => "#")
       render :edit, status: :unprocessable_content
     end
 
-    def delete
-      label = label_for(band: @band)
+    def destroy
+      label = band_label(band: @band)
       ActiveLeadProviders::Bands::Destroy.new(author: current_user, band: @band).destroy!
 
       redirect_to bands_path, notice: "#{label} deleted"
@@ -83,11 +85,29 @@ module Admin::Finance::ActiveLeadProviders
       @contract_period ||= @active_lead_provider.contract_period
     end
 
-    def redirect_if_contracted_or_inside_contract_period
+    def redirect_unless_bands_can_be_added_and_removed
       unless @active_lead_provider.bands_can_be_added_and_removed?
         redirect_to admin_contract_period_active_lead_provider_bands_path(contract_period, @active_lead_provider),
                     flash: {
                       error: "Bands cannot be added or removed once contracts have been added or the contract period has started"
+                    }
+      end
+    end
+
+    def redirect_unless_band_is_editable
+      unless @band.editable?
+        redirect_to admin_contract_period_active_lead_provider_bands_path(contract_period, @active_lead_provider),
+                    flash: {
+                      error: "Only the last band can be modified"
+                    }
+      end
+    end
+
+    def redirect_unless_band_is_deletable
+      unless @band.deletable?
+        redirect_to admin_contract_period_active_lead_provider_bands_path(contract_period, @active_lead_provider),
+                    flash: {
+                      error: "Only the last band can be deleted"
                     }
       end
     end

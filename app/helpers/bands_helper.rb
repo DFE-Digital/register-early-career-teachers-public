@@ -1,9 +1,9 @@
 module BandsHelper
-  def label_for(band:)
+  def band_label(band:)
     "Band #{band.letter}"
   end
 
-  def capacity_description_for(band:)
+  def band_capacity_description(band:)
     "#{band.min_declarations} - #{band.max_declarations}"
   end
 end
