@@ -63,7 +63,15 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Wiz
     context "when an available contract period has been selected" do
       before { store.contract_period_year = target_contract_period.year }
 
-      it { is_expected.to eq(%i[select_contract_period select_partnership]) }
+      it { is_expected.to eq(%i[select_contract_period check_answers]) }
+
+      context "when there are multiple partnerships for the school and contract period" do
+        before do
+          FactoryBot.create(:school_partnership, :for_year, year: target_contract_period.year, school:)
+        end
+
+        it { is_expected.to eq(%i[select_contract_period select_partnership]) }
+      end
     end
 
     context "when an available contract period has no partnerships for the school" do
@@ -76,6 +84,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Wiz
 
     context "when an available contract period and partnership have been selected" do
       before do
+        FactoryBot.create(:school_partnership, :for_year, year: target_contract_period.year, school:)
         store.contract_period_year = target_contract_period.year
         store.school_partnership_id = target_school_partnership.id
       end
@@ -112,6 +121,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Wiz
 
     context "when an unavailable partnership has been selected" do
       before do
+        FactoryBot.create(:school_partnership, :for_year, year: target_contract_period.year, school:)
         store.contract_period_year = target_contract_period.year
         store.school_partnership_id = school_partnership.id
       end
@@ -138,6 +148,24 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Wiz
       expect(Admin::Teachers::TrainingPeriods::ChangeContractPeriod::AvailableContractPeriods)
         .to have_received(:new)
         .with(training_period: wizard.training_period)
+    end
+  end
+
+  describe "#selected_school_partnership" do
+    before { store.contract_period_year = target_contract_period.year }
+
+    it "infers the selected partnership when there is only one available partnership" do
+      expect(wizard.selected_school_partnership).to eq(target_school_partnership)
+    end
+
+    context "when there are multiple partnerships" do
+      before do
+        FactoryBot.create(:school_partnership, :for_year, year: target_contract_period.year, school:)
+      end
+
+      it "returns nil without a stored partnership selection" do
+        expect(wizard.selected_school_partnership).to be_nil
+      end
     end
   end
 

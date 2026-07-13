@@ -20,7 +20,7 @@
           <%= row.with_value { @wizard.selected_contract_period.year.to_s } %>
         <% end %>
 
-        <% if @wizard.partnership_selection_required? %>
+        <% if @wizard.partnership_details_required? %>
           <%= list.with_row do |row| %>
             <%= row.with_key { "Partnership" } %>
             <%= row.with_value { @wizard.selected_partnership_name } %>
