@@ -39,7 +39,7 @@ class ActiveLeadProvider::Band < ApplicationRecord
   def min_declarations
     return nil unless has_allocation_order?
 
-    active_lead_provider.bands.where("allocation_order < ?", allocation_order).sum(:capacity) + 1
+    prior_capacity + 1
   end
 
   # @return [Integer, nil]
@@ -85,5 +85,18 @@ private
   # @return [Boolean]
   def last?
     active_lead_provider.bands.last == self
+  end
+
+  # @return [Integer]
+  def prior_capacity
+    prior_bands.sum(&:capacity)
+  end
+
+  def prior_bands
+    if active_lead_provider.association(:bands).loaded?
+      active_lead_provider.bands.select { |band| band.allocation_order < allocation_order }
+    else
+      active_lead_provider.bands.where("allocation_order < ?", allocation_order)
+    end
   end
 end

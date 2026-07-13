@@ -37,14 +37,12 @@ RSpec.configure do |config|
   config.infer_spec_type_from_file_location!
   config.filter_rails_from_backtrace!
 
-  # Ensure registration window (i.e contract periods) are always open
-  config.before do
-    allow(Schools::RegistrationWindow).to receive(:closed?).and_return(false)
-  end
-
   config.before do
     # RIAB: new data model
     allow(Rails.application.config).to receive(:enable_teaching_school_hubs).and_return(true)
+
+    # Ensure registration window (i.e contract periods) are always open
+    allow(Schools::RegistrationWindow).to receive(:closed?).and_return(false)
 
     # Banners
     allow(Rails.application.config).to receive_messages(

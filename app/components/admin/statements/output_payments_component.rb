@@ -17,9 +17,9 @@ module Admin
       delegate :contract, to: :statement, private: true
 
       def calculators
-        @calculators ||= PaymentCalculator::Resolver.new(statement:, contract:)
+        @calculators ||= PaymentCalculator::Resolver
+          .new(statement:, contract:)
           .calculators
-          .sort_by { it.banded? ? 0 : 1 }
           .map { presenter_for(it) }
       end
 

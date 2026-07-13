@@ -15,7 +15,7 @@ RSpec.describe Contract::BandedFeeStructure::BandTerm, type: :model do
     it { is_expected.to validate_numericality_of(:service_fee_ratio).is_in(0..1).with_message("Service fee ratio must be between 0 and 1") }
 
     describe "output_fee_ratio + service_fee_ratio" do
-      subject(:term) do
+      subject(:band_term) do
         FactoryBot.build_stubbed(:contract_banded_fee_structure_band_term,
                                  output_fee_ratio:,
                                  service_fee_ratio:)
@@ -94,6 +94,40 @@ RSpec.describe Contract::BandedFeeStructure::BandTerm, type: :model do
 
     it "#capacity" do
       expect(band_term.capacity).to eq(band_term.band.capacity)
+    end
+  end
+
+  describe "percentages" do
+    subject(:band_term) do
+      FactoryBot.build(:contract_banded_fee_structure_band_term,
+                       output_fee_ratio: 0.123,
+                       service_fee_ratio: 0.456)
+    end
+
+    describe "#output_fee_percentage" do
+      it "converts and rounds output_fee_ratio" do
+        expect(band_term.output_fee_percentage).to eq(12)
+      end
+    end
+
+    describe "#output_fee_percentage=" do
+      it "overrides and rounds output_fee_ratio" do
+        band_term.output_fee_percentage = 34.56
+        expect(band_term.output_fee_ratio.to_f).to eq(0.35)
+      end
+    end
+
+    describe "#service_fee_percentage" do
+      it "converts and rounds service_fee_ratio" do
+        expect(band_term.service_fee_percentage).to eq(46)
+      end
+    end
+
+    describe "#service_fee_percentage=" do
+      it "overrides and rounds service_fee_ratio" do
+        band_term.service_fee_percentage = 67.89
+        expect(band_term.service_fee_ratio.to_f).to eq(0.68)
+      end
     end
   end
 end

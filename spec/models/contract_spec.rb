@@ -19,6 +19,28 @@ describe Contract do
     it { is_expected.to have_many(:statements).inverse_of(:contract) }
   end
 
+  describe "scopes" do
+    describe ".most_recent_first" do
+      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+      let(:other_active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+      let!(:contract_1) { FactoryBot.create(:contract, active_lead_provider:, created_at: 4.days.ago) }
+      let!(:contract_2) { FactoryBot.create(:contract, active_lead_provider:, created_at: 3.days.ago) }
+      let!(:contract_3) { FactoryBot.create(:contract, active_lead_provider:, created_at: 2.days.ago) }
+      let!(:contract_4) { FactoryBot.create(:contract, active_lead_provider: other_active_lead_provider, created_at: 1.day.ago) }
+
+      let(:result) { described_class.most_recent_first }
+
+      it "orders contract by created_at in descending order" do
+        expect(result.to_a).to eq([contract_4, contract_3, contract_2, contract_1])
+      end
+
+      it "returns contract with most recently created first" do
+        expect(result.first).to eq(contract_4)
+        expect(result.last).to eq(contract_1)
+      end
+    end
+  end
+
   describe "validations" do
     subject { FactoryBot.create(:contract) }
 
