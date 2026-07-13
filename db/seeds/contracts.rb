@@ -2,7 +2,9 @@ def describe_contracts(active_lead_provider, contracts)
   colour = active_lead_provider.contract_period.mentor_funding_enabled? ? :magenta : :cyan
   contracts_summary = contracts
     .group_by(&:contract_type)
-    .map { |type, contracts| "#{contracts.size} #{type.to_s.humanize.upcase}" }
+    .map { |type, contracts|
+      "#{contracts.size} #{type.to_s.humanize.upcase} with #{contracts.first.banded_fee_structure.band_terms.size} band terms"
+    }
     .join(", ")
   print_seed_info("Contracts for #{active_lead_provider.contract_period.year}: #{contracts_summary}", indent: 2, colour:)
 end
