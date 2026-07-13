@@ -3275,6 +3275,35 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe ".record_school_merged_event!" do
+    let(:predecessor_gias_school) { FactoryBot.create(:gias_school, :with_school, name: "Monsters High School", urn: "123456") }
+    let(:successor_gias_school) { FactoryBot.create(:gias_school, :with_school, name: "Abigail Hardscrabble School For Girls", urn: "654321") }
+    let(:school) { successor_gias_school.school }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        metadata = {
+          predecessor_gias_school_name: "Monsters High School",
+          predecessor_gias_school_urn: 123_456,
+          successor_gias_school_name: "Abigail Hardscrabble School For Girls",
+          successor_gias_school_urn: 654_321
+
+        }
+
+        Events::Record.record_school_merged_event!(author:, school:, predecessor_gias_school:, successor_gias_school:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          school:,
+          heading: "Monsters High School (123456) was merged into Abigail Hardscrabble School For Girls (654321) in GIAS",
+          event_type: :school_merged,
+          happened_at: Time.zone.now,
+          metadata:,
+          **author_params
+        )
+      end
+    end
+  end
+
   describe "contracts" do
     let(:lead_provider) do
       FactoryBot.create(:lead_provider,
