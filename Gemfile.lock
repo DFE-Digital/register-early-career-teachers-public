@@ -304,7 +304,7 @@ GEM
       html-attributes-utils (~> 1.0.0, >= 1.0.0)
       pagy (>= 6, < 10)
       view_component (>= 4.9, < 4.13)
-    govuk_design_system_formbuilder (6.3.0)
+    govuk_design_system_formbuilder (6.3.1)
       actionview (>= 7.2)
       activemodel (>= 7.2)
       activesupport (>= 7.2)
@@ -318,16 +318,16 @@ GEM
     hashdiff (1.2.1)
     hashie (5.1.0)
       logger
-    herb (0.10.1-aarch64-linux-gnu)
-    herb (0.10.1-aarch64-linux-musl)
-    herb (0.10.1-arm-linux-gnu)
-    herb (0.10.1-arm-linux-musl)
-    herb (0.10.1-arm64-darwin)
-    herb (0.10.1-x86-linux-gnu)
-    herb (0.10.1-x86-linux-musl)
-    herb (0.10.1-x86_64-darwin)
-    herb (0.10.1-x86_64-linux-gnu)
-    herb (0.10.1-x86_64-linux-musl)
+    herb (0.10.2-aarch64-linux-gnu)
+    herb (0.10.2-aarch64-linux-musl)
+    herb (0.10.2-arm-linux-gnu)
+    herb (0.10.2-arm-linux-musl)
+    herb (0.10.2-arm64-darwin)
+    herb (0.10.2-x86-linux-gnu)
+    herb (0.10.2-x86-linux-musl)
+    herb (0.10.2-x86_64-darwin)
+    herb (0.10.2-x86_64-linux-gnu)
+    herb (0.10.2-x86_64-linux-musl)
     hotwire-rails (0.1.3)
       rails (>= 6.0.0)
       stimulus-rails
@@ -365,7 +365,7 @@ GEM
       reline (>= 0.4.2)
     jsbundling-rails (1.3.1)
       railties (>= 6.0.0)
-    json (2.20.0)
+    json (2.21.1)
     json-jwt (1.16.6)
       activesupport (>= 4.2)
       aes_key_wrap
@@ -901,7 +901,7 @@ DEPENDENCIES
   faker
   faraday
   govuk-components (= 6.4.0)
-  govuk_design_system_formbuilder (= 6.3.0)
+  govuk_design_system_formbuilder (= 6.3.1)
   govuk_markdown
   herb
   hotwire-rails
