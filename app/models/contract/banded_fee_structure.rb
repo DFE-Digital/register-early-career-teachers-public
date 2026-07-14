@@ -14,6 +14,8 @@ class Contract::BandedFeeStructure < ApplicationRecord
            through: :band_terms,
            source: :band
 
+  accepts_nested_attributes_for :band_terms, allow_destroy: true
+
   # Validations
   validates :contract_id, uniqueness: { message: "Contract with the same banded fee structure already exist" }
 

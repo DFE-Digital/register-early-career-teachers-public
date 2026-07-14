@@ -83,7 +83,11 @@ RSpec.describe Admin::Statements::OutputPaymentsComponent, type: :component do
   end
 
   context "for `ecf` contracts" do
-    let(:contract) { FactoryBot.create(:contract, :for_ecf, banded_fee_structure:) }
+    let(:contract) do
+      FactoryBot.create(:contract, :for_ecf,
+                        active_lead_provider:,
+                        banded_fee_structure:)
+    end
 
     it "renders one table of output payments" do
       expect(page).to have_css("table", count: 1)
@@ -116,7 +120,11 @@ RSpec.describe Admin::Statements::OutputPaymentsComponent, type: :component do
   end
 
   context "for `ittecf_ectp` contracts" do
-    let(:contract) { FactoryBot.create(:contract, :for_ittecf_ectp, banded_fee_structure:) }
+    let(:contract) do
+      FactoryBot.create(:contract, :for_ittecf_ectp,
+                        active_lead_provider:,
+                        banded_fee_structure:)
+    end
 
     it "renders the ECTs output payment table with all declaration types" do
       expect(page).to have_statement_table(
@@ -160,7 +168,12 @@ RSpec.describe Admin::Statements::OutputPaymentsComponent, type: :component do
   end
 
   context "for service fee statements" do
-    let(:contract) { FactoryBot.create(:contract, :for_ecf, banded_fee_structure:) }
+    let(:contract) do
+      FactoryBot.create(:contract, :for_ecf,
+                        active_lead_provider:,
+                        banded_fee_structure:)
+    end
+
     let(:statement) { FactoryBot.create(:statement, contract:, fee_type: :service) }
 
     it "does not render" do
