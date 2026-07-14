@@ -50,13 +50,18 @@ module Schools
     end
 
     def ect_training_programme(contract_period_year:)
-      ect_at_school_period_id = (
+      ect_at_school_period_ids = (
         (ect_expressions_of_interest_ids_by_contract_period_year[contract_period_year] || []) +
         (ect_at_school_period_ids_by_contract_period_year[contract_period_year] || []) +
         (school_led_ect_at_school_period_ids_by_contract_period_year[contract_period_year] || [])
       ).compact
 
-      training_programmes_by_ect_at_school_period_id&.slice(*ect_at_school_period_id)&.values&.first
+      # Prioritises provider-led training programmes over
+      # school-led training programmes if a school has both for the same ECT.
+      training_programmes_by_ect_at_school_period_id
+        .select { |id, _| ect_at_school_period_ids.include?(id) }
+        .min_by { |_, programme| programme }
+        &.last
     end
 
     def training_programmes_by_ect_at_school_period_id
@@ -71,7 +76,6 @@ module Schools
           .where(ect_at_school_period_id:)
           .order(training_programme: :asc)
           .pluck(:ect_at_school_period_id, :training_programme)
-          .to_h
       end
     end
 
