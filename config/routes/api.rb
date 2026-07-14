@@ -30,4 +30,13 @@ namespace :api do
     resources :schools, only: %i[index show], param: :api_id
     resources :unfunded_mentors, only: %i[index show], path: "unfunded-mentors", param: :api_id
   end
+
+  namespace :v4 do
+    scope path: "appropriate-body/teachers/:trn", module: :induction do
+      resource :claim, only: :create
+      resource :pass, only: :create
+      resource :fail, only: :create
+      resource :release, only: :create
+    end
+  end
 end

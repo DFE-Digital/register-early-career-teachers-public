@@ -1335,6 +1335,8 @@ module Events
         author.lead_provider_api_author_params
       when Events::AppropriateBodyBatchAuthor
         author.event_author_params
+      when Events::AppropriateBodyAPIAuthor
+        author.event_author_params
       else
         fail(InvalidAuthor, author.class)
       end
