@@ -32,7 +32,8 @@ module Events
                 :modifications,
                 :metadata,
                 :zendesk_ticket_id,
-                :contract_period
+                :contract_period,
+                :band
 
     def initialize(
       author:,
@@ -63,7 +64,8 @@ module Events
       modifications: nil,
       metadata: nil,
       zendesk_ticket_id: nil,
-      contract_period: nil
+      contract_period: nil,
+      band: nil
     )
       @author = author
       @event_type = event_type
@@ -94,6 +96,7 @@ module Events
       @metadata = metadata || modifications
       @zendesk_ticket_id = zendesk_ticket_id
       @contract_period = contract_period
+      @band = band
     end
 
     def record_event!
@@ -1334,6 +1337,62 @@ module Events
       }
 
       new(event_type:, author:, heading:, school:, happened_at:, metadata:).record_event!
+    end
+
+    ## band events
+
+    def self.record_active_lead_provider_band_added_event!(author:, band:)
+      event_type = :band_added
+      active_lead_provider = band.active_lead_provider
+      lead_provider = active_lead_provider.lead_provider
+      contract_period = active_lead_provider.contract_period
+      heading = "Band #{band.letter} added to #{lead_provider.name} for #{contract_period.year}"
+
+      new(
+        event_type:,
+        author:,
+        heading:,
+        active_lead_provider:,
+        lead_provider:,
+        contract_period:,
+        happened_at: Time.zone.now
+      ).record_event!
+    end
+
+    def self.record_active_lead_provider_band_updated_event!(author:, band:, modifications:)
+      event_type = :band_updated
+      active_lead_provider = band.active_lead_provider
+      lead_provider = active_lead_provider.lead_provider
+      contract_period = active_lead_provider.contract_period
+      heading = "Band #{band.letter} updated for #{lead_provider.name} for #{contract_period.year}"
+
+      new(
+        event_type:,
+        author:,
+        heading:,
+        active_lead_provider:,
+        lead_provider:,
+        contract_period:,
+        happened_at: Time.zone.now,
+        modifications:
+      ).record_event!
+    end
+
+    def self.record_active_lead_provider_band_deleted_event!(author:, active_lead_provider:, band_letter:)
+      event_type = :band_deleted
+      contract_period = active_lead_provider.contract_period
+      lead_provider = active_lead_provider.lead_provider
+      heading = "Band #{band_letter} deleted for #{lead_provider.name} for #{contract_period.year}"
+
+      new(
+        event_type:,
+        author:,
+        heading:,
+        active_lead_provider:,
+        lead_provider:,
+        contract_period:,
+        happened_at: Time.zone.now
+      ).record_event!
     end
 
   private

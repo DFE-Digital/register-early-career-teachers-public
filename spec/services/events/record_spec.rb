@@ -3198,4 +3198,87 @@ RSpec.describe Events::Record do
       end
     end
   end
+
+  describe ".record_active_lead_provider_band_added_event!" do
+    let(:band) { FactoryBot.create(:active_lead_provider_band) }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        Events::Record.record_active_lead_provider_band_added_event!(author:, band:)
+
+        active_lead_provider = band.active_lead_provider
+        lead_provider = active_lead_provider.lead_provider
+        contract_period = active_lead_provider.contract_period
+        heading = "Band #{band.letter} added to #{lead_provider.name} for #{contract_period.year}"
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          heading:,
+          event_type: :band_added,
+          active_lead_provider:,
+          lead_provider:,
+          contract_period:,
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      end
+    end
+  end
+
+  describe ".record_active_lead_provider_band_updated_event!" do
+    let(:band) { FactoryBot.create(:active_lead_provider_band, capacity: 500) }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        band.capacity = 1000
+        raw_modifications = band.changes
+
+        active_lead_provider = band.active_lead_provider
+        lead_provider = active_lead_provider.lead_provider
+        contract_period = active_lead_provider.contract_period
+        heading = "Band #{band.letter} updated for #{lead_provider.name} for #{contract_period.year}"
+
+        Events::Record.record_active_lead_provider_band_updated_event!(author:, band:, modifications: raw_modifications)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          heading:,
+          event_type: :band_updated,
+          active_lead_provider:,
+          lead_provider:,
+          contract_period:,
+          happened_at: Time.zone.now,
+          modifications: anything,
+          metadata: raw_modifications,
+          **author_params
+        )
+      end
+    end
+  end
+
+  describe ".record_active_lead_provider_band_deleted_event!" do
+    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        lead_provider = active_lead_provider.lead_provider
+        contract_period = active_lead_provider.contract_period
+        heading = "Band C deleted for #{lead_provider.name} for #{contract_period.year}"
+
+        Events::Record.record_active_lead_provider_band_deleted_event!(
+          author:,
+          active_lead_provider:,
+          band_letter: "C"
+        )
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          heading:,
+          event_type: :band_deleted,
+          active_lead_provider:,
+          lead_provider:,
+          contract_period:,
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      end
+    end
+  end
 end
