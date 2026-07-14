@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-ruby "4.0.4"
+ruby file: ".ruby-version"
 
 gem "rails", "~> 8.1.3"
 
