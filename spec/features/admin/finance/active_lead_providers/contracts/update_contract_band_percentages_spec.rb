@@ -1,4 +1,4 @@
-RSpec.describe "Update contract band percentages", :enable_finance_contract_periods, :js do
+RSpec.describe "Update contract band percentages", :js do
   before { sign_in_as_dfe_user(role: :finance) }
 
   scenario "Output fee percentage drives service fee percentage" do
