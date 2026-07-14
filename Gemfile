@@ -21,7 +21,7 @@ gem "redis-session-store"
 gem "tzinfo-data", platforms: %i[windows jruby]
 
 gem "govuk-components", "6.4.0"
-gem "govuk_design_system_formbuilder", "6.3.0"
+gem "govuk_design_system_formbuilder", "6.3.1"
 gem "govuk_markdown"
 
 gem "mail-notify"
