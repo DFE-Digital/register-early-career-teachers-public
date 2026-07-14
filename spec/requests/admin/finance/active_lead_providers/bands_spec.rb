@@ -1,4 +1,4 @@
-RSpec.describe "Admin finance active lead provider bands", :enable_finance_contract_periods, type: :request do
+RSpec.describe "Admin finance active lead provider bands", type: :request do
   let(:contract_period) { FactoryBot.create(:contract_period, :current) }
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
 
