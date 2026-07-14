@@ -28,7 +28,7 @@ RSpec.describe Contracts::Update do
 
   let(:params) do
     {
-      ecf_contract_version: "updated-version",
+      vat_rate: 0.1,
       banded_fee_structure_attributes: {
         id: banded_fee_structure.id,
         recruitment_target: 9_999,
@@ -52,11 +52,12 @@ RSpec.describe Contracts::Update do
     original_fee_per_declaration = band_term.fee_per_declaration
     original_output_fee_ratio = band_term.output_fee_ratio
     original_service_fee_ratio = band_term.service_fee_ratio
+    original_vat_rate = contract.vat_rate
 
     result = service.call
 
     expect(result).to eq(contract)
-    expect(result.ecf_contract_version).to eq("updated-version")
+    expect(result.vat_rate).to eq(0.1)
     expect(result.banded_fee_structure.recruitment_target).to eq(9_999)
     expect(band_term.reload.fee_per_declaration).to eq(9_999)
     expect(band_term.output_fee_ratio).to eq(0.80)
@@ -67,7 +68,7 @@ RSpec.describe Contracts::Update do
         author:,
         contract:,
         modifications: hash_including(
-          "ecf_contract_version" => %w[1 updated-version],
+          "vat_rate" => [original_vat_rate, 0.1],
           "banded_recruitment_target" => [original_recruitment_target, 9_999],
           "band_A_fee_per_declaration" => [original_fee_per_declaration, 9_999],
           "band_A_output_fee_ratio" => [original_output_fee_ratio, 0.80],
@@ -80,7 +81,7 @@ RSpec.describe Contracts::Update do
   context "when the band term is not changed" do
     let(:params) do
       {
-        ecf_contract_version: "updated-version",
+        vat_rate: 0.1,
         banded_fee_structure_attributes: {
           id: banded_fee_structure.id,
           recruitment_target: 9_999,
@@ -99,6 +100,7 @@ RSpec.describe Contracts::Update do
 
     it "only records modifications for changed attributes" do
       original_recruitment_target = banded_fee_structure.recruitment_target
+      original_vat_rate = contract.vat_rate
 
       service.call
 
@@ -107,7 +109,7 @@ RSpec.describe Contracts::Update do
           author:,
           contract:,
           modifications: hash_including(
-            "ecf_contract_version" => %w[1 updated-version],
+            "vat_rate" => [original_vat_rate, 0.1],
             "banded_recruitment_target" => [original_recruitment_target, 9_999]
           )
         )

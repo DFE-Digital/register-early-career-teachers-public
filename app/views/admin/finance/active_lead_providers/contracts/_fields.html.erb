@@ -6,15 +6,6 @@
       ->(type) { type.humanize.upcase },
       legend: { text: "Contract type", size: "s" } %>
 
-<%= form.govuk_text_field :ecf_contract_version,
-      label: { text: "ECF contract version", size: "s" },
-      width: 10 %>
-
-<%= form.govuk_text_field :ecf_mentor_contract_version,
-      label: { text: "ECF mentor contract version", size: "s" },
-      hint: { text: "Required for ITTECF_ECTP contracts only" },
-      width: 10 %>
-
 <%= form.govuk_text_field :vat_rate,
       label: { text: "VAT rate (enter as a decimal, e.g. 0.2 for 20%)", size: "s" },
       width: 5,

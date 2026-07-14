@@ -435,8 +435,6 @@ erDiagram
     integer active_lead_provider_id
     enum contract_type
     datetime created_at
-    string ecf_contract_version
-    string ecf_mentor_contract_version
     datetime updated_at
     decimal vat_rate
   }

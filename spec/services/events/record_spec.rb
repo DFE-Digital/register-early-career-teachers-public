@@ -3155,7 +3155,7 @@ RSpec.describe Events::Record do
     describe ".record_contract_updated_event!" do
       let(:modifications) do
         {
-          "ecf_contract_version" => %w[1 2],
+          "vat_rate" => [0.05, 0.1],
           "banded_recruitment_target" => [1000, 2000],
         }
       end
@@ -3171,7 +3171,7 @@ RSpec.describe Events::Record do
             event_type: :contract_updated,
             happened_at: Time.zone.now,
             modifications: [
-              "ECF contract version changed from '1' to '2'",
+              "VAT rate changed from '0.05' to '0.1'",
               "Banded recruitment target changed from '1000' to '2000'",
             ],
             metadata: modifications,

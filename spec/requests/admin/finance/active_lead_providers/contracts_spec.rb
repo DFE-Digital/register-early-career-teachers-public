@@ -108,8 +108,6 @@ RSpec.describe "Admin finance active lead provider contracts", type: :request do
       {
         contract: {
           contract_type: "ittecf_ectp",
-          ecf_contract_version: "1",
-          ecf_mentor_contract_version: "2",
           vat_rate: "0.2",
           flat_rate_fee_structure_attributes:,
           banded_fee_structure_attributes:
@@ -205,7 +203,7 @@ RSpec.describe "Admin finance active lead provider contracts", type: :request do
     let(:update_params) do
       {
         contract: {
-          ecf_contract_version: "updated",
+          vat_rate: 0.1,
           banded_fee_structure_attributes: {
             id: contract.banded_fee_structure.id,
             band_terms_attributes: {
@@ -243,7 +241,7 @@ RSpec.describe "Admin finance active lead provider contracts", type: :request do
         patch contract_path, params: update_params
 
         expect(response).to redirect_to(contract_path)
-        expect(contract.reload.ecf_contract_version).to eq("updated")
+        expect(contract.reload.vat_rate).to eq(0.1)
         expect(band_term.reload.fee_per_declaration).to eq(999)
       end
     end
