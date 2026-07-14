@@ -166,6 +166,34 @@ describe Schools::TrainingProgramme do
 
           it { is_expected.to eq("provider_led") }
         end
+
+        context "when the same ect at school period has both provider-led and school-led training periods" do
+          let(:ect_at_school_period) do
+            FactoryBot.create(:ect_at_school_period,
+                              :ongoing,
+                              school:,
+                              started_on: "2021-01-01")
+          end
+          let!(:provider_led_training_period) do
+            FactoryBot.create(:training_period,
+                              :provider_led,
+                              ect_at_school_period:,
+                              school_partnership:,
+                              started_on: contract_period.started_on,
+                              finished_on: contract_period.started_on + 1.month)
+          end
+          let!(:school_led_training_period) do
+            FactoryBot.create(:training_period,
+                              :school_led,
+                              ect_at_school_period:,
+                              started_on: contract_period.started_on + 2.months,
+                              finished_on: contract_period.started_on + 3.months)
+          end
+
+          it "prioritises provider-led training" do
+            expect(subject).to eq("provider_led")
+          end
+        end
       end
 
       context "when school has at least one expression of interest for training from an ect" do
