@@ -97,6 +97,12 @@ private
       lead_provider:,
       delivery_partner:
     )
+    FactoryBot.create(
+      :school_partnership,
+      :for_year,
+      year: @target_contract_period.year,
+      school: @school
+    )
     @target_partnership_name = "#{lead_provider.name} & #{delivery_partner.name}"
     @training_period = FactoryBot.create(
       :training_period,
