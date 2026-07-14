@@ -22,7 +22,7 @@ module Admin
             steps = [:select_contract_period]
             return steps unless selected_contract_period_allowed?
 
-            return steps << :check_answers if eoi_only?
+            return steps << :check_answers if training_period_eoi_only?
             return steps << :no_partnerships unless school_partnerships.exists?
             return steps << :check_answers if single_school_partnership
 
@@ -119,19 +119,15 @@ module Admin
             training_period.expression_of_interest_lead_provider.name
           end
 
-          def partnership_details_required?
-            !eoi_only?
+          def training_period_eoi_only?
+            training_period.only_expression_of_interest?
           end
 
           def partnership_selection_step_required?
-            partnership_details_required? && school_partnerships.many?
+            !training_period_eoi_only? && school_partnerships.many?
           end
 
         private
-
-          def eoi_only?
-            training_period.only_expression_of_interest?
-          end
 
           def school_partnership_search(lead_provider: :ignore, delivery_partner: :ignore)
             SchoolPartnerships::Search

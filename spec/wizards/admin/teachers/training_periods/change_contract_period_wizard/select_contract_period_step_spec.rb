@@ -7,7 +7,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Sel
       store:,
       contract_periods:,
       school_partnerships:,
-      partnership_details_required?: partnership_details_required,
+      training_period_eoi_only?: training_period_eoi_only,
       partnership_selection_step_required?: partnership_selection_step_required
     )
   end
@@ -18,7 +18,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Sel
   let(:available_school_partnership) { FactoryBot.create(:school_partnership) }
   let(:other_school_partnership) { FactoryBot.create(:school_partnership) }
   let(:school_partnerships) { SchoolPartnership.where(id: [available_school_partnership.id, other_school_partnership.id]) }
-  let(:partnership_details_required) { true }
+  let(:training_period_eoi_only) { false }
   let(:partnership_selection_step_required) { true }
   let(:contract_period_year) { available_contract_period.year }
 
@@ -102,8 +102,8 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Sel
       end
     end
 
-    context "when partnership details are not required" do
-      let(:partnership_details_required) { false }
+    context "when the training period is EOI only" do
+      let(:training_period_eoi_only) { true }
 
       it "returns check answers" do
         expect(step.next_step).to eq(:check_answers)

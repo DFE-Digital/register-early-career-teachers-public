@@ -20,12 +20,7 @@
           <%= row.with_value { @wizard.selected_contract_period.year.to_s } %>
         <% end %>
 
-        <% if @wizard.partnership_details_required? %>
-          <%= list.with_row do |row| %>
-            <%= row.with_key { "Partnership" } %>
-            <%= row.with_value { @wizard.selected_partnership_name } %>
-          <% end %>
-        <% else %>
+        <% if @wizard.training_period_eoi_only? %>
           <%= list.with_row do |row| %>
             <%= row.with_key { "Lead provider" } %>
             <%= row.with_value { @wizard.selected_lead_provider_name } %>
@@ -34,6 +29,11 @@
           <%= list.with_row do |row| %>
             <%= row.with_key { "Delivery partner" } %>
             <%= row.with_value { "No delivery partner confirmed" } %>
+          <% end %>
+        <% else %>
+          <%= list.with_row do |row| %>
+            <%= row.with_key { "Partnership" } %>
+            <%= row.with_value { @wizard.selected_partnership_name } %>
           <% end %>
         <% end %>
       <% end %>
