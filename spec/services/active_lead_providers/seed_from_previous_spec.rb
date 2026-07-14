@@ -1,25 +1,25 @@
 RSpec.describe ActiveLeadProviders::SeedFromPrevious do
-  subject(:service) { described_class.new(active_lead_provider: teach_first_activation_2026) }
+  subject(:service) { described_class.new(active_lead_provider: teach_first_activation_next) }
 
   # given a new contract_period...
-  let!(:contract_period_2026) { FactoryBot.create(:contract_period, :with_schedules, year: 2026, mentor_funding_enabled: true) }
+  let!(:contract_period_next) { FactoryBot.create(:contract_period, :next, :with_schedules, mentor_funding_enabled: true) }
   # and an old contract_period...
-  let!(:contract_period_2025) { FactoryBot.create(:contract_period, :with_schedules, year: 2025) }
+  let!(:contract_period_current) { FactoryBot.create(:contract_period, :current, :with_schedules) }
 
   # given a lead provider, active in both periods...
   let(:teach_first) { FactoryBot.create(:lead_provider, name: "Teach First") }
-  let(:teach_first_activation_2026) { FactoryBot.create(:active_lead_provider, lead_provider: teach_first, contract_period: contract_period_2026) }
-  let!(:teach_first_activation_2025) { FactoryBot.create(:active_lead_provider, lead_provider: teach_first, contract_period: contract_period_2025) }
+  let(:teach_first_activation_next) { FactoryBot.create(:active_lead_provider, lead_provider: teach_first, contract_period: contract_period_next) }
+  let!(:teach_first_activation_current) { FactoryBot.create(:active_lead_provider, lead_provider: teach_first, contract_period: contract_period_current) }
 
   describe "building subordinates from the previous activation's subordinate records" do
     before do
-      create_subordinate_records(teach_first_activation_2025)
+      create_subordinate_records(teach_first_activation_current)
       service.call
     end
 
     describe "delivery_partnerships" do
-      let(:previous_partnerships) { teach_first_activation_2025.lead_provider_delivery_partnerships }
-      let(:new_partnerships) { teach_first_activation_2026.lead_provider_delivery_partnerships }
+      let(:previous_partnerships) { teach_first_activation_current.lead_provider_delivery_partnerships }
+      let(:new_partnerships) { teach_first_activation_next.lead_provider_delivery_partnerships }
 
       it "builds new delivery partnerships mirroring the previous ones" do
         expect(new_partnerships.size).to eq previous_partnerships.size
@@ -29,11 +29,11 @@ RSpec.describe ActiveLeadProviders::SeedFromPrevious do
     end
 
     describe "contracts" do
-      let(:previous_contract) { teach_first_activation_2025.contracts.first }
-      let(:new_contract) { teach_first_activation_2026.contracts.first }
+      let(:previous_contract) { teach_first_activation_current.contracts.first }
+      let(:new_contract) { teach_first_activation_next.contracts.first }
 
       it "builds a single new contract based on the latest previous one" do
-        expect(teach_first_activation_2026.contracts.size).to eq 1
+        expect(teach_first_activation_next.contracts.size).to eq 1
         expect(new_contract.lead_provider).to eq teach_first
         expect(new_contract.contract_type).to eq "ittecf_ectp"
       end
@@ -84,22 +84,22 @@ RSpec.describe ActiveLeadProviders::SeedFromPrevious do
   end
 
   context "when the previous activation has multiple contracts" do
-    let!(:earlier_contract) { FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider: teach_first_activation_2025, vat_rate: 0.10) }
-    let!(:latest_contract) { FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider: teach_first_activation_2025, vat_rate: 0.20) }
+    let!(:earlier_contract) { FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider: teach_first_activation_current, vat_rate: 0.10) }
+    let!(:latest_contract) { FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider: teach_first_activation_current, vat_rate: 0.20) }
 
     before do
-      FactoryBot.create_list(:lead_provider_delivery_partnership, 3, active_lead_provider: teach_first_activation_2025)
-      FactoryBot.create(:statement, :paid, active_lead_provider: teach_first_activation_2025, contract: earlier_contract, month: 11, year: 2025)
-      FactoryBot.create(:statement, :paid, active_lead_provider: teach_first_activation_2025, contract: latest_contract, month: 8, year: 2028)
+      FactoryBot.create_list(:lead_provider_delivery_partnership, 3, active_lead_provider: teach_first_activation_current)
+      FactoryBot.create(:statement, :paid, active_lead_provider: teach_first_activation_current, contract: earlier_contract, month: 11, year: contract_period_current.year)
+      FactoryBot.create(:statement, :paid, active_lead_provider: teach_first_activation_current, contract: latest_contract, month: 8, year: contract_period_current.year + 3)
       service.call
     end
 
     it "builds a single new contract based on the contract owning the latest statement, rolling every previous statement onto it" do
-      new_contracts = teach_first_activation_2026.contracts
+      new_contracts = teach_first_activation_next.contracts
       expect(new_contracts.size).to eq 1
       expect(new_contracts.first.vat_rate).to eq 0.20
       expect(new_contracts.first.statements.map { |s| [s.month, s.year] })
-        .to contain_exactly([11, 2026], [8, 2029])
+        .to contain_exactly([11, contract_period_next.year], [8, contract_period_next.year + 3])
     end
   end
 
@@ -111,11 +111,11 @@ RSpec.describe ActiveLeadProviders::SeedFromPrevious do
   end
 
   context "when there is no previous activation for the lead provider" do
-    before { teach_first_activation_2025.destroy! }
+    before { teach_first_activation_current.destroy! }
 
     it "raises an error" do
       expect { service.call }
-        .to raise_error(described_class::PreviousActiveLeadProviderError, /No previous activation found in 2025 for Teach First/)
+        .to raise_error(described_class::PreviousActiveLeadProviderError, /No previous activation found in #{contract_period_current.year} for Teach First/)
     end
   end
 
@@ -130,7 +130,7 @@ RSpec.describe ActiveLeadProviders::SeedFromPrevious do
     let(:missing_data_error_message) { /Key info for Teach First is missing previous delivery partnerships, contracts or statements/ }
 
     context "with delivery partnerships but no contracts or statements" do
-      before { FactoryBot.create_list(:lead_provider_delivery_partnership, 3, active_lead_provider: teach_first_activation_2025) }
+      before { FactoryBot.create_list(:lead_provider_delivery_partnership, 3, active_lead_provider: teach_first_activation_current) }
 
       it "raises an error" do
         expect { service.call }.to raise_error(described_class::PreviousActiveLeadProviderError, missing_data_error_message)
@@ -138,7 +138,7 @@ RSpec.describe ActiveLeadProviders::SeedFromPrevious do
     end
 
     context "with a contract but no partnerships or statements" do
-      before { FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider: teach_first_activation_2025) }
+      before { FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider: teach_first_activation_current) }
 
       it "raises an error" do
         expect { service.call }.to raise_error(described_class::PreviousActiveLeadProviderError, missing_data_error_message)
@@ -147,8 +147,8 @@ RSpec.describe ActiveLeadProviders::SeedFromPrevious do
 
     context "with partnerships and a contract but no statements" do
       before do
-        FactoryBot.create_list(:lead_provider_delivery_partnership, 3, active_lead_provider: teach_first_activation_2025)
-        FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider: teach_first_activation_2025)
+        FactoryBot.create_list(:lead_provider_delivery_partnership, 3, active_lead_provider: teach_first_activation_current)
+        FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider: teach_first_activation_current)
       end
 
       it "raises an error" do
@@ -158,8 +158,8 @@ RSpec.describe ActiveLeadProviders::SeedFromPrevious do
 
     context "with a contract and statements but no partnerships" do
       before do
-        contract = FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider: teach_first_activation_2025)
-        FactoryBot.create(:statement, :paid, active_lead_provider: teach_first_activation_2025, contract:, month: 11, year: 2025)
+        contract = FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider: teach_first_activation_current)
+        FactoryBot.create(:statement, :paid, active_lead_provider: teach_first_activation_current, contract:, month: 11, year: contract_period_current.year)
       end
 
       it "raises an error" do
@@ -170,13 +170,13 @@ RSpec.describe ActiveLeadProviders::SeedFromPrevious do
 
   context "when the active lead provider already has data" do
     before do
-      create_subordinate_records(teach_first_activation_2025)
-      FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: teach_first_activation_2026)
+      create_subordinate_records(teach_first_activation_current)
+      FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: teach_first_activation_next)
     end
 
     it "raises an error rather than duplicating data" do
       expect { service.call }
-        .to raise_error(described_class::AlreadyPopulatedError, /Teach First already has data for 2026/)
+        .to raise_error(described_class::AlreadyPopulatedError, /Teach First already has data for #{contract_period_next.year}/)
     end
   end
 

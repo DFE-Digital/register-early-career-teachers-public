@@ -33,6 +33,7 @@ class ActiveLeadProviders::SeedFromPrevious
 
     # This is a large graph, so let's make all or nothing...
     ActiveRecord::Base.transaction do
+      create_new_bands
       create_new_delivery_partnerships
       create_new_contract
     end
@@ -70,6 +71,15 @@ private
     end
   end
 
+  def create_new_bands
+    # Bands need to be added before contracts and before the contract period starts
+    if previous_activation
+      previous_activation.bands.each do |band|
+        active_lead_provider.bands.create!(allocation_order: band.allocation_order, capacity: band.capacity)
+      end
+    end
+  end
+
   def create_new_contract
     # The banded fee structure cannot be attached after the contract is saved because
     # Contract validates its presence at creation time, and the duped fee structure's
@@ -94,9 +104,10 @@ private
     new_fee_structure = previous_fee_structure.dup
 
     previous_fee_structure.band_terms.each do |previous_term|
-      new_band = active_lead_provider.bands.create!(capacity: previous_term.capacity)
+      band = active_lead_provider.bands.find_by!(allocation_order: previous_term.band.allocation_order)
+
       new_fee_structure.band_terms.build(
-        band: new_band,
+        band:,
         fee_per_declaration: previous_term.fee_per_declaration,
         output_fee_ratio: previous_term.output_fee_ratio,
         service_fee_ratio: previous_term.service_fee_ratio
