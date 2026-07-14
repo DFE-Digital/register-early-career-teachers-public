@@ -11,7 +11,7 @@ module Admin
           def self.permitted_params = %i[contract_period_year]
 
           def next_step
-            return :check_answers unless wizard.partnership_details_required?
+            return :check_answers if wizard.training_period_eoi_only?
 
             return :no_partnerships unless wizard.school_partnerships.exists?
 
