@@ -2,11 +2,11 @@ module Schools
   class AssignMentor
     attr_reader :ect_at_school_period, :mentor_at_school_period, :mentorship_period, :author
 
-    def initialize(ect_at_school_period:, mentor_at_school_period:, author:, mentoring_at_new_school_only: false)
+    def initialize(ect_at_school_period:, mentor_at_school_period:, author:, mentorship_can_start_today: true)
       @ect_at_school_period = ect_at_school_period
       @mentor_at_school_period = mentor_at_school_period
       @author = author
-      @mentoring_at_new_school_only = mentoring_at_new_school_only
+      @mentorship_can_start_today = mentorship_can_start_today
     end
 
     def assign!
@@ -54,15 +54,13 @@ module Schools
 
     def earliest_possible_start
       possible_dates = [ect_at_school_period.started_on, mentor_at_school_period.started_on]
-      possible_dates.push(Date.current) unless newly_registered_mentor_moving_schools?
+      possible_dates.push(Date.current) if @mentorship_can_start_today
       possible_dates.compact.max
     end
 
     def latest_possible_finish
       [ect_at_school_period.finished_on, mentor_at_school_period.finished_on].compact.min
     end
-
-    def newly_registered_mentor_moving_schools? = !!@mentoring_at_new_school_only
 
     def record_events!
       Events::Record.record_teacher_starts_being_mentored_event!(

@@ -131,7 +131,7 @@ describe Schools::RegisterMentorWizard::CheckAnswersStep, type: :model do
               ect_at_school_period: wizard.ect,
               mentor_at_school_period: new_mentor,
               author:,
-              mentoring_at_new_school_only: true
+              mentorship_can_start_today: false
             )
         end
       end
@@ -147,7 +147,7 @@ describe Schools::RegisterMentorWizard::CheckAnswersStep, type: :model do
               ect_at_school_period: wizard.ect,
               mentor_at_school_period: new_mentor,
               author:,
-              mentoring_at_new_school_only: false
+              mentorship_can_start_today: true
             )
         end
       end
