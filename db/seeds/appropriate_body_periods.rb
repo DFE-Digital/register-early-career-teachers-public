@@ -189,11 +189,13 @@ appropriate_body_periods = [
     name: "Umber Teaching School Hub",
     body_type: "teaching_school_hub",
     dqt_id: Faker::Internet.uuid,
+    third_party: "ECT Manager"
   },
   {
     name: "Golden Leaf Teaching School Hub",
     body_type: "teaching_school_hub",
     dqt_id: Faker::Internet.uuid,
+    third_party: "Mozaic"
   },
   # Fake Inactive Teaching School Hubs (joined since launch)
   # ----------------------------------------------------------------------------
@@ -235,6 +237,22 @@ appropriate_body_periods.each do |data|
                                               body_type:,
                                               dqt_id:,
                                               dfe_sign_in_organisation_id:)
+
+  # RIAB API for Third Parties
+  if ENV["AB_API"] && data[:third_party]
+    api_third_party = API::ThirdParty.find_by(name: data[:third_party])
+
+    token = appropriate_body_period.name.parameterize + "-" + api_third_party.name.parameterize
+
+    FactoryBot.create(:api_token,
+                      appropriate_body_period:,
+                      api_third_party:,
+                      token:,
+                      description: "An appropriate body token for #{appropriate_body_period.name} granted to #{api_third_party.name}",
+                      lead_provider: nil,
+                      last_used_at: nil)
+
+  end
 
   # Legacy Appropriate Body
   if dfe_sign_in_organisation_id.present?

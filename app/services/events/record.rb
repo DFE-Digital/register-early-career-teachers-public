@@ -726,6 +726,24 @@ module Events
       new(event_type:, author:, heading:, lead_provider:, happened_at: Time.zone.now, metadata:).record_event!
     end
 
+    def self.record_appropriate_body_api_token_created_event!(author:, api_token:, api_third_party: nil)
+      event_type = :appropriate_body_api_token_created
+      appropriate_body_period = api_token.appropriate_body_period
+      heading = "An API token was created for appropriate body: #{appropriate_body_period.name} and #{api_third_party.name}"
+      metadata = { description: api_token.description }
+
+      new(event_type:, author:, heading:, appropriate_body_period:, happened_at: Time.zone.now, metadata:).record_event!
+    end
+
+    def self.record_appropriate_body_api_token_revoked_event!(author:, api_token:)
+      event_type = :appropriate_body_api_token_revoked
+      appropriate_body_period = api_token.appropriate_body_period
+      heading = "An API token was revoked for appropriate body: #{appropriate_body_period.name}"
+      metadata = { description: api_token.description }
+
+      new(event_type:, author:, heading:, appropriate_body_period:, happened_at: Time.zone.now, metadata:).record_event!
+    end
+
     # School Partnership Events
 
     def self.record_school_partnership_created_event!(author:, school_partnership:)

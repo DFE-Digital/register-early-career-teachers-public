@@ -63,7 +63,7 @@ RSpec.describe RemoveTeacher, :aggregate_failures do
 
     describe "unrelated records" do
       before do
-        FactoryBot.create(:api_token)
+        FactoryBot.create(:api_token, :for_lead_provider)
         FactoryBot.create(:contract_period)
         FactoryBot.create(:delivery_partner)
         FactoryBot.create(:gias_school)

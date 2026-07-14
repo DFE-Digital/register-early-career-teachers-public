@@ -1682,7 +1682,7 @@ RSpec.describe Events::Record do
   end
 
   describe ".record_lead_provider_api_token_created_event!" do
-    let(:api_token) { FactoryBot.create(:api_token) }
+    let(:api_token) { FactoryBot.create(:api_token, :for_lead_provider) }
 
     it "queues a RecordEventJob with the correct values" do
       freeze_time do
@@ -1701,7 +1701,7 @@ RSpec.describe Events::Record do
   end
 
   describe ".record_lead_provider_api_token_revoked_event!" do
-    let(:api_token) { FactoryBot.create(:api_token) }
+    let(:api_token) { FactoryBot.create(:api_token, :for_lead_provider) }
 
     it "queues a RecordEventJob with the correct values" do
       freeze_time do

@@ -4,8 +4,11 @@ namespace :api do
   get "guidance/swagger-api-documentation", to: redirect("/api/docs/v3")
   get "guidance/*page", to: "guidance#page", as: :guidance_page
   get "docs/:version", to: "documentation#index", as: :documentation
+  get "token/:token", to: "token_deliveries#show", as: :token_delivery
 
   namespace :v3 do
+    resources :teachers, only: %i[index], param: :api_id # RIAB ECTM PoC
+
     resources :participants, only: %i[index show], param: :api_id do
       member do
         put :change_schedule, path: "change-schedule"

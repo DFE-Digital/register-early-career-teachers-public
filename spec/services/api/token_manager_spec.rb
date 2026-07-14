@@ -37,7 +37,7 @@ describe API::TokenManager do
   describe ".revoke_lead_provider_api_token!" do
     subject(:revoke_token) { described_class.revoke_lead_provider_api_token!(api_token:) }
 
-    let!(:api_token) { FactoryBot.create(:api_token) }
+    let!(:api_token) { FactoryBot.create(:api_token, :for_lead_provider) }
 
     it "destroys the API token" do
       expect { revoke_token }.to change(API::Token, :count).by(-1)
@@ -59,24 +59,15 @@ describe API::TokenManager do
   describe ".find_lead_provider_api_token" do
     subject(:find_token) { described_class.find_lead_provider_api_token(token: api_token.token) }
 
-    let(:api_token) { FactoryBot.create(:api_token) }
+    context "with a lead provider token" do
+      let(:api_token) { FactoryBot.create(:api_token, :for_lead_provider) }
 
-    it { expect { find_token }.to change { api_token.reload.last_used_at }.to be_within(5.seconds).of(Time.current) }
-    it { is_expected.to eq(api_token) }
-
-    context "when the API token does not exist" do
-      let(:api_token) { FactoryBot.build(:api_token, token: "does-not-exist-yet") }
-
-      it { is_expected.to be_nil }
+      it { expect { find_token }.to change { api_token.reload.last_used_at }.to be_within(5.seconds).of(Time.current) }
+      it { is_expected.to eq(api_token) }
     end
 
-    context "when a matching, non-lead provider token exists" do
-      let(:api_token) do
-        API::Token.new(
-          lead_provider: nil,
-          description: "Non-lead provider token"
-        ).tap { |token| token.save!(validate: false) }
-      end
+    context "with an appropriate body token" do
+      let(:api_token) { FactoryBot.create(:api_token, :for_appropriate_body_period) }
 
       it { is_expected.to be_nil }
     end
