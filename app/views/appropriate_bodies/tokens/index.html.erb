@@ -1,0 +1,20 @@
+<% page_data(
+  title: @appropriate_body.name,
+  backlink_href: ab_teachers_path
+) %>
+
+<% if @tokens.none? %>
+  <p class="govuk-body">
+    You have no API tokens
+  </p>
+
+  <%= govuk_button_link_to("Generate a new token", new_ab_token_path) %>
+<% else %>
+   <p class="govuk-body">
+    You have <%= @tokens.size %> API tokens
+  </p>
+
+   <p class="govuk-body">
+    <%= @tokens.first.description %>
+  </p>
+<% end %>

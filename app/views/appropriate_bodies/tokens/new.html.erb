@@ -1,0 +1,20 @@
+<% page_data(
+  title: @appropriate_body.name,
+  backlink_href: ab_tokens_path
+) %>
+
+<p class="govuk-body">
+  Generate a new API token
+</p>
+
+
+<%= form_with(model: API::Token.new, url: ab_tokens_path, method: 'post') do |f| %>
+  <%= content_for(:error_summary) { f.govuk_error_summary } %>
+  <%= f.govuk_collection_radio_buttons :api_third_party_id,
+        API::ThirdParty.all,
+        :id,
+        :name,
+        legend: { text: "Nominated third-party provider" }
+        %>
+  <%= f.govuk_submit 'Continue' %>
+<% end %>

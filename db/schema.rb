@@ -69,15 +69,41 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_06_113458) do
     t.index ["lead_provider_id"], name: "index_active_lead_providers_on_lead_provider_id"
   end
 
+  create_table "api_third_parties", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "email", null: false
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_api_third_parties_on_email", unique: true
+    t.index ["name"], name: "index_api_third_parties_on_name", unique: true
+  end
+
+  create_table "api_token_deliveries", force: :cascade do |t|
+    t.bigint "api_token_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "expires_at", null: false
+    t.string "token", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "used_at"
+    t.index ["api_token_id"], name: "index_api_token_deliveries_on_api_token_id"
+    t.index ["expires_at"], name: "index_api_token_deliveries_on_expires_at"
+    t.index ["token"], name: "index_api_token_deliveries_on_token", unique: true
+  end
+
   create_table "api_tokens", force: :cascade do |t|
+    t.bigint "api_third_party_id"
+    t.bigint "appropriate_body_period_id"
     t.datetime "created_at", null: false
     t.string "description", null: false
     t.datetime "last_used_at"
     t.bigint "lead_provider_id"
     t.string "token", null: false
     t.datetime "updated_at", null: false
+    t.index ["api_third_party_id"], name: "index_api_tokens_on_api_third_party_id"
+    t.index ["appropriate_body_period_id"], name: "index_api_tokens_on_appropriate_body_period_id"
     t.index ["lead_provider_id"], name: "index_api_tokens_on_lead_provider_id"
     t.index ["token"], name: "index_api_tokens_on_token", unique: true
+    t.check_constraint "lead_provider_id IS NOT NULL AND appropriate_body_period_id IS NULL OR lead_provider_id IS NULL AND appropriate_body_period_id IS NOT NULL", name: "api_token_belongs_to_either_lead_provider_or_appropriate_body"
   end
 
   create_table "appropriate_bodies", force: :cascade do |t|
@@ -956,6 +982,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_06_113458) do
   add_foreign_key "active_lead_provider_bands", "active_lead_providers"
   add_foreign_key "active_lead_providers", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "active_lead_providers", "lead_providers"
+  add_foreign_key "api_token_deliveries", "api_tokens"
+  add_foreign_key "api_tokens", "api_third_parties"
+  add_foreign_key "api_tokens", "appropriate_body_periods"
   add_foreign_key "appropriate_bodies", "dfe_sign_in_organisations"
   add_foreign_key "appropriate_body_periods", "appropriate_bodies"
   add_foreign_key "contract_banded_fee_structure_band_terms", "active_lead_provider_bands", column: "band_id"

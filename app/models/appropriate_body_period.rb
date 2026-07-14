@@ -20,6 +20,7 @@ class AppropriateBodyPeriod < ApplicationRecord
   # TODO: remove UUID once linked to DfESignInOrganisation
   belongs_to :dfe_sign_in_organisation, primary_key: :uuid, inverse_of: :appropriate_body_period
   belongs_to :appropriate_body
+  has_many :api_tokens, class_name: "API::Token"
   has_many :pending_induction_submissions
   has_many :induction_periods, inverse_of: :appropriate_body_period
   has_many :events

@@ -13,13 +13,18 @@ private
 
   # `current_user` needed for DfE::Analytics
   def current_user
-    current_lead_provider
+    current_lead_provider || current_appropriate_body
   end
 
   def append_info_to_payload(payload)
     super
-    payload[:current_user_class] = current_lead_provider&.class&.name
-    payload[:current_user_id] = current_lead_provider&.id
+    if current_lead_provider.present?
+      payload[:current_user_class] = current_lead_provider&.class&.name
+      payload[:current_user_id] = current_lead_provider&.id
+    elsif current_appropriate_body.present?
+      payload[:current_user_class] = current_appropriate_body&.class&.name
+      payload[:current_user_id] = current_appropriate_body&.id
+    end
   end
 
 protected
