@@ -24,7 +24,7 @@ module Admin
 
             return steps << :check_answers if training_period_eoi_only?
             return steps << :no_partnerships unless school_partnerships.exists?
-            return steps << :check_answers if single_school_partnership
+            return steps << :check_answers if only_school_partnership
 
             steps << :select_partnership
             return steps unless selected_school_partnership_allowed?
@@ -63,7 +63,7 @@ module Admin
           end
 
           def selected_school_partnership
-            return single_school_partnership if single_school_partnership
+            return only_school_partnership if only_school_partnership
             return if store.school_partnership_id.blank?
 
             @selected_school_partnership ||= school_partnerships.find_by(id: store.school_partnership_id)
@@ -152,7 +152,7 @@ module Admin
             @current_active_period ||= ::TrainingPeriods::RelatedPeriods.new(training_period:).current_active_period
           end
 
-          def single_school_partnership
+          def only_school_partnership
             partnerships = school_partnerships.limit(2).to_a
             partnerships.first if partnerships.one?
           end
@@ -163,7 +163,7 @@ module Admin
           end
 
           def selected_school_partnership_allowed?
-            return true if single_school_partnership.present?
+            return true if only_school_partnership.present?
 
             store.school_partnership_id.present? &&
               school_partnerships.where(id: store.school_partnership_id).exists?
