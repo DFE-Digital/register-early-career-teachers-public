@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_02_065431) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_13_075124) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -211,8 +211,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_02_065431) do
     t.bigint "active_lead_provider_id", null: false
     t.enum "contract_type", null: false, enum_type: "contract_types"
     t.datetime "created_at", null: false
-    t.string "ecf_contract_version", default: "1.0.0", null: false
-    t.string "ecf_mentor_contract_version"
     t.datetime "updated_at", null: false
     t.decimal "vat_rate", precision: 3, scale: 2, default: "0.2", null: false
     t.index ["active_lead_provider_id"], name: "index_contracts_on_active_lead_provider_id"

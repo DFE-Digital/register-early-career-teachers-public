@@ -9,8 +9,6 @@ describe Contracts::Create do
   let(:params) do
     {
       contract_type: "ittecf_ectp",
-      ecf_contract_version: "1",
-      ecf_mentor_contract_version: "2",
       banded_fee_structure_attributes: {
         **banded_fee_structure_attributes,
         band_terms_attributes: [

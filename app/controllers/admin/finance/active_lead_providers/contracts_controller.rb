@@ -111,8 +111,6 @@ module Admin::Finance::ActiveLeadProviders
       params.expect(
         contract: [
           :contract_type,
-          :ecf_contract_version,
-          :ecf_mentor_contract_version,
           :vat_rate,
           {
             banded_fee_structure_attributes: [
