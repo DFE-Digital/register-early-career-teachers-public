@@ -198,13 +198,26 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
       expect(response.body).to include("Select a new contract period")
     end
 
-    it "redirects to select partnership when the selection is valid" do
+    it "redirects to check answers when there is only one partnership for the selected contract period" do
       post(
         path_for_step("select-contract-period"),
         params: { select_contract_period: { contract_period_year: target_contract_period.year } }
       )
 
-      expect(response).to redirect_to(path_for_step("select-partnership"))
+      expect(response).to redirect_to(path_for_step("check-answers"))
+    end
+
+    context "when there are multiple partnerships for the selected contract period" do
+      before { different_school_partnership }
+
+      it "redirects to select partnership when the selection is valid" do
+        post(
+          path_for_step("select-contract-period"),
+          params: { select_contract_period: { contract_period_year: target_contract_period.year } }
+        )
+
+        expect(response).to redirect_to(path_for_step("select-partnership"))
+      end
     end
 
     context "when there are no partnerships for the school" do
@@ -255,6 +268,7 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
     end
 
     it "renders the partnership selection page after a contract period has been selected" do
+      different_school_partnership
       target_school_partnership
       partnership_name =
         "#{target_school_partnership.lead_provider.name} & #{target_school_partnership.delivery_partner.name}"
@@ -318,22 +332,13 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
         )
       end
 
-      it "validates the selected partnership uses the current active lead provider and delivery partner" do
+      it "redirects to check answers when there is one available current active lead provider and delivery partner partnership" do
         post(
           path_for_step("select-contract-period"),
           params: { select_contract_period: { contract_period_year: target_contract_period.year } }
         )
 
-        post(
-          path_for_step("select-partnership"),
-          params: { select_partnership: { school_partnership_id: different_school_partnership.id } }
-        )
-
-        page = Capybara.string(response.body)
-
-        expect(response).to have_http_status(:unprocessable_content)
-        expect(page).to have_text("There is a problem")
-        expect(page).to have_text("Select a partnership")
+        expect(response).to redirect_to(path_for_step("check-answers"))
       end
     end
   end
@@ -357,6 +362,8 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
 
   describe "GET check-answers" do
     it "redirects to select partnership when no partnership has been selected" do
+      different_school_partnership
+
       post(
         path_for_step("select-contract-period"),
         params: { select_contract_period: { contract_period_year: target_contract_period.year } }
@@ -365,6 +372,21 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
       get path_for_step("check-answers")
 
       expect(response).to redirect_to(path_for_step("select-partnership"))
+    end
+
+    it "renders the CYA page after the contract period has been selected when there is only one partnership" do
+      post(
+        path_for_step("select-contract-period"),
+        params: { select_contract_period: { contract_period_year: target_contract_period.year } }
+      )
+
+      get path_for_step("check-answers")
+      page = Capybara.string(response.body)
+      partnership_name =
+        "#{target_school_partnership.lead_provider.name} & #{target_school_partnership.delivery_partner.name}"
+
+      expect(response).to have_http_status(:ok)
+      expect(page).to have_summary_list_row("Partnership", value: partnership_name)
     end
 
     it "renders the CYA page after the contract period and partnership have been selected" do
@@ -442,6 +464,22 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
       follow_redirect!
 
       expect(response.body).to include("Contract period changed")
+    end
+
+    it "applies the contract period change after selecting only the contract period when there is one partnership" do
+      target_schedule
+
+      post(
+        path_for_step("select-contract-period"),
+        params: { select_contract_period: { contract_period_year: target_contract_period.year } }
+      )
+
+      expect {
+        post path_for_step("check-answers"), params: { check_answers: {} }
+      }.to change { TrainingPeriod.where(ect_at_school_period:).count }.by(1)
+
+      expect(response).to redirect_to(admin_teacher_training_path(teacher))
+      expect(replacement_training_period.school_partnership).to eq(target_school_partnership)
     end
 
     it "shows an error when the selected contract period has no matching schedule" do
@@ -593,6 +631,8 @@ private
   end
 
   def select_contract_period_and_partnership
+    different_school_partnership
+
     post(
       path_for_step("select-contract-period"),
       params: { select_contract_period: { contract_period_year: target_contract_period.year } }

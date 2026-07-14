@@ -9,7 +9,7 @@ module Admin
           self.expected_store_keys = %i[contract_period_year]
 
           def previous_step
-            wizard.partnership_selection_required? ? :select_partnership : :select_contract_period
+            wizard.partnership_selection_step_required? ? :select_partnership : :select_contract_period
           end
 
           def save!
