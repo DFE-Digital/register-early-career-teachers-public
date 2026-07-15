@@ -150,7 +150,7 @@ module APISeedData
 
     def teacher_ids_with_declarations
       Declaration
-        .joins(training_period: %i[ect_at_school_period mentor_at_school_period])
+        .left_joins(training_period: %i[ect_at_school_period mentor_at_school_period])
         .pluck("ect_at_school_periods.teacher_id", "mentor_at_school_periods.teacher_id")
         .flatten
         .uniq
