@@ -87,6 +87,26 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
     end
   end
 
+  context "when the ECT has been claimed by an appropriate body" do
+    let!(:induction_period) do
+      FactoryBot.create(
+        :induction_period,
+        :ongoing,
+        teacher: ect_at_school_period.teacher,
+        started_on: ect_at_school_period.started_on
+      )
+    end
+
+    it "renders the claimed by appropriate body name" do
+      render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:))
+
+      expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "Appropriate body")
+      expect(rendered_content).to have_text(induction_period.appropriate_body_period.name)
+      expect(rendered_content).not_to have_text(ect_at_school_period.school_reported_appropriate_body_name)
+      expect(rendered_content).not_to have_text("Not reported")
+    end
+  end
+
   context "when provider led chosen" do
     let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period:, started_on:) }
 
