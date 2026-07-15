@@ -287,13 +287,42 @@ describe Teachers::Search do
         let!(:ect_at_school_period3) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: mentored_teacher1, school: school1, started_on: earlier_start_date) }
         let!(:ect_at_school_period4) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: mentored_teacher2, school: school1, started_on: later_start_date) }
 
-        let!(:mentorship_period1) { FactoryBot.create(:mentorship_period, mentee: ect_at_school_period3, mentor: mentor_at_school_period1, started_on: earlier_start_date) }
-        let!(:mentorship_period2) { FactoryBot.create(:mentorship_period, mentee: ect_at_school_period4, mentor: mentor_at_school_period1, started_on: later_start_date) }
+        let!(:mentorship_period1) { FactoryBot.create(:mentorship_period, :ongoing, mentee: ect_at_school_period3, mentor: mentor_at_school_period1, started_on: earlier_start_date) }
+        let!(:mentorship_period2) { FactoryBot.create(:mentorship_period, :ongoing, mentee: ect_at_school_period4, mentor: mentor_at_school_period1, started_on: later_start_date) }
 
         it "orders with unmentored teachers first, then by started_on (newest first)" do
           results = Teachers::Search.new(ect_at_school: school1).search
 
           expect(results).to eq([teacher2, teacher1, mentored_teacher2, mentored_teacher1])
+        end
+
+        context "when an ECT only has a past mentorship" do
+          let(:previously_mentored_teacher) { FactoryBot.create(:teacher) }
+          let!(:previously_mentored_ect) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: previously_mentored_teacher, school: school1, started_on: later_start_date + 1.day) }
+          let!(:past_mentorship_period) { FactoryBot.create(:mentorship_period, mentee: previously_mentored_ect, mentor: mentor_at_school_period1, started_on: previously_mentored_ect.started_on, finished_on: previously_mentored_ect.started_on + 1.week) }
+
+          it "orders them with unmentored ECTs" do
+            results = Teachers::Search.new(ect_at_school: school1).search
+
+            expect(results).to eq([previously_mentored_teacher, teacher2, teacher1, mentored_teacher2, mentored_teacher1])
+          end
+        end
+      end
+
+      describe "preloaded current mentorships" do
+        let(:school) { FactoryBot.create(:school) }
+        let(:teacher) { FactoryBot.create(:teacher) }
+        let(:mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, started_on: 1.year.ago) }
+        let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:, started_on: 1.year.ago) }
+        let!(:past_mentorship_period) { FactoryBot.create(:mentorship_period, mentee: ect_at_school_period, mentor:, started_on: 1.year.ago, finished_on: 1.month.ago) }
+        let!(:current_mentorship_period) { FactoryBot.create(:mentorship_period, :ongoing, mentee: ect_at_school_period, mentor:, started_on: 1.month.ago + 1.day) }
+
+        it "does not cache current_or_next_mentorship_period as nil" do
+          result = Teachers::Search.new(ect_at_school: school).search.find_by!(id: teacher.id)
+          card_ect = result.current_or_next_ect_at_school_period
+
+          expect(card_ect.association(:current_or_next_mentorship_period)).to be_loaded
+          expect(card_ect.current_or_next_mentorship_period).to eq(current_mentorship_period)
         end
       end
 

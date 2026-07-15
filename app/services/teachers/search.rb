@@ -68,7 +68,7 @@ module Teachers
 
       @scope.merge!(
         @scope
-          .eager_load(current_or_next_ect_at_school_period: :mentorship_periods)
+          .eager_load(current_or_next_ect_at_school_period: :current_or_next_mentorship_period)
           .where(ect_at_school_periods: { school: })
       )
 
