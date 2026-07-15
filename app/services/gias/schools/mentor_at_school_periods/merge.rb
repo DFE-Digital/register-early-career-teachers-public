@@ -26,15 +26,17 @@ module GIAS
             end
 
             successor_period.save!
+
+            record_event!
           end
         end
 
       private
 
         def successor_period
-          @successor_period ||= periods.reverse.find do |period|
-            period.school == successor_school
-          end
+          @successor_period ||= periods
+            .select { |period| period.school == successor_school }
+            .max_by(&:started_on)
         end
 
         def redundant_periods
@@ -64,7 +66,7 @@ module GIAS
 
         def update_mentorship_periods
           mentorship_periods.each do |mentorship_period|
-            GIAS::Schools::ECTAtSchoolPeriods::Transfer.call(period: mentorship_period.mentee, predecessor_school:, successor_school:)
+            GIAS::Schools::ECTAtSchoolPeriods::Transfer.call(ect_at_school_period: mentorship_period.mentee, predecessor_school:, successor_school:)
             mentorship_period.mentor = successor_period
             mentorship_period.save!
           end
@@ -96,6 +98,16 @@ module GIAS
 
         def started_on
           @started_on ||= periods.map(&:started_on).min
+        end
+
+        def record_event!
+          Events::Record.record_teacher_mentor_at_school_periods_merged!(
+            author: Events::SystemAuthor.new,
+            teacher: successor_period.teacher,
+            successor_period:,
+            mentor_at_school_periods: periods,
+            happened_at: predecessor_school.gias_school.closed_on
+          )
         end
       end
     end

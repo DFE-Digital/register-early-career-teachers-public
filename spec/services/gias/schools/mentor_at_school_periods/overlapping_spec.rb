@@ -27,7 +27,7 @@ RSpec.describe GIAS::Schools::MentorAtSchoolPeriods::Overlapping do
     )
   end
 
-  describe "#call" do
+  describe "#find" do
     context "when two periods overlap" do
       let(:first_period_started_on) { Date.new(2025, 1, 1) }
       let(:first_period_finished_on) { Date.new(2025, 3, 31) }

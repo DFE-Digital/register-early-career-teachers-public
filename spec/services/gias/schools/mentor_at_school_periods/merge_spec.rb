@@ -517,5 +517,17 @@ RSpec.describe GIAS::Schools::MentorAtSchoolPeriods::Merge do
         end
       end
     end
+
+    it "records an event for the periods being merged" do
+      expect(Events::Record).to receive(:record_teacher_mentor_at_school_periods_merged!).with(
+        author: an_instance_of(Events::SystemAuthor),
+        teacher: successor_period.teacher,
+        successor_period:,
+        mentor_at_school_periods: periods,
+        happened_at: predecessor_school.gias_school.closed_on
+      )
+
+      service
+    end
   end
 end

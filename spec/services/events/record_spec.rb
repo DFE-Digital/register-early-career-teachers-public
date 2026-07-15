@@ -941,7 +941,7 @@ RSpec.describe Events::Record do
       )
     end
 
-    let(:target_period) do
+    let(:successor_period) do
       FactoryBot.create(
         :mentor_at_school_period,
         teacher:,
@@ -964,18 +964,22 @@ RSpec.describe Events::Record do
           periods = [
             { finished_on: Date.new(2025, 6, 30),
               school: "Monsters College",
-              started_on: Date.new(2025, 1, 1) },
+              started_on: Date.new(2025, 1, 1),
+              id: first_period.id,
+              urn: 1_234_567 },
             { finished_on: nil,
               school: "Monsters College",
-              started_on: Date.new(2025, 7, 1) }
+              started_on: Date.new(2025, 7, 1),
+              id: second_period.id,
+              urn: 1_234_567 }
           ]
 
-          Events::Record.record_teacher_mentor_at_school_periods_merged!(author:, teacher:, mentor_at_school_periods:, target_period:)
+          Events::Record.record_teacher_mentor_at_school_periods_merged!(author:, teacher:, mentor_at_school_periods:, successor_period:)
 
           expect(RecordEventJob).to have_received(:perform_later).with(
             event_type: :teacher_mentor_at_school_periods_merged,
             teacher:,
-            mentor_at_school_period: target_period,
+            mentor_at_school_period: successor_period,
             metadata: { periods: },
             heading: "Rhys Ifans's mentor at school periods from 2025-01-01 were merged into a single period at Abigail Hardscrabble High School for Girls (7654321)",
             happened_at: Time.zone.now,
@@ -993,21 +997,25 @@ RSpec.describe Events::Record do
 
       it "queues a RecordEventJob with the correct values" do
         freeze_time do
-          Events::Record.record_teacher_mentor_at_school_periods_merged!(author:, teacher:, mentor_at_school_periods:, target_period:)
+          Events::Record.record_teacher_mentor_at_school_periods_merged!(author:, teacher:, mentor_at_school_periods:, successor_period:)
 
           periods = [
             { finished_on: Date.new(2025, 6, 30),
               school: "Monsters College",
-              started_on: Date.new(2025, 1, 1) },
+              started_on: Date.new(2025, 1, 1),
+              id: first_period.id,
+              urn: 1_234_567 },
             { finished_on: Date.new(2025, 12, 31),
               school: "Monsters College",
-              started_on: Date.new(2025, 7, 1) }
+              started_on: Date.new(2025, 7, 1),
+              id: second_period.id,
+              urn: 1_234_567 }
           ]
 
           expect(RecordEventJob).to have_received(:perform_later).with(
             event_type: :teacher_mentor_at_school_periods_merged,
             teacher:,
-            mentor_at_school_period: target_period,
+            mentor_at_school_period: successor_period,
             metadata: { periods: },
             heading: "Rhys Ifans's mentor at school periods between 2025-01-01 and 2025-12-31 were merged into a single period at Abigail Hardscrabble High School for Girls (7654321)",
             happened_at: Time.zone.now,
