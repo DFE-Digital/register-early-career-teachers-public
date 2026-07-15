@@ -11,11 +11,24 @@ RSpec.describe GIAS::Schools::ECTAtSchoolPeriods::Transfer do
   let(:finished_on) { Date.new(2025, 12, 31) }
 
   describe ".call" do
-    subject { described_class.call(period: ect_at_school_period, predecessor_school:, successor_school:) }
+    subject { described_class.call(ect_at_school_period:, predecessor_school:, successor_school:) }
 
     it "updates the ect_at_school_period's school to the successor school" do
       subject
       expect(ect_at_school_period.school).to eq(successor_school)
+    end
+
+    it "records an event for the ect_at_school_period being moved to the successor school" do
+      expect(Events::Record).to receive(:record_teacher_ect_at_school_period_moved_school!).with(
+        teacher: ect_at_school_period.teacher,
+        ect_at_school_period:,
+        old_school_name: predecessor_gias_school.name,
+        new_school: successor_school,
+        happened_at: predecessor_gias_school.closed_on,
+        author: an_instance_of(Events::SystemAuthor)
+      )
+
+      subject
     end
 
     context "when the ect_at_school_period has associated training periods" do
