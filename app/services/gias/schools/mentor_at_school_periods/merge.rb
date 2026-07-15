@@ -22,6 +22,8 @@ module GIAS
 
             redundant_periods.each do |period|
               period.training_periods.reset
+              period.mentorship_periods.reset
+              period.events.reset
               period.destroy!
             end
 
