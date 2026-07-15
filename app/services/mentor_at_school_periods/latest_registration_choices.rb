@@ -18,6 +18,11 @@ module MentorAtSchoolPeriods
       school_partnership&.lead_provider || expression_of_interest&.lead_provider
     end
 
+    def contract_period
+      training_period&.contract_period ||
+        training_period&.expression_of_interest_contract_period
+    end
+
     def school
       school_partnership&.school || training_period&.mentor_at_school_period&.school
     end
