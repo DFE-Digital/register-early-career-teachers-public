@@ -11,11 +11,24 @@ RSpec.describe GIAS::Schools::MentorAtSchoolPeriods::Transfer do
   let(:finished_on) { Date.new(2025, 12, 31) }
 
   describe ".call" do
-    subject { described_class.call(period: mentor_at_school_period, predecessor_school:, successor_school:) }
+    subject { described_class.call(mentor_at_school_period:, predecessor_school:, successor_school:) }
 
     it "updates the mentor_at_school_period's school to the successor school" do
       subject
       expect(mentor_at_school_period.school).to eq(successor_school)
+    end
+
+    it "records an event for the mentor_at_school_period being moved to the successor school" do
+      expect(Events::Record).to receive(:record_teacher_mentor_at_school_period_moved_school!).with(
+        teacher: mentor_at_school_period.teacher,
+        mentor_at_school_period:,
+        old_school_name: predecessor_gias_school.name,
+        new_school: successor_school,
+        happened_at: predecessor_gias_school.closed_on,
+        author: an_instance_of(Events::SystemAuthor)
+      )
+
+      subject
     end
 
     context "when the mentor_at_school_period has associated training periods" do
@@ -79,7 +92,7 @@ RSpec.describe GIAS::Schools::MentorAtSchoolPeriods::Transfer do
         subject
 
         ect_at_school_periods.each do |mentee|
-          expect(GIAS::Schools::ECTAtSchoolPeriods::Transfer).to have_received(:call).with(period: mentee, predecessor_school:, successor_school:)
+          expect(GIAS::Schools::ECTAtSchoolPeriods::Transfer).to have_received(:call).with(ect_at_school_period: mentee, predecessor_school:, successor_school:)
         end
       end
     end
