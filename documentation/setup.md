@@ -8,7 +8,7 @@ The quickest way to get up and running with the ECF2 application is to use a [Co
 
 ### Prerequisites
 
-* Ruby 4.0.4 (via [rbenv](https://github.com/rbenv/rbenv), [rvm](https://github.com/rvm/rvm), or [asdf](https://github.com/asdf-vm/asdf))
+* Ruby 4.0.6 (via [rbenv](https://github.com/rbenv/rbenv), [rvm](https://github.com/rvm/rvm), or [asdf](https://github.com/asdf-vm/asdf))
 * NodeJS (via [fnm](https://github.com/Schniz/fnm), [nvm](https://github.com/nvm-sh/nvm) or asdf)
 * PostgreSQL (via your package manager or [Postgres.app](https://postgresapp.com/))
 
@@ -35,6 +35,7 @@ This assumes your username is `joey`. You can check yours by running `whoami`
    On Linux this will be something like `sudo systemctl restart postgresql.service`
 
    On Mac, if you installed with Homebrew, run `brew services restart postgres`. If you installed Postgres.app, right click on the icon in the control centre and click 'Restart server'
+
 5. Now we can test our user account is working properly. By default, running the `postgres` command with no arguments will connect with your username to a database named after your username (i.e. it will connect with the user `joey` to a database called `joey`).
 
    We should be able to create a database with `createdb joey`

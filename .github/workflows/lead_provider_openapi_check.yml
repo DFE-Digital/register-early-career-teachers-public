@@ -6,7 +6,7 @@ on:
         description: Ruby version
         type: string
         required: false
-        default: "4.0.4"
+        default: "4.0.6"
 jobs:
   openapi-check:
     name: Check OpenAPI schema
