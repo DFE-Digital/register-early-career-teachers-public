@@ -36,22 +36,39 @@ module Schools
       {
         text: "Change",
         visually_hidden_text: "appropriate body",
-        href: change_appropriate_body_path,
+        href: schools_ects_change_appropriate_body_wizard_edit_path(@ect),
         classes: "govuk-link--no-visited-state"
       }
     end
 
-    # The ongoing induction period that represents an AB claiming the ECT for
-    # *this* school placement (i.e. started within this placement's dates).
-    # Claims recorded before the school registered the ECT, or carried over from
-    # a previous school, are excluded, so the school keeps seeing its reported
-    # appropriate body as provisional until it's confirmed for this placement.
-    def claiming_induction_period
-      @claiming_induction_period ||=
-        @ect.teacher.induction_periods.ongoing
-            .where(started_on: @ect.started_on..@ect.finished_on)
-            .latest_first
-            .first
+    def appropriate_body
+      @appropriate_body ||= ECTAtSchoolPeriods::AppropriateBody.new(@ect)
+    end
+
+    def appropriate_body_html
+      return claimed_appropriate_body_html if appropriate_body.from_induction?
+      return appropriate_body.name unless appropriate_body.from_school?
+
+      safe_join([
+        appropriate_body.name,
+        tag.br,
+        tag.span("Awaiting confirmation by the appropriate body", class: "govuk-hint")
+      ])
+    end
+
+    def claimed_appropriate_body_html
+      safe_join([
+        appropriate_body.name,
+        tag.br,
+        tag.span(
+          safe_join([
+            "This appropriate body has recorded the ECT’s induction.",
+            tag.br,
+            "Contact them if this is wrong or if you want to change the appropriate body."
+          ]),
+          class: "govuk-hint"
+        )
+      ])
     end
 
     def induction_start_date_row
@@ -76,43 +93,11 @@ module Schools
       ])
     end
 
-    def appropriate_body_html
-      return claimed_appropriate_body_html if claiming_induction_period
-
-      name = @ect.school_reported_appropriate_body_name.presence
-      return "Not reported" if name.nil?
-
-      safe_join([
-        name,
-        tag.br,
-        tag.span("Awaiting confirmation by the appropriate body", class: "govuk-hint")
-      ])
-    end
-
-    def claimed_appropriate_body_html
-      safe_join([
-        claiming_induction_period.appropriate_body_name,
-        tag.br,
-        tag.span(
-          safe_join([
-            "This appropriate body has recorded the ECT’s induction.",
-            tag.br,
-            "Contact them if this is wrong or if you want to change the appropriate body."
-          ]),
-          class: "govuk-hint"
-        )
-      ])
-    end
-
     def induction_start_date_not_reported_row
       {
         key: { text: "Induction start date" },
         value: { text: "Yet to be reported by the appropriate body" }
       }
-    end
-
-    def change_appropriate_body_path
-      schools_ects_change_appropriate_body_wizard_edit_path(ect_id: @ect.id)
     end
   end
 end
