@@ -228,6 +228,36 @@ RSpec.describe TRS::Teacher do
       it { is_expected.to be_prohibited_from_teaching }
     end
 
+    context "when teacher has a prohibition alert with an end date" do
+      let(:data) do
+        {
+          "alerts" => [
+            {
+              "alertType" => { "alertCategory" => { "alertCategoryId" => "b2b19019-b165-47a3-8745-3297ff152581" } },
+              "endDate" => "2024-09-18"
+            }
+          ]
+        }
+      end
+
+      it { is_expected.not_to be_prohibited_from_teaching }
+    end
+
+    context "when teacher has a prohibition alert with a future end date" do
+      let(:data) do
+        {
+          "alerts" => [
+            {
+              "alertType" => { "alertCategory" => { "alertCategoryId" => "b2b19019-b165-47a3-8745-3297ff152581" } },
+              "endDate" => "9999-09-18"
+            }
+          ]
+        }
+      end
+
+      it { is_expected.to be_prohibited_from_teaching }
+    end
+
     context "when teacher has no alerts" do
       let(:data) { { "alerts" => [] } }
 
