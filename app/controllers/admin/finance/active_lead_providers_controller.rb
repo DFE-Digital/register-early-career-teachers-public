@@ -27,14 +27,12 @@ module Admin::Finance
     end
 
     def create
-      @active_lead_provider = Create.(
-        author: current_user,
-        contract_period: @contract_period,
-        lead_provider_id: active_lead_provider_params[:lead_provider_id]
-      )
+      @active_lead_provider = @contract_period.active_lead_providers.build(active_lead_provider_params)
 
-      if @active_lead_provider.persisted?
-        flash[:notice] = "#{@active_lead_provider.lead_provider.name} added"
+      if @active_lead_provider.save
+        @active_lead_provider.seed_from_previous!
+
+        flash[:notice] = "#{@active_lead_provider.lead_provider_name} added"
         redirect_to admin_contract_period_active_lead_providers_path(@contract_period)
       else
         @available_lead_providers = available_lead_providers

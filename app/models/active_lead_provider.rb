@@ -1,4 +1,6 @@
 class ActiveLeadProvider < ApplicationRecord
+  include EventRecordable
+
   # Associations
   belongs_to :contract_period, inverse_of: :active_lead_providers, foreign_key: :contract_period_year
   belongs_to :lead_provider, inverse_of: :active_lead_providers
@@ -6,7 +8,6 @@ class ActiveLeadProvider < ApplicationRecord
   has_many :school_partnerships, through: :lead_provider_delivery_partnerships
   has_many :delivery_partners, through: :lead_provider_delivery_partnerships
   has_many :expressions_of_interest, class_name: "TrainingPeriod", foreign_key: "expression_of_interest_id", inverse_of: :expression_of_interest
-  has_many :events
   has_many :contracts
   has_many :statements, through: :contracts
   has_many :bands, -> { order(allocation_order: :asc) }, class_name: "ActiveLeadProvider::Band"
@@ -42,4 +43,8 @@ class ActiveLeadProvider < ApplicationRecord
   def bands_can_be_added_and_removed?
     contracts.none? && contract_period.started_on.future?
   end
+
+  # This would be better as ActiveLeadProvider::SeedFromPrevious as we could then have
+  # SeedFromPrevious.( and ideally this would live in models.
+  def seed_from_previous! = ActiveLeadProviders::SeedFromPrevious.(active_lead_provider: self)
 end

@@ -1,5 +1,7 @@
 module Admin::Finance
   class ContractPeriodsController < Admin::Finance::BaseController
+    include ::ContractPeriods
+
     layout "full"
 
     before_action :set_contract_period, only: %i[show edit update]
@@ -28,16 +30,18 @@ module Admin::Finance
     end
 
     def create
-      @contract_period = ContractPeriods::Create.new(
-        author: current_user,
-        params: contract_period_params
-      ).create!
+      @contract_period = ContractPeriod.new(contract_period_params.merge(enabled: true))
+
+      ActiveRecord::Base.transaction do
+        @contract_period.save!
+        @contract_period.seed_from_previous!
+      end
 
       redirect_to admin_contract_periods_path, alert: "#{@contract_period.year} Contract period added"
     rescue ActiveRecord::RecordInvalid,
-           ContractPeriods::SeedFromPrevious::AlreadyScheduledError,
-           ContractPeriods::SeedFromPrevious::ContractPeriodStartedError,
-           ContractPeriods::SeedFromPrevious::NoPreviousContractPeriodError => e
+           SeedFromPrevious::AlreadyScheduledError,
+           SeedFromPrevious::ContractPeriodStartedError,
+           SeedFromPrevious::NoPreviousContractPeriodError => e
 
       flash[:error] = "Cannot seed contract period: #{e.message}"
       @contract_period = e.record
@@ -48,16 +52,11 @@ module Admin::Finance
     end
 
     def update
-      ContractPeriods::Update.new(
-        author: current_user,
-        contract_period: @contract_period,
-        params: contract_period_params
-      ).update!
-
-      redirect_to admin_contract_periods_path, alert: "#{@contract_period.year} Contract period updated"
-    rescue ActiveRecord::RecordInvalid,
-           ContractPeriods::Update::NotEditable
-      render :edit, status: :unprocessable_content
+      if @contract_period.update(contract_period_params)
+        redirect_to admin_contract_periods_path, alert: "#{@contract_period.year} Contract period updated"
+      else
+        render :edit, status: :unprocessable_content
+      end
     end
 
   private

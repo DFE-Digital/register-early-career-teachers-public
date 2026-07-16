@@ -15,14 +15,14 @@ RSpec.describe ContractPeriods::SeedFromPrevious do
     end
   end
 
-  describe "#schedule!" do
+  describe "#call" do
     let(:contract_period) do
       FactoryBot.create(:contract_period, :next)
     end
 
     context "without a previous contract period" do
       it do
-        expect { service.schedule! }.to raise_error(
+        expect { service.call }.to raise_error(
           ContractPeriods::SeedFromPrevious::NoPreviousContractPeriodError,
           "No previous contract period found"
         )
@@ -87,23 +87,23 @@ RSpec.describe ContractPeriods::SeedFromPrevious do
         end
 
         it "returns :scheduled" do
-          expect(service.schedule!).to eq(:scheduled)
+          expect(service.call).to eq(:scheduled)
         end
 
         it "clones from the previous contract period" do
-          expect { service.schedule! }.to change(Schedule, :count).by(3).and change(Milestone, :count).by(4)
+          expect { service.call }.to change(Schedule, :count).by(3).and change(Milestone, :count).by(4)
         end
 
         it "raises an error if called repeatedly" do
-          expect(service.schedule!).to eq(:scheduled)
-          expect { service.schedule! }.to raise_error(
+          expect(service.call).to eq(:scheduled)
+          expect { service.call }.to raise_error(
             ContractPeriods::SeedFromPrevious::AlreadyScheduledError,
             "The contract period already has schedules"
           )
         end
 
         it "advances dates by one year if set" do
-          service.schedule!
+          service.call
 
           expect(new_september_schedule.milestones.find_by(declaration_type: "started").start_date).to eq(Date.new(current_year, 6, 1))
           expect(new_september_schedule.milestones.find_by(declaration_type: "retained-1").milestone_date).to be_nil
@@ -113,12 +113,12 @@ RSpec.describe ContractPeriods::SeedFromPrevious do
 
         it "rolls back changes if an error occurs" do
           allow(Milestone).to receive(:create!).and_raise(ActiveRecord::RecordInvalid)
-          expect { service.schedule! }.to raise_error(ActiveRecord::RecordInvalid)
+          expect { service.call }.to raise_error(ActiveRecord::RecordInvalid)
           expect(new_schedules).to be_empty
         end
 
         it "copies schedule identifiers" do
-          service.schedule!
+          service.call
           expect(new_schedules.pluck(:identifier)).to contain_exactly(
             "ecf-standard-september",
             "ecf-standard-january",
@@ -127,13 +127,13 @@ RSpec.describe ContractPeriods::SeedFromPrevious do
         end
 
         it "copies milestone declaration types" do
-          service.schedule!
+          service.call
           expect(new_september_schedule.milestones.pluck(:declaration_type)).to contain_exactly("started", "retained-1")
           expect(new_january_schedule.milestones.pluck(:declaration_type)).to contain_exactly("started", "completed")
         end
 
         it "copies schedules without milestones" do
-          service.schedule!
+          service.call
           expect(new_april_schedule).not_to be_nil
           expect(new_april_schedule.milestones).to be_empty
         end
@@ -145,7 +145,7 @@ RSpec.describe ContractPeriods::SeedFromPrevious do
         end
 
         it do
-          expect { service.schedule! }.to raise_error(
+          expect { service.call }.to raise_error(
             ContractPeriods::SeedFromPrevious::ContractPeriodStartedError,
             "Contract periods cannot be scheduled after they have started"
           )
@@ -158,7 +158,7 @@ RSpec.describe ContractPeriods::SeedFromPrevious do
         end
 
         it do
-          expect { service.schedule! }.to raise_error(
+          expect { service.call }.to raise_error(
             ContractPeriods::SeedFromPrevious::ContractPeriodStartedError,
             "Contract periods cannot be scheduled after they have started"
           )
@@ -172,7 +172,7 @@ RSpec.describe ContractPeriods::SeedFromPrevious do
         end
 
         it do
-          expect { service.schedule! }.to raise_error(
+          expect { service.call }.to raise_error(
             ContractPeriods::SeedFromPrevious::AlreadyScheduledError,
             "The contract period already has schedules"
           )
