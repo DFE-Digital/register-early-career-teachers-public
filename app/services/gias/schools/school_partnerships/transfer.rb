@@ -1,20 +1,13 @@
 module GIAS::Schools
   module SchoolPartnerships
     class Transfer
-      class InvalidObject < StandardError; end
-      class InvalidPeriodType < StandardError; end
+      def self.call(...) = new(...).call
 
-      attr_reader :object, :successor_school, :author
-
-      def initialize(object:, successor_school:, author: Events::SystemAuthor.new)
-        @object = object
+      def initialize(predecessor_school_partnership:, successor_school:, author: Events::SystemAuthor.new)
         @successor_school = successor_school
         @author = author
-
-        raise InvalidObject unless object.respond_to?(:school_partnership)
+        @predecessor_school_partnership = predecessor_school_partnership
       end
-
-      def self.call(**args) = new(**args).call
 
       def call
         return unless reassignment_required?
@@ -24,10 +17,11 @@ module GIAS::Schools
 
     private
 
+      attr_reader :predecessor_school_partnership, :successor_school, :author
+
       def reassignment_required?
         return false if successor_school.blank?
         return false if predecessor_school_partnership.blank?
-        return false if period.blank?
 
         predecessor_school != successor_school
       end
@@ -51,9 +45,7 @@ module GIAS::Schools
         end
       end
 
-      def predecessor_school_partnership = object&.school_partnership
-      def predecessor_school = period.school
-      def period = object.send(:mentor_at_school_period) || object.send(:ect_at_school_period)
+      def predecessor_school = predecessor_school_partnership.school
 
       delegate :lead_provider_delivery_partnership, to: :predecessor_school_partnership
     end

@@ -49,7 +49,7 @@ RSpec.describe GIAS::Schools::ECTAtSchoolPeriods::Transfer do
         it "updates the training_period to have a matching school partnership at the successor school" do
           subject
 
-          expect(training_period.school_partnership.school).to eq(successor_school)
+          expect(training_period.reload.school_partnership.school).to eq(successor_school)
           expect(training_period.school_partnership.lead_provider_delivery_partnership).to eq(lead_provider_delivery_partnership)
         end
       end
