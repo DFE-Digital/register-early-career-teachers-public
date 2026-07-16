@@ -9,18 +9,12 @@ RSpec.describe API::Teachers::SchoolTransferSerializer, type: :serializer do
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
   let(:other_lead_provider) { FactoryBot.create(:lead_provider) }
   let(:teacher) { FactoryBot.create(:teacher) }
-  let(:leaving_training_period) do
-    teacher.ect_at_school_periods.first.latest_training_period
-  end
-  let(:leaving_school) do
-    teacher.ect_at_school_periods.first.school
-  end
-  let(:joining_training_period) do
-    teacher.ect_at_school_periods.second.earliest_training_period
-  end
-  let(:joining_school) do
-    teacher.ect_at_school_periods.second.school
-  end
+  let(:leaving_school_period) { teacher.ect_at_school_periods.order(:started_on).first }
+  let(:leaving_training_period) { leaving_school_period.latest_training_period }
+  let(:leaving_school) { leaving_school_period.school }
+  let(:joining_school_period) { teacher.ect_at_school_periods.order(:started_on).last }
+  let(:joining_training_period) { joining_school_period.earliest_training_period }
+  let(:joining_school) { joining_school_period.school }
 
   describe "core attributes" do
     before do
