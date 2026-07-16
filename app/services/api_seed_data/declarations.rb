@@ -51,13 +51,13 @@ module APISeedData
         next unless declaration_date.past?
 
         payment_status = Declaration.payment_statuses.keys.sample
-        unless payment_status == :no_payment
+        unless payment_status == "no_payment"
           payment_statement = find_random_statement(active_lead_provider)
           next unless payment_statement
         end
 
         clawback_status = clawback_status(payment_status)
-        unless clawback_status == :no_clawback
+        unless clawback_status == "no_clawback"
           clawback_statement = find_random_statement(active_lead_provider, (payment_statement.deadline_date + 1.day)..)
           next unless clawback_statement
         end
@@ -106,7 +106,7 @@ module APISeedData
     end
 
     def clawback_status(payment_status)
-      return :no_clawback unless payment_status == "paid"
+      return "no_clawback" unless payment_status == "paid"
 
       Declaration.clawback_statuses.keys.sample
     end
@@ -150,7 +150,7 @@ module APISeedData
 
     def teacher_ids_with_declarations
       Declaration
-        .joins(training_period: %i[ect_at_school_period mentor_at_school_period])
+        .left_joins(training_period: %i[ect_at_school_period mentor_at_school_period])
         .pluck("ect_at_school_periods.teacher_id", "mentor_at_school_periods.teacher_id")
         .flatten
         .uniq
