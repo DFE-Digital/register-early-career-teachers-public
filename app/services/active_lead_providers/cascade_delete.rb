@@ -1,5 +1,5 @@
 module ActiveLeadProviders
-  class CascadeDelete
+  class CascadeDelete < ApplicationService
     # Active lead providers should only be deleted before their contract period
     # has started, i.e. while still unused. If any usage data references this
     # active lead provider we refuse to delete it and raise CascadeDeleteError for
@@ -8,14 +8,10 @@ module ActiveLeadProviders
 
     class CascadeDeleteError < StandardError; end
 
-    attr_reader :active_lead_provider, :author
+    attribute :active_lead_provider
+    attribute :author
 
     delegate :lead_provider, :contract_period, to: :active_lead_provider
-
-    def initialize(active_lead_provider:, author:)
-      @active_lead_provider = active_lead_provider
-      @author = author
-    end
 
     def call
       reject_if_in_use!
