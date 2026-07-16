@@ -1,7 +1,6 @@
 RSpec.describe Support::ECTWithdrawalHistoryCorrection do
   subject(:correct_withdrawal_history) do
     described_class.new(
-      ect_at_school_period:,
       original_training_period:,
       erroneous_withdrawn_training_period:,
       corrected_end_date:,
@@ -122,7 +121,6 @@ RSpec.describe Support::ECTWithdrawalHistoryCorrection do
     context "when the original and erroneous periods are the same" do
       subject(:correct_withdrawal_history) do
         described_class.new(
-          ect_at_school_period:,
           original_training_period:,
           erroneous_withdrawn_training_period:
             original_training_period,
@@ -140,38 +138,7 @@ RSpec.describe Support::ECTWithdrawalHistoryCorrection do
       end
     end
 
-    context "when the original training period belongs to another ECT-at-school period" do
-      let(:other_ect_at_school_period) do
-        FactoryBot.create(
-          :ect_at_school_period,
-          started_on: ect_started_on,
-          finished_on: nil
-        )
-      end
-
-      let(:original_training_period) do
-        FactoryBot.create(
-          :training_period,
-          :for_ect,
-          :provider_led,
-          ect_at_school_period: other_ect_at_school_period,
-          started_on: ect_started_on,
-          finished_on: original_finished_on,
-          withdrawn_at: nil,
-          withdrawal_reason: nil
-        )
-      end
-
-      it "raises an error" do
-        expect { correct_withdrawal_history }
-          .to raise_error(
-            described_class::InvalidCorrection,
-            "Original training period does not belong to the ECT-at-school period"
-          )
-      end
-    end
-
-    context "when the erroneous training period belongs to another ECT-at-school period" do
+    context "when the training periods belong to different ECT-at-school periods" do
       let(:other_ect_at_school_period) do
         FactoryBot.create(
           :ect_at_school_period,
@@ -197,7 +164,7 @@ RSpec.describe Support::ECTWithdrawalHistoryCorrection do
         expect { correct_withdrawal_history }
           .to raise_error(
             described_class::InvalidCorrection,
-            "Erroneous training period does not belong to the ECT-at-school period"
+            "Training periods do not belong to the same ECT-at-school period"
           )
       end
     end
