@@ -191,6 +191,40 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
       end
     end
 
+    context "when the mentor had a prohibition alert that has ended" do
+      let(:school) { FactoryBot.create(:school) }
+
+      before do
+        test_client = TRS::TestAPIClient.new
+
+        allow(test_client).to receive(:find_teacher).and_return(
+          TRS::Teacher.new(
+            "trn" => "1234568",
+            "firstName" => "Jane",
+            "lastName" => "Smith",
+            "dateOfBirth" => "1977-02-03",
+            "qts" => { "holdsFrom" => "2024-09-18" },
+            "alerts" => [
+              {
+                "alertType" => {
+                  "alertCategory" => {
+                    "alertCategoryId" => TRS::Teacher::PROHIBITED_FROM_TEACHING_CATEGORY_ID
+                  }
+                },
+                "endDate" => "2024-09-18"
+              }
+            ]
+          )
+        )
+        allow(::TRS::APIClient).to receive(:new).and_return(test_client)
+        subject.save!
+      end
+
+      it "returns :review_mentor_details" do
+        expect(subject.next_step).to eq(:review_mentor_details)
+      end
+    end
+
     context "otherwise" do
       let(:school) { FactoryBot.create(:school) }
 
