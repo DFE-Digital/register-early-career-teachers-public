@@ -96,5 +96,11 @@ RSpec.describe GIAS::Schools::MentorAtSchoolPeriods::Transfer do
         end
       end
     end
+
+    context "when the mentor_at_school_period is not at the predecessor school" do
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, started_on:, finished_on:) }
+
+      it { is_expected.to be_nil }
+    end
   end
 end

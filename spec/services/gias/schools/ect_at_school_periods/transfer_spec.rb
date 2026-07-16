@@ -73,5 +73,11 @@ RSpec.describe GIAS::Schools::ECTAtSchoolPeriods::Transfer do
         end
       end
     end
+
+    context "when the ect_at_school_period is not at the predecessor school" do
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on:, finished_on:) }
+
+      it { is_expected.to be_nil }
+    end
   end
 end
