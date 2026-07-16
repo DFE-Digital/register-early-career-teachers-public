@@ -37,7 +37,7 @@ RSpec.describe GIAS::Schools::MentorAtSchoolPeriods::Overlapping do
       it { is_expected.to eq([[first_period, second_period]]) }
     end
 
-    context "when periods are adjacent" do
+    context "when two periods are adjacent" do
       let(:first_period_started_on) { Date.new(2025, 1, 1) }
       let(:first_period_finished_on) { Date.new(2025, 3, 31) }
       let(:second_period_started_on) { Date.new(2025, 4, 1) }
@@ -46,7 +46,7 @@ RSpec.describe GIAS::Schools::MentorAtSchoolPeriods::Overlapping do
       it { is_expected.to be_empty }
     end
 
-    context "when periods have a gap" do
+    context "when two periods have a gap" do
       let(:first_period_started_on) { Date.new(2025, 1, 1) }
       let(:first_period_finished_on) { Date.new(2025, 3, 31) }
       let(:second_period_started_on) { Date.new(2025, 4, 2) }
@@ -55,7 +55,7 @@ RSpec.describe GIAS::Schools::MentorAtSchoolPeriods::Overlapping do
       it { is_expected.to be_empty }
     end
 
-    context "when periods overlap transitively" do
+    context "when three periods overlap transitively" do
       let(:first_period_started_on) { Date.new(2025, 1, 1) }
       let(:first_period_finished_on) { Date.new(2025, 3, 31) }
       let(:second_period_started_on) { Date.new(2025, 3, 1) }
@@ -111,7 +111,7 @@ RSpec.describe GIAS::Schools::MentorAtSchoolPeriods::Overlapping do
       end
     end
 
-    context "when the earliest periods is ongoing" do
+    context "when the earliest period is ongoing" do
       let(:first_period_started_on) { Date.new(2025, 1, 1) }
       let(:first_period_finished_on) { nil }
       let(:second_period_started_on) { Date.new(2025, 4, 1) }
@@ -195,7 +195,7 @@ RSpec.describe GIAS::Schools::MentorAtSchoolPeriods::Overlapping do
       it { is_expected.to be_empty }
     end
 
-    context "when there mentor periods belonging to other teachers at the schools" do
+    context "when there are mentor periods belonging to other teachers at the schools" do
       let(:other_teacher) { FactoryBot.create(:teacher) }
       let(:another_teacher) { FactoryBot.create(:teacher) }
 
