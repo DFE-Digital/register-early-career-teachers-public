@@ -3,23 +3,25 @@
 #
 # It moves the withdrawal details to the original period, applies the corrected
 # leaving date across linked records, and removes later periods that should no
-# longer exist. The supplied periods must have no declarations or events.
-module Teachers
+# longer exist. Neither training period can have declarations, and the erroneous training
+# period must not have any events.
+module Support
   class ECTWithdrawalHistoryCorrection
-    attr_reader :ect_at_school_period,
-                :original_training_period,
+    class InvalidCorrection < StandardError; end
+
+    attr_reader :original_training_period,
                 :erroneous_withdrawn_training_period,
                 :corrected_end_date,
                 :author
 
+    delegate :ect_at_school_period, to: :original_training_period
+
     def initialize(
-      ect_at_school_period:,
       original_training_period:,
       erroneous_withdrawn_training_period:,
       corrected_end_date:,
       author:
     )
-      @ect_at_school_period = ect_at_school_period
       @original_training_period = original_training_period
       @erroneous_withdrawn_training_period =
         erroneous_withdrawn_training_period
@@ -61,70 +63,73 @@ module Teachers
 
     def validate_training_periods!
       if original_training_period == erroneous_withdrawn_training_period
-        raise "Original and erroneous training periods must be different"
-      end
-
-      unless original_training_period.ect_at_school_period ==
-          ect_at_school_period
-        raise "Original training period does not belong to the ECT-at-school period"
+        raise InvalidCorrection,
+              "Original and erroneous training periods must be different"
       end
 
       unless erroneous_withdrawn_training_period.ect_at_school_period ==
           ect_at_school_period
-        raise "Erroneous training period does not belong to the ECT-at-school period"
+        raise InvalidCorrection,
+              "Training periods do not belong to the same ECT-at-school period"
       end
     end
 
     def validate_period_dates!
       if ect_at_school_period.finished_on.present?
-        raise "ECT-at-school period is already finished"
+        raise InvalidCorrection,
+              "ECT-at-school period is already finished"
       end
 
       if corrected_end_date < ect_at_school_period.started_on
-        raise "Corrected end date is before the ECT-at-school period start date"
+        raise InvalidCorrection,
+              "Corrected end date is before the ECT-at-school period start date"
       end
 
       if original_training_period.started_on > corrected_end_date
-        raise "Original training period starts after the corrected end date"
+        raise InvalidCorrection,
+              "Original training period starts after the corrected end date"
       end
 
       if original_training_period.finished_on.present? &&
           original_training_period.finished_on < corrected_end_date
-        raise "Original training period finishes before the corrected end date"
+        raise InvalidCorrection,
+              "Original training period finishes before the corrected end date"
       end
 
       if erroneous_withdrawn_training_period.started_on < corrected_end_date
-        raise "Erroneous training period starts before the corrected end date"
+        raise InvalidCorrection,
+              "Erroneous training period starts before the corrected end date"
       end
     end
 
     def validate_withdrawal_details!
       if original_training_period.withdrawn_at.present? ||
           original_training_period.withdrawal_reason.present?
-        raise "Original training period already has withdrawal details"
+        raise InvalidCorrection,
+              "Original training period already has withdrawal details"
       end
 
       if erroneous_withdrawn_training_period.withdrawn_at.blank? ||
           erroneous_withdrawn_training_period.withdrawal_reason.blank?
-        raise "Erroneous training period has incomplete withdrawal details"
+        raise InvalidCorrection,
+              "Erroneous training period has incomplete withdrawal details"
       end
     end
 
     def validate_dependencies!
       if original_training_period.declarations.exists?
-        raise "Original training period has declarations"
-      end
-
-      if original_training_period.events.exists?
-        raise "Original training period has events"
+        raise InvalidCorrection,
+              "Original training period has declarations"
       end
 
       if erroneous_withdrawn_training_period.declarations.exists?
-        raise "Erroneous training period has declarations"
+        raise InvalidCorrection,
+              "Erroneous training period has declarations"
       end
 
       if erroneous_withdrawn_training_period.events.exists?
-        raise "Erroneous training period has events"
+        raise InvalidCorrection,
+              "Erroneous training period has events"
       end
     end
   end

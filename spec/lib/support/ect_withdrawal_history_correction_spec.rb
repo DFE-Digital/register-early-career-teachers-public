@@ -1,4 +1,4 @@
-RSpec.describe Teachers::ECTWithdrawalHistoryCorrection do
+RSpec.describe Support::ECTWithdrawalHistoryCorrection do
   subject(:correct_withdrawal_history) do
     described_class.new(
       ect_at_school_period:,
@@ -134,7 +134,7 @@ RSpec.describe Teachers::ECTWithdrawalHistoryCorrection do
       it "raises an error" do
         expect { correct_withdrawal_history }
           .to raise_error(
-            RuntimeError,
+            described_class::InvalidCorrection,
             "Original and erroneous training periods must be different"
           )
       end
@@ -165,7 +165,7 @@ RSpec.describe Teachers::ECTWithdrawalHistoryCorrection do
       it "raises an error" do
         expect { correct_withdrawal_history }
           .to raise_error(
-            RuntimeError,
+            described_class::InvalidCorrection,
             "Original training period does not belong to the ECT-at-school period"
           )
       end
@@ -196,7 +196,7 @@ RSpec.describe Teachers::ECTWithdrawalHistoryCorrection do
       it "raises an error" do
         expect { correct_withdrawal_history }
           .to raise_error(
-            RuntimeError,
+            described_class::InvalidCorrection,
             "Erroneous training period does not belong to the ECT-at-school period"
           )
       end
@@ -212,7 +212,7 @@ RSpec.describe Teachers::ECTWithdrawalHistoryCorrection do
       it "raises an error" do
         expect { correct_withdrawal_history }
           .to raise_error(
-            RuntimeError,
+            described_class::InvalidCorrection,
             "ECT-at-school period is already finished"
           )
       end
@@ -224,7 +224,7 @@ RSpec.describe Teachers::ECTWithdrawalHistoryCorrection do
       it "raises an error" do
         expect { correct_withdrawal_history }
           .to raise_error(
-            RuntimeError,
+            described_class::InvalidCorrection,
             "Corrected end date is before the ECT-at-school period start date"
           )
       end
@@ -240,7 +240,7 @@ RSpec.describe Teachers::ECTWithdrawalHistoryCorrection do
       it "raises an error" do
         expect { correct_withdrawal_history }
           .to raise_error(
-            RuntimeError,
+            described_class::InvalidCorrection,
             "Original training period starts after the corrected end date"
           )
       end
@@ -256,7 +256,7 @@ RSpec.describe Teachers::ECTWithdrawalHistoryCorrection do
       it "raises an error" do
         expect { correct_withdrawal_history }
           .to raise_error(
-            RuntimeError,
+            described_class::InvalidCorrection,
             "Original training period finishes before the corrected end date"
           )
       end
@@ -272,7 +272,7 @@ RSpec.describe Teachers::ECTWithdrawalHistoryCorrection do
       it "raises an error" do
         expect { correct_withdrawal_history }
           .to raise_error(
-            RuntimeError,
+            described_class::InvalidCorrection,
             "Erroneous training period starts before the corrected end date"
           )
       end
@@ -289,7 +289,7 @@ RSpec.describe Teachers::ECTWithdrawalHistoryCorrection do
       it "raises an error" do
         expect { correct_withdrawal_history }
           .to raise_error(
-            RuntimeError,
+            described_class::InvalidCorrection,
             "Original training period already has withdrawal details"
           )
       end
@@ -305,7 +305,7 @@ RSpec.describe Teachers::ECTWithdrawalHistoryCorrection do
       it "raises an error" do
         expect { correct_withdrawal_history }
           .to raise_error(
-            RuntimeError,
+            described_class::InvalidCorrection,
             "Erroneous training period has incomplete withdrawal details"
           )
       end
@@ -321,7 +321,7 @@ RSpec.describe Teachers::ECTWithdrawalHistoryCorrection do
       it "raises an error" do
         expect { correct_withdrawal_history }
           .to raise_error(
-            RuntimeError,
+            described_class::InvalidCorrection,
             "Erroneous training period has incomplete withdrawal details"
           )
       end
@@ -339,26 +339,8 @@ RSpec.describe Teachers::ECTWithdrawalHistoryCorrection do
       it "raises an error without changing the records" do
         expect { correct_withdrawal_history }
           .to raise_error(
-            RuntimeError,
+            described_class::InvalidCorrection,
             "Original training period has declarations"
-          )
-
-        expect_records_to_remain_unchanged
-      end
-    end
-
-    context "when the original training period has events" do
-      before do
-        allow(original_training_period.events)
-          .to receive(:exists?)
-          .and_return(true)
-      end
-
-      it "raises an error without changing the records" do
-        expect { correct_withdrawal_history }
-          .to raise_error(
-            RuntimeError,
-            "Original training period has events"
           )
 
         expect_records_to_remain_unchanged
@@ -377,7 +359,7 @@ RSpec.describe Teachers::ECTWithdrawalHistoryCorrection do
       it "raises an error without changing the records" do
         expect { correct_withdrawal_history }
           .to raise_error(
-            RuntimeError,
+            described_class::InvalidCorrection,
             "Erroneous training period has declarations"
           )
 
@@ -395,7 +377,7 @@ RSpec.describe Teachers::ECTWithdrawalHistoryCorrection do
       it "raises an error without changing the records" do
         expect { correct_withdrawal_history }
           .to raise_error(
-            RuntimeError,
+            described_class::InvalidCorrection,
             "Erroneous training period has events"
           )
 
