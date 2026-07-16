@@ -22,7 +22,7 @@ RSpec.describe GIAS::Schools::ECTAtSchoolPeriods::Transfer do
       expect(Events::Record).to receive(:record_teacher_ect_at_school_period_moved_school!).with(
         teacher: ect_at_school_period.teacher,
         ect_at_school_period:,
-        old_school_name: predecessor_gias_school.name,
+        old_school_name_and_urn: Schools::Name.new(predecessor_school).name_and_urn,
         new_school: successor_school,
         happened_at: predecessor_gias_school.closed_on,
         author: an_instance_of(Events::SystemAuthor)
