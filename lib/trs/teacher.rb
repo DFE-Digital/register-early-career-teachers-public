@@ -45,7 +45,9 @@ module TRS
       @trs_last_name = data["lastName"]
       @trs_email_address = data["emailAddress"]
       @trs_national_insurance_number = data["nationalInsuranceNumber"]
-      @trs_alerts = data.fetch("alerts", []).map { |a| a.dig(*%w[alertType alertCategory alertCategoryId]) }
+      alerts = data.fetch("alerts", [])
+      @trs_alerts = alerts.map { |alert| alert.dig(*%w[alertType alertCategory alertCategoryId]) }
+      @trs_prohibited_from_teaching = alerts.any? { |alert| active_prohibition_alert?(alert) }
       @trs_qtls_status = data["qtlsStatus"]
       @trs_routes_to_professional_status = data["routesToProfessionalStatuses"]
       @trs_induction_start_date = data.dig("induction", "startDate")
@@ -63,7 +65,7 @@ module TRS
 
     # @return [Boolean]
     def prohibited_from_teaching?
-      PROHIBITED_FROM_TEACHING_CATEGORY_ID.in?(trs_alerts)
+      @trs_prohibited_from_teaching
     end
 
     alias_method :trs_prohibited_from_teaching, :prohibited_from_teaching?
@@ -110,6 +112,22 @@ module TRS
         trs_alerts:,
         trs_prohibited_from_teaching:,
       }
+    end
+
+  private
+
+    def active_prohibition_alert?(alert)
+      alert.dig(*%w[alertType alertCategory alertCategoryId]) == PROHIBITED_FROM_TEACHING_CATEGORY_ID &&
+        active_alert?(alert)
+    end
+
+    def active_alert?(alert)
+      end_date = alert["endDate"]
+      return true if end_date.blank?
+
+      Date.iso8601(end_date).future?
+    rescue Date::Error
+      true
     end
   end
 end
