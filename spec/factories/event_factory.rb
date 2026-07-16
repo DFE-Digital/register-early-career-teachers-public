@@ -8,9 +8,6 @@ FactoryBot.define do
     author_type { :appropriate_body_user }
     event_type { Event::EVENT_TYPES.sample }
 
-    association :school
-    association :school_partnership
-
     trait(:dfe_staff_user) do
       association :user
       author_type { :dfe_staff_user }
