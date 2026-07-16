@@ -953,13 +953,13 @@ RSpec.describe Events::Record do
 
     let(:mentor_at_school_periods) { [first_period, second_period] }
 
-    context "when the target period is ongoing" do
+    context "when the successor period is ongoing" do
       let(:first_period_started_on) { Date.new(2025, 1, 1) }
       let(:first_period_finished_on) { Date.new(2025, 6, 30) }
       let(:second_period_started_on) { Date.new(2025, 7, 1) }
       let(:second_period_finished_on) { nil }
 
-      it "queues a RecordEventJob with the correct values" do
+      it "queues a RecordEventJob with ongoing period message" do
         freeze_time do
           periods = [
             { finished_on: Date.new(2025, 6, 30),
@@ -989,13 +989,13 @@ RSpec.describe Events::Record do
       end
     end
 
-    context "when the target period is finished" do
+    context "when the successor period is finished" do
       let(:first_period_started_on) { Date.new(2025, 1, 1) }
       let(:first_period_finished_on) { Date.new(2025, 6, 30) }
       let(:second_period_started_on) { Date.new(2025, 7, 1) }
       let(:second_period_finished_on) { Date.new(2025, 12, 31) }
 
-      it "queues a RecordEventJob with the correct values" do
+      it "queues a RecordEventJob with between two dates message" do
         freeze_time do
           Events::Record.record_teacher_mentor_at_school_periods_merged!(author:, teacher:, mentor_at_school_periods:, successor_period:)
 
