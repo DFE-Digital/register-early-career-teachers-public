@@ -2,8 +2,6 @@ module Schools
   module ECTs
     module ChangeLeadProviderWizard
       class EditStep < Step
-        include Schedules::Reuse
-
         attribute :lead_provider_id, :string
 
         validates :lead_provider_id,
@@ -44,10 +42,20 @@ module Schools
             .call
         end
 
-        def period = ect_at_school_period
-        def reuse_existing_schedule? = false
-        def current_or_next_training_period_confirmed? = true
-        def date_of_transition = period.started_on
+        def contract_period
+          return contract_period_reassignment.successor_contract_period if contract_period_reassignment.required?
+
+          contract_period_reassignment.assigned_contract_period
+        end
+
+        def training_period
+          @training_period ||= ect_at_school_period.current_or_next_training_period ||
+            ect_at_school_period.latest_training_period
+        end
+
+        def contract_period_reassignment
+          @contract_period_reassignment ||= ContractPeriods::Reassignment.new(training_period:)
+        end
       end
     end
   end
