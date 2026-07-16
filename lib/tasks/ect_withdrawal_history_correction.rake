@@ -105,7 +105,7 @@ namespace :support do
     erroneous_training_period_id =
       erroneous_withdrawn_training_period.id
 
-    Teachers::ECTWithdrawalHistoryCorrection.new(
+    Support::ECTWithdrawalHistoryCorrection.new(
       ect_at_school_period:,
       source_training_period: erroneous_withdrawn_training_period,
       target_training_period: original_training_period,
