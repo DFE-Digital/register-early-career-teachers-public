@@ -56,7 +56,7 @@ module GIAS
           Events::Record.record_teacher_ect_at_school_period_moved_school!(
             teacher:,
             ect_at_school_period:,
-            old_school_name: predecessor_gias_school.name,
+            old_school_name_and_urn:,
             new_school: successor_school,
             happened_at: predecessor_gias_school.closed_on,
             author: Events::SystemAuthor.new
@@ -64,6 +64,7 @@ module GIAS
         end
 
         def predecessor_gias_school = predecessor_school.gias_school
+        def old_school_name_and_urn = ::Schools::Name.new(predecessor_school).name_and_urn
 
         delegate :mentorship_periods, :training_periods, :events, :teacher, to: :ect_at_school_period
       end

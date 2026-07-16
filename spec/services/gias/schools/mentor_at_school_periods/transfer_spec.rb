@@ -22,7 +22,7 @@ RSpec.describe GIAS::Schools::MentorAtSchoolPeriods::Transfer do
       expect(Events::Record).to receive(:record_teacher_mentor_at_school_period_moved_school!).with(
         teacher: mentor_at_school_period.teacher,
         mentor_at_school_period:,
-        old_school_name: predecessor_gias_school.name,
+        old_school_name_and_urn: Schools::Name.new(predecessor_school).name_and_urn,
         new_school: successor_school,
         happened_at: predecessor_gias_school.closed_on,
         author: an_instance_of(Events::SystemAuthor)
