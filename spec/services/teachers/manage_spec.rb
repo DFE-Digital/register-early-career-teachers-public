@@ -87,7 +87,8 @@ RSpec.describe Teachers::Manage do
             event_type: :teacher_name_updated_by_trs,
             happened_at: Time.zone.now,
             heading: "Name changed from 'Barry Allen' to 'John Doe'",
-            teacher:
+            teacher:,
+            metadata: { old_name: "Barry Allen", new_name: "John Doe" }
           )
         end
       end
