@@ -36,7 +36,7 @@ RSpec.describe GIAS::Schools::ECTAtSchoolPeriods::Transfer do
         let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :with_only_expression_of_interest, ect_at_school_period:) }
 
         it "updates the ect_at_school_period's school to the successor school but makes no change to the training_period" do
-          expect { subject }.not_to(change { training_period })
+          expect { subject }.not_to(change { training_period.reload.school_partnership_id })
 
           expect(ect_at_school_period.school).to eq(successor_school)
         end
