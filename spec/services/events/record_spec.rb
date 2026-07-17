@@ -916,6 +916,116 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe ".record_teacher_mentor_at_school_periods_merged!" do
+    let(:first_gias_school) { FactoryBot.create(:gias_school, :with_school, urn: "1234567", name: "Monsters College") }
+    let(:second_gias_school) { FactoryBot.create(:gias_school, :with_school, urn: "7654321", name: "Abigail Hardscrabble High School for Girls") }
+    let(:first_school) { first_gias_school.school }
+    let(:second_school) { second_gias_school.school }
+    let!(:first_period) do
+      FactoryBot.create(
+        :mentor_at_school_period,
+        teacher:,
+        school: first_school,
+        started_on: first_period_started_on,
+        finished_on: first_period_finished_on
+      )
+    end
+
+    let!(:second_period) do
+      FactoryBot.create(
+        :mentor_at_school_period,
+        teacher:,
+        school: first_school,
+        started_on: second_period_started_on,
+        finished_on: second_period_finished_on
+      )
+    end
+
+    let(:successor_period) do
+      FactoryBot.create(
+        :mentor_at_school_period,
+        teacher:,
+        school: second_school,
+        started_on: first_period_started_on,
+        finished_on: second_period_finished_on
+      )
+    end
+
+    let(:mentor_at_school_periods) { [first_period, second_period] }
+
+    context "when the successor period is ongoing" do
+      let(:first_period_started_on) { Date.new(2025, 1, 1) }
+      let(:first_period_finished_on) { Date.new(2025, 6, 30) }
+      let(:second_period_started_on) { Date.new(2025, 7, 1) }
+      let(:second_period_finished_on) { nil }
+
+      it "queues a RecordEventJob with ongoing period message" do
+        freeze_time do
+          periods = [
+            { finished_on: Date.new(2025, 6, 30),
+              school: "Monsters College",
+              started_on: Date.new(2025, 1, 1),
+              id: first_period.id,
+              urn: 1_234_567 },
+            { finished_on: nil,
+              school: "Monsters College",
+              started_on: Date.new(2025, 7, 1),
+              id: second_period.id,
+              urn: 1_234_567 }
+          ]
+
+          Events::Record.record_teacher_mentor_at_school_periods_merged!(author:, teacher:, mentor_at_school_periods:, successor_period:)
+
+          expect(RecordEventJob).to have_received(:perform_later).with(
+            event_type: :teacher_mentor_at_school_periods_merged,
+            teacher:,
+            mentor_at_school_period: successor_period,
+            metadata: { periods: },
+            heading: "Rhys Ifans's mentor at school periods from 2025-01-01 were merged into a single period at Abigail Hardscrabble High School for Girls (7654321)",
+            happened_at: Time.zone.now,
+            **author_params
+          )
+        end
+      end
+    end
+
+    context "when the successor period is finished" do
+      let(:first_period_started_on) { Date.new(2025, 1, 1) }
+      let(:first_period_finished_on) { Date.new(2025, 6, 30) }
+      let(:second_period_started_on) { Date.new(2025, 7, 1) }
+      let(:second_period_finished_on) { Date.new(2025, 12, 31) }
+
+      it "queues a RecordEventJob with between two dates message" do
+        freeze_time do
+          Events::Record.record_teacher_mentor_at_school_periods_merged!(author:, teacher:, mentor_at_school_periods:, successor_period:)
+
+          periods = [
+            { finished_on: Date.new(2025, 6, 30),
+              school: "Monsters College",
+              started_on: Date.new(2025, 1, 1),
+              id: first_period.id,
+              urn: 1_234_567 },
+            { finished_on: Date.new(2025, 12, 31),
+              school: "Monsters College",
+              started_on: Date.new(2025, 7, 1),
+              id: second_period.id,
+              urn: 1_234_567 }
+          ]
+
+          expect(RecordEventJob).to have_received(:perform_later).with(
+            event_type: :teacher_mentor_at_school_periods_merged,
+            teacher:,
+            mentor_at_school_period: successor_period,
+            metadata: { periods: },
+            heading: "Rhys Ifans's mentor at school periods between 2025-01-01 and 2025-12-31 were merged into a single period at Abigail Hardscrabble High School for Girls (7654321)",
+            happened_at: Time.zone.now,
+            **author_params
+          )
+        end
+      end
+    end
+  end
+
   describe ".record_teacher_starts_training_period_event" do
     let(:started_on) { Date.new(2023, 7, 20) }
     let(:started_on_param) { { started_on: } }
