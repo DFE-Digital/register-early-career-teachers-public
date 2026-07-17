@@ -3,7 +3,7 @@ module ContractPeriods
   #
   # Milestone#milestone_date acts as the deadline for declarations
   #
-  class SeedFromPrevious
+  class SeedFromPrevious < ApplicationService
     class Error < StandardError
       attr_reader :record
 
@@ -17,17 +17,16 @@ module ContractPeriods
     class ContractPeriodStartedError < Error; end
     class NoPreviousContractPeriodError < Error; end
 
-    attr_reader :contract_period
+    attribute :contract_period
 
-    def initialize(contract_period:)
+    def initialize(...)
+      super
       raise ArgumentError, "Contract period is required" if contract_period.nil?
-
-      @contract_period = contract_period
     end
 
     # @raise [AlreadyScheduledError, ContractPeriodStartedError, NoPreviousContractPeriodError]
     # @return [Symbol] :scheduled
-    def schedule!
+    def call
       raise AlreadyScheduledError.new("The contract period already has schedules", record: contract_period) if contract_period.schedules.any?
       raise ContractPeriodStartedError.new("Contract periods cannot be scheduled after they have started", record: contract_period) if contract_period.started_on_or_before_today?
       raise NoPreviousContractPeriodError.new("No previous contract period found", record: contract_period) if previous_contract_period.blank?

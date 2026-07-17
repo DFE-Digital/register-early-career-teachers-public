@@ -1,5 +1,6 @@
 class ContractPeriod < ApplicationRecord
   include Interval
+  include EventRecordable
 
   ECF_FIRST_YEAR = 2020
 
@@ -90,6 +91,8 @@ class ContractPeriod < ApplicationRecord
   def sorted_schedules
     schedules.sort_by { |s| Schedule.identifiers.keys.index(s.identifier) }
   end
+
+  def seed_from_previous! = ContractPeriods::SeedFromPrevious.(contract_period: self)
 
 private
 
