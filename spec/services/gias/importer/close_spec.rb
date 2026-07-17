@@ -1,4 +1,4 @@
-RSpec.describe GIAS::Schools::Close do
+RSpec.describe GIAS::Importer::Close do
   describe "#close" do
     subject(:service) { described_class.new(gias_school).close! }
 

@@ -1,4 +1,4 @@
-RSpec.describe GIAS::Schools::Open do
+RSpec.describe GIAS::Importer::Open do
   describe "#open!" do
     subject(:service) { described_class.new(gias_school).open! }
 

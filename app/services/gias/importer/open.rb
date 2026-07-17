@@ -1,5 +1,5 @@
 module GIAS
-  module Schools
+  class Importer
     class Open
       attr_reader :gias_school
 
@@ -10,19 +10,15 @@ module GIAS
       def open!
         return false unless gias_school.can_be_opened?
 
-        open_school!
+        ActiveRecord::Base.transaction do
+          gias_school.create_school!
+          record_school_opened_event!
+        end
 
         true
       end
 
     private
-
-      def open_school!
-        ActiveRecord::Base.transaction do
-          gias_school.create_school!
-          record_school_opened_event!
-        end
-      end
 
       def record_school_opened_event!
         Events::Record.record_school_opened_event!(

@@ -1,5 +1,5 @@
 module GIAS
-  module Schools
+  class Importer
     module MentorAtSchoolPeriods
       class Merge
         attr_reader :periods, :predecessor_school, :successor_school
@@ -69,7 +69,7 @@ module GIAS
 
         def update_mentorship_periods!
           mentorship_periods.each do |mentorship_period|
-            GIAS::Schools::ECTAtSchoolPeriods::Transfer.call(ect_at_school_period: mentorship_period.mentee, predecessor_school:, successor_school:)
+            GIAS::Importer::ECTAtSchoolPeriods::Transfer.call(ect_at_school_period: mentorship_period.mentee, predecessor_school:, successor_school:)
             mentorship_period.mentor = successor_period
             mentorship_period.save!
           end
@@ -87,7 +87,7 @@ module GIAS
         end
 
         def successor_partnership(predecessor_school_partnership)
-          GIAS::Schools::SchoolPartnerships::Transfer.call(predecessor_school_partnership:, successor_school:)
+          GIAS::Importer::SchoolPartnerships::Transfer.call(predecessor_school_partnership:, successor_school:)
         end
 
         def finished_on

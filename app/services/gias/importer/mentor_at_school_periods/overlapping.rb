@@ -1,5 +1,5 @@
 module GIAS
-  module Schools
+  class Importer
     module MentorAtSchoolPeriods
       class Overlapping
         attr_reader :teacher, :schools, :groups

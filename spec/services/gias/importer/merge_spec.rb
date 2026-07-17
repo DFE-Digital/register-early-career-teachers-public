@@ -1,4 +1,4 @@
-RSpec.describe GIAS::Schools::Merge do
+RSpec.describe GIAS::Importer::Merge do
   describe "#merge!" do
     subject(:merge_school) { described_class.new(gias_school).merge! }
 
@@ -47,21 +47,21 @@ RSpec.describe GIAS::Schools::Merge do
       it { expect(merge_school).to be_falsey }
 
       it "does not merge any periods" do
-        allow(GIAS::Schools::MentorAtSchoolPeriods::Merge).to receive(:call)
+        allow(GIAS::Importer::MentorAtSchoolPeriods::Merge).to receive(:call)
 
         expect { merge_school }.not_to change(MentorAtSchoolPeriod, :count)
 
-        expect(GIAS::Schools::MentorAtSchoolPeriods::Merge).not_to have_received(:call)
+        expect(GIAS::Importer::MentorAtSchoolPeriods::Merge).not_to have_received(:call)
       end
 
       it "does not move any periods" do
-        allow(GIAS::Schools::MentorAtSchoolPeriods::Transfer).to receive(:call)
-        allow(GIAS::Schools::ECTAtSchoolPeriods::Transfer).to receive(:call)
+        allow(GIAS::Importer::MentorAtSchoolPeriods::Transfer).to receive(:call)
+        allow(GIAS::Importer::ECTAtSchoolPeriods::Transfer).to receive(:call)
 
         merge_school
 
-        expect(GIAS::Schools::MentorAtSchoolPeriods::Transfer).not_to have_received(:call)
-        expect(GIAS::Schools::ECTAtSchoolPeriods::Transfer).not_to have_received(:call)
+        expect(GIAS::Importer::MentorAtSchoolPeriods::Transfer).not_to have_received(:call)
+        expect(GIAS::Importer::ECTAtSchoolPeriods::Transfer).not_to have_received(:call)
 
         expect(mentor_period_at_predecessor.reload.school).to eq(predecessor_school)
         expect(mentor_period_at_successor.reload.school).to eq(successor_school)
@@ -107,13 +107,13 @@ RSpec.describe GIAS::Schools::Merge do
           it { expect(merge_school).to be_truthy }
 
           it "moves mentor periods without overlaps to the successor school" do
-            allow(GIAS::Schools::MentorAtSchoolPeriods::Transfer).to receive(:call).and_call_original
-            allow(GIAS::Schools::ECTAtSchoolPeriods::Transfer).to receive(:call).and_call_original
+            allow(GIAS::Importer::MentorAtSchoolPeriods::Transfer).to receive(:call).and_call_original
+            allow(GIAS::Importer::ECTAtSchoolPeriods::Transfer).to receive(:call).and_call_original
 
             merge_school
 
-            expect(GIAS::Schools::MentorAtSchoolPeriods::Transfer).to have_received(:call).once
-            expect(GIAS::Schools::ECTAtSchoolPeriods::Transfer).to have_received(:call).twice
+            expect(GIAS::Importer::MentorAtSchoolPeriods::Transfer).to have_received(:call).once
+            expect(GIAS::Importer::ECTAtSchoolPeriods::Transfer).to have_received(:call).twice
 
             expect(mentor_without_overlapping_periods.reload.school).to eq(successor_school)
             mentees.each do |mentee|
@@ -188,11 +188,11 @@ RSpec.describe GIAS::Schools::Merge do
           it { expect(merge_school).to be_truthy }
 
           it "moves ECT periods without mentors to the successor school" do
-            allow(GIAS::Schools::ECTAtSchoolPeriods::Transfer).to receive(:call).and_call_original
+            allow(GIAS::Importer::ECTAtSchoolPeriods::Transfer).to receive(:call).and_call_original
 
             merge_school
 
-            expect(GIAS::Schools::ECTAtSchoolPeriods::Transfer).to have_received(:call).twice
+            expect(GIAS::Importer::ECTAtSchoolPeriods::Transfer).to have_received(:call).twice
 
             ects_without_mentor.each do |ect|
               expect(ect.reload.school).to eq(successor_school)
@@ -222,11 +222,11 @@ RSpec.describe GIAS::Schools::Merge do
             end
 
             it "moves ECT periods without mentors to the successor school and creates a new partnership for the successor school" do
-              allow(GIAS::Schools::ECTAtSchoolPeriods::Transfer).to receive(:call).and_call_original
+              allow(GIAS::Importer::ECTAtSchoolPeriods::Transfer).to receive(:call).and_call_original
 
               expect { merge_school }.to change(SchoolPartnership, :count).by(1)
 
-              expect(GIAS::Schools::ECTAtSchoolPeriods::Transfer).to have_received(:call).twice
+              expect(GIAS::Importer::ECTAtSchoolPeriods::Transfer).to have_received(:call).twice
 
               ects_without_mentor.each do |ect|
                 expect(ect.reload.school).to eq(successor_school)
@@ -241,21 +241,21 @@ RSpec.describe GIAS::Schools::Merge do
 
       context "when there are no mentors or ECTs at the predecessor school" do
         it "does not merge any periods" do
-          allow(GIAS::Schools::MentorAtSchoolPeriods::Merge).to receive(:call)
+          allow(GIAS::Importer::MentorAtSchoolPeriods::Merge).to receive(:call)
 
           merge_school
 
-          expect(GIAS::Schools::MentorAtSchoolPeriods::Merge).not_to have_received(:call)
+          expect(GIAS::Importer::MentorAtSchoolPeriods::Merge).not_to have_received(:call)
         end
 
         it "does not move any periods" do
-          allow(GIAS::Schools::MentorAtSchoolPeriods::Transfer).to receive(:call)
-          allow(GIAS::Schools::ECTAtSchoolPeriods::Transfer).to receive(:call)
+          allow(GIAS::Importer::MentorAtSchoolPeriods::Transfer).to receive(:call)
+          allow(GIAS::Importer::ECTAtSchoolPeriods::Transfer).to receive(:call)
 
           merge_school
 
-          expect(GIAS::Schools::MentorAtSchoolPeriods::Transfer).not_to have_received(:call)
-          expect(GIAS::Schools::ECTAtSchoolPeriods::Transfer).not_to have_received(:call)
+          expect(GIAS::Importer::MentorAtSchoolPeriods::Transfer).not_to have_received(:call)
+          expect(GIAS::Importer::ECTAtSchoolPeriods::Transfer).not_to have_received(:call)
         end
 
         it "does not create any school partnerships" do

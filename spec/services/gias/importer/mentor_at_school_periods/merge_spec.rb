@@ -1,4 +1,4 @@
-RSpec.describe GIAS::Schools::MentorAtSchoolPeriods::Merge do
+RSpec.describe GIAS::Importer::MentorAtSchoolPeriods::Merge do
   subject(:service) do
     described_class.call(
       periods:,

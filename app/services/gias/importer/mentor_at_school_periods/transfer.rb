@@ -1,5 +1,5 @@
 module GIAS
-  module Schools
+  class Importer
     module MentorAtSchoolPeriods
       class Transfer
         def self.call(...) = new(...).call
@@ -51,12 +51,12 @@ module GIAS
 
         def update_mentorship_periods!
           mentorship_periods.each do |mentorship_period|
-            GIAS::Schools::ECTAtSchoolPeriods::Transfer.call(ect_at_school_period: mentorship_period.mentee, predecessor_school:, successor_school:)
+            GIAS::Importer::ECTAtSchoolPeriods::Transfer.call(ect_at_school_period: mentorship_period.mentee, predecessor_school:, successor_school:)
           end
         end
 
         def successor_partnership(predecessor_school_partnership)
-          GIAS::Schools::SchoolPartnerships::Transfer.call(predecessor_school_partnership:, successor_school:)
+          GIAS::Importer::SchoolPartnerships::Transfer.call(predecessor_school_partnership:, successor_school:)
         end
 
         def record_event!

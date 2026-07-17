@@ -1,4 +1,4 @@
-RSpec.describe GIAS::Schools::ECTAtSchoolPeriods::Transfer do
+RSpec.describe GIAS::Importer::ECTAtSchoolPeriods::Transfer do
   let(:author) { Events::SystemAuthor.new }
   let(:predecessor_gias_school) { FactoryBot.create(:gias_school, :with_school) }
   let(:gias_school) { FactoryBot.create(:gias_school, :with_school) }

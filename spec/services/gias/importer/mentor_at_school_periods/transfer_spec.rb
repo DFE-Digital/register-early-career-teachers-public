@@ -1,4 +1,4 @@
-RSpec.describe GIAS::Schools::MentorAtSchoolPeriods::Transfer do
+RSpec.describe GIAS::Importer::MentorAtSchoolPeriods::Transfer do
   let(:author) { Events::SystemAuthor.new }
   let(:predecessor_gias_school) { FactoryBot.create(:gias_school, :with_school) }
   let(:gias_school) { FactoryBot.create(:gias_school, :with_school) }
@@ -84,15 +84,15 @@ RSpec.describe GIAS::Schools::MentorAtSchoolPeriods::Transfer do
         end
       end
 
-      it "calls GIAS::Schools::ECTAtSchoolPeriods::Transfer for each mentorship_period's mentee" do
+      it "calls GIAS::Importer::ECTAtSchoolPeriods::Transfer for each mentorship_period's mentee" do
         ect_at_school_periods.each do |_mentee|
-          allow(GIAS::Schools::ECTAtSchoolPeriods::Transfer).to receive(:call).and_call_original
+          allow(GIAS::Importer::ECTAtSchoolPeriods::Transfer).to receive(:call).and_call_original
         end
 
         subject
 
         ect_at_school_periods.each do |mentee|
-          expect(GIAS::Schools::ECTAtSchoolPeriods::Transfer).to have_received(:call).with(ect_at_school_period: mentee, predecessor_school:, successor_school:)
+          expect(GIAS::Importer::ECTAtSchoolPeriods::Transfer).to have_received(:call).with(ect_at_school_period: mentee, predecessor_school:, successor_school:)
         end
       end
     end
