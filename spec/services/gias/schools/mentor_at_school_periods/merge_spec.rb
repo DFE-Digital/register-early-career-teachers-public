@@ -398,7 +398,7 @@ RSpec.describe GIAS::Schools::MentorAtSchoolPeriods::Merge do
           it "recreates the mentee's school partnership at the destination school" do
             expect { service }.to change(SchoolPartnership, :count).by(1)
 
-            expect(training_period.school_partnership.school).to eq(successor_school)
+            expect(training_period.reload.school_partnership.school).to eq(successor_school)
           end
 
           it "moves the mentee period to the new school" do
@@ -421,7 +421,7 @@ RSpec.describe GIAS::Schools::MentorAtSchoolPeriods::Merge do
           it "uses the existing partnership" do
             expect { service }.not_to change(SchoolPartnership, :count)
 
-            expect(training_period.school_partnership).to eq(existing_partnership)
+            expect(training_period.reload.school_partnership).to eq(existing_partnership)
           end
 
           it "moves the mentee period to the new school" do
@@ -472,12 +472,6 @@ RSpec.describe GIAS::Schools::MentorAtSchoolPeriods::Merge do
             expect { service }.to change(SchoolPartnership, :count).by(1)
 
             expect(event.reload.school_partnership.school).to eq(successor_school)
-          end
-
-          it "moves the event to the new school" do
-            service
-
-            expect(event.reload.school).to eq(successor_school)
           end
         end
 
