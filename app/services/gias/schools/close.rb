@@ -28,7 +28,7 @@ module GIAS::Schools
 
     def finish_ongoing_periods!
       ect_at_school_periods.ongoing_on(closed_on).each do |ect_at_school_period|
-        ECTAtSchoolPeriods::Finish.new(
+        ::ECTAtSchoolPeriods::Finish.new(
           ect_at_school_period:,
           finished_on: closed_on,
           author:,
@@ -37,7 +37,7 @@ module GIAS::Schools
       end
 
       mentor_at_school_periods.ongoing_on(closed_on).each do |mentor_at_school_period|
-        MentorAtSchoolPeriods::Finish.new(
+        ::MentorAtSchoolPeriods::Finish.new(
           teacher: mentor_at_school_period.teacher,
           reported_by_school_id:,
           finished_on: closed_on,
@@ -49,11 +49,11 @@ module GIAS::Schools
 
     def destroy_unstarted_periods!
       mentor_at_school_periods.started_after(closed_on).each do |mentor_at_school_period|
-        MentorAtSchoolPeriods::Destroy.call(mentor_at_school_period:, author:, actioned_at: closed_on)
+        ::MentorAtSchoolPeriods::Destroy.call(mentor_at_school_period:, author:, actioned_at: closed_on)
       end
 
       ect_at_school_periods.started_after(closed_on).each do |ect_at_school_period|
-        ECTAtSchoolPeriods::Destroy.call(ect_at_school_period:, author:, actioned_at: closed_on)
+        ::ECTAtSchoolPeriods::Destroy.call(ect_at_school_period:, author:, actioned_at: closed_on)
       end
     end
 

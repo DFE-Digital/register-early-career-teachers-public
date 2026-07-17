@@ -858,15 +858,15 @@ RSpec.describe Events::Record do
     let(:new_gias_school) { FactoryBot.create(:gias_school, :with_school, urn: "7654321", name: "James P. Sullivan High School") }
     let(:old_school) { old_gias_school.school }
     let(:new_school) { new_gias_school.school }
-    let(:old_school_name) { Schools::Name.new(old_school).name_and_urn }
+    let(:old_school_name_and_urn) { Schools::Name.new(old_school).name_and_urn }
 
     let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, school: old_school) }
 
     it "queues a RecordEventJob with the correct values" do
       freeze_time do
-        Events::Record.record_teacher_ect_at_school_period_moved_school!(author:, teacher:, ect_at_school_period:, old_school_name:, new_school:)
+        Events::Record.record_teacher_ect_at_school_period_moved_school!(author:, teacher:, ect_at_school_period:, old_school_name_and_urn:, new_school:)
 
-        metadata = { old_school_name: }
+        metadata = { old_school_name_and_urn: }
 
         heading = "Rhys Ifans's ECT at school period at Monsters Junior School (1234567) was moved to James P. Sullivan High School (7654321)"
 
@@ -889,15 +889,15 @@ RSpec.describe Events::Record do
     let(:new_gias_school) { FactoryBot.create(:gias_school, :with_school, urn: "7654321", name: "Abigail Hardscrabble High School for Girls") }
     let(:old_school) { old_gias_school.school }
     let(:new_school) { new_gias_school.school }
-    let(:old_school_name) { Schools::Name.new(old_school).name_and_urn }
+    let(:old_school_name_and_urn) { Schools::Name.new(old_school).name_and_urn }
 
     let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school: old_school) }
 
     it "queues a RecordEventJob with the correct values" do
       freeze_time do
-        Events::Record.record_teacher_mentor_at_school_period_moved_school!(author:, teacher:, mentor_at_school_period:, old_school_name:, new_school:)
+        Events::Record.record_teacher_mentor_at_school_period_moved_school!(author:, teacher:, mentor_at_school_period:, old_school_name_and_urn:, new_school:)
 
-        metadata = { old_school_name: }
+        metadata = { old_school_name_and_urn: }
         heading = "Rhys Ifans's Mentor at school period at Monsters College (1234567) was moved to Abigail Hardscrabble High School for Girls (7654321)"
 
         expect(RecordEventJob).to have_received(:perform_later).with(
@@ -1849,6 +1849,48 @@ RSpec.describe Events::Record do
           previous_school_partnership_id: previous_school_partnership.id
         )
       }.to raise_error(Events::NotPersistedRecord, "school_partnership")
+    end
+  end
+
+  describe ".record_school_partnership_recreated_event!" do
+    let(:lead_provider) { FactoryBot.create(:lead_provider, name: "LP") }
+    let(:delivery_partner) { FactoryBot.create(:delivery_partner, name: "DP") }
+    let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, :for_year, year: 2025, lead_provider:, delivery_partner:) }
+
+    let(:old_gias_school) { FactoryBot.create(:gias_school, :with_school, name: "Old School") }
+    let(:new_gias_school) { FactoryBot.create(:gias_school, :with_school, name: "New School") }
+    let(:old_school) { old_gias_school.school }
+    let(:new_school) { new_gias_school.school }
+    let(:old_school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school: old_school) }
+    let(:new_school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school: new_school) }
+
+    before { allow(RecordEventJob).to receive(:perform_later) }
+
+    it "queues RecordEventJob with correct payload" do
+      freeze_time do
+        Events::Record.record_school_partnership_recreated_event!(
+          author:, old_school_partnership:, new_school_partnership:
+        )
+
+        heading = "School partnership with LP and DP in 2025 at Old School was recreated at New School."
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          hash_including(
+            event_type: :school_partnership_recreated,
+            school_partnership: new_school_partnership,
+            school: new_school_partnership.school,
+            lead_provider: new_school_partnership.lead_provider,
+            delivery_partner: new_school_partnership.delivery_partner,
+            heading:,
+            happened_at: Time.zone.now,
+            metadata: hash_including(
+              old_school_partnership:,
+              old_school: old_school_partnership.school
+            ),
+            **author_params
+          )
+        )
+      end
     end
   end
 
