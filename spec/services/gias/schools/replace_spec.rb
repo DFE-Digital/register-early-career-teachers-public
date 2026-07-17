@@ -52,7 +52,7 @@ RSpec.describe GIAS::Schools::Replace do
               teacher: ect.teacher,
               ect_at_school_period: ect,
               new_school: successor_gias_school.school,
-              old_school_name:,
+              old_school_name_and_urn: Schools::Name.new(gias_school).name_and_urn,
               happened_at: successor_gias_school.opened_on,
               author: an_instance_of(Events::SystemAuthor)
             ).once
@@ -77,7 +77,7 @@ RSpec.describe GIAS::Schools::Replace do
               teacher: mentor.teacher,
               mentor_at_school_period: mentor,
               new_school: successor_gias_school.school,
-              old_school_name:,
+              old_school_name_and_urn: Schools::Name.new(gias_school).name_and_urn,
               happened_at: successor_gias_school.opened_on,
               author: an_instance_of(Events::SystemAuthor)
             ).once

@@ -24,36 +24,36 @@ module GIAS::Schools
         mentor_at_school_periods_to_be_moved =
           school.mentor_at_school_periods.includes(:teacher).load
 
-        old_school_name = Schools::Name.new(school).name_and_urn
+        old_school_name_and_urn = Schools::Name.new(school).name_and_urn
 
         school.update!(urn: successor.urn)
         record_school_replaced_event!
 
-        record_ect_moved_to_new_school_event!(ect_at_school_periods_to_be_moved, old_school_name)
-        record_mentor_moved_to_new_school_event!(mentor_at_school_periods_to_be_moved, old_school_name)
+        record_ect_moved_to_new_school_event!(ect_at_school_periods_to_be_moved, old_school_name_and_urn)
+        record_mentor_moved_to_new_school_event!(mentor_at_school_periods_to_be_moved, old_school_name_and_urn)
       end
     end
 
-    def record_ect_moved_to_new_school_event!(periods, old_school_name)
+    def record_ect_moved_to_new_school_event!(periods, old_school_name_and_urn)
       periods.each do |ect_at_school_period|
         Events::Record.record_teacher_ect_at_school_period_moved_school!(
           teacher: ect_at_school_period.teacher,
           ect_at_school_period:,
           new_school: successor.school,
-          old_school_name:,
+          old_school_name_and_urn:,
           happened_at: successor.opened_on,
           author:
         )
       end
     end
 
-    def record_mentor_moved_to_new_school_event!(periods, old_school_name)
+    def record_mentor_moved_to_new_school_event!(periods, old_school_name_and_urn)
       periods.each do |mentor_at_school_period|
         Events::Record.record_teacher_mentor_at_school_period_moved_school!(
           teacher: mentor_at_school_period.teacher,
           mentor_at_school_period:,
           new_school: successor.school,
-          old_school_name:,
+          old_school_name_and_urn:,
           happened_at: successor.opened_on,
           author:
         )

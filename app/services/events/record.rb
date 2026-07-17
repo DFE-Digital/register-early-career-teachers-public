@@ -381,25 +381,25 @@ module Events
       new(event_type:, author:, heading:, teacher:, school:, happened_at:).record_event!
     end
 
-    def self.record_teacher_ect_at_school_period_moved_school!(author:, teacher:, ect_at_school_period:, old_school_name:, new_school:, happened_at: Time.zone.now)
+    def self.record_teacher_ect_at_school_period_moved_school!(author:, teacher:, ect_at_school_period:, old_school_name_and_urn:, new_school:, happened_at: Time.zone.now)
       event_type = :teacher_ect_at_school_period_moved_school
       teacher_name = Teachers::Name.new(teacher).full_name
-      new_school_name = Schools::Name.new(new_school).name_and_urn
+      new_school_name_and_urn = Schools::Name.new(new_school).name_and_urn
 
-      heading = "#{teacher_name}'s ECT at school period at #{old_school_name} was moved to #{new_school_name}"
+      heading = "#{teacher_name}'s ECT at school period at #{old_school_name_and_urn} was moved to #{new_school_name_and_urn}"
 
-      metadata = { old_school_name: }
+      metadata = { old_school_name_and_urn: }
 
       new(event_type:, author:, heading:, teacher:, ect_at_school_period:, school: new_school, metadata:, happened_at:).record_event!
     end
 
-    def self.record_teacher_mentor_at_school_period_moved_school!(author:, teacher:, mentor_at_school_period:, old_school_name:, new_school:, happened_at: Time.zone.now)
+    def self.record_teacher_mentor_at_school_period_moved_school!(author:, teacher:, mentor_at_school_period:, old_school_name_and_urn:, new_school:, happened_at: Time.zone.now)
       event_type = :teacher_mentor_at_school_period_moved_school
       teacher_name = Teachers::Name.new(teacher).full_name
-      new_school_name = Schools::Name.new(new_school).name_and_urn
-      heading = "#{teacher_name}'s Mentor at school period at #{old_school_name} was moved to #{new_school_name}"
+      new_school_name_and_urn = Schools::Name.new(new_school).name_and_urn
+      heading = "#{teacher_name}'s Mentor at school period at #{old_school_name_and_urn} was moved to #{new_school_name_and_urn}"
 
-      metadata = { old_school_name: }
+      metadata = { old_school_name_and_urn: }
 
       new(event_type:, author:, heading:, teacher:, mentor_at_school_period:, school: new_school, metadata:, happened_at:).record_event!
     end
@@ -773,6 +773,36 @@ module Events
       metadata = {
         previous_school_partnership_id:,
         reused_into_contract_period_year: contract_period.year
+      }
+
+      new(
+        event_type:,
+        author:,
+        heading:,
+        school_partnership:,
+        delivery_partner:,
+        school:,
+        lead_provider:,
+        happened_at:,
+        metadata:
+      ).record_event!
+    end
+
+    def self.record_school_partnership_recreated_event!(author:, old_school_partnership:, new_school_partnership:, happened_at: Time.zone.now)
+      event_type = :school_partnership_recreated
+
+      old_school = old_school_partnership.school
+      school = new_school_partnership.school
+      school_partnership = new_school_partnership
+      delivery_partner = new_school_partnership.delivery_partner
+      lead_provider = new_school_partnership.lead_provider
+      contract_period = new_school_partnership.contract_period
+
+      heading = "School partnership with #{lead_provider.name} and #{delivery_partner.name} in #{contract_period.year} at #{old_school.name} was recreated at #{school.name}."
+
+      metadata = {
+        old_school_partnership:,
+        old_school:
       }
 
       new(

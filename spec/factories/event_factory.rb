@@ -29,6 +29,10 @@ FactoryBot.define do
       ect_at_school_period
     end
 
+    trait :with_mentor_at_school_period do
+      mentor_at_school_period
+    end
+
     trait :with_training_period do
       training_period
     end
