@@ -19,10 +19,10 @@ module GIAS::Schools
     def replace_school!
       ActiveRecord::Base.transaction do
         ect_at_school_periods_to_be_moved =
-          school.ect_at_school_periods.includes(:teacher).load
+          school.ect_at_school_periods.tap(&:touch_all).includes(:teacher).load
 
         mentor_at_school_periods_to_be_moved =
-          school.mentor_at_school_periods.includes(:teacher).load
+          school.mentor_at_school_periods.tap(&:touch_all).includes(:teacher).load
 
         old_school_name = Schools::Name.new(school).name_and_urn
 

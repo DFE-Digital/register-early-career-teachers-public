@@ -37,9 +37,16 @@ RSpec.describe GIAS::Schools::Replace do
 
       context "when there are ECTs at the school" do
         let!(:old_school_name) { Schools::Name.new(gias_school.school).name_and_urn }
+        let!(:ects) { FactoryBot.create_list(:ect_at_school_period, 2, school: gias_school.school) }
 
         before do
-          FactoryBot.create_list(:ect_at_school_period, 2, school: gias_school.school)
+          ects.each { |ect| ect.update!(updated_at: 1.day.ago) }
+        end
+
+        it "touches the ECT at school periods" do
+          subject
+
+          expect(ects.map { |ect| ect.reload.updated_at }).to all(be > 1.day.ago)
         end
 
         it "records an event for each ECT moved" do
@@ -62,9 +69,16 @@ RSpec.describe GIAS::Schools::Replace do
 
       context "when there are Mentors at the school" do
         let!(:old_school_name) { Schools::Name.new(gias_school.school).name_and_urn }
+        let!(:mentors) { FactoryBot.create_list(:mentor_at_school_period, 2, school: gias_school.school) }
 
         before do
-          FactoryBot.create_list(:mentor_at_school_period, 2, school: gias_school.school)
+          mentors.each { |mentor| mentor.update!(updated_at: 1.day.ago) }
+        end
+
+        it "touches the mentor at school periods" do
+          subject
+
+          expect(mentors.map { |mentor| mentor.reload.updated_at }).to all(be > 1.day.ago)
         end
 
         it "records an event for each Mentor moved" do
@@ -102,8 +116,14 @@ RSpec.describe GIAS::Schools::Replace do
       end
 
       context "when there are ECTs at the school" do
+        let!(:ects) { FactoryBot.create_list(:ect_at_school_period, 2, school: gias_school.school) }
+
         before do
-          FactoryBot.create_list(:ect_at_school_period, 2, school: gias_school.school)
+          ects.each { |ect| ect.update!(updated_at: 1.day.ago) }
+        end
+
+        it "touches the ECT at school periods" do
+          expect { subject }.not_to(change { ects.map { |ect| ect.reload.updated_at } })
         end
 
         it "does not record an event for each ECT moved" do
@@ -114,8 +134,14 @@ RSpec.describe GIAS::Schools::Replace do
       end
 
       context "when there are Mentors at the school" do
+        let!(:mentors) { FactoryBot.create_list(:mentor_at_school_period, 2, school: gias_school.school) }
+
         before do
-          FactoryBot.create_list(:mentor_at_school_period, 2, school: gias_school.school)
+          mentors.each { |mentor| mentor.update!(updated_at: 1.day.ago) }
+        end
+
+        it "does not touch the mentor at school periods" do
+          expect { subject }.not_to(change { mentors.map { |mentor| mentor.reload.updated_at } })
         end
 
         it "does not record an event for each Mentor moved" do
