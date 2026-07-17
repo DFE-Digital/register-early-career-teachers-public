@@ -437,6 +437,7 @@ RSpec.describe Events::Record do
           heading: "Name changed from 'Wilfred Bramble' to 'Willy Brambs'",
           event_type: :teacher_name_updated_by_trs,
           happened_at: Time.zone.now,
+          metadata: { old_name:, new_name: },
           **author_params
         )
       end
@@ -455,6 +456,7 @@ RSpec.describe Events::Record do
           heading: "Name changed from 'Wilfred Bramble' to 'Willy Brambs'",
           event_type: :teacher_name_updated_by_user,
           happened_at: Time.zone.now,
+          metadata: { old_name:, new_name: },
           **author_params
         )
       end
