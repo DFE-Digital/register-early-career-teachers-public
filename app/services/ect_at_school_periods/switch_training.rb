@@ -66,7 +66,7 @@ module ECTAtSchoolPeriods
           .teacher
           .ect_training_periods
           .provider_led_training_programme
-          .where("training_periods.started_on < ?", date_of_transition)
+          .started_before(date_of_transition)
           .latest_first
           .first
     end
