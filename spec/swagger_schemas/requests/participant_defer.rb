@@ -22,7 +22,7 @@ PARTICIPANT_DEFER_REQUEST = {
               description: "The reason for the deferral",
               type: :string,
               enum: TrainingPeriod.deferral_reasons.keys.map(&:dasherize),
-              example: "left-teaching-profession",
+              example: TrainingPeriod.deferral_reasons.keys.map(&:dasherize).first,
             },
             course_identifier: {
               description: "The type of course the participant is enrolled in",

@@ -1,0 +1,7 @@
+# This file instructs Redocly's linter to ignore the rules contained for specific parts of your API.
+# See https://redocly.com/docs/cli/ for more information.
+public/api/docs/v3/swagger.yaml:
+  no-empty-servers:
+    - '#/openapi'
+  info-license:
+    - '#/info'

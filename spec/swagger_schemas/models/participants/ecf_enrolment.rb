@@ -108,7 +108,7 @@ PARTICIPANT_ECF_ENROLMENT = {
           description: "The reason a participant was withdrawn",
           type: :string,
           enum: TrainingPeriod.withdrawal_reasons.keys.map(&:dasherize),
-          example: "moved-school"
+          example: TrainingPeriod.withdrawal_reasons.keys.map(&:dasherize).first
         },
         date: {
           description: "The date and time the participant was withdrawn",
@@ -128,7 +128,7 @@ PARTICIPANT_ECF_ENROLMENT = {
           description: "The reason a participant was deferred",
           type: :string,
           enum: TrainingPeriod.deferral_reasons.keys.map(&:dasherize),
-          example: "career-break"
+          example: TrainingPeriod.deferral_reasons.keys.map(&:dasherize).first
         },
         date: {
           description: "The date and time the participant was deferred",
