@@ -19,7 +19,7 @@ PARTNERSHIP = {
         cohort: {
           description: "The cohort for which you are reporting the partnership",
           type: "string",
-          example: 2021
+          example: "2021"
         },
         urn: {
           description: "The Unique Reference Number (URN) of the school you are partnered with",
@@ -30,13 +30,13 @@ PARTNERSHIP = {
           description: "The unique ID of the school you are partnered with",
           type: "string",
           format: "uuid",
-          example: "dd4a11347-7308-4879-942a-c4a70ced400v"
+          example: "dd4a1134-7308-4879-942a-c4a70ced400f"
         },
         delivery_partner_id: {
           description: "The unique ID of the delivery partner you are working with for this partnership",
           type: "string",
           format: "uuid",
-          example: "cd3a12347-7308-4879-942a-c4a70ced400a"
+          example: "45146ec2-594a-495a-bb02-8b2280a3deaf"
         },
         delivery_partner_name: {
           description: "The name of the delivery partner you are working with for this partnership",

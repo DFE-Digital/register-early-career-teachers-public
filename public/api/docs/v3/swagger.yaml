@@ -16,6 +16,7 @@ paths:
       - Declarations
       security:
       - api_key: []
+      operationId: createDeclaration
       parameters: []
       responses:
         '200':
@@ -53,6 +54,7 @@ paths:
       - Declarations
       security:
       - api_key: []
+      operationId: getDeclarations
       parameters:
       - name: filter
         in: query
@@ -86,6 +88,7 @@ paths:
       - Declarations
       security:
       - api_key: []
+      operationId: getDeclaration
       parameters:
       - name: id
         in: path
@@ -118,6 +121,7 @@ paths:
       - Declarations
       security:
       - api_key: []
+      operationId: voidDeclaration
       parameters:
       - name: id
         in: path
@@ -156,6 +160,7 @@ paths:
       - Delivery Partners
       security:
       - api_key: []
+      operationId: getDeliveryPartners
       parameters:
       - name: filter
         in: query
@@ -194,6 +199,7 @@ paths:
       - Delivery Partners
       security:
       - api_key: []
+      operationId: getDeliveryPartner
       parameters:
       - name: id
         in: path
@@ -226,6 +232,7 @@ paths:
       - Participants
       security:
       - api_key: []
+      operationId: getParticipants
       parameters:
       - name: filter
         in: query
@@ -302,6 +309,7 @@ paths:
       - Participants
       security:
       - api_key: []
+      operationId: getParticipant
       parameters:
       - name: id
         in: path
@@ -372,6 +380,7 @@ paths:
       - Participants
       security:
       - api_key: []
+      operationId: withdrawParticipant
       parameters:
       - name: id
         in: path
@@ -408,7 +417,7 @@ paths:
                           schedule_identifier: ecf-standard-january
                           delivery_partner_id: 42a9ef2f-9059-400a-92ff-4830a629d0c5
                           withdrawal:
-                            reason: moved-school
+                            reason: left-teaching-profession
                             date: '2021-05-31T02:22:32.000Z'
                           deferral:
                           created_at: '2023-01-01T00:00:00Z'
@@ -461,6 +470,7 @@ paths:
       - Participants
       security:
       - api_key: []
+      operationId: deferParticipant
       parameters:
       - name: id
         in: path
@@ -498,7 +508,7 @@ paths:
                           delivery_partner_id: 42a9ef2f-9059-400a-92ff-4830a629d0c5
                           withdrawal:
                           deferral:
-                            reason: career-break
+                            reason: bereavement
                             date: '2021-05-31T02:22:32.000Z'
                           created_at: '2023-01-01T00:00:00Z'
                           induction_end_date: '2023-01-01'
@@ -550,6 +560,7 @@ paths:
       - Participants
       security:
       - api_key: []
+      operationId: resumeParticipant
       parameters:
       - name: id
         in: path
@@ -637,6 +648,7 @@ paths:
       - Participants
       security:
       - api_key: []
+      operationId: changeScheduleParticipant
       parameters:
       - name: id
         in: path
@@ -673,10 +685,10 @@ paths:
                           schedule_identifier: ecf-extended-september
                           delivery_partner_id: 42a9ef2f-9059-400a-92ff-4830a629d0c5
                           withdrawal:
-                            reason: moved-school
+                            reason: left-teaching-profession
                             date: '2021-05-31T02:22:32.000Z'
                           deferral:
-                            reason: career-break
+                            reason: bereavement
                             date: '2021-05-31T02:22:32.000Z'
                           created_at: '2023-01-01T00:00:00Z'
                           induction_end_date: '2023-01-01'
@@ -728,6 +740,7 @@ paths:
       - Partnerships
       security:
       - api_key: []
+      operationId: getPartnerships
       parameters:
       - name: filter
         in: query
@@ -765,6 +778,7 @@ paths:
       - Partnerships
       security:
       - api_key: []
+      operationId: createPartnership
       parameters: []
       responses:
         '200':
@@ -803,6 +817,7 @@ paths:
       - Partnerships
       security:
       - api_key: []
+      operationId: getPartnership
       parameters:
       - name: id
         in: path
@@ -834,6 +849,7 @@ paths:
       - Partnerships
       security:
       - api_key: []
+      operationId: updatePartnership
       parameters:
       - name: id
         in: path
@@ -883,6 +899,7 @@ paths:
       - Schools
       security:
       - api_key: []
+      operationId: getSchools
       parameters:
       - name: filter
         in: query
@@ -921,6 +938,7 @@ paths:
       - Schools
       security:
       - api_key: []
+      operationId: getSchool
       parameters:
       - name: id
         in: path
@@ -959,6 +977,7 @@ paths:
       - Statements
       security:
       - api_key: []
+      operationId: getStatements
       parameters:
       - name: filter
         in: query
@@ -992,6 +1011,7 @@ paths:
       - Statements
       security:
       - api_key: []
+      operationId: getStatement
       parameters:
       - name: id
         in: path
@@ -1024,6 +1044,7 @@ paths:
       - Transfers
       security:
       - api_key: []
+      operationId: getTransfers
       parameters:
       - name: filter
         in: query
@@ -1062,6 +1083,7 @@ paths:
       - Transfers
       security:
       - api_key: []
+      operationId: getTransfer
       parameters:
       - name: id
         in: path
@@ -1091,9 +1113,10 @@ paths:
     get:
       summary: Retrieve multiple unfunded mentors
       tags:
-      - Unfunded mentors
+      - Unfunded Mentors
       security:
       - api_key: []
+      operationId: getUnfundedMentors
       parameters:
       - name: filter
         in: query
@@ -1129,9 +1152,10 @@ paths:
     get:
       summary: Retrieve a single unfunded mentor
       tags:
-      - Unfunded mentors
+      - Unfunded Mentors
       security:
       - api_key: []
+      operationId: getUnfundedMentor
       parameters:
       - name: id
         in: path
@@ -1554,7 +1578,7 @@ components:
               type: string
               format: uuid
               nullable: true
-              example: cd3a12347-7308-4879-942a-c4a70ced400a
+              example: 45146ec2-594a-495a-bb02-8b2280a3deaf
             clawback_statement_id:
               description: Unique ID of the statement to which the declaration will
                 be clawed back on, if any.
@@ -1692,7 +1716,7 @@ components:
               type: string
               format: uuid
               nullable: true
-              example: cd3a12347-7308-4879-942a-c4a70ced400a
+              example: 45146ec2-594a-495a-bb02-8b2280a3deaf
             clawback_statement_id:
               description: Unique ID of the statement to which the declaration will
                 be clawed back on, if any.
@@ -2390,7 +2414,7 @@ components:
             cohort:
               description: The cohort for which you are reporting the partnership
               type: string
-              example: 2021
+              example: '2021'
             urn:
               description: The Unique Reference Number (URN) of the school you are
                 partnered with
@@ -2400,13 +2424,13 @@ components:
               description: The unique ID of the school you are partnered with
               type: string
               format: uuid
-              example: dd4a11347-7308-4879-942a-c4a70ced400v
+              example: dd4a1134-7308-4879-942a-c4a70ced400f
             delivery_partner_id:
               description: The unique ID of the delivery partner you are working with
                 for this partnership
               type: string
               format: uuid
-              example: cd3a12347-7308-4879-942a-c4a70ced400a
+              example: 45146ec2-594a-495a-bb02-8b2280a3deaf
             delivery_partner_name:
               description: The name of the delivery partner you are working with for
                 this partnership
@@ -2702,7 +2726,7 @@ components:
                   - parental-leave
                   - career-break
                   - other
-                  example: left-teaching-profession
+                  example: bereavement
                 course_identifier:
                   description: The type of course the participant is enrolled in
                   type: string
@@ -2943,7 +2967,7 @@ components:
               - switched-to-school-led
               - changed-lead-provider
               - other
-              example: moved-school
+              example: left-teaching-profession
             date:
               description: The date and time the participant was withdrawn
               type: string
@@ -2966,7 +2990,7 @@ components:
               - parental-leave
               - career-break
               - other
-              example: career-break
+              example: bereavement
             date:
               description: The date and time the participant was deferred
               type: string
@@ -3163,7 +3187,7 @@ components:
           example: '2021-05-13T11:21:55Z'
     ParticipantTransfersResponse:
       description: Transfers for a given participant
-      tyoe: object
+      type: object
       required:
       - data
       properties:

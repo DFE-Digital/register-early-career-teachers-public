@@ -29,7 +29,7 @@ describe "Unfunded mentors endpoint", :with_metadata, openapi_spec: "v3/swagger.
   it_behaves_like "an API index endpoint documentation",
                   {
                     url: "/api/v3/unfunded-mentors",
-                    tag: "Unfunded mentors",
+                    tag: "Unfunded Mentors",
                     resource_description: "Retrieve multiple unfunded mentors",
                     response_description: "A list of unfunded mentors",
                     response_schema_ref: "#/components/schemas/UnfundedMentorsResponse",
@@ -40,7 +40,7 @@ describe "Unfunded mentors endpoint", :with_metadata, openapi_spec: "v3/swagger.
   it_behaves_like "an API show endpoint documentation",
                   {
                     url: "/api/v3/unfunded-mentors/{id}",
-                    tag: "Unfunded mentors",
+                    tag: "Unfunded Mentors",
                     resource_description: "Retrieve a single unfunded mentor",
                     response_description: "A single unfunded mentor",
                     response_schema_ref: "#/components/schemas/UnfundedMentorResponse",

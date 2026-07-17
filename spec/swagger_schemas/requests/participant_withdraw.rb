@@ -22,7 +22,7 @@ PARTICIPANT_WITHDRAW_REQUEST = {
               description: "The reason for the withdrawal",
               type: :string,
               enum: TrainingPeriod.withdrawal_reasons.keys.map(&:dasherize),
-              example: "left-teaching-profession",
+              example: TrainingPeriod.withdrawal_reasons.keys.map(&:dasherize).first,
             },
             course_identifier: {
               description: "The type of course the participant is enrolled in",

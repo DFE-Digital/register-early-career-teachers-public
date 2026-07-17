@@ -5,6 +5,7 @@ RSpec.shared_context "an API update endpoint documentation", :exceptions_app do 
       consumes "application/json"
       produces "application/json"
       security [{ api_key: [] }]
+      operationId params[:operation_id] || "update#{params[:tag].singularize.delete(' ')}"
 
       parameter name: :id,
                 in: :path,
