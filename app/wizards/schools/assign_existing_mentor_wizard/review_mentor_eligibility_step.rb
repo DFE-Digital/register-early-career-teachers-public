@@ -15,8 +15,8 @@ module Schools
 
       def assign_mentor!
         AssignMentor.new(
-          ect: ect_at_school_period,
-          mentor: mentor_at_school_period,
+          ect_at_school_period:,
+          mentor_at_school_period:,
           author:
         ).assign!
       end
