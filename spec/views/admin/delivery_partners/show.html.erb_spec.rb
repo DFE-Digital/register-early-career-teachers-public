@@ -13,9 +13,7 @@ RSpec.describe "admin/delivery_partners/show.html.erb" do
     assign(:delivery_partner, delivery_partner)
     assign(:page, "2")
     assign(:q, "search term")
-    assign(:contract_period_partnerships, [
-      { contract_period: partnership.contract_period, partnerships: [partnership] }
-    ])
+    assign(:partnership_data, { partnership.contract_period.year => [active_lead_provider.lead_provider.name] })
   end
 
   it %(sets the page title to the delivery partner name) do
@@ -106,6 +104,13 @@ RSpec.describe "admin/delivery_partners/show.html.erb" do
         { contract_period: new_contract_period, partnerships: [new_partnership] },
         { contract_period: old_contract_period, partnerships: [old_partnership] }
       ])
+      assign(
+        :partnership_data,
+        {
+          new_contract_period.year => [new_partnership.lead_provider.name],
+          old_contract_period.year => [old_partnership.lead_provider.name]
+        }
+      )
     end
 
     it "displays multiple partnerships" do
@@ -143,6 +148,15 @@ RSpec.describe "admin/delivery_partners/show.html.erb" do
       assign(:contract_period_partnerships, [
         { contract_period:, partnerships: [partnership_1, partnership_2] }
       ])
+      assign(
+        :partnership_data,
+        {
+          contract_period.year => [
+            partnership_1.lead_provider.name,
+            partnership_2.lead_provider.name,
+          ]
+        }
+      )
     end
 
     it "groups partnerships by year and displays lead providers in the same row" do
@@ -169,7 +183,7 @@ RSpec.describe "admin/delivery_partners/show.html.erb" do
 
   context "when there are no contract periods with available lead providers" do
     before do
-      assign(:contract_period_partnerships, [])
+      assign(:partnership_data, {})
     end
 
     it "shows empty state message" do

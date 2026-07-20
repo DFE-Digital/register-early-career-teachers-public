@@ -9,13 +9,13 @@
 </p>
 
 <%= render(Admin::LeadProviderPartnershipsTableComponent.new(
-  contract_period_partnerships: @contract_period_partnerships,
+  partnership_data: @partnership_data,
   delivery_partner: @delivery_partner,
   page: @page,
   q: @q
 )) %>
 
-<% unless @contract_period_partnerships.any? %>
+<% if @partnership_data.blank? %>
   <p class="govuk-body">
     No contract periods with available lead providers found for this delivery partner.
   </p>
