@@ -613,7 +613,11 @@ module ECTAtSchoolPeriods
         context "when the previous provider-led training period belongs to an earlier ECT-at-school period" do
           let(:mentorship_period) { nil }
           let(:started_on) { Date.new(2026, 9, 1) }
-          let(:previous_contract_period) { FactoryBot.create(:contract_period, :with_schedules, year: 2025) }
+          let(:previous_contract_period) do
+            FactoryBot.create(:contract_period, :with_schedules, year: 2025)
+          end
+
+          let(:previous_school) { ect_at_school_period.school }
 
           let!(:previous_active_lead_provider) do
             FactoryBot.create(
@@ -627,7 +631,7 @@ module ECTAtSchoolPeriods
             FactoryBot.create(
               :ect_at_school_period,
               teacher: ect_at_school_period.teacher,
-              school: ect_at_school_period.school,
+              school: previous_school,
               started_on: previous_contract_period.started_on,
               finished_on: Date.new(2026, 5, 31)
             )
@@ -657,22 +661,100 @@ module ECTAtSchoolPeriods
             )
           end
 
-          it "retains the previous provider-led contract period" do
-            SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+          shared_examples "retains the earlier provider-led contract period" do
+            it "retains the previous provider-led contract period" do
+              SwitchTraining.to_provider_led(
+                ect_at_school_period,
+                lead_provider:,
+                author:
+              )
 
-            new_training_period = ect_at_school_period
-              .reload
-              .training_periods
-              .provider_led_training_programme
-              .latest_first
-              .first
+              new_training_period = ect_at_school_period
+                .reload
+                .training_periods
+                .provider_led_training_programme
+                .latest_first
+                .first
 
-            expect(new_training_period.schedule.contract_period).to eq(previous_contract_period)
+              expect(new_training_period.schedule.contract_period)
+                .to eq(previous_contract_period)
 
-            association_contract_period =
-              new_training_period.contract_period ||
-              new_training_period.expression_of_interest_contract_period
-            expect(association_contract_period).to eq(previous_contract_period)
+              association_contract_period =
+                new_training_period.contract_period ||
+                new_training_period.expression_of_interest_contract_period
+
+              expect(association_contract_period)
+                .to eq(previous_contract_period)
+            end
+          end
+
+          context "when it was at the same school" do
+            include_examples "retains the earlier provider-led contract period"
+          end
+
+          context "when it was at a different school" do
+            let(:previous_school) { FactoryBot.create(:school) }
+
+            include_examples "retains the earlier provider-led contract period"
+          end
+
+          context "when there are multiple previous provider-led periods at different schools" do
+            let(:previous_school) { FactoryBot.create(:school) }
+
+            let(:older_contract_period) do
+              FactoryBot.create(:contract_period, :with_schedules, year: 2024)
+            end
+
+            let(:older_active_lead_provider) do
+              FactoryBot.create(
+                :active_lead_provider,
+                lead_provider:,
+                contract_period: older_contract_period
+              )
+            end
+
+            let(:older_school) { FactoryBot.create(:school) }
+
+            let!(:older_ect_at_school_period) do
+              FactoryBot.create(
+                :ect_at_school_period,
+                teacher: ect_at_school_period.teacher,
+                school: older_school,
+                started_on: older_contract_period.started_on,
+                finished_on: Date.new(2025, 5, 31)
+              )
+            end
+
+            let!(:older_training_period) do
+              FactoryBot.create(
+                :training_period,
+                :for_ect,
+                :provider_led,
+                :with_only_expression_of_interest,
+                ect_at_school_period: older_ect_at_school_period,
+                expression_of_interest: older_active_lead_provider,
+                started_on: older_ect_at_school_period.started_on,
+                finished_on: older_ect_at_school_period.finished_on
+              )
+            end
+
+            it "retains the most recent previous provider-led contract period" do
+              SwitchTraining.to_provider_led(
+                ect_at_school_period,
+                lead_provider:,
+                author:
+              )
+
+              new_training_period = ect_at_school_period
+                .reload
+                .training_periods
+                .provider_led_training_programme
+                .latest_first
+                .first
+
+              expect(new_training_period.schedule.contract_period)
+                .to eq(previous_contract_period)
+            end
           end
         end
 
