@@ -92,6 +92,7 @@ RSpec.describe "Declarations endpoint", :with_metadata, openapi_spec: "v3/swagge
                   {
                     url: "/api/v3/participant-declarations/{id}/void",
                     tag: "Declarations",
+                    operation_id: "voidDeclaration",
                     resource_description: "Void a declaration",
                     response_description: "The declaration being voided",
                     response_schema_ref: "#/components/schemas/DeclarationResponse",

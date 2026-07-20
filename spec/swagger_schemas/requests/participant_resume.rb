@@ -10,7 +10,6 @@ PARTICIPANT_RESUME_REQUEST = {
       properties: {
         type: {
           type: :string,
-          required: true,
           enum: %w[participant-resume],
           example: "participant-resume",
         },
@@ -22,7 +21,6 @@ PARTICIPANT_RESUME_REQUEST = {
             course_identifier: {
               description: "The type of course the participant is enrolled in",
               type: :string,
-              required: true,
               enum: %w[ecf-mentor ecf-induction],
               example: "ecf-mentor"
             }

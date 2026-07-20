@@ -59,6 +59,12 @@ jobs:
           prepare-test-database: "true"
           prepare-assets: "true"
 
+      - name: Install Redocly CLI
+        run: npm install -g @redocly/cli@latest
+      
+      - name: Run linting
+        run: redocly lint public/api/docs/v3/swagger.yaml --format=github-actions
+
       - name: Generate API doc checksums (original)
         run: |
           find public/api/docs/ -type f -exec sed -i 's/[[:space:]]\+$//' {} \;

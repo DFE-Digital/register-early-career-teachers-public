@@ -5,6 +5,7 @@ RSpec.shared_context "an API index endpoint documentation", :exceptions_app do |
       consumes "application/json"
       produces "application/json"
       security [{ api_key: [] }]
+      operationId params[:operation_id] || "get#{params[:tag].delete(' ')}"
 
       if params[:filter_schema_ref]
         parameter name: :filter,
