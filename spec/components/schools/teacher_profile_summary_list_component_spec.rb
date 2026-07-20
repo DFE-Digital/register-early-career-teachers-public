@@ -13,6 +13,8 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
     FactoryBot.create(:ect_at_school_period, :ongoing, school:, teacher: mentee_teacher, started_on: Date.new(2021, 9, 1),
                                                        email: "foobarect@madeup.com", working_pattern: "full_time")
   end
+  let(:training_period) { mentee.current_or_next_or_latest_training_period }
+  let(:component) { described_class.new(mentee, training_period:, current_school: school) }
 
   context "when the ECT has a mentor assigned" do
     let(:mentor_row) { page.find(".govuk-summary-list__row", text: "Mentor") }
@@ -21,7 +23,7 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
       FactoryBot.create(:mentorship_period, :ongoing, mentee:, mentor: previous_mentor, started_on: 3.years.ago, finished_on: 2.years.ago - 1.day)
       FactoryBot.create(:mentorship_period, :ongoing, mentee:, mentor: current_mentor, started_on: 2.years.ago)
 
-      render_inline(described_class.new(mentee, current_school: school))
+      render_inline(component)
     end
 
     it "renders the summary list container" do
@@ -46,7 +48,7 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
     end
   end
 
-  context "when latest started training is deferred" do
+  context "when the supplied training period is deferred" do
     before do
       training_period = FactoryBot.create(
         :training_period,
@@ -70,7 +72,7 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
         expression_of_interest: active_lead_provider
       )
 
-      render_inline(described_class.new(mentee, current_school: school))
+      render_inline(component)
     end
 
     it "shows training paused status" do
@@ -83,7 +85,7 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
     end
   end
 
-  context "when training is withdrawn" do
+  context "when the supplied training period is withdrawn" do
     before do
       training_period = FactoryBot.create(
         :training_period,
@@ -107,7 +109,7 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
         expression_of_interest: active_lead_provider
       )
 
-      render_inline(described_class.new(mentee, current_school: school))
+      render_inline(component)
     end
 
     it "shows action required status" do
@@ -131,7 +133,7 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
         withdrawal_reason: TrainingPeriod.withdrawal_reasons.keys.first
       )
 
-      render_inline(described_class.new(mentee, current_school: school))
+      render_inline(component)
     end
 
     it "shows withdrawn status instead of mentor required" do
@@ -153,7 +155,7 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
         deferral_reason: TrainingPeriod.deferral_reasons.keys.first
       )
 
-      render_inline(described_class.new(mentee, current_school: school))
+      render_inline(component)
     end
 
     it "shows training paused instead of mentor required" do
@@ -175,7 +177,7 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
 
       mentee.update!(finished_on: 1.day.from_now.to_date, reported_leaving_by_school_id: school.id)
 
-      render_inline(described_class.new(mentee, current_school: school))
+      render_inline(component)
     end
 
     it "shows leaving school instead of action required" do
@@ -197,7 +199,7 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
 
       mentee.update!(finished_on: 1.day.from_now.to_date, reported_leaving_by_school_id: school.id)
 
-      render_inline(described_class.new(mentee, current_school: school))
+      render_inline(component)
     end
 
     it "shows leaving school instead of training paused" do
@@ -219,7 +221,7 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
 
       mentee_teacher.update!(trs_induction_status: "Exempt")
 
-      render_inline(described_class.new(mentee, current_school: school))
+      render_inline(component)
     end
 
     it "shows exempt status instead of action required" do
@@ -241,7 +243,7 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
 
       mentee_teacher.update!(trs_induction_status: "Exempt")
 
-      render_inline(described_class.new(mentee, current_school: school))
+      render_inline(component)
     end
 
     it "shows exempt status instead of training paused" do
@@ -252,7 +254,7 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
 
   context "when the ECT has no mentor assigned" do
     before do
-      render_inline(described_class.new(mentee, current_school: school))
+      render_inline(component)
     end
 
     it "shows action required with mentor assignment message" do
@@ -269,7 +271,7 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
   context "when the ECT's migrated data is not accurate" do
     before do
       allow(mentee).to receive(:migrated_data_accurate?).and_return(false)
-      render_inline(described_class.new(mentee))
+      render_inline(component)
     end
 
     it "does not show the school start date" do
@@ -284,7 +286,7 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
   context "when the ECT's migrated data is accurate" do
     before do
       allow(mentee).to receive(:migrated_data_accurate?).and_return(true)
-      render_inline(described_class.new(mentee))
+      render_inline(component)
     end
 
     it "shows the school start date" do
