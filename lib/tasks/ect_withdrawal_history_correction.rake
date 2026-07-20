@@ -5,21 +5,19 @@ namespace :support do
 
     Usage:
       rake "support:correct_ect_withdrawal_history[
-        ECT_AT_SCHOOL_PERIOD_ID,
         ORIGINAL_TRAINING_PERIOD_ID,
         ERRONEOUS_WITHDRAWN_TRAINING_PERIOD_ID,
         CORRECTED_END_DATE
       ]"
   DESC
+
   task :correct_ect_withdrawal_history,
        %i[
-         ect_at_school_period_id
          original_training_period_id
          erroneous_withdrawn_training_period_id
          corrected_end_date
        ] => :environment do |_task, args|
     required_arguments = %i[
-      ect_at_school_period_id
       original_training_period_id
       erroneous_withdrawn_training_period_id
       corrected_end_date
@@ -34,10 +32,6 @@ namespace :support do
             "Missing required arguments: #{missing_arguments.join(', ')}"
     end
 
-    ect_at_school_period = ECTAtSchoolPeriod.find(
-      args[:ect_at_school_period_id]
-    )
-
     original_training_period = TrainingPeriod.find(
       args[:original_training_period_id]
     )
@@ -46,11 +40,15 @@ namespace :support do
       args[:erroneous_withdrawn_training_period_id]
     )
 
+    ect_at_school_period =
+      original_training_period.ect_at_school_period
+
     corrected_end_date = Date.iso8601(
       args[:corrected_end_date]
     )
 
     teacher = ect_at_school_period.teacher
+    author = Events::SystemAuthor.new
 
     puts "WARNING: This task corrects an ECT's historical withdrawal records."
     puts
@@ -106,11 +104,10 @@ namespace :support do
       erroneous_withdrawn_training_period.id
 
     Support::ECTWithdrawalHistoryCorrection.new(
-      ect_at_school_period:,
-      source_training_period: erroneous_withdrawn_training_period,
-      target_training_period: original_training_period,
-      corrected_finished_on: corrected_end_date,
-      author: Events::SystemAuthor.new
+      original_training_period:,
+      erroneous_withdrawn_training_period:,
+      corrected_end_date:,
+      author:
     ).correct!
 
     puts
