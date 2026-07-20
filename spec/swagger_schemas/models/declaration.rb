@@ -77,7 +77,7 @@ DECLARATION = {
           type: :string,
           format: :uuid,
           nullable: true,
-          example: "cd3a12347-7308-4879-942a-c4a70ced400a",
+          example: "45146ec2-594a-495a-bb02-8b2280a3deaf",
         },
         clawback_statement_id: {
           description: "Unique ID of the statement to which the declaration will be clawed back on, if any.",

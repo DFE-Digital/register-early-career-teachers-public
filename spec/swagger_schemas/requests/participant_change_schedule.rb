@@ -10,7 +10,6 @@ PARTICIPANT_CHANGE_SCHEDULE_REQUEST = {
       properties: {
         type: {
           type: :string,
-          required: true,
           enum: %w[participant-change-schedule],
           example: "participant-change-schedule",
         },
@@ -22,14 +21,12 @@ PARTICIPANT_CHANGE_SCHEDULE_REQUEST = {
             schedule_identifier: {
               description: "The new schedule of the participant",
               type: :string,
-              required: true,
               enum: Schedule.identifiers.keys,
               example: "ecf-extended-september",
             },
             course_identifier: {
               description: "The type of course the participant is enrolled in",
               type: :string,
-              required: true,
               enum: %w[ecf-mentor ecf-induction],
               example: "ecf-mentor"
             },
@@ -38,7 +35,6 @@ PARTICIPANT_CHANGE_SCHEDULE_REQUEST = {
               "Indicates which call-off contract funds this participant’s training. "\
               "2021 indicates a participant that has started, or will start, their training in the 2021/22 academic year.",
               type: :string,
-              required: false,
               example: "2021"
             }
           }

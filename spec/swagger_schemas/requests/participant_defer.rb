@@ -10,7 +10,6 @@ PARTICIPANT_DEFER_REQUEST = {
       properties: {
         type: {
           type: :string,
-          required: true,
           enum: %w[participant-defer],
           example: "participant-defer",
         },
@@ -22,14 +21,12 @@ PARTICIPANT_DEFER_REQUEST = {
             reason: {
               description: "The reason for the deferral",
               type: :string,
-              required: true,
               enum: TrainingPeriod.deferral_reasons.keys.map(&:dasherize),
-              example: "left-teaching-profession",
+              example: TrainingPeriod.deferral_reasons.keys.map(&:dasherize).first,
             },
             course_identifier: {
               description: "The type of course the participant is enrolled in",
               type: :string,
-              required: true,
               enum: %w[ecf-mentor ecf-induction],
               example: "ecf-mentor"
             }

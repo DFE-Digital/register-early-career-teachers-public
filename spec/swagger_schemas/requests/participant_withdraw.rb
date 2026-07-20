@@ -10,7 +10,6 @@ PARTICIPANT_WITHDRAW_REQUEST = {
       properties: {
         type: {
           type: :string,
-          required: true,
           enum: %w[participant-withdraw],
           example: "participant-withdraw",
         },
@@ -22,14 +21,12 @@ PARTICIPANT_WITHDRAW_REQUEST = {
             reason: {
               description: "The reason for the withdrawal",
               type: :string,
-              required: true,
               enum: TrainingPeriod.withdrawal_reasons.keys.map(&:dasherize),
-              example: "left-teaching-profession",
+              example: TrainingPeriod.withdrawal_reasons.keys.map(&:dasherize).first,
             },
             course_identifier: {
               description: "The type of course the participant is enrolled in",
               type: :string,
-              required: true,
               enum: %w[ecf-mentor ecf-induction],
               example: "ecf-mentor"
             }

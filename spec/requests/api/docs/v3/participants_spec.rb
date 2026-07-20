@@ -75,6 +75,7 @@ describe "Participants endpoint", :with_metadata, openapi_spec: "v3/swagger.yaml
                   {
                     url: "/api/v3/participants/{id}/withdraw",
                     tag: "Participants",
+                    operation_id: "withdrawParticipant",
                     resource_description: "Notify that a participant has withdrawn from their course",
                     response_description: "The participant being withdrawn",
                     request_schema_ref: "#/components/schemas/ParticipantWithdrawRequest",
@@ -116,6 +117,7 @@ describe "Participants endpoint", :with_metadata, openapi_spec: "v3/swagger.yaml
                   {
                     url: "/api/v3/participants/{id}/defer",
                     tag: "Participants",
+                    operation_id: "deferParticipant",
                     resource_description: "Notify that a participant is taking a break from their course",
                     response_description: "The participant being deferred",
                     request_schema_ref: "#/components/schemas/ParticipantDeferRequest",
@@ -157,6 +159,7 @@ describe "Participants endpoint", :with_metadata, openapi_spec: "v3/swagger.yaml
                   {
                     url: "/api/v3/participants/{id}/resume",
                     tag: "Participants",
+                    operation_id: "resumeParticipant",
                     resource_description: "Notify that a participant is resuming their course",
                     response_description: "The participant being resumed",
                     request_schema_ref: "#/components/schemas/ParticipantResumeRequest",
@@ -207,6 +210,7 @@ describe "Participants endpoint", :with_metadata, openapi_spec: "v3/swagger.yaml
                   {
                     url: "/api/v3/participants/{id}/change-schedule",
                     tag: "Participants",
+                    operation_id: "changeScheduleParticipant",
                     resource_description: "Notify that a participant is changing training schedule",
                     response_description: "The participant changing schedule",
                     request_schema_ref: "#/components/schemas/ParticipantChangeScheduleRequest",

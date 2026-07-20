@@ -10,7 +10,6 @@ PARTNERSHIP_UPDATE_REQUEST = {
       properties: {
         type: {
           type: :string,
-          required: true,
           enum: %w[
             partnership
           ],
@@ -23,7 +22,6 @@ PARTNERSHIP_UPDATE_REQUEST = {
           properties: {
             delivery_partner_id: {
               description: "The unique ID of the delivery partner you will work with for this school partnership",
-              required: true,
               nullable: false,
               type: :string,
               example: "db2fbf67-b7b7-454f-a1b7-0020411e2314",
