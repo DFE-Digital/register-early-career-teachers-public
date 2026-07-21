@@ -10,7 +10,11 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
 
-      <%= render Schools::TeacherProfileSummaryListComponent.new(@ect_at_school_period, current_school: @school) %>
+      <%= render Schools::TeacherProfileSummaryListComponent.new(
+        @ect_at_school_period,
+        training_period: @training_period,
+        current_school: @school
+      ) %>
 
       <%= render Schools::ECTInductionDetailsComponent.new(@ect_at_school_period) %>
 

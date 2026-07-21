@@ -104,8 +104,8 @@ class ECTAtSchoolPeriod < ApplicationRecord
     teacher.ect_at_school_periods.excluding(self)
   end
 
-  def latest_training_status
-    latest_training_period&.status
+  def current_or_next_or_latest_training_period
+    current_or_next_training_period || latest_training_period
   end
 
   def latest_lead_provider_name
