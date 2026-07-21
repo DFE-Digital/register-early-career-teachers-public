@@ -8,10 +8,18 @@ module EnvironmentHelper
   end
 
   def environment_specific_phase_banner(html_attributes: {}, tag_html_attributes: {})
+    govuk_phase_banner(**environment_specific_phase_banner_arguments(html_attributes:, tag_html_attributes:))
+  end
+
+  def environment_specific_phase_banner_arguments(html_attributes: {}, tag_html_attributes: {})
     tag_text = ENVIRONMENT_PHASE_BANNER_TAG || "Beta"
     banner_text = ENVIRONMENT_PHASE_BANNER_CONTENT || environment_phase_banner_default_content
 
-    govuk_phase_banner(text: banner_text, tag: { text: tag_text, colour: ENVIRONMENT_COLOUR, html_attributes: tag_html_attributes }.compact, html_attributes:)
+    {
+      text: banner_text,
+      tag: { text: tag_text, colour: ENVIRONMENT_COLOUR, html_attributes: tag_html_attributes }.compact,
+      html_attributes:,
+    }
   end
 
 private
