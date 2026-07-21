@@ -11,14 +11,26 @@ module EnvironmentHelper
     govuk_phase_banner(**environment_specific_phase_banner_arguments(html_attributes:, tag_html_attributes:))
   end
 
-  def environment_specific_phase_banner_arguments(html_attributes: {}, tag_html_attributes: {})
+  def environment_specific_phase_banner_arguments(inverse: false)
     tag_text = ENVIRONMENT_PHASE_BANNER_TAG || "Beta"
     banner_text = ENVIRONMENT_PHASE_BANNER_CONTENT || environment_phase_banner_default_content
 
+    banner_classes = if inverse
+                       %w[govuk-width-container x-govuk-phase-banner--inverse]
+                     else
+                       %w[govuk-width-container]
+                     end
+
+    tag_classes = if inverse
+                    %w[x-govuk-tag--inverse]
+                  else
+                    []
+                  end
+
     {
       text: banner_text,
-      tag: { text: tag_text, colour: ENVIRONMENT_COLOUR, html_attributes: tag_html_attributes }.compact,
-      html_attributes:,
+      tag: { text: tag_text, colour: ENVIRONMENT_COLOUR, html_attributes: { class: tag_classes } }.compact,
+      html_attributes: { class: banner_classes },
     }
   end
 
