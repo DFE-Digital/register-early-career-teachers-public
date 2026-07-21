@@ -29,4 +29,6 @@
       ).govuk_header_arguments
     )
   %>
+
+  <% header.with_phase_banner(**environment_specific_phase_banner_arguments, html_attributes: { class: "govuk-width-container" }) %>
 <% end %>
