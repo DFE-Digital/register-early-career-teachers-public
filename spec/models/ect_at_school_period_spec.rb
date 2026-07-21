@@ -55,6 +55,77 @@ describe ECTAtSchoolPeriod do
       end
     end
 
+    describe "#current_or_next_or_latest_training_period" do
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 1.year.ago) }
+
+      context "when there is a current period and a future period" do
+        let!(:current_training_period) do
+          FactoryBot.create(
+            :training_period,
+            :provider_led,
+            ect_at_school_period:,
+            started_on: Date.current,
+            finished_on: Date.current.next_month
+          )
+        end
+        let!(:future_training_period) do
+          FactoryBot.create(
+            :training_period,
+            :ongoing,
+            :provider_led,
+            ect_at_school_period:,
+            started_on: current_training_period.finished_on.next_day
+          )
+        end
+
+        it "returns the current period" do
+          expect(ect_at_school_period.current_or_next_or_latest_training_period).to eq(current_training_period)
+        end
+      end
+
+      context "when there is a next period and a later future period" do
+        let!(:next_training_period) do
+          FactoryBot.create(
+            :training_period,
+            :provider_led,
+            ect_at_school_period:,
+            started_on: Date.tomorrow,
+            finished_on: Date.current.next_month
+          )
+        end
+        let!(:future_training_period) do
+          FactoryBot.create(
+            :training_period,
+            :ongoing,
+            :provider_led,
+            ect_at_school_period:,
+            started_on: next_training_period.finished_on.next_day
+          )
+        end
+
+        it "returns the next period" do
+          expect(ect_at_school_period.current_or_next_or_latest_training_period).to eq(next_training_period)
+        end
+      end
+
+      context "when there is no current or future period" do
+        let!(:latest_training_period) do
+          FactoryBot.create(
+            :training_period,
+            :finished,
+            :provider_led,
+            ect_at_school_period:,
+            started_on: 1.year.ago,
+            finished_on: 1.month.ago
+          )
+        end
+
+        it "returns the latest period" do
+          expect(ect_at_school_period.current_or_next_or_latest_training_period).to eq(latest_training_period)
+        end
+      end
+    end
+
     describe "leaving/joining training periods" do
       let(:ect_at_school_period) do
         FactoryBot.create(
