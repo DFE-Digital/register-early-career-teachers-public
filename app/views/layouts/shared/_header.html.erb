@@ -20,13 +20,13 @@
       <%= govuk_link_to('Sign out', current_user.sign_out_path, inverse: true, no_underline: true) %>
     </div>
   <% end %>
-<% end %>
 
-<%=
-  govuk_service_navigation(
-    **Navigation::Primary.new(
-      current_path: request.fullpath,
-      current_user: current_user
-    ).govuk_header_arguments
-  )
-%>
+  <%
+    header.with_service_navigation(
+      **Navigation::Primary.new(
+        current_path: request.fullpath,
+        current_user: current_user
+      ).govuk_header_arguments
+    )
+  %>
+<% end %>
