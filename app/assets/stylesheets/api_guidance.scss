@@ -5,6 +5,9 @@ $x-govuk-masthead-border-colour: govuk-tint($govuk-brand-colour, 25%);
 $x-govuk-masthead-text-colour: govuk-colour("white");
 
 .api-guidance {
+  .x-govuk-header--inverse {
+    background: $x-govuk-masthead-background-colour;
+  }
 
   // phase banner
   .x-govuk-phase-banner--inverse {

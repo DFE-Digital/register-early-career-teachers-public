@@ -2,7 +2,7 @@ module API
   class GuidanceController < ApplicationController
     include ReleaseNotes
 
-    layout "api_guidance"
+    layout "api_home"
 
     after_action :allow_search_engine_indexing, only: :show
 
@@ -14,7 +14,7 @@ module API
       template = "api/guidance/#{params[:page].underscore}"
 
       if template_exists?(template)
-        render template
+        render template, layout: "api_guidance"
       else
         render "errors/not_found", status: :not_found
       end
