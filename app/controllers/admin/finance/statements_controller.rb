@@ -39,7 +39,7 @@ module Admin::Finance
   private
 
     def set_statement
-      @statement = Statement.eager_load(active_lead_provider: :lead_provider).find(params[:id])
+      @statement = Statement.eager_load(active_lead_provider: %i[lead_provider contract_period]).find(params[:id])
     end
 
     def ensure_output_fee_statement!
