@@ -20,7 +20,7 @@ module Admin
 
     private
 
-      delegate :contract, :calculators, to: :statement
+      delegate :contract, :calculators, to: :statement, private: true
 
       def uplifts
         @uplifts ||= calculators.banded_calculator.uplifts
