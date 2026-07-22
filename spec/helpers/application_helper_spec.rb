@@ -2,6 +2,7 @@ RSpec.describe ApplicationHelper, type: :helper do
   include GovukVisuallyHiddenHelper
   include GovukLinkHelper
   include GovukComponentsHelper
+  include GovukSkipLinkHelper
   include TitleWithErrorPrefixHelper
 
   describe "#page_data" do
@@ -292,6 +293,32 @@ RSpec.describe ApplicationHelper, type: :helper do
 
     it "defaults to english" do
       expect(subject).to include('lang="en"')
+    end
+  end
+
+  describe "#govuk_body_element" do
+    subject { govuk_body_element { content } }
+
+    let(:content) { "interesting body content" }
+
+    it "renders the provided content in a HTML element" do
+      expect(subject).to match(%r{<body.*#{content}</body>})
+    end
+
+    it "includes the govuk-template class" do
+      expect(subject).to include("govuk-template__body")
+    end
+
+    it "renders the govuk skip link before any other content" do
+      expect(subject).to match(%r{govuk-skip-link.*#{content}})
+    end
+
+    context "when extra classes are passed in" do
+      subject { govuk_body_element(classes: "fancy") { content } }
+
+      it "includes the provided classes" do
+        expect(subject).to include(%(<body class="govuk-template__body fancy"))
+      end
     end
   end
 
