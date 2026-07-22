@@ -3,7 +3,9 @@ require "csv"
 RSpec.describe Statements::DeclarationsCSV do
   subject(:export) { described_class.new(statement:) }
 
-  let(:contract_period) { FactoryBot.create(:contract_period, year: 2024, uplift_fees_enabled: true) }
+  let(:contract_period) { FactoryBot.create(:contract_period, year: 2025, uplift_fees_enabled: true) }
+  let(:statement_month) { 11 }
+  let(:statement_year) { 2024 }
   let(:ect_started_on) { Date.new(2024, 9, 1) }
   let(:declaration_timestamp) { Time.zone.local(2024, 10, 15, 10, 0, 0) }
   let(:created_timestamp) { Time.zone.local(2024, 10, 16, 11, 30, 0) }
@@ -22,8 +24,8 @@ RSpec.describe Statements::DeclarationsCSV do
       :paid,
       contract:,
       active_lead_provider:,
-      month: 11,
-      year: 2024,
+      month: statement_month,
+      year: statement_year,
       api_id: "df66db14-0f96-4b31-be92-1c1f1c6e4efe"
     )
   end
@@ -89,8 +91,11 @@ RSpec.describe Statements::DeclarationsCSV do
   end
 
   describe "#filename" do
-    it "uses the lead provider and statement period" do
-      expect(export.filename).to eq("ambition-institute-november-2024-declarations.csv")
+    let(:statement_month) { 8 }
+    let(:statement_year) { 2026 }
+
+    it "uses the lead provider, contract period and statement period" do
+      expect(export.filename).to eq("ambitioninstitute-2025-contract-august-2026-declarations.csv")
     end
   end
 
