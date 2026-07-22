@@ -27,6 +27,8 @@ Declaration,590071,update,"training_period_id,163490"
 Declaration,606958,update,"training_period_id,163490"
 ECTAtSchoolPeriod,35950,update,"finished_on,2021-12-31"
 TrainingPeriod,163485,update,"finished_on,2021-12-31"
+TrainingPeriod,163477,delete,
+ECTAtSchoolPeriod,35942,delete,
 TrainingPeriod,273260,update,"finished_on,2022-12-31"
 ECTAtSchoolPeriod,139497,update,"started_on,2022-04-01,finished_on,2022-12-31"
 TrainingPeriod,273260,update,"started_on,2022-04-03"
@@ -93,6 +95,8 @@ ECTAtSchoolPeriod,157851,update,"finished_on,2022-08-31"
 TrainingPeriod,292711,update,"started_on,2021-09-01,finished_on,2022-08-31"
 ECTAtSchoolPeriod,157851,update,"started_on,2021-09-01"
 Declaration,458585,update,"training_period_id,292711"
+TrainingPeriod,292779,delete,
+ECTAtSchoolPeriod,157898,delete,
 TrainingPeriod,256098,update,"schedule_id,33,school_partnership_id,40319"
 TrainingPeriod,256103,update,"schedule_id,33,school_partnership_id,27434"
 Declaration,629994,update,"training_period_id,256103"
@@ -142,7 +146,7 @@ TrainingPeriod,218296,update,"started_on,2022-09-01"
 TrainingPeriod,218292,delete,
 ECTAtSchoolPeriod,87630,delete,
 Declaration,941063,update,"training_period_id,293000"
-Declaration,941063,update,"training_period_id,293000"
+Declaration,941064,update,"training_period_id,293000"
 TrainingPeriod,303088,delete,
 ECTAtSchoolPeriod,157725,delete,
 ECTAtSchoolPeriod,157899,update,"finished_on,2022-05-28"
