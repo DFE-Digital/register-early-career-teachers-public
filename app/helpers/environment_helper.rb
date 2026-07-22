@@ -11,17 +11,8 @@ module EnvironmentHelper
     tag_text = ENVIRONMENT_PHASE_BANNER_TAG || "Beta"
     banner_text = ENVIRONMENT_PHASE_BANNER_CONTENT || environment_phase_banner_default_content
 
-    banner_classes = if inverse
-                       %w[govuk-width-container x-govuk-phase-banner--inverse]
-                     else
-                       %w[govuk-width-container]
-                     end
-
-    tag_classes = if inverse
-                    %w[x-govuk-tag--inverse]
-                  else
-                    []
-                  end
+    banner_classes = class_names("govuk-width-container", "x-govuk-phase-banner--inverse" => inverse)
+    tag_classes = class_names("x-govuk-tag--inverse" => inverse)
 
     {
       text: banner_text,
