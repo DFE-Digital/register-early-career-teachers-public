@@ -7,24 +7,24 @@
       <%= render partial: "layouts/shared/header", locals: { inverse: true } %>
     </div>
 
-    <div class="x-govuk-masthead">
-      <div class="govuk-width-container">
-        <div class="govuk-grid-row">
-          <div class="govuk-grid-column-full">
-            <%= yield(:page_caption) %>
-            <%= yield(:page_header) %>
+    <main class="govuk-main-wrapper" id="main-content" role="main">
+      <div class="x-govuk-masthead">
+        <div class="govuk-width-container">
+          <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+              <%= yield(:page_caption) %>
+              <%= yield(:page_header) %>
 
-            <p class="x-govuk-masthead__description">
-              Find out what data lead providers need to submit to DfE, how to keep it up to
-              date, and when to report changes about early career teachers and their mentors.
-            </p>
+              <p class="x-govuk-masthead__description">
+                Find out what data lead providers need to submit to DfE, how to keep it up to
+                date, and when to report changes about early career teachers and their mentors.
+              </p>
 
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <main class="govuk-main-wrapper" id="main-content" role="main">
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
           <%= yield %>
