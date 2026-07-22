@@ -43,7 +43,8 @@ module Statements
 
     def filename
       [
-        statement.lead_provider.name.parameterize,
+        statement.lead_provider.name.parameterize(separator: ""),
+        "#{statement.contract_period.year}-contract",
         Statements::Period.for(statement).parameterize,
         "declarations.csv"
       ].join("-")
