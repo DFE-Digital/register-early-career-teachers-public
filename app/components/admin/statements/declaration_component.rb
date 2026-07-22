@@ -1,41 +1,24 @@
 module Admin
   module Statements
     class DeclarationComponent < ApplicationComponent
-      attr_reader :statement
+      include CalculatorPresenters
 
-      delegate :contract, to: :statement
+      DECLARATION_TYPES = %w[started retained completed extended].freeze
+
+      attr_reader :statement
 
       def initialize(statement:)
         @statement = statement
       end
 
-      def count_header_text(calculator)
-        return "Total" if ecf_contract?
-        return "ECTs" if calculator.banded?
-
-        "Mentors"
-      end
-
     private
 
-      def ecf_contract?
-        contract.ecf_contract_type?
-      end
+      delegate :contract, to: :statement, private: true
 
-      delegate :calculators, to: :statement, private: true
+      def declaration_types = DECLARATION_TYPES
 
-      def declarations_count(calculator, type)
-        calculator.outputs.declaration_type_outputs
-          .select { it.declaration_type.start_with?(type) }
-          .sum(&:billable_count)
-      end
-
-      def refunded_count(calculator)
-        calculator.outputs.total_refundable_count
-      end
-
-      def voided_count(calculator)
-        calculator.voided_declarations_count
+      def declaration_columns
+        @declaration_columns ||= statement.calculators.map { presenter_for(it) }
       end
     end
   end
