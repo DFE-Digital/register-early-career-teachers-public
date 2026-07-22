@@ -72,11 +72,11 @@ describe EnvironmentHelper do
       subject { environment_specific_phase_banner_arguments(inverse: true) }
 
       it "adds the inverse class to the phase banner arg" do
-        expect(subject.dig(:html_attributes, :class)).to match_array(%w[govuk-width-container x-govuk-phase-banner--inverse])
+        expect(subject.dig(:html_attributes, :class)).to eql("govuk-width-container x-govuk-phase-banner--inverse")
       end
 
       it "adds the inverse class to the phase banner tag arg" do
-        expect(subject.dig(:tag, :html_attributes, :class)).to include("x-govuk-tag--inverse")
+        expect(subject.dig(:tag, :html_attributes, :class)).to eql("x-govuk-tag--inverse")
       end
     end
   end
