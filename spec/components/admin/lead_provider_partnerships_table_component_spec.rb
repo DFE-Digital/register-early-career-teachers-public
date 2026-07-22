@@ -24,16 +24,16 @@ RSpec.describe Admin::LeadProviderPartnershipsTableComponent, type: :component d
     ]
   end
 
-  let(:contract_period_partnerships) do
-    [
-      { contract_period: contract_period_2024, partnerships: partnerships_2024 },
-      { contract_period: contract_period_2025, partnerships: partnerships_2025 }
-    ]
+  let(:partnership_data) do
+    {
+      contract_period_2024.year => partnerships_2024.map { it.lead_provider.name },
+      contract_period_2025.year => partnerships_2025.map { it.lead_provider.name }
+    }
   end
 
   let(:component) do
     described_class.new(
-      contract_period_partnerships:,
+      partnership_data:,
       delivery_partner:,
       page: "2",
       q: "search"
@@ -77,11 +77,11 @@ RSpec.describe Admin::LeadProviderPartnershipsTableComponent, type: :component d
     end
 
     context "when some contract periods have no partnerships" do
-      let(:contract_period_partnerships) do
-        [
-          { contract_period: contract_period_2024, partnerships: partnerships_2024 },
-          { contract_period: contract_period_2025, partnerships: [] }
-        ]
+      let(:partnership_data) do
+        {
+          contract_period_2024.year => partnerships_2024.map { it.lead_provider.name },
+          contract_period_2025.year => []
+        }
       end
 
       before { render_inline(component) }
@@ -105,7 +105,7 @@ RSpec.describe Admin::LeadProviderPartnershipsTableComponent, type: :component d
     context "when page and q are nil" do
       let(:component) do
         described_class.new(
-          contract_period_partnerships:,
+          partnership_data:,
           delivery_partner:
         )
       end
@@ -131,7 +131,7 @@ RSpec.describe Admin::LeadProviderPartnershipsTableComponent, type: :component d
     context "when there are no contract periods" do
       let(:component) do
         described_class.new(
-          contract_period_partnerships: [],
+          partnership_data: {},
           delivery_partner:
         )
       end
@@ -145,12 +145,12 @@ RSpec.describe Admin::LeadProviderPartnershipsTableComponent, type: :component d
   describe "private methods" do
     describe "#lead_provider_names" do
       it "joins lead provider names with commas when partnerships exist" do
-        names = component.send(:lead_provider_names, partnerships_2024)
+        names = component.send(:display_lead_provider_names, partnerships_2024.map { it.lead_provider.name })
         expect(names).to eq("Lead Provider One, Lead Provider Two")
       end
 
       it "returns 'Not reported' when no partnerships exist" do
-        names = component.send(:lead_provider_names, [])
+        names = component.send(:display_lead_provider_names, [])
         expect(names).to eq("Not reported")
       end
     end
