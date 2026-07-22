@@ -2,7 +2,7 @@
 <%= govuk_html_element do %>
   <%= render partial: "layouts/shared/head" %>
 
-  <body class="govuk-template__body" data-turbo="false">
+  <%= govuk_body_element do %>
     <div class="govuk-!-display-none-print">
       <%= render partial: "layouts/shared/header" %>
     </div>
@@ -26,5 +26,5 @@
     <div class="govuk-!-display-none-print">
       <%= render partial: "layouts/shared/footer" %>
     </div>
-  </body>
+  <% end %>
 <% end %>

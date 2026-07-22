@@ -92,4 +92,10 @@ module ApplicationHelper
   def govuk_html_element(&block)
     tag.html(lang: "en", class: "govuk-template", &block)
   end
+
+  def govuk_body_element(classes: [], &block)
+    tag.body(class: ["govuk-template__body", *classes], data: { turbo: "false" }) do
+      safe_join([govuk_skip_link, capture(&block)])
+    end
+  end
 end

@@ -6,10 +6,8 @@
 <%= govuk_html_element do %>
   <%= render partial: "layouts/shared/head" %>
 
-  <body class="govuk-template__body" data-turbo="false">
+  <%= govuk_body_element do %>
     <%= render partial: "layouts/shared/js_enabled" %>
-
-    <%= govuk_skip_link %>
     <%= render partial: "layouts/shared/header" %>
 
     <div class="govuk-width-container">
@@ -25,5 +23,5 @@
     </div>
 
     <%= render partial: "layouts/shared/footer" %>
-  </body>
+  <% end %>
 <% end %>
