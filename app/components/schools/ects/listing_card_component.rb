@@ -77,12 +77,12 @@ module Schools
       def appropriate_body_row
         {
           key: { text: "Appropriate body" },
-          value: { text: appropriate_body_text }
+          value: { text: appropriate_body.name }
         }
       end
 
-      def appropriate_body_text
-        ect_at_school_period.school_reported_appropriate_body_name.presence || "Not reported"
+      def appropriate_body
+        @appropriate_body ||= ECTAtSchoolPeriods::AppropriateBody.new(ect_at_school_period)
       end
 
       def delivery_partner_row
