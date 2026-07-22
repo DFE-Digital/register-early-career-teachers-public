@@ -13,6 +13,7 @@ module Schools
         )
         .search
         .includes(
+          ongoing_induction_period: :appropriate_body_period,
           ect_at_school_periods: %i[latest_training_period mentorship_periods],
           current_or_next_ect_at_school_period: [
             { current_or_next_training_period: %i[
