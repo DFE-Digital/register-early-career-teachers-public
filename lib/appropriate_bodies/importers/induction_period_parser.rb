@@ -2,7 +2,7 @@ require "csv"
 
 module AppropriateBodies::Importers
   class InductionPeriodParser
-    PARSER_ERROR_LOG = "log/dqt_induction_period_parser.log"
+    PARSER_ERROR_LOG = "tmp/dqt_induction_period_parser.log"
 
     # 2 legacy teachers with inductions have already been imported manually
     UNWANTED_TEACHER_IDS = [76_075, 93_314].freeze

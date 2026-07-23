@@ -13,7 +13,7 @@ module AppropriateBodies::Importers
   class TeacherInductionImporter
     BATCH_SIZE = 10_000
 
-    IMPORT_INFO_LOG = "log/dqt_import_info.log"
+    IMPORT_INFO_LOG = "tmp/dqt_import_info.log"
 
     # Bulk replace placeholder event headings
     STATEMENTS = [<<~CLAIMED, <<~RELEASED, <<~PASSED, <<~FAILED].freeze
