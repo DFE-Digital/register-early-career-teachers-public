@@ -56,19 +56,19 @@ module Admin
       end
 
       def total_manual_adjustments_amount
-        @total_manual_adjustments_amount ||= banded_calculator.total_manual_adjustments_amount
+        banded_calculator.total_manual_adjustments_amount
       end
 
       def monthly_service_fee
-        @monthly_service_fee ||= banded_calculator.monthly_service_fee
+        banded_calculator.monthly_service_fee
       end
 
       def outputs
-        @outputs ||= banded_calculator.outputs.total_billable_amount
+        banded_calculator.outputs.total_billable_amount
       end
 
       def clawbacks
-        @clawbacks ||= -banded_calculator.outputs.total_refundable_amount
+        -banded_calculator.outputs.total_refundable_amount
       end
     end
   end

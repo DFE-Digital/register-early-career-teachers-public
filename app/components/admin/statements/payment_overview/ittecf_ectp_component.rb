@@ -19,11 +19,11 @@ module Admin
         delegate :flat_rate_calculator, to: :calculators, private: true
 
         def mentors_outputs
-          @mentors_outputs ||= flat_rate_calculator.outputs.total_billable_amount
+          flat_rate_calculator.outputs.total_billable_amount
         end
 
         def mentors_clawbacks
-          @mentors_clawbacks ||= -flat_rate_calculator.outputs.total_refundable_amount
+          -flat_rate_calculator.outputs.total_refundable_amount
         end
       end
     end
