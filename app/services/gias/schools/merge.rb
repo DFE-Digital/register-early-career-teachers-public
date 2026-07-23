@@ -24,13 +24,13 @@ module GIAS::Schools
           end
         end
 
-        remaining_mentor_periods = school.mentor_at_school_periods.reload
+        remaining_mentor_periods = predecessor_school.mentor_at_school_periods.reload
 
         remaining_mentor_periods.each do |mentor_at_school_period|
           GIAS::Schools::MentorAtSchoolPeriods::Transfer.call(mentor_at_school_period:, predecessor_school:, successor_school:)
         end
 
-        remaining_ect_periods = school.ect_at_school_periods.reload
+        remaining_ect_periods = predecessor_school.ect_at_school_periods.reload
 
         remaining_ect_periods.each do |ect_at_school_period|
           GIAS::Schools::ECTAtSchoolPeriods::Transfer.call(ect_at_school_period:, predecessor_school:, successor_school:)
@@ -49,7 +49,7 @@ module GIAS::Schools
 
     def record_school_merged_event!
       Events::Record.record_school_merged_event!(
-        school: successor_school,
+        school: predecessor_school,
         successor_gias_school: successor,
         predecessor_gias_school: gias_school,
         happened_at: closed_on,
