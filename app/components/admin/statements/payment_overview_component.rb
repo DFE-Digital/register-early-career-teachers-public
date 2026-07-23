@@ -1,7 +1,6 @@
 module Admin
   module Statements
     class PaymentOverviewComponent < ApplicationComponent
-      delegate :contract, to: :statement
       delegate :calculators, to: :statement, private: true
       delegate :banded_calculator, to: :calculators, private: true
       delegate :monthly_service_fee, :total_manual_adjustments_amount, to: :banded_calculator, private: true
