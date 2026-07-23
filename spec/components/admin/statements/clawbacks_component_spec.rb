@@ -147,6 +147,30 @@ RSpec.describe Admin::Statements::ClawbacksComponent, type: :component do
         )
       end
     end
+
+    context "when nothing is refundable" do
+      let(:banded_outputs) do
+        instance_double(
+          PaymentCalculator::Banded::Outputs,
+          declaration_type_outputs: [],
+          total_refundable_amount: 0
+        )
+      end
+
+      it "renders the table with no clawback rows and a zero total" do
+        expect(page).to have_statement_table(
+          caption: "Clawbacks",
+          headings: [
+            "Payment type",
+            "Number of participants",
+            "Fee per participant",
+            "Payments"
+          ],
+          rows: [],
+          total: "£0.00"
+        )
+      end
+    end
   end
 
   context "for `ittecf_ectp` contracts" do
