@@ -50,12 +50,17 @@ module Schools
             ect_at_school_period: ect,
             mentor_at_school_period: mentor.register!(author:),
             author:,
-            mentorship_can_start_today: !mentoring_at_new_school_only?
+            mentorship_can_start_today: use_today_as_earliest_start?
           ).assign!
         end
       rescue StandardError => e
         mentor.registered = false
         raise e
+      end
+
+      def use_today_as_earliest_start?
+        ect.mentorship_periods.exists? ||
+          !mentoring_at_new_school_only?
       end
     end
   end

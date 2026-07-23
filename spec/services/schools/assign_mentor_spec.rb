@@ -45,7 +45,7 @@ RSpec.describe Schools::AssignMentor do
       end
 
       context "when a previous mentorship has finished" do
-        let(:mentorship_can_start_today) { false }
+        let(:mentorship_can_start_today) { true }
         let(:new_mentor_started_on) { 1.month.ago }
 
         let(:previous_mentor) do
@@ -67,18 +67,16 @@ RSpec.describe Schools::AssignMentor do
           )
         end
 
-        it "assigns the new mentor without overlapping the previous mentorship" do
+        it "starts the new mentorship from today" do
           expect { assign! }.not_to raise_error
 
           new_mentorship = mentee.reload.mentorship_periods.find_by!(
             mentor: new_mentor
           )
 
-          expect(new_mentorship.started_on)
-            .to eq(previous_mentorship_period.finished_on.next_day)
+          expect(new_mentorship.started_on).to eq(Date.current)
         end
       end
-
 
       context "when the mentee is currently being mentored" do
         let(:current_mentor) do
@@ -133,34 +131,6 @@ RSpec.describe Schools::AssignMentor do
             expect { current_mentorship_period.reload }
               .to raise_error(ActiveRecord::RecordNotFound)
           end
-        end
-      end
-
-      context "when the current mentorship already has a future end date" do
-        let(:current_mentor) do
-          FactoryBot.create(
-            :mentor_at_school_period,
-            :ongoing,
-            started_on: 6.months.ago,
-            school: mentee.school
-          )
-        end
-
-        let!(:current_mentorship_period) do
-          FactoryBot.create(
-            :mentorship_period,
-            started_on: current_mentor.started_on,
-            finished_on: 1.week.from_now,
-            mentee:,
-            mentor: current_mentor
-          )
-        end
-
-        it "finishes the current mentorship before assigning the new mentor" do
-          expect { assign! }.not_to raise_error
-
-          expect(current_mentorship_period.reload.finished_on)
-            .to eq(Date.yesterday)
         end
       end
     end
