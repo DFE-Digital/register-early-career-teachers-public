@@ -73,8 +73,6 @@ module Admin::Statements
 
     delegate :banded_fee_structure, to: :contract, private: true
 
-    delegate :number_to_pounds, :number_to_percentage, to: :helpers
-
     delegate :recruitment_target,
              :setup_fee,
              :band_terms,

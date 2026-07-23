@@ -27,7 +27,6 @@ module Admin::Statements
     attr_reader :contract
 
     delegate :flat_rate_fee_structure, to: :contract, private: true
-    delegate :number_to_pounds, :number_to_percentage, to: :helpers
 
     def recruitment_target = flat_rate_fee_structure.recruitment_target
     def payment_per_participant = flat_rate_fee_structure.fee_per_declaration

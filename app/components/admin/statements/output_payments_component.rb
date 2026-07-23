@@ -15,7 +15,6 @@ module Admin
 
     private
 
-      delegate :number_to_pounds, to: :helpers
       delegate :contract, to: :statement, private: true
 
       def output_payment_tables

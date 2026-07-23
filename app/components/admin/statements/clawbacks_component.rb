@@ -11,7 +11,6 @@ module Admin
 
     private
 
-      delegate :number_to_pounds, to: :helpers
       delegate :contract, to: :statement, private: true
 
       def clawback_tables

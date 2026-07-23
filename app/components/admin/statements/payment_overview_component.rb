@@ -1,7 +1,6 @@
 module Admin
   module Statements
     class PaymentOverviewComponent < ApplicationComponent
-      delegate :number_to_pounds, to: :helpers
       delegate :contract, to: :statement
       delegate :calculators, to: :statement, private: true
       delegate :banded_calculator, to: :calculators, private: true

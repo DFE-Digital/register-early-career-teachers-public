@@ -1,8 +1,6 @@
 module Admin
   module Statements
     class UpliftFeesComponent < ApplicationComponent
-      delegate :number_to_pounds, to: :helpers
-
       delegate :billable_count,
                :uplift_fee_per_declaration,
                :total_billable_amount,
