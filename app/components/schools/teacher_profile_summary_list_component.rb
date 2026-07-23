@@ -3,12 +3,15 @@ module Schools
     include TeacherHelper
     include ECTHelper
 
-    def initialize(ect, current_school: nil)
+    def initialize(ect, training_period:, current_school: nil)
       @ect = ect
+      @training_period = training_period
       @current_school = current_school
     end
 
   private
+
+    attr_reader :training_period
 
     def show_school_start_date? = @ect.migrated_data_accurate?
     def show_working_pattern? = @ect.migrated_data_accurate?
@@ -43,13 +46,7 @@ module Schools
       end
     end
 
-    def training_period
-      @training_period ||= @ect.latest_training_period
-    end
-
-    def training_status
-      @training_status ||= @ect.latest_training_status
-    end
+    def training_status = training_period&.status
 
     def withdrawn?
       training_period&.provider_led_training_programme? && training_status == :withdrawn

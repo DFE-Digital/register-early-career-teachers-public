@@ -6,41 +6,11 @@
 <%= govuk_html_element do %>
   <%= render partial: "layouts/shared/head" %>
 
-  <body class="govuk-template__body" data-turbo="false">
+  <%= govuk_body_element do %>
     <%= render partial: "layouts/shared/js_enabled" %>
-
-    <%= govuk_skip_link %>
-    <%= govuk_header(full_width_border: true, html_attributes: { class: ['app-header', environment_specific_header_colour_class] }) do |header| %>
-      <% if multi_role_user? %>
-        <div class="app-header__item">
-          <%= govuk_link_to(current_user.organisation_name, switch_role_path, inverse: true, no_underline: true) %>
-        </div>
-      <% end %>
-
-      <% if single_role_user? %>
-        <div class="app-header__item">
-          <%= current_user.organisation_name %>
-        </div>
-      <% end %>
-
-      <% if authenticated? %>
-        <div class="app-header__item">
-          <%= govuk_link_to('Sign out', current_user.sign_out_path, inverse: true, no_underline: true) %>
-        </div>
-      <% end %>
-    <% end %>
-
-    <%=
-      govuk_service_navigation(
-        **Navigation::Primary.new(
-          current_path: request.fullpath,
-          current_user: current_user,
-        ).govuk_header_arguments
-      )
-    %>
+    <%= render partial: "layouts/shared/header" %>
 
     <div class="govuk-width-container">
-      <%= environment_specific_phase_banner %>
       <%= yield(:backlink_or_breadcrumb) %>
 
       <main class="govuk-main-wrapper" id="main-content" role="main">
@@ -53,5 +23,5 @@
     </div>
 
     <%= render partial: "layouts/shared/footer" %>
-  </body>
+  <% end %>
 <% end %>

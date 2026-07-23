@@ -1,33 +1,29 @@
 module Admin
   class LeadProviderPartnershipsTableComponent < ApplicationComponent
-    attr_reader :contract_period_partnerships, :delivery_partner, :page, :q
+    attr_reader :partnership_data, :delivery_partner, :page, :q
 
-    def initialize(contract_period_partnerships:, delivery_partner:, page: nil, q: nil)
-      @contract_period_partnerships = contract_period_partnerships
+    # Expects partnerhsip data in format { 2026 => ["Lead provider one name", "Lead provider two name"] }
+    def initialize(partnership_data:, delivery_partner:, page: nil, q: nil)
+      @partnership_data = partnership_data
       @delivery_partner = delivery_partner
       @page = page
       @q = q
     end
 
     def render?
-      contract_period_partnerships.any?
+      partnership_data.present?
     end
 
   private
 
-    def change_link_path(contract_period)
-      helpers.new_admin_delivery_partner_delivery_partnership_path(
-        delivery_partner,
-        contract_period.year,
-        page:,
-        q:
-      )
+    def change_link_path(year)
+      helpers.new_admin_delivery_partner_delivery_partnership_path(delivery_partner, year, page:, q:)
     end
 
-    def lead_provider_names(partnerships)
-      return "Not reported" if partnerships.empty?
+    def display_lead_provider_names(lead_provider_names)
+      return "Not reported" if lead_provider_names.empty?
 
-      partnerships.map(&:lead_provider).map(&:name).join(", ")
+      lead_provider_names.join(", ")
     end
   end
 end
