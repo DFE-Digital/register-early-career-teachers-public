@@ -4,7 +4,8 @@ module Admin
       delegate :billable_count,
                :uplift_fee_per_declaration,
                :total_billable_amount,
-               to: :uplifts
+               to: :uplifts,
+               private: true
 
       attr_reader :statement
 

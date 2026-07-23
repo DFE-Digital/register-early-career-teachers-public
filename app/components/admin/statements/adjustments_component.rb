@@ -1,8 +1,7 @@
 module Admin
   module Statements
     class AdjustmentsComponent < ApplicationComponent
-      delegate :adjustment_editable?,
-               to: :statement
+      delegate :adjustment_editable?, to: :statement, private: true
 
       attr_reader :statement
 

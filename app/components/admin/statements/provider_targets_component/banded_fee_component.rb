@@ -76,7 +76,8 @@ module Admin::Statements
     delegate :recruitment_target,
              :setup_fee,
              :band_terms,
-             to: :banded_fee_structure
+             to: :banded_fee_structure,
+             private: true
 
     def recruitment_target_label
       if contract.ecf_contract_type?
