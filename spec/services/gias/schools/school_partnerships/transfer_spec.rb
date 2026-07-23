@@ -2,8 +2,7 @@ RSpec.describe GIAS::Schools::SchoolPartnerships::Transfer do
   subject(:service) do
     described_class.call(
       predecessor_school_partnership:,
-      successor_school:,
-      author:
+      successor_school:
     )
   end
 
@@ -46,9 +45,9 @@ RSpec.describe GIAS::Schools::SchoolPartnerships::Transfer do
       expect(Events::Record)
         .to have_received(:record_school_partnership_recreated_event!)
         .with(
-          author:,
           old_school_partnership: predecessor_school_partnership,
-          new_school_partnership:
+          new_school_partnership:,
+          author: an_instance_of(Events::SystemAuthor)
         )
     end
   end

@@ -1,57 +1,55 @@
-module GIAS
-  module Schools
-    module MentorAtSchoolPeriods
-      class Overlapping
-        attr_reader :teacher, :schools, :groups
+module GIAS::Schools
+  module MentorAtSchoolPeriods
+    class Overlapping
+      def self.find(...) = new(...).find
 
-        def initialize(teacher:, schools:)
-          @teacher = teacher
-          @schools = Array(schools).compact.uniq
-          @groups = []
-        end
+      def initialize(teacher:, schools:)
+        @teacher = teacher
+        @schools = Array(schools).compact.uniq
+        @groups = []
+      end
 
-        def self.find(...) = new(...).find
+      def find
+        return [] if only_one_school?
 
-        def find
-          return [] if only_one_school?
+        group_mentor_at_school_periods
 
-          group_mentor_at_school_periods
+        groups.select(&:many?)
+      end
 
-          groups.select(&:many?)
-        end
+    private
 
-      private
+      attr_reader :teacher, :schools, :groups
 
-        def ordered_mentor_at_school_periods
-          @ordered_mentor_at_school_periods ||= teacher
-            .mentor_at_school_periods
-            .where(school: schools)
-            .order(:started_on)
-        end
+      def ordered_mentor_at_school_periods
+        @ordered_mentor_at_school_periods ||= teacher
+          .mentor_at_school_periods
+          .where(school: schools)
+          .order(:started_on)
+      end
 
-        def only_one_school?
-          schools.uniq.one? || ordered_mentor_at_school_periods.map(&:school_id).uniq.one?
-        end
+      def only_one_school?
+        schools.uniq.one? || ordered_mentor_at_school_periods.map(&:school_id).uniq.one?
+      end
 
-        def group_mentor_at_school_periods
-          ordered_mentor_at_school_periods.each do |period|
-            if start_new_group?(groups.last, period)
-              groups << [period]
-            else
-              groups.last << period
-            end
+      def group_mentor_at_school_periods
+        ordered_mentor_at_school_periods.each do |period|
+          if start_new_group?(groups.last, period)
+            groups << [period]
+          else
+            groups.last << period
           end
         end
+      end
 
-        def start_new_group?(current_group, next_period)
-          current_group.nil? || gap_between?(current_group, next_period)
-        end
+      def start_new_group?(current_group, next_period)
+        current_group.nil? || gap_between?(current_group, next_period)
+      end
 
-        def gap_between?(group, period)
-          return false if group.any?(&:ongoing?)
+      def gap_between?(group, period)
+        return false if group.any?(&:ongoing?)
 
-          group.map(&:finished_on).max < period.started_on
-        end
+        group.map(&:finished_on).max < period.started_on
       end
     end
   end

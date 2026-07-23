@@ -1,7 +1,5 @@
 module GIAS::Schools
   class Merge
-    attr_reader :gias_school
-
     def initialize(gias_school)
       @gias_school = gias_school
     end
@@ -15,6 +13,8 @@ module GIAS::Schools
     end
 
   private
+
+    attr_reader :gias_school
 
     def merge_school!
       ActiveRecord::Base.transaction do
@@ -41,7 +41,10 @@ module GIAS::Schools
     end
 
     def overlapping_mentor_at_school_periods(teacher)
-      GIAS::Schools::MentorAtSchoolPeriods::Overlapping.find(teacher:, schools:)
+      GIAS::Schools::MentorAtSchoolPeriods::Overlapping.find(
+        teacher:,
+        schools: [predecessor_school, successor_school]
+      )
     end
 
     def record_school_merged_event!
@@ -54,18 +57,12 @@ module GIAS::Schools
       )
     end
 
-    def author
-      Events::SystemAuthor.new
-    end
-
-    def schools = [school, successor_school]
     def predecessor_school = school
-
-    def successor_school
-      @successor_school ||= successor.school
-    end
+    def successor_school = @successor_school ||= successor.school
 
     delegate :school, :closed_on, :successor, to: :gias_school
     delegate :mentor_teachers, to: :school, prefix: false
+
+    def author = Events::SystemAuthor.new
   end
 end
