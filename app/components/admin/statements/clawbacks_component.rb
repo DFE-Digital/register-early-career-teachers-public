@@ -9,13 +9,7 @@ module Admin
         @statement = statement
       end
 
-    private
-
       delegate :contract, to: :statement, private: true
-
-      def clawback_tables
-        statement.calculators.map { presenter_for(it) }
-      end
     end
   end
 end

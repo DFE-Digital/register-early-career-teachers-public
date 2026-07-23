@@ -3,6 +3,10 @@ module CalculatorPresenters
 
 private
 
+  def presented_calculators
+    @presented_calculators ||= statement.calculators.map { presenter_for it }
+  end
+
   def presenter_for(calculator)
     presenter_class =
       if contract.ecf_contract_type?

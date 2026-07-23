@@ -13,13 +13,7 @@ module Admin
         statement.output_fee?
       end
 
-    private
-
       delegate :contract, to: :statement, private: true
-
-      def output_payment_tables
-        statement.calculators.map { presenter_for(it) }
-      end
     end
   end
 end
