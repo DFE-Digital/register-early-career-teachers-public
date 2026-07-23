@@ -4,7 +4,7 @@ module Admin
       class ECFComponent < PaymentOverviewComponent
         def rows
           [
-            ["Output payment", { text: number_to_pounds(outputs), numeric: true }],
+            ["Output payment", { text: number_to_pounds(output_payment), numeric: true }],
             ["Service fee", { text: number_to_pounds(monthly_service_fee), numeric: true }],
             ["Uplift fees", { text: number_to_pounds(uplift_fees), numeric: true }],
             ["Clawbacks", { text: number_to_pounds(clawbacks), numeric: true }],
@@ -15,12 +15,14 @@ module Admin
 
       private
 
+        delegate :uplifts, to: :banded_calculator, private: true
+
         def uplift_fees
-          banded_calculator.uplifts.total_billable_amount
+          uplifts.total_billable_amount
         end
 
         def clawbacks
-          -(banded_calculator.outputs.total_refundable_amount + banded_calculator.uplifts.total_refundable_amount)
+          -(outputs.total_refundable_amount + uplifts.total_refundable_amount)
         end
       end
     end

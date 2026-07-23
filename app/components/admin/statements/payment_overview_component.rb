@@ -5,6 +5,8 @@ module Admin
       delegate :contract, to: :statement
       delegate :calculators, to: :statement, private: true
       delegate :banded_calculator, to: :calculators, private: true
+      delegate :monthly_service_fee, :total_manual_adjustments_amount, to: :banded_calculator, private: true
+      delegate :outputs, to: :banded_calculator, private: true
 
       attr_reader :statement
 
@@ -55,20 +57,12 @@ module Admin
         calculators.sum(&:vat_amount)
       end
 
-      def total_manual_adjustments_amount
-        banded_calculator.total_manual_adjustments_amount
-      end
-
-      def monthly_service_fee
-        banded_calculator.monthly_service_fee
-      end
-
-      def outputs
-        banded_calculator.outputs.total_billable_amount
+      def output_payment
+        outputs.total_billable_amount
       end
 
       def clawbacks
-        -banded_calculator.outputs.total_refundable_amount
+        -outputs.total_refundable_amount
       end
     end
   end
