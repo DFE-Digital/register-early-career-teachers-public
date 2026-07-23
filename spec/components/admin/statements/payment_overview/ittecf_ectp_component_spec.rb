@@ -21,8 +21,12 @@ RSpec.describe Admin::Statements::PaymentOverview::IttecfEctpComponent, type: :c
     )
   end
 
-  let(:banded_outputs_double) { double(total_net_amount: 400, total_refundable_amount: 150, total_billable_amount: 550) }
-  let(:flat_rate_outputs_double) { double(total_net_amount: 200, total_refundable_amount: 300, total_billable_amount: 500) }
+  let(:banded_outputs_double) do
+    instance_double(PaymentCalculator::Banded::Outputs, total_net_amount: 400, total_refundable_amount: 150, total_billable_amount: 550)
+  end
+  let(:flat_rate_outputs_double) do
+    instance_double(PaymentCalculator::FlatRate::Outputs, total_net_amount: 200, total_refundable_amount: 300, total_billable_amount: 500)
+  end
 
   let(:total_manual_adjustments_amount) { 375 }
   let(:monthly_service_fee) { 1_000 }

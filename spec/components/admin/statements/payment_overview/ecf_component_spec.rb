@@ -21,9 +21,17 @@ RSpec.describe Admin::Statements::PaymentOverview::ECFComponent, type: :componen
     )
   end
 
-  let(:banded_outputs_double) { double(total_net_amount:, total_refundable_amount:, total_billable_amount:) }
+  let(:banded_outputs_double) do
+    instance_double(
+      PaymentCalculator::Banded::Outputs,
+      total_net_amount:,
+      total_refundable_amount:,
+      total_billable_amount:
+    )
+  end
   let(:uplifts_double) do
-    double(
+    instance_double(
+      PaymentCalculator::Banded::Uplifts,
       total_net_amount: total_billable_uplifts_amount - total_refundable_uplifts_amount,
       total_billable_amount: total_billable_uplifts_amount,
       total_refundable_amount: total_refundable_uplifts_amount
