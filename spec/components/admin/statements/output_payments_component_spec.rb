@@ -117,6 +117,42 @@ RSpec.describe Admin::Statements::OutputPaymentsComponent, type: :component do
         total: "£344.00"
       )
     end
+
+    context "with multiple extended declaration types" do
+      let(:banded_outputs) do
+        outputs = banded_fee_structure.band_terms.flat_map do |band_term|
+          %w[extended-1 extended-2].map do |declaration_type|
+            instance_double(
+              PaymentCalculator::Banded::DeclarationTypeOutput,
+              declaration_type:,
+              band_term:,
+              billable_count: 2,
+              type_adjusted_fee_per_declaration: 10,
+              total_billable_amount: 20
+            )
+          end
+        end
+
+        instance_double(
+          PaymentCalculator::Banded::Outputs,
+          declaration_type_outputs: outputs,
+          total_billable_amount: 120
+        )
+      end
+
+      it "collapses them into a single Extended row summing the counts per band" do
+        expect(page).to have_statement_table(
+          caption: "Output payments",
+          headings: ["Outputs", "Band A", "Band B", "Band C", "Payments"],
+          rows: [
+            ["Extended", "4", "4", "4", ""],
+            ["Fee per participant", "£10.00", "£10.00", "£10.00", "£120.00"],
+          ],
+          total_label: "Output payment total",
+          total: "£120.00"
+        )
+      end
+    end
   end
 
   context "for `ittecf_ectp` contracts" do
