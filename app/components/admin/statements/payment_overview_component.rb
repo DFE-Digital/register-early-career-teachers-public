@@ -27,10 +27,6 @@ module Admin
         klass.new(statement:)
       end
 
-      def caption
-        "Total #{number_to_pounds(total_amount)}"
-      end
-
       def statement_print_link
         govuk_link_to(
           "Save as PDF",
@@ -49,21 +45,13 @@ module Admin
         "#{statement.lead_provider_name} #{statement.period} financial statement"
       end
 
-      def total_amount
-        calculators.sum { |calculator| calculator.total_amount(with_vat: true) }
-      end
+      def total_amount = calculators.sum { it.total_amount(with_vat: true) }
 
-      def vat_amount
-        calculators.sum(&:vat_amount)
-      end
+      def vat_amount = calculators.sum(&:vat_amount)
 
-      def output_payment
-        outputs.total_billable_amount
-      end
+      def output_payment = outputs.total_billable_amount
 
-      def clawbacks
-        -outputs.total_refundable_amount
-      end
+      def clawbacks = -outputs.total_refundable_amount
     end
   end
 end
