@@ -16,10 +16,6 @@ module Admin
       delegate :contract, to: :statement, private: true
 
       def declaration_types = DECLARATION_TYPES
-
-      def declaration_columns
-        @declaration_columns ||= statement.calculators.map { presenter_for(it) }
-      end
     end
   end
 end
