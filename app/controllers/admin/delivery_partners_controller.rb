@@ -22,19 +22,7 @@ module Admin
         @delivery_partner.name => nil
       }
 
-      existing_partnerships = @delivery_partner
-        .lead_provider_delivery_partnerships
-        .includes(active_lead_provider: %i[lead_provider contract_period])
-
-      contract_periods_with_providers = ContractPeriod
-        .joins(:active_lead_providers)
-        .distinct
-        .most_recent_first
-
-      @contract_period_partnerships = contract_periods_with_providers.map do |contract_period|
-        partnerships = existing_partnerships.select { |p| p.contract_period.year == contract_period.year }
-        { contract_period:, partnerships: }
-      end
+      @partnership_data = ::DeliveryPartners::PartnershipData.new(@delivery_partner).partners_by_contract_period
     end
 
     def new

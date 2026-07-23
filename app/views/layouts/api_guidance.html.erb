@@ -2,70 +2,32 @@
 <%= govuk_html_element do %>
   <%= render partial: "layouts/shared/head" %>
 
-  <body class="govuk-template__body api-guidance" data-turbo="false">
+  <%= govuk_body_element(classes: "api-guidance") do %>
     <%= render partial: "layouts/shared/js_enabled" %>
+    <%= render partial: "layouts/shared/header" %>
 
-    <%= govuk_skip_link %>
-    <%= govuk_header(full_width_border: true, html_attributes: { class: ['app-header', environment_specific_header_colour_class] }) do |header| %>
-      <% if multi_role_user? %>
-        <div class="app-header__item">
-          <%= govuk_link_to(current_user.organisation_name, switch_role_path, inverse: true, no_underline: true) %>
-        </div>
-      <% end %>
+    <div class="govuk-width-container">
+      <%= yield(:backlink_or_breadcrumb) %>
 
-      <% if single_role_user? %>
-        <div class="app-header__item">
-          <%= current_user.organisation_name %>
-        </div>
-      <% end %>
-
-      <% if authenticated? %>
-        <div class="app-header__item">
-          <%= govuk_link_to('Sign out', current_user.sign_out_path, inverse: true, no_underline: true) %>
-        </div>
-      <% end %>
-    <% end %>
-
-    <%=
-      govuk_service_navigation(
-        **Navigation::Primary.new(
-          current_path: request.fullpath,
-          current_user: current_user,
-          inverse: content_for?(:api_guidance_home_header),
-        ).govuk_header_arguments
-      )
-    %>
-
-    <% if content_for?(:api_guidance_home_header) %>
-      <%= yield(:api_guidance_home_header) %>
       <main class="govuk-main-wrapper" id="main-content" role="main">
-        <%= yield %>
-      </main>
-    <% else %>
-      <div class="govuk-width-container">
-        <%= environment_specific_phase_banner %>
-        <%= yield(:backlink_or_breadcrumb) %>
+        <%= render partial: "layouts/shared/main_preamble" %>
 
-        <main class="govuk-main-wrapper" id="main-content" role="main">
-          <%= render partial: "layouts/shared/main_preamble" %>
+        <div class="govuk-grid-row govuk-!-padding-top-7">
+          <%= render API::Guidance::SidebarComponent.new(
+            current_path: request.path,
+            page: params[:page],
+          ) %>
 
-          <div class="govuk-grid-row govuk-!-padding-top-7">
-            <%= render API::Guidance::SidebarComponent.new(
-              current_path: request.path,
-              page: params[:page],
-            ) %>
+          <div class="govuk-grid-column-two-thirds">
+            <%= yield(:page_caption) %>
+            <%= yield(:page_header) %>
 
-            <div class="govuk-grid-column-two-thirds">
-              <%= yield(:page_caption) %>
-              <%= yield(:page_header) %>
-
-              <%= yield %>
-            </div>
+            <%= yield %>
           </div>
-        </main>
-      </div>
-    <% end %>
+        </div>
+      </main>
+    </div>
 
     <%= render partial: "layouts/shared/footer" %>
-  </body>
+  <% end %>
 <% end %>

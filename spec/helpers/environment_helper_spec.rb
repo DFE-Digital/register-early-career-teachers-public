@@ -1,4 +1,4 @@
-RSpec.describe EnvironmentHelper, type: :helper do
+describe EnvironmentHelper do
   include GovukLinkHelper
   include GovukVisuallyHiddenHelper
   include GovukComponentsHelper
@@ -23,24 +23,28 @@ RSpec.describe EnvironmentHelper, type: :helper do
     end
   end
 
-  describe "#environment_specific_phase_banner" do
-    subject { environment_specific_phase_banner }
+  describe "#environment_specific_phase_banner_arguments" do
+    subject { environment_specific_phase_banner_arguments }
 
     it "is 'Beta' by default" do
-      expect(subject).to include("Beta")
+      expect(subject.dig(:tag, :text)).to eql("Beta")
     end
 
     it "has a govuk tag with no colour modifier" do
-      expect(subject).not_to match(/govuk-tag--\w+/)
+      expect(subject.dig(:tag, :colour)).to be_nil
+    end
+
+    it "adds the govuk-width-container class to the phase banner arg" do
+      expect(subject.dig(:html_attributes, :class)).to include("govuk-width-container")
     end
 
     context "when ENVIRONMENT_PHASE_BANNER_TAG is not set" do
       it "includes the default text" do
-        expect(subject).to match("This is a new service")
+        expect(subject.fetch(:text)).to start_with("This is a new service")
       end
 
       it "includes the support feedback form" do
-        expect(subject).to include(EnvironmentHelper::FEEDBACK_SURVEY_FORM_URL)
+        expect(subject.fetch(:text)).to include(EnvironmentHelper::FEEDBACK_SURVEY_FORM_URL)
       end
     end
 
@@ -52,34 +56,27 @@ RSpec.describe EnvironmentHelper, type: :helper do
       end
 
       it "overwrites the default with the provided value" do
-        expect(subject).to include("Wow")
+        expect(subject.dig(:tag, :text)).to eql("Wow")
       end
 
       it "has a govuk tag with a yellow modifier class" do
-        expect(subject).to match(/govuk-tag govuk-tag--yellow govuk-phase-banner__content__tag/)
+        expect(subject.dig(:tag, :colour)).to eql("yellow")
       end
 
       it "contains the text 'Give feedback about this service'" do
-        expect(subject).to include("What a nice service")
+        expect(subject.fetch(:text)).to include("What a nice service")
       end
     end
 
-    describe "passing custom HTML attributes through" do
-      subject do
-        Nokogiri.parse(
-          environment_specific_phase_banner(
-            html_attributes: { hello: "world" },
-            tag_html_attributes: { bonjour: "le monde" }
-          )
-        )
+    context "when inverse is true" do
+      subject { environment_specific_phase_banner_arguments(inverse: true) }
+
+      it "adds the inverse class to the phase banner arg" do
+        expect(subject.dig(:html_attributes, :class)).to eql("govuk-width-container x-govuk-phase-banner--inverse")
       end
 
-      it "sets the custom attributes on the rendered phase banner" do
-        expect(subject).to have_css(%(div.govuk-phase-banner[hello='world']))
-      end
-
-      it "sets the custom attributes on the rendered phase banner tag" do
-        expect(subject).to have_css(%(strong[bonjour='le monde']))
+      it "adds the inverse class to the phase banner tag arg" do
+        expect(subject.dig(:tag, :html_attributes, :class)).to eql("x-govuk-tag--inverse")
       end
     end
   end
