@@ -4,9 +4,8 @@ module Admin
       class BasePresenter < SimpleDelegator
         Row = Data.define(:payment_type, :refundable_count, :fee_per_declaration, :total_refundable_amount)
 
-        delegate :total_refundable_amount,
-                 :declaration_type_outputs,
-                 to: :outputs
+        delegate :total_refundable_amount, to: :outputs
+        delegate :declaration_type_outputs, to: :outputs, private: true
 
         def rows
           refundable_outputs.map do |output|
