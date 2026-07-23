@@ -122,13 +122,16 @@ RSpec.describe GIAS::Schools::Merge do
           end
 
           it "records a school merged event" do
-            expect(Events::Record).to receive(:record_school_merged_event!)
+            expect(Events::Record)
+              .to receive(:record_school_merged_event!)
               .once
-              .with(school: successor_school,
-                    predecessor_gias_school: gias_school,
-                    successor_gias_school:,
-                    happened_at: gias_school.closed_on,
-                    author: an_instance_of(Events::SystemAuthor))
+              .with(
+                school: predecessor_school,
+                predecessor_gias_school: gias_school,
+                successor_gias_school:,
+                happened_at: gias_school.closed_on,
+                author: an_instance_of(Events::SystemAuthor)
+              )
 
             merge_school
           end
@@ -170,13 +173,16 @@ RSpec.describe GIAS::Schools::Merge do
           end
 
           it "records a school merged event" do
-            expect(Events::Record).to receive(:record_school_merged_event!)
+            expect(Events::Record)
+              .to receive(:record_school_merged_event!)
               .once
-              .with(school: successor_school,
-                    predecessor_gias_school: gias_school,
-                    successor_gias_school:,
-                    happened_at: gias_school.closed_on,
-                    author: an_instance_of(Events::SystemAuthor))
+              .with(
+                school: predecessor_school,
+                predecessor_gias_school: gias_school,
+                successor_gias_school:,
+                happened_at: gias_school.closed_on,
+                author: an_instance_of(Events::SystemAuthor)
+              )
 
             merge_school
           end
@@ -200,13 +206,16 @@ RSpec.describe GIAS::Schools::Merge do
           end
 
           it "records a school merged event" do
-            expect(Events::Record).to receive(:record_school_merged_event!)
+            expect(Events::Record)
+              .to receive(:record_school_merged_event!)
               .once
-              .with(school: successor_school,
-                    predecessor_gias_school: gias_school,
-                    successor_gias_school:,
-                    happened_at: gias_school.closed_on,
-                    author: an_instance_of(Events::SystemAuthor))
+              .with(
+                school: predecessor_school,
+                predecessor_gias_school: gias_school,
+                successor_gias_school:,
+                happened_at: gias_school.closed_on,
+                author: an_instance_of(Events::SystemAuthor)
+              )
 
             merge_school
           end
@@ -263,13 +272,16 @@ RSpec.describe GIAS::Schools::Merge do
         end
 
         it "records a school merged event" do
-          expect(Events::Record).to receive(:record_school_merged_event!)
+          expect(Events::Record)
+            .to receive(:record_school_merged_event!)
             .once
-            .with(school: successor_school,
-                  predecessor_gias_school: gias_school,
-                  successor_gias_school:,
-                  happened_at: gias_school.closed_on,
-                  author: an_instance_of(Events::SystemAuthor))
+            .with(
+              school: predecessor_school,
+              predecessor_gias_school: gias_school,
+              successor_gias_school:,
+              happened_at: gias_school.closed_on,
+              author: an_instance_of(Events::SystemAuthor)
+            )
 
           merge_school
         end
