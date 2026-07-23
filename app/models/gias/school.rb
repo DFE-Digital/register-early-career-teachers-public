@@ -98,7 +98,7 @@ class GIAS::School < ApplicationRecord
   def can_be_merged?
     closed_status? &&
       closed_on_or_before_today? &&
-      !school_merger_recorded? &&
+      no_school_merged_event_recorded? &&
       successors.one? &&
       successor.open_status? &&
       successor.opened_on_or_before_today? &&
@@ -128,8 +128,8 @@ private
     Event.where(school:, event_type: :school_closed).exists?
   end
 
-  def school_merger_recorded?
-    Event.where(school:, event_type: :school_merged).exists?
+  def no_school_merged_event_recorded?
+    Event.where(school:, event_type: :school_merged).none?
   end
 
   def school_being_replaced?
