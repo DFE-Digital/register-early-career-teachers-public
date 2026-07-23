@@ -1,7 +1,7 @@
-namespace :support do
+namespace :data_corrections do
   desc "Correct an ECT training period assigned to the wrong contract period"
 
-  # Replacement IDs are optional overrides when automatic lookup is ambiguous.
+  # Replacement IDs are optional overrides when automatic lookup is ambiguous
   task :ect_contract_period_correction,
        %i[
          training_period_id
@@ -35,7 +35,7 @@ namespace :support do
       end
 
     correction =
-      Support::ECTContractPeriodCorrection.new(
+      DataCorrections::ECTContractPeriodCorrection.new(
         training_period:,
         teacher_id: args.fetch(:teacher_id).to_i,
         current_contract_period_year:

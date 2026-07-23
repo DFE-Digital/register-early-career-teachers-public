@@ -1,4 +1,4 @@
-module Support
+module DataCorrections
   class ECTContractPeriodCorrection
     class InvalidCorrection < StandardError; end
 
@@ -66,6 +66,11 @@ module Support
     end
 
     def validate_training_period!
+      unless training_period.ect_at_school_period
+        raise InvalidCorrection,
+              "Training period must be for an ECT"
+      end
+
       unless teacher.id == teacher_id
         raise InvalidCorrection,
               "Training period belongs to a different teacher"
