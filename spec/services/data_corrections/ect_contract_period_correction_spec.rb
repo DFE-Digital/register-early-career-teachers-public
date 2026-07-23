@@ -1,4 +1,4 @@
-RSpec.describe Support::ECTContractPeriodCorrection do
+RSpec.describe DataCorrections::ECTContractPeriodCorrection do
   subject(:correction) do
     described_class.new(
       training_period:,
@@ -195,6 +195,35 @@ RSpec.describe Support::ECTContractPeriodCorrection do
   end
 
   describe "validation" do
+    context "when the training period is for a mentor" do
+      let(:mentor_at_school_period) do
+        FactoryBot.create(
+          :mentor_at_school_period,
+          :ongoing,
+          started_on: 1.year.ago
+        )
+      end
+
+      let(:training_period) do
+        FactoryBot.create(
+          :training_period,
+          :for_mentor,
+          :ongoing,
+          :provider_led,
+          mentor_at_school_period:,
+          started_on: mentor_at_school_period.started_on
+        )
+      end
+
+      it "raises an error" do
+        expect { correction.call }
+          .to raise_error(
+            described_class::InvalidCorrection,
+            "Training period must be for an ECT"
+          )
+      end
+    end
+
     context "when the training period belongs to another teacher" do
       let(:teacher_id) { FactoryBot.create(:teacher).id }
 
