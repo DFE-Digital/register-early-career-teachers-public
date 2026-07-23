@@ -16,11 +16,11 @@ module Admin
       private
 
         def uplift_fees
-          @uplift_fees ||= banded_calculator.uplifts.total_billable_amount
+          banded_calculator.uplifts.total_billable_amount
         end
 
         def clawbacks
-          @clawbacks ||= -(banded_calculator.outputs.total_refundable_amount + banded_calculator.uplifts.total_refundable_amount)
+          -(banded_calculator.outputs.total_refundable_amount + banded_calculator.uplifts.total_refundable_amount)
         end
       end
     end

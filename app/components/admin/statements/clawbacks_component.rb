@@ -15,7 +15,7 @@ module Admin
       delegate :contract, to: :statement, private: true
 
       def clawback_tables
-        @clawback_tables ||= statement.calculators.map { presenter_for(it) }
+        statement.calculators.map { presenter_for(it) }
       end
     end
   end

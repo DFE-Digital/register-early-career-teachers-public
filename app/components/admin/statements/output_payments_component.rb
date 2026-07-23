@@ -19,7 +19,7 @@ module Admin
       delegate :contract, to: :statement, private: true
 
       def output_payment_tables
-        @output_payment_tables ||= statement.calculators.map { presenter_for(it) }
+        statement.calculators.map { presenter_for(it) }
       end
     end
   end
