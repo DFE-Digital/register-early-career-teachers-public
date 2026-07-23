@@ -1,0 +1,8 @@
+<div class="finance-panel govuk-!-margin-top-5 govuk-!-margin-bottom-5">
+  <h2 class="govuk-heading-m">Audit notes</h2>
+
+  <% audit_notes.each do |audit_note| %>
+    <p class="govuk-hint govuk-!-margin-bottom-1"><%= timestamp(audit_note) %></p>
+    <p class="govuk-body"><%= audit_note.body %></p>
+  <% end %>
+</div>
