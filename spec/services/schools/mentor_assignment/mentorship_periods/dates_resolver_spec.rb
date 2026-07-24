@@ -3,7 +3,7 @@ RSpec.describe Schools::MentorAssignment::MentorshipPeriods::DatesResolver do
     described_class.new(
       ect_at_school_period:,
       mentor_at_school_period:,
-      mentorship_can_start_today:
+      mentor_is_transferring_schools:
     )
   end
 
@@ -26,12 +26,13 @@ RSpec.describe Schools::MentorAssignment::MentorshipPeriods::DatesResolver do
   let(:mentor_started_on) { 2.years.ago }
   let(:ect_finished_on) { nil }
   let(:mentor_finished_on) { nil }
+  let(:mentor_is_transferring_schools) { false }
 
   describe "#earliest_possible_start" do
     subject(:earliest_possible_start) { service.earliest_possible_start }
 
-    context "when the mentorship can start today" do
-      let(:mentorship_can_start_today) { true }
+    context "when the mentor is not transferring schools" do
+      let(:mentor_is_transferring_schools) { false }
 
       context "and both the ECT and the mentor started at the school " \
               "in the past" do
@@ -74,21 +75,61 @@ RSpec.describe Schools::MentorAssignment::MentorshipPeriods::DatesResolver do
       end
     end
 
-    context "when the mentorship cannot start today" do
-      let(:mentorship_can_start_today) { false }
+    context "when the mentor is transferring schools" do
+      let(:mentor_is_transferring_schools) { true }
 
-      context "and the ECT started at the school after the mentor" do
-        let(:ect_started_on) { 1.year.ago }
-        let(:mentor_started_on) { 2.years.ago }
+      context "and the ECT has no previous mentorships" do
+        context "and the ECT started at the school after the mentor" do
+          let(:ect_started_on) { 1.year.ago }
+          let(:mentor_started_on) { 2.years.ago }
 
-        it { is_expected.to eq(ect_at_school_period.started_on) }
+          it { is_expected.to eq(ect_at_school_period.started_on) }
+        end
+
+        context "and the mentor started at the school after the ECT" do
+          let(:ect_started_on) { 2.years.ago }
+          let(:mentor_started_on) { 1.year.ago }
+
+          it { is_expected.to eq(mentor_at_school_period.started_on) }
+        end
       end
 
-      context "and the mentor started at the school after the ECT" do
-        let(:ect_started_on) { 2.years.ago }
-        let(:mentor_started_on) { 1.year.ago }
+      context "and the ECT has a previous mentorship" do
+        let(:previous_mentorship_started_on) { 1.year.ago.to_date }
 
-        it { is_expected.to eq(mentor_at_school_period.started_on) }
+        let(:previous_mentor_at_school_period) do
+          FactoryBot.create(
+            :mentor_at_school_period,
+            :ongoing,
+            started_on: previous_mentorship_started_on,
+            school: ect_at_school_period.school
+          )
+        end
+
+        let!(:previous_mentorship_period) do
+          FactoryBot.create(
+            :mentorship_period,
+            mentee: ect_at_school_period,
+            mentor: previous_mentor_at_school_period,
+            started_on: previous_mentorship_started_on,
+            finished_on: 2.weeks.ago.to_date
+          )
+        end
+
+        context "and both the ECT and the new mentor started at the school " \
+                "in the past" do
+          let(:ect_started_on) { 2.years.ago }
+          let(:mentor_started_on) { 1.month.ago }
+
+          it { is_expected.to eq(Date.current) }
+        end
+
+        context "and the new mentor starts at the school in the future" do
+          let(:ect_started_on) { 2.years.ago }
+          let(:mentor_started_on) { 1.month.from_now }
+
+          it { is_expected.to eq(mentor_at_school_period.started_on) }
+        end
       end
     end
   end
@@ -96,9 +137,7 @@ RSpec.describe Schools::MentorAssignment::MentorshipPeriods::DatesResolver do
   describe "#latest_possible_finish" do
     subject(:latest_possible_finish) { service.latest_possible_finish }
 
-    let(:mentorship_can_start_today) { nil }
-
-    context "when neither the ECT or the mentor are due to leave the school" do
+    context "when neither the ECT nor the mentor are due to leave the school" do
       let(:ect_finished_on) { nil }
       let(:mentor_finished_on) { nil }
 
