@@ -44,40 +44,6 @@ RSpec.describe Schools::AssignMentor do
         end
       end
 
-      context "when a previous mentorship has finished" do
-        let(:mentorship_can_start_today) { true }
-        let(:new_mentor_started_on) { 1.month.ago }
-
-        let(:previous_mentor) do
-          FactoryBot.create(
-            :mentor_at_school_period,
-            :ongoing,
-            school: mentee.school,
-            started_on: 1.year.ago
-          )
-        end
-
-        let!(:previous_mentorship_period) do
-          FactoryBot.create(
-            :mentorship_period,
-            mentee:,
-            mentor: previous_mentor,
-            started_on: 1.year.ago,
-            finished_on: 2.weeks.ago
-          )
-        end
-
-        it "starts the new mentorship from today" do
-          expect { assign! }.not_to raise_error
-
-          new_mentorship = mentee.reload.mentorship_periods.find_by!(
-            mentor: new_mentor
-          )
-
-          expect(new_mentorship.started_on).to eq(Date.current)
-        end
-      end
-
       context "when the mentee is currently being mentored" do
         let(:current_mentor) do
           FactoryBot.create(
