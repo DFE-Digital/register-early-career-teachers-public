@@ -31,33 +31,7 @@ default: &default
 
 migration: &migration
   workers:
-    # Dedicated critical queues
-    - queues: [mailers]
-      threads: 2
-      processes: 2
-      polling_interval: 0.1
-
-    - queues: [default]
-      threads: 2
-      processes: 2
-      polling_interval: 0.1
-
-    # Metadata workers (2 jobs max, will be 2 jobs with 2 workers)
-    # The jobs to refresh school metadata have DB-heavy and can
-    # lock up the database if we run too many at once.
-    - queues: [metadata]
-      threads: 1
-      processes: 1
-      polling_interval: 0.1
-
-    # Everything else
-    - queues: [process_batch, trs_sync, events, dfe_analytics, solid_queue_recurring]
-      threads: 2
-      processes: 2
-      polling_interval: 0.1
-
-    # Migration
-    - queues: [migration]
+    - queues: ["*"]
       threads: 2
       processes: 2
       polling_interval: 0.1
