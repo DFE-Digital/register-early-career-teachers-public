@@ -3,7 +3,7 @@ RSpec.describe Schools::AssignMentor do
     described_class.new(
       ect_at_school_period: mentee,
       mentor_at_school_period: new_mentor,
-      mentorship_can_start_today:,
+      mentor_is_transferring_schools:,
       author:
     )
   end
@@ -30,7 +30,7 @@ RSpec.describe Schools::AssignMentor do
   let(:mentee_finished_on) { nil }
   let(:new_mentor_started_on) { 1.year.ago }
   let(:new_mentor_finished_on) { nil }
-  let(:mentorship_can_start_today) { true }
+  let(:mentor_is_transferring_schools) { false }
 
   describe "#assign!" do
     subject(:assign!) { service.assign! }
@@ -122,6 +122,19 @@ RSpec.describe Schools::AssignMentor do
           started_on: Date.current,
           finished_on: 1.year.from_now.to_date
         )
+      end
+
+      it "passes whether the mentor is transferring schools to the dates resolver" do
+        assign!
+
+        expect(Schools::MentorAssignment::MentorshipPeriods::DatesResolver)
+          .to have_received(:new)
+          .with(
+            ect_at_school_period: mentee,
+            mentor_at_school_period: new_mentor,
+            mentor_is_transferring_schools:
+          )
+          .at_least(:once)
       end
     end
 

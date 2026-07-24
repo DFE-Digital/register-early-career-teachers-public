@@ -2,11 +2,11 @@ module Schools
   class AssignMentor
     attr_reader :ect_at_school_period, :mentor_at_school_period, :mentorship_period, :author
 
-    def initialize(ect_at_school_period:, mentor_at_school_period:, author:, mentorship_can_start_today: true)
+    def initialize(ect_at_school_period:, mentor_at_school_period:, author:, mentor_is_transferring_schools: false)
       @ect_at_school_period = ect_at_school_period
       @mentor_at_school_period = mentor_at_school_period
       @author = author
-      @mentorship_can_start_today = mentorship_can_start_today
+      @mentor_is_transferring_schools = mentor_is_transferring_schools
     end
 
     def assign!
@@ -56,7 +56,8 @@ module Schools
       MentorAssignment::MentorshipPeriods::DatesResolver.new(
         ect_at_school_period:,
         mentor_at_school_period:,
-        mentorship_can_start_today: @mentorship_can_start_today
+        mentor_is_transferring_schools:
+          @mentor_is_transferring_schools
       )
     end
 
