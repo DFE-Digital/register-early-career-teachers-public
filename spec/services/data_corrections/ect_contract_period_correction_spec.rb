@@ -9,7 +9,8 @@ RSpec.describe DataCorrections::ECTContractPeriodCorrection do
       replacement_school_partnership:
         supplied_replacement_school_partnership,
       replacement_expression_of_interest:
-        supplied_replacement_expression_of_interest
+        supplied_replacement_expression_of_interest,
+      allow_finished_training_period:
     )
   end
 
@@ -99,6 +100,7 @@ RSpec.describe DataCorrections::ECTContractPeriodCorrection do
   let(:supplied_replacement_schedule) { nil }
   let(:supplied_replacement_school_partnership) { nil }
   let(:supplied_replacement_expression_of_interest) { nil }
+  let(:allow_finished_training_period) { false }
 
   describe "#preview" do
     it "returns the proposed replacement without changing the period" do
@@ -253,18 +255,35 @@ RSpec.describe DataCorrections::ECTContractPeriodCorrection do
     end
 
     context "when the training period is finished" do
+      let(:finished_on) { Date.current }
+
       before do
-        training_period.update!(
-          finished_on: Date.current
-        )
+        training_period.update!(finished_on:)
       end
 
-      it "raises an error" do
+      it "raises an error by default" do
         expect { correction.call }
           .to raise_error(
             described_class::InvalidCorrection,
             "Training period must be ongoing"
           )
+      end
+
+      context "when correcting it has been explicitly allowed" do
+        let(:allow_finished_training_period) { true }
+
+        it "corrects the period without changing its dates" do
+          started_on = training_period.started_on
+
+          correction.call
+
+          expect(training_period.reload).to have_attributes(
+            started_on:,
+            finished_on:,
+            schedule: replacement_schedule,
+            school_partnership: replacement_school_partnership
+          )
+        end
       end
     end
 
