@@ -11,6 +11,7 @@ namespace :data_corrections do
          replacement_schedule_id
          replacement_school_partnership_id
          replacement_expression_of_interest_id
+         allow_finished_training_period
        ] => :environment do |_task, args|
     training_period =
       TrainingPeriod.find(args.fetch(:training_period_id))
@@ -34,6 +35,9 @@ namespace :data_corrections do
         )
       end
 
+    allow_finished_training_period =
+      args[:allow_finished_training_period] == "true"
+
     correction =
       DataCorrections::ECTContractPeriodCorrection.new(
         training_period:,
@@ -44,7 +48,8 @@ namespace :data_corrections do
           args.fetch(:replacement_contract_period_year).to_i,
         replacement_schedule:,
         replacement_school_partnership:,
-        replacement_expression_of_interest:
+        replacement_expression_of_interest:,
+        allow_finished_training_period:
       )
 
     replacement = correction.preview
@@ -78,6 +83,10 @@ namespace :data_corrections do
     puts(
       "  Expression of interest: " \
       "#{replacement[:expression_of_interest]&.id}"
+    )
+    puts(
+      "  Finished period correction allowed: " \
+      "#{allow_finished_training_period}"
     )
 
     teacher_id = training_period.ect_at_school_period.teacher_id

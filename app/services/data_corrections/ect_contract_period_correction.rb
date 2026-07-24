@@ -9,7 +9,8 @@ module DataCorrections
       replacement_contract_period_year:,
       replacement_schedule: nil,
       replacement_school_partnership: nil,
-      replacement_expression_of_interest: nil
+      replacement_expression_of_interest: nil,
+      allow_finished_training_period: false
     )
       @training_period = training_period
       @teacher_id = teacher_id
@@ -21,6 +22,8 @@ module DataCorrections
         replacement_school_partnership
       @replacement_expression_of_interest =
         replacement_expression_of_interest
+      @allow_finished_training_period =
+        allow_finished_training_period
     end
 
     def preview
@@ -53,7 +56,8 @@ module DataCorrections
     attr_reader :training_period,
                 :teacher_id,
                 :current_contract_period_year,
-                :replacement_contract_period_year
+                :replacement_contract_period_year,
+                :allow_finished_training_period
 
     def validate!
       validate_training_period!
@@ -81,7 +85,8 @@ module DataCorrections
               "Training period must be provider-led"
       end
 
-      if training_period.finished_on.present?
+      if training_period.finished_on.present? &&
+          !allow_finished_training_period
         raise InvalidCorrection,
               "Training period must be ongoing"
       end
