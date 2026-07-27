@@ -14,14 +14,171 @@ end
 
 def teacher(...) = TeacherHistories::TeacherBuilder.teacher(...)
 
-def populate_school(gias_school, counter = 0)
+SCENARIOS = [
+  {
+    name: "Overlap",
+    periods: [
+      {
+        school: :predecessor,
+        started_on: "2026-01-01",
+        finished_on: "2026-03-31"
+      },
+      {
+        school: :successor,
+        started_on: "2026-03-01",
+        finished_on: "2026-06-30"
+      }
+    ]
+  },
+  {
+    name: "Adjacent",
+    periods: [
+      {
+        school: :predecessor,
+        started_on: "2026-01-01",
+        finished_on: "2026-03-31"
+      },
+      {
+        school: :successor,
+        started_on: "2026-04-01",
+        finished_on: "2026-06-30"
+      }
+    ]
+  },
+  {
+    name: "Gap",
+    periods: [
+      {
+        school: :predecessor,
+        started_on: "2026-01-01",
+        finished_on: "2026-03-31"
+      },
+      {
+        school: :successor,
+        started_on: "2026-04-02",
+        finished_on: "2026-06-30"
+      }
+    ]
+  },
+  {
+    name: "Transitive",
+    periods: [
+      {
+        school: :predecessor,
+        started_on: "2026-01-01",
+        finished_on: "2026-03-31"
+      },
+      {
+        school: :successor,
+        started_on: "2026-03-01",
+        finished_on: "2026-11-30"
+      },
+      {
+        school: :predecessor,
+        started_on: "2026-11-01",
+        finished_on: "2026-12-31"
+      }
+    ]
+  },
+  {
+    name: "Separate",
+    periods: [
+      {
+        school: :predecessor,
+        started_on: "2026-01-01",
+        finished_on: "2026-03-31"
+      },
+      {
+        school: :successor,
+        started_on: "2026-03-01",
+        finished_on: "2026-11-30"
+      },
+      {
+        school: :predecessor,
+        started_on: "2026-12-15",
+        finished_on: "2026-12-31"
+      }
+    ]
+  },
+  {
+    name: "TwoSeparate",
+    periods: [
+      {
+        school: :predecessor,
+        started_on: "2026-01-01",
+        finished_on: "2026-03-31"
+      },
+      {
+        school: :successor,
+        started_on: "2026-03-15",
+        finished_on: "2026-06-30"
+      },
+      {
+        school: :predecessor,
+        started_on: "2026-07-15",
+        finished_on: "2026-09-30"
+      },
+      {
+        school: :successor,
+        started_on: "2026-09-01",
+        finished_on: "2026-12-31"
+      }
+    ]
+  },
+  {
+    name: "Ongoing",
+    periods: [
+      {
+        school: :predecessor,
+        started_on: "2026-01-01",
+        finished_on: nil
+      },
+      {
+        school: :successor,
+        started_on: "2026-04-01",
+        finished_on: "2026-06-30"
+      }
+    ]
+  },
+  {
+    name: "Predecessor",
+    periods: [
+      {
+        school: :predecessor,
+        started_on: "2026-01-01",
+        finished_on: "2026-03-31"
+      },
+      {
+        school: :predecessor,
+        started_on: "2026-04-02",
+        finished_on: "2026-06-30"
+      }
+    ]
+  },
+  {
+    name: "Successor",
+    periods: [
+      {
+        school: :successor,
+        started_on: "2026-01-01",
+        finished_on: "2026-03-31"
+      },
+      {
+        school: :successor,
+        started_on: "2026-04-01",
+        finished_on: "2026-06-30"
+      }
+    ]
+  }
+].freeze
+
+def populate_school(gias_school, lead_provider, counter = 0)
   school = gias_school.school
   closed_on = gias_school.closed_on || Date.current
 
   rp2025 = ContractPeriod.find_by!(year: 2025)
   rp2026 = ContractPeriod.find_by!(year: 2026)
 
-  lead_provider = LeadProvider.find_by!(name: "Ambition Institute")
   delivery_partner = DeliveryPartner.find_by!(name: "Artisan Education Group")
 
   [rp2025, rp2026].each do |contract_period|
@@ -64,6 +221,65 @@ def populate_school(gias_school, counter = 0)
   counter
 end
 
+def overlap_scenarios(predecessor_school:, successor_school:, lead_provider:, counter:)
+  schools = {
+    predecessor: predecessor_school.school,
+    successor: successor_school.school
+  }
+
+  SCENARIOS.each do |scenario|
+    print_seed_info("🧪 #{Colourize.text(scenario[:name], :blue)}", indent: 2)
+
+    counter += 1
+    mentor_trn = 9_000_000 + counter
+    mentees_to_create = []
+    mentor_teacher = teacher(mentor_trn, "#{scenario[:name]} Mentor") do
+      scenario[:periods].each_with_index do |period, index|
+        school_key = period[:school]
+        school = schools[school_key]
+        started_on = period[:started_on]
+        finished_on = period[:finished_on]
+        date_range = finished_on.present? ? "#{started_on}->#{finished_on}" : started_on
+        valid_period_for_mentor_training = index.zero? && (school_key == :predecessor)
+
+        mentor_at_school_period(school, date_range) do
+          if valid_period_for_mentor_training
+            training_period(lead_provider, 2025, date_range)
+          end
+        end
+
+        next unless school_key == :predecessor
+
+        counter += 1
+        mentee = { trn: 9_000_000 + counter, name: "#{scenario[:name]}#{index} Mentee", school:, started_on:, date_range: }
+        mentees_to_create << mentee
+      end
+    end
+
+    mentees_to_create.each do |attributes|
+      mentee_teacher = teacher(attributes[:trn], attributes[:name]) do
+        ect_at_school_period(attributes[:school], attributes[:date_range]) do
+          training_period(lead_provider, 2025, attributes[:date_range])
+        end
+      end
+
+      mentee = mentee_teacher.ect_at_school_periods.find_by!(
+        school: attributes[:school],
+        started_on: attributes[:started_on]
+      )
+
+      mentor = mentor_teacher.mentor_at_school_periods.find_by!(
+        school: attributes[:school],
+        started_on: attributes[:started_on]
+      )
+
+      create_mentorship(mentee:, mentor:, finished_on: attributes[:finished_on])
+    end
+  end
+
+  counter
+end
+
 def create_mentorship(mentee:, mentor:, finished_on:)
   started_on = [mentee.started_on, mentor.started_on].max
 
@@ -78,15 +294,18 @@ print_seed_info("\n🌱 GIAS Updates:")
 
 print_seed_info("\n🐉 Creating Test Schools:")
 
+ambition = LeadProvider.find_by!(name: "Ambition Institute")
+teach_first = LeadProvider.find_by!(name: "Teach First")
+
 monsters_college = FactoryBot.create(:gias_school, :with_school, :closed, closed_on: Date.new(2026, 4, 30), urn: 9_123_500, name: "Monsters College").tap do |school|
   describe_school(school)
 end
 
-school_of_excellence = FactoryBot.create(:gias_school, status: :open, opened_on: Date.new(2026, 4, 30), urn: 9_123_501, name: "Michael Wazowski School of Excellence").tap do |school|
+school_of_excellence = FactoryBot.create(:gias_school, :with_school, status: :open, opened_on: Date.new(2026, 4, 30), urn: 9_123_501, name: "Michael Wazowski School of Excellence").tap do |school|
   describe_school(school)
 end
 
-girls_high_school = FactoryBot.create(:gias_school, status: :open, opened_on: Date.new(2026, 4, 30), urn: 9_123_502, name: "Abigail Hardscrabble High School for Girls").tap do |school|
+girls_high_school = FactoryBot.create(:gias_school, :with_school, status: :closed, closed_on: Date.new(2026, 4, 30), urn: 9_123_502, name: "Abigail Hardscrabble High School for Girls").tap do |school|
   describe_school(school)
 end
 
@@ -106,11 +325,21 @@ open_school = FactoryBot.create(:gias_school, status: :open, opened_on: Date.new
   describe_school(school)
 end
 
+monstropolis_academy = FactoryBot.create(:gias_school, :with_school, status: :open, opened_on: Date.new(2026, 1, 30), urn: 9_123_507, name: "Monstropolis Academy").tap do |school|
+  describe_school(school)
+end
+
 counter = 0
 
-counter = populate_school(closed_school, counter)
-counter = populate_school(monsters_college, counter)
-populate_school(primary_school, counter)
+counter = populate_school(monsters_college, ambition, counter)
+counter = populate_school(school_of_excellence, teach_first, counter)
+counter = populate_school(girls_high_school, teach_first, counter)
+counter = populate_school(primary_school, ambition, counter)
+counter = populate_school(closed_school, ambition, counter)
+counter = populate_school(monstropolis_academy, ambition, counter)
+
+counter = overlap_scenarios(predecessor_school: monsters_college, successor_school: school_of_excellence, lead_provider: ambition, counter:)
+overlap_scenarios(predecessor_school: girls_high_school, successor_school: monstropolis_academy, lead_provider: teach_first, counter:)
 
 print_seed_info("\n🌱 Closures:")
 print_seed_info("🔒 #{Colourize.text(closed_school.name, :yellow)} (URN: #{Colourize.text(closed_school.urn, :yellow)}) closed on #{Colourize.text(closed_school.closed_on, :yellow)}", indent: 2)
@@ -127,16 +356,18 @@ FactoryBot.create(:gias_school_link,
   describe_school_link(school_link)
 end
 
+print_seed_info("\n🌱 Mergers:")
+
 FactoryBot.create(:gias_school_link,
-                  :successor_split,
+                  :successor_merged,
                   from_gias_school: monsters_college,
                   to_gias_school: school_of_excellence).tap do |school_link|
   describe_school_link(school_link)
 end
 
 FactoryBot.create(:gias_school_link,
-                  :successor_split,
-                  from_gias_school: monsters_college,
-                  to_gias_school: girls_high_school).tap do |school_link|
+                  :successor_merged,
+                  from_gias_school: girls_high_school,
+                  to_gias_school: monstropolis_academy).tap do |school_link|
   describe_school_link(school_link)
 end

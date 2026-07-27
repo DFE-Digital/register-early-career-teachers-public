@@ -1,7 +1,5 @@
 module GIAS::Schools
   class Replace
-    attr_reader :gias_school
-
     def initialize(gias_school)
       @gias_school = gias_school
     end
@@ -15,6 +13,8 @@ module GIAS::Schools
     end
 
   private
+
+    attr_reader :gias_school
 
     def replace_school!
       ActiveRecord::Base.transaction do
@@ -70,13 +70,11 @@ module GIAS::Schools
       )
     end
 
-    def author
-      Events::SystemAuthor.new
-    end
-
     def new_school = successor.school
 
     delegate :successor, to: :gias_school
     delegate :school, to: :gias_school
+
+    def author = Events::SystemAuthor.new
   end
 end
