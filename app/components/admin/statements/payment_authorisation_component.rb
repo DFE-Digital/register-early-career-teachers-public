@@ -1,10 +1,9 @@
 module Admin
   module Statements
     class PaymentAuthorisationComponent < ApplicationComponent
-      delegate :can_authorise_payment?,
-               to: :statement
+      delegate :can_authorise_payment?, to: :statement, private: true
 
-      attr_accessor :statement
+      attr_reader :statement
 
       def initialize(statement:)
         @statement = statement

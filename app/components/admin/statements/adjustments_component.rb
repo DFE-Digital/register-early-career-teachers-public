@@ -1,12 +1,9 @@
 module Admin
   module Statements
     class AdjustmentsComponent < ApplicationComponent
-      delegate :number_to_pounds, to: :helpers
+      delegate :adjustment_editable?, to: :statement, private: true
 
-      delegate :adjustment_editable?,
-               to: :statement
-
-      attr_accessor :statement
+      attr_reader :statement
 
       def initialize(statement:)
         @statement = statement

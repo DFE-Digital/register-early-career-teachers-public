@@ -1,14 +1,13 @@
 module Admin
   module Statements
     class UpliftFeesComponent < ApplicationComponent
-      delegate :number_to_pounds, to: :helpers
-
       delegate :billable_count,
                :uplift_fee_per_declaration,
                :total_billable_amount,
-               to: :uplifts
+               to: :uplifts,
+               private: true
 
-      attr_accessor :statement
+      attr_reader :statement
 
       def initialize(statement:)
         @statement = statement
@@ -20,17 +19,10 @@ module Admin
 
     private
 
-      delegate :contract, to: :statement
-
-      def calculators
-        @calculators ||= PaymentCalculator::Resolver.new(contract:, statement:).calculators
-      end
+      delegate :contract, :calculators, to: :statement, private: true
 
       def uplifts
-        raise ArgumentError, "Expected exactly 1 calculator for ECF contract type" unless calculators.one?
-        raise ArgumentError, "Expected Banded calculator for ECF contract type" unless calculators.first.banded?
-
-        @uplifts ||= calculators.first.uplifts
+        @uplifts ||= calculators.banded_calculator.uplifts
       end
     end
   end

@@ -1,13 +1,13 @@
-<% calculators.each do |calculator| %>
+<% presented_calculators.each do |output_payment_table| %>
   <div class="finance-panel govuk-!-margin-top-5 govuk-!-margin-bottom-5">
     <%=
       govuk_table do |table|
-        table.with_caption(text: calculator.caption_text, size: "m")
+        table.with_caption(text: output_payment_table.caption_text, size: "m")
 
         table.with_head do |head|
           head.with_row do |row|
             row.with_cell(header: true) { "Outputs" }
-            calculator.columns.each do |header|
+            output_payment_table.columns.each do |header|
               row.with_cell(header: true, numeric: true) { header }
             end
             row.with_cell(header: true, numeric: true) { "Payments" }
@@ -15,7 +15,7 @@
         end
 
         table.with_body do |body|
-          calculator.row_pairs.each do |(count_row, fee_row)|
+          output_payment_table.row_pairs.each do |(count_row, fee_row)|
             body.with_row(classes: "govuk-table__row--no-border") do |row|
               row.with_cell(header: true) { count_row[0] }
               count_row[1..].each do |value|
@@ -35,10 +35,10 @@
     %>
 
     <div class="govuk-!-text-align-right govuk-heading-s govuk-!-margin-bottom-0">
-      <%= calculator.total_label %>
+      <%= output_payment_table.total_label %>
     </div>
     <div class="govuk-!-text-align-right govuk-heading-s">
-      <%= number_to_pounds(calculator.total_billable_amount) %>
+      <%= number_to_pounds(output_payment_table.total_billable_amount) %>
     </div>
   </div>
 <% end %>
