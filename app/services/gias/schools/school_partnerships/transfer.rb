@@ -3,9 +3,8 @@ module GIAS::Schools
     class Transfer
       def self.call(...) = new(...).call
 
-      def initialize(predecessor_school_partnership:, successor_school:, author: Events::SystemAuthor.new)
+      def initialize(predecessor_school_partnership:, successor_school:)
         @successor_school = successor_school
-        @author = author
         @predecessor_school_partnership = predecessor_school_partnership
       end
 
@@ -17,7 +16,7 @@ module GIAS::Schools
 
     private
 
-      attr_reader :predecessor_school_partnership, :successor_school, :author
+      attr_reader :predecessor_school_partnership, :successor_school
 
       def reassignment_required?
         return false if successor_school.blank?
@@ -35,9 +34,9 @@ module GIAS::Schools
 
           if successor_school_partnership.previously_new_record?
             Events::Record.record_school_partnership_recreated_event!(
-              author:,
               old_school_partnership: predecessor_school_partnership,
-              new_school_partnership: successor_school_partnership
+              new_school_partnership: successor_school_partnership,
+              author:
             )
           end
 
@@ -48,6 +47,8 @@ module GIAS::Schools
       def predecessor_school = predecessor_school_partnership.school
 
       delegate :lead_provider_delivery_partnership, to: :predecessor_school_partnership
+
+      def author = Events::SystemAuthor.new
     end
   end
 end

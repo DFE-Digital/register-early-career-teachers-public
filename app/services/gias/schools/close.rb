@@ -1,7 +1,5 @@
 module GIAS::Schools
   class Close
-    attr_reader :gias_school
-
     def initialize(gias_school)
       @gias_school = gias_school
     end
@@ -15,6 +13,8 @@ module GIAS::Schools
     end
 
   private
+
+    attr_reader :gias_school
 
     def close_school!
       ActiveRecord::Base.transaction do
@@ -81,14 +81,12 @@ module GIAS::Schools
       )
     end
 
-    def author
-      Events::SystemAuthor.new
-    end
-
     def reported_by_school_id = school.id
 
     delegate :school, to: :gias_school
     delegate :closed_on, to: :gias_school
     delegate :ect_at_school_periods, :mentor_at_school_periods, to: :school
+
+    def author = Events::SystemAuthor.new
   end
 end
