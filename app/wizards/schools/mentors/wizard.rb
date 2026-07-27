@@ -15,6 +15,10 @@ module Schools
         ::Teachers::Name.new(mentor_at_school_period.teacher.reload).full_name
       end
 
+      def teacher_trn
+        mentor_at_school_period.teacher.trn
+      end
+
       # @return [Hash]
       def default_path_arguments
         { mentor_id: mentor_at_school_period.id }
