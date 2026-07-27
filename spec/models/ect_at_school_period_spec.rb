@@ -170,6 +170,67 @@ describe ECTAtSchoolPeriod do
       end
     end
 
+    describe ".upcoming_mentorship_periods" do
+      subject(:upcoming_mentorship_periods) do
+        ect_at_school_period.upcoming_mentorship_periods
+      end
+
+      let(:ect_at_school_period) do
+        FactoryBot.create(
+          :ect_at_school_period,
+          :unfinished,
+          started_on: 2.years.ago
+        )
+      end
+      let(:mentor_at_school_period) do
+        FactoryBot.create(
+          :mentor_at_school_period,
+          :unfinished,
+          school: ect_at_school_period.school,
+          started_on: 3.years.ago
+        )
+      end
+
+      let!(:finished_mentorship_period) do
+        FactoryBot.create(
+          :mentorship_period,
+          mentee: ect_at_school_period,
+          mentor: mentor_at_school_period,
+          started_on: 2.years.ago,
+          finished_on: 9.months.ago
+        )
+      end
+      let!(:current_mentorship_period) do
+        FactoryBot.create(
+          :mentorship_period,
+          mentee: ect_at_school_period,
+          mentor: mentor_at_school_period,
+          started_on: finished_mentorship_period.finished_on.next_day,
+          finished_on: 2.weeks.from_now
+        )
+      end
+      let!(:upcoming_mentorship_period) do
+        FactoryBot.create(
+          :mentorship_period,
+          mentee: ect_at_school_period,
+          mentor: mentor_at_school_period,
+          started_on: current_mentorship_period.finished_on.next_day,
+          finished_on: current_mentorship_period.finished_on.next_day + 6.months
+        )
+      end
+      let!(:another_upcoming_mentorship_period) do
+        FactoryBot.create(
+          :mentorship_period,
+          :unfinished,
+          mentee: ect_at_school_period,
+          mentor: mentor_at_school_period,
+          started_on: upcoming_mentorship_period.finished_on.next_day
+        )
+      end
+
+      it { is_expected.to contain_exactly(upcoming_mentorship_period, another_upcoming_mentorship_period) }
+    end
+
     describe ".current_or_next_mentorship_period" do
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 1.year.ago, finished_on: nil) }
       let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, school: ect_at_school_period.school) }

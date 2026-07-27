@@ -30,7 +30,14 @@ module Teachers
                           .when(MentorshipPeriod.arel_table[:id].eq(nil)).then(0)
                           .else(1)
                           .asc,
-          { ect_at_school_periods: { started_on: :desc } }
+          {
+            ect_at_school_periods: { started_on: :desc },
+            # Calling .order overrides the ordering on the scoped associations
+            # (e.g upcoming_mentorship_periods).
+            # We need to explicitly order mentorship periods here to avoid
+            # has_many associations being loaded in the wrong order
+            mentorship_periods: { started_on: :asc },
+          }
         ]
       else
         %i[trs_last_name trs_first_name id]

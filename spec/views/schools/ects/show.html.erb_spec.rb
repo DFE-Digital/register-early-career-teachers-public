@@ -1,5 +1,8 @@
 RSpec.describe "schools/ects/show.html.erb" do
-  subject { render }
+  subject do
+    render
+    Capybara.string(rendered)
+  end
 
   let(:contract_period) { FactoryBot.create(:contract_period) }
   let!(:current_ect_period) do
@@ -68,23 +71,200 @@ RSpec.describe "schools/ects/show.html.erb" do
 
     describe "mentor" do
       context "when assigned" do
-        before do
-          mentor = FactoryBot.create(:teacher, trs_first_name: "Moby", trs_last_name: "Dick")
-          mentor_at_school_period = FactoryBot.create(:mentor_at_school_period,
-                                                      started_on: current_ect_period.started_on,
-                                                      finished_on: nil,
-                                                      school: current_school,
-                                                      teacher: mentor)
-
-          FactoryBot.create(:mentorship_period, :unfinished,
-                            started_on: current_ect_period.started_on,
-                            mentee: current_ect_period,
-                            mentor: mentor_at_school_period)
+        let(:mentor) do
+          FactoryBot.create(:teacher, trs_first_name: "Moby", trs_last_name: "Dick")
+        end
+        let(:mentor_at_school_period) do
+          FactoryBot.create(
+            :mentor_at_school_period,
+            :unfinished,
+            started_on: current_ect_period.started_on,
+            school: current_school,
+            teacher: mentor
+          )
+        end
+        let!(:mentorship_period) do
+          FactoryBot.create(
+            :mentorship_period,
+            :unfinished,
+            started_on: mentor_at_school_period.started_on,
+            mentee: current_ect_period,
+            mentor: mentor_at_school_period
+          )
         end
 
         it "has mentor's full name" do
-          expect(subject).to have_css("dt.govuk-summary-list__key", text: "Mentor")
-          expect(subject).to have_css("dd.govuk-summary-list__value", text: "Moby Dick")
+          expect(subject).to have_summary_list_row("Mentor", value: "Moby Dick")
+        end
+      end
+
+      context "when current and future mentors are assigned" do
+        let(:current_mentor) do
+          FactoryBot.create(:teacher, trs_first_name: "Moby", trs_last_name: "Dick")
+        end
+        let(:current_mentor_at_school_period) do
+          FactoryBot.create(
+            :mentor_at_school_period,
+            :unfinished,
+            started_on: current_ect_period.started_on,
+            school: current_school,
+            teacher: current_mentor
+          )
+        end
+        let!(:current_mentorship_period) do
+          FactoryBot.create(
+            :mentorship_period,
+            started_on: current_mentor_at_school_period.started_on,
+            finished_on: 1.month.from_now,
+            mentee: current_ect_period,
+            mentor: current_mentor_at_school_period
+          )
+        end
+
+        let(:future_mentor) do
+          FactoryBot.create(:teacher, trs_first_name: "John", trs_last_name: "Smith")
+        end
+        let(:future_mentor_at_school_period) do
+          FactoryBot.create(
+            :mentor_at_school_period,
+            :unfinished,
+            started_on: current_ect_period.started_on,
+            school: current_school,
+            teacher: future_mentor
+          )
+        end
+        let!(:future_mentorship_period) do
+          FactoryBot.create(
+            :mentorship_period,
+            :unfinished,
+            started_on: current_mentorship_period.finished_on.next_day,
+            mentee: current_ect_period,
+            mentor: future_mentor_at_school_period
+          )
+        end
+
+        it "has current mentor's full name" do
+          expect(subject).to have_summary_list_row(
+            "Mentor",
+            value: "Moby Dick",
+            matcher: [:has_text?, { exact: false }]
+          )
+        end
+
+        it "displays upcoming mentorship details" do
+          upcoming_mentorship_detail = <<~TXT.squish
+            John Smith (from #{future_mentorship_period.started_on.to_fs(:govuk)})
+          TXT
+          expect(subject).to have_summary_list_row(
+            "Mentor",
+            value: "ul > li",
+            matcher: [:has_css?, { count: 1 }]
+          )
+          expect(subject).to have_summary_list_row(
+            "Mentor",
+            value: "ul > li:nth-child(1)",
+            matcher: [:has_css?, { text: upcoming_mentorship_detail }]
+          )
+        end
+      end
+
+      context "when current and multiple future mentors are assigned" do
+        let(:current_mentor) do
+          FactoryBot.create(:teacher, trs_first_name: "Moby", trs_last_name: "Dick")
+        end
+        let(:current_mentor_at_school_period) do
+          FactoryBot.create(
+            :mentor_at_school_period,
+            :unfinished,
+            started_on: current_ect_period.started_on,
+            school: current_school,
+            teacher: current_mentor
+          )
+        end
+        let!(:current_mentorship_period) do
+          FactoryBot.create(
+            :mentorship_period,
+            started_on: current_mentor_at_school_period.started_on,
+            finished_on: 1.month.from_now,
+            mentee: current_ect_period,
+            mentor: current_mentor_at_school_period
+          )
+        end
+
+        let(:future_mentor) do
+          FactoryBot.create(:teacher, trs_first_name: "John", trs_last_name: "Smith")
+        end
+        let(:future_mentor_at_school_period) do
+          FactoryBot.create(
+            :mentor_at_school_period,
+            :unfinished,
+            started_on: current_ect_period.started_on,
+            school: current_school,
+            teacher: future_mentor
+          )
+        end
+        let!(:future_mentorship_period) do
+          FactoryBot.create(
+            :mentorship_period,
+            started_on: current_mentorship_period.finished_on.next_day,
+            finished_on: current_mentorship_period.finished_on.next_year,
+            mentee: current_ect_period,
+            mentor: future_mentor_at_school_period
+          )
+        end
+
+        let(:another_future_mentor) do
+          FactoryBot.create(:teacher, trs_first_name: "Jane", trs_last_name: "Smith")
+        end
+        let(:another_future_mentor_at_school_period) do
+          FactoryBot.create(
+            :mentor_at_school_period,
+            :unfinished,
+            started_on: current_ect_period.started_on,
+            school: current_school,
+            teacher: another_future_mentor
+          )
+        end
+        let!(:another_future_mentorship_period) do
+          FactoryBot.create(
+            :mentorship_period,
+            :unfinished,
+            started_on: future_mentorship_period.finished_on.next_day,
+            mentee: current_ect_period,
+            mentor: another_future_mentor_at_school_period
+          )
+        end
+
+        it "has current mentor's full name" do
+          expect(subject).to have_summary_list_row(
+            "Mentor",
+            value: "Moby Dick",
+            matcher: [:has_text?, { exact: false }]
+          )
+        end
+
+        it "displays upcoming mentorship details in order" do
+          upcoming_mentorship_detail = <<~TXT.squish
+            John Smith (from #{future_mentorship_period.started_on.to_fs(:govuk)})
+          TXT
+          another_upcoming_mentorship_detail = <<~TXT.squish
+            Jane Smith (from #{another_future_mentorship_period.started_on.to_fs(:govuk)})
+          TXT
+          expect(subject).to have_summary_list_row(
+            "Mentor",
+            value: "ul > li",
+            matcher: [:has_css?, { count: 2 }]
+          )
+          expect(subject).to have_summary_list_row(
+            "Mentor",
+            value: "ul > li:nth-child(1)",
+            matcher: [:has_css?, { text: upcoming_mentorship_detail }]
+          )
+          expect(subject).to have_summary_list_row(
+            "Mentor",
+            value: "ul > li:nth-child(2)",
+            matcher: [:has_css?, { text: another_upcoming_mentorship_detail }]
+          )
         end
       end
 

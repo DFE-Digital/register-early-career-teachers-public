@@ -1,11 +1,15 @@
-describe ECTAtSchoolPeriods::Mentorship do
+RSpec.describe ECTAtSchoolPeriods::Mentorship do
+  subject(:service) { described_class.new(mentee) }
+
   let(:school) { FactoryBot.create(:school) }
   let(:mentee) { FactoryBot.create(:ect_at_school_period, :unfinished, school:, started_on: 3.years.ago) }
   let(:mentor) { FactoryBot.create(:mentor_at_school_period, :unfinished, school:, started_on: 3.years.ago) }
   let(:old_mentor) { FactoryBot.create(:mentor_at_school_period, :unfinished, school:, started_on: 3.years.ago) }
 
   describe "#current_or_next_mentorship_period" do
-    subject { described_class.new(mentee).current_or_next_mentorship_period }
+    subject(:current_or_next_mentorship_period) do
+      service.current_or_next_mentorship_period
+    end
 
     context "when the ect has had no mentorships ever" do
       it { is_expected.to be_nil }
@@ -27,8 +31,69 @@ describe ECTAtSchoolPeriods::Mentorship do
     end
   end
 
+  describe "#upcoming_mentorship_periods" do
+    subject(:upcoming_mentorship_periods) do
+      service.upcoming_mentorship_periods
+    end
+
+    context "when the ECT has no mentorships" do
+      it { is_expected.to be_empty }
+    end
+
+    context "when the ECT has past mentorships" do
+      let!(:mentorship) do
+        FactoryBot.create(
+          :mentorship_period,
+          mentee:,
+          mentor:,
+          started_on: 1.year.ago,
+          finished_on: 1.week.ago
+        )
+      end
+
+      it { is_expected.to be_empty }
+    end
+
+    context "when the ECT has an ongoing mentorship" do
+      let!(:mentorship) do
+        FactoryBot.create(
+          :mentorship_period,
+          :unfinished,
+          mentee:,
+          mentor:,
+          started_on: 1.year.ago
+        )
+      end
+
+      it { is_expected.to be_empty }
+    end
+
+    context "when the ECT has upcoming mentorships" do
+      let!(:upcoming_mentorship) do
+        FactoryBot.create(
+          :mentorship_period,
+          mentee:,
+          mentor:,
+          started_on: 1.week.from_now,
+          finished_on: 6.months.from_now
+        )
+      end
+      let!(:another_upcoming_mentorship) do
+        FactoryBot.create(
+          :mentorship_period,
+          :unfinished,
+          mentee:,
+          mentor:,
+          started_on: 7.months.from_now
+        )
+      end
+
+      it { is_expected.to contain_exactly(upcoming_mentorship, another_upcoming_mentorship) }
+    end
+  end
+
   describe "#current_mentor" do
-    subject { described_class.new(mentee).current_mentor }
+    subject(:current_mentor) { service.current_mentor }
 
     context "when the ect has had no mentorships ever" do
       it { is_expected.to be_nil }
@@ -53,7 +118,7 @@ describe ECTAtSchoolPeriods::Mentorship do
   end
 
   describe "#current_mentor_name" do
-    subject { described_class.new(mentee).current_mentor_name }
+    subject(:current_mentor_name) { service.current_mentor_name }
 
     context "when the ect has had no mentorships ever" do
       it { is_expected.to be_nil }
@@ -78,7 +143,7 @@ describe ECTAtSchoolPeriods::Mentorship do
   end
 
   describe "#latest_mentorship_period" do
-    subject { described_class.new(mentee).latest_mentorship_period }
+    subject(:latest_mentorship_period) { service.latest_mentorship_period }
 
     context "when the ect has had no mentorships ever" do
       it { is_expected.to be_nil }
@@ -99,7 +164,7 @@ describe ECTAtSchoolPeriods::Mentorship do
   end
 
   describe "#latest_mentor" do
-    subject { described_class.new(mentee).latest_mentor }
+    subject(:latest_mentor) { service.latest_mentor }
 
     context "when the ect has had no mentorships ever" do
       it { is_expected.to be_nil }
@@ -125,7 +190,7 @@ describe ECTAtSchoolPeriods::Mentorship do
   end
 
   describe "#latest_mentor_name" do
-    subject { described_class.new(mentee).latest_mentor_name }
+    subject(:latest_mentor_name) { service.latest_mentor_name }
 
     context "when the ect has had no mentorships ever" do
       it { is_expected.to be_nil }

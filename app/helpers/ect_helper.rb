@@ -79,11 +79,6 @@ module ECTHelper
   end
 
   # @param ect [ECTAtSchoolPeriod]
-  def link_to_assign_mentor(ect)
-    govuk_warning_text(text: assign_or_create_mentor_link(ect))
-  end
-
-  # @param ect [ECTAtSchoolPeriod]
   def link_to_ect(ect)
     govuk_link_to(teacher_full_name(ect.teacher), schools_ect_path(ect), no_visited_state: true)
   end
@@ -92,15 +87,6 @@ module ECTHelper
   def ect_start_date(ect)
     date_as_hash = { 1 => ect.started_on.year, 2 => ect.started_on.month, 3 => ect.started_on.day }
     Schools::Validation::ECTStartDate.new(date_as_hash:).formatted_date
-  end
-
-  # @param ect [ECTAtSchoolPeriod]
-  def ect_mentor_name_or_assign_mentor_link(ect)
-    mentorship = ECTAtSchoolPeriods::Mentorship.new(ect)
-
-    return link_to_assign_mentor(ect) if mentorship.current_mentor.blank?
-
-    mentorship.current_mentor_name
   end
 
   # @param ect [ECTAtSchoolPeriod]
@@ -155,10 +141,6 @@ module ECTHelper
   end
 
 private
-
-  def assign_or_create_mentor_link(ect)
-    govuk_link_to("Assign a mentor for this ECT", assign_or_create_mentor_path(ect), no_visited_state: true)
-  end
 
   def assign_or_create_mentor_path(ect)
     return new_schools_ect_mentorship_path(ect) if eligible_mentors_for_ect?(ect)
