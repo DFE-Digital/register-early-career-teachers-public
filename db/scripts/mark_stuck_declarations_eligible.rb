@@ -11,7 +11,7 @@ def stuck_declarations_by_teacher
   Declaration
     .where(payment_status: "no_payment", voided_by_user: nil)
     .joins(:contract_period, :ect_teacher)
-    .where(contract_period: { year: [2023,2024,2025] })
+    .where(contract_period: { year: [2023, 2024, 2025] })
     .where.not(ect_teacher: { trs_induction_start_date: nil })
     .includes(:lead_provider, :contract_period, :ect_teacher)
     .group_by { |declaration| declaration.ect_teacher.id }
@@ -31,14 +31,12 @@ begin
     end
 
     Declarations::Actions::MarkDeclarationsEligible.new(declarations:, author:).mark
-  rescue => e
+  rescue StandardError => e
     log.puts("*** Error: #{e.message} ***")
   end
 
   log.puts
-  log.puts("Teachers: #{teacher_declarations.keys.count} | Declarations: #{teacher_declarations.values.sum { it.count }}")
-
+  log.puts("Teachers: #{teacher_declarations.keys.count} | Declarations: #{teacher_declarations.values.sum(&:count)}")
 ensure
   log.close unless log.nil?
 end
-
