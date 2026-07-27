@@ -50,7 +50,7 @@ module Schools
             ect_at_school_period: ect,
             mentor_at_school_period: mentor.register!(author:),
             author:,
-            mentorship_can_start_today: !mentoring_at_new_school_only?
+            mentor_is_transferring_schools: mentoring_at_new_school_only?
           ).assign!
         end
       rescue StandardError => e

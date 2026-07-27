@@ -123,15 +123,16 @@ describe Schools::RegisterMentorWizard::CheckAnswersStep, type: :model do
       context "when the mentor is mentoring only at the new school" do
         before { store.mentoring_at_new_school_only = "yes" }
 
-        it "assigns the created mentor to the ECT" do
+        it "assigns the created mentor as transferring schools" do
           subject.save!
+
           expect(Schools::AssignMentor)
             .to have_received(:new)
             .with(
               ect_at_school_period: wizard.ect,
               mentor_at_school_period: new_mentor,
               author:,
-              mentorship_can_start_today: false
+              mentor_is_transferring_schools: true
             )
         end
       end
@@ -139,15 +140,16 @@ describe Schools::RegisterMentorWizard::CheckAnswersStep, type: :model do
       context "when the mentor is continuing to mentor at their current school" do
         before { store.mentoring_at_new_school_only = "no" }
 
-        it "assigns the created mentor to the ECT" do
+        it "assigns the created mentor as not transferring schools" do
           subject.save!
+
           expect(Schools::AssignMentor)
             .to have_received(:new)
             .with(
               ect_at_school_period: wizard.ect,
               mentor_at_school_period: new_mentor,
               author:,
-              mentorship_can_start_today: true
+              mentor_is_transferring_schools: false
             )
         end
       end
