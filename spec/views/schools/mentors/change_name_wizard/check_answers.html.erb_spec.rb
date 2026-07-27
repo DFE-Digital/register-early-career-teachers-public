@@ -21,7 +21,7 @@ RSpec.describe "schools/mentors/change_name_wizard/check_answers.html.erb" do
 
     expect(rendered).to have_css(
       ".govuk-inset-text",
-      text: "This will change the name for the record with the teacher reference number (TRN) 1693012."
+      text: "This will change the name for teacher reference number (TRN) 1693012."
     )
   end
 end
