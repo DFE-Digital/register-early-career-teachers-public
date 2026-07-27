@@ -65,7 +65,7 @@ gem "with_advisory_lock"
 
 gem "diffy"
 
-gem "zendesk_api", "~> 3.1", ">= 3.1.1"
+gem "zendesk_api", "~> 3.1"
 
 group :development do
   gem "amazing_print"
