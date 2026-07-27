@@ -188,6 +188,44 @@ RSpec.describe "Admin finance active lead provider contracts", type: :request do
     end
   end
 
+  describe "GET .../contracts/:id/edit" do
+    let(:contract_period) { FactoryBot.create(:contract_period, :next) }
+    let!(:contract) do
+      FactoryBot.create(:contract, :for_ittecf_ectp,
+                        :with_bands_and_band_terms, active_lead_provider:)
+    end
+
+    it "redirects to sign in path when not signed in" do
+      get edit_path
+      expect(response).to redirect_to(sign_in_path)
+    end
+
+    context "with an authenticated non-DfE user" do
+      include_context "sign in as non-DfE user"
+
+      it "requires authorisation" do
+        get edit_path
+        expect(response.status).to eq(401)
+      end
+    end
+
+    context "when signed in as a finance DfE user" do
+      include_context "sign in as finance DfE user"
+
+      it "renders a hidden id for each persisted band term so they are updated rather than recreated" do
+        get edit_path
+
+        expect(response.status).to eq(200)
+
+        contract.banded_fee_structure.band_terms.each_with_index do |band_term, index|
+          expect(response.body).to include(
+            %(value="#{band_term.id}" name="contract[banded_fee_structure_attributes][band_terms_attributes][#{index}][id]")
+          )
+        end
+      end
+    end
+  end
+
   describe "PATCH .../contracts/:id" do
     let(:contract_period) { FactoryBot.create(:contract_period, :next) }
     let(:active_lead_provider) do
