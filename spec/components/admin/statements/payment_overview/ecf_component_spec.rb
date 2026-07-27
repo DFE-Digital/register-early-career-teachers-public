@@ -21,9 +21,17 @@ RSpec.describe Admin::Statements::PaymentOverview::ECFComponent, type: :componen
     )
   end
 
-  let(:banded_outputs_double) { double(total_net_amount:, total_refundable_amount:, total_billable_amount:) }
+  let(:banded_outputs_double) do
+    instance_double(
+      PaymentCalculator::Banded::Outputs,
+      total_net_amount:,
+      total_refundable_amount:,
+      total_billable_amount:
+    )
+  end
   let(:uplifts_double) do
-    double(
+    instance_double(
+      PaymentCalculator::Banded::Uplifts,
       total_net_amount: total_billable_uplifts_amount - total_refundable_uplifts_amount,
       total_billable_amount: total_billable_uplifts_amount,
       total_refundable_amount: total_refundable_uplifts_amount
@@ -119,48 +127,6 @@ RSpec.describe Admin::Statements::PaymentOverview::ECFComponent, type: :componen
             ["VAT", "£389.00"],
           ]
         )
-      end
-    end
-  end
-
-  describe "calculators" do
-    let(:banded_calculator) do
-      instance_double(PaymentCalculator::Banded, banded?: true, flat_rate?: false)
-    end
-
-    let(:flat_rate_calculator) do
-      instance_double(PaymentCalculator::FlatRate, banded?: false, flat_rate?: true)
-    end
-
-    let(:resolver) do
-      instance_double(PaymentCalculator::Resolver, calculators:)
-    end
-
-    before do
-      allow(PaymentCalculator::Resolver).to receive(:new).and_return(resolver)
-    end
-
-    context "when no calculators are returned" do
-      let(:calculators) { [] }
-
-      it "raises an error when trying to access uplifts" do
-        expect { component.send(:uplifts) }.to raise_error(ArgumentError, "Expected exactly 1 calculator for ECF contract type")
-      end
-    end
-
-    context "when more than one calculator is returned" do
-      let(:calculators) { [flat_rate_calculator, banded_calculator] }
-
-      it "raises an error when trying to access uplifts" do
-        expect { component.send(:uplifts) }.to raise_error(ArgumentError, "Expected exactly 1 calculator for ECF contract type")
-      end
-    end
-
-    context "when no banded calculators are returned" do
-      let(:calculators) { [flat_rate_calculator] }
-
-      it "raises an error when trying to access uplifts" do
-        expect { component.send(:uplifts) }.to raise_error(ArgumentError, "Expected Banded calculator for ECF contract type")
       end
     end
   end

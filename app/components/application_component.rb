@@ -3,4 +3,5 @@ class ApplicationComponent < ViewComponent::Base
   include GovukLinkHelper
   include GovukComponentsHelper
   include GovukListHelper
+  include ::NumberHelper
 end

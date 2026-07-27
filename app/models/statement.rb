@@ -100,6 +100,10 @@ class Statement < ApplicationRecord
     payment_declarations.exists? || clawback_declarations.exists?
   end
 
+  def calculators
+    @calculators ||= PaymentCalculator::Collection.for(self)
+  end
+
 private
 
   def unique_lead_provider_month_year

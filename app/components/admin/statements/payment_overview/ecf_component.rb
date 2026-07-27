@@ -4,9 +4,9 @@ module Admin
       class ECFComponent < PaymentOverviewComponent
         def rows
           [
-            ["Output payment", { text: number_to_pounds(outputs), numeric: true }],
+            ["Output payment", { text: number_to_pounds(output_payment), numeric: true }],
             ["Service fee", { text: number_to_pounds(monthly_service_fee), numeric: true }],
-            ["Uplift fees", { text: number_to_pounds(uplifts), numeric: true }],
+            ["Uplift fees", { text: number_to_pounds(uplift_fees), numeric: true }],
             ["Clawbacks", { text: number_to_pounds(clawbacks), numeric: true }],
             ["Additional adjustments", { text: number_to_pounds(total_manual_adjustments_amount), numeric: true }],
             ["VAT", { text: number_to_pounds(vat_amount), numeric: true }]
@@ -15,15 +15,14 @@ module Admin
 
       private
 
-        def uplifts
-          raise ArgumentError, "Expected exactly 1 calculator for ECF contract type" unless calculators.one?
-          raise ArgumentError, "Expected Banded calculator for ECF contract type" unless banded
+        delegate :uplifts, to: :banded_calculator, private: true
 
-          @uplifts ||= banded.uplifts.total_billable_amount
+        def uplift_fees
+          uplifts.total_billable_amount
         end
 
         def clawbacks
-          @clawbacks ||= -(banded.outputs.total_refundable_amount + banded.uplifts.total_refundable_amount)
+          -(outputs.total_refundable_amount + uplifts.total_refundable_amount)
         end
       end
     end

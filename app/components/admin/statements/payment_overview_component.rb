@@ -1,8 +1,10 @@
 module Admin
   module Statements
     class PaymentOverviewComponent < ApplicationComponent
-      delegate :number_to_pounds, to: :helpers
-      delegate :contract, to: :statement
+      delegate :calculators, to: :statement, private: true
+      delegate :banded_calculator, to: :calculators, private: true
+      delegate :monthly_service_fee, :total_manual_adjustments_amount, to: :banded_calculator, private: true
+      delegate :outputs, to: :banded_calculator, private: true
 
       attr_reader :statement
 
@@ -23,10 +25,6 @@ module Admin
         klass.new(statement:)
       end
 
-      def caption
-        "Total #{number_to_pounds(total_amount)}"
-      end
-
       def statement_print_link
         govuk_link_to(
           "Save as PDF",
@@ -45,37 +43,13 @@ module Admin
         "#{statement.lead_provider_name} #{statement.period} financial statement"
       end
 
-      def total_amount
-        calculators.sum { |calculator| calculator.total_amount(with_vat: true) }
-      end
+      def total_amount = calculators.sum { it.total_amount(with_vat: true) }
 
-      def vat_amount
-        calculators.sum(&:vat_amount)
-      end
+      def vat_amount = calculators.sum(&:vat_amount)
 
-      def calculators
-        @calculators ||= PaymentCalculator::Resolver.new(statement:, contract:).calculators
-      end
+      def output_payment = outputs.total_billable_amount
 
-      def banded
-        @banded ||= calculators.find(&:banded?)
-      end
-
-      def total_manual_adjustments_amount
-        @total_manual_adjustments_amount ||= banded.total_manual_adjustments_amount
-      end
-
-      def monthly_service_fee
-        @monthly_service_fee ||= banded.monthly_service_fee
-      end
-
-      def outputs
-        @outputs ||= banded.outputs.total_billable_amount
-      end
-
-      def clawbacks
-        @clawbacks ||= -banded.outputs.total_refundable_amount
-      end
+      def clawbacks = -outputs.total_refundable_amount
     end
   end
 end

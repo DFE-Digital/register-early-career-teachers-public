@@ -13,7 +13,7 @@ module Admin
 
       private
 
-        delegate :band_terms, to: :banded_fee_structure
+        delegate :band_terms, to: :banded_fee_structure, private: true
 
         def row_pair(display_type, outputs)
           by_band_term = outputs.group_by(&:band_term)

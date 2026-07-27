@@ -1,9 +1,7 @@
 RSpec.describe Admin::Statements::DeclarationComponent, type: :component do
   include Rails.application.routes.url_helpers
 
-  subject { render_inline(component) }
-
-  let(:component) { described_class.new statement: }
+  subject(:component) { described_class.new(statement:) }
 
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
   let!(:contract_period) { active_lead_provider.contract_period }
@@ -113,59 +111,45 @@ RSpec.describe Admin::Statements::DeclarationComponent, type: :component do
     allow(PaymentCalculator::FlatRate::Outputs)
       .to receive(:new)
       .and_return(flat_rate_outputs)
-  end
 
-  context "when no calculators are returned" do
-    let(:contract) { FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider:, contract_period:) }
-    let(:resolver) { instance_double(PaymentCalculator::Resolver, calculators: []) }
-
-    before do
-      allow(PaymentCalculator::Resolver)
-        .to receive(:new)
-        .and_return(resolver)
-    end
-
-    it "raises an error" do
-      expect { subject }.to raise_error(ArgumentError)
-    end
+    render_inline(component)
   end
 
   context "when one calculator is returned (ECF contract)" do
     let(:contract_trait) { :for_ecf }
 
-    it "renders the declaration types correctly" do
-      expect(subject).to have_table rows: [
-        %w[Started 10],
-        %w[Retained 20],
-        %w[Completed 7],
-        %w[Extended 3],
-        %w[Clawbacks 6],
-        %w[Voided 2],
-      ]
-    end
-
-    it "shows the Total header" do
-      expect(subject).to have_table(text: "Total")
+    it "renders the summary with a single Total column" do
+      expect(page).to have_statement_table(
+        caption: "Declarations summary",
+        headings: ["", "Total"],
+        rows: [
+          %w[Started 10],
+          %w[Retained 20],
+          %w[Completed 7],
+          %w[Extended 3],
+          %w[Clawbacks 6],
+          %w[Voided 2],
+        ]
+      )
     end
   end
 
   context "when several calculators are returned (ITTECF contract)" do
     let(:contract_trait) { :for_ittecf_ectp }
 
-    it "displays banded first and flat rate second" do
-      expect(subject).to have_table rows: [
-        ["Started", "10", "9"],
-        ["Retained", "20", "-"],
-        ["Completed", "7", "2"],
-        ["Extended", "3", "-"],
-        ["Clawbacks", "6", "4"],
-        ["Voided", "1", "1"],
-      ]
-    end
-
-    it "renders the correct headers" do
-      expect(subject).to have_table(text: "ECTs")
-      expect(subject).to have_table(text: "Mentors")
+    it "renders the summary with ECTs and Mentors columns, banded first" do
+      expect(page).to have_statement_table(
+        caption: "Declarations summary",
+        headings: ["", "ECTs", "Mentors"],
+        rows: [
+          ["Started", "10", "9"],
+          ["Retained", "20", "-"],
+          ["Completed", "7", "2"],
+          ["Extended", "3", "-"],
+          ["Clawbacks", "6", "4"],
+          ["Voided", "1", "1"],
+        ]
+      )
     end
   end
 
@@ -174,11 +158,11 @@ RSpec.describe Admin::Statements::DeclarationComponent, type: :component do
       let(:statement_trait) { :output_fee }
 
       it "shows the CSV download link for output fee statements" do
-        expect(subject).to have_link(
+        expect(page).to have_link(
           "Download declarations (CSV)",
           href: declarations_export_admin_finance_statement_path(statement, format: :csv)
         )
-        expect(subject).to have_css(".govuk-\\!-display-none-print", text: "Download declarations (CSV)")
+        expect(page).to have_css(".govuk-\\!-display-none-print", text: "Download declarations (CSV)")
       end
     end
 
@@ -186,7 +170,7 @@ RSpec.describe Admin::Statements::DeclarationComponent, type: :component do
       let(:statement_trait) { :service_fee }
 
       it "does not show the CSV download link" do
-        expect(subject).not_to have_link("Download declarations (CSV)")
+        expect(page).not_to have_link("Download declarations (CSV)")
       end
     end
   end
