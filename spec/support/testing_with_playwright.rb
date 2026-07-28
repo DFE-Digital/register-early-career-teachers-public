@@ -22,6 +22,7 @@ RSpec.configure do |config|
                                    .new_page(baseURL: Capybara.current_session.server.base_url,
                                              javaScriptEnabled: Capybara.current_driver == :js_enabled)
     config.playwright_page.set_default_timeout(RSpecPlaywright::DEFAULT_TIMEOUT)
+    config.playwright_page.set_default_navigation_timeout(RSpecPlaywright::DEFAULT_NAVIGATION_TIMEOUT)
   end
 
   # Close Playwright page after each feature spec
