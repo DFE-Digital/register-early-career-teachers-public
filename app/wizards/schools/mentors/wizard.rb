@@ -19,11 +19,16 @@ module Schools
         mentor_at_school_period.teacher.trn
       end
 
+      def details_path
+        url_helpers.schools_mentor_path(mentor_at_school_period)
+      end
+
       # @return [Hash]
       def default_path_arguments
         { mentor_id: mentor_at_school_period.id }
       end
 
+      delegate :teacher, to: :mentor_at_school_period
       delegate :save!, to: :current_step
       delegate :reset, to: :store
     end

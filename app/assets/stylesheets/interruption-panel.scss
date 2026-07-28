@@ -1,0 +1,27 @@
+@use "govuk-frontend/dist/govuk" as *;
+
+.govuk-panel--interruption {
+  background: govuk-colour("blue");
+  color: govuk-colour("white");
+  text-align: left;
+
+  .govuk-body,
+  .govuk-list,
+  .govuk-warning-text__text {
+    color: govuk-colour("white");
+  }
+
+  .govuk-warning-text__icon {
+    border-color: govuk-colour("black");
+    background: govuk-colour("black");
+    color: govuk-colour("white");
+  }
+
+  .govuk-panel__body > :last-child {
+    margin-bottom: 0;
+  }
+
+  .govuk-panel__actions {
+    margin-top: govuk-spacing(6);
+  }
+}
