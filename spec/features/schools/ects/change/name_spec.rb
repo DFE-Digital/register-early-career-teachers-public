@@ -142,7 +142,7 @@ RSpec.describe "Changing an ECT's name" do
   end
 
   def when_i_click_continue_to_change_name
-    page.get_by_role("button", name: "Continue to change name").click
+    page.get_by_role("link", name: "Continue to change name").click
   end
 
   def and_i_click_the_confirmation_button

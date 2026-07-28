@@ -6,39 +6,29 @@
 
 <% teacher_full_name = @wizard.teacher_full_name %>
 
-<%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
-  <div class="govuk-panel govuk-panel--interruption">
-    <h1 class="govuk-panel__title">Check this name change is for the same person</h1>
+<%= govuk_panel(interruption: true, title_text: "Check this name change is for the same person") do |panel| %>
+  <% panel.with_action(text: "Continue to change name", href: @wizard.next_step_path, type: :button) %>
+  <% panel.with_action(text: "Cancel and return to #{teacher_full_name}’s details", href: @wizard.details_path, type: :link) %>
 
-    <div class="govuk-panel__body">
-      <p class="govuk-body">
-        You’ve told us you want to change <strong><%= teacher_full_name %></strong>’s name to <strong><%= @wizard.store.name %></strong>.
-      </p>
+  <p class="govuk-body">
+    You’ve told us you want to change <strong><%= teacher_full_name %></strong>’s name to <strong><%= @wizard.store.name %></strong>.
+  </p>
 
-      <% if @wizard.teacher.trn.present? %>
-        <p class="govuk-body">
-          This will change the name for teacher reference number (TRN) <strong><%= @wizard.teacher.trn %></strong>.
-        </p>
-      <% end %>
+  <% if @wizard.teacher.trn.present? %>
+    <p class="govuk-body">
+      This will change the name for teacher reference number (TRN) <strong><%= @wizard.teacher.trn %></strong>.
+    </p>
+  <% end %>
 
-      <%= govuk_warning_text do %>
-        If <%= @wizard.store.name %> is a different person, do not continue. Changing <%= teacher_full_name %>’s name to that of a different person may affect your school’s funding.
-      <% end %>
+  <%= govuk_warning_text do %>
+    If <%= @wizard.store.name %> is a different person, do not continue. Changing <%= teacher_full_name %>’s name to that of a different person may affect your school’s funding.
+  <% end %>
 
-      <p class="govuk-body">Only change <%= teacher_full_name %>’s name if:</p>
+  <p class="govuk-body">Only change <%= teacher_full_name %>’s name if:</p>
 
-      <ul class="govuk-list govuk-list--bullet">
-        <li>it’s spelt incorrectly</li>
-        <li>they’ve changed their name</li>
-        <li>they want to use a shortened or less formal name</li>
-      </ul>
-    </div>
-
-    <div class="govuk-panel__actions">
-      <div class="govuk-button-group">
-        <%= f.govuk_submit "Continue to change name", class: "govuk-button--inverse" %>
-        <%= govuk_link_to "Cancel and return to #{teacher_full_name}’s details", @wizard.details_path, inverse: true %>
-      </div>
-    </div>
-  </div>
+  <ul class="govuk-list govuk-list--bullet">
+    <li>it’s spelt incorrectly</li>
+    <li>they’ve changed their name</li>
+    <li>they want to use a shortened or less formal name</li>
+  </ul>
 <% end %>
