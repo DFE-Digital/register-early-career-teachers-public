@@ -15,6 +15,10 @@ module Schools
         name_for(ect_at_school_period.teacher.reload)
       end
 
+      def teacher_trn
+        ect_at_school_period.teacher.trn
+      end
+
       # @return [Hash]
       def default_path_arguments
         { ect_id: ect_at_school_period.id }
