@@ -17,7 +17,7 @@
   <% end %>
 <% end %>
 
-<%= govuk_inset_text(text: "This will change the name for teacher reference number (TRN) #{@wizard.teacher_trn}.") %>
+<%= govuk_inset_text(text: "This will change the name for teacher reference number (TRN) #{@wizard.teacher.trn}.") %>
 
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>

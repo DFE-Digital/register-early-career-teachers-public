@@ -15,10 +15,6 @@ module Schools
         name_for(ect_at_school_period.teacher.reload)
       end
 
-      def teacher_trn
-        ect_at_school_period.teacher.trn
-      end
-
       def details_path
         url_helpers.schools_ect_path(ect_at_school_period)
       end

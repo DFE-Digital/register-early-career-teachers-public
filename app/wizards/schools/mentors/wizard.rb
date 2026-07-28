@@ -15,10 +15,6 @@ module Schools
         ::Teachers::Name.new(mentor_at_school_period.teacher.reload).full_name
       end
 
-      def teacher_trn
-        mentor_at_school_period.teacher.trn
-      end
-
       def details_path
         url_helpers.schools_mentor_path(mentor_at_school_period)
       end
