@@ -17,7 +17,7 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
   let(:trs_client) { instance_double(TRS::APIClient) }
 
   let!(:induction_period) do
-    FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:)
+    FactoryBot.create(:induction_period, :unfinished, teacher:, appropriate_body_period:)
   end
 
   before do
@@ -91,7 +91,7 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
     let!(:earliest_period) do
       FactoryBot.create(
         :induction_period,
-        :ongoing,
+        :unfinished,
         teacher:,
         appropriate_body_period:,
         started_on: Date.new(2020, 1, 1),
@@ -103,7 +103,7 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
     let!(:later_period) do
       FactoryBot.create(
         :induction_period,
-        :ongoing,
+        :unfinished,
         teacher:,
         appropriate_body_period:,
         started_on: Date.new(2021, 1, 1),

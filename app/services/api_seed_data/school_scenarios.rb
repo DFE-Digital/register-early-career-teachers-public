@@ -138,7 +138,7 @@ module APISeedData
           # Create school period starting in 2024, still ongoing
           school_period = FactoryBot.create(
             :ect_at_school_period,
-            :ongoing,
+            :unfinished,
             school:,
             started_on: Date.new(2024, 9, 1)
           )
@@ -171,7 +171,7 @@ module APISeedData
             :training_period,
             :for_ect,
             :provider_led,
-            :ongoing,
+            :unfinished,
             ect_at_school_period: school_period,
             school_partnership: school_partnership_2025,
             schedule: schedule_2025,
@@ -214,7 +214,7 @@ module APISeedData
           # Create school period
           school_period = FactoryBot.create(
             :ect_at_school_period,
-            :ongoing,
+            :unfinished,
             school:
           )
 
@@ -293,7 +293,7 @@ module APISeedData
           # Create school period starting in 2024
           school_period = FactoryBot.create(
             :ect_at_school_period,
-            :ongoing,
+            :unfinished,
             school:,
             started_on: Date.new(2024, 9, 1)
           )
@@ -490,12 +490,12 @@ module APISeedData
 
           # Create an ECT training with this lead provider
           ect_teacher = FactoryBot.create(:teacher)
-          ect_school_period = FactoryBot.create(:ect_at_school_period, :ongoing, teacher: ect_teacher, school:, started_on: start_date)
+          ect_school_period = FactoryBot.create(:ect_at_school_period, :unfinished, teacher: ect_teacher, school:, started_on: start_date)
           add_training_period(ect_school_period, programme_type: :provider_led, from: start_date, with: lead_provider)
 
           # Create a mentor training with this lead provider
           mentor_teacher = FactoryBot.create(:teacher)
-          mentor_school_period = FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: mentor_teacher, school:, started_on: start_date)
+          mentor_school_period = FactoryBot.create(:mentor_at_school_period, :unfinished, teacher: mentor_teacher, school:, started_on: start_date)
           add_training_period(mentor_school_period, programme_type: :provider_led, from: start_date, with: lead_provider)
 
           log_seed_info("Created school with ECT and mentor training with #{lead_provider.name}", colour: Colourize::COLOURS.keys.sample)

@@ -21,7 +21,7 @@ RSpec.describe Teachers::Defer do
         let(:teacher_type) { trainee_type }
 
         context "when training period is ongoing" do
-          let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on) }
+          let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :unfinished, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on) }
 
           it "defers the training period" do
             freeze_time
@@ -40,7 +40,7 @@ RSpec.describe Teachers::Defer do
             FactoryBot.create(
               :training_period,
               :"for_#{trainee_type}",
-              :ongoing,
+              :unfinished,
               "#{trainee_type}_at_school_period": at_school_period,
               started_on: at_school_period.started_on,
               finished_on: 1.month.ago
@@ -64,7 +64,7 @@ RSpec.describe Teachers::Defer do
             FactoryBot.create(
               :training_period,
               :"for_#{trainee_type}",
-              :ongoing,
+              :unfinished,
               "#{trainee_type}_at_school_period": at_school_period,
               started_on: at_school_period.started_on,
               finished_on: 3.months.from_now
@@ -84,7 +84,7 @@ RSpec.describe Teachers::Defer do
         end
 
         context "event recording" do
-          let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on) }
+          let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :unfinished, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on) }
 
           it "records a teacher defers training period event" do
             freeze_time do

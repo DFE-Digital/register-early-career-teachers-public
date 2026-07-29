@@ -63,10 +63,10 @@ private
   end
 
   def and_there_is_an_ect_with_no_mentor_registered_at_the_school
-    @ect = FactoryBot.create(:ect_at_school_period, :ongoing, school: @school)
+    @ect = FactoryBot.create(:ect_at_school_period, :unfinished, school: @school)
     @training_period = FactoryBot.create(
       :training_period,
-      :ongoing,
+      :unfinished,
       :school_led,
       ect_at_school_period: @ect
     )
@@ -91,7 +91,7 @@ private
     )
     other_ect = FactoryBot.create(
       :ect_at_school_period,
-      :ongoing,
+      :unfinished,
       school: another_school
     )
     @existing_mentorship = FactoryBot.create(

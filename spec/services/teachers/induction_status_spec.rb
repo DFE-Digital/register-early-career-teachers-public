@@ -66,7 +66,7 @@ RSpec.describe Teachers::InductionStatus do
 
       context "with an ongoing induction period" do
         before do
-          FactoryBot.create(:induction_period, :ongoing,
+          FactoryBot.create(:induction_period, :unfinished,
                             teacher:)
         end
 

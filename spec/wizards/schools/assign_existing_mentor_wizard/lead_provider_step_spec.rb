@@ -8,8 +8,8 @@ RSpec.describe Schools::AssignExistingMentorWizard::LeadProviderStep do
   let(:lead_provider_id) { lead_provider.id }
   let(:school) { FactoryBot.create(:school) }
   let(:started_on) { mid_year - 2.days }
-  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:, started_on:) }
-  let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, started_on:) }
+  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school:, started_on:) }
+  let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, school:, started_on:) }
   let(:user) { FactoryBot.create(:user) }
   let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
 
@@ -109,7 +109,7 @@ RSpec.describe Schools::AssignExistingMentorWizard::LeadProviderStep do
     context "when the mentee has previously started training with another mentor" do
       let(:previous_mentor) { FactoryBot.create(:mentor_at_school_period, school:, started_on:, finished_on: started_on + 2.months) }
       let(:previous_mentor_training_period) { FactoryBot.create(:training_period, :provider_led, :for_mentor, started_on:, finished_on: started_on + 2.months, mentor_at_school_period: previous_mentor) }
-      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, started_on: Date.current) }
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, school:, started_on: Date.current) }
 
       before do
         FactoryBot.create(:schedule, contract_period:, identifier: "ecf-replacement-january")
@@ -117,7 +117,7 @@ RSpec.describe Schools::AssignExistingMentorWizard::LeadProviderStep do
         FactoryBot.create(:schedule, contract_period:, identifier: "ecf-replacement-september")
 
         FactoryBot.create(:training_period,
-                          :ongoing,
+                          :unfinished,
                           :provider_led,
                           :with_no_school_partnership,
                           ect_at_school_period:,

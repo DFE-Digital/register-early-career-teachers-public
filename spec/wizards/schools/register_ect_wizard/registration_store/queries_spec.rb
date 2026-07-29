@@ -109,7 +109,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
 
   describe "#active_record_at_school" do
     let(:school) { FactoryBot.create(:school) }
-    let!(:ongoing_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:) }
+    let!(:ongoing_period) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher:, school:) }
 
     it "returns the ongoing period for the given urn" do
       expect(queries.active_record_at_school(school.urn)).to eq(ongoing_period)

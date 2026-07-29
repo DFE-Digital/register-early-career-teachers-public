@@ -48,7 +48,7 @@ RSpec.describe TasksIndex::DetailedReviewSectionComponent, type: :component do
     let(:teacher) { FactoryBot.create(:teacher) }
     let(:school) { FactoryBot.create(:school) }
     let(:another_school) { FactoryBot.create(:school) }
-    let(:appropriate_body_induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:) }
+    let(:appropriate_body_induction_period) { FactoryBot.create(:induction_period, :unfinished, teacher:, appropriate_body_period:) }
     let(:finished_etc_period_with_appropriate_body) do
       FactoryBot.create(
         :ect_at_school_period, teacher:, school:,

@@ -10,7 +10,7 @@ module Schools
       ECTAtSchoolPeriod
         .where(school:)
         .eager_load(:teacher, :school, mentors: :teacher)
-        .merge(MentorshipPeriod.ongoing)
+        .merge(MentorshipPeriod.unfinished)
     end
 
     def mentors_with_ects

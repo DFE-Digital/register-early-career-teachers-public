@@ -6,7 +6,7 @@ describe "Schools::Mentors::ChangeLeadProviderWizard Requests" do
   let(:mentor_at_school_period) do
     FactoryBot.create(
       :mentor_at_school_period,
-      :ongoing,
+      :unfinished,
       teacher:,
       school:,
       started_on:
@@ -15,7 +15,7 @@ describe "Schools::Mentors::ChangeLeadProviderWizard Requests" do
 
   let!(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, :current) }
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
-  let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:, started_on:, school_partnership:) }
+  let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :unfinished, mentor_at_school_period:, started_on:, school_partnership:) }
   let(:old_lead_provider) { FactoryBot.create(:lead_provider) }
   let(:new_lead_provider) { lead_provider }
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider: old_lead_provider, contract_period:) }
@@ -141,7 +141,7 @@ describe "Schools::Mentors::ChangeLeadProviderWizard Requests" do
 
             post(path_for_step("check-answers"))
 
-            new_training_period = mentor_at_school_period.training_periods.ongoing.first
+            new_training_period = mentor_at_school_period.training_periods.unfinished.first
             expect(new_training_period.schedule).to eq(training_period.schedule)
           end
         end
@@ -151,7 +151,7 @@ describe "Schools::Mentors::ChangeLeadProviderWizard Requests" do
             let!(:training_period) do
               FactoryBot.create(:training_period,
                                 :for_mentor,
-                                :ongoing,
+                                :unfinished,
                                 :with_only_expression_of_interest,
                                 mentor_at_school_period:,
                                 started_on:,
@@ -178,7 +178,7 @@ describe "Schools::Mentors::ChangeLeadProviderWizard Requests" do
 
               post(path_for_step("check-answers"))
 
-              new_training_period = mentor_at_school_period.training_periods.ongoing.first
+              new_training_period = mentor_at_school_period.training_periods.unfinished.first
               expect(new_training_period.schedule.identifier).not_to eq(training_period.schedule.identifier)
             end
           end
@@ -191,7 +191,7 @@ describe "Schools::Mentors::ChangeLeadProviderWizard Requests" do
 
               post(path_for_step("check-answers"))
 
-              new_training_period = mentor_at_school_period.training_periods.ongoing.first
+              new_training_period = mentor_at_school_period.training_periods.unfinished.first
               expect(new_training_period.schedule).to eq(training_period.schedule)
             end
           end
@@ -204,7 +204,7 @@ describe "Schools::Mentors::ChangeLeadProviderWizard Requests" do
 
           post(path_for_step("check-answers"))
 
-          new_training_period = mentor_at_school_period.training_periods.ongoing.first
+          new_training_period = mentor_at_school_period.training_periods.unfinished.first
           expect(new_training_period.expression_of_interest.lead_provider).to eq(lead_provider)
 
           expect(response).to redirect_to(path_for_step("confirmation"))

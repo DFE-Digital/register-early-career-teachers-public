@@ -14,12 +14,12 @@ describe Schools::ECTs::ChangeMentorWizard::ConfirmationStep, type: :model do
   let(:author) { FactoryBot.build(:school_user, school_urn: school.urn) }
   let(:school) { FactoryBot.create(:school) }
   let(:ect_at_school_period) do
-    FactoryBot.create(:ect_at_school_period, :ongoing, school:)
+    FactoryBot.create(:ect_at_school_period, :unfinished, school:)
   end
   let(:mentor_at_school_period) do
     FactoryBot.create(
       :mentor_at_school_period,
-      :ongoing,
+      :unfinished,
       school:,
       started_on: ect_at_school_period.started_on - 1.month
     )
@@ -27,7 +27,7 @@ describe Schools::ECTs::ChangeMentorWizard::ConfirmationStep, type: :model do
   let!(:mentorship_period) do
     FactoryBot.create(
       :mentorship_period,
-      :ongoing,
+      :unfinished,
       mentee: ect_at_school_period,
       mentor: mentor_at_school_period,
       started_on: ect_at_school_period.started_on

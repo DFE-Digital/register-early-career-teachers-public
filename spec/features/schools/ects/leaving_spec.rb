@@ -35,7 +35,7 @@ private
 
     @ect_at_school_period = FactoryBot.create(
       :ect_at_school_period,
-      :ongoing,
+      :unfinished,
       teacher: @teacher,
       school: @school,
       started_on: Date.new(2024, 9, 1)

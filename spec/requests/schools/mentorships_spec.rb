@@ -1,8 +1,8 @@
 RSpec.describe "Create mentorship of an ECT to a mentor" do
   include ActionView::Helpers::SanitizeHelper
 
-  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
-  let(:mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:) }
+  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school:) }
+  let(:mentor) { FactoryBot.create(:mentor_at_school_period, :unfinished, school:) }
   let(:school) { FactoryBot.create(:school, :independent) }
 
   describe "GET /school/ects/:id/mentorship/new" do
@@ -79,11 +79,11 @@ RSpec.describe "Create mentorship of an ECT to a mentor" do
 
       context "when a valid mentor has been selected for the school-led ECT mentorship" do
         before do
-          FactoryBot.create(:training_period, :ongoing, :school_led, ect_at_school_period:)
+          FactoryBot.create(:training_period, :unfinished, :school_led, ect_at_school_period:)
         end
 
         let(:params) { { schools_assign_mentor_form: { mentor_id: mentor.id } } }
-        let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
+        let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school:) }
 
         it "creates the mentorship and redirects the user to the confirmation page" do
           allow(Schools::AssignMentorForm).to receive(:new).and_call_original
@@ -98,11 +98,11 @@ RSpec.describe "Create mentorship of an ECT to a mentor" do
 
       context "provider-led ECT mentorship" do
         before do
-          FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period:)
+          FactoryBot.create(:training_period, :unfinished, :provider_led, ect_at_school_period:)
         end
 
         let(:params) { { schools_assign_mentor_form: { mentor_id: mentor.id } } }
-        let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
+        let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school:) }
 
         context "when the mentor is eligible for funding" do
           before do

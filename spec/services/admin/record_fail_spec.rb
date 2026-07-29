@@ -85,7 +85,7 @@ RSpec.describe Admin::RecordFail do
 
     context "when ongoing induction period only has a mappable legacy programme type" do
       let!(:induction_period) do
-        FactoryBot.create(:induction_period, :ongoing, :legacy_programme_type,
+        FactoryBot.create(:induction_period, :unfinished, :legacy_programme_type,
                           appropriate_body_period:,
                           teacher:)
       end
@@ -103,7 +103,7 @@ RSpec.describe Admin::RecordFail do
 
     context "when ongoing induction period only has an unmappable legacy programme type" do
       let!(:induction_period) do
-        FactoryBot.create(:induction_period, :ongoing, :pre_2021, :legacy_programme_type,
+        FactoryBot.create(:induction_period, :unfinished, :pre_2021, :legacy_programme_type,
                           appropriate_body_period:,
                           teacher:)
       end

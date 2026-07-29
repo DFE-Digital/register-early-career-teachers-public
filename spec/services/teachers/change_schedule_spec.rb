@@ -22,8 +22,8 @@ RSpec.describe Teachers::ChangeSchedule do
   describe "#change_schedule" do
     %i[ect mentor].each do |trainee_type|
       context "for #{trainee_type}" do
-        let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :ongoing, started_on: school_period_started_on, finished_on: school_period_finished_on) }
-        let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing, :with_expression_of_interest, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on, finished_on: training_period_finished_on) }
+        let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :unfinished, started_on: school_period_started_on, finished_on: school_period_finished_on) }
+        let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :unfinished, :with_expression_of_interest, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on, finished_on: training_period_finished_on) }
         let!(:school_period_started_on) { 6.months.ago }
         let(:school_period_finished_on) { nil }
         let(:training_period_finished_on) { nil }

@@ -5,7 +5,7 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController" do
   let(:ect_at_school_period) do
     FactoryBot.create(
       :ect_at_school_period,
-      :ongoing,
+      :unfinished,
       teacher:,
       school:,
       started_on: contract_period.started_on
@@ -20,7 +20,7 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController" do
   let!(:training_period) do
     FactoryBot.create(
       :training_period,
-      :ongoing,
+      :unfinished,
       :for_ect,
       :provider_led,
       :with_only_expression_of_interest,
@@ -85,7 +85,7 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController" do
         let!(:training_period) do
           FactoryBot.create(
             :training_period,
-            :ongoing,
+            :unfinished,
             :provider_led,
             :for_ect,
             :withdrawn,
@@ -222,7 +222,7 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController" do
             let!(:training_period) do
               FactoryBot.create(
                 :training_period,
-                :ongoing,
+                :unfinished,
                 :for_ect,
                 :provider_led,
                 ect_at_school_period:,
@@ -268,7 +268,7 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController" do
         let(:training_period) do
           FactoryBot.create(
             :training_period,
-            :ongoing,
+            :unfinished,
             :school_led,
             ect_at_school_period:,
             started_on: ect_at_school_period.started_on

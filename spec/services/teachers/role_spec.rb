@@ -23,7 +23,7 @@ RSpec.describe Teachers::Role do
 
       context "when teacher has ongoing ECT period at any school" do
         before do
-          FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:)
+          FactoryBot.create(:ect_at_school_period, :unfinished, teacher:, school:)
         end
 
         it "returns ECT role" do
@@ -49,7 +49,7 @@ RSpec.describe Teachers::Role do
 
       context "when teacher has ongoing mentor period at any school" do
         before do
-          FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, school:)
+          FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:, school:)
         end
 
         it "returns Mentor role" do
@@ -69,8 +69,8 @@ RSpec.describe Teachers::Role do
 
       context "when teacher has both ECT and mentor roles" do
         before do
-          FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:)
-          FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, school: other_school)
+          FactoryBot.create(:ect_at_school_period, :unfinished, teacher:, school:)
+          FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:, school: other_school)
         end
 
         it "returns both roles" do
@@ -98,9 +98,9 @@ RSpec.describe Teachers::Role do
 
       context "when teacher has ongoing ECT period at the specified school" do
         before do
-          FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:)
+          FactoryBot.create(:ect_at_school_period, :unfinished, teacher:, school:)
           # Add mentor period at other school to test filtering
-          FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, school: other_school)
+          FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:, school: other_school)
         end
 
         it "returns ECT role for the specified school only" do
@@ -110,7 +110,7 @@ RSpec.describe Teachers::Role do
 
       context "when teacher has ECT period at other school but not specified school" do
         before do
-          FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school: other_school)
+          FactoryBot.create(:ect_at_school_period, :unfinished, teacher:, school: other_school)
         end
 
         it "returns empty array" do
@@ -132,8 +132,8 @@ RSpec.describe Teachers::Role do
 
       context "when teacher has ongoing mentor period at the specified school" do
         before do
-          FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, school:)
-          FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, school: other_school)
+          FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:, school:)
+          FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:, school: other_school)
         end
 
         it "returns Mentor role for the specified school only" do
@@ -143,7 +143,7 @@ RSpec.describe Teachers::Role do
 
       context "when teacher has mentor period at other school but not specified school" do
         before do
-          FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, school: other_school)
+          FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:, school: other_school)
         end
 
         it "returns empty array" do
@@ -154,7 +154,7 @@ RSpec.describe Teachers::Role do
       context "when teacher has inactive mentor period at the specified school" do
         before do
           FactoryBot.create(:mentor_at_school_period, teacher:, school:, finished_on: 1.month.ago)
-          FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, school: other_school)
+          FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:, school: other_school)
         end
 
         it "returns Mentor (Inactive) role for the specified school" do
@@ -164,8 +164,8 @@ RSpec.describe Teachers::Role do
 
       context "when teacher has both ECT and mentor roles at the specified school" do
         before do
-          FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:)
-          FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, school:)
+          FactoryBot.create(:ect_at_school_period, :unfinished, teacher:, school:)
+          FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:, school:)
           # Add periods at other school with different dates to ensure we're filtering correctly
           FactoryBot.create(:ect_at_school_period, teacher:, school: other_school, started_on: 3.years.ago, finished_on: 2.years.ago)
         end
@@ -177,7 +177,7 @@ RSpec.describe Teachers::Role do
 
       context "when teacher has mixed active/inactive roles at the specified school" do
         before do
-          FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:)
+          FactoryBot.create(:ect_at_school_period, :unfinished, teacher:, school:)
           FactoryBot.create(:mentor_at_school_period, teacher:, school:, finished_on: 1.month.ago)
         end
 
@@ -189,8 +189,8 @@ RSpec.describe Teachers::Role do
       context "when teacher has no periods at the specified school" do
         before do
           # Add periods at other schools to ensure we're filtering correctly
-          FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school: other_school)
-          FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, school: other_school)
+          FactoryBot.create(:ect_at_school_period, :unfinished, teacher:, school: other_school)
+          FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:, school: other_school)
         end
 
         it "returns empty array" do
@@ -214,7 +214,7 @@ RSpec.describe Teachers::Role do
 
       context "with single role" do
         before do
-          FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:)
+          FactoryBot.create(:ect_at_school_period, :unfinished, teacher:, school:)
         end
 
         it "returns the role as string" do
@@ -224,8 +224,8 @@ RSpec.describe Teachers::Role do
 
       context "with multiple roles" do
         before do
-          FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:)
-          FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, school: other_school)
+          FactoryBot.create(:ect_at_school_period, :unfinished, teacher:, school:)
+          FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:, school: other_school)
         end
 
         it "joins roles with ampersand" do
@@ -245,7 +245,7 @@ RSpec.describe Teachers::Role do
 
       context "with roles at the specified school" do
         before do
-          FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:)
+          FactoryBot.create(:ect_at_school_period, :unfinished, teacher:, school:)
           FactoryBot.create(:mentor_at_school_period, teacher:, school:, finished_on: 1.month.ago)
         end
 
@@ -256,7 +256,7 @@ RSpec.describe Teachers::Role do
 
       context "with no roles at the specified school" do
         before do
-          FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school: other_school)
+          FactoryBot.create(:ect_at_school_period, :unfinished, teacher:, school: other_school)
         end
 
         it "returns empty string" do
@@ -271,8 +271,8 @@ RSpec.describe Teachers::Role do
       let(:role_service) { described_class.new(teacher:) }
 
       before do
-        FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:)
-        FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, school: other_school)
+        FactoryBot.create(:ect_at_school_period, :unfinished, teacher:, school:)
+        FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:, school: other_school)
       end
 
       it "works as before, checking all schools" do

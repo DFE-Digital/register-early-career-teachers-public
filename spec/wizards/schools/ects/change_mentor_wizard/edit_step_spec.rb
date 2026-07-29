@@ -14,12 +14,12 @@ describe Schools::ECTs::ChangeMentorWizard::EditStep do
   let(:author) { FactoryBot.build(:school_user, school_urn: school.urn) }
   let(:school) { FactoryBot.create(:school) }
   let(:ect_at_school_period) do
-    FactoryBot.create(:ect_at_school_period, :ongoing, school:)
+    FactoryBot.create(:ect_at_school_period, :unfinished, school:)
   end
   let(:current_mentor_at_school_period) do
     FactoryBot.create(
       :mentor_at_school_period,
-      :ongoing,
+      :unfinished,
       school:,
       started_on: ect_at_school_period.started_on - 1.month
     )
@@ -27,7 +27,7 @@ describe Schools::ECTs::ChangeMentorWizard::EditStep do
   let!(:current_mentorship_period) do
     FactoryBot.create(
       :mentorship_period,
-      :ongoing,
+      :unfinished,
       mentee: ect_at_school_period,
       mentor: current_mentor_at_school_period,
       started_on: ect_at_school_period.started_on + 1.week
@@ -36,7 +36,7 @@ describe Schools::ECTs::ChangeMentorWizard::EditStep do
   let(:mentor_at_school_period) do
     FactoryBot.create(
       :mentor_at_school_period,
-      :ongoing,
+      :unfinished,
       school:,
       started_on: ect_at_school_period.started_on - 1.month
     )
@@ -161,11 +161,11 @@ describe Schools::ECTs::ChangeMentorWizard::EditStep do
 
       # Two ongoing mentors at the same school -> both are eligible
       let!(:mentor_at_school_period_1) do
-        FactoryBot.create(:mentor_at_school_period, :ongoing, school:, started_on: envelope_start)
+        FactoryBot.create(:mentor_at_school_period, :unfinished, school:, started_on: envelope_start)
       end
 
       let!(:mentor_at_school_period_2) do
-        FactoryBot.create(:mentor_at_school_period, :ongoing, school:, started_on: envelope_start)
+        FactoryBot.create(:mentor_at_school_period, :unfinished, school:, started_on: envelope_start)
       end
 
       it "returns all eligible mentors" do
@@ -174,7 +174,7 @@ describe Schools::ECTs::ChangeMentorWizard::EditStep do
     end
 
     context "when there is a current mentorship period (current mentor not eligible)" do
-      let!(:mentor_at_school_period_1) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, started_on: envelope_start) }
+      let!(:mentor_at_school_period_1) { FactoryBot.create(:mentor_at_school_period, :unfinished, school:, started_on: envelope_start) }
 
       # mentor 2 is the current mentor but is (not ongoing) -> not eligible
       let!(:mentor_at_school_period_2) { FactoryBot.create(:mentor_at_school_period, school:, started_on: envelope_start, finished_on: envelope_end) }

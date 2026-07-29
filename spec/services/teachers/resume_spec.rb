@@ -15,11 +15,11 @@ RSpec.describe Teachers::Resume do
   describe "#resume" do
     %i[ect mentor].each do |trainee_type|
       context "for #{trainee_type}" do
-        let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :ongoing, started_on: 6.months.ago) }
+        let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :unfinished, started_on: 6.months.ago) }
         let(:course_identifier) { trainee_type == :ect ? "ecf-induction" : "ecf-mentor" }
 
         context "when training period is active" do
-          let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on) }
+          let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :unfinished, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on) }
 
           it "raises an error" do
             expect {
@@ -31,9 +31,9 @@ RSpec.describe Teachers::Resume do
         context "when teacher has moved to a new Lead provider" do
           let(:teacher) { FactoryBot.create(:teacher) }
           let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: 6.months.ago, finished_on: 5.months.ago, teacher:) }
-          let(:at_school_period_new) { FactoryBot.create(:"#{trainee_type}_at_school_period", :ongoing, started_on: 4.months.ago, finished_on: nil, teacher:) }
+          let(:at_school_period_new) { FactoryBot.create(:"#{trainee_type}_at_school_period", :unfinished, started_on: 4.months.ago, finished_on: nil, teacher:) }
           let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :deferred, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on) }
-          let!(:training_period_new) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing, "#{trainee_type}_at_school_period": at_school_period_new, started_on: at_school_period_new.started_on, finished_on: nil) }
+          let!(:training_period_new) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :unfinished, "#{trainee_type}_at_school_period": at_school_period_new, started_on: at_school_period_new.started_on, finished_on: nil) }
 
           it "raises an error" do
             expect {
@@ -53,7 +53,7 @@ RSpec.describe Teachers::Resume do
             }.to change(TrainingPeriod, :count).by(1)
 
             created_training_period = TrainingPeriod.last
-            expect(created_training_period).to be_ongoing
+            expect(created_training_period).to be_unfinished
             expect(created_training_period.deferred_at).to be_nil
             expect(created_training_period.at_school_period).to eq(training_period.at_school_period)
             expect(created_training_period.started_on).to eq(Time.zone.today)
@@ -96,7 +96,7 @@ RSpec.describe Teachers::Resume do
             }.to change(TrainingPeriod, :count).by(1)
 
             created_training_period = TrainingPeriod.last
-            expect(created_training_period).to be_ongoing
+            expect(created_training_period).to be_unfinished
             expect(created_training_period.withdrawn_at).to be_nil
             expect(created_training_period.at_school_period).to eq(training_period.at_school_period)
             expect(created_training_period.started_on).to eq(Time.zone.today)
@@ -131,9 +131,9 @@ RSpec.describe Teachers::Resume do
         context "when teacher is moving to a new Lead provider" do
           let(:teacher) { FactoryBot.create(:teacher) }
           let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: 6.months.ago, finished_on: 60.days.from_now, teacher:) }
-          let(:at_school_period_new) { FactoryBot.create(:"#{trainee_type}_at_school_period", :ongoing, started_on: 61.days.from_now, finished_on: nil, teacher:) }
+          let(:at_school_period_new) { FactoryBot.create(:"#{trainee_type}_at_school_period", :unfinished, started_on: 61.days.from_now, finished_on: nil, teacher:) }
           let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :deferred, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on, finished_on: 1.month.ago) }
-          let!(:training_period_new) { FactoryBot.build(:training_period, :"for_#{trainee_type}", :ongoing, "#{trainee_type}_at_school_period": at_school_period_new, started_on: at_school_period_new.started_on, finished_on: nil) }
+          let!(:training_period_new) { FactoryBot.build(:training_period, :"for_#{trainee_type}", :unfinished, "#{trainee_type}_at_school_period": at_school_period_new, started_on: at_school_period_new.started_on, finished_on: nil) }
 
           it "resumes training period" do
             freeze_time

@@ -360,16 +360,16 @@ describe TrainingPeriod do
       let(:envelope_error) { "Date range is not contained by the period the trainee is at the school" }
 
       context "ongoing training period inside an ongoing at school period" do
-        let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 1.year.ago) }
+        let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, started_on: 1.year.ago) }
 
         it "is valid when the training period starts on or after the at school period" do
-          training_period = FactoryBot.build(:training_period, :ongoing, :for_ect, ect_at_school_period:, started_on: 6.months.ago)
+          training_period = FactoryBot.build(:training_period, :unfinished, :for_ect, ect_at_school_period:, started_on: 6.months.ago)
           training_period.valid?
           expect(training_period.errors[:base]).not_to include(envelope_error)
         end
 
         it "is invalid when the training period starts before the at school period" do
-          training_period = FactoryBot.build(:training_period, :ongoing, :for_ect, ect_at_school_period:, started_on: 2.years.ago)
+          training_period = FactoryBot.build(:training_period, :unfinished, :for_ect, ect_at_school_period:, started_on: 2.years.ago)
           training_period.valid?
           expect(training_period.errors[:base]).to include(envelope_error)
         end
@@ -418,7 +418,7 @@ describe TrainingPeriod do
         let(:next_ect_at_school_period) do
           FactoryBot.create(
             :ect_at_school_period,
-            :ongoing,
+            :unfinished,
             teacher:,
             started_on: ect_at_school_period.finished_on.advance(days: 1)
           )
@@ -426,7 +426,7 @@ describe TrainingPeriod do
         let!(:ongoing_training_period) do
           FactoryBot.create(
             :training_period,
-            :ongoing,
+            :unfinished,
             :for_ect,
             :provider_led,
             ect_at_school_period: next_ect_at_school_period,
@@ -476,7 +476,7 @@ describe TrainingPeriod do
         let(:next_mentor_at_school_period) do
           FactoryBot.create(
             :mentor_at_school_period,
-            :ongoing,
+            :unfinished,
             teacher:,
             started_on: mentor_at_school_period.finished_on.advance(days: 1)
           )
@@ -484,7 +484,7 @@ describe TrainingPeriod do
         let!(:ongoing_training_period) do
           FactoryBot.create(
             :training_period,
-            :ongoing,
+            :unfinished,
             :for_mentor,
             :provider_led,
             mentor_at_school_period: next_mentor_at_school_period,
@@ -495,7 +495,7 @@ describe TrainingPeriod do
         let(:concurrent_ongoing_period) do
           FactoryBot.build(
             :training_period,
-            :ongoing,
+            :unfinished,
             :for_mentor,
             :provider_led,
             mentor_at_school_period: next_mentor_at_school_period,
@@ -605,13 +605,13 @@ describe TrainingPeriod do
 
       context "checking contract period matches with school partnership" do
         context "when contract periods match" do
-          subject { FactoryBot.build(:training_period, :ongoing, schedule:, school_partnership:, ect_at_school_period:) }
+          subject { FactoryBot.build(:training_period, :unfinished, schedule:, school_partnership:, ect_at_school_period:) }
 
           it { is_expected.to be_valid }
         end
 
         context "when contract periods do not match" do
-          subject { FactoryBot.build(:training_period, :ongoing, schedule:, school_partnership: mismatched_school_partnership, ect_at_school_period:) }
+          subject { FactoryBot.build(:training_period, :unfinished, schedule:, school_partnership: mismatched_school_partnership, ect_at_school_period:) }
 
           let(:mismatched_school_partnership) { make_partnership_for(school, FactoryBot.create(:contract_period, year: 2025)) }
 
@@ -628,7 +628,7 @@ describe TrainingPeriod do
             FactoryBot.build(
               :training_period,
               :for_ect,
-              :ongoing,
+              :unfinished,
               :provider_led,
               :with_no_school_partnership,
               expression_of_interest:,
@@ -646,7 +646,7 @@ describe TrainingPeriod do
             FactoryBot.build(
               :training_period,
               :for_ect,
-              :ongoing,
+              :unfinished,
               :provider_led,
               :with_no_school_partnership,
               expression_of_interest: mismatched_expression_of_interest,
@@ -665,7 +665,7 @@ describe TrainingPeriod do
         end
 
         context "when training period is `school-led`" do
-          subject { FactoryBot.build(:training_period, :ongoing, :school_led, schedule:, ect_at_school_period:) }
+          subject { FactoryBot.build(:training_period, :unfinished, :school_led, schedule:, ect_at_school_period:) }
 
           it "adds an error to schedule" do
             expect(subject).to be_invalid
@@ -675,7 +675,7 @@ describe TrainingPeriod do
       end
 
       context "checking contract period matches with declarations" do
-        let(:training_period) { FactoryBot.create(:training_period, :ongoing, schedule:, school_partnership:, ect_at_school_period:) }
+        let(:training_period) { FactoryBot.create(:training_period, :unfinished, schedule:, school_partnership:, ect_at_school_period:) }
 
         before do
           FactoryBot.create(:declaration, :paid, training_period:)
@@ -1195,7 +1195,7 @@ describe TrainingPeriod do
     let!(:other_ect_at_school_period) do
       FactoryBot.create(
         :ect_at_school_period,
-        :ongoing,
+        :unfinished,
         teacher:,
         started_on: "2023-01-02"
       )
@@ -1212,7 +1212,7 @@ describe TrainingPeriod do
     let!(:unrelated_ect_at_school_period) do
       FactoryBot.create(
         :ect_at_school_period,
-        :ongoing,
+        :unfinished,
         started_on: "2021-01-01"
       )
     end

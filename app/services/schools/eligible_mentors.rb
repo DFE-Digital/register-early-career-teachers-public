@@ -5,13 +5,13 @@ module Schools
     end
 
     def for_ect(ect)
-      @school.mentor_at_school_periods.ongoing.excluding(ect_as_mentor_at_school(ect))
+      @school.mentor_at_school_periods.unfinished.excluding(ect_as_mentor_at_school(ect))
     end
 
   private
 
     def ect_as_mentor_at_school(ect)
-      ect.mentor_at_school_periods.for_school(@school).ongoing
+      ect.mentor_at_school_periods.for_school(@school).unfinished
     end
   end
 end

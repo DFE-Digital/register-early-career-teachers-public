@@ -10,7 +10,7 @@ class MigrationFixes::WithdrawTrainingPeriod
   def withdraw!
     return if training_period.blank?
 
-    if training_period.ongoing?
+    if training_period.unfinished?
       training_period.update!(finished_on: withdrawn_at,
                               withdrawn_at:,
                               withdrawal_reason:)

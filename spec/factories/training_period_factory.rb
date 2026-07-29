@@ -123,7 +123,7 @@ FactoryBot.define do
       association :expression_of_interest, factory: :active_lead_provider
     end
 
-    trait :ongoing do
+    trait :unfinished do
       finished_on { nil }
     end
 

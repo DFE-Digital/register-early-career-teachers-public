@@ -28,7 +28,7 @@ RSpec.describe Schools::ECTInductionDetailsComponent, type: :component do
 
   context "when induction start date is available" do
     let!(:induction_period) do
-      FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:, started_on: Date.new(2023, 9, 1))
+      FactoryBot.create(:induction_period, :unfinished, teacher:, appropriate_body_period:, started_on: Date.new(2023, 9, 1))
     end
 
     before do
@@ -86,7 +86,7 @@ RSpec.describe Schools::ECTInductionDetailsComponent, type: :component do
 
     context "when the teacher has an ongoing induction period" do
       before do
-        FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:)
+        FactoryBot.create(:induction_period, :unfinished, teacher:, appropriate_body_period:)
         teacher.reload
         render_inline(described_class.new(ect))
       end
@@ -120,7 +120,7 @@ RSpec.describe Schools::ECTInductionDetailsComponent, type: :component do
 
     context "when the school reported appropriate body has claimed the induction" do
       let!(:induction_period) do
-        FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:, started_on: Date.new(2023, 9, 1))
+        FactoryBot.create(:induction_period, :unfinished, teacher:, appropriate_body_period:, started_on: Date.new(2023, 9, 1))
       end
 
       before do
@@ -138,7 +138,7 @@ RSpec.describe Schools::ECTInductionDetailsComponent, type: :component do
     context "when an appropriate body other than the one the school reported has claimed the induction" do
       let(:other_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Beta Teaching School Hub") }
       let!(:induction_period) do
-        FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period: other_appropriate_body_period, started_on: Date.new(2023, 9, 1))
+        FactoryBot.create(:induction_period, :unfinished, teacher:, appropriate_body_period: other_appropriate_body_period, started_on: Date.new(2023, 9, 1))
       end
 
       before do
@@ -157,7 +157,7 @@ RSpec.describe Schools::ECTInductionDetailsComponent, type: :component do
     context "when an ongoing induction period predates this school placement (claimed before registration, or carried over from a previous school)" do
       let(:other_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Beta Teaching School Hub") }
       let!(:induction_period) do
-        FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period: other_appropriate_body_period, started_on: Date.new(2022, 9, 1))
+        FactoryBot.create(:induction_period, :unfinished, teacher:, appropriate_body_period: other_appropriate_body_period, started_on: Date.new(2022, 9, 1))
       end
 
       before do

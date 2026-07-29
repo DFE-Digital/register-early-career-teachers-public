@@ -26,7 +26,7 @@ module Schools
     private
 
       def currently_ect_at_another_school?
-        ect.previously_registered? && previous_period.ongoing?
+        ect.previously_registered? && previous_period.unfinished?
       end
 
       def previous_period

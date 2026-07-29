@@ -15,7 +15,7 @@ RSpec.describe Teachers::Details::CurrentInductionPeriodComponent, type: :compon
   context "when teacher has a current induction period" do
     let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Test AB") }
     let!(:current_period) do
-      FactoryBot.create(:induction_period, :ongoing,
+      FactoryBot.create(:induction_period, :unfinished,
                         teacher:,
                         appropriate_body_period:,
                         started_on: "2025-06-30",
@@ -94,7 +94,7 @@ RSpec.describe Teachers::Details::CurrentInductionPeriodComponent, type: :compon
 
         context "when the induction period has an outcome" do
           let!(:current_period) do
-            FactoryBot.create(:induction_period, :ongoing,
+            FactoryBot.create(:induction_period, :unfinished,
                               teacher:,
                               appropriate_body_period:,
                               started_on: 6.months.ago,

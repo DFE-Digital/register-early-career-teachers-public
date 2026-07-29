@@ -58,7 +58,7 @@ module Schools
         def mentorship_status
           mentor_at_school_periods = queries.mentor_at_school_periods
 
-          if mentor_at_school_periods.ongoing_today.exists?
+          if mentor_at_school_periods.contains_today.exists?
             :currently_a_mentor
           elsif mentor_at_school_periods.exists?
             :previously_a_mentor

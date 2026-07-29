@@ -34,13 +34,13 @@ class Teachers::InductionPeriod
   #
   # @return [InductionPeriod, nil]
   def ongoing_induction_period
-    teacher.induction_periods.ongoing.first
+    teacher.induction_periods.unfinished.first
   end
 
   # @param date [Date]
   # @return [Boolean]
   def overlapping_with?(date)
-    teacher.induction_periods.ongoing_on(date).exists?
+    teacher.induction_periods.contains_date(date).exists?
   end
 
   delegate :first_induction_period, to: :teacher

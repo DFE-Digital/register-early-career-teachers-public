@@ -71,7 +71,7 @@ RSpec.describe Statements::DeclarationsCSV do
       withdrawal_reason: "moved_school"
     )
   end
-  let(:mentorship_period) { FactoryBot.create(:mentorship_period, :ongoing, mentee: ect, mentor:) }
+  let(:mentorship_period) { FactoryBot.create(:mentorship_period, :unfinished, mentee: ect, mentor:) }
   let(:declaration) do
     FactoryBot.create(
       :declaration,

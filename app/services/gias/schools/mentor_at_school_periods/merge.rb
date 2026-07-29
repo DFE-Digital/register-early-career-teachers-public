@@ -94,7 +94,7 @@ module GIAS::Schools
       end
 
       def calculate_finished_on
-        return nil if periods.any?(&:ongoing?)
+        return nil if periods.any?(&:unfinished?)
 
         periods.map(&:finished_on).compact.max
       end

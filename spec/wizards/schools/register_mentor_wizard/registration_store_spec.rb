@@ -22,7 +22,7 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
 
     context "when the mentor has an ongoing mentor record at the school" do
       let!(:ongoing_mentor_record) do
-        FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher:)
+        FactoryBot.create(:mentor_at_school_period, :unfinished, school:, teacher:)
       end
 
       it "returns true" do
@@ -46,7 +46,7 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
 
     context "when the mentor has an ongoing mentor record at the school" do
       let!(:ongoing_mentor_record) do
-        FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher:)
+        FactoryBot.create(:mentor_at_school_period, :unfinished, school:, teacher:)
       end
 
       it "returns the mentor record" do
@@ -190,7 +190,7 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
     let!(:mentor_at_school_period) do
       FactoryBot.create(
         :mentor_at_school_period,
-        :ongoing,
+        :unfinished,
         teacher:,
         started_on: Date.new(2025, 1, 1)
       )
@@ -228,11 +228,11 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
     end
 
     context "when there is an associated mentee on provider-led training who has previously been trained" do
-      let(:mentee) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 2.weeks.ago) }
+      let(:mentee) { FactoryBot.create(:ect_at_school_period, :unfinished, started_on: 2.weeks.ago) }
       let!(:mentee_training_period) do
         FactoryBot.create(
           :training_period,
-          :ongoing,
+          :unfinished,
           :provider_led,
           :for_ect,
           ect_at_school_period: mentee,
@@ -372,7 +372,7 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
 
     context "when there is an ongoing mentor_at_school_period" do
       let!(:ongoing_period) do
-        FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher:)
+        FactoryBot.create(:mentor_at_school_period, :unfinished, school:, teacher:)
       end
 
       it "returns :currently_a_mentor" do
@@ -395,7 +395,7 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
         FactoryBot.create(:mentor_at_school_period, school:, teacher:, started_on: 3.years.ago)
       end
       let!(:ongoing_period) do
-        FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher:)
+        FactoryBot.create(:mentor_at_school_period, :unfinished, school:, teacher:)
       end
 
       it "returns :currently_a_mentor" do
@@ -419,7 +419,7 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
 
     context "when there is an ongoing record at another school" do
       before do
-        FactoryBot.create(:mentor_at_school_period, :ongoing, school: other_school, teacher:)
+        FactoryBot.create(:mentor_at_school_period, :unfinished, school: other_school, teacher:)
       end
 
       it "returns true" do
@@ -458,7 +458,7 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
 
     context "when all previous periods are ongoing" do
       before do
-        FactoryBot.create(:mentor_at_school_period, :ongoing, school: other_school, teacher:)
+        FactoryBot.create(:mentor_at_school_period, :unfinished, school: other_school, teacher:)
       end
 
       it { is_expected.to be_falsey }

@@ -1,6 +1,6 @@
 RSpec.describe "Changing a mentor's name" do
   let!(:mentor_at_school_period) do
-    FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher:)
+    FactoryBot.create(:mentor_at_school_period, :unfinished, school:, teacher:)
   end
 
   let(:teacher) do

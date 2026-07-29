@@ -9,7 +9,7 @@ FactoryBot.define do
     induction_programme { "fip" }
     training_programme { "provider_led" }
 
-    trait :ongoing do
+    trait :unfinished do
       finished_on { nil }
       number_of_terms { nil }
     end

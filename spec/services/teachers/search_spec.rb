@@ -24,8 +24,8 @@ describe Teachers::Search do
     let(:teacher2) { FactoryBot.create(:teacher) }
     let(:teacher3) { FactoryBot.create(:teacher) }
 
-    let!(:induction_period1) { FactoryBot.create(:induction_period, :ongoing, teacher: teacher1, appropriate_body_period: ab1) }
-    let!(:induction_period2) { FactoryBot.create(:induction_period, :ongoing, teacher: teacher2, appropriate_body_period: ab2) }
+    let!(:induction_period1) { FactoryBot.create(:induction_period, :unfinished, teacher: teacher1, appropriate_body_period: ab1) }
+    let!(:induction_period2) { FactoryBot.create(:induction_period, :unfinished, teacher: teacher2, appropriate_body_period: ab2) }
 
     describe "belonging to appropriate bodies" do
       context "when one appropriate body is provided" do
@@ -43,7 +43,7 @@ describe Teachers::Search do
       context "when multiple appropriate bodies are provided" do
         subject { Teachers::Search.new(appropriate_bodies: [ab1, ab3]) }
 
-        let!(:induction_period3) { FactoryBot.create(:induction_period, :ongoing, teacher: teacher3, appropriate_body_period: ab3) }
+        let!(:induction_period3) { FactoryBot.create(:induction_period, :unfinished, teacher: teacher3, appropriate_body_period: ab3) }
 
         it "includes teachers with ongoing induction periods with the specified appropriate bodies" do
           expect(subject.search).to include(teacher1, teacher3)
@@ -76,7 +76,7 @@ describe Teachers::Search do
       let(:teacher_with_completed_induction) { FactoryBot.create(:teacher) }
       let(:teacher_with_no_induction) { FactoryBot.create(:teacher) }
 
-      let!(:open_induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher: teacher_with_open_induction, appropriate_body_period: ab1) }
+      let!(:open_induction_period) { FactoryBot.create(:induction_period, :unfinished, teacher: teacher_with_open_induction, appropriate_body_period: ab1) }
       let!(:completed_induction_period) { FactoryBot.create(:induction_period, :pass, teacher: teacher_with_completed_induction, appropriate_body_period: ab1) }
 
       context 'when status is "open"' do
@@ -237,7 +237,7 @@ describe Teachers::Search do
           end
 
           context "when currently an ECT at the school" do
-            let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:, teacher:) }
+            let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school:, teacher:) }
 
             it "returns the teacher" do
               expect(Teachers::Search.new(ect_at_school: school).search).to include(teacher)
@@ -279,16 +279,16 @@ describe Teachers::Search do
         let(:mentored_teacher2) { FactoryBot.create(:teacher) }
 
         # unmentored
-        let!(:ect_at_school_period1) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: teacher1, school: school1, started_on: earlier_start_date) }
-        let!(:ect_at_school_period2) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: teacher2, school: school1, started_on: later_start_date) }
+        let!(:ect_at_school_period1) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher: teacher1, school: school1, started_on: earlier_start_date) }
+        let!(:ect_at_school_period2) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher: teacher2, school: school1, started_on: later_start_date) }
 
         # mentored
-        let!(:mentor_at_school_period1) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: teacher3, school: school1, started_on: earlier_start_date) }
-        let!(:ect_at_school_period3) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: mentored_teacher1, school: school1, started_on: earlier_start_date) }
-        let!(:ect_at_school_period4) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: mentored_teacher2, school: school1, started_on: later_start_date) }
+        let!(:mentor_at_school_period1) { FactoryBot.create(:mentor_at_school_period, :unfinished, teacher: teacher3, school: school1, started_on: earlier_start_date) }
+        let!(:ect_at_school_period3) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher: mentored_teacher1, school: school1, started_on: earlier_start_date) }
+        let!(:ect_at_school_period4) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher: mentored_teacher2, school: school1, started_on: later_start_date) }
 
-        let!(:mentorship_period1) { FactoryBot.create(:mentorship_period, :ongoing, mentee: ect_at_school_period3, mentor: mentor_at_school_period1, started_on: earlier_start_date) }
-        let!(:mentorship_period2) { FactoryBot.create(:mentorship_period, :ongoing, mentee: ect_at_school_period4, mentor: mentor_at_school_period1, started_on: later_start_date) }
+        let!(:mentorship_period1) { FactoryBot.create(:mentorship_period, :unfinished, mentee: ect_at_school_period3, mentor: mentor_at_school_period1, started_on: earlier_start_date) }
+        let!(:mentorship_period2) { FactoryBot.create(:mentorship_period, :unfinished, mentee: ect_at_school_period4, mentor: mentor_at_school_period1, started_on: later_start_date) }
 
         it "orders with unmentored teachers first, then by started_on (newest first)" do
           results = Teachers::Search.new(ect_at_school: school1).search
@@ -298,7 +298,7 @@ describe Teachers::Search do
 
         context "when an ECT only has a past mentorship" do
           let(:previously_mentored_teacher) { FactoryBot.create(:teacher) }
-          let!(:previously_mentored_ect) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: previously_mentored_teacher, school: school1, started_on: later_start_date + 1.day) }
+          let!(:previously_mentored_ect) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher: previously_mentored_teacher, school: school1, started_on: later_start_date + 1.day) }
           let!(:past_mentorship_period) { FactoryBot.create(:mentorship_period, mentee: previously_mentored_ect, mentor: mentor_at_school_period1, started_on: previously_mentored_ect.started_on, finished_on: previously_mentored_ect.started_on + 1.week) }
 
           it "orders them with unmentored ECTs" do
@@ -312,10 +312,10 @@ describe Teachers::Search do
       describe "preloaded current mentorships" do
         let(:school) { FactoryBot.create(:school) }
         let(:teacher) { FactoryBot.create(:teacher) }
-        let(:mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, started_on: 1.year.ago) }
-        let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:, started_on: 1.year.ago) }
+        let(:mentor) { FactoryBot.create(:mentor_at_school_period, :unfinished, school:, started_on: 1.year.ago) }
+        let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher:, school:, started_on: 1.year.ago) }
         let!(:past_mentorship_period) { FactoryBot.create(:mentorship_period, mentee: ect_at_school_period, mentor:, started_on: 1.year.ago, finished_on: 1.month.ago) }
-        let!(:current_mentorship_period) { FactoryBot.create(:mentorship_period, :ongoing, mentee: ect_at_school_period, mentor:, started_on: 1.month.ago + 1.day) }
+        let!(:current_mentorship_period) { FactoryBot.create(:mentorship_period, :unfinished, mentee: ect_at_school_period, mentor:, started_on: 1.month.ago + 1.day) }
 
         it "does not cache current_or_next_mentorship_period as nil" do
           result = Teachers::Search.new(ect_at_school: school).search.find_by!(id: teacher.id)
@@ -366,7 +366,7 @@ describe Teachers::Search do
       let(:future_teacher) { FactoryBot.create(:teacher) }
       let(:past_teacher) { FactoryBot.create(:teacher) }
 
-      let!(:current_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: current_teacher, school:) }
+      let!(:current_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, teacher: current_teacher, school:) }
       let!(:future_period)  { FactoryBot.create(:mentor_at_school_period, teacher: future_teacher, school:, started_on: 1.month.from_now.to_date, finished_on: nil) }
       let!(:past_period)    { FactoryBot.create(:mentor_at_school_period, teacher: past_teacher, school:, started_on: 6.months.ago.to_date, finished_on: 1.month.ago.to_date) }
 

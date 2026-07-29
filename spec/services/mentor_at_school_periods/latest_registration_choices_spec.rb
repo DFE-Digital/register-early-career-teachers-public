@@ -5,13 +5,13 @@ RSpec.describe MentorAtSchoolPeriods::LatestRegistrationChoices do
 
   context "when the latest training period has a confirmed partnership" do
     let(:school_partnership) { FactoryBot.create(:school_partnership) }
-    let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:) }
+    let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:) }
 
     let!(:training_period) do
       FactoryBot.create(
         :training_period,
         :for_mentor,
-        :ongoing,
+        :unfinished,
         school_partnership:,
         started_on: mentor_at_school_period.started_on,
         mentor_at_school_period:
@@ -54,7 +54,7 @@ RSpec.describe MentorAtSchoolPeriods::LatestRegistrationChoices do
     let(:mentor_at_school_period) do
       FactoryBot.create(
         :mentor_at_school_period,
-        :ongoing,
+        :unfinished,
         teacher:,
         school:
       )
@@ -67,7 +67,7 @@ RSpec.describe MentorAtSchoolPeriods::LatestRegistrationChoices do
       FactoryBot.create(
         :training_period,
         :for_mentor,
-        :ongoing,
+        :unfinished,
         :with_no_school_partnership,
         mentor_at_school_period:,
         expression_of_interest:,

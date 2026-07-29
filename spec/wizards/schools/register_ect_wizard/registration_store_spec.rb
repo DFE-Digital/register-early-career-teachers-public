@@ -29,7 +29,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
     let(:teacher) { FactoryBot.create(:teacher, trn: "3002586") }
 
     context "when the ECT has an ongoing ECT record at the school" do
-      let!(:existing_ect_record) { FactoryBot.create(:ect_at_school_period, :ongoing, school:, teacher:) }
+      let!(:existing_ect_record) { FactoryBot.create(:ect_at_school_period, :unfinished, school:, teacher:) }
 
       it "returns the ECT record" do
         expect(registration_store.active_record_at_school(school.urn)).to eq(existing_ect_record)
@@ -49,7 +49,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
     let(:teacher) { FactoryBot.create(:teacher, trn: registration_store.trn) }
 
     it "returns true if the ECT is active at the given school" do
-      FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:)
+      FactoryBot.create(:ect_at_school_period, :unfinished, teacher:, school:)
 
       expect(registration_store).to be_active_at_school(school.urn)
     end

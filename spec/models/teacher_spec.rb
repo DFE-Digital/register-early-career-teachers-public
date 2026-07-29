@@ -221,7 +221,7 @@ describe Teacher do
       it { is_expected.to have_one(:current_or_next_ect_at_school_period).class_name("ECTAtSchoolPeriod") }
 
       context "when there is a current period" do
-        let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:) }
+        let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher:) }
         let!(:finished_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 10.years.ago, finished_on: 8.years.ago, teacher:) }
 
         it "returns the current ect_at_school_period" do

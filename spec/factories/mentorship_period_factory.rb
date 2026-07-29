@@ -30,7 +30,7 @@ FactoryBot.define do
       [calculated_end_date, mentee_end_date, mentor_end_date].compact.min
     end
 
-    trait :ongoing do
+    trait :unfinished do
       finished_on { nil }
     end
   end

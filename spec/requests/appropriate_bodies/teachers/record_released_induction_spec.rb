@@ -3,7 +3,7 @@ RSpec.describe "Appropriate body releasing an ECT" do
   let(:teacher) { FactoryBot.create(:teacher) }
 
   let!(:induction_period) do
-    FactoryBot.create(:induction_period, :ongoing,
+    FactoryBot.create(:induction_period, :unfinished,
                       teacher:,
                       appropriate_body_period:)
   end

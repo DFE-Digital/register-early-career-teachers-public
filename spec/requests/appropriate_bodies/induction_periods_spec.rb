@@ -5,7 +5,7 @@ RSpec.describe "AppropriateBodies::InductionPeriodsController", type: :request d
   let(:teacher) { FactoryBot.create(:teacher, :with_name, trs_qts_awarded_on: 1.year.ago) }
 
   let!(:induction_period) do
-    FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:, started_on: 9.months.ago)
+    FactoryBot.create(:induction_period, :unfinished, teacher:, appropriate_body_period:, started_on: 9.months.ago)
   end
 
   describe "GET /appropriate-body/teachers/:teacher_id/induction-periods/:id/edit" do

@@ -77,7 +77,7 @@ module APISeedData
     def create_open_mentor_school_period(mentor, school_partnership)
       FactoryBot.create(
         :mentor_at_school_period,
-        :ongoing,
+        :unfinished,
         teacher: mentor,
         school: school_partnership.school
       )
@@ -87,7 +87,7 @@ module APISeedData
       FactoryBot.create(
         :training_period,
         :for_mentor,
-        :ongoing,
+        :unfinished,
         started_on: mentor_school_period.started_on,
         mentor_at_school_period: mentor_school_period,
         school_partnership:
@@ -97,14 +97,14 @@ module APISeedData
     def create_open_ect_with_mentorship(mentor_school_period, school_partnership)
       mentee_school_period = FactoryBot.create(
         :ect_at_school_period,
-        :ongoing,
+        :unfinished,
         school: school_partnership.school
       )
 
       FactoryBot.create(
         :training_period,
         :for_ect,
-        :ongoing,
+        :unfinished,
         started_on: mentee_school_period.started_on,
         ect_at_school_period: mentee_school_period,
         school_partnership:
@@ -112,7 +112,7 @@ module APISeedData
 
       FactoryBot.create(
         :mentorship_period,
-        :ongoing,
+        :unfinished,
         mentee: mentee_school_period,
         mentor: mentor_school_period,
         started_on: mentor_school_period.started_on

@@ -37,10 +37,10 @@ RSpec.describe TasksIndex::TableSectionComponent, type: :component do
                       trs_initial_teacher_training_provider_name: "ITT")
   end
 
-  let(:postman_pat_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: postman_pat, school:) }
-  let(:bob_builder_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: bob_builder, school:) }
+  let(:postman_pat_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher: postman_pat, school:) }
+  let(:bob_builder_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher: bob_builder, school:) }
 
-  let(:induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher: postman_pat, appropriate_body_period:) }
+  let(:induction_period) { FactoryBot.create(:induction_period, :unfinished, teacher: postman_pat, appropriate_body_period:) }
 
   before { postman_pat_at_school_period && bob_builder_at_school_period && induction_period }
 
@@ -132,8 +132,8 @@ RSpec.describe TasksIndex::TableSectionComponent, type: :component do
       context "when the teacher has started at another school" do
         let(:new_school) { FactoryBot.create(:school, :with_induction_tutor) }
         let(:new_school_ect_at_school_period) do
-          FactoryBot.create(:ect_at_school_period, :ongoing, teacher: postman_pat,
-                                                             school: new_school, started_on: 1.week.from_now)
+          FactoryBot.create(:ect_at_school_period, :unfinished, teacher: postman_pat,
+                                                                school: new_school, started_on: 1.week.from_now)
         end
 
         before { new_school_ect_at_school_period }

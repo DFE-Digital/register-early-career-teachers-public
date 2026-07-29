@@ -50,7 +50,7 @@ private
     )
     @ect = FactoryBot.create(
       :ect_at_school_period,
-      :ongoing,
+      :unfinished,
       teacher: @teacher,
       school: @school,
       email: "ect@example.com"

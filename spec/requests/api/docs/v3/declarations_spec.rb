@@ -15,10 +15,10 @@ RSpec.describe "Declarations endpoint", :with_metadata, openapi_spec: "v3/swagge
     FactoryBot.create(
       :training_period,
       :for_ect,
-      :ongoing,
+      :unfinished,
       :with_school_partnership,
       school_partnership:,
-      ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing)
+      ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished)
     )
   end
   let(:declaration) { FactoryBot.create(:declaration, training_period:) }

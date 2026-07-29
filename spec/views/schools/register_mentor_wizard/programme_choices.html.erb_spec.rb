@@ -9,12 +9,12 @@ RSpec.describe "schools/register_mentor_wizard/programme_choices.html.erb" do
     make_partnership_for(school, contract_period, lead_provider_name: "Naruto Ninja Academy", delivery_partner_name: "Shinobi Training Co")
   end
 
-  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:) }
+  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher:, school:) }
 
   let!(:training_period) do
     FactoryBot.create(:training_period,
                       :provider_led,
-                      :ongoing,
+                      :unfinished,
                       ect_at_school_period:,
                       school_partnership:)
   end

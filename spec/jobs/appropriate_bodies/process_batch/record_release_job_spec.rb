@@ -26,7 +26,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::RecordReleaseJob, type: :job do
 
   before do
     FactoryBot.create(:teacher, trn: pending_induction_submission.trn)
-    FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:)
+    FactoryBot.create(:induction_period, :unfinished, teacher:, appropriate_body_period:)
   end
 
   it "closes the induction", :aggregate_failures do

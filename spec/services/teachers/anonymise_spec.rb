@@ -15,13 +15,13 @@ RSpec.describe Teachers::Anonymise do
     end
 
     context "when the teacher has an ECT at school period" do
-      before { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:) }
+      before { FactoryBot.create(:ect_at_school_period, :unfinished, teacher:) }
 
       it { is_expected.not_to be_permitted }
     end
 
     context "when the teacher has a mentor at school period" do
-      before { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:) }
+      before { FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:) }
 
       it { is_expected.not_to be_permitted }
     end
@@ -69,7 +69,7 @@ RSpec.describe Teachers::Anonymise do
     end
 
     context "when not permitted" do
-      before { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:) }
+      before { FactoryBot.create(:ect_at_school_period, :unfinished, teacher:) }
 
       it "raises NotPermittedError" do
         expect { service.anonymise! }.to raise_error(Teachers::Anonymise::NotPermittedError)

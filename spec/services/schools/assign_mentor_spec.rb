@@ -48,7 +48,7 @@ RSpec.describe Schools::AssignMentor do
         let(:current_mentor) do
           FactoryBot.create(
             :mentor_at_school_period,
-            :ongoing,
+            :unfinished,
             started_on: 6.months.ago,
             school: mentee.school
           )
@@ -56,7 +56,7 @@ RSpec.describe Schools::AssignMentor do
         let!(:current_mentorship_period) do
           FactoryBot.create(
             :mentorship_period,
-            :ongoing,
+            :unfinished,
             started_on: current_mentor.started_on,
             mentee:,
             mentor: current_mentor

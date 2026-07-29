@@ -9,9 +9,9 @@ describe ECTAtSchoolPeriods::TextSearch do
   let!(:bob_squarepants) { FactoryBot.create(:teacher, trn: "3456789", trs_first_name: "Bob", trs_last_name: "Squarepants") }
 
   # And some AtSchoolPeriods..
-  let!(:pat_at_grange_hill) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: postman_pat, school: grange_hill_school) }
-  let!(:bob_builder_at_grange_hill) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: bob_builder, school: grange_hill_school) }
-  let!(:bob_squarepants_at_bash_street) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: bob_squarepants, school: bash_street_school) }
+  let!(:pat_at_grange_hill) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher: postman_pat, school: grange_hill_school) }
+  let!(:bob_builder_at_grange_hill) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher: bob_builder, school: grange_hill_school) }
+  let!(:bob_squarepants_at_bash_street) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher: bob_squarepants, school: bash_street_school) }
 
   describe "#search" do
     subject(:search) { described_class.new(initial_cohort, query_string:).search }

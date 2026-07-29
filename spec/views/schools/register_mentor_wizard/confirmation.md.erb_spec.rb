@@ -9,7 +9,7 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
 
   let(:teacher) { FactoryBot.create(:teacher, trn: "1234568") }
 
-  let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school: school_partnership.school) }
+  let(:ect) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher:, school: school_partnership.school) }
 
   let(:store) do
     FactoryBot.build(:session_repository,
@@ -67,7 +67,7 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
   describe "mentor funding" do
     context "when eligible" do
       context "when the ect is provider_led" do
-        let!(:training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, ect_at_school_period: ect, school_partnership:) }
+        let!(:training_period) { FactoryBot.create(:training_period, :provider_led, :unfinished, ect_at_school_period: ect, school_partnership:) }
 
         it do
           assign(:wizard, wizard)
@@ -131,7 +131,7 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
 
   context "when the mentor is already active at the school" do
     let(:already_active_at_school) { true }
-    let!(:training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, ect_at_school_period: ect, school_partnership:) }
+    let!(:training_period) { FactoryBot.create(:training_period, :provider_led, :unfinished, ect_at_school_period: ect, school_partnership:) }
 
     before do
       assign(:wizard, wizard)
@@ -153,7 +153,7 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
 
   context "when the mentor is not active at the school" do
     let(:already_active_at_school) { false }
-    let!(:training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, ect_at_school_period: ect, school_partnership:) }
+    let!(:training_period) { FactoryBot.create(:training_period, :provider_led, :unfinished, ect_at_school_period: ect, school_partnership:) }
 
     before do
       assign(:wizard, wizard)
@@ -175,7 +175,7 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
 
   context "when the mentor is continuing to mentor at another school" do
     let(:mentoring_at_new_school_only) { "no" }
-    let!(:training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, ect_at_school_period: ect, school_partnership:) }
+    let!(:training_period) { FactoryBot.create(:training_period, :provider_led, :unfinished, ect_at_school_period: ect, school_partnership:) }
 
     before do
       assign(:wizard, wizard)
@@ -196,7 +196,7 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
 
   context "when the mentor is mentoring at the new school only" do
     let(:mentoring_at_new_school_only) { "yes" }
-    let!(:training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, ect_at_school_period: ect, school_partnership:) }
+    let!(:training_period) { FactoryBot.create(:training_period, :provider_led, :unfinished, ect_at_school_period: ect, school_partnership:) }
 
     it "mentions passing on details to the lead provider for mentor training" do
       assign(:wizard, wizard)

@@ -54,10 +54,10 @@ RSpec.describe APISeedData::ECTDeclarationScenarios do
       expect(training_period.schedule.identifier).to eq("ecf-standard-september")
 
       expect(training_period.started_on).to eq(Date.new(2025, 9, 2))
-      expect(training_period).to be_ongoing
+      expect(training_period).to be_unfinished
 
       expect(training_period.at_school_period.started_on).to eq(Date.new(2025, 9, 2))
-      expect(training_period.at_school_period).to be_ongoing
+      expect(training_period.at_school_period).to be_unfinished
 
       expect(teacher.induction_periods).to be_present
       expect(teacher.finished_induction_period).to be_nil
@@ -101,10 +101,10 @@ RSpec.describe APISeedData::ECTDeclarationScenarios do
       expect(training_period.schedule.identifier).to eq("ecf-standard-september")
 
       expect(training_period.started_on).to eq(Date.new(2025, 9, 1))
-      expect(training_period).to be_ongoing
+      expect(training_period).to be_unfinished
 
       expect(training_period.at_school_period.started_on).to eq(Date.new(2025, 9, 1))
-      expect(training_period.at_school_period).to be_ongoing
+      expect(training_period.at_school_period).to be_unfinished
 
       expect(teacher.induction_periods).to be_present
       expect(teacher.finished_induction_period).to be_nil

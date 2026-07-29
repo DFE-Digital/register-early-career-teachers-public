@@ -111,7 +111,7 @@ RSpec.describe AppropriateBodies::ClaimECTEligibilityComponent, type: :component
 
     context "and the teacher is claimed by another appropriate body" do
       before do
-        FactoryBot.create(:induction_period, :ongoing, teacher:)
+        FactoryBot.create(:induction_period, :unfinished, teacher:)
         render_inline(component)
       end
 
