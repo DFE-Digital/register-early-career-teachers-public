@@ -19,6 +19,8 @@ module Schools
         url_helpers.schools_mentor_path(mentor_at_school_period)
       end
 
+      def mentor? = true
+
       # @return [Hash]
       def default_path_arguments
         { mentor_id: mentor_at_school_period.id }

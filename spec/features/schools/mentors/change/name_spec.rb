@@ -130,6 +130,8 @@ RSpec.describe "Changing a mentor's name" do
     expect(page.get_by_text("You’ve told us you want to change Miriam Margolyes’s name to Sister Mildred.")).to be_visible
     expect(page.get_by_text("This will change the name for teacher reference number (TRN) #{teacher.trn}.")).to be_visible
     expect(page.get_by_text("If Sister Mildred is a different person, do not continue.")).to be_visible
+    expect(page.get_by_text("If you want a different person to mentor an ECT, change the mentor from the ECT’s details page.")).to be_visible
+    expect(page.get_by_role("link", name: "ECT’s details page").get_attribute("href")).to eq("/school/home/ects")
   end
 
   def when_i_click_continue_to_change_name

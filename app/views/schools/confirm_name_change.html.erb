@@ -31,4 +31,10 @@
     <li>they’ve changed their name</li>
     <li>they want to use a shortened or less formal name</li>
   </ul>
+
+  <% if @wizard.mentor? %>
+    <p class="govuk-body">
+      If you want a different person to mentor an ECT, change the mentor from the <%= govuk_link_to "ECT’s details page", schools_ects_home_path, inverse: true %>.
+    </p>
+  <% end %>
 <% end %>
