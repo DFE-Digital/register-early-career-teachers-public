@@ -4,7 +4,7 @@ describe API::Token do
   end
 
   describe "validations" do
-    subject { FactoryBot.build(:api_token) }
+    subject { FactoryBot.build(:api_token, :for_lead_provider) }
 
     it { is_expected.to validate_presence_of(:lead_provider).with_message("Lead provider must be specified") }
     it { is_expected.to validate_presence_of(:token).with_message("Hashed token must be specified") }
@@ -15,13 +15,8 @@ describe API::Token do
     describe ".lead_provider_tokens" do
       subject { described_class.lead_provider_tokens }
 
-      let!(:lead_provider_token) { FactoryBot.create(:api_token) }
-
-      before do
-        # Contrived example as we only support lead provider tokens at
-        # the moment, but provides a safety net for future changes.
-        described_class.new(lead_provider: nil, description: "Non-lead provider token").save!(validate: false)
-      end
+      let!(:lead_provider_token) { FactoryBot.create(:api_token, :for_lead_provider) }
+      let!(:appropriate_body_token) { FactoryBot.create(:api_token, :for_appropriate_body_period) }
 
       it { is_expected.to contain_exactly(lead_provider_token) }
     end
@@ -38,7 +33,7 @@ describe API::Token do
 
   describe "encrypts" do
     it "encrypts the token" do
-      api_token = FactoryBot.create(:api_token)
+      api_token = FactoryBot.create(:api_token, :for_lead_provider)
       encrypted_token = api_token.token_before_type_cast
 
       expect(api_token.token).not_to eq(encrypted_token)

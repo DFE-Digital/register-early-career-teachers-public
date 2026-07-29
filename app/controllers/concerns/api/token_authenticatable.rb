@@ -1,3 +1,5 @@
+# API auth supporting LPs or ABPs
+#
 module API
   module TokenAuthenticatable
     extend ActiveSupport::Concern
@@ -15,7 +17,9 @@ module API
 
     def authenticate_token
       authenticate_with_http_token do |token|
-        @current_api_token = TokenManager.find_lead_provider_api_token(token:)
+        @current_api_token =
+          TokenManager.find_lead_provider_api_token(token:) ||
+          TokenManager.find_appropriate_body_api_token(token:)
       end
     end
 
@@ -25,6 +29,10 @@ module API
 
     def current_lead_provider
       @current_lead_provider ||= @current_api_token&.lead_provider
+    end
+
+    def current_appropriate_body
+      @current_appropriate_body ||= @current_api_token&.appropriate_body_period
     end
   end
 end

@@ -268,9 +268,25 @@
   :api_tokens:
   - id
   - lead_provider_id
+  - appropriate_body_period_id
+  - api_third_party_id
   - token
   - description
   - last_used_at
+  - created_at
+  - updated_at
+  :api_third_parties:
+  - id
+  - name
+  - email
+  - created_at
+  - updated_at
+  :api_token_deliveries:
+  - id
+  - api_token_id
+  - token
+  - expires_at
+  - used_at
   - created_at
   - updated_at
   :metadata_schools_lead_providers_contract_periods:

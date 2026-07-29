@@ -1,6 +1,8 @@
 namespace :appropriate_bodies, path: "appropriate-body", as: :ab do
   resource :landing, only: :show, path: "", controller: :landing
 
+  resources :tokens, only: %i[index new create destroy]
+
   resource :tasks, only: :show, path: "schools-data", controller: :tasks do
     scope module: :tasks do
       resources :claimable, only: :index, path: "claimable"
