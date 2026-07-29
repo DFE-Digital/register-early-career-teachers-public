@@ -61,7 +61,7 @@ jobs:
 
       - name: Install Redocly CLI
         run: npm install -g @redocly/cli@latest
-      
+
       - name: Run linting
         run: redocly lint public/api/docs/v3/swagger.yaml --format=github-actions
 
@@ -72,7 +72,7 @@ jobs:
           cat api-doc-checksums-original.txt
 
       - name: Run swaggerize
-        run: bundle exec rake rswag:specs:swaggerize
+        run: PATTERN='spec/requests/api/docs/**/*_spec.rb' bundle exec rake rswag:specs:swaggerize
 
       - name: Generate API doc checksums (after swaggerize)
         run: |
