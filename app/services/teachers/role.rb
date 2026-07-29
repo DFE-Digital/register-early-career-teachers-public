@@ -23,13 +23,13 @@ private
     mentor_periods = school ? teacher.mentor_at_school_periods.where(school:) : teacher.mentor_at_school_periods
     induction_periods = school ? ::InductionPeriod.none : teacher.induction_periods
 
-    if ect_periods.ongoing.any?
+    if ect_periods.unfinished.any?
       result << "ECT"
     elsif ect_periods.any?
       result << "ECT (Inactive)"
     end
 
-    if mentor_periods.ongoing.any?
+    if mentor_periods.unfinished.any?
       result << "Mentor"
     elsif mentor_periods.any?
       result << "Mentor (Inactive)"

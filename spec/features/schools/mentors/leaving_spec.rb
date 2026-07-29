@@ -40,7 +40,7 @@ private
 
     @mentor_at_school_period = FactoryBot.create(
       :mentor_at_school_period,
-      :ongoing,
+      :unfinished,
       teacher: @teacher,
       school: @school,
       started_on: Date.new(2024, 9, 1)
@@ -51,7 +51,7 @@ private
     @other_school = FactoryBot.create(:school)
     @other_mentor_at_school_period = FactoryBot.create(
       :mentor_at_school_period,
-      :ongoing,
+      :unfinished,
       teacher: @teacher,
       school: @other_school,
       started_on: Date.new(2024, 10, 1)

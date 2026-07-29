@@ -116,7 +116,7 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::LeadProviderStep do
       FactoryBot.create(:active_lead_provider, contract_period: upcoming_contract_period)
     end
     let(:ect_at_school_period) do
-      FactoryBot.create(:ect_at_school_period, :ongoing, school:, started_on:)
+      FactoryBot.create(:ect_at_school_period, :unfinished, school:, started_on:)
     end
 
     context "when there are no active lead providers in contract period containing the ect's start date" do

@@ -6,8 +6,8 @@ RSpec.describe "Schools endpoint", :with_metadata, openapi_spec: "v3/swagger.yam
   let(:resource) { FactoryBot.create(:school, :eligible, :with_induction_tutor) }
   let!(:school_partnership) { FactoryBot.create(:school_partnership, school: resource, lead_provider_delivery_partnership:) }
   let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
-  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school: resource) }
-  let!(:training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, ect_at_school_period:, school_partnership:) }
+  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school: resource) }
+  let!(:training_period) { FactoryBot.create(:training_period, :provider_led, :unfinished, ect_at_school_period:, school_partnership:) }
   let(:"filter[cohort]") { contract_period.year }
 
   before do |example|

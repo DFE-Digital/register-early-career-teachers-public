@@ -15,7 +15,7 @@ describe "Participants endpoint", :with_metadata, openapi_spec: "v3/swagger.yaml
   let(:ect_at_school_period) do
     FactoryBot.create(
       :ect_at_school_period,
-      :ongoing,
+      :unfinished,
       school: school_partnership.school,
       started_on: 6.months.ago
     )
@@ -24,7 +24,7 @@ describe "Participants endpoint", :with_metadata, openapi_spec: "v3/swagger.yaml
     FactoryBot.create(
       :training_period,
       :for_ect,
-      :ongoing,
+      :unfinished,
       :with_school_partnership,
       school_partnership:,
       ect_at_school_period:,

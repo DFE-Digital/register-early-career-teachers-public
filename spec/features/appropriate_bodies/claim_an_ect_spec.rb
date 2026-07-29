@@ -35,7 +35,7 @@ RSpec.describe "Claiming an ECT" do
     include_context "test TRS API returns a teacher with specific induction status", "InProgress"
 
     before do
-      FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period: other_body)
+      FactoryBot.create(:induction_period, :unfinished, teacher:, appropriate_body_period: other_body)
     end
 
     scenario "the teacher cannot be claimed" do

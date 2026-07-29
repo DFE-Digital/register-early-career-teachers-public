@@ -98,8 +98,8 @@ RSpec.describe "Registering a mentor", :js do
 
   def and_there_is_an_ect_with_no_mentor_registered_at_the_school
     contract_period = @contract_period
-    @ect = FactoryBot.create(:ect_at_school_period, :with_training_period, :ongoing, lead_provider: @lead_provider, contract_period:, school: @school)
-    @training_period = FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period: @ect, school_partnership: @school_partnership)
+    @ect = FactoryBot.create(:ect_at_school_period, :with_training_period, :unfinished, lead_provider: @lead_provider, contract_period:, school: @school)
+    @training_period = FactoryBot.create(:training_period, :unfinished, :provider_led, ect_at_school_period: @ect, school_partnership: @school_partnership)
     @ect_name = Teachers::Name.new(@ect.teacher).full_name
   end
 

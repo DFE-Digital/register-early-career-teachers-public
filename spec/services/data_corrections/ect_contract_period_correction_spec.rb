@@ -46,7 +46,7 @@ RSpec.describe DataCorrections::ECTContractPeriodCorrection do
   let(:ect_at_school_period) do
     FactoryBot.create(
       :ect_at_school_period,
-      :ongoing,
+      :unfinished,
       teacher:,
       school:
     )
@@ -89,7 +89,7 @@ RSpec.describe DataCorrections::ECTContractPeriodCorrection do
     FactoryBot.create(
       :training_period,
       :provider_led,
-      :ongoing,
+      :unfinished,
       ect_at_school_period:,
       schedule: current_schedule,
       school_partnership: current_school_partnership,
@@ -138,7 +138,7 @@ RSpec.describe DataCorrections::ECTContractPeriodCorrection do
           :training_period,
           :for_ect,
           :provider_led,
-          :ongoing,
+          :unfinished,
           :with_no_school_partnership,
           ect_at_school_period:,
           schedule: current_schedule,
@@ -201,7 +201,7 @@ RSpec.describe DataCorrections::ECTContractPeriodCorrection do
       let(:mentor_at_school_period) do
         FactoryBot.create(
           :mentor_at_school_period,
-          :ongoing,
+          :unfinished,
           started_on: 1.year.ago
         )
       end
@@ -210,7 +210,7 @@ RSpec.describe DataCorrections::ECTContractPeriodCorrection do
         FactoryBot.create(
           :training_period,
           :for_mentor,
-          :ongoing,
+          :unfinished,
           :provider_led,
           mentor_at_school_period:,
           started_on: mentor_at_school_period.started_on
@@ -478,7 +478,7 @@ RSpec.describe DataCorrections::ECTContractPeriodCorrection do
           :training_period,
           :for_ect,
           :provider_led,
-          :ongoing,
+          :unfinished,
           :with_no_school_partnership,
           ect_at_school_period:,
           schedule: current_schedule,
@@ -508,7 +508,7 @@ RSpec.describe DataCorrections::ECTContractPeriodCorrection do
           :training_period,
           :for_ect,
           :provider_led,
-          :ongoing,
+          :unfinished,
           :with_no_school_partnership,
           ect_at_school_period:,
           schedule: current_schedule,

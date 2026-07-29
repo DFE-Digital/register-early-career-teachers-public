@@ -7,10 +7,10 @@ describe MentorAtSchoolPeriods::Finish do
   let(:author) { FactoryBot.create(:school_user, school_urn: mentor_at_school_period.school.urn) }
   let(:reported_by_school_id) { nil }
 
-  let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, started_on:) }
-  let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:, started_on:) }
-  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on:, school: mentor_at_school_period.school) }
-  let!(:mentorship_period) { FactoryBot.create(:mentorship_period, :ongoing, mentor: mentor_at_school_period, mentee: ect_at_school_period, started_on:) }
+  let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:, started_on:) }
+  let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :unfinished, mentor_at_school_period:, started_on:) }
+  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, started_on:, school: mentor_at_school_period.school) }
+  let!(:mentorship_period) { FactoryBot.create(:mentorship_period, :unfinished, mentor: mentor_at_school_period, mentee: ect_at_school_period, started_on:) }
 
   describe "#finish_periods_at_all_schools!" do
     context "when finished_on is already set" do
@@ -112,8 +112,8 @@ describe MentorAtSchoolPeriods::Finish do
       let(:mentor_finished_on) { finished_on + 1.month }
       let(:ect_finished_on) { finished_on + 2.months }
 
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on:, school: mentor_at_school_period.school) }
-      let!(:mentorship_period) { FactoryBot.create(:mentorship_period, :ongoing, mentor: mentor_at_school_period, mentee: ect_at_school_period, started_on:) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, started_on:, school: mentor_at_school_period.school) }
+      let!(:mentorship_period) { FactoryBot.create(:mentorship_period, :unfinished, mentor: mentor_at_school_period, mentee: ect_at_school_period, started_on:) }
 
       before do
         ect_at_school_period.update_column(:finished_on, ect_finished_on)
@@ -132,8 +132,8 @@ describe MentorAtSchoolPeriods::Finish do
       let(:mentor_finished_on) { finished_on + 2.months }
       let(:ect_finished_on) { finished_on + 1.month }
 
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on:, school: mentor_at_school_period.school) }
-      let!(:mentorship_period) { FactoryBot.create(:mentorship_period, :ongoing, mentor: mentor_at_school_period, mentee: ect_at_school_period, started_on:) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, started_on:, school: mentor_at_school_period.school) }
+      let!(:mentorship_period) { FactoryBot.create(:mentorship_period, :unfinished, mentor: mentor_at_school_period, mentee: ect_at_school_period, started_on:) }
 
       before do
         ect_at_school_period.update_column(:finished_on, ect_finished_on)
@@ -223,11 +223,11 @@ describe MentorAtSchoolPeriods::Finish do
     context "when there are ongoing mentor at school periods at other schools" do
       let(:other_school) { FactoryBot.create(:school) }
       let(:other_mentor_at_school_period) do
-        FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, school: other_school, started_on:)
+        FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:, school: other_school, started_on:)
       end
 
-      let(:other_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on:, school: other_school) }
-      let!(:other_mentorship_period) { FactoryBot.create(:mentorship_period, :ongoing, mentor: other_mentor_at_school_period, mentee: other_ect_at_school_period, started_on:) }
+      let(:other_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, started_on:, school: other_school) }
+      let!(:other_mentorship_period) { FactoryBot.create(:mentorship_period, :unfinished, mentor: other_mentor_at_school_period, mentee: other_ect_at_school_period, started_on:) }
 
       it "finishes the periods at other schools" do
         subject.finish_periods_at_all_schools!
@@ -290,11 +290,11 @@ describe MentorAtSchoolPeriods::Finish do
     context "when there are ongoing mentor at school periods at other schools" do
       let(:other_school) { FactoryBot.create(:school) }
       let(:other_mentor_at_school_period) do
-        FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, school: other_school, started_on:)
+        FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:, school: other_school, started_on:)
       end
 
-      let(:other_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on:, school: other_school) }
-      let!(:other_mentorship_period) { FactoryBot.create(:mentorship_period, :ongoing, mentor: other_mentor_at_school_period, mentee: other_ect_at_school_period, started_on:) }
+      let(:other_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, started_on:, school: other_school) }
+      let!(:other_mentorship_period) { FactoryBot.create(:mentorship_period, :unfinished, mentor: other_mentor_at_school_period, mentee: other_ect_at_school_period, started_on:) }
 
       let(:reported_by_school_id) { mentor_at_school_period.school_id }
 
@@ -325,7 +325,7 @@ describe MentorAtSchoolPeriods::Finish do
 
       context "when the mentor is training at another school" do
         let(:training_period) { nil }
-        let!(:other_training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period: other_mentor_at_school_period, started_on:) }
+        let!(:other_training_period) { FactoryBot.create(:training_period, :for_mentor, :unfinished, mentor_at_school_period: other_mentor_at_school_period, started_on:) }
 
         it "does not finish the training period at the other school" do
           subject.finish_periods_at_reported_school!

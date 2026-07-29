@@ -65,7 +65,7 @@ RSpec.describe "Appropriate body claiming an ECT: finding the ECT" do
 
         context "with another AB" do
           let!(:induction_period) do
-            FactoryBot.create(:induction_period, :ongoing, teacher:, started_on: Date.parse("2 October 2022"))
+            FactoryBot.create(:induction_period, :unfinished, teacher:, started_on: Date.parse("2 October 2022"))
           end
 
           before do
@@ -82,7 +82,7 @@ RSpec.describe "Appropriate body claiming an ECT: finding the ECT" do
 
         context "with the current AB" do
           let!(:induction_period) do
-            FactoryBot.create(:induction_period, :ongoing, appropriate_body_period:, teacher:, started_on: Date.parse("2 October 2022"))
+            FactoryBot.create(:induction_period, :unfinished, appropriate_body_period:, teacher:, started_on: Date.parse("2 October 2022"))
           end
 
           before do

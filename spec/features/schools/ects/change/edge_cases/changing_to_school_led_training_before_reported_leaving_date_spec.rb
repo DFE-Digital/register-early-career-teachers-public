@@ -130,7 +130,7 @@ private
     FactoryBot.create(
       :training_period,
       :for_ect,
-      :ongoing,
+      :unfinished,
       :provider_led,
       :with_active_lead_provider,
       ect_at_school_period: @ect_at_school_period,

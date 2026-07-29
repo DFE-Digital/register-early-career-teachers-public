@@ -134,9 +134,9 @@ describe ECTAtSchoolPeriods::Finish do
         end
 
         it "closes the mentorship period" do
-          expect(mentorship_period).to be_ongoing
+          expect(mentorship_period).to be_unfinished
           subject.finish!
-          expect(mentorship_period.reload).not_to be_ongoing
+          expect(mentorship_period.reload).not_to be_unfinished
         end
 
         it "uses MentorshipPeriods::Finish to close it" do
@@ -194,9 +194,9 @@ describe ECTAtSchoolPeriods::Finish do
         end
 
         it "closes the training period" do
-          expect(training_period).to be_ongoing
+          expect(training_period).to be_unfinished
           subject.finish!
-          expect(training_period.reload).not_to be_ongoing
+          expect(training_period.reload).not_to be_unfinished
         end
 
         it "uses TrainingPeriods::Finish to close it" do

@@ -59,7 +59,7 @@ private
     @teacher_name = Teachers::Name.new(@teacher).full_name
     @ect_at_school_period = FactoryBot.create(
       :ect_at_school_period,
-      :ongoing,
+      :unfinished,
       teacher: @teacher,
       school: @school,
       started_on: Date.current.prev_year
@@ -106,7 +106,7 @@ private
     @target_partnership_name = "#{lead_provider.name} & #{delivery_partner.name}"
     @training_period = FactoryBot.create(
       :training_period,
-      :ongoing,
+      :unfinished,
       ect_at_school_period: @ect_at_school_period,
       school_partnership: @current_school_partnership,
       schedule: @current_schedule,

@@ -202,7 +202,7 @@ RSpec.describe Schools::RegisterMentorWizard::RegistrationStore::Status do
 
   describe "#currently_mentor_at_another_school?" do
     context "when there is an ongoing periods at another school" do
-      let(:previous_school_periods_relation) { MentorAtSchoolPeriod.where(id: FactoryBot.create(:mentor_at_school_period, :ongoing).id) }
+      let(:previous_school_periods_relation) { MentorAtSchoolPeriod.where(id: FactoryBot.create(:mentor_at_school_period, :unfinished).id) }
 
       it "returns true" do
         expect(status.currently_mentor_at_another_school?).to be(true)
@@ -234,7 +234,7 @@ RSpec.describe Schools::RegisterMentorWizard::RegistrationStore::Status do
 
   describe "#mentorship_status" do
     context "when there is an ongoing mentor period" do
-      let(:mentor_periods_relation) { MentorAtSchoolPeriod.where(id: FactoryBot.create(:mentor_at_school_period, :ongoing).id) }
+      let(:mentor_periods_relation) { MentorAtSchoolPeriod.where(id: FactoryBot.create(:mentor_at_school_period, :unfinished).id) }
 
       it "returns :currently_a_mentor" do
         expect(status.mentorship_status).to eq(:currently_a_mentor)

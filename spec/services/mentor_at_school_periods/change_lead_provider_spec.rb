@@ -3,7 +3,7 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
 
   include_context "safe_schedules"
 
-  let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, started_on:) }
+  let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:, started_on:) }
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:school) { mentor_at_school_period.school }
 
@@ -20,7 +20,7 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
   let(:old_lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: old_active_lead_provider, contract_period:) }
   let(:old_school_partnership) { FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership: old_lead_provider_delivery_partnership) }
 
-  let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:, started_on:, school_partnership: old_school_partnership) }
+  let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :unfinished, mentor_at_school_period:, started_on:, school_partnership: old_school_partnership) }
 
   let(:new_lead_provider) { lead_provider }
 
@@ -43,7 +43,7 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
         expect(new_active_lead_provider.lead_provider).to eq(lead_provider)
         expect(new_active_lead_provider.contract_period).to eq(contract_period)
 
-        new_training_period = mentor_at_school_period.training_periods.ongoing.first
+        new_training_period = mentor_at_school_period.training_periods.unfinished.first
         expect(new_training_period.school_partnership).to be_nil
         expect(new_training_period.training_programme).to eq("provider_led")
 
@@ -58,7 +58,7 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
       it "uses the existing school partnership" do
         expect { subject }.not_to change(ActiveLeadProvider, :count)
 
-        new_training_period = mentor_at_school_period.training_periods.ongoing.first
+        new_training_period = mentor_at_school_period.training_periods.unfinished.first
         expect(new_training_period.school_partnership).to eq(school_partnership)
         expect(new_training_period.training_programme).to eq("provider_led")
       end
@@ -67,7 +67,7 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
         it "opens a new training period with the previous schedule" do
           expect { subject }.to change(TrainingPeriod, :count).by(1)
 
-          new_training_period = mentor_at_school_period.training_periods.ongoing.first
+          new_training_period = mentor_at_school_period.training_periods.unfinished.first
           expect(new_training_period.schedule).to eq(training_period.schedule)
         end
 
@@ -103,7 +103,7 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
         it "assigns the correct schedule for the new training period" do
           subject
 
-          new_training_period = mentor_at_school_period.training_periods.ongoing.first
+          new_training_period = mentor_at_school_period.training_periods.unfinished.first
           expect(new_training_period.schedule.identifier).to eq("ecf-standard-september")
           expect(new_training_period.schedule.contract_period_year).to eq(Time.zone.now.year)
         end
@@ -115,7 +115,7 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
         it "opens a new training period with the previous schedule" do
           expect { subject }.to change(TrainingPeriod, :count).by(1)
 
-          new_training_period = mentor_at_school_period.training_periods.ongoing.first
+          new_training_period = mentor_at_school_period.training_periods.unfinished.first
           expect(new_training_period.schedule).to eq(training_period.schedule)
         end
       end
@@ -131,7 +131,7 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
         it "does not reassign the contract period and leaves it in the closed contract period" do
           subject
 
-          new_training_period = mentor_at_school_period.training_periods.ongoing.first
+          new_training_period = mentor_at_school_period.training_periods.unfinished.first
           expect(new_training_period.schedule.identifier).not_to include("extended")
           expect(new_training_period.schedule.contract_period_year).to eq(2021)
         end
@@ -147,7 +147,7 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
         it "opens a new training period with the previous schedule" do
           expect { subject }.to change(TrainingPeriod, :count).by(1)
 
-          new_training_period = mentor_at_school_period.training_periods.ongoing.first
+          new_training_period = mentor_at_school_period.training_periods.unfinished.first
           expect(new_training_period.schedule).to eq(training_period.schedule)
           expect(new_training_period.schedule.contract_period_year).to eq(training_period.schedule.contract_period_year)
         end
@@ -159,7 +159,7 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
         it "opens a new training period with the previous schedule" do
           expect { subject }.to change(TrainingPeriod, :count).by(1)
 
-          new_training_period = mentor_at_school_period.training_periods.ongoing.first
+          new_training_period = mentor_at_school_period.training_periods.unfinished.first
           expect(new_training_period.schedule).to eq(training_period.schedule)
           expect(new_training_period.schedule.contract_period_year).to eq(training_period.schedule.contract_period_year)
         end
@@ -176,7 +176,7 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
       let!(:training_period) do
         FactoryBot.create(:training_period,
                           :for_mentor,
-                          :ongoing,
+                          :unfinished,
                           :with_no_school_partnership,
                           expression_of_interest: old_active_lead_provider,
                           schedule:,

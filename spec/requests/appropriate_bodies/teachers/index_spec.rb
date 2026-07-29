@@ -16,7 +16,7 @@ RSpec.describe "Appropriate Body teacher index page", type: :request do
         let!(:additional_teachers) do
           FactoryBot.create_list(:teacher, 51, trs_first_name: "John", trs_last_name: "Smith").tap do |teachers|
             teachers.each do |teacher|
-              FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:)
+              FactoryBot.create(:induction_period, :unfinished, teacher:, appropriate_body_period:)
             end
           end
         end
@@ -33,19 +33,19 @@ RSpec.describe "Appropriate Body teacher index page", type: :request do
       context "with open and closed induction filtering" do
         let!(:alice_johnson) do
           FactoryBot.create(:teacher, trs_first_name: "Alice", trs_last_name: "Johnson", trn: "1000001", trs_induction_status: "InProgress").tap do |teacher|
-            FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:, started_on: 3.months.ago)
+            FactoryBot.create(:induction_period, :unfinished, teacher:, appropriate_body_period:, started_on: 3.months.ago)
           end
         end
 
         let!(:bob_williams) do
           FactoryBot.create(:teacher, trs_first_name: "Bob", trs_last_name: "Williams", trn: "1000002", trs_induction_status: "RequiredToComplete").tap do |teacher|
-            FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:, started_on: 2.months.ago)
+            FactoryBot.create(:induction_period, :unfinished, teacher:, appropriate_body_period:, started_on: 2.months.ago)
           end
         end
 
         let!(:charlie_brown) do
           FactoryBot.create(:teacher, trs_first_name: "Charlie", trs_last_name: "Brown", trn: "1000003", trs_induction_status: "InProgress").tap do |teacher|
-            FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:, started_on: 1.month.ago)
+            FactoryBot.create(:induction_period, :unfinished, teacher:, appropriate_body_period:, started_on: 1.month.ago)
           end
         end
 

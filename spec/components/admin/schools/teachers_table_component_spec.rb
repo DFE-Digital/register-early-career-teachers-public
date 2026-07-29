@@ -15,27 +15,27 @@ RSpec.describe Admin::Schools::TeachersTableComponent, type: :component do
 
   context "when there are teachers" do
     let!(:ect) do
-      ect_at_school_period = FactoryBot.create(:ect_at_school_period, :ongoing, school:, started_on: Date.new(2022, 7, 1))
+      ect_at_school_period = FactoryBot.create(:ect_at_school_period, :unfinished, school:, started_on: Date.new(2022, 7, 1))
       school_partnership = FactoryBot.create(:school_partnership, :for_year, school:, year: 2022)
-      FactoryBot.create(:training_period, :ongoing, ect_at_school_period:, school_partnership:)
+      FactoryBot.create(:training_period, :unfinished, ect_at_school_period:, school_partnership:)
       ect_at_school_period.teacher
     end
 
     let!(:mentor) do
-      mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :ongoing, school:, started_on: Date.new(2023, 7, 1))
+      mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :unfinished, school:, started_on: Date.new(2023, 7, 1))
       school_partnership = FactoryBot.create(:school_partnership, :for_year, school:, year: 2023)
-      FactoryBot.create(:training_period, :provider_led, :for_mentor, :with_schedule, :ongoing, mentor_at_school_period:, school_partnership:)
+      FactoryBot.create(:training_period, :provider_led, :for_mentor, :with_schedule, :unfinished, mentor_at_school_period:, school_partnership:)
       mentor_at_school_period.teacher
     end
 
     let!(:ect_and_mentor) do
-      ect_at_school_period = FactoryBot.create(:ect_at_school_period, :ongoing, school:, started_on: Date.new(2024, 7, 1))
+      ect_at_school_period = FactoryBot.create(:ect_at_school_period, :unfinished, school:, started_on: Date.new(2024, 7, 1))
       school_partnership = FactoryBot.create(:school_partnership, :for_year, school:, year: 2024)
-      FactoryBot.create(:training_period, :ongoing, ect_at_school_period:, school_partnership:)
+      FactoryBot.create(:training_period, :unfinished, ect_at_school_period:, school_partnership:)
 
-      mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher: ect_at_school_period.teacher, started_on: Date.new(2025, 7, 1))
+      mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :unfinished, school:, teacher: ect_at_school_period.teacher, started_on: Date.new(2025, 7, 1))
       school_partnership = FactoryBot.create(:school_partnership, :for_year, school:, year: 2025)
-      FactoryBot.create(:training_period, :provider_led, :for_mentor, :with_schedule, :ongoing, mentor_at_school_period:, school_partnership:)
+      FactoryBot.create(:training_period, :provider_led, :for_mentor, :with_schedule, :unfinished, mentor_at_school_period:, school_partnership:)
 
       ect_at_school_period.teacher
     end
@@ -52,7 +52,7 @@ RSpec.describe Admin::Schools::TeachersTableComponent, type: :component do
     end
 
     let!(:mentor_without_training_period) do
-      FactoryBot.create(:mentor_at_school_period, :ongoing, school:, started_on: Date.new(2025, 7, 1)).teacher
+      FactoryBot.create(:mentor_at_school_period, :unfinished, school:, started_on: Date.new(2025, 7, 1)).teacher
     end
 
     let!(:ect_at_different_school) do

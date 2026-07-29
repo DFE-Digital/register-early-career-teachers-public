@@ -84,8 +84,8 @@ RSpec.describe Statements::DeclarationSelection do
         **default_declaration_attrs.merge(payment_statement: statement),
         training_period: FactoryBot.create(:training_period,
                                            :for_ect,
-                                           :ongoing,
-                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing, started_on:),
+                                           :unfinished,
+                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished, started_on:),
                                            **default_training_period_attrs)
       )
     end
@@ -99,8 +99,8 @@ RSpec.describe Statements::DeclarationSelection do
         ),
         training_period: FactoryBot.create(:training_period,
                                            :for_ect,
-                                           :ongoing,
-                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing, started_on:),
+                                           :unfinished,
+                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished, started_on:),
                                            **default_training_period_attrs)
       )
     end
@@ -122,8 +122,8 @@ RSpec.describe Statements::DeclarationSelection do
         **default_declaration_attrs.merge(payment_statement: statement),
         training_period: FactoryBot.create(:training_period,
                                            :for_ect,
-                                           :ongoing,
-                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing, started_on:),
+                                           :unfinished,
+                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished, started_on:),
                                            **default_training_period_attrs)
       )
     end
@@ -137,8 +137,8 @@ RSpec.describe Statements::DeclarationSelection do
         ),
         training_period: FactoryBot.create(:training_period,
                                            :for_ect,
-                                           :ongoing,
-                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing, started_on:),
+                                           :unfinished,
+                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished, started_on:),
                                            **default_training_period_attrs)
       )
     end
@@ -152,8 +152,8 @@ RSpec.describe Statements::DeclarationSelection do
         ),
         training_period: FactoryBot.create(:training_period,
                                            :for_ect,
-                                           :ongoing,
-                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing, started_on:),
+                                           :unfinished,
+                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished, started_on:),
                                            **default_training_period_attrs)
       )
     end
@@ -172,8 +172,8 @@ RSpec.describe Statements::DeclarationSelection do
         **default_declaration_attrs.merge(payment_statement: statement),
         training_period: FactoryBot.create(:training_period,
                                            :for_ect,
-                                           :ongoing,
-                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing, started_on:),
+                                           :unfinished,
+                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished, started_on:),
                                            **default_training_period_attrs)
       )
     end
@@ -183,8 +183,8 @@ RSpec.describe Statements::DeclarationSelection do
         **default_declaration_attrs.merge(payment_statement: statement),
         training_period: FactoryBot.create(:training_period,
                                            :for_ect,
-                                           :ongoing,
-                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing, started_on:),
+                                           :unfinished,
+                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished, started_on:),
                                            **default_training_period_attrs)
       )
     end
@@ -194,8 +194,8 @@ RSpec.describe Statements::DeclarationSelection do
         **default_declaration_attrs.merge(payment_statement: statement),
         training_period: FactoryBot.create(:training_period,
                                            :for_ect,
-                                           :ongoing,
-                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing, started_on:),
+                                           :unfinished,
+                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished, started_on:),
                                            **default_training_period_attrs)
       )
     end
@@ -231,8 +231,8 @@ RSpec.describe Statements::DeclarationSelection do
         ),
         training_period: FactoryBot.create(:training_period,
                                            :for_ect,
-                                           :ongoing,
-                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing, started_on:),
+                                           :unfinished,
+                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished, started_on:),
                                            **default_training_period_attrs)
       )
     end
@@ -252,8 +252,8 @@ RSpec.describe Statements::DeclarationSelection do
         ),
         training_period: FactoryBot.create(:training_period,
                                            :for_ect,
-                                           :ongoing,
-                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing, started_on:),
+                                           :unfinished,
+                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished, started_on:),
                                            **default_training_period_attrs)
       )
     end
@@ -300,8 +300,8 @@ RSpec.describe Statements::DeclarationSelection do
         ),
         training_period: FactoryBot.create(:training_period,
                                            :for_ect,
-                                           :ongoing,
-                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing, started_on:),
+                                           :unfinished,
+                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished, started_on:),
                                            **default_training_period_attrs)
       )
     end
@@ -316,8 +316,8 @@ RSpec.describe Statements::DeclarationSelection do
         ),
         training_period: FactoryBot.create(:training_period,
                                            :for_ect,
-                                           :ongoing,
-                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing, started_on:),
+                                           :unfinished,
+                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished, started_on:),
                                            **default_training_period_attrs)
       )
     end
@@ -332,8 +332,8 @@ RSpec.describe Statements::DeclarationSelection do
         ),
         training_period: FactoryBot.create(:training_period,
                                            :for_ect,
-                                           :ongoing,
-                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing, started_on:),
+                                           :unfinished,
+                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished, started_on:),
                                            **default_training_period_attrs)
       )
     end
@@ -350,8 +350,8 @@ RSpec.describe Statements::DeclarationSelection do
         ),
         training_period: FactoryBot.create(:training_period,
                                            :for_ect,
-                                           :ongoing,
-                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing, started_on:),
+                                           :unfinished,
+                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished, started_on:),
                                            **default_training_period_attrs)
       )
     end
@@ -366,8 +366,8 @@ RSpec.describe Statements::DeclarationSelection do
         ),
         training_period: FactoryBot.create(:training_period,
                                            :for_ect,
-                                           :ongoing,
-                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing, started_on:),
+                                           :unfinished,
+                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished, started_on:),
                                            **default_training_period_attrs)
       )
     end
@@ -408,8 +408,8 @@ RSpec.describe Statements::DeclarationSelection do
         **default_declaration_attrs.merge(payment_statement: statement),
         training_period: FactoryBot.create(:training_period,
                                            :for_ect,
-                                           :ongoing,
-                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing, started_on:),
+                                           :unfinished,
+                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished, started_on:),
                                            **default_training_period_attrs)
       )
     end
@@ -445,8 +445,8 @@ RSpec.describe Statements::DeclarationSelection do
         ),
         training_period: FactoryBot.create(:training_period,
                                            :for_ect,
-                                           :ongoing,
-                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing, started_on:),
+                                           :unfinished,
+                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished, started_on:),
                                            **default_training_period_attrs)
       )
     end
@@ -460,8 +460,8 @@ RSpec.describe Statements::DeclarationSelection do
         ),
         training_period: FactoryBot.create(:training_period,
                                            :for_ect,
-                                           :ongoing,
-                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing, started_on:),
+                                           :unfinished,
+                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished, started_on:),
                                            **default_training_period_attrs)
       )
     end
@@ -475,8 +475,8 @@ RSpec.describe Statements::DeclarationSelection do
         ),
         training_period: FactoryBot.create(:training_period,
                                            :for_ect,
-                                           :ongoing,
-                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing, started_on:),
+                                           :unfinished,
+                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished, started_on:),
                                            **default_training_period_attrs)
       )
     end
@@ -520,8 +520,8 @@ RSpec.describe Statements::DeclarationSelection do
         **default_declaration_attrs.merge(payment_statement: qualifying_previous_statement),
         training_period: FactoryBot.create(:training_period,
                                            :for_ect,
-                                           :ongoing,
-                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing, started_on:),
+                                           :unfinished,
+                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished, started_on:),
                                            **default_training_period_attrs)
       )
     end
@@ -531,8 +531,8 @@ RSpec.describe Statements::DeclarationSelection do
         **default_declaration_attrs.merge(payment_statement: same_payment_date_statement),
         training_period: FactoryBot.create(:training_period,
                                            :for_ect,
-                                           :ongoing,
-                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing, started_on:),
+                                           :unfinished,
+                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished, started_on:),
                                            **default_training_period_attrs)
       )
     end
@@ -546,8 +546,8 @@ RSpec.describe Statements::DeclarationSelection do
         ),
         training_period: FactoryBot.create(:training_period,
                                            :for_ect,
-                                           :ongoing,
-                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing, started_on:),
+                                           :unfinished,
+                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished, started_on:),
                                            **default_training_period_attrs)
       )
     end
@@ -602,10 +602,10 @@ RSpec.describe Statements::DeclarationSelection do
       FactoryBot.create(
         :training_period,
         :for_ect,
-        :ongoing,
+        :unfinished,
         school_partnership: other_school_partnership,
         started_on:,
-        ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing, started_on:)
+        ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished, started_on:)
       )
     end
 
@@ -615,8 +615,8 @@ RSpec.describe Statements::DeclarationSelection do
         **default_declaration_attrs.merge(payment_statement: qualifying_previous_statement),
         training_period: FactoryBot.create(:training_period,
                                            :for_ect,
-                                           :ongoing,
-                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing, started_on:),
+                                           :unfinished,
+                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished, started_on:),
                                            **default_training_period_attrs)
       )
     end
@@ -637,8 +637,8 @@ RSpec.describe Statements::DeclarationSelection do
         ),
         training_period: FactoryBot.create(:training_period,
                                            :for_ect,
-                                           :ongoing,
-                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing, started_on:),
+                                           :unfinished,
+                                           ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished, started_on:),
                                            **default_training_period_attrs)
       )
     end

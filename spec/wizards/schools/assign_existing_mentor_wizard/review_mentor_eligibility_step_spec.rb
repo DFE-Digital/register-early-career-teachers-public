@@ -7,8 +7,8 @@ RSpec.describe Schools::AssignExistingMentorWizard::ReviewMentorEligibilityStep 
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
   let(:school) { FactoryBot.create(:school) }
   let(:started_on) { mid_year - 2.days }
-  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:, started_on:) }
-  let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, started_on:) }
+  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school:, started_on:) }
+  let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, school:, started_on:) }
   let(:user) { FactoryBot.create(:user) }
   let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
 
@@ -59,7 +59,7 @@ RSpec.describe Schools::AssignExistingMentorWizard::ReviewMentorEligibilityStep 
         school:,
         lead_provider_delivery_partnership: FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
       )
-      FactoryBot.create(:training_period, :ongoing, :provider_led,
+      FactoryBot.create(:training_period, :unfinished, :provider_led,
                         ect_at_school_period:,
                         started_on:,
                         school_partnership:)

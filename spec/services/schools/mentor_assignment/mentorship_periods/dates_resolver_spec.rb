@@ -100,7 +100,7 @@ RSpec.describe Schools::MentorAssignment::MentorshipPeriods::DatesResolver do
         let(:previous_mentor_at_school_period) do
           FactoryBot.create(
             :mentor_at_school_period,
-            :ongoing,
+            :unfinished,
             started_on: previous_mentorship_started_on,
             school: ect_at_school_period.school
           )

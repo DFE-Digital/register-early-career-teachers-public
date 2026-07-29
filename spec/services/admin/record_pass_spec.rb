@@ -81,7 +81,7 @@ RSpec.describe Admin::RecordPass do
 
     context "when ongoing induction period only has the legacy programme type" do
       let!(:induction_period) do
-        FactoryBot.create(:induction_period, :ongoing, :legacy_programme_type,
+        FactoryBot.create(:induction_period, :unfinished, :legacy_programme_type,
                           appropriate_body_period:,
                           teacher:)
       end

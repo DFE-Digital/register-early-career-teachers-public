@@ -12,7 +12,7 @@ RSpec.describe "appropriate_bodies/teachers/record_released_induction/new.html.e
   end
 
   before do
-    FactoryBot.create(:induction_period, :ongoing,
+    FactoryBot.create(:induction_period, :unfinished,
                       appropriate_body_period:,
                       teacher:)
 

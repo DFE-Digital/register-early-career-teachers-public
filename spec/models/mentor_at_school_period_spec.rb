@@ -1,14 +1,14 @@
 describe MentorAtSchoolPeriod do
   describe "declarative updates" do
     describe "school target" do
-      let(:instance) { FactoryBot.create(:mentor_at_school_period, :ongoing, school: target) }
+      let(:instance) { FactoryBot.create(:mentor_at_school_period, :unfinished, school: target) }
       let!(:target) { FactoryBot.create(:school) }
 
       it_behaves_like "a declarative metadata model", on_event: %i[create destroy update]
     end
 
     describe "teacher target" do
-      let(:instance) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: target) }
+      let(:instance) { FactoryBot.create(:mentor_at_school_period, :unfinished, teacher: target) }
       let!(:target) { FactoryBot.create(:teacher) }
 
       it_behaves_like "a declarative metadata model", on_event: %i[create destroy update]
@@ -38,9 +38,9 @@ describe MentorAtSchoolPeriod do
     let(:finishing) { FactoryBot.create(:ect_at_school_period, school:, finished_on: 1.week.from_now) }
     let(:current)   { FactoryBot.create(:ect_at_school_period, school:, finished_on: nil) }
     let(:upcoming)  { FactoryBot.create(:ect_at_school_period, school:, started_on: 1.week.from_now) }
-    let(:passed)    { FactoryBot.create(:ect_at_school_period, :ongoing, school:, teacher: passed_teacher) }
-    let(:failed)    { FactoryBot.create(:ect_at_school_period, :ongoing, school:, teacher: failed_teacher) }
-    let(:previously_mentored) { FactoryBot.create(:ect_at_school_period, :ongoing, school:, started_on: 1.year.ago) }
+    let(:passed)    { FactoryBot.create(:ect_at_school_period, :unfinished, school:, teacher: passed_teacher) }
+    let(:failed)    { FactoryBot.create(:ect_at_school_period, :unfinished, school:, teacher: failed_teacher) }
+    let(:previously_mentored) { FactoryBot.create(:ect_at_school_period, :unfinished, school:, started_on: 1.year.ago) }
 
     before do
       [finished, finishing, current, upcoming, passed, failed].each do |mentee|
@@ -62,12 +62,12 @@ describe MentorAtSchoolPeriod do
   end
 
   describe ".current_or_next_training_period" do
-    let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: 1.year.ago) }
+    let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, started_on: 1.year.ago) }
 
     it { is_expected.to have_one(:current_or_next_training_period).class_name("TrainingPeriod") }
 
     context "when there is a current period" do
-      let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :for_mentor, mentor_at_school_period:) }
+      let!(:training_period) { FactoryBot.create(:training_period, :unfinished, :for_mentor, mentor_at_school_period:) }
 
       it "returns the current training_period" do
         expect(mentor_at_school_period.current_or_next_training_period).to eql(training_period)
@@ -96,7 +96,7 @@ describe MentorAtSchoolPeriod do
     let(:mentor_at_school_period) do
       FactoryBot.create(
         :mentor_at_school_period,
-        :ongoing,
+        :unfinished,
         started_on: 2.years.ago
       )
     end
@@ -210,7 +210,7 @@ describe MentorAtSchoolPeriod do
     let!(:ongoing_mentor_at_school_period) do
       FactoryBot.create(
         :mentor_at_school_period,
-        :ongoing,
+        :unfinished,
         teacher:,
         school:,
         started_on: 1.year.ago
@@ -222,7 +222,7 @@ describe MentorAtSchoolPeriod do
       let(:concurrent_ongoing_period) do
         FactoryBot.build(
           :mentor_at_school_period,
-          :ongoing,
+          :unfinished,
           teacher:,
           school: other_school,
           started_on: 1.week.from_now
@@ -236,7 +236,7 @@ describe MentorAtSchoolPeriod do
       let(:concurrent_ongoing_period) do
         FactoryBot.build(
           :mentor_at_school_period,
-          :ongoing,
+          :unfinished,
           teacher:,
           school:,
           started_on: 1.week.from_now
@@ -337,7 +337,7 @@ describe MentorAtSchoolPeriod do
 
     describe "#latest_mentor_at_school_period?", :with_touches do
       let(:teacher) { FactoryBot.create(:teacher) }
-      let!(:latest_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, started_on: 6.months.ago) }
+      let!(:latest_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:, started_on: 6.months.ago) }
       let!(:previous_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, started_on: 1.year.ago, finished_on: 6.months.ago) }
       let(:email_change) { "test1@anyexampleemail.com" }
 
@@ -375,7 +375,7 @@ describe MentorAtSchoolPeriod do
   end
 
   describe "#reported_leaving_by?" do
-    subject(:period) { FactoryBot.create(:mentor_at_school_period, :ongoing, reported_leaving_by_school_id: reporter_id) }
+    subject(:period) { FactoryBot.create(:mentor_at_school_period, :unfinished, reported_leaving_by_school_id: reporter_id) }
 
     let(:reporting_school) { FactoryBot.create(:school) }
     let(:other_school) { FactoryBot.create(:school) }

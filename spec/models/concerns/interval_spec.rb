@@ -79,9 +79,9 @@ describe Interval do
       end
     end
 
-    describe ".ongoing" do
+    describe ".unfinished" do
       it "returns records where the finished_on date is null" do
-        expect(DummyMentor.ongoing.to_sql).to end_with(%("finished_on" IS NULL))
+        expect(DummyMentor.unfinished.to_sql).to end_with(%("finished_on" IS NULL))
       end
     end
 
@@ -136,10 +136,10 @@ describe Interval do
       end
     end
 
-    describe ".ongoing_today" do
+    describe ".contains_today" do
       it "queries for dates within the range field" do
         today = Time.zone.today.to_s
-        expect(DummyMentor.ongoing_today.to_sql).to end_with(%{"range" @> date('#{today}'))})
+        expect(DummyMentor.contains_today.to_sql).to end_with(%{"range" @> date('#{today}'))})
       end
     end
 
@@ -151,13 +151,13 @@ describe Interval do
     end
 
     describe ".current_or_future" do
-      it "chains together .ongoing_today and .starting_tomorrow_or_after" do
-        allow(DummyMentor).to receive(:ongoing_today).and_call_original
+      it "chains together .contains_today and .starting_tomorrow_or_after" do
+        allow(DummyMentor).to receive(:contains_today).and_call_original
         allow(DummyMentor).to receive(:starting_tomorrow_or_after).and_call_original
 
         DummyMentor.current_or_future
 
-        expect(DummyMentor).to have_received(:ongoing_today).once
+        expect(DummyMentor).to have_received(:contains_today).once
         expect(DummyMentor).to have_received(:starting_tomorrow_or_after).once
       end
     end
@@ -190,9 +190,9 @@ describe Interval do
       end
     end
 
-    describe ".ongoing_on" do
+    describe ".contains_date" do
       it "returns records where the `started_on` and `finished_on` cover the date" do
-        ongoing_mentor = DummyMentor.ongoing_on(Date.new(2023, 2, 15))
+        ongoing_mentor = DummyMentor.contains_date(Date.new(2023, 2, 15))
 
         expect(ongoing_mentor).to match_array([period_1, teacher_2_period])
       end
@@ -215,17 +215,17 @@ describe Interval do
     end
   end
 
-  describe "#ongoing?" do
+  describe "#unfinished?" do
     context "without finished_on" do
       subject(:interval) { DummyInterval.new(started_on: 1.week.ago, finished_on: nil) }
 
-      it { is_expected.to be_ongoing }
+      it { is_expected.to be_unfinished }
     end
 
     context "with finished_on" do
       subject(:interval) { DummyInterval.new(started_on: 1.week.ago, finished_on: 1.day.ago) }
 
-      it { is_expected.not_to be_ongoing }
+      it { is_expected.not_to be_unfinished }
     end
   end
 
@@ -382,30 +382,30 @@ describe Interval do
     end
   end
 
-  describe "#ongoing_today?" do
+  describe "#contains_today?" do
     context "without finished_on" do
       subject(:interval) { DummyInterval.new(started_on: 1.week.ago, finished_on: nil) }
 
-      it { is_expected.to be_ongoing_today }
+      it { is_expected.to be_contains_today }
     end
 
     context "with finished_on" do
       context "in the future" do
         subject(:interval) { DummyInterval.new(started_on: 1.week.ago, finished_on: 1.day.from_now) }
 
-        it { is_expected.to be_ongoing_today }
+        it { is_expected.to be_contains_today }
       end
 
       context "in the past" do
         subject(:interval) { DummyInterval.new(started_on: 1.week.ago, finished_on: 1.day.ago) }
 
-        it { is_expected.not_to be_ongoing_today }
+        it { is_expected.not_to be_contains_today }
       end
 
       context "in the present" do
         subject(:interval) { DummyInterval.new(started_on: 1.week.ago, finished_on: Time.zone.today) }
 
-        it { is_expected.not_to be_ongoing_today }
+        it { is_expected.not_to be_contains_today }
       end
     end
   end

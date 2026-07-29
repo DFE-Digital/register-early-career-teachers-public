@@ -11,8 +11,8 @@ RSpec.describe "Schools API", :with_metadata, type: :request do
     lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
     school = FactoryBot.create(:school, :ineligible, :with_induction_tutor)
     school_partnership = FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school:)
-    ect_at_school_period = FactoryBot.create(:ect_at_school_period, :ongoing, school:)
-    FactoryBot.create(:training_period, :provider_led, :ongoing, ect_at_school_period:, school_partnership:)
+    ect_at_school_period = FactoryBot.create(:ect_at_school_period, :unfinished, school:)
+    FactoryBot.create(:training_period, :provider_led, :unfinished, ect_at_school_period:, school_partnership:)
     school
   end
 

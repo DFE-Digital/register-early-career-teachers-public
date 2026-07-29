@@ -17,7 +17,7 @@ module ECTAtSchoolPeriods
     end
 
     let(:ect_at_school_period) do
-      FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 2.weeks.ago)
+      FactoryBot.create(:ect_at_school_period, :unfinished, started_on: 2.weeks.ago)
     end
 
     let(:lead_provider) { FactoryBot.create(:lead_provider) }
@@ -55,7 +55,7 @@ module ECTAtSchoolPeriods
       let!(:training_period) do
         FactoryBot.create(
           :training_period,
-          :ongoing,
+          :unfinished,
           :provider_led,
           :with_school_partnership,
           ect_at_school_period:,
@@ -118,7 +118,7 @@ module ECTAtSchoolPeriods
         let(:ect_at_school_period) do
           FactoryBot.create(
             :ect_at_school_period,
-            :ongoing,
+            :unfinished,
             started_on: Date.current
           )
         end
@@ -138,7 +138,7 @@ module ECTAtSchoolPeriods
         let(:ect_at_school_period) do
           FactoryBot.create(
             :ect_at_school_period,
-            :ongoing,
+            :unfinished,
             started_on: 1.month.from_now
           )
         end
@@ -184,7 +184,7 @@ module ECTAtSchoolPeriods
         let(:ect_at_school_period) do
           FactoryBot.create(
             :ect_at_school_period,
-            :ongoing,
+            :unfinished,
             started_on: Date.new(2021, 9, 1)
           )
         end
@@ -297,7 +297,7 @@ module ECTAtSchoolPeriods
       let!(:training_period) do
         FactoryBot.create(
           :training_period,
-          :ongoing,
+          :unfinished,
           :provider_led,
           :with_only_expression_of_interest,
           ect_at_school_period:,
@@ -350,7 +350,7 @@ module ECTAtSchoolPeriods
         let(:ect_at_school_period) do
           FactoryBot.create(
             :ect_at_school_period,
-            :ongoing,
+            :unfinished,
             started_on: 1.month.from_now
           )
         end
@@ -404,7 +404,7 @@ module ECTAtSchoolPeriods
         let(:ect_at_school_period) do
           FactoryBot.create(
             :ect_at_school_period,
-            :ongoing,
+            :unfinished,
             started_on: Date.new(2021, 9, 1)
           )
         end
@@ -527,7 +527,7 @@ module ECTAtSchoolPeriods
         let!(:training_period) do
           FactoryBot.create(
             :training_period,
-            :ongoing,
+            :unfinished,
             :school_led,
             ect_at_school_period:,
             started_on: ect_at_school_period.started_on

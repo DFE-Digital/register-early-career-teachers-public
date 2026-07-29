@@ -36,7 +36,7 @@ RSpec.shared_context "it transfers an induction" do
                       teacher: partial_completed_induction.teacher,
                       heading: "partial_completed_induction: #{current_appropriate_body.name}")
 
-    partial_in_progress_induction = FactoryBot.create(:induction_period, :ongoing,
+    partial_in_progress_induction = FactoryBot.create(:induction_period, :unfinished,
                                                       appropriate_body_period: current_appropriate_body,
                                                       started_on: 10.months.before(cut_off_date))
 
@@ -60,7 +60,7 @@ RSpec.shared_context "it transfers an induction" do
                       teacher: full_completed_induction.teacher,
                       heading: "full_completed_induction: #{current_appropriate_body.name}")
 
-    full_in_progress_induction = FactoryBot.create(:induction_period, :ongoing,
+    full_in_progress_induction = FactoryBot.create(:induction_period, :unfinished,
                                                    appropriate_body_period: current_appropriate_body,
                                                    started_on: 1.week.after(cut_off_date))
 

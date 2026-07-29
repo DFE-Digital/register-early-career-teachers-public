@@ -61,7 +61,7 @@ RSpec.describe AppropriateBodies::Importers::TeacherInductionImporter do
       expect { induction_importer.import! }.not_to raise_error
 
       expect(Teacher.count).to eq(5) # 2 already + 3 imported
-      expect(InductionPeriod.ongoing.count).to be_zero
+      expect(InductionPeriod.unfinished.count).to be_zero
       expect(Teacher.induction_status_passed.count).to eq(1)
       expect(Teacher.induction_status_failed.count).to eq(2) # 1 already + 1 imported
       expect(Teacher.induction_status_failed_in_wales.count).to eq(1)
@@ -113,7 +113,7 @@ RSpec.describe AppropriateBodies::Importers::TeacherInductionImporter do
       expect(Teacher.induction_status_passed.count).to eq(589_222)
       expect(Teacher.induction_status_exempt.count).to eq(302)
 
-      expect(InductionPeriod.ongoing.count).to be_zero
+      expect(InductionPeriod.unfinished.count).to be_zero
       expect(InductionPeriod.count).to eq(634_213)
       expect(InductionPeriod.finished.count).to eq(InductionPeriod.count)
       expect(InductionPeriod.released.count).to eq(44_681)

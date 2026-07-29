@@ -21,7 +21,7 @@ module AppropriateBodies
     end
 
     def current
-      @scope.merge(InductionPeriod.ongoing)
+      @scope.merge(InductionPeriod.unfinished)
     end
 
     def former

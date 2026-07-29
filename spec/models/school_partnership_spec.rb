@@ -45,21 +45,21 @@ describe SchoolPartnership do
 
       let(:instance) { FactoryBot.create(:school_partnership) }
       let(:ongoing_training_period) do
-        FactoryBot.create(:training_period, :ongoing,
+        FactoryBot.create(:training_period, :unfinished,
                           school_partnership: instance,
-                          ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing))
+                          ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished))
       end
 
       before do
         # Different lead provider
-        FactoryBot.create(:training_period, :ongoing, :with_school_partnership, ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing))
+        FactoryBot.create(:training_period, :unfinished, :with_school_partnership, ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished))
         # Not on-going today
         ect_at_school_period = FactoryBot.create(:ect_at_school_period, school: instance.school, started_on: 1.year.ago, finished_on: 1.month.ago)
         FactoryBot.create(:training_period, school_partnership: instance, ect_at_school_period:, started_on: 5.months.ago, finished_on: 2.months.ago)
-        FactoryBot.create(:training_period, :ongoing,
+        FactoryBot.create(:training_period, :unfinished,
                           school_partnership: instance,
                           started_on: 1.week.from_now,
-                          ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing))
+                          ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished))
       end
 
       it { is_expected.to contain_exactly(ongoing_training_period) }

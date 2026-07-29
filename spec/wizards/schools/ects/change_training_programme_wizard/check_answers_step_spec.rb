@@ -24,7 +24,7 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::CheckAnswersStep do
   let(:ect_at_school_period) do
     FactoryBot.create(
       :ect_at_school_period,
-      :ongoing,
+      :unfinished,
       school:,
       started_on: 1.week.ago
     )

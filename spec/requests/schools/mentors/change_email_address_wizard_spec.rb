@@ -4,7 +4,7 @@ describe "Schools::Mentors::ChangeEmailAddressWizardController" do
   let(:mentor_at_school_period) do
     FactoryBot.create(
       :mentor_at_school_period,
-      :ongoing,
+      :unfinished,
       teacher:,
       school:,
       email: "mentor@example.com"

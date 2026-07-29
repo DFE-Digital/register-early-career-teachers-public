@@ -9,11 +9,11 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
   end
 
   let(:ect) do
-    FactoryBot.create(:ect_at_school_period, :ongoing, teacher:)
+    FactoryBot.create(:ect_at_school_period, :unfinished, teacher:)
   end
 
   let!(:training_period) do
-    FactoryBot.create(:training_period, :ongoing, ect_at_school_period: ect, school_partnership:)
+    FactoryBot.create(:training_period, :unfinished, ect_at_school_period: ect, school_partnership:)
   end
 
   let(:store) do
@@ -84,11 +84,11 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
   describe "summary" do
     context "with school led ect" do
       let(:ect) do
-        FactoryBot.create(:ect_at_school_period, :ongoing, teacher:)
+        FactoryBot.create(:ect_at_school_period, :unfinished, teacher:)
       end
 
       let!(:training_period) do
-        FactoryBot.create(:training_period, :ongoing, ect_at_school_period: ect)
+        FactoryBot.create(:training_period, :unfinished, ect_at_school_period: ect)
       end
 
       it "hides lead provider" do

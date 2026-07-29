@@ -267,7 +267,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
           describe "`most_recent_induction_period_end_date`" do
             context "when the latest induction_period is ongoing" do
               let!(:first_induction_period) { FactoryBot.create(:induction_period, teacher:) }
-              let!(:latest_induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:, started_on: 1.day.ago) }
+              let!(:latest_induction_period) { FactoryBot.create(:induction_period, :unfinished, teacher:, started_on: 1.day.ago) }
 
               it "serializes `most_recent_induction_period_end_date` as nil" do
                 expect(ect_enrolment["most_recent_induction_period_end_date"]).to be_nil
@@ -292,7 +292,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
 
           describe "`overall_induction_start_date`" do
             context "when a started induction period is present" do
-              let!(:started_induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:) }
+              let!(:started_induction_period) { FactoryBot.create(:induction_period, :unfinished, teacher:) }
 
               it "serializes `overall_induction_start_date` from started induction period" do
                 expect(ect_enrolment["overall_induction_start_date"]).to eq(started_induction_period.started_on.to_fs(:api))
@@ -500,7 +500,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
 
           context "when there is an induction period" do
             context "when the latest induction period is ongoing" do
-              let!(:first_induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:) }
+              let!(:first_induction_period) { FactoryBot.create(:induction_period, :unfinished, teacher:) }
 
               it "serializes `most_recent_induction_period_end_date` as nil" do
                 expect(mentor_enrolment["most_recent_induction_period_end_date"]).to be_nil

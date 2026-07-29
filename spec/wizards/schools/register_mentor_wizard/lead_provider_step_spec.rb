@@ -1,7 +1,7 @@
 RSpec.describe Schools::RegisterMentorWizard::LeadProviderStep, type: :model do
   subject { wizard.current_step }
 
-  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing) }
+  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished) }
   let(:store) { FactoryBot.build(:session_repository) }
   let(:author) { FactoryBot.create(:school_user, school_urn: ect_at_school_period.school.urn) }
   let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :lead_provider, store:, author:, ect_id: ect_at_school_period.id) }

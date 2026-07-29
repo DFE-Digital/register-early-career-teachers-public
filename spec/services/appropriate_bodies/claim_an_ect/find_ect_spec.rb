@@ -49,7 +49,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::FindECT do
           let(:other_appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
 
           before do
-            FactoryBot.create(:induction_period, :ongoing,
+            FactoryBot.create(:induction_period, :unfinished,
                               teacher:,
                               appropriate_body_period: other_appropriate_body_period,
                               started_on: Date.parse("2 October 2022"))
@@ -62,7 +62,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::FindECT do
 
         context "with the same AB" do
           before do
-            FactoryBot.create(:induction_period, :ongoing,
+            FactoryBot.create(:induction_period, :unfinished,
                               teacher:,
                               appropriate_body_period:,
                               started_on: Date.parse("2 October 2022"))

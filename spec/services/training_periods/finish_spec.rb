@@ -7,8 +7,8 @@ describe "TrainingPeriods::Finish" do
     subject { TrainingPeriods::Finish.ect_training(training_period:, finished_on:, author:, ect_at_school_period:) }
 
     let(:author) { FactoryBot.build(:school_user, school_urn: ect_at_school_period.school.urn) }
-    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing) }
-    let(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period:) }
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished) }
+    let(:training_period) { FactoryBot.create(:training_period, :for_ect, :unfinished, ect_at_school_period:) }
 
     it "assigns the training_period" do
       expect(subject.training_period).to eql(training_period)
@@ -35,8 +35,8 @@ describe "TrainingPeriods::Finish" do
     subject { TrainingPeriods::Finish.mentor_training(training_period:, finished_on:, author:, mentor_at_school_period:) }
 
     let(:author) { FactoryBot.build(:school_user, school_urn: mentor_at_school_period.school.urn) }
-    let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing) }
-    let(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:) }
+    let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished) }
+    let(:training_period) { FactoryBot.create(:training_period, :for_mentor, :unfinished, mentor_at_school_period:) }
 
     it "assigns the training_period" do
       expect(subject.training_period).to eql(training_period)

@@ -30,8 +30,8 @@ RSpec.describe School do
 
     context "target ect_teachers" do
       let(:school_partnership) { FactoryBot.create(:school_partnership, school: instance) }
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school: instance) }
-      let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period:) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school: instance) }
+      let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :unfinished, ect_at_school_period:) }
 
       let(:target) { instance.ect_teachers }
 
@@ -40,8 +40,8 @@ RSpec.describe School do
 
     context "target mentor_teachers" do
       let!(:school_partnership) { FactoryBot.create(:school_partnership, school: instance) }
-      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school: instance) }
-      let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:) }
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, school: instance) }
+      let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :unfinished, mentor_at_school_period:) }
 
       let(:target) { instance.mentor_teachers }
 
@@ -50,8 +50,8 @@ RSpec.describe School do
 
     context "target training periods" do
       let!(:school_partnership) { FactoryBot.create(:school_partnership, school: instance) }
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school: instance) }
-      let!(:training_period) { FactoryBot.create(:training_period, :ongoing, ect_at_school_period:) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school: instance) }
+      let!(:training_period) { FactoryBot.create(:training_period, :unfinished, ect_at_school_period:) }
 
       let(:target) { instance.training_periods }
 
@@ -442,17 +442,17 @@ RSpec.describe School do
         end
 
         context "and has an ongoing ect training period" do
-          let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
+          let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school:) }
 
-          before { FactoryBot.create(:training_period, :ongoing, ect_at_school_period:) }
+          before { FactoryBot.create(:training_period, :unfinished, ect_at_school_period:) }
 
           it { is_expected.to be_truthy }
         end
 
         context "and has an ongoing mentor training period" do
-          let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:) }
+          let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, school:) }
 
-          before { FactoryBot.create(:training_period, :ongoing, :for_mentor, mentor_at_school_period:) }
+          before { FactoryBot.create(:training_period, :unfinished, :for_mentor, mentor_at_school_period:) }
 
           it { is_expected.to be_truthy }
         end
@@ -467,9 +467,9 @@ RSpec.describe School do
 
         context "and training is at another school" do
           let(:other_school) { FactoryBot.create(:school, :state_funded) }
-          let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school: other_school) }
+          let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school: other_school) }
 
-          before { FactoryBot.create(:training_period, :ongoing, ect_at_school_period:) }
+          before { FactoryBot.create(:training_period, :unfinished, ect_at_school_period:) }
 
           it { is_expected.to be_falsey }
         end
@@ -477,9 +477,9 @@ RSpec.describe School do
 
       context "and section 41 is approved" do
         let(:school) { FactoryBot.create(:school, :independent, :section_41) }
-        let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
+        let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school:) }
 
-        before { FactoryBot.create(:training_period, :ongoing, ect_at_school_period:) }
+        before { FactoryBot.create(:training_period, :unfinished, ect_at_school_period:) }
 
         it { is_expected.to be_falsey }
       end
@@ -487,9 +487,9 @@ RSpec.describe School do
 
     context "when the school is state-funded" do
       let(:school) { FactoryBot.create(:school, :state_funded) }
-      let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
+      let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school:) }
 
-      before { FactoryBot.create(:training_period, :ongoing, ect_at_school_period:) }
+      before { FactoryBot.create(:training_period, :unfinished, ect_at_school_period:) }
 
       it { is_expected.to be_falsey }
     end
@@ -508,17 +508,17 @@ RSpec.describe School do
         end
 
         context "with an ongoing ect training period" do
-          let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
+          let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school:) }
 
-          before { FactoryBot.create(:training_period, :ongoing, ect_at_school_period:) }
+          before { FactoryBot.create(:training_period, :unfinished, ect_at_school_period:) }
 
           it { is_expected.to be_falsey }
         end
 
         context "with an ongoing mentor training period" do
-          let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:) }
+          let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, school:) }
 
-          before { FactoryBot.create(:training_period, :ongoing, :for_mentor, mentor_at_school_period:) }
+          before { FactoryBot.create(:training_period, :unfinished, :for_mentor, mentor_at_school_period:) }
 
           it { is_expected.to be_falsey }
         end

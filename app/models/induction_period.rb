@@ -53,7 +53,6 @@ class InductionPeriod < ApplicationRecord
   # Scopes
   scope :for_teacher, ->(teacher) { where(teacher:) }
   scope :for_appropriate_body_period, ->(appropriate_body_period) { where(appropriate_body_period:) }
-  scope :ongoing, -> { where(finished_on: nil) }
   scope :with_outcome, -> { where.not(outcome: nil) }
   scope :without_outcome, -> { where(outcome: nil) }
   scope :released, -> { finished.without_outcome }

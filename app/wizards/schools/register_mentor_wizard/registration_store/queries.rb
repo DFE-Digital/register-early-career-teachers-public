@@ -10,7 +10,7 @@ module Schools
           @active_record_at_school ||= MentorAtSchoolPeriods::Search
             .new
             .mentor_periods(trn: registration_store.trn, urn: registration_store.school_urn)
-            .ongoing
+            .unfinished
             .last
         end
 
@@ -51,7 +51,7 @@ module Schools
         def previous_school_mentor_at_school_periods
           finished_on_or_after_date = registration_store.started_on.presence || Date.current
           finishes_in_the_future_scope = ::MentorAtSchoolPeriod.finished_on_or_after(finished_on_or_after_date)
-          scope = ::MentorAtSchoolPeriod.ongoing.or(finishes_in_the_future_scope)
+          scope = ::MentorAtSchoolPeriod.unfinished.or(finishes_in_the_future_scope)
           mentor_at_school_periods.where.not(school:).merge(scope)
         end
 

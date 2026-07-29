@@ -32,7 +32,7 @@ private
     @teacher = FactoryBot.create(:teacher, corrected_name: "Mr Teacher")
     @ect_at_school_period = FactoryBot.create(
       :ect_at_school_period,
-      :ongoing,
+      :unfinished,
       school: @school,
       teacher: @teacher,
       started_on: 2.months.ago

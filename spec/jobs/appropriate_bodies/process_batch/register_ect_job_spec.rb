@@ -77,7 +77,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::RegisterECTJob, type: :job do
 
     context "and has an ongoing induction" do
       before do
-        FactoryBot.create(:induction_period, :ongoing,
+        FactoryBot.create(:induction_period, :unfinished,
                           teacher: Teacher.find_by(trn: pending_induction_submission.trn))
       end
 

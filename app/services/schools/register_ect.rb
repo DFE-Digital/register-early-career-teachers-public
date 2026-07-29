@@ -66,7 +66,7 @@ module Schools
   private
 
     def already_registered_as_an_ect?
-      teacher.ect_at_school_periods.where(school:).ongoing.exists?
+      teacher.ect_at_school_periods.where(school:).unfinished.exists?
     end
 
     def not_registered_as_an_ect!
@@ -132,7 +132,7 @@ module Schools
     end
 
     def ongoing_previous_period
-      previous_periods.ongoing.first
+      previous_periods.unfinished.first
     end
 
     def previous_period_with_future_end

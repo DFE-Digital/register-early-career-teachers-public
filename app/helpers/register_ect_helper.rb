@@ -7,7 +7,7 @@ module RegisterECTHelper
   end
 
   def formatted_year_range_for_registration_date(date)
-    contract_period = ContractPeriod.ongoing_on(date).first
+    contract_period = ContractPeriod.contains_date(date).first
     return "" if contract_period.blank?
 
     academic_year_string(contract_period.year)

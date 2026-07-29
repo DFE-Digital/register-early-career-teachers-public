@@ -13,8 +13,8 @@ RSpec.describe "admin/schools/teachers/show.html.erb", type: :view do
     ])
     allow(view).to receive_messages(params: { urn: school.urn }, request: double(fullpath: "/admin/schools/#{school.urn}/teachers"))
 
-    FactoryBot.create(:ect_at_school_period, :ongoing, teacher: ect_teacher, school:)
-    FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: mentor_teacher, school:)
+    FactoryBot.create(:ect_at_school_period, :unfinished, teacher: ect_teacher, school:)
+    FactoryBot.create(:mentor_at_school_period, :unfinished, teacher: mentor_teacher, school:)
   end
 
   it "sets up breadcrumbs in page data" do

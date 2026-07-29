@@ -31,7 +31,7 @@ FactoryBot.define do
       finished_on { 2.weeks.ago }
     end
 
-    trait :ongoing do
+    trait :unfinished do
       started_on { 1.year.ago }
       finished_on { nil }
     end

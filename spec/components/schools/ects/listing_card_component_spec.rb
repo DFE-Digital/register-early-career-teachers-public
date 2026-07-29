@@ -13,7 +13,7 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
 
   context "when the ECT has a mentor assigned" do
     before do
-      FactoryBot.create(:mentorship_period, :ongoing, started_on: ect_at_school_period.started_on, mentee: ect_at_school_period, mentor:)
+      FactoryBot.create(:mentorship_period, :unfinished, started_on: ect_at_school_period.started_on, mentee: ect_at_school_period, mentor:)
       render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:))
     end
 
@@ -91,7 +91,7 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
     let!(:induction_period) do
       FactoryBot.create(
         :induction_period,
-        :ongoing,
+        :unfinished,
         teacher: ect_at_school_period.teacher,
         started_on: ect_at_school_period.started_on
       )
@@ -108,7 +108,7 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
   end
 
   context "when provider led chosen" do
-    let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period:, started_on:) }
+    let!(:training_period) { FactoryBot.create(:training_period, :unfinished, :provider_led, ect_at_school_period:, started_on:) }
 
     it "renders their latest providers" do
       render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:))
@@ -122,7 +122,7 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
   end
 
   context "when school led chosen" do
-    let(:training_period) { FactoryBot.create(:training_period, :ongoing, :school_led, ect_at_school_period:, started_on:) }
+    let(:training_period) { FactoryBot.create(:training_period, :unfinished, :school_led, ect_at_school_period:, started_on:) }
 
     it "doesn't render providers" do
       render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:))
@@ -134,11 +134,11 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
 
   context "when school-led training period has withdrawn/deferred timestamps (bad data)" do
     let(:training_period) do
-      FactoryBot.create(:training_period, :ongoing, :school_led, ect_at_school_period:, started_on:)
+      FactoryBot.create(:training_period, :unfinished, :school_led, ect_at_school_period:, started_on:)
     end
 
     before do
-      FactoryBot.create(:mentorship_period, :ongoing, started_on: ect_at_school_period.started_on, mentee: ect_at_school_period, mentor:)
+      FactoryBot.create(:mentorship_period, :unfinished, started_on: ect_at_school_period.started_on, mentee: ect_at_school_period, mentor:)
 
       training_period.update!(
         withdrawn_at: Time.zone.today,
@@ -169,7 +169,7 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
     let(:training_period) do
       FactoryBot.create(
         :training_period,
-        :ongoing,
+        :unfinished,
         :provider_led,
         :with_only_expression_of_interest,
         ect_at_school_period:,
@@ -193,7 +193,7 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
   end
 
   context "when training is withdrawn" do
-    let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period:, started_on:) }
+    let!(:training_period) { FactoryBot.create(:training_period, :unfinished, :provider_led, ect_at_school_period:, started_on:) }
 
     before do
       training_period.update!(
@@ -227,7 +227,7 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
   end
 
   context "when training is withdrawn and the ECT is leaving" do
-    let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period:, started_on:) }
+    let!(:training_period) { FactoryBot.create(:training_period, :unfinished, :provider_led, ect_at_school_period:, started_on:) }
 
     before do
       training_period.update!(
@@ -264,7 +264,7 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
   end
 
   context "when training is withdrawn and the ECT has no mentor assigned" do
-    let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period:, started_on:) }
+    let!(:training_period) { FactoryBot.create(:training_period, :unfinished, :provider_led, ect_at_school_period:, started_on:) }
 
     before do
       training_period.update!(
@@ -286,10 +286,10 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
   end
 
   context "when training is withdrawn and the ECT has a mentor assigned" do
-    let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period:, started_on:) }
+    let!(:training_period) { FactoryBot.create(:training_period, :unfinished, :provider_led, ect_at_school_period:, started_on:) }
 
     before do
-      FactoryBot.create(:mentorship_period, :ongoing, started_on: ect_at_school_period.started_on, mentee: ect_at_school_period, mentor:)
+      FactoryBot.create(:mentorship_period, :unfinished, started_on: ect_at_school_period.started_on, mentee: ect_at_school_period, mentor:)
       training_period.update!(withdrawn_at: Time.zone.today, withdrawal_reason: valid_withdrawal_reason, finished_on: Time.zone.today)
       render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:, current_school: school))
     end
@@ -302,7 +302,7 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
   end
 
   context "when training is deferred and the ECT has no mentor assigned" do
-    let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period:, started_on:) }
+    let!(:training_period) { FactoryBot.create(:training_period, :unfinished, :provider_led, ect_at_school_period:, started_on:) }
 
     before do
       training_period.update!(
@@ -324,7 +324,7 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
   end
 
   context "when training is deferred" do
-    let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period:, started_on:) }
+    let!(:training_period) { FactoryBot.create(:training_period, :unfinished, :provider_led, ect_at_school_period:, started_on:) }
 
     before do
       training_period.update!(
@@ -350,7 +350,7 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
   end
 
   context "when training is deferred and the ECT is reported as leaving by the current school" do
-    let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period:, started_on:) }
+    let!(:training_period) { FactoryBot.create(:training_period, :unfinished, :provider_led, ect_at_school_period:, started_on:) }
 
     before do
       training_period.update!(

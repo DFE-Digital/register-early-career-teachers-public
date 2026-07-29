@@ -28,7 +28,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::RecordPassJob, type: :job do
 
   before do
     FactoryBot.create(:teacher, trn: pending_induction_submission.trn)
-    FactoryBot.create(:induction_period, :ongoing, teacher: pending_induction_submission.teacher, appropriate_body_period:)
+    FactoryBot.create(:induction_period, :unfinished, teacher: pending_induction_submission.teacher, appropriate_body_period:)
   end
 
   it "records an outcome for the induction", :aggregate_failures do

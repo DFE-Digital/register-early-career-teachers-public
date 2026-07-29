@@ -110,7 +110,7 @@ describe Schools::RegisterECTWizard::FindECTStep, type: :model do
 
     context "when the ect is already active at the school" do
       let(:teacher) { FactoryBot.create(:teacher, trn: "1234568") }
-      let(:ongoing_ect_period) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, :ongoing, teacher:, school:) }
+      let(:ongoing_ect_period) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, :unfinished, teacher:, school:) }
 
       before do
         wizard.store.update!(school_urn: ongoing_ect_period.school.urn)

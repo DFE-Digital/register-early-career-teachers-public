@@ -14,7 +14,7 @@ RSpec.describe Teachers::Details::InductionOutcomeActionsComponent, type: :compo
 
   context "with ongoing induction period" do
     before do
-      FactoryBot.create(:induction_period, :ongoing, teacher:)
+      FactoryBot.create(:induction_period, :unfinished, teacher:)
       render_inline(component)
     end
 
