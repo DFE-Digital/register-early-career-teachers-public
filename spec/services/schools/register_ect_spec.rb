@@ -612,6 +612,45 @@ RSpec.describe Schools::RegisterECT do
           let(:started_on) { Date.new(2026, 8, 10) }
 
           include_examples "successful same-school re-registration"
+
+          context "when associated periods span the new start date" do
+            let!(:training_period) do
+              FactoryBot.create(
+                :training_period,
+                :school_led,
+                ect_at_school_period: existing_period,
+                started_on: existing_period.started_on,
+                finished_on: recorded_leaving_date
+              )
+            end
+
+            let!(:mentorship_period) do
+              mentor = FactoryBot.create(
+                :mentor_at_school_period,
+                school:,
+                started_on: existing_period.started_on,
+                finished_on: recorded_leaving_date
+              )
+
+              FactoryBot.create(
+                :mentorship_period,
+                mentee: existing_period,
+                mentor:,
+                started_on: existing_period.started_on,
+                finished_on: recorded_leaving_date
+              )
+            end
+
+            it "trims the associated periods to the day before the new start date" do
+              expect { service.register! }
+                .to change { training_period.reload.finished_on }
+                  .from(recorded_leaving_date)
+                  .to(expected_finished_on)
+                .and change { mentorship_period.reload.finished_on }
+                  .from(recorded_leaving_date)
+                  .to(expected_finished_on)
+            end
+          end
         end
 
         context "when the new start is on the recorded leaving date" do
