@@ -192,4 +192,23 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
 
     expect(rendered).to have_css("table caption", text: "Additional adjustments")
   end
+
+  it "does not display an audit notes section when the statement has no audit notes" do
+    render
+
+    expect(rendered).not_to have_css("h2", text: "Audit notes")
+  end
+
+  context "when the statement has audit notes" do
+    before do
+      FactoryBot.create(:statement_audit_note, statement: feb_statement, body: "Amount differs from the invoiced amount")
+    end
+
+    it "displays the audit notes" do
+      render
+
+      expect(rendered).to have_css("h2", text: "Audit notes")
+      expect(rendered).to have_css("p", text: "Amount differs from the invoiced amount")
+    end
+  end
 end

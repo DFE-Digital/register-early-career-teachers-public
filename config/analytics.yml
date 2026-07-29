@@ -248,6 +248,12 @@ shared:
     - amount
     - created_at
     - updated_at
+  :statement_audit_notes:
+    - id
+    - statement_id
+    - body
+    - created_at
+    - updated_at
   :statements:
     - id
     - api_id

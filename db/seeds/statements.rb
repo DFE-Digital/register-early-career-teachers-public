@@ -82,3 +82,19 @@ grouped_active_lead_providers.each do |lead_provider, active_lead_providers|
 
   describe_group_of_statements(lead_provider, statements)
 end
+
+ambition = LeadProvider.find_by!(name: "Ambition Institute")
+contract_period = ContractPeriod.find_by!(year: 2023)
+active_lead_provider = ActiveLeadProvider.find_by!(lead_provider: ambition, contract_period:)
+audited_statement = active_lead_provider.statements.find_by!(year: 2024, month: 8)
+
+audit_notes = [
+  { body: "Sample Note: x1 started declaration (955c45ff-32f3-4f58-8219-5804d7a5de4f) included for payment in ECF1 service but was unable to be represented in the RECT service", created_at: 2.months.ago },
+  { body: "Sample Note: Adjustment applied to account for the ECF1 declaration that could not be migrated", created_at: 1.month.ago },
+]
+
+audit_notes.each do |attributes|
+  FactoryBot.create(:statement_audit_note, statement: audited_statement, **attributes)
+end
+
+print_seed_info("#{audit_notes.size} audit notes added to the #{ambition.name} #{audited_statement.month_year} statement", indent: 2, blank_lines_before: 1)
