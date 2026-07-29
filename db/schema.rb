@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_13_075124) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_23_155410) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -806,6 +806,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_13_075124) do
     t.index ["statement_id"], name: "index_statement_adjustments_on_statement_id"
   end
 
+  create_table "statement_audit_notes", force: :cascade do |t|
+    t.text "body", null: false
+    t.datetime "created_at", null: false
+    t.bigint "statement_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["statement_id"], name: "index_statement_audit_notes_on_statement_id"
+  end
+
   create_table "statements", force: :cascade do |t|
     t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
     t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
@@ -1025,6 +1033,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_13_075124) do
   add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "statement_adjustments", "statements"
+  add_foreign_key "statement_audit_notes", "statements"
   add_foreign_key "statements", "contracts"
   add_foreign_key "teacher_id_changes", "teachers"
   add_foreign_key "teacher_id_changes", "teachers", column: "api_from_teacher_id", primary_key: "api_id"
