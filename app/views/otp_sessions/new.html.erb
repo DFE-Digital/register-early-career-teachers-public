@@ -7,7 +7,7 @@
     You need to request an email with a code to sign in.
   </p>
 
-  <%= f.govuk_text_field :email, type: :email, width: 'two-thirds', label: { text: "Email address", size: "s" } %>
+  <%= f.govuk_email_field :email, width: 'two-thirds', label: { text: "Email address", size: "s" }, autocomplete: "email" %>
 
   <%= f.govuk_submit "Request code to sign in" %>
 <% end %>
