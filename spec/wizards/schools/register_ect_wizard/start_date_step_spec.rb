@@ -144,6 +144,25 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
       it { is_expected.to have_error(:start_date, "Our records show that Johnnie Walker started teaching at Springfield Primary on 1 September 2024. Enter a start date after 2 September 2024.") }
     end
 
+    context "when re-registering an ECT at the same school before their recorded leaving date" do
+      let(:school) { FactoryBot.create(:school) }
+      let(:start_date) { Date.new(2026, 8, 10) }
+
+      before do
+        store.trn = teacher.trn
+
+        FactoryBot.create(
+          :ect_at_school_period,
+          teacher:,
+          school:,
+          started_on: Date.new(2026, 7, 1),
+          finished_on: Date.new(2026, 9, 20)
+        )
+      end
+
+      it { is_expected.to be_valid }
+    end
+
     context "when the date clashes with the latest training period" do
       let(:training_period) { FactoryBot.create(:training_period, ect_at_school_period: previous_period, started_on: Date.new(2024, 12, 31), finished_on: Date.new(2025, 3, 31)) }
 
