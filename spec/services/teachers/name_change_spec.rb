@@ -20,7 +20,7 @@ RSpec.describe Teachers::NameChange do
       expect(significant?("John Smith", "John Paul Smith")).to be(false)
     end
 
-    it "is false for multi-part names when the first and last words are unchanged" do
+    it "is false when only the last part of a multi-part name changes" do
       expect(significant?("Edwin van der Smoot", "Edwin van der Smoot-Jones")).to be(false)
     end
 
