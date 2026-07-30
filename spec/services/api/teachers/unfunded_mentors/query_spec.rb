@@ -1,11 +1,12 @@
 RSpec.describe API::Teachers::UnfundedMentors::Query, :with_metadata do
   include MentorshipPeriodHelpers
 
-  let(:school_partnership) { FactoryBot.create(:school_partnership) }
+  let_it_be(:school_partnership) { FactoryBot.create(:school_partnership) }
   let(:lead_provider_id) { school_partnership.lead_provider.id }
   let(:query) { described_class.new(lead_provider_id:) }
 
-  let!(:unfunded_mentor) do
+  # refind: some examples mutate the record via update!
+  let_it_be(:unfunded_mentor, refind: true) do
     mentor_school_partnership = other_lp_school_partnership_for(school_partnership:)
 
     create_mentorship_period_for(
@@ -55,7 +56,7 @@ RSpec.describe API::Teachers::UnfundedMentors::Query, :with_metadata do
   describe "#unfunded_mentors" do
     describe "filtering" do
       describe "by `lead_provider`" do
-        let!(:other_unfunded_mentor) do
+        let_it_be(:other_unfunded_mentor) do
           mentor_school_partnership = other_lp_school_partnership_for(school_partnership:)
 
           create_mentorship_period_for(
@@ -108,7 +109,8 @@ RSpec.describe API::Teachers::UnfundedMentors::Query, :with_metadata do
       end
 
       describe "by `updated_since`" do
-        let!(:other_unfunded_mentor) do
+        # refind: the before block mutates the record via update!
+        let_it_be(:other_unfunded_mentor, refind: true) do
           mentor_school_partnership = other_lp_school_partnership_for(school_partnership:)
 
           create_mentorship_period_for(
@@ -142,7 +144,8 @@ RSpec.describe API::Teachers::UnfundedMentors::Query, :with_metadata do
     end
 
     describe "ordering" do
-      let!(:other_unfunded_mentor) do
+      # refind: the before block mutates the record via update!
+      let_it_be(:other_unfunded_mentor, refind: true) do
         mentor_school_partnership = other_lp_school_partnership_for(school_partnership:)
 
         create_mentorship_period_for(

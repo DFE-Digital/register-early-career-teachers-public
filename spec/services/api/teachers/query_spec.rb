@@ -39,11 +39,12 @@ RSpec.describe API::Teachers::Query, :with_metadata do
     end
 
     let(:instance) { described_class.new }
-    let(:teacher) { FactoryBot.create(:teacher) }
-    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, started_on: 1.year.ago, finished_on: nil) }
-    let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, started_on: 1.year.ago, finished_on: nil) }
-    let!(:latest_ect_training_period) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: 1.month.ago, finished_on: nil) }
-    let!(:latest_mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: 1.month.ago, finished_on: nil) }
+
+    let_it_be(:teacher) { FactoryBot.create(:teacher) }
+    let_it_be(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, started_on: 1.year.ago, finished_on: nil) }
+    let_it_be(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, started_on: 1.year.ago, finished_on: nil) }
+    let_it_be(:latest_ect_training_period) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: 1.month.ago, finished_on: nil) }
+    let_it_be(:latest_mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: 1.month.ago, finished_on: nil) }
 
     describe "#teachers" do
       subject(:result) do
@@ -86,10 +87,10 @@ RSpec.describe API::Teachers::Query, :with_metadata do
 
     describe "filtering" do
       describe "by `lead_provider`" do
-        let(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing)) }
-        let!(:teacher1) { training_period.teacher }
-        let!(:teacher2) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing)).teacher }
-        let!(:teacher3) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing)).teacher }
+        let_it_be(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing)) }
+        let_it_be(:teacher1) { training_period.teacher }
+        let_it_be(:teacher2) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing)).teacher }
+        let_it_be(:teacher3) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing)).teacher }
 
         context "when `lead_provider` param is omitted" do
           it "returns all teachers" do
@@ -118,18 +119,18 @@ RSpec.describe API::Teachers::Query, :with_metadata do
       end
 
       describe "by `contract_period_years`" do
-        let(:ect_at_school_period_1) { FactoryBot.create(:ect_at_school_period, :ongoing) }
-        let(:ect_at_school_period_2) { FactoryBot.create(:ect_at_school_period, :ongoing) }
-        let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing) }
-        let(:contract_period1) { FactoryBot.create(:contract_period) }
-        let(:contract_period2) { FactoryBot.create(:contract_period) }
-        let(:contract_period3) { FactoryBot.create(:contract_period) }
-        let(:school_partnership1) { FactoryBot.create(:school_partnership, active_lead_provider: FactoryBot.create(:active_lead_provider, contract_period: contract_period1)) }
-        let(:school_partnership2) { FactoryBot.create(:school_partnership, active_lead_provider: FactoryBot.create(:active_lead_provider, contract_period: contract_period2)) }
-        let(:school_partnership3) { FactoryBot.create(:school_partnership, active_lead_provider: FactoryBot.create(:active_lead_provider, contract_period: contract_period3)) }
-        let!(:teacher1) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period: ect_at_school_period_1, school_partnership: school_partnership1).teacher }
-        let!(:teacher2) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:, school_partnership: school_partnership2).teacher }
-        let!(:teacher3) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period: ect_at_school_period_2, school_partnership: school_partnership3).teacher }
+        let_it_be(:ect_at_school_period_1) { FactoryBot.create(:ect_at_school_period, :ongoing) }
+        let_it_be(:ect_at_school_period_2) { FactoryBot.create(:ect_at_school_period, :ongoing) }
+        let_it_be(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing) }
+        let_it_be(:contract_period1) { FactoryBot.create(:contract_period) }
+        let_it_be(:contract_period2) { FactoryBot.create(:contract_period) }
+        let_it_be(:contract_period3) { FactoryBot.create(:contract_period) }
+        let_it_be(:school_partnership1) { FactoryBot.create(:school_partnership, active_lead_provider: FactoryBot.create(:active_lead_provider, contract_period: contract_period1)) }
+        let_it_be(:school_partnership2) { FactoryBot.create(:school_partnership, active_lead_provider: FactoryBot.create(:active_lead_provider, contract_period: contract_period2)) }
+        let_it_be(:school_partnership3) { FactoryBot.create(:school_partnership, active_lead_provider: FactoryBot.create(:active_lead_provider, contract_period: contract_period3)) }
+        let_it_be(:teacher1) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period: ect_at_school_period_1, school_partnership: school_partnership1).teacher }
+        let_it_be(:teacher2) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:, school_partnership: school_partnership2).teacher }
+        let_it_be(:teacher3) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period: ect_at_school_period_2, school_partnership: school_partnership3).teacher }
 
         context "when `contract_period_years` param is omitted" do
           it "returns all teachers" do
@@ -177,12 +178,12 @@ RSpec.describe API::Teachers::Query, :with_metadata do
       end
 
       describe "by `api_from_teacher_id`" do
-        let(:teacher1) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing)).teacher }
-        let(:teacher2) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period: FactoryBot.create(:mentor_at_school_period, :ongoing)).teacher }
-        let(:teacher3) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing)).teacher }
-        let!(:teacher_id_change1) { FactoryBot.create(:teacher_id_change, teacher: teacher1, api_from_teacher_id: teacher2.api_id) }
-        let!(:teacher_id_change2) { FactoryBot.create(:teacher_id_change, teacher: teacher2, api_from_teacher_id: teacher3.api_id) }
-        let!(:teacher_id_change3) { FactoryBot.create(:teacher_id_change, teacher: teacher3, api_from_teacher_id: teacher1.api_id) }
+        let_it_be(:teacher1) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing)).teacher }
+        let_it_be(:teacher2) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period: FactoryBot.create(:mentor_at_school_period, :ongoing)).teacher }
+        let_it_be(:teacher3) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing)).teacher }
+        let_it_be(:teacher_id_change1) { FactoryBot.create(:teacher_id_change, teacher: teacher1, api_from_teacher_id: teacher2.api_id) }
+        let_it_be(:teacher_id_change2) { FactoryBot.create(:teacher_id_change, teacher: teacher2, api_from_teacher_id: teacher3.api_id) }
+        let_it_be(:teacher_id_change3) { FactoryBot.create(:teacher_id_change, teacher: teacher3, api_from_teacher_id: teacher1.api_id) }
 
         context "when `api_from_teacher_id` param is omitted" do
           it "returns all teachers" do
@@ -211,14 +212,14 @@ RSpec.describe API::Teachers::Query, :with_metadata do
       end
 
       describe "by `training_status`" do
-        let(:ect_at_school_period_1) { FactoryBot.create(:ect_at_school_period, :ongoing) }
-        let(:ect_at_school_period_2) { FactoryBot.create(:ect_at_school_period, :ongoing) }
-        let(:mentor_at_school_period_1) { FactoryBot.create(:mentor_at_school_period, :ongoing) }
+        let_it_be(:ect_at_school_period_1) { FactoryBot.create(:ect_at_school_period, :ongoing) }
+        let_it_be(:ect_at_school_period_2) { FactoryBot.create(:ect_at_school_period, :ongoing) }
+        let_it_be(:mentor_at_school_period_1) { FactoryBot.create(:mentor_at_school_period, :ongoing) }
 
-        let(:school_partnership) { FactoryBot.create(:school_partnership) }
-        let!(:deferred_teacher) { FactoryBot.create(:training_period, :for_ect, :ongoing, :deferred, ect_at_school_period: ect_at_school_period_1, school_partnership:).teacher }
-        let!(:withdrawn_teacher) { FactoryBot.create(:training_period, :for_mentor, :ongoing, :withdrawn, mentor_at_school_period: mentor_at_school_period_1, school_partnership:).teacher }
-        let!(:active_teacher) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period: ect_at_school_period_2, school_partnership:).teacher }
+        let_it_be(:school_partnership) { FactoryBot.create(:school_partnership) }
+        let_it_be(:deferred_teacher) { FactoryBot.create(:training_period, :for_ect, :ongoing, :deferred, ect_at_school_period: ect_at_school_period_1, school_partnership:).teacher }
+        let_it_be(:withdrawn_teacher) { FactoryBot.create(:training_period, :for_mentor, :ongoing, :withdrawn, mentor_at_school_period: mentor_at_school_period_1, school_partnership:).teacher }
+        let_it_be(:active_teacher) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period: ect_at_school_period_2, school_partnership:).teacher }
 
         context "when `training_status` param is omitted" do
           it "returns all teachers" do
@@ -260,12 +261,12 @@ RSpec.describe API::Teachers::Query, :with_metadata do
       end
 
       describe "by `training_status` when a teacher has multiple training periods" do
-        let(:teacher) { FactoryBot.create(:teacher) }
-        let(:school_partnership) { FactoryBot.create(:school_partnership) }
-        let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, school: school_partnership.school) }
-        let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school: school_partnership.school) }
-        let!(:deferred_training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, :deferred, school_partnership:, ect_at_school_period:) }
-        let!(:withdrawn_training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, :withdrawn, school_partnership:, mentor_at_school_period:) }
+        let_it_be(:teacher) { FactoryBot.create(:teacher) }
+        let_it_be(:school_partnership) { FactoryBot.create(:school_partnership) }
+        let_it_be(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, school: school_partnership.school) }
+        let_it_be(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school: school_partnership.school) }
+        let_it_be(:deferred_training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, :deferred, school_partnership:, ect_at_school_period:) }
+        let_it_be(:withdrawn_training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, :withdrawn, school_partnership:, mentor_at_school_period:) }
 
         it "returns the teacher if any of the latest training periods match the filter" do
           query = described_class.new(training_status: :deferred)
@@ -313,8 +314,9 @@ RSpec.describe API::Teachers::Query, :with_metadata do
     end
 
     describe "ordering" do
-      let!(:teacher1) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing)).teacher }
-      let!(:teacher2) { travel_to(1.day.ago) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period: FactoryBot.create(:mentor_at_school_period, :ongoing)).teacher } }
+      # refind: an example mutates teacher2; give each example a fresh instance
+      let_it_be(:teacher1, refind: true) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing)).teacher }
+      let_it_be(:teacher2, refind: true) { travel_to(1.day.ago) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period: FactoryBot.create(:mentor_at_school_period, :ongoing)).teacher } }
 
       describe "default order" do
         it "returns teachers ordered by created_at, in ascending order" do

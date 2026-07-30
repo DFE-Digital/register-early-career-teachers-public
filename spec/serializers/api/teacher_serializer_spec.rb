@@ -4,9 +4,10 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
     JSON.parse(described_class.render(teacher, **options))
   end
 
-  let!(:lead_provider) { FactoryBot.create(:lead_provider) }
-  let(:api_updated_at) { Time.utc(2023, 7, 2, 12, 0, 0) }
-  let(:teacher) do
+  let_it_be(:lead_provider) { FactoryBot.create(:lead_provider) }
+  let_it_be(:api_updated_at) { Time.utc(2023, 7, 2, 12, 0, 0) }
+  # refind: some examples mutate the teacher via update!
+  let_it_be(:teacher, refind: true) do
     FactoryBot.create(
       :teacher,
       :ineligible_for_mentor_funding,
@@ -103,22 +104,13 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
       it { is_expected.to be_empty }
 
       context "when there are ECT/mentor training periods for the lead provider" do
-        let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, lead_provider:) }
-        let(:school_partnership) do
+        let_it_be(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, lead_provider:) }
+        # refind: the before block mutates the associated contract period each example
+        let_it_be(:school_partnership, refind: true) do
           FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:)
         end
-        let(:school) { school_partnership.school }
+        let_it_be(:school) { school_partnership.school }
         let!(:school_funding_eligibility) { FactoryBot.create(:school_funding_eligibility, gias_school: school.gias_school, contract_period: school_partnership.contract_period) }
-
-        let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on: 2.months.ago, finished_on: nil) }
-        let!(:ect_training_period) { FactoryBot.create(:training_period, :for_ect, started_on: 1.month.ago, ect_at_school_period:, school_partnership:) }
-
-        let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school:, teacher:, started_on: 2.months.ago, finished_on: nil) }
-        let!(:mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, started_on: 1.month.ago, mentor_at_school_period:, school_partnership:) }
-
-        let(:other_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school:, started_on: 2.months.ago, finished_on: nil) }
-        let!(:other_mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, started_on: 1.month.ago, mentor_at_school_period: other_mentor_at_school_period, school_partnership:) }
-
         let!(:latest_mentorship_period) do
           FactoryBot.create(
             :mentorship_period,
@@ -128,6 +120,16 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
             finished_on: nil
           )
         end
+
+        # refind: some examples mutate these records via update!
+        let_it_be(:ect_at_school_period, refind: true) { FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on: 2.months.ago, finished_on: nil) }
+        let_it_be(:ect_training_period, refind: true) { FactoryBot.create(:training_period, :for_ect, started_on: 1.month.ago, ect_at_school_period:, school_partnership:) }
+
+        let_it_be(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school:, teacher:, started_on: 2.months.ago, finished_on: nil) }
+        let_it_be(:mentor_training_period, refind: true) { FactoryBot.create(:training_period, :for_mentor, started_on: 1.month.ago, mentor_at_school_period:, school_partnership:) }
+
+        let_it_be(:other_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school:, started_on: 2.months.ago, finished_on: nil) }
+        let_it_be(:other_mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, started_on: 1.month.ago, mentor_at_school_period: other_mentor_at_school_period, school_partnership:) }
 
         before do
           school_partnership.contract_period.update!(uplift_fees_enabled: true)

@@ -1,27 +1,30 @@
 RSpec.describe APISeedData::SchoolScenarios do
   let(:verbose) { true }
+  let(:lead_provider_count) { LeadProvider.count }
+  let(:active_lead_provider_count) { ActiveLeadProvider.count }
   let(:instance) { described_class.new(verbose:) }
   let(:environment) { "sandbox" }
   let(:logger) { instance_double(Logger, info: nil, "formatter=" => nil, "level=" => nil) }
 
-  let(:contract_period_2024) { FactoryBot.create(:contract_period, year: 2024) }
-  let(:contract_period_2025) { FactoryBot.create(:contract_period, year: 2025) }
+  let_it_be(:contract_period_2024) { FactoryBot.create(:contract_period, year: 2024) }
+  let_it_be(:contract_period_2025) { FactoryBot.create(:contract_period, year: 2025) }
 
-  let(:lead_provider_count) { LeadProvider.count }
-  let(:active_lead_provider_count) { ActiveLeadProvider.count }
+  before_all do
+    DeclarativeUpdates.skip(:metadata, :touch) do
+      # Create lead providers with active lead providers for both contract periods
+      FactoryBot.create_list(:lead_provider, 2).each do |lead_provider|
+        FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: contract_period_2024)
+        FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: contract_period_2025)
+      end
+
+      # Create delivery partners
+      FactoryBot.create_list(:delivery_partner, 5)
+    end
+  end
 
   before do
     allow(Logger).to receive(:new).with($stdout) { logger }
     allow(Rails).to receive(:env) { environment.inquiry }
-
-    # Create lead providers with active lead providers for both contract periods
-    FactoryBot.create_list(:lead_provider, 2).each do |lead_provider|
-      FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: contract_period_2024)
-      FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: contract_period_2025)
-    end
-
-    # Create delivery partners
-    FactoryBot.create_list(:delivery_partner, 5)
   end
 
   describe "#plant" do

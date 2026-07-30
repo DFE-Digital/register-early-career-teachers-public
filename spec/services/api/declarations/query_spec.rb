@@ -39,7 +39,8 @@ RSpec.describe API::Declarations::Query, :with_metadata do
     end
 
     let(:instance) { described_class.new }
-    let!(:declaration) { FactoryBot.create(:declaration) }
+
+    let_it_be(:declaration) { FactoryBot.create(:declaration) }
 
     describe "#declarations" do
       subject(:result) { instance.declarations.first }
@@ -122,27 +123,28 @@ RSpec.describe API::Declarations::Query, :with_metadata do
         end
 
         context "when there are declarations from previous lead provider" do
-          let(:contract_period) { FactoryBot.create(:contract_period) }
+          let_it_be(:contract_period) { FactoryBot.create(:contract_period) }
 
           # Previous training period with `lead_provider1`
-          let(:training_period1) { create_training_period(contract_period:, trainee: :ect) }
+          let_it_be(:training_period1) { create_training_period(contract_period:, trainee: :ect) }
           let(:lead_provider1) { training_period1.lead_provider }
+          let(:lead_provider2) { training_period2.lead_provider }
+          let(:lead_provider3) { training_period3.lead_provider }
+          # Declaration for each training period
+          # no let_it_be for declatarion1; overridden in nested contexts and mutated in example
+          let!(:declaration1) { create_declaration(training_period: training_period1, declaration_type: "started") }
 
           # Current training period with `lead_provider2`
-          let(:training_period2) { create_training_period(contract_period:, trainee: :ect, following_on_from_training_period: training_period1) }
-          let(:lead_provider2) { training_period2.lead_provider }
+          let_it_be(:training_period2) { create_training_period(contract_period:, trainee: :ect, following_on_from_training_period: training_period1) }
 
           # New ongoing training period with `lead_provider3`
-          let(:training_period3) { create_training_period(contract_period:, trainee: :ect, following_on_from_training_period: training_period2) }
-          let(:lead_provider3) { training_period3.lead_provider }
+          let_it_be(:training_period3) { create_training_period(contract_period:, trainee: :ect, following_on_from_training_period: training_period2) }
 
-          # Declaration for each training period
-          let!(:declaration1) { create_declaration(training_period: training_period1, declaration_type: "started") }
-          let!(:declaration2) { create_declaration(training_period: training_period2, declaration_type: "retained-1") }
-          let!(:declaration3) { create_declaration(training_period: training_period3, declaration_type: "retained-3") }
+          let_it_be(:declaration2) { create_declaration(training_period: training_period2, declaration_type: "retained-1") }
+          let_it_be(:declaration3) { create_declaration(training_period: training_period3, declaration_type: "retained-3") }
 
           # Additional unrelated declaration
-          before { FactoryBot.create(:declaration) }
+          before_all { FactoryBot.create(:declaration) }
 
           context "when lead_provider2 has previous and direct declaration" do
             it "returns previous declarations and direct declarations for lead_provider2" do
@@ -207,13 +209,13 @@ RSpec.describe API::Declarations::Query, :with_metadata do
       end
 
       describe "by `contract_period_years`" do
-        let(:contract_period1) { FactoryBot.create(:contract_period) }
-        let(:contract_period2) { FactoryBot.create(:contract_period) }
-        let(:contract_period3) { FactoryBot.create(:contract_period) }
+        let_it_be(:contract_period1) { FactoryBot.create(:contract_period) }
+        let_it_be(:contract_period2) { FactoryBot.create(:contract_period) }
+        let_it_be(:contract_period3) { FactoryBot.create(:contract_period) }
 
-        let!(:declaration1) { create_declaration(contract_period: contract_period1) }
-        let!(:declaration2) { create_declaration(contract_period: contract_period2) }
-        let!(:declaration3) { create_declaration(contract_period: contract_period3) }
+        let_it_be(:declaration1) { create_declaration(contract_period: contract_period1) }
+        let_it_be(:declaration2) { create_declaration(contract_period: contract_period2) }
+        let_it_be(:declaration3) { create_declaration(contract_period: contract_period3) }
 
         context "when `contract_period_years` param is omitted" do
           it "returns all declarations" do
@@ -253,15 +255,15 @@ RSpec.describe API::Declarations::Query, :with_metadata do
       end
 
       describe "by `teacher_api_ids`" do
-        let(:teacher1) { FactoryBot.create(:teacher) }
-        let(:teacher2) { FactoryBot.create(:teacher) }
+        let_it_be(:teacher1) { FactoryBot.create(:teacher) }
+        let_it_be(:teacher2) { FactoryBot.create(:teacher) }
 
-        let(:training_period1) { create_training_period(trainee: :ect, teacher: teacher1) }
-        let(:training_period2) { create_training_period(trainee: :ect, teacher: teacher2) }
+        let_it_be(:training_period1) { create_training_period(trainee: :ect, teacher: teacher1) }
+        let_it_be(:training_period2) { create_training_period(trainee: :ect, teacher: teacher2) }
 
-        let!(:declaration1) { FactoryBot.create(:declaration, training_period: training_period1) }
-        let!(:declaration2) { FactoryBot.create(:declaration, training_period: training_period2) }
-        let!(:declaration3) { FactoryBot.create(:declaration) }
+        let_it_be(:declaration1) { FactoryBot.create(:declaration, training_period: training_period1) }
+        let_it_be(:declaration2) { FactoryBot.create(:declaration, training_period: training_period2) }
+        let_it_be(:declaration3) { FactoryBot.create(:declaration) }
 
         context "when `teacher_api_ids` param is omitted" do
           it "returns all declarations" do
@@ -319,15 +321,15 @@ RSpec.describe API::Declarations::Query, :with_metadata do
       end
 
       describe "by `delivery_partner_api_ids`" do
-        let(:delivery_partner1) { FactoryBot.create(:delivery_partner) }
-        let(:delivery_partner2) { FactoryBot.create(:delivery_partner) }
+        let_it_be(:delivery_partner1) { FactoryBot.create(:delivery_partner) }
+        let_it_be(:delivery_partner2) { FactoryBot.create(:delivery_partner) }
 
-        let(:training_period1) { create_training_period(trainee: :ect, delivery_partner: delivery_partner1) }
-        let(:training_period2) { create_training_period(trainee: :mentor, delivery_partner: delivery_partner2) }
+        let_it_be(:training_period1) { create_training_period(trainee: :ect, delivery_partner: delivery_partner1) }
+        let_it_be(:training_period2) { create_training_period(trainee: :mentor, delivery_partner: delivery_partner2) }
 
-        let!(:declaration1) { FactoryBot.create(:declaration, training_period: training_period1) }
-        let!(:declaration2) { FactoryBot.create(:declaration, training_period: training_period2) }
-        let!(:declaration3) { FactoryBot.create(:declaration) }
+        let_it_be(:declaration1) { FactoryBot.create(:declaration, training_period: training_period1) }
+        let_it_be(:declaration2) { FactoryBot.create(:declaration, training_period: training_period2) }
+        let_it_be(:declaration3) { FactoryBot.create(:declaration) }
 
         context "when `delivery_partner_api_ids` param is omitted" do
           it "returns all declarations" do
