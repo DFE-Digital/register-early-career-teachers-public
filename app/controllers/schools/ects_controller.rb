@@ -12,7 +12,7 @@ module Schools
           query_string: params[:q]
         )
         .search
-        .includes(
+        .preload( # .includes folds into search query and breaks when no current/next TP
           ongoing_induction_period: :appropriate_body_period,
           ect_at_school_periods: %i[latest_training_period mentorship_periods],
           current_or_next_ect_at_school_period: [

@@ -34,6 +34,31 @@ RSpec.describe "ECT summary" do
         expect(response).to have_http_status(:ok)
       end
     end
+
+    context "when the ECT has no current or next training period" do
+      let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Ambition Institute") }
+      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
+
+      let!(:finished_training_period) do
+        FactoryBot.create(
+          :training_period,
+          :with_active_lead_provider,
+          active_lead_provider:,
+          ect_at_school_period: ect,
+          started_on: 2.years.ago,
+          finished_on: 6.months.ago
+        )
+      end
+
+      before { sign_in_as(:school_user, school:) }
+
+      it "shows the lead provider of the latest training period rather than 'Not available'" do
+        subject
+
+        expect(response.body).to include("Ambition Institute")
+        expect(response.body).not_to include(ECTHelper::NOT_AVAILABLE)
+      end
+    end
   end
 
   describe "GET #show" do
