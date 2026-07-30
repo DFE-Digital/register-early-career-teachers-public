@@ -7,10 +7,10 @@ describe "otp_sessions/request_code.html.erb" do
     expect(view.content_for(:page_title)).to eql("Enter your code")
   end
 
-  it "renders a text field with inputmode='numeric' and autocomplete='false'" do
+  it "renders a text field with inputmode='numeric' and autocomplete='off'" do
     render
 
-    expect(rendered).to have_css("form input[inputmode='numeric'][autocomplete='false']")
+    expect(rendered).to have_css("form input[inputmode='numeric'][autocomplete='off']")
   end
 
   it "renders a 'Sign in' button" do
