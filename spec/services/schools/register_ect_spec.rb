@@ -553,7 +553,7 @@ RSpec.describe Schools::RegisterECT do
       let(:training_programme) { "school_led" }
       let(:lead_provider) { nil }
 
-      before { FactoryBot.create(:teacher, trn:) }
+      let!(:teacher) { FactoryBot.create(:teacher, trn:) }
 
       it "creates a TrainingPeriod" do
         expect { service.register! }.to change(TrainingPeriod, :count).by(1)
@@ -579,6 +579,85 @@ RSpec.describe Schools::RegisterECT do
         training_period = TrainingPeriod.find_by!(started_on:)
 
         expect(training_period.training_programme).to eql("school_led")
+      end
+
+      context "when re-registering an ECT at the same school with a recorded leaving date" do
+        let(:recorded_leaving_date) { Date.new(2026, 9, 20) }
+        let(:expected_finished_on) { started_on.yesterday }
+        let(:overridden_current_date) { Date.new(2026, 9, 1) }
+
+        let!(:existing_period) do
+          FactoryBot.create(
+            :ect_at_school_period,
+            teacher:,
+            school:,
+            started_on: Date.new(2026, 7, 1),
+            finished_on: recorded_leaving_date
+          )
+        end
+
+        shared_examples "successful same-school re-registration" do
+          it "finishes the existing period and allows a new registration at the same school" do
+            expect { service.register! }
+              .to change { existing_period.reload.finished_on }
+                .from(recorded_leaving_date)
+                .to(expected_finished_on)
+              .and change(ECTAtSchoolPeriod, :count).by(1)
+
+            expect(service.ect_at_school_period).to have_attributes(started_on:, finished_on: nil)
+          end
+        end
+
+        context "when the new start is before the recorded leaving date" do
+          let(:started_on) { Date.new(2026, 8, 10) }
+
+          include_examples "successful same-school re-registration"
+
+          context "when associated periods span the new start date" do
+            let!(:training_period) do
+              FactoryBot.create(
+                :training_period,
+                :school_led,
+                ect_at_school_period: existing_period,
+                started_on: existing_period.started_on,
+                finished_on: recorded_leaving_date
+              )
+            end
+
+            let!(:mentorship_period) do
+              mentor = FactoryBot.create(
+                :mentor_at_school_period,
+                school:,
+                started_on: existing_period.started_on,
+                finished_on: recorded_leaving_date
+              )
+
+              FactoryBot.create(
+                :mentorship_period,
+                mentee: existing_period,
+                mentor:,
+                started_on: existing_period.started_on,
+                finished_on: recorded_leaving_date
+              )
+            end
+
+            it "trims the associated periods to the day before the new start date" do
+              expect { service.register! }
+                .to change { training_period.reload.finished_on }
+                  .from(recorded_leaving_date)
+                  .to(expected_finished_on)
+                .and change { mentorship_period.reload.finished_on }
+                  .from(recorded_leaving_date)
+                  .to(expected_finished_on)
+            end
+          end
+        end
+
+        context "when the new start is on the recorded leaving date" do
+          let(:started_on) { recorded_leaving_date }
+
+          include_examples "successful same-school re-registration"
+        end
       end
     end
 

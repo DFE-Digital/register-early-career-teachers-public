@@ -66,9 +66,7 @@ module Schools
   private
 
     def already_registered_as_an_ect?
-      # Check if ECT is already registered at THIS school to prevent duplicates
-      # School transfers to different schools are allowed
-      teacher.ect_at_school_periods.where(school:).ongoing_today.exists?
+      teacher.ect_at_school_periods.where(school:).ongoing.exists?
     end
 
     def not_registered_as_an_ect!
@@ -143,7 +141,6 @@ module Schools
 
     def previous_periods
       teacher.ect_at_school_periods
-             .where.not(school:)
              .started_on_or_before(started_on)
     end
 
