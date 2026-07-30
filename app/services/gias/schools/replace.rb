@@ -41,7 +41,7 @@ module GIAS::Schools
           ect_at_school_period:,
           new_school: successor.school,
           old_school_name_and_urn:,
-          happened_at: successor.opened_on,
+          happened_at:,
           author:
         )
       end
@@ -54,7 +54,7 @@ module GIAS::Schools
           mentor_at_school_period:,
           new_school: successor.school,
           old_school_name_and_urn:,
-          happened_at: successor.opened_on,
+          happened_at:,
           author:
         )
       end
@@ -65,7 +65,7 @@ module GIAS::Schools
         school:,
         new_gias_school: successor,
         old_gias_school: gias_school,
-        happened_at: successor.opened_on,
+        happened_at:,
         author:
       )
     end
@@ -75,6 +75,7 @@ module GIAS::Schools
     delegate :successor, to: :gias_school
     delegate :school, to: :gias_school
 
+    def happened_at = gias_school.closed_on
     def author = Events::SystemAuthor.new
   end
 end

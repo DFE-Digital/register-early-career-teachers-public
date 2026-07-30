@@ -27,11 +27,12 @@ module GIAS::Schools
       Events::Record.record_school_opened_event!(
         school: gias_school.school,
         gias_school:,
-        happened_at: gias_school.opened_on,
+        happened_at:,
         author:
       )
     end
 
+    def happened_at = gias_school.opened_on || Date.current
     def author = Events::SystemAuthor.new
   end
 end
