@@ -14,7 +14,7 @@ describe AtSchoolPeriod do
 
     describe "covering inner periods" do
       context "for an ECT at school period" do
-        let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 1.year.ago) }
+        let(:ect) { FactoryBot.create(:ect_at_school_period, :unfinished, started_on: 1.year.ago) }
 
         context "with no inner periods" do
           it "is valid" do
@@ -34,7 +34,7 @@ describe AtSchoolPeriod do
 
         context "with an ongoing training period when the ECT is ongoing" do
           before do
-            FactoryBot.create(:training_period, :ongoing, ect_at_school_period: ect, started_on: 6.months.ago)
+            FactoryBot.create(:training_period, :unfinished, ect_at_school_period: ect, started_on: 6.months.ago)
           end
 
           it "is valid" do
@@ -69,10 +69,10 @@ describe AtSchoolPeriod do
         end
 
         context "when finishing an ECT that has an ongoing training period" do
-          let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 2.years.ago) }
+          let(:ect) { FactoryBot.create(:ect_at_school_period, :unfinished, started_on: 2.years.ago) }
 
           before do
-            FactoryBot.create(:training_period, :ongoing, ect_at_school_period: ect, started_on: 2.years.ago)
+            FactoryBot.create(:training_period, :unfinished, ect_at_school_period: ect, started_on: 2.years.ago)
           end
 
           it "is invalid when setting finished_on while a training period is ongoing" do
@@ -84,7 +84,7 @@ describe AtSchoolPeriod do
         end
 
         context "with mentorship periods fully within range" do
-          let(:mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, school: ect.school) }
+          let(:mentor) { FactoryBot.create(:mentor_at_school_period, :unfinished, school: ect.school) }
 
           before do
             FactoryBot.create(:mentorship_period, mentee: ect, mentor:, started_on: 6.months.ago, finished_on: 1.month.ago)
@@ -96,7 +96,7 @@ describe AtSchoolPeriod do
         end
 
         context "when the ECT start is moved after the mentorship period start" do
-          let(:mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, school: ect.school) }
+          let(:mentor) { FactoryBot.create(:mentor_at_school_period, :unfinished, school: ect.school) }
 
           before do
             FactoryBot.create(:mentorship_period, mentee: ect, mentor:, started_on: 6.months.ago, finished_on: 1.month.ago)
@@ -110,7 +110,7 @@ describe AtSchoolPeriod do
         end
 
         context "with multiple inner periods all within range" do
-          let(:mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, school: ect.school) }
+          let(:mentor) { FactoryBot.create(:mentor_at_school_period, :unfinished, school: ect.school) }
 
           before do
             FactoryBot.create(:training_period, ect_at_school_period: ect, started_on: 9.months.ago, finished_on: 6.months.ago)
@@ -123,7 +123,7 @@ describe AtSchoolPeriod do
         end
 
         context "with multiple inner periods where one is outside range" do
-          let(:mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, school: ect.school) }
+          let(:mentor) { FactoryBot.create(:mentor_at_school_period, :unfinished, school: ect.school) }
 
           before do
             FactoryBot.create(:training_period, ect_at_school_period: ect, started_on: 9.months.ago, finished_on: 6.months.ago)
@@ -139,7 +139,7 @@ describe AtSchoolPeriod do
       end
 
       context "for a mentor at school period" do
-        let(:mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: 1.year.ago) }
+        let(:mentor) { FactoryBot.create(:mentor_at_school_period, :unfinished, started_on: 1.year.ago) }
 
         context "with no inner periods" do
           it "is valid" do
@@ -172,7 +172,7 @@ describe AtSchoolPeriod do
         end
 
         context "with mentorship periods (where this mentor is mentoring) within range" do
-          let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, school: mentor.school) }
+          let(:ect) { FactoryBot.create(:ect_at_school_period, :unfinished, school: mentor.school) }
 
           before do
             FactoryBot.create(:mentorship_period, mentor:, mentee: ect, started_on: 6.months.ago, finished_on: 1.month.ago)
@@ -184,7 +184,7 @@ describe AtSchoolPeriod do
         end
 
         context "when the mentor start is moved after the mentorship period start" do
-          let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, school: mentor.school) }
+          let(:ect) { FactoryBot.create(:ect_at_school_period, :unfinished, school: mentor.school) }
 
           before do
             FactoryBot.create(:mentorship_period, mentor:, mentee: ect, started_on: 6.months.ago, finished_on: 3.months.ago)
@@ -282,9 +282,9 @@ describe AtSchoolPeriod do
 
   describe "#provider_led_training_programme?" do
     context "when there is a current or next training period that is provider-led" do
-      let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 1.year.ago) }
+      let(:ect) { FactoryBot.create(:ect_at_school_period, :unfinished, started_on: 1.year.ago) }
 
-      before { FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period: ect, started_on: 6.months.ago) }
+      before { FactoryBot.create(:training_period, :unfinished, :provider_led, ect_at_school_period: ect, started_on: 6.months.ago) }
 
       it "returns true" do
         expect(ect.provider_led_training_programme?).to be true
@@ -302,9 +302,9 @@ describe AtSchoolPeriod do
 
   describe "#school_led_training_programme?" do
     context "when there is a current or next training period that is school-led" do
-      let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 1.year.ago) }
+      let(:ect) { FactoryBot.create(:ect_at_school_period, :unfinished, started_on: 1.year.ago) }
 
-      before { FactoryBot.create(:training_period, :ongoing, :school_led, ect_at_school_period: ect, started_on: 6.months.ago) }
+      before { FactoryBot.create(:training_period, :unfinished, :school_led, ect_at_school_period: ect, started_on: 6.months.ago) }
 
       it "returns true" do
         expect(ect.school_led_training_programme?).to be true
@@ -322,7 +322,7 @@ describe AtSchoolPeriod do
 
   describe "#reported_leaving_by?" do
     context "via ECTAtSchoolPeriod" do
-      subject(:period) { FactoryBot.create(:ect_at_school_period, :ongoing, reported_leaving_by_school_id: reporter_id) }
+      subject(:period) { FactoryBot.create(:ect_at_school_period, :unfinished, reported_leaving_by_school_id: reporter_id) }
 
       let(:reporting_school) { FactoryBot.create(:school) }
       let(:other_school) { FactoryBot.create(:school) }
@@ -353,7 +353,7 @@ describe AtSchoolPeriod do
     end
 
     context "via MentorAtSchoolPeriod" do
-      subject(:period) { FactoryBot.create(:mentor_at_school_period, :ongoing, reported_leaving_by_school_id: reporter_id) }
+      subject(:period) { FactoryBot.create(:mentor_at_school_period, :unfinished, reported_leaving_by_school_id: reporter_id) }
 
       let(:reporting_school) { FactoryBot.create(:school) }
       let(:other_school) { FactoryBot.create(:school) }

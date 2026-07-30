@@ -103,7 +103,7 @@ module APISeedData
 
       mentor_school_period = FactoryBot.create(
         :mentor_at_school_period,
-        :ongoing,
+        :unfinished,
         teacher:,
         started_on:
       )
@@ -120,7 +120,7 @@ module APISeedData
         :training_period,
         :for_mentor,
         :provider_led,
-        :ongoing,
+        :unfinished,
         :with_schedule,
         mentor_at_school_period: mentor_school_period,
         school_partnership:,

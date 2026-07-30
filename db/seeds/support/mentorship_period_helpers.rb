@@ -15,7 +15,7 @@ module MentorshipPeriodHelpers
 
     mentee_school_period = FactoryBot.create(
       :ect_at_school_period,
-      :ongoing,
+      :unfinished,
       teacher: mentee,
       school:,
       started_on: school_started_on
@@ -24,7 +24,7 @@ module MentorshipPeriodHelpers
     FactoryBot.create(
       :training_period,
       :for_ect,
-      :ongoing,
+      :unfinished,
       started_on: training_started_on,
       ect_at_school_period: mentee_school_period,
       school_partnership: mentee_school_partnership
@@ -32,7 +32,7 @@ module MentorshipPeriodHelpers
 
     mentor_school_period = FactoryBot.create(
       :mentor_at_school_period,
-      :ongoing,
+      :unfinished,
       teacher: mentor,
       school:,
       started_on: school_started_on
@@ -42,7 +42,7 @@ module MentorshipPeriodHelpers
       FactoryBot.create(
         :training_period,
         :for_mentor,
-        :ongoing,
+        :unfinished,
         started_on: training_started_on,
         mentor_at_school_period: mentor_school_period,
         school_partnership: mentor_school_partnership
@@ -51,7 +51,7 @@ module MentorshipPeriodHelpers
 
     mentorship_period = FactoryBot.create(
       :mentorship_period,
-      :ongoing,
+      :unfinished,
       mentee: mentee_school_period,
       mentor: mentor_school_period
     )

@@ -7,20 +7,20 @@ RSpec.describe Schools::SummaryCardComponent, type: :component do
   let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
 
   let(:school_led_ect_at_school_period) do
-    FactoryBot.create(:ect_at_school_period, :ongoing, school_reported_appropriate_body:)
+    FactoryBot.create(:ect_at_school_period, :unfinished, school_reported_appropriate_body:)
   end
 
-  let(:school_led_training_period) { FactoryBot.create(:training_period, :school_led, :ongoing, ect_at_school_period: school_led_ect_at_school_period) }
+  let(:school_led_training_period) { FactoryBot.create(:training_period, :school_led, :unfinished, ect_at_school_period: school_led_ect_at_school_period) }
 
   let(:provider_led_ect_at_school_period) do
     FactoryBot.create(:ect_at_school_period,
-                      :ongoing,
+                      :unfinished,
                       school_reported_appropriate_body:,
                       started_on: "2021-01-01")
   end
 
   let(:provider_led_training_period) do
-    FactoryBot.create(:training_period, :provider_led, :ongoing, school_partnership:, ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing))
+    FactoryBot.create(:training_period, :provider_led, :unfinished, school_partnership:, ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished))
   end
 
   context "when data is reported by the school" do
@@ -86,8 +86,8 @@ RSpec.describe Schools::SummaryCardComponent, type: :component do
   end
 
   context "when data is reported by the appropriate body" do
-    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school_reported_appropriate_body:) }
-    let(:training_period) { FactoryBot.create(:training_period, :ongoing, :school_led, ect_at_school_period:) }
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school_reported_appropriate_body:) }
+    let(:training_period) { FactoryBot.create(:training_period, :unfinished, :school_led, ect_at_school_period:) }
 
     before do
       FactoryBot.create(:induction_period, teacher: ect_at_school_period.teacher, started_on: "2023-01-01")
@@ -143,7 +143,7 @@ RSpec.describe Schools::SummaryCardComponent, type: :component do
 
   context "when no training periods exist for a provider-led ECT" do
     let(:provider_led_ect_at_school_period_without_training_periods) do
-      FactoryBot.create(:ect_at_school_period, :ongoing, school_reported_appropriate_body:)
+      FactoryBot.create(:ect_at_school_period, :unfinished, school_reported_appropriate_body:)
     end
 
     before do

@@ -30,10 +30,10 @@ RSpec.describe Teachers::UndoRegistration do
     end
 
     context "when the participant has billable declarations" do
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished) }
       let(:at_school_period) { ect_at_school_period }
-      let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period:) }
-      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: ect_at_school_period.started_on, school: ect_at_school_period.school) }
+      let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :unfinished, ect_at_school_period:) }
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, started_on: ect_at_school_period.started_on, school: ect_at_school_period.school) }
       let!(:mentorship_period) { FactoryBot.create(:mentorship_period, mentee: ect_at_school_period, mentor: mentor_at_school_period, started_on: ect_at_school_period.started_on, finished_on: nil) }
 
       context "with an eligible declaration" do
@@ -105,7 +105,7 @@ RSpec.describe Teachers::UndoRegistration do
           FactoryBot.create(
             :training_period,
             :for_ect,
-            :ongoing,
+            :unfinished,
             ect_at_school_period:,
             started_on: 6.months.ago.to_date
           )
@@ -134,10 +134,10 @@ RSpec.describe Teachers::UndoRegistration do
     end
 
     context "when the participant has refundable declarations" do
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished) }
       let(:at_school_period) { ect_at_school_period }
-      let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period:) }
-      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: ect_at_school_period.started_on, school: ect_at_school_period.school) }
+      let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :unfinished, ect_at_school_period:) }
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, started_on: ect_at_school_period.started_on, school: ect_at_school_period.school) }
       let!(:mentorship_period) { FactoryBot.create(:mentorship_period, mentee: ect_at_school_period, mentor: mentor_at_school_period, started_on: ect_at_school_period.started_on, finished_on: nil) }
 
       context "with an awaiting_clawback declaration" do
@@ -170,10 +170,10 @@ RSpec.describe Teachers::UndoRegistration do
     end
 
     context "when the participant has no billable or refundable declarations" do
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished) }
       let(:at_school_period) { ect_at_school_period }
-      let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period:) }
-      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: ect_at_school_period.started_on, school: ect_at_school_period.school) }
+      let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :unfinished, ect_at_school_period:) }
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, started_on: ect_at_school_period.started_on, school: ect_at_school_period.school) }
       let!(:mentorship_period) { FactoryBot.create(:mentorship_period, mentee: ect_at_school_period, mentor: mentor_at_school_period, started_on: ect_at_school_period.started_on, finished_on: nil) }
 
       context "with no declarations" do
@@ -225,7 +225,7 @@ RSpec.describe Teachers::UndoRegistration do
 
       context "when the teacher has another mentor registration" do
         let!(:other_mentor_at_school_period) do
-          FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: ect_at_school_period.teacher)
+          FactoryBot.create(:mentor_at_school_period, :unfinished, teacher: ect_at_school_period.teacher)
         end
 
         it "deletes only the targeted ECT registration" do
@@ -295,9 +295,9 @@ RSpec.describe Teachers::UndoRegistration do
     end
 
     context "when undoing a mentor registration" do
-      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing) }
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished) }
       let(:at_school_period) { mentor_at_school_period }
-      let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:) }
+      let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :unfinished, mentor_at_school_period:) }
 
       context "with no declarations" do
         it "only undoes the targeted registration" do
@@ -330,7 +330,7 @@ RSpec.describe Teachers::UndoRegistration do
 
       context "when the teacher has another ECT registration" do
         let!(:other_ect_at_school_period) do
-          FactoryBot.create(:ect_at_school_period, :ongoing, teacher: mentor_at_school_period.teacher)
+          FactoryBot.create(:ect_at_school_period, :unfinished, teacher: mentor_at_school_period.teacher)
         end
 
         it "deletes only the targeted mentor registration" do
@@ -401,8 +401,8 @@ RSpec.describe Teachers::UndoRegistration do
       let(:teacher) { FactoryBot.create(:teacher) }
       let(:legitimate_period) { FactoryBot.create(:ect_at_school_period, :finished, teacher:) }
       let!(:legitimate_training_period) { FactoryBot.create(:training_period, :for_ect, :finished, ect_at_school_period: legitimate_period) }
-      let(:erroneous_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, started_on: legitimate_period.finished_on + 1.day) }
-      let!(:erroneous_training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period: erroneous_period) }
+      let(:erroneous_period) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher:, started_on: legitimate_period.finished_on + 1.day) }
+      let!(:erroneous_training_period) { FactoryBot.create(:training_period, :for_ect, :unfinished, ect_at_school_period: erroneous_period) }
       let(:at_school_period) { erroneous_period }
 
       it "only undoes the targeted registration" do
@@ -415,9 +415,9 @@ RSpec.describe Teachers::UndoRegistration do
     end
 
     context "when an error occurs during undoing the registration" do
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished) }
       let(:at_school_period) { ect_at_school_period }
-      let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period:) }
+      let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :unfinished, ect_at_school_period:) }
 
       it "rolls back all changes" do
         allow(Events::Record).to receive(:record_undo_registration_event!).and_raise(StandardError)

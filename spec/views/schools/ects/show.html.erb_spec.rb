@@ -76,7 +76,7 @@ RSpec.describe "schools/ects/show.html.erb" do
                                                       school: current_school,
                                                       teacher: mentor)
 
-          FactoryBot.create(:mentorship_period, :ongoing,
+          FactoryBot.create(:mentorship_period, :unfinished,
                             started_on: current_ect_period.started_on,
                             mentee: current_ect_period,
                             mentor: mentor_at_school_period)
@@ -114,7 +114,7 @@ RSpec.describe "schools/ects/show.html.erb" do
 
   describe "Induction details" do
     before do
-      FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:)
+      FactoryBot.create(:induction_period, :unfinished, teacher:, appropriate_body_period:)
       teacher.reload # Reload to pick up the new induction period
     end
 

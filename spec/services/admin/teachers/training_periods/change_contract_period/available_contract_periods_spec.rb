@@ -26,12 +26,12 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::Available
       delivery_partner:
     )
   end
-  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:) }
+  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher:, school:) }
   let(:schedule) { FactoryBot.create(:schedule, contract_period: current_contract_period) }
   let(:training_period) do
     FactoryBot.create(
       :training_period,
-      :ongoing,
+      :unfinished,
       ect_at_school_period:,
       school_partnership:,
       schedule:
@@ -66,11 +66,11 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::Available
     end
 
     context "when the training period is for a mentor with an original frozen contract period" do
-      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, school:) }
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:, school:) }
       let(:training_period) do
         FactoryBot.create(
           :training_period,
-          :ongoing,
+          :unfinished,
           :for_mentor,
           mentor_at_school_period:,
           school_partnership:,
@@ -96,7 +96,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::Available
       let(:training_period) do
         FactoryBot.create(
           :training_period,
-          :ongoing,
+          :unfinished,
           :with_only_expression_of_interest,
           ect_at_school_period:,
           expression_of_interest: active_lead_provider,

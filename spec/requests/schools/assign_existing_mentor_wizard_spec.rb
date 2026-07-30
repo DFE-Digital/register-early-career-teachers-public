@@ -3,8 +3,8 @@ RSpec.describe "Assign existing mentor wizard" do
 
   let(:school) { FactoryBot.create(:school) }
   let(:started_on) { mid_year }
-  let(:ect)    { FactoryBot.create(:ect_at_school_period, :ongoing, school:, started_on:) }
-  let(:mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, started_on:) }
+  let(:ect)    { FactoryBot.create(:ect_at_school_period, :unfinished, school:, started_on:) }
+  let(:mentor) { FactoryBot.create(:mentor_at_school_period, :unfinished, school:, started_on:) }
   let(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, :current) }
 
   before do
@@ -12,7 +12,7 @@ RSpec.describe "Assign existing mentor wizard" do
     school_partnership.lead_provider_delivery_partnership.active_lead_provider.update!(contract_period:)
 
     FactoryBot.create(:training_period,
-                      :ongoing,
+                      :unfinished,
                       :provider_led,
                       ect_at_school_period: ect,
                       started_on:,

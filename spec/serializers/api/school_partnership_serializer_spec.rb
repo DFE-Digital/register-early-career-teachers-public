@@ -62,9 +62,9 @@ describe API::SchoolPartnershipSerializer, type: :serializer do
         before do
           3.times do
             FactoryBot.create(:training_period,
-                              :ongoing,
+                              :unfinished,
                               school_partnership: partnership,
-                              ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing))
+                              ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished))
           end
         end
 

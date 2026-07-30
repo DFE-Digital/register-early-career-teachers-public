@@ -76,7 +76,7 @@ module APISeedData
 
             school_period = FactoryBot.create(
               :"#{type}_at_school_period",
-              :ongoing,
+              :unfinished,
               school:,
               started_on: start_date
             )
@@ -87,7 +87,7 @@ module APISeedData
               :training_period,
               :"for_#{type}",
               :provider_led,
-              :ongoing,
+              :unfinished,
               "#{type}_at_school_period" => school_period,
               school_partnership:,
               schedule:,
@@ -133,7 +133,7 @@ module APISeedData
 
             school_period = FactoryBot.create(
               :"#{type}_at_school_period",
-              :ongoing,
+              :unfinished,
               school:,
               started_on: start_date
             )
@@ -144,7 +144,7 @@ module APISeedData
               :training_period,
               :"for_#{type}",
               :provider_led,
-              :ongoing,
+              :unfinished,
               "#{type}_at_school_period" => school_period,
               school_partnership: nil,
               expression_of_interest: active_lead_provider,
@@ -180,7 +180,7 @@ module APISeedData
 
             school_period = FactoryBot.create(
               :ect_at_school_period,
-              :ongoing,
+              :unfinished,
               school:,
               started_on: start_date
             )
@@ -191,7 +191,7 @@ module APISeedData
               :training_period,
               :for_ect,
               :provider_led,
-              :ongoing,
+              :unfinished,
               ect_at_school_period: school_period,
               school_partnership:,
               schedule:,
@@ -233,7 +233,7 @@ module APISeedData
 
             school_period = FactoryBot.create(
               :ect_at_school_period,
-              :ongoing,
+              :unfinished,
               school:,
               started_on: start_date
             )
@@ -244,7 +244,7 @@ module APISeedData
               :training_period,
               :for_ect,
               :provider_led,
-              :ongoing,
+              :unfinished,
               ect_at_school_period: school_period,
               school_partnership:,
               schedule:,
@@ -304,7 +304,7 @@ module APISeedData
               school_partnership = school_partnership(active_lead_provider)
               school = school_partnership.school
               start_date = Date.new(contract_period_year, 9, 1)
-              school_period = FactoryBot.create(:"#{type}_at_school_period", :ongoing, school:, started_on: start_date)
+              school_period = FactoryBot.create(:"#{type}_at_school_period", :unfinished, school:, started_on: start_date)
               schedule = find_schedule(contract_period, type)
               teacher = school_period.teacher
 
@@ -312,7 +312,7 @@ module APISeedData
                 :training_period,
                 :"for_#{type}",
                 :provider_led,
-                :ongoing,
+                :unfinished,
                 "#{type}_at_school_period" => school_period,
                 school_partnership:,
                 schedule:,
@@ -392,7 +392,7 @@ module APISeedData
               start_date = Date.new(contract_period_year, 9, 1)
               finished_date = Time.zone.today + rand(1..6).months
 
-              school_period = FactoryBot.create(:"#{type}_at_school_period", :ongoing, school:, started_on: start_date, finished_on: finished_date)
+              school_period = FactoryBot.create(:"#{type}_at_school_period", :unfinished, school:, started_on: start_date, finished_on: finished_date)
 
               schedule = find_schedule(contract_period, type)
 
@@ -455,7 +455,7 @@ module APISeedData
 
               school_period = FactoryBot.create(
                 :"#{type}_at_school_period",
-                :ongoing,
+                :unfinished,
                 school:,
                 started_on: start_date
               )
@@ -467,7 +467,7 @@ module APISeedData
                 :"for_#{type}",
                 :provider_led,
                 :active,
-                :ongoing,
+                :unfinished,
                 "#{type}_at_school_period" => school_period,
                 school_partnership:,
                 schedule:,

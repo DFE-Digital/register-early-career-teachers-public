@@ -7,8 +7,8 @@ RSpec.describe Admin::TeacherPresenter do
   describe "#most_recent_email" do
     context "when there are ECT and mentor periods" do
       before do
-        FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:, email: "ect@example.com", started_on: 2.months.ago)
-        FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, school:, email: "mentor@example.com", started_on: 1.month.ago)
+        FactoryBot.create(:ect_at_school_period, :unfinished, teacher:, school:, email: "ect@example.com", started_on: 2.months.ago)
+        FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:, school:, email: "mentor@example.com", started_on: 1.month.ago)
       end
 
       it "returns the email from the most recent period" do
@@ -25,7 +25,7 @@ RSpec.describe Admin::TeacherPresenter do
 
   describe "#current_schools" do
     context "when the teacher has ongoing ECT periods" do
-      before { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:) }
+      before { FactoryBot.create(:ect_at_school_period, :unfinished, teacher:, school:) }
 
       it "includes the school from the ongoing period" do
         expect(presenter.current_schools).to include(school)
@@ -75,8 +75,8 @@ RSpec.describe Admin::TeacherPresenter do
     context "when the teacher is an Early Career Teacher" do
       let(:teacher) do
         FactoryBot.create(:teacher, api_id: SecureRandom.uuid, trs_induction_status: "InProgress").tap do |t|
-          FactoryBot.create(:ect_at_school_period, :ongoing, teacher: t, school:)
-          FactoryBot.create(:induction_period, :ongoing, teacher: t)
+          FactoryBot.create(:ect_at_school_period, :unfinished, teacher: t, school:)
+          FactoryBot.create(:induction_period, :unfinished, teacher: t)
         end
       end
 

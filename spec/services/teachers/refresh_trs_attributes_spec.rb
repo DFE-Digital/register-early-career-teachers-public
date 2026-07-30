@@ -265,7 +265,7 @@ describe Teachers::RefreshTRSAttributes do
 
       context "and the teacher has an ongoing induction" do
         before do
-          FactoryBot.create(:induction_period, :ongoing, teacher:)
+          FactoryBot.create(:induction_period, :unfinished, teacher:)
           service.refresh!
           teacher.reload
         end

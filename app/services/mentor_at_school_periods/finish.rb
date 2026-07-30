@@ -41,7 +41,7 @@ private
   end
 
   def ongoing_mentor_at_school_periods
-    teacher.mentor_at_school_periods.ongoing_on(finished_on)
+    teacher.mentor_at_school_periods.contains_date(finished_on)
   end
 
   def ongoing_mentor_at_school_periods_at_reported_school
@@ -51,7 +51,7 @@ private
   def finish_mentorship_periods!(period)
     destroy_unstarted_mentorship_periods!(period)
 
-    period.mentorship_periods.ongoing_on(finished_on).each do |mentorship_period|
+    period.mentorship_periods.contains_date(finished_on).each do |mentorship_period|
       effective_date = [finished_on, mentorship_period.mentee.finished_on].compact.min
 
       MentorshipPeriods::Finish.new(mentorship_period:, finished_on: effective_date, author:).finish!
@@ -75,7 +75,7 @@ private
   def finish_training_periods!(period)
     destroy_unstarted_training_periods!(period)
 
-    period.training_periods.ongoing_on(finished_on).each do |training_period|
+    period.training_periods.contains_date(finished_on).each do |training_period|
       TrainingPeriods::Finish.mentor_training(training_period:, mentor_at_school_period: period, finished_on:, author:).finish!
     end
   end

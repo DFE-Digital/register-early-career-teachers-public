@@ -261,7 +261,7 @@ RSpec.describe API::Declarations::Create, type: :model do
           context "when teacher's latest ongoing training period is in a frozen contract period but declaration targets non-frozen" do
             let(:declaration_date) { Faker::Date.between(from: training_period.started_on, to: training_period.finished_on).rfc3339 }
 
-            let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :ongoing, started_on: 6.months.ago) }
+            let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :unfinished, started_on: 6.months.ago) }
             let!(:training_period) do
               FactoryBot.create(:training_period, :"for_#{trainee_type}", :active,
                                 "#{trainee_type}_at_school_period": at_school_period,
@@ -277,7 +277,7 @@ RSpec.describe API::Declarations::Create, type: :model do
                                 school: at_school_period.school)
             end
             let!(:frozen_training_period) do
-              FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing,
+              FactoryBot.create(:training_period, :"for_#{trainee_type}", :unfinished,
                                 "#{trainee_type}_at_school_period": at_school_period,
                                 school_partnership: frozen_school_partnership,
                                 started_on: training_period.finished_on + 1.day)
@@ -324,7 +324,7 @@ RSpec.describe API::Declarations::Create, type: :model do
         end
 
         describe "training period selection" do
-          let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :ongoing, started_on: 6.months.ago) }
+          let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :unfinished, started_on: 6.months.ago) }
 
           context "when multiple training periods exist for the same lead provider" do
             let!(:training_period) do
@@ -335,7 +335,7 @@ RSpec.describe API::Declarations::Create, type: :model do
             end
 
             let!(:current_training_period) do
-              FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing,
+              FactoryBot.create(:training_period, :"for_#{trainee_type}", :unfinished,
                                 "#{trainee_type}_at_school_period": at_school_period,
                                 school_partnership: training_period.school_partnership,
                                 started_on: 2.months.ago + 1.day)
@@ -363,7 +363,7 @@ RSpec.describe API::Declarations::Create, type: :model do
             end
 
             let!(:future_training_period) do
-              FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing,
+              FactoryBot.create(:training_period, :"for_#{trainee_type}", :unfinished,
                                 "#{trainee_type}_at_school_period": at_school_period,
                                 school_partnership: training_period.school_partnership,
                                 started_on: 1.month.from_now)
@@ -384,7 +384,7 @@ RSpec.describe API::Declarations::Create, type: :model do
 
           context "when only a future training period exists for the same lead provider" do
             let!(:training_period) do
-              FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing,
+              FactoryBot.create(:training_period, :"for_#{trainee_type}", :unfinished,
                                 "#{trainee_type}_at_school_period": at_school_period,
                                 started_on: 1.month.from_now)
             end
@@ -622,9 +622,9 @@ RSpec.describe API::Declarations::Create, type: :model do
         let(:teacher_type) { trainee_type }
 
         context "when invalid" do
-          let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :ongoing) }
+          let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :unfinished) }
           let!(:training_period) do
-            FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing,
+            FactoryBot.create(:training_period, :"for_#{trainee_type}", :unfinished,
                               "#{trainee_type}_at_school_period": at_school_period,
                               started_on: at_school_period.started_on)
           end

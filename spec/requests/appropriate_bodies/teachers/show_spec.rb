@@ -1,7 +1,7 @@
 RSpec.describe "Appropriate Body teacher show page", type: :request do
   let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let(:teacher) { FactoryBot.create(:teacher) }
-  let!(:induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:) }
+  let!(:induction_period) { FactoryBot.create(:induction_period, :unfinished, teacher:, appropriate_body_period:) }
 
   describe "GET /appropriate-body/teachers/:id" do
     context "when not signed in" do

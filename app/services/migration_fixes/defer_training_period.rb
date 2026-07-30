@@ -10,7 +10,7 @@ class MigrationFixes::DeferTrainingPeriod
   def defer!
     return if training_period.blank?
 
-    if training_period.ongoing?
+    if training_period.unfinished?
       training_period.assign_attributes(finished_on: deferred_at,
                                         deferred_at:,
                                         deferral_reason:)

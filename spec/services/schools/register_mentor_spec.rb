@@ -97,7 +97,7 @@ RSpec.describe Schools::RegisterMentor do
         end
 
         context "with MentorATSchoolPeriod records" do
-          let!(:existing_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, started_on: 2.years.ago) }
+          let!(:existing_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:, started_on: 2.years.ago) }
           let!(:existing_training_period) do
             FactoryBot.create(
               :training_period,

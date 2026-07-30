@@ -17,7 +17,7 @@ describe Schools::ECTs::ChangeLeadProviderWizard::CheckAnswersStep do
   let(:ect_at_school_period) do
     FactoryBot.create(
       :ect_at_school_period,
-      :ongoing,
+      :unfinished,
       school:,
       started_on: contract_period.started_on
     )
@@ -41,7 +41,7 @@ describe Schools::ECTs::ChangeLeadProviderWizard::CheckAnswersStep do
   let!(:training_period) do
     FactoryBot.create(
       :training_period,
-      :ongoing,
+      :unfinished,
       :provider_led,
       :with_only_expression_of_interest,
       ect_at_school_period:,
@@ -82,7 +82,7 @@ describe Schools::ECTs::ChangeLeadProviderWizard::CheckAnswersStep do
       let!(:training_period) do
         FactoryBot.create(
           :training_period,
-          :ongoing,
+          :unfinished,
           :provider_led,
           :withdrawn,
           :with_only_expression_of_interest,
@@ -121,7 +121,7 @@ describe Schools::ECTs::ChangeLeadProviderWizard::CheckAnswersStep do
       let!(:training_period) do
         training_period = FactoryBot.create(
           :training_period,
-          :ongoing,
+          :unfinished,
           :provider_led,
           :with_only_expression_of_interest,
           ect_at_school_period:,
@@ -158,7 +158,7 @@ describe Schools::ECTs::ChangeLeadProviderWizard::CheckAnswersStep do
       let!(:training_period) do
         training_period = FactoryBot.create(
           :training_period,
-          :ongoing,
+          :unfinished,
           :school_led,
           ect_at_school_period:,
           started_on: ect_at_school_period.started_on

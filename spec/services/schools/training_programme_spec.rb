@@ -20,7 +20,7 @@ describe Schools::TrainingProgramme do
       context "when school has at least one mentor in training" do
         let(:mentor_at_school_period) do
           FactoryBot.create(:mentor_at_school_period,
-                            :ongoing,
+                            :unfinished,
                             school:,
                             started_on: "2021-01-01")
         end
@@ -38,19 +38,19 @@ describe Schools::TrainingProgramme do
       context "when school has mentors not in training (only mentoring)" do
         let(:mentor_at_school_period) do
           FactoryBot.create(:mentor_at_school_period,
-                            :ongoing,
+                            :unfinished,
                             school:,
                             started_on: "2021-01-01")
         end
         let(:ect_at_school_period) do
           FactoryBot.create(:ect_at_school_period,
-                            :ongoing,
+                            :unfinished,
                             school:,
                             started_on: "2021-01-01")
         end
         let!(:mentorship_period) do
           FactoryBot.create(:mentorship_period,
-                            :ongoing,
+                            :unfinished,
                             started_on: mentor_at_school_period.started_on,
                             mentor: mentor_at_school_period,
                             mentee: ect_at_school_period)
@@ -62,7 +62,7 @@ describe Schools::TrainingProgramme do
       context "when school has at least one expression of interest for training from a mentor" do
         let(:mentor_at_school_period) do
           FactoryBot.create(:mentor_at_school_period,
-                            :ongoing,
+                            :unfinished,
                             school:,
                             started_on: "2021-01-01")
         end
@@ -82,7 +82,7 @@ describe Schools::TrainingProgramme do
         context "when there is only `provider_led` as the ects training programmes" do
           let(:ect_at_school_period) do
             FactoryBot.create(:ect_at_school_period,
-                              :ongoing,
+                              :unfinished,
                               school:,
                               started_on: "2021-01-01")
           end
@@ -101,7 +101,7 @@ describe Schools::TrainingProgramme do
         context "when there is only `school_led` as the ects training programmes" do
           let(:ect_at_school_period) do
             FactoryBot.create(:ect_at_school_period,
-                              :ongoing,
+                              :unfinished,
                               school:,
                               started_on: "2021-01-01")
           end
@@ -119,7 +119,7 @@ describe Schools::TrainingProgramme do
         context "when the only `school_led` ect training was created for a different contract period" do
           let(:ect_at_school_period) do
             FactoryBot.create(:ect_at_school_period,
-                              :ongoing,
+                              :unfinished,
                               school:,
                               started_on: "2021-01-01")
           end
@@ -137,7 +137,7 @@ describe Schools::TrainingProgramme do
         context "when there is a mix of `provider_led` and `school_led` as the ects training programmes" do
           let(:ect_at_school_period_1) do
             FactoryBot.create(:ect_at_school_period,
-                              :ongoing,
+                              :unfinished,
                               school:,
                               started_on: "2021-01-01")
           end
@@ -152,7 +152,7 @@ describe Schools::TrainingProgramme do
 
           let(:ect_at_school_period_2) do
             FactoryBot.create(:ect_at_school_period,
-                              :ongoing,
+                              :unfinished,
                               school:,
                               started_on: "2021-01-01")
           end
@@ -170,7 +170,7 @@ describe Schools::TrainingProgramme do
         context "when the same ect at school period has both provider-led and school-led training periods" do
           let(:ect_at_school_period) do
             FactoryBot.create(:ect_at_school_period,
-                              :ongoing,
+                              :unfinished,
                               school:,
                               started_on: "2021-01-01")
           end
@@ -199,7 +199,7 @@ describe Schools::TrainingProgramme do
       context "when school has at least one expression of interest for training from an ect" do
         let(:ect_at_school_period) do
           FactoryBot.create(:ect_at_school_period,
-                            :ongoing,
+                            :unfinished,
                             school:,
                             started_on: contract_period.started_on)
         end

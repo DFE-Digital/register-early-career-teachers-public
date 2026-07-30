@@ -504,9 +504,9 @@ RSpec.shared_examples "period boundary validations" do
   def build_training_period(period:, started_on:, finished_on: nil)
     case period
     when ECTAtSchoolPeriod
-      FactoryBot.create(:training_period, :ongoing, :for_ect, ect_at_school_period: period, started_on:, finished_on:)
+      FactoryBot.create(:training_period, :unfinished, :for_ect, ect_at_school_period: period, started_on:, finished_on:)
     when MentorAtSchoolPeriod
-      FactoryBot.create(:training_period, :ongoing, :for_mentor, mentor_at_school_period: period, started_on:, finished_on:)
+      FactoryBot.create(:training_period, :unfinished, :for_mentor, mentor_at_school_period: period, started_on:, finished_on:)
     end
   end
 end
@@ -520,13 +520,13 @@ RSpec.describe Schools::Validation::PeriodBoundary do
   end
 
   context "when validating an ECT at school period" do
-    let(:input_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: input_period_started_on) }
+    let(:input_period) { FactoryBot.create(:ect_at_school_period, :unfinished, started_on: input_period_started_on) }
 
     it_behaves_like "period boundary validations"
   end
 
   context "when validating a mentor at school period" do
-    let(:input_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: input_period_started_on) }
+    let(:input_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, started_on: input_period_started_on) }
 
     it_behaves_like "period boundary validations"
   end

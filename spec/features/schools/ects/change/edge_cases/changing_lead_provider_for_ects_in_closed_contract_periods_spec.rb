@@ -74,7 +74,7 @@ private
     )
     @ect_at_school_period = FactoryBot.create(
       :ect_at_school_period,
-      :ongoing,
+      :unfinished,
       teacher: @teacher,
       school: @school,
       email: "ect@example.com",
@@ -98,7 +98,7 @@ private
   def with_confirmed_provider_led_training
     @provider_led_training_period = FactoryBot.create(
       :training_period,
-      :ongoing,
+      :unfinished,
       :for_ect,
       :provider_led,
       :with_school_partnership,

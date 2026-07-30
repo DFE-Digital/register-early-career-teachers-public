@@ -35,7 +35,7 @@ private
   end
 
   def eligible_for_ect_training?
-    teacher.induction_periods.ongoing_today.any? && teacher.ect_at_school_periods.any?
+    teacher.induction_periods.contains_today.any? && teacher.ect_at_school_periods.any?
   end
 
   def record_teacher_set_funding_eligibility_event!

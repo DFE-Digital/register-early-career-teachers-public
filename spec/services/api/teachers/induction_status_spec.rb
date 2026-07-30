@@ -98,7 +98,7 @@ RSpec.describe API::Teachers::InductionStatus, type: :model do
     end
 
     context "when the teacher has an ongoing induction_period" do
-      let(:teacher) { FactoryBot.create(:induction_period, :ongoing).teacher }
+      let(:teacher) { FactoryBot.create(:induction_period, :unfinished).teacher }
 
       it { is_expected.to be_nil }
     end
@@ -106,7 +106,7 @@ RSpec.describe API::Teachers::InductionStatus, type: :model do
     context "when the teacher has multiple induction periods" do
       let(:teacher) { closed_period.teacher }
       let(:closed_period) { FactoryBot.create(:induction_period, finished_on: 10.days.ago) }
-      let!(:latest_period) { FactoryBot.create(:induction_period, :ongoing, started_on: 9.days.ago, teacher:) }
+      let!(:latest_period) { FactoryBot.create(:induction_period, :unfinished, started_on: 9.days.ago, teacher:) }
 
       it { is_expected.to eq latest_period.finished_on }
     end

@@ -149,9 +149,9 @@ RSpec.describe "Registering a mentor", :js do
     @another_lead_provider = FactoryBot.create(:lead_provider, name: "Another lead provider")
     FactoryBot.create(:active_lead_provider, lead_provider: @another_lead_provider, contract_period: @contract_period)
 
-    @ect_at_school_period = FactoryBot.create(:ect_at_school_period, :ongoing, school: @school)
+    @ect_at_school_period = FactoryBot.create(:ect_at_school_period, :unfinished, school: @school)
     @training_period = FactoryBot.create(
-      :training_period, :ongoing,
+      :training_period, :unfinished,
       ect_at_school_period: @ect_at_school_period,
       school_partnership: school_partnership_for_ect
     )
@@ -162,11 +162,11 @@ RSpec.describe "Registering a mentor", :js do
   def and_mentor_has_existing_mentorship_at_another_school
     another_school = FactoryBot.create(:school, urn: "7654321")
     @teacher = FactoryBot.create(:teacher, trn:, trs_first_name: "Kirk", trs_last_name: "Van Houten", corrected_name: nil)
-    @existing_mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :ongoing, school: another_school, teacher: @teacher)
+    @existing_mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :unfinished, school: another_school, teacher: @teacher)
     school_partnership_for_prev_lp = make_partnership_for(another_school, @contract_period, lead_provider_name: "Mentor Prev LP")
 
     @training_period = FactoryBot.create(
-      :training_period, :for_mentor, :provider_led, :ongoing,
+      :training_period, :for_mentor, :provider_led, :unfinished,
       mentor_at_school_period: @existing_mentor_at_school_period,
       school_partnership: school_partnership_for_prev_lp,
       started_on: @existing_mentor_at_school_period.started_on

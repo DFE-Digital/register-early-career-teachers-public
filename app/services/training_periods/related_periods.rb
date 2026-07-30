@@ -7,7 +7,7 @@ module TrainingPeriods
     end
 
     def current_active_period
-      related_periods.ongoing_today.first
+      related_periods.contains_today.first
     end
 
     def future_periods

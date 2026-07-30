@@ -8,8 +8,8 @@ RSpec.describe Admin::Teachers::OverviewSummaryComponent, type: :component do
     let(:teacher) { FactoryBot.create(:teacher, corrected_name: "New Name", api_id: SecureRandom.uuid, trs_induction_status: "InProgress") }
 
     before do
-      FactoryBot.create(:induction_period, :ongoing, teacher:)
-      FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:, email: "teacher@example.com")
+      FactoryBot.create(:induction_period, :unfinished, teacher:)
+      FactoryBot.create(:ect_at_school_period, :unfinished, teacher:, school:, email: "teacher@example.com")
     end
 
     it "renders the core summary rows" do
@@ -44,7 +44,7 @@ RSpec.describe Admin::Teachers::OverviewSummaryComponent, type: :component do
     let(:teacher) { FactoryBot.create(:teacher, api_id: SecureRandom.uuid, trs_induction_status: nil) }
 
     before do
-      FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, school:, email: "mentor@example.com")
+      FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:, school:, email: "mentor@example.com")
     end
 
     it "does not render the induction status row" do

@@ -1,6 +1,6 @@
 describe MentorshipPeriod do
   describe "declarative updates" do
-    let(:instance) { FactoryBot.create(:mentorship_period, :ongoing, mentee:, mentor:, started_on: 1.year.ago, finished_on: nil) }
+    let(:instance) { FactoryBot.create(:mentorship_period, :unfinished, mentee:, mentor:, started_on: 1.year.ago, finished_on: nil) }
     let(:mentee) { FactoryBot.create(:ect_at_school_period, started_on: 5.years.ago, finished_on: nil, teacher: target, school:) }
     let(:mentor) { FactoryBot.create(:mentor_at_school_period, started_on: 5.years.ago, finished_on: nil, school:) }
     let!(:target) { FactoryBot.create(:teacher) }
@@ -27,8 +27,8 @@ describe MentorshipPeriod do
     end
 
     let(:school) { FactoryBot.create(:school) }
-    let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 2.years.ago, school:) }
-    let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: 2.years.ago, school:) }
+    let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, started_on: 2.years.ago, school:) }
+    let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, started_on: 2.years.ago, school:) }
     let(:started_on) { 2.months.ago }
     let(:finished_on) { nil }
 
@@ -122,7 +122,7 @@ describe MentorshipPeriod do
         let(:mentor_at_school_period) do
           FactoryBot.create(
             :mentor_at_school_period,
-            :ongoing,
+            :unfinished,
             school: ect_at_school_period.school,
             started_on: 1.year.ago
           )
@@ -141,7 +141,7 @@ describe MentorshipPeriod do
         let(:next_ect_at_school_period) do
           FactoryBot.create(
             :ect_at_school_period,
-            :ongoing,
+            :unfinished,
             teacher: mentee_teacher,
             started_on: ect_at_school_period.finished_on.advance(days: 1)
           )
@@ -149,7 +149,7 @@ describe MentorshipPeriod do
         let(:next_mentor_at_school_period) do
           FactoryBot.create(
             :mentor_at_school_period,
-            :ongoing,
+            :unfinished,
             school: next_ect_at_school_period.school,
             started_on: 1.year.ago
           )
@@ -157,7 +157,7 @@ describe MentorshipPeriod do
         let!(:ongoing_mentorship_period) do
           FactoryBot.create(
             :mentorship_period,
-            :ongoing,
+            :unfinished,
             mentee: next_ect_at_school_period,
             mentor: next_mentor_at_school_period,
             started_on: next_ect_at_school_period.started_on
@@ -168,7 +168,7 @@ describe MentorshipPeriod do
         let(:concurrent_ongoing_period) do
           FactoryBot.build(
             :mentorship_period,
-            :ongoing,
+            :unfinished,
             mentee: ect_at_school_period,
             mentor: mentor_at_school_period,
             started_on: mentorship_period.finished_on
@@ -188,7 +188,7 @@ describe MentorshipPeriod do
         let(:ect_at_school_period) do
           FactoryBot.create(
             :ect_at_school_period,
-            :ongoing,
+            :unfinished,
             started_on: 1.year.ago
           )
         end
@@ -215,7 +215,7 @@ describe MentorshipPeriod do
         let(:next_mentor_at_school_period) do
           FactoryBot.create(
             :mentor_at_school_period,
-            :ongoing,
+            :unfinished,
             school: next_ect_at_school_period.school,
             teacher: mentor_teacher,
             started_on: mentor_at_school_period.finished_on.advance(days: 1)
@@ -224,14 +224,14 @@ describe MentorshipPeriod do
         let(:next_ect_at_school_period) do
           FactoryBot.create(
             :ect_at_school_period,
-            :ongoing,
+            :unfinished,
             started_on: mentor_at_school_period.finished_on.advance(days: 1)
           )
         end
         let!(:ongoing_mentorship_period) do
           FactoryBot.create(
             :mentorship_period,
-            :ongoing,
+            :unfinished,
             mentor: next_mentor_at_school_period,
             mentee: next_ect_at_school_period,
             started_on: next_mentor_at_school_period.started_on
@@ -242,7 +242,7 @@ describe MentorshipPeriod do
         let(:other_next_ect_at_school_period) do
           FactoryBot.create(
             :ect_at_school_period,
-            :ongoing,
+            :unfinished,
             school: next_ect_at_school_period.school,
             started_on: next_mentor_at_school_period.started_on.advance(weeks: 1)
           )
@@ -250,7 +250,7 @@ describe MentorshipPeriod do
         let(:concurrent_ongoing_period) do
           FactoryBot.build(
             :mentorship_period,
-            :ongoing,
+            :unfinished,
             mentor: next_mentor_at_school_period,
             mentee: other_next_ect_at_school_period,
             started_on: other_next_ect_at_school_period.started_on
@@ -302,8 +302,8 @@ describe MentorshipPeriod do
         subject { FactoryBot.build(:mentorship_period, mentee: ect_at_school_period, mentor: mentor_at_school_period) }
 
         let!(:teacher) { ect_at_school_period.teacher }
-        let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing) }
-        let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:) }
+        let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished) }
+        let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:) }
 
         it "add a base error" do
           subject.valid?
@@ -315,8 +315,8 @@ describe MentorshipPeriod do
       context "when mentor and mentee are different teachers" do
         subject { FactoryBot.build(:mentorship_period, mentee: ect_at_school_period, mentor: mentor_at_school_period) }
 
-        let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing) }
-        let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing) }
+        let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished) }
+        let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished) }
 
         it "do not add an error" do
           subject.valid?
@@ -328,8 +328,8 @@ describe MentorshipPeriod do
       context "when mentor or mentee are not set yet" do
         subject { FactoryBot.build(:mentorship_period, mentor: mentor_at_school_period) }
 
-        let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing) }
-        let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing) }
+        let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished) }
+        let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished) }
 
         it "do not add an error" do
           subject.valid?
@@ -355,11 +355,11 @@ describe MentorshipPeriod do
         end
 
         let!(:ect_at_school_period) do
-          FactoryBot.create(:ect_at_school_period, :ongoing, school: school_1)
+          FactoryBot.create(:ect_at_school_period, :unfinished, school: school_1)
         end
 
         let!(:mentor_at_school_period) do
-          FactoryBot.create(:mentor_at_school_period, :ongoing, school: school_1)
+          FactoryBot.create(:mentor_at_school_period, :unfinished, school: school_1)
         end
 
         it "is valid" do
@@ -380,11 +380,11 @@ describe MentorshipPeriod do
         end
 
         let!(:ect_at_school_period) do
-          FactoryBot.create(:ect_at_school_period, :ongoing, school: school_1)
+          FactoryBot.create(:ect_at_school_period, :unfinished, school: school_1)
         end
 
         let!(:mentor_at_school_period) do
-          FactoryBot.create(:mentor_at_school_period, :ongoing, school: school_2)
+          FactoryBot.create(:mentor_at_school_period, :unfinished, school: school_2)
         end
 
         it "adds a base error" do
@@ -395,8 +395,8 @@ describe MentorshipPeriod do
       end
 
       context "when mentor or mentee is missing" do
-        let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school: school_1) }
-        let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school: school_2) }
+        let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school: school_1) }
+        let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, school: school_2) }
 
         it "does not add an error when mentee is missing" do
           period = FactoryBot.build(
@@ -458,12 +458,12 @@ describe MentorshipPeriod do
     subject { period_1.siblings }
 
     let(:school) { FactoryBot.create(:school) }
-    let!(:mentee) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: "2021-01-01", school:) }
-    let!(:mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: "2021-01-01", school:) }
+    let!(:mentee) { FactoryBot.create(:ect_at_school_period, :unfinished, started_on: "2021-01-01", school:) }
+    let!(:mentor) { FactoryBot.create(:mentor_at_school_period, :unfinished, started_on: "2021-01-01", school:) }
     let!(:period_1) { FactoryBot.create(:mentorship_period, mentee:, mentor:, started_on: "2022-01-01", finished_on: "2022-06-01") }
     let!(:period_2) { FactoryBot.create(:mentorship_period, mentee:, mentor:, started_on: "2022-06-02", finished_on: "2023-01-01") }
 
-    let!(:unrelated_mentee) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: "2021-01-01", school:) }
+    let!(:unrelated_mentee) { FactoryBot.create(:ect_at_school_period, :unfinished, started_on: "2021-01-01", school:) }
     let!(:unrelated_period) { FactoryBot.create(:mentorship_period, mentor:, mentee: unrelated_mentee, started_on: "2022-06-01", finished_on: "2023-01-01") }
 
     it "only returns records that belong to the same mentee" do

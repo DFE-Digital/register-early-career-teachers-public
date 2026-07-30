@@ -102,7 +102,7 @@ describe "School user can change ECT's appropriate body" do
     )
     @ect = FactoryBot.create(
       :ect_at_school_period,
-      :ongoing,
+      :unfinished,
       teacher: @teacher,
       school: @school,
       email: "ect@example.com",

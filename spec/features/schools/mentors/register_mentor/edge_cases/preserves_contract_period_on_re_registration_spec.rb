@@ -55,8 +55,8 @@ private
     @active_lead_provider = FactoryBot.create(:active_lead_provider,
                                               lead_provider: @lead_provider,
                                               contract_period: @contract_period)
-    @ect = FactoryBot.create(:ect_at_school_period, :ongoing, school: @school)
-    FactoryBot.create(:training_period, :provider_led, :ongoing,
+    @ect = FactoryBot.create(:ect_at_school_period, :unfinished, school: @school)
+    FactoryBot.create(:training_period, :provider_led, :unfinished,
                       ect_at_school_period: @ect,
                       school_partnership: FactoryBot.create(:school_partnership,
                                                             school: @school,

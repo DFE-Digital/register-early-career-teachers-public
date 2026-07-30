@@ -174,10 +174,10 @@ RSpec.describe "Admin finance statements index", type: :request do
                                                                                 delivery_partner:))
       end
       let(:training_period) do
-        FactoryBot.create(:training_period, :ongoing,
+        FactoryBot.create(:training_period, :unfinished,
                           school_partnership:,
                           started_on: Date.new(2024, 10, 1),
-                          ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing,
+                          ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished,
                                                                   started_on: Date.new(2024, 10, 1)))
       end
       let!(:declaration) do

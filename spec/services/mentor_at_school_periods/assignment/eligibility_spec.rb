@@ -11,10 +11,10 @@ RSpec.describe MentorAtSchoolPeriods::Assignment::Eligibility, type: :service do
     end
 
     context "when mentor is eligible for funding, ECT is provider-led, and the mentor has no ongoing training periods" do
-      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher:) }
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, school:, teacher:) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school:) }
 
-      before { FactoryBot.create(:training_period, :for_ect, :ongoing, :provider_led, ect_at_school_period:) }
+      before { FactoryBot.create(:training_period, :for_ect, :unfinished, :provider_led, ect_at_school_period:) }
 
       it "returns true" do
         expect(result).to be(true)
@@ -22,12 +22,12 @@ RSpec.describe MentorAtSchoolPeriods::Assignment::Eligibility, type: :service do
     end
 
     context "when mentor already has an ongoing training period" do
-      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher:) }
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, school:, teacher:) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school:) }
 
       before do
-        FactoryBot.create(:training_period, :for_ect, :ongoing, :provider_led, ect_at_school_period:)
-        FactoryBot.create(:training_period, :for_mentor, :ongoing, :provider_led, mentor_at_school_period:)
+        FactoryBot.create(:training_period, :for_ect, :unfinished, :provider_led, ect_at_school_period:)
+        FactoryBot.create(:training_period, :for_mentor, :unfinished, :provider_led, mentor_at_school_period:)
       end
 
       it "returns false" do
@@ -36,11 +36,11 @@ RSpec.describe MentorAtSchoolPeriods::Assignment::Eligibility, type: :service do
     end
 
     context "when mentor has a training period that ends in the future" do
-      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher:) }
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, school:, teacher:) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school:) }
 
       before do
-        FactoryBot.create(:training_period, :for_ect, :ongoing, :provider_led, ect_at_school_period:)
+        FactoryBot.create(:training_period, :for_ect, :unfinished, :provider_led, ect_at_school_period:)
         FactoryBot.create(:training_period, :for_mentor, :provider_led, mentor_at_school_period:, started_on: 1.week.ago, finished_on: 1.day.from_now)
       end
 
@@ -50,11 +50,11 @@ RSpec.describe MentorAtSchoolPeriods::Assignment::Eligibility, type: :service do
     end
 
     context "when mentor has a finished training period at the same school" do
-      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher:) }
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, school:, teacher:) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school:) }
 
       before do
-        FactoryBot.create(:training_period, :for_ect, :ongoing, :provider_led, ect_at_school_period:)
+        FactoryBot.create(:training_period, :for_ect, :unfinished, :provider_led, ect_at_school_period:)
         FactoryBot.create(:training_period, :for_mentor, :finished, :provider_led, mentor_at_school_period:)
       end
 
@@ -64,12 +64,12 @@ RSpec.describe MentorAtSchoolPeriods::Assignment::Eligibility, type: :service do
     end
 
     context "when mentor has a finished training period at another school" do
-      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher:) }
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
-      let(:other_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school: other_school, teacher:) }
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, school:, teacher:) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school:) }
+      let(:other_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, school: other_school, teacher:) }
 
       before do
-        FactoryBot.create(:training_period, :for_ect, :ongoing, :provider_led, ect_at_school_period:)
+        FactoryBot.create(:training_period, :for_ect, :unfinished, :provider_led, ect_at_school_period:)
         FactoryBot.create(:training_period, :for_mentor, :finished, :provider_led, mentor_at_school_period: other_mentor_at_school_period)
       end
 
@@ -79,13 +79,13 @@ RSpec.describe MentorAtSchoolPeriods::Assignment::Eligibility, type: :service do
     end
 
     context "when the mentor is mentoring at another school" do
-      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher:) }
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
-      let(:other_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school: other_school, teacher:) }
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, school:, teacher:) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school:) }
+      let(:other_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, school: other_school, teacher:) }
 
       before do
-        FactoryBot.create(:training_period, :for_ect, :ongoing, :provider_led, ect_at_school_period:)
-        FactoryBot.create(:training_period, :for_mentor, :ongoing, :provider_led, mentor_at_school_period: other_mentor_at_school_period)
+        FactoryBot.create(:training_period, :for_ect, :unfinished, :provider_led, ect_at_school_period:)
+        FactoryBot.create(:training_period, :for_mentor, :unfinished, :provider_led, mentor_at_school_period: other_mentor_at_school_period)
       end
 
       it "returns false" do
@@ -94,12 +94,12 @@ RSpec.describe MentorAtSchoolPeriods::Assignment::Eligibility, type: :service do
     end
 
     context "when the mentor is mentoring at another school and the mentor's training period ends in the future" do
-      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher:) }
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
-      let(:other_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school: other_school, teacher:) }
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, school:, teacher:) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school:) }
+      let(:other_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, school: other_school, teacher:) }
 
       before do
-        FactoryBot.create(:training_period, :for_ect, :ongoing, :provider_led, ect_at_school_period:)
+        FactoryBot.create(:training_period, :for_ect, :unfinished, :provider_led, ect_at_school_period:)
         FactoryBot.create(:training_period, :for_mentor, :provider_led, mentor_at_school_period: other_mentor_at_school_period, started_on: 1.week.ago, finished_on: 1.day.from_now)
       end
 
@@ -110,10 +110,10 @@ RSpec.describe MentorAtSchoolPeriods::Assignment::Eligibility, type: :service do
 
     context "when mentor is ineligible for funding" do
       let(:teacher) { FactoryBot.create(:teacher, :ineligible_for_mentor_funding) }
-      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher:) }
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, school:, teacher:) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school:) }
 
-      before { FactoryBot.create(:training_period, :for_ect, :ongoing, :provider_led, ect_at_school_period:) }
+      before { FactoryBot.create(:training_period, :for_ect, :unfinished, :provider_led, ect_at_school_period:) }
 
       it "returns false" do
         expect(result).to be(false)
@@ -121,10 +121,10 @@ RSpec.describe MentorAtSchoolPeriods::Assignment::Eligibility, type: :service do
     end
 
     context "when ECT is school-led" do
-      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher:) }
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, school:, teacher:) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school:) }
 
-      before { FactoryBot.create(:training_period, :for_ect, :ongoing, :school_led, ect_at_school_period:) }
+      before { FactoryBot.create(:training_period, :for_ect, :unfinished, :school_led, ect_at_school_period:) }
 
       it "returns false" do
         expect(result).to be(false)
@@ -133,7 +133,7 @@ RSpec.describe MentorAtSchoolPeriods::Assignment::Eligibility, type: :service do
 
     context "when mentor_at_school_period is nil" do
       let(:mentor_at_school_period) { nil }
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school:) }
 
       it "returns false" do
         expect(result).to be(false)
@@ -141,7 +141,7 @@ RSpec.describe MentorAtSchoolPeriods::Assignment::Eligibility, type: :service do
     end
 
     context "when ect_at_school_period is nil" do
-      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher:) }
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, school:, teacher:) }
       let(:ect_at_school_period) { nil }
 
       it "returns false" do

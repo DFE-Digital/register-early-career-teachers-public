@@ -1,13 +1,13 @@
 module ECTAtSchoolPeriods
   RSpec.describe SwitchTraining do
     let(:ect_at_school_period) do
-      FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 2.weeks.ago)
+      FactoryBot.create(:ect_at_school_period, :unfinished, started_on: 2.weeks.ago)
     end
 
     let(:mentor_at_school_period) do
       FactoryBot.create(
         :mentor_at_school_period,
-        :ongoing,
+        :unfinished,
         started_on: ect_at_school_period.started_on,
         school: ect_at_school_period.school
       )
@@ -32,7 +32,7 @@ module ECTAtSchoolPeriods
             FactoryBot.create(
               :training_period,
               :for_ect,
-              :ongoing,
+              :unfinished,
               :provider_led,
               :with_school_partnership,
               ect_at_school_period:,
@@ -61,7 +61,7 @@ module ECTAtSchoolPeriods
             FactoryBot.create(
               :training_period,
               :for_ect,
-              :ongoing,
+              :unfinished,
               :provider_led,
               :with_only_expression_of_interest,
               ect_at_school_period:,
@@ -88,7 +88,7 @@ module ECTAtSchoolPeriods
             FactoryBot.create(
               :training_period,
               :for_ect,
-              :ongoing,
+              :unfinished,
               :provider_led,
               :with_school_partnership,
               ect_at_school_period:,
@@ -150,7 +150,7 @@ module ECTAtSchoolPeriods
           FactoryBot.create(
             :training_period,
             :for_ect,
-            :ongoing,
+            :unfinished,
             :school_led,
             ect_at_school_period:,
             started_on: ect_at_school_period.started_on
@@ -192,27 +192,27 @@ module ECTAtSchoolPeriods
           SwitchTraining.to_school_led(ect_at_school_period, author:)
 
           new_training_period = ect_at_school_period.reload.latest_training_period
-          expect(new_training_period).not_to be_ongoing
+          expect(new_training_period).not_to be_unfinished
           expect(new_training_period.finished_on).to eq(ect_at_school_period.finished_on)
         end
       end
 
       context "when the `ECTAtSchoolPeriod` does not have a `finished_on` date" do
         let(:ect_at_school_period) do
-          FactoryBot.create(:ect_at_school_period, :ongoing)
+          FactoryBot.create(:ect_at_school_period, :unfinished)
         end
 
         it "creates an ongoing training period" do
           SwitchTraining.to_school_led(ect_at_school_period, author:)
 
           new_training_period = ect_at_school_period.reload.latest_training_period
-          expect(new_training_period).to be_ongoing
+          expect(new_training_period).to be_unfinished
         end
       end
 
       context "when the record is not a `ECTAtSchoolPeriod`" do
         let(:ect_at_school_period) do
-          FactoryBot.create(:mentor_at_school_period, :ongoing)
+          FactoryBot.create(:mentor_at_school_period, :unfinished)
         end
         let(:mentorship_period) { nil }
 
@@ -239,7 +239,7 @@ module ECTAtSchoolPeriods
           FactoryBot.create(
             :training_period,
             :for_ect,
-            :ongoing,
+            :unfinished,
             :school_led,
             ect_at_school_period:,
             started_on: ect_at_school_period.started_on
@@ -327,7 +327,7 @@ module ECTAtSchoolPeriods
             FactoryBot.create(
               :training_period,
               :for_ect,
-              :ongoing,
+              :unfinished,
               :school_led,
               ect_at_school_period:,
               started_on: Date.current
@@ -403,7 +403,7 @@ module ECTAtSchoolPeriods
             let(:ect_at_school_period) do
               FactoryBot.create(
                 :ect_at_school_period,
-                :ongoing,
+                :unfinished,
                 started_on: upcoming_contract_period.started_on
               )
             end
@@ -433,7 +433,7 @@ module ECTAtSchoolPeriods
           FactoryBot.create(
             :training_period,
             :for_ect,
-            :ongoing,
+            :unfinished,
             :provider_led,
             ect_at_school_period:,
             started_on: ect_at_school_period.started_on
@@ -452,7 +452,7 @@ module ECTAtSchoolPeriods
         let!(:extended_schedule) { FactoryBot.create(:schedule, contract_period: contract_period_2024, identifier: "ecf-extended-september") }
 
         let(:ect_at_school_period) do
-          FactoryBot.create(:ect_at_school_period, :ongoing, started_on:)
+          FactoryBot.create(:ect_at_school_period, :unfinished, started_on:)
         end
 
         context "when there is a confirmed school partnership" do
@@ -481,7 +481,7 @@ module ECTAtSchoolPeriods
             FactoryBot.create(
               :training_period,
               :for_ect,
-              :ongoing,
+              :unfinished,
               :school_led,
               ect_at_school_period:,
               started_on: previous_training_period_finished_on + 1.day
@@ -579,7 +579,7 @@ module ECTAtSchoolPeriods
               FactoryBot.create(
                 :training_period,
                 :for_ect,
-                :ongoing,
+                :unfinished,
                 :school_led,
                 ect_at_school_period:,
                 started_on: second_training_period_finished_on + 1.day
@@ -654,7 +654,7 @@ module ECTAtSchoolPeriods
             FactoryBot.create(
               :training_period,
               :for_ect,
-              :ongoing,
+              :unfinished,
               :school_led,
               ect_at_school_period:,
               started_on:
@@ -776,7 +776,7 @@ module ECTAtSchoolPeriods
             FactoryBot.create(
               :training_period,
               :for_ect,
-              :ongoing,
+              :unfinished,
               :school_led,
               ect_at_school_period:,
               started_on: previous_training_period_finished_on + 1.day
@@ -870,7 +870,7 @@ module ECTAtSchoolPeriods
               FactoryBot.create(
                 :training_period,
                 :for_ect,
-                :ongoing,
+                :unfinished,
                 :school_led,
                 ect_at_school_period:,
                 started_on: second_training_period_finished_on + 1.day
@@ -946,27 +946,27 @@ module ECTAtSchoolPeriods
           SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
 
           new_training_period = ect_at_school_period.reload.latest_training_period
-          expect(new_training_period).not_to be_ongoing
+          expect(new_training_period).not_to be_unfinished
           expect(new_training_period.finished_on).to eq(ect_at_school_period.finished_on)
         end
       end
 
       context "when the `ECTAtSchoolPeriod` does not have a `finished_on` date" do
         let(:ect_at_school_period) do
-          FactoryBot.create(:ect_at_school_period, :ongoing)
+          FactoryBot.create(:ect_at_school_period, :unfinished)
         end
 
         it "creates an ongoing training period" do
           SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
 
           new_training_period = ect_at_school_period.reload.latest_training_period
-          expect(new_training_period).to be_ongoing
+          expect(new_training_period).to be_unfinished
         end
       end
 
       context "when the record is not a `ECTAtSchoolPeriod`" do
         let(:ect_at_school_period) do
-          FactoryBot.create(:mentor_at_school_period, :ongoing)
+          FactoryBot.create(:mentor_at_school_period, :unfinished)
         end
 
         let(:mentorship_period) { nil }
@@ -982,7 +982,7 @@ module ECTAtSchoolPeriods
           FactoryBot.create(
             :training_period,
             :for_ect,
-            :ongoing,
+            :unfinished,
             :school_led,
             ect_at_school_period:,
             started_on: ect_at_school_period.started_on
@@ -1198,7 +1198,7 @@ module ECTAtSchoolPeriods
           let(:mentor_at_school_period) do
             FactoryBot.create(
               :mentor_at_school_period,
-              :ongoing,
+              :unfinished,
               school: ect_at_school_period.school,
               teacher:,
               started_on: ect_at_school_period.started_on

@@ -75,7 +75,7 @@ private
     )
     @mentor_at_school_period = FactoryBot.create(
       :mentor_at_school_period,
-      :ongoing,
+      :unfinished,
       teacher: @teacher,
       school: @school,
       started_on: @contract_period.started_on
@@ -108,7 +108,7 @@ private
   def with_provider_led_training
     @provider_led_training_period = FactoryBot.create(
       :training_period,
-      :ongoing,
+      :unfinished,
       :for_mentor,
       :provider_led,
       school_partnership: @school_partnership,

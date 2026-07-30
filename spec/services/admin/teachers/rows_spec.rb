@@ -14,8 +14,8 @@ RSpec.describe Admin::Teachers::Rows do
   describe "#rows" do
     context "when a teacher has both ECT and mentor roles" do
       let!(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Naruto", trs_last_name: "Uzumaki") }
-      let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:) }
-      let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:) }
+      let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher:) }
+      let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:) }
 
       before do
         ect_contract_period = FactoryBot.create(:contract_period, year: 2024)
@@ -29,7 +29,7 @@ RSpec.describe Admin::Teachers::Rows do
         FactoryBot.create(
           :training_period,
           :for_ect,
-          :ongoing,
+          :unfinished,
           ect_at_school_period:,
           school_partnership: ect_school_partnership
         )
@@ -45,7 +45,7 @@ RSpec.describe Admin::Teachers::Rows do
         FactoryBot.create(
           :training_period,
           :for_mentor,
-          :ongoing,
+          :unfinished,
           mentor_at_school_period:,
           school_partnership: mentor_school_partnership
         )
@@ -73,8 +73,8 @@ RSpec.describe Admin::Teachers::Rows do
     context "when sorting rows" do
       let!(:sasuke) { FactoryBot.create(:teacher, trs_first_name: "Sasuke", trs_last_name: "Uchiha") }
       let!(:naruto) { FactoryBot.create(:teacher, trs_first_name: "Naruto", trs_last_name: "Uzumaki") }
-      let!(:sasuke_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: sasuke) }
-      let!(:naruto_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: naruto) }
+      let!(:sasuke_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher: sasuke) }
+      let!(:naruto_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher: naruto) }
 
       before do
         [sasuke_ect_at_school_period, naruto_ect_at_school_period].each do |ect_at_school_period|
@@ -89,7 +89,7 @@ RSpec.describe Admin::Teachers::Rows do
           FactoryBot.create(
             :training_period,
             :for_ect,
-            :ongoing,
+            :unfinished,
             ect_at_school_period:,
             school_partnership:
           )
@@ -104,7 +104,7 @@ RSpec.describe Admin::Teachers::Rows do
     context "when a teacher has a later ect role period" do
       let!(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Naruto", trs_last_name: "Uzumaki") }
       let!(:older_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 7, 31)) }
-      let!(:latest_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, started_on: Date.new(2025, 1, 1)) }
+      let!(:latest_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher:, started_on: Date.new(2025, 1, 1)) }
 
       before do
         contract_period_2024 = FactoryBot.create(:contract_period, year: 2024)
@@ -136,7 +136,7 @@ RSpec.describe Admin::Teachers::Rows do
         FactoryBot.create(
           :training_period,
           :for_ect,
-          :ongoing,
+          :unfinished,
           ect_at_school_period: latest_ect_at_school_period,
           school_partnership: latest_school_partnership
         )
@@ -152,7 +152,7 @@ RSpec.describe Admin::Teachers::Rows do
     context "when a teacher has a later mentor role period" do
       let!(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Kakashi", trs_last_name: "Hatake") }
       let!(:older_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 7, 31)) }
-      let!(:latest_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, started_on: Date.new(2025, 1, 1)) }
+      let!(:latest_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:, started_on: Date.new(2025, 1, 1)) }
 
       before do
         contract_period_2024 = FactoryBot.create(:contract_period, year: 2024)
@@ -184,7 +184,7 @@ RSpec.describe Admin::Teachers::Rows do
         FactoryBot.create(
           :training_period,
           :for_mentor,
-          :ongoing,
+          :unfinished,
           mentor_at_school_period: latest_mentor_at_school_period,
           school_partnership: latest_school_partnership
         )
@@ -200,8 +200,8 @@ RSpec.describe Admin::Teachers::Rows do
     context "when filtering by role" do
       let(:role) { "mentor" }
       let!(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Naruto", trs_last_name: "Uzumaki") }
-      let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:) }
-      let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:) }
+      let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher:) }
+      let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:) }
 
       before do
         ect_contract_period = FactoryBot.create(:contract_period, year: 2024)
@@ -215,7 +215,7 @@ RSpec.describe Admin::Teachers::Rows do
         FactoryBot.create(
           :training_period,
           :for_ect,
-          :ongoing,
+          :unfinished,
           ect_at_school_period:,
           school_partnership: ect_school_partnership
         )
@@ -231,7 +231,7 @@ RSpec.describe Admin::Teachers::Rows do
         FactoryBot.create(
           :training_period,
           :for_mentor,
-          :ongoing,
+          :unfinished,
           mentor_at_school_period:,
           school_partnership: mentor_school_partnership
         )
@@ -247,14 +247,14 @@ RSpec.describe Admin::Teachers::Rows do
       let(:contract_period) { "not_available" }
       let!(:school_led_teacher) { FactoryBot.create(:teacher, trs_first_name: "Naruto", trs_last_name: "Uzumaki") }
       let!(:provider_led_teacher) { FactoryBot.create(:teacher, trs_first_name: "Sasuke", trs_last_name: "Uchiha") }
-      let!(:school_led_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: school_led_teacher) }
-      let!(:provider_led_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: provider_led_teacher) }
+      let!(:school_led_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher: school_led_teacher) }
+      let!(:provider_led_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher: provider_led_teacher) }
 
       before do
         FactoryBot.create(
           :training_period,
           :for_ect,
-          :ongoing,
+          :unfinished,
           :school_led,
           ect_at_school_period: school_led_ect_at_school_period,
           started_on: school_led_ect_at_school_period.started_on
@@ -271,7 +271,7 @@ RSpec.describe Admin::Teachers::Rows do
         FactoryBot.create(
           :training_period,
           :for_ect,
-          :ongoing,
+          :unfinished,
           ect_at_school_period: provider_led_ect_at_school_period,
           school_partnership:
         )

@@ -102,7 +102,7 @@ RSpec.describe "Admin::Schools", type: :request do
         let(:teacher) { FactoryBot.create(:teacher) }
 
         before do
-          FactoryBot.create(:ect_at_school_period, :ongoing, school:, teacher:)
+          FactoryBot.create(:ect_at_school_period, :unfinished, school:, teacher:)
         end
 
         it "displays teachers in the teachers section" do

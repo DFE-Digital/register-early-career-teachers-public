@@ -1,7 +1,7 @@
 RSpec.describe "Appropriate Body teacher extensions index", type: :request do
   let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let(:teacher) { FactoryBot.create(:teacher) }
-  let!(:induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:) }
+  let!(:induction_period) { FactoryBot.create(:induction_period, :unfinished, teacher:, appropriate_body_period:) }
 
   describe "when not signed in" do
     it "redirects to the root page" do

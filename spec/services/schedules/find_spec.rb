@@ -37,8 +37,8 @@ RSpec.describe Schedules::Find do
 
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:school) { FactoryBot.create(:school) }
-  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, :with_training_period, teacher:, school:) }
-  let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, :with_training_period, teacher:, school:) }
+  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, :with_training_period, teacher:, school:) }
+  let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, :with_training_period, teacher:, school:) }
   let(:mentee) {}
 
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
@@ -163,7 +163,7 @@ RSpec.describe Schedules::Find do
               it "assigns the schedule based on the start date of the current training period" do
                 first_training_period = nil
                 travel_to(registered_on) do
-                  first_training_period = FactoryBot.create(:training_period, :school_led, :ongoing, started_on: previous_start_date, ect_at_school_period:)
+                  first_training_period = FactoryBot.create(:training_period, :school_led, :unfinished, started_on: previous_start_date, ect_at_school_period:)
                 end
 
                 travel_to(provider_led_start_date) do
@@ -178,7 +178,7 @@ RSpec.describe Schedules::Find do
               it "uses the identifier from the previous provider-led training period" do
                 first_training_period = nil
                 travel_to(registered_on) do
-                  first_training_period = FactoryBot.create(:training_period, :provider_led, :ongoing,
+                  first_training_period = FactoryBot.create(:training_period, :provider_led, :unfinished,
                                                             started_on: previous_start_date,
                                                             ect_at_school_period:,
                                                             schedule:,
@@ -214,7 +214,7 @@ RSpec.describe Schedules::Find do
 
                 second_training_period = nil
                 travel_to(registered_on + 60.days) do
-                  second_training_period = FactoryBot.create(:training_period, :school_led, :ongoing,
+                  second_training_period = FactoryBot.create(:training_period, :school_led, :unfinished,
                                                              started_on: previous_start_date + 60.days,
                                                              ect_at_school_period:)
                 end
@@ -235,7 +235,7 @@ RSpec.describe Schedules::Find do
             let(:started_on) { new_school_start_date }
             let(:old_school) { FactoryBot.create(:school) }
             let(:ect_at_old_school_period) { FactoryBot.create(:ect_at_school_period, :finished, teacher:, school: old_school, started_on: old_school_start_date, finished_on: old_school_end_date) }
-            let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, :with_training_period, teacher:, school:, started_on:) }
+            let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, :with_training_period, teacher:, school:, started_on:) }
 
             let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school: old_school) }
 
@@ -272,7 +272,7 @@ RSpec.describe Schedules::Find do
       let(:provider_led_start_date) { Date.new(year, 12, 1) }
       let(:previous_start_date) { Date.new(year, 7, 1) }
 
-      let(:mentee) { FactoryBot.create(:ect_at_school_period, :ongoing, school:, started_on: previous_start_date) }
+      let(:mentee) { FactoryBot.create(:ect_at_school_period, :unfinished, school:, started_on: previous_start_date) }
       let(:schedule) { FactoryBot.create(:schedule, contract_period: previous_contract_period, identifier: "ecf-standard-september") }
 
       before do
@@ -290,14 +290,14 @@ RSpec.describe Schedules::Find do
       end
 
       context "when the mentee has previously received school-led training" do
-        let!(:mentee_training_period) { FactoryBot.create(:training_period, :school_led, :ongoing, started_on: previous_start_date, ect_at_school_period: mentee) }
+        let!(:mentee_training_period) { FactoryBot.create(:training_period, :school_led, :unfinished, started_on: previous_start_date, ect_at_school_period: mentee) }
 
         it_behaves_like "no replacement schedule assigned"
       end
 
       context "when the mentee has previously received provider-led training" do
         context "when there is one previous mentor with a training period" do
-          let!(:mentee_training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, started_on: previous_start_date, ect_at_school_period: mentee) }
+          let!(:mentee_training_period) { FactoryBot.create(:training_period, :provider_led, :unfinished, started_on: previous_start_date, ect_at_school_period: mentee) }
           let(:previous_mentor) { FactoryBot.create(:mentor_at_school_period, school:, started_on: previous_start_date, finished_on: 1.day.ago) }
           let!(:mentorship_period) { FactoryBot.create(:mentorship_period, started_on: previous_start_date, finished_on: 1.day.ago, mentee:, mentor: previous_mentor) }
           let!(:mentor_training_period) { FactoryBot.create(:training_period, :provider_led, :for_mentor, started_on: previous_start_date, finished_on: 1.day.ago, mentor_at_school_period: previous_mentor) }
@@ -356,7 +356,7 @@ RSpec.describe Schedules::Find do
           let!(:second_mentor_training_period) { FactoryBot.create(:training_period, :provider_led, :for_mentor, started_on: second_date, finished_on: 1.day.ago, mentor_at_school_period: second_mentor) }
 
           before do
-            FactoryBot.create(:training_period, :provider_led, :ongoing, started_on: first_date, ect_at_school_period: mentee)
+            FactoryBot.create(:training_period, :provider_led, :unfinished, started_on: first_date, ect_at_school_period: mentee)
             FactoryBot.create(:mentorship_period, started_on: first_date, finished_on: second_date - 1.day, mentee:, mentor: first_mentor)
             FactoryBot.create(:mentorship_period, started_on: second_date, finished_on: 1.day.ago, mentee:, mentor: second_mentor)
           end
@@ -390,7 +390,7 @@ RSpec.describe Schedules::Find do
           let(:previous_school_start) { Date.new(year - 1, 9, 1) }
           let(:previous_school_end) { Date.new(year - 1, 12, 31) }
 
-          let!(:mentee_training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, started_on: previous_start_date, ect_at_school_period: mentee) }
+          let!(:mentee_training_period) { FactoryBot.create(:training_period, :provider_led, :unfinished, started_on: previous_start_date, ect_at_school_period: mentee) }
 
           let!(:mentee_at_previous_school) do
             FactoryBot.create(:ect_at_school_period,
@@ -447,13 +447,13 @@ RSpec.describe Schedules::Find do
       before { travel_to provider_led_start_date }
 
       context "when the ECT started training in the 2021 contract period" do
-        let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, :with_training_period, teacher:, school:, started_on: Date.new(2021, 7, 1)) }
+        let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, :with_training_period, teacher:, school:, started_on: Date.new(2021, 7, 1)) }
         let(:contract_period_2021) { FactoryBot.create(:contract_period, :with_schedules, :with_payments_frozen, year: 2021) }
         let(:old_active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period: contract_period_2021) }
         let!(:old_training_period) do
           FactoryBot.create(:training_period,
                             :provider_led,
-                            :ongoing,
+                            :unfinished,
                             :with_active_lead_provider,
                             started_on: Date.new(2021, 7, 1),
                             ect_at_school_period:,
@@ -477,7 +477,7 @@ RSpec.describe Schedules::Find do
 
       before do
         travel_to started_on
-        FactoryBot.create(:training_period, :provider_led, :ongoing,
+        FactoryBot.create(:training_period, :provider_led, :unfinished,
                           ect_at_school_period:,
                           started_on: previous_start_date,
                           schedule: old_schedule,
@@ -498,7 +498,7 @@ RSpec.describe Schedules::Find do
 
       before do
         travel_to started_on
-        FactoryBot.create(:training_period, :provider_led, :ongoing,
+        FactoryBot.create(:training_period, :provider_led, :unfinished,
                           :for_mentor,
                           mentor_at_school_period:,
                           started_on: previous_start_date,

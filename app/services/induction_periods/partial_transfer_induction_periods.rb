@@ -55,7 +55,7 @@ module InductionPeriods
     # @return [InductionPeriod::ActiveRecord_Relation] inductions that span cut off date
     def target_inductions
       inductions_before_cut_off = InductionPeriod.for_appropriate_body_period(current_appropriate_body).started_before(cut_off_date)
-      inductions_before_cut_off.finished_on_or_after(cut_off_date).or(inductions_before_cut_off.ongoing)
+      inductions_before_cut_off.finished_on_or_after(cut_off_date).or(inductions_before_cut_off.unfinished)
     end
 
     # @param trns [Array<String>]

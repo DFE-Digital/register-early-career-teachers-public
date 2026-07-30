@@ -47,7 +47,7 @@ private
     )
     @mentor_at_school_period = FactoryBot.create(
       :mentor_at_school_period,
-      :ongoing,
+      :unfinished,
       teacher: @teacher,
       school: @school,
       started_on: Date.new(2024, 9, 1)
@@ -81,7 +81,7 @@ private
   def with_provider_led_training
     @provider_led_training_period = FactoryBot.create(
       :training_period,
-      :ongoing,
+      :unfinished,
       :for_mentor,
       :provider_led,
       school_partnership: @school_partnership,
@@ -175,7 +175,7 @@ private
     training_periods = @mentor_at_school_period.training_periods
     expect(training_periods.count).to eq(2)
 
-    new_training_period = training_periods.ongoing.first
+    new_training_period = training_periods.unfinished.first
 
     expect(new_training_period).not_to be_nil
     expect(new_training_period.school_partnership).to be_nil

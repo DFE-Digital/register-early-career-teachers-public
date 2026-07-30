@@ -50,7 +50,7 @@ private
     )
     @mentor = FactoryBot.create(
       :mentor_at_school_period,
-      :ongoing,
+      :unfinished,
       teacher: @teacher,
       school: @school,
       email: "mentor@example.com"

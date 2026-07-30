@@ -23,7 +23,7 @@ describe Schools::ECTs::ChangeMentorWizard::LeadProviderStep do
   let(:mentor_at_school_period) do
     FactoryBot.create(
       :mentor_at_school_period,
-      :ongoing,
+      :unfinished,
       school:,
       started_on: ect_at_school_period.started_on - 1.month
     )

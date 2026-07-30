@@ -170,7 +170,7 @@ private
     )
     @ect_at_school_period = FactoryBot.create(
       :ect_at_school_period,
-      :ongoing,
+      :unfinished,
       teacher: @teacher,
       school: @school,
       email: "ect@example.com",
@@ -196,7 +196,7 @@ private
       :training_period,
       :school_led,
       :for_ect,
-      :ongoing,
+      :unfinished,
       ect_at_school_period: @ect_at_school_period,
       started_on: @ect_at_school_period.started_on
     )
@@ -207,7 +207,7 @@ private
       :training_period,
       :provider_led,
       :for_ect,
-      :ongoing,
+      :unfinished,
       ect_at_school_period: @ect_at_school_period,
       started_on: @ect_at_school_period.started_on
     )
@@ -224,14 +224,14 @@ private
     )
     mentor_at_school_period = FactoryBot.create(
       :mentor_at_school_period,
-      :ongoing,
+      :unfinished,
       teacher:,
       school: @school,
       started_on: @ect_at_school_period.started_on - 2.months
     )
     FactoryBot.create(
       :mentorship_period,
-      :ongoing,
+      :unfinished,
       mentee: @ect_at_school_period,
       mentor: mentor_at_school_period,
       started_on: @ect_at_school_period.started_on
@@ -246,7 +246,7 @@ private
     )
     FactoryBot.create(
       :mentor_at_school_period,
-      :ongoing,
+      :unfinished,
       teacher: @mentor_teacher,
       school: @school,
       started_on: @ect_at_school_period.started_on - 1.month

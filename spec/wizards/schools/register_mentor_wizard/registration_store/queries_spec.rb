@@ -14,7 +14,7 @@ RSpec.describe Schools::RegisterMentorWizard::RegistrationStore::Queries do
   let(:started_on) { nil }
 
   describe "#active_record_at_school" do
-    let!(:ongoing_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, school:) }
+    let!(:ongoing_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:, school:) }
 
     it "returns the ongoing mentor period for the school" do
       expect(queries.active_record_at_school).to eq(ongoing_period)
@@ -55,7 +55,7 @@ RSpec.describe Schools::RegisterMentorWizard::RegistrationStore::Queries do
   end
 
   describe "#previous_training_period" do
-    let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: 1.year.ago, teacher:) }
+    let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, started_on: 1.year.ago, teacher:) }
     let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: 9.months.ago) }
 
     it "returns the latest training period for the mentor" do
@@ -101,7 +101,7 @@ RSpec.describe Schools::RegisterMentorWizard::RegistrationStore::Queries do
   describe "#previous_school_mentor_at_school_periods" do
     let(:other_school) { FactoryBot.create(:school) }
     let(:other_teacher) { FactoryBot.create(:teacher) }
-    let!(:current_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, school:) }
+    let!(:current_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:, school:) }
     let!(:finished_recently) do
       FactoryBot.create(:mentor_at_school_period,
                         teacher:,
@@ -111,14 +111,14 @@ RSpec.describe Schools::RegisterMentorWizard::RegistrationStore::Queries do
     end
     let!(:ongoing_other_school) do
       FactoryBot.create(:mentor_at_school_period,
-                        :ongoing,
+                        :unfinished,
                         teacher:,
                         school: other_school,
                         started_on: finished_recently.finished_on + 1.day)
     end
     let!(:other_teacher_finishes_in_the_future) do
       FactoryBot.create(:mentor_at_school_period,
-                        :ongoing,
+                        :unfinished,
                         teacher: other_teacher,
                         school: other_school,
                         started_on: 2.years.ago,

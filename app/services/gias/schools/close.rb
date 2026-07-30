@@ -27,7 +27,7 @@ module GIAS::Schools
     end
 
     def finish_ongoing_periods!
-      ect_at_school_periods.ongoing_on(closed_on).each do |ect_at_school_period|
+      ect_at_school_periods.contains_date(closed_on).each do |ect_at_school_period|
         ::ECTAtSchoolPeriods::Finish.new(
           ect_at_school_period:,
           finished_on: closed_on,
@@ -36,7 +36,7 @@ module GIAS::Schools
         ).finish!
       end
 
-      mentor_at_school_periods.ongoing_on(closed_on).each do |mentor_at_school_period|
+      mentor_at_school_periods.contains_date(closed_on).each do |mentor_at_school_period|
         ::MentorAtSchoolPeriods::Finish.new(
           teacher: mentor_at_school_period.teacher,
           reported_by_school_id:,
