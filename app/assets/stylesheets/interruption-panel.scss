@@ -1,0 +1,6 @@
+@use "govuk-frontend/dist/govuk" as *;
+
+// Required to prevent white exclamation on white circle
+.govuk-panel--interruption .govuk-warning-text__icon {
+  color: govuk-colour("black");
+}
