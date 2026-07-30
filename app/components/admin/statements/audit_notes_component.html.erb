@@ -3,6 +3,6 @@
 
   <% audit_notes.each do |audit_note| %>
     <p class="govuk-hint govuk-!-margin-bottom-1"><%= timestamp(audit_note) %></p>
-    <p class="govuk-body"><%= audit_note.body %></p>
+    <p class="govuk-body"><%= audit_note.body.html_safe %></p>
   <% end %>
 </div>
