@@ -6,6 +6,7 @@ module Schools
           [
             {
               edit: EditStep,
+              confirm_name_change: ConfirmNameChangeStep,
               check_answers: CheckAnswersStep,
               confirmation: ConfirmationStep,
             }

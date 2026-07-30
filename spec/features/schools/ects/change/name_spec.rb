@@ -27,32 +27,52 @@ RSpec.describe "Changing an ECT's name" do
     then_i_should_see_the_change_name_page
   end
 
-  scenario "valid name" do
-    when_i_change_the_name_to("Sister Mildred")
+  scenario "minor change (only part of the name) goes straight to check answers" do
+    when_i_change_the_name_to("Miriam Mildred")
     and_i_click_the_continue_button
     then_i_should_be_taken_to_the_check_answers_page
-    and_i_should_see_the_name("Sister Mildred")
+    and_i_should_see_the_name("Miriam Mildred")
     and_i_should_see_the_name("Miriam Margolyes")
     and_i_click_the_confirmation_button
     then_i_should_be_taken_to_the_confirmation_page
-    then_the_teacher_name_should_be_corrected
+    then_the_teacher_name_should_be("Miriam Mildred")
+  end
+
+  scenario "significant change (both first and last name) shows the interruption page" do
+    when_i_change_the_name_to("Sister Mildred")
+    and_i_click_the_continue_button
+    then_i_should_see_the_interruption_page
+    when_i_click_continue_to_change_name
+    then_i_should_be_taken_to_the_check_answers_page
+    and_i_click_the_confirmation_button
+    then_i_should_be_taken_to_the_confirmation_page
+    then_the_teacher_name_should_be("Sister Mildred")
+  end
+
+  scenario "cancel from the interruption page returns to the ECT's details" do
+    when_i_change_the_name_to("Sister Mildred")
+    and_i_click_the_continue_button
+    then_i_should_see_the_interruption_page
+    and_i_click_the_cancel_link
+    then_i_should_be_taken_to_the_ect_details_page
+    then_the_teacher_name_should_be("Miriam Margolyes")
   end
 
   scenario "edit before confirming" do
-    when_i_change_the_name_to("Professor Sprout")
+    when_i_change_the_name_to("Miriam Sprout")
     and_i_click_the_continue_button
     then_i_should_be_taken_to_the_check_answers_page
     and_i_click_the_back_link
     then_i_should_see_the_change_name_page
-    and_the_name_field_should_be("Professor Sprout")
-    when_i_change_the_name_to("Sister Mildred")
+    and_the_name_field_should_be("Miriam Sprout")
+    when_i_change_the_name_to("Miriam Mildred")
     and_i_click_the_continue_button
     and_i_click_the_confirmation_button
-    then_the_teacher_name_should_be_corrected
+    then_the_teacher_name_should_be("Miriam Mildred")
   end
 
   scenario "cancel and reset" do
-    when_i_change_the_name_to("Professor Sprout")
+    when_i_change_the_name_to("Miriam Sprout")
     and_i_click_the_continue_button
     then_i_should_be_taken_to_the_check_answers_page
     and_i_click_the_cancel_link
@@ -110,7 +130,20 @@ RSpec.describe "Changing an ECT's name" do
   end
 
   def and_i_click_the_continue_button
-    page.get_by_role("button", name: "Continue").click
+    page.get_by_role("button", name: "Continue", exact: true).click
+  end
+
+  def then_i_should_see_the_interruption_page
+    expect(page).to have_path("/school/ects/#{ect_at_school_period.id}/change-name/confirm-name-change")
+    expect(page.get_by_role("heading", name: "Check this name change is for the same person")).to be_visible
+    expect(page.get_by_text("You’ve told us you want to change Miriam Margolyes’s name to Sister Mildred.")).to be_visible
+    expect(page.get_by_text("This will change the name for teacher reference number (TRN) #{teacher.trn}.")).to be_visible
+    expect(page.get_by_text("If Sister Mildred is a different person, do not continue.")).to be_visible
+    expect(page.get_by_role("link", name: "ECT’s details page")).not_to be_visible
+  end
+
+  def when_i_click_continue_to_change_name
+    page.get_by_role("link", name: "Continue to change name").click
   end
 
   def and_i_click_the_confirmation_button
@@ -137,12 +170,16 @@ RSpec.describe "Changing an ECT's name" do
     expect(page).to have_path("/school/ects/#{ect_at_school_period.id}/change-name/confirmation")
   end
 
+  def then_i_should_be_taken_to_the_ect_details_page
+    expect(page).to have_path("/school/ects/#{ect_at_school_period.id}")
+  end
+
   def and_i_should_see_the_name(name)
     expect(page.get_by_text(name, exact: true)).to be_visible
   end
 
-  def then_the_teacher_name_should_be_corrected
-    expect(teacher.reload.corrected_name).to eq("Sister Mildred")
+  def then_the_teacher_name_should_be(name)
+    expect(Teachers::Name.new(teacher.reload).full_name).to eq(name)
   end
 
   def then_the_form_should_be_reset

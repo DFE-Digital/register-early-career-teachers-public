@@ -38,7 +38,23 @@ RSpec.describe Schools::Mentors::ChangeNameWizard::EditStep, type: :model do
   end
 
   describe "#next_step" do
-    it { expect(current_step.next_step).to eq(:check_answers) }
+    before { mentor_at_school_period.teacher.update!(corrected_name: "Terry Smith") }
+
+    context "when only part of the name changes" do
+      let(:params) { { "name" => "Terry Pratchett" } }
+
+      it "goes straight to the check answers page" do
+        expect(current_step.next_step).to eq(:check_answers)
+      end
+    end
+
+    context "when both the first and last name change" do
+      let(:params) { { "name" => "Nanny Ogg" } }
+
+      it "routes through the interruption page" do
+        expect(current_step.next_step).to eq(:confirm_name_change)
+      end
+    end
   end
 
   describe "#previous_step" do

@@ -15,15 +15,18 @@ module Schools
         name_for(ect_at_school_period.teacher.reload)
       end
 
-      def teacher_trn
-        ect_at_school_period.teacher.trn
+      def details_path
+        url_helpers.schools_ect_path(ect_at_school_period)
       end
+
+      def mentor? = false
 
       # @return [Hash]
       def default_path_arguments
         { ect_id: ect_at_school_period.id }
       end
 
+      delegate :teacher, to: :ect_at_school_period
       delegate :save!, to: :current_step
       delegate :reset, to: :store
     end
