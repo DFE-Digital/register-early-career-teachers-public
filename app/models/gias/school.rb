@@ -82,7 +82,7 @@ class GIAS::School < ApplicationRecord
   end
 
   def can_be_opened?
-    open_status? && opened_on_or_before_today? && school_not_yet_opened? && predecessors.empty? && successors.empty?
+    open_status? && school_not_yet_opened? && predecessors.empty? && successors.empty?
   end
 
   def can_be_replaced?
@@ -90,7 +90,6 @@ class GIAS::School < ApplicationRecord
       closed_on_or_before_today? &&
       successors.one? &&
       successor.open_status? &&
-      successor.opened_on_or_before_today? &&
       successor.school_not_yet_opened? &&
       school_being_replaced?
   end
@@ -101,7 +100,6 @@ class GIAS::School < ApplicationRecord
       no_school_merged_event_recorded? &&
       successors.one? &&
       successor.open_status? &&
-      successor.opened_on_or_before_today? &&
       successor.school.present? &&
       school_being_merged?
   end
@@ -114,12 +112,6 @@ class GIAS::School < ApplicationRecord
     return false if closed_on.blank?
 
     closed_on <= Date.current
-  end
-
-  def opened_on_or_before_today?
-    return false if opened_on.blank?
-
-    opened_on <= Date.current
   end
 
 private

@@ -22,7 +22,7 @@ RSpec.describe GIAS::Schools::Open do
       expect(gias_school.school).to be_present
     end
 
-    it "records a school opened event" do
+    it "records a school opened event with the opening date" do
       allow(Events::Record).to receive(:record_school_opened_event!)
 
       service
@@ -35,6 +35,25 @@ RSpec.describe GIAS::Schools::Open do
         happened_at: gias_school.opened_on,
         author: an_instance_of(Events::SystemAuthor)
       ).once
+    end
+
+    context "when GIAS does not provide an opening date" do
+      let!(:gias_school) { FactoryBot.create(:gias_school, status: :open, opened_on: nil) }
+
+      it "records a school opened event with the current date" do
+        allow(Events::Record).to receive(:record_school_opened_event!)
+
+        service
+
+        school = gias_school.reload.school
+
+        expect(Events::Record).to have_received(:record_school_opened_event!).with(
+          school:,
+          gias_school:,
+          happened_at: Date.current,
+          author: an_instance_of(Events::SystemAuthor)
+        ).once
+      end
     end
 
     context "when the school cannot be opened" do

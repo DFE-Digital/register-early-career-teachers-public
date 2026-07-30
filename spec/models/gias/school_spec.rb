@@ -224,8 +224,7 @@ describe GIAS::School do
     describe "#can_be_opened?" do
       subject { gias_school.can_be_opened? }
 
-      let(:gias_school) { FactoryBot.create(:gias_school, status: :open, opened_on:) }
-      let(:opened_on) { Date.current }
+      let(:gias_school) { FactoryBot.create(:gias_school, status: :open) }
 
       context "when the school is open, has no predecessors or successors and no associated school" do
         it { is_expected.to be_truthy }
@@ -258,18 +257,6 @@ describe GIAS::School do
 
         it { is_expected.to be_falsy }
       end
-
-      context "when the school opens in the future" do
-        let(:opened_on) { Date.tomorrow }
-
-        it { is_expected.to be_falsy }
-      end
-
-      context "when the school opened in the past but it has not yet been associated with a school record" do
-        let(:opened_on) { Date.yesterday }
-
-        it { is_expected.to be_truthy }
-      end
     end
 
     describe "#can_be_replaced?" do
@@ -282,8 +269,7 @@ describe GIAS::School do
         it { is_expected.to be_falsy }
 
         context "when there is a unique successor" do
-          let(:successor) { FactoryBot.create(:gias_school, status: :open, opened_on:) }
-          let(:opened_on) { Date.current }
+          let(:successor) { FactoryBot.create(:gias_school, status: :open) }
 
           before do
             FactoryBot.create(:gias_school_link, :successor_unique, from_gias_school: gias_school, to_gias_school: successor)
@@ -300,32 +286,20 @@ describe GIAS::School do
           end
 
           context "when the successor is not open" do
-            let(:successor) { FactoryBot.create(:gias_school, status: :proposed_to_open, opened_on:) }
+            let(:successor) { FactoryBot.create(:gias_school, status: :proposed_to_open) }
 
             it { is_expected.to be_falsy }
           end
 
           context "when the successor already has an associated school" do
-            let(:successor) { FactoryBot.create(:gias_school, :with_school, status: :open, opened_on:) }
+            let(:successor) { FactoryBot.create(:gias_school, :with_school, status: :open) }
 
             it { is_expected.to be_falsy }
-          end
-
-          context "when the successor opens in the future" do
-            let(:opened_on) { Date.tomorrow }
-
-            it { is_expected.to be_falsy }
-          end
-
-          context "when the successor opened in the past but it has not yet been associated with a school record" do
-            let(:opened_on) { Date.yesterday }
-
-            it { is_expected.to be_truthy }
           end
         end
 
         context "when there is a non-unique successor" do
-          let(:successor) { FactoryBot.create(:gias_school, status: :open, opened_on: Date.current) }
+          let(:successor) { FactoryBot.create(:gias_school, status: :open) }
 
           context "when the school is being merged" do
             before do
@@ -385,8 +359,7 @@ describe GIAS::School do
         it { is_expected.to be_falsy }
 
         context "when there is a unique successor" do
-          let(:successor) { FactoryBot.create(:gias_school, :with_school, status: :open, opened_on:) }
-          let(:opened_on) { Date.current }
+          let(:successor) { FactoryBot.create(:gias_school, :with_school, status: :open) }
           let(:link_type) { :successor_merged }
 
           before do
@@ -398,19 +371,13 @@ describe GIAS::School do
           end
 
           context "when the successor is not open" do
-            let(:successor) { FactoryBot.create(:gias_school, :with_school, status: :proposed_to_open, opened_on:) }
+            let(:successor) { FactoryBot.create(:gias_school, :with_school, status: :proposed_to_open) }
 
             it { is_expected.to be_falsy }
           end
 
           context "when the successor does not have a school record" do
-            let(:successor) { FactoryBot.create(:gias_school, status: :open, opened_on:) }
-
-            it { is_expected.to be_falsy }
-          end
-
-          context "when the successor opens in the future" do
-            let(:opened_on) { Date.tomorrow }
+            let(:successor) { FactoryBot.create(:gias_school, status: :open) }
 
             it { is_expected.to be_falsy }
           end
@@ -437,8 +404,8 @@ describe GIAS::School do
         end
 
         context "when there are multiple successors" do
-          let(:successor) { FactoryBot.create(:gias_school, :with_school, status: :open, opened_on: Date.current) }
-          let(:other_successor) { FactoryBot.create(:gias_school, :with_school, status: :open, opened_on: Date.current) }
+          let(:successor) { FactoryBot.create(:gias_school, :with_school, status: :open) }
+          let(:other_successor) { FactoryBot.create(:gias_school, :with_school, status: :open) }
 
           before do
             FactoryBot.create(:gias_school_link, :successor_merged, from_gias_school: gias_school, to_gias_school: other_successor)
@@ -451,7 +418,7 @@ describe GIAS::School do
 
       context "when the school is not closed" do
         let(:gias_school) { FactoryBot.create(:gias_school, status: :proposed_to_close) }
-        let(:successor) { FactoryBot.create(:gias_school, :with_school, status: :open, opened_on: Date.current) }
+        let(:successor) { FactoryBot.create(:gias_school, :with_school, status: :open) }
 
         before do
           FactoryBot.create(:gias_school_link, :successor_merged, from_gias_school: gias_school, to_gias_school: successor)
@@ -502,36 +469,6 @@ describe GIAS::School do
 
       context "when the school closes tomorrow" do
         let(:closed_on) { Date.tomorrow }
-
-        it { is_expected.to be_falsy }
-      end
-    end
-
-    describe "#opened_on_or_before_today?" do
-      subject { gias_school.opened_on_or_before_today? }
-
-      let(:gias_school) { FactoryBot.create(:gias_school, opened_on:) }
-
-      context "when the school does not have an opened_on date" do
-        let(:opened_on) { nil }
-
-        it { is_expected.to be_falsy }
-      end
-
-      context "when the school opened yesterday" do
-        let(:opened_on) { Date.yesterday }
-
-        it { is_expected.to be_truthy }
-      end
-
-      context "when the school opens today" do
-        let(:opened_on) { Date.current }
-
-        it { is_expected.to be_truthy }
-      end
-
-      context "when the school opens tomorrow" do
-        let(:opened_on) { Date.tomorrow }
 
         it { is_expected.to be_falsy }
       end

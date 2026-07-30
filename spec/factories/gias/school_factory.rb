@@ -9,6 +9,7 @@ FactoryBot.define do
     phase_name { "Phase one" }
     urn { Faker::Number.unique.within(range: 10_000..9_999_999) }
     ukprn { Faker::Number.unique.within(range: 1_000_000..99_999_999).to_s }
+    opened_on { Faker::Date.between(from: 2.months.ago, to: Date.yesterday) }
 
     initialize_with do
       GIAS::School.find_or_initialize_by(urn:)

@@ -84,6 +84,22 @@ RSpec.describe GIAS::Schools::Replace do
           end
         end
       end
+
+      context "when the successor school has no opening date" do
+        let(:successor_gias_school) { FactoryBot.create(:gias_school, status: :open, opened_on: nil) }
+
+        it "records a school changed event" do
+          expect(Events::Record).to receive(:record_school_changed_event!).with(
+            school: gias_school.school,
+            new_gias_school: successor_gias_school,
+            old_gias_school: gias_school,
+            happened_at: Date.current,
+            author: an_instance_of(Events::SystemAuthor)
+          ).once
+
+          subject
+        end
+      end
     end
 
     context "when the school is cannot be replaced" do
