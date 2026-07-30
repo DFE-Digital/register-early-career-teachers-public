@@ -2,7 +2,7 @@ describe MigrationFixes::DeferTrainingPeriod do
   subject(:service) { described_class.new(training_period:, deferred_at:, deferral_reason:) }
 
   let(:teacher) { FactoryBot.create(:teacher, api_updated_at:) }
-  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, started_on:) }
+  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher:, started_on:) }
   let!(:training_period) { FactoryBot.create(:training_period, :for_ect, started_on:, finished_on:, ect_at_school_period:, updated_at:) }
   let(:deferred_at) { 1.week.ago.round }
   let(:deferral_reason) { "career_break" }

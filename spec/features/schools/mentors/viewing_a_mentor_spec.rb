@@ -89,7 +89,7 @@ RSpec.describe "Viewing a mentor" do
                              started_on: start_date,
                              finished_on: nil)
 
-    FactoryBot.create(:training_period, :ongoing, :provider_led, :for_ect, ect_at_school_period: @ect)
+    FactoryBot.create(:training_period, :unfinished, :provider_led, :for_ect, ect_at_school_period: @ect)
     FactoryBot.create(:mentorship_period, mentor: @mentor, mentee: @ect, started_on: start_date, finished_on: nil)
   end
 

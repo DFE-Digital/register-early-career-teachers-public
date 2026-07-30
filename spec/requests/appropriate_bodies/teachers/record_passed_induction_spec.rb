@@ -3,7 +3,7 @@ RSpec.describe "Appropriate body recording a passed induction outcome for a teac
   let(:teacher) { FactoryBot.create(:teacher) }
 
   let!(:induction_period) do
-    FactoryBot.create(:induction_period, :ongoing,
+    FactoryBot.create(:induction_period, :unfinished,
                       teacher:,
                       appropriate_body_period:)
   end

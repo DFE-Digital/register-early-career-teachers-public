@@ -155,7 +155,7 @@ RSpec.describe Schools::RegisterECT do
           before do
             FactoryBot.create(
               :ect_at_school_period,
-              :ongoing,
+              :unfinished,
               teacher:,
               school: other_school,
               started_on: Date.new(2024, 1, 1)
@@ -171,7 +171,7 @@ RSpec.describe Schools::RegisterECT do
           before do
             FactoryBot.create(
               :ect_at_school_period,
-              :ongoing,
+              :unfinished,
               teacher:,
               school:,
               started_on: Date.new(2024, 1, 1)
@@ -225,7 +225,7 @@ RSpec.describe Schools::RegisterECT do
             # Finished at current school (previous period)
             FactoryBot.create(:ect_at_school_period, :finished, teacher:, school:, started_on: Date.new(2023, 9, 1), finished_on: Date.new(2023, 12, 31))
             # Ongoing at other school (started after the finished period)
-            FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school: other_school, started_on: Date.new(2024, 1, 1))
+            FactoryBot.create(:ect_at_school_period, :unfinished, teacher:, school: other_school, started_on: Date.new(2024, 1, 1))
           end
 
           it "closes the ongoing period and allows registration at the current school" do
@@ -275,7 +275,7 @@ RSpec.describe Schools::RegisterECT do
           before do
             FactoryBot.create(
               :ect_at_school_period,
-              :ongoing,
+              :unfinished,
               teacher:,
               school: other_school,
               started_on: started_on.advance(weeks: 2)

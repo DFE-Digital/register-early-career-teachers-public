@@ -5,20 +5,20 @@ describe "Schools::ECTs::ChangeTrainingProgrammeWizardController" do
   let(:ect_at_school_period) do
     FactoryBot.create(
       :ect_at_school_period,
-      :ongoing,
+      :unfinished,
       teacher:,
       school:,
       started_on: contract_period.started_on
     )
   end
 
-  let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, started_on: ect_at_school_period.started_on) }
+  let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, school:, started_on: ect_at_school_period.started_on) }
   let!(:mentorship_period) { FactoryBot.create(:mentorship_period, mentee: ect_at_school_period, mentor: mentor_at_school_period) }
 
   let!(:training_period) do
     FactoryBot.create(
       :training_period,
-      :ongoing,
+      :unfinished,
       :for_ect,
       ect_at_school_period:,
       started_on: ect_at_school_period.started_on
@@ -72,7 +72,7 @@ describe "Schools::ECTs::ChangeTrainingProgrammeWizardController" do
         let!(:training_period) do
           FactoryBot.create(
             :training_period,
-            :ongoing,
+            :unfinished,
             :provider_led,
             :for_ect,
             :withdrawn,
@@ -145,7 +145,7 @@ describe "Schools::ECTs::ChangeTrainingProgrammeWizardController" do
         let!(:training_period) do
           FactoryBot.create(
             :training_period,
-            :ongoing,
+            :unfinished,
             :provider_led,
             :for_ect,
             ect_at_school_period:,
@@ -194,7 +194,7 @@ describe "Schools::ECTs::ChangeTrainingProgrammeWizardController" do
         let!(:training_period) do
           FactoryBot.create(
             :training_period,
-            :ongoing,
+            :unfinished,
             :school_led,
             :for_ect,
             ect_at_school_period:,

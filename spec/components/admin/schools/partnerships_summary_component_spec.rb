@@ -88,8 +88,8 @@ RSpec.describe Admin::Schools::PartnershipsSummaryComponent, type: :component do
                         delivery_partner: FactoryBot.create(:delivery_partner, name: "Gamma Partner"))
     end
 
-    let!(:ect_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
-    let!(:mentor_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:) }
+    let!(:ect_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school:) }
+    let!(:mentor_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, school:) }
     let!(:finished_ect_period) { FactoryBot.create(:ect_at_school_period, school:, started_on: 2.years.ago, finished_on: 1.year.ago) }
     let!(:finished_mentor_period) { FactoryBot.create(:mentor_at_school_period, school:, started_on: 2.years.ago, finished_on: 1.year.ago) }
     let!(:future_ect_period) { FactoryBot.create(:ect_at_school_period, school:, started_on: 1.month.from_now, finished_on: nil) }
@@ -98,7 +98,7 @@ RSpec.describe Admin::Schools::PartnershipsSummaryComponent, type: :component do
     let!(:ect_training_period) do
       FactoryBot.create(:training_period,
                         :for_ect,
-                        :ongoing,
+                        :unfinished,
                         ect_at_school_period: ect_period,
                         school_partnership: partnership_with_teachers)
     end
@@ -106,7 +106,7 @@ RSpec.describe Admin::Schools::PartnershipsSummaryComponent, type: :component do
     let!(:mentor_training_period) do
       FactoryBot.create(:training_period,
                         :for_mentor,
-                        :ongoing,
+                        :unfinished,
                         mentor_at_school_period: mentor_period,
                         school_partnership: partnership_with_teachers)
     end
@@ -162,11 +162,11 @@ RSpec.describe Admin::Schools::PartnershipsSummaryComponent, type: :component do
         z_teacher = FactoryBot.create(:teacher, corrected_name: "Z Teacher")
         a_teacher = FactoryBot.create(:teacher, corrected_name: "A Teacher")
 
-        z_period = FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher: z_teacher)
-        a_period = FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher: a_teacher)
+        z_period = FactoryBot.create(:mentor_at_school_period, :unfinished, school:, teacher: z_teacher)
+        a_period = FactoryBot.create(:mentor_at_school_period, :unfinished, school:, teacher: a_teacher)
 
-        FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period: z_period, school_partnership: partnership_with_teachers)
-        FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period: a_period, school_partnership: partnership_with_teachers)
+        FactoryBot.create(:training_period, :for_mentor, :unfinished, mentor_at_school_period: z_period, school_partnership: partnership_with_teachers)
+        FactoryBot.create(:training_period, :for_mentor, :unfinished, mentor_at_school_period: a_period, school_partnership: partnership_with_teachers)
 
         body = mentor_row.to_html
         a_index = body.index("A Teacher")

@@ -88,7 +88,7 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
         end
 
         context "and the previous registration is ongoing" do
-          let(:previous_period) { :ongoing }
+          let(:previous_period) { :unfinished }
 
           it "is valid up to 4 months from today" do
             subject.start_date = start_date - 1.day

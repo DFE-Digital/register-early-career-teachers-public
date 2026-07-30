@@ -17,29 +17,29 @@ module ECTAtSchoolPeriods
     end
 
     let(:ect_at_school_period) do
-      FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 2.weeks.ago)
+      FactoryBot.create(:ect_at_school_period, :unfinished, started_on: 2.weeks.ago)
     end
 
     let(:selected_mentor_teacher) { FactoryBot.create(:teacher) }
     let(:selected_mentor_at_school_period) do
       FactoryBot.create(
         :mentor_at_school_period,
-        :ongoing,
+        :unfinished,
         school: ect_at_school_period.school,
         teacher: selected_mentor_teacher,
         started_on: ect_at_school_period.started_on - 1.month
       )
     end
 
-    let(:current_mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: 3.years.ago, school: ect_at_school_period.school) }
-    let!(:current_mentorship) { FactoryBot.create(:mentorship_period, :ongoing, mentee: ect_at_school_period, mentor: current_mentor, started_on: 2.weeks.ago) }
+    let(:current_mentor) { FactoryBot.create(:mentor_at_school_period, :unfinished, started_on: 3.years.ago, school: ect_at_school_period.school) }
+    let!(:current_mentorship) { FactoryBot.create(:mentorship_period, :unfinished, mentee: ect_at_school_period, mentor: current_mentor, started_on: 2.weeks.ago) }
 
     describe ".switch" do
       context "when the ECT is undergoing school-led training" do
         let!(:ect_training_period) do
           FactoryBot.create(
             :training_period,
-            :ongoing,
+            :unfinished,
             :school_led,
             :for_ect,
             ect_at_school_period:,
@@ -92,7 +92,7 @@ module ECTAtSchoolPeriods
         let!(:ect_training_period) do
           FactoryBot.create(
             :training_period,
-            :ongoing,
+            :unfinished,
             :provider_led,
             :for_ect,
             ect_at_school_period:,
@@ -134,7 +134,7 @@ module ECTAtSchoolPeriods
           let!(:selected_mentor_training_period) do
             FactoryBot.create(
               :training_period,
-              :ongoing,
+              :unfinished,
               :provider_led,
               :for_mentor,
               mentor_at_school_period: selected_mentor_at_school_period,
@@ -267,8 +267,8 @@ module ECTAtSchoolPeriods
 
         context "when the mentor is mentoring at another school" do
           let(:other_school) { FactoryBot.create(:school) }
-          let(:other_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school: other_school, teacher: selected_mentor_teacher) }
-          let!(:other_mentor_training_period) { FactoryBot.create(:training_period, :ongoing, :provider_led, :for_mentor, mentor_at_school_period: other_mentor_at_school_period, started_on: 1.month.ago) }
+          let(:other_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, school: other_school, teacher: selected_mentor_teacher) }
+          let!(:other_mentor_training_period) { FactoryBot.create(:training_period, :unfinished, :provider_led, :for_mentor, mentor_at_school_period: other_mentor_at_school_period, started_on: 1.month.ago) }
 
           it "does not create a training period" do
             expect { switch_mentor }.not_to change(TrainingPeriod, :count)

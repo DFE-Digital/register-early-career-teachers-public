@@ -102,7 +102,7 @@ describe Schools::ECTs::ChangeLeadProviderWizard::EditStep do
       FactoryBot.create(:contract_period, :current)
     end
     let(:ect_at_school_period) do
-      FactoryBot.create(:ect_at_school_period, :ongoing, school:, started_on:)
+      FactoryBot.create(:ect_at_school_period, :unfinished, school:, started_on:)
     end
     let!(:current_lead_provider) do
       FactoryBot.create(:active_lead_provider, contract_period: current_contract_period)
@@ -111,7 +111,7 @@ describe Schools::ECTs::ChangeLeadProviderWizard::EditStep do
       FactoryBot.create(
         :training_period,
         :for_ect,
-        :ongoing,
+        :unfinished,
         :with_active_lead_provider,
         ect_at_school_period:,
         started_on: training_period_started_on,

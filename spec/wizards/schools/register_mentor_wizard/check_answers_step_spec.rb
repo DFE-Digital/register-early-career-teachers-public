@@ -1,7 +1,7 @@
 describe Schools::RegisterMentorWizard::CheckAnswersStep, type: :model do
   subject { wizard.current_step }
 
-  let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing) }
+  let(:ect) { FactoryBot.create(:ect_at_school_period, :unfinished) }
   let(:training_programme) { "provider_led" }
   let(:use_previous_ect_choices) { true }
   let(:store) { FactoryBot.build(:session_repository) }
@@ -15,20 +15,20 @@ describe Schools::RegisterMentorWizard::CheckAnswersStep, type: :model do
 
     describe "#previous_step" do
       context "when the mentor is available for funding" do
-        let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing) }
+        let(:ect) { FactoryBot.create(:ect_at_school_period, :unfinished) }
 
         before do
           allow(wizard.mentor).to receive_messages(eligible_for_funding?: true, ect_lead_provider_invalid?: false)
         end
 
         context "when the ect is provider led" do
-          let!(:training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, ect_at_school_period: ect) }
+          let!(:training_period) { FactoryBot.create(:training_period, :provider_led, :unfinished, ect_at_school_period: ect) }
 
           it { expect(subject.previous_step).to eq(:review_mentor_eligibility) }
         end
 
         context "when the ect is not provider led" do
-          let!(:training_period) { FactoryBot.create(:training_period, :school_led, :ongoing, ect_at_school_period: ect) }
+          let!(:training_period) { FactoryBot.create(:training_period, :school_led, :unfinished, ect_at_school_period: ect) }
 
           it { expect(subject.previous_step).to eq(:email_address) }
         end

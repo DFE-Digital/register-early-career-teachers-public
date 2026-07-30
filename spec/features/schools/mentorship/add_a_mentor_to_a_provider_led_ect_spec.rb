@@ -63,7 +63,7 @@ RSpec.describe "Add a mentor to a provider led ECT" do
   def given_the_mentor_already_has_an_ongoing_training_period
     FactoryBot.create(
       :training_period,
-      :ongoing,
+      :unfinished,
       :provider_led,
       :for_mentor,
       mentor_at_school_period: @mentor,
@@ -113,20 +113,20 @@ RSpec.describe "Add a mentor to a provider led ECT" do
 
     @ect = FactoryBot.create(
       :ect_at_school_period,
-      :ongoing,
+      :unfinished,
       school: @school,
       started_on: mid_year
     )
 
     @ect_name = Teachers::Name.new(@ect.teacher).full_name
 
-    FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period: @ect, school_partnership: @school_partnership)
+    FactoryBot.create(:training_period, :unfinished, :provider_led, ect_at_school_period: @ect, school_partnership: @school_partnership)
   end
 
   def and_the_school_has_a_mentor_eligible_to_mentor_the_ect
     @mentor = FactoryBot.create(
       :mentor_at_school_period,
-      :ongoing,
+      :unfinished,
       school: @school,
       started_on: mid_year
     )

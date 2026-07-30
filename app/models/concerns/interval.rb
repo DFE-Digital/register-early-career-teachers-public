@@ -7,7 +7,7 @@ module Interval
     validate :period_dates_validation
 
     # Scopes
-    scope :ongoing, -> { where(finished_on: nil) }
+    scope :unfinished, -> { where(finished_on: nil) }
     scope :finished, -> { where.not(finished_on: nil) }
     scope :earliest_first, -> { order(started_on: "asc") }
     scope :latest_first, -> { order(started_on: "desc") }
@@ -19,7 +19,7 @@ module Interval
     scope :finished_on_or_after, ->(date) { where(finished_on: date..) }
     scope :overlapping_with, ->(period) { where(*overlapping_with_range(period.started_on, period.finished_on)) }
     scope :containing_period, ->(period) { where(*containing_range(period.started_on, period.finished_on)) }
-    scope :ongoing_on, ->(date) { where(*date_in_range(date)) }
+    scope :contains_date, ->(date) { where(*date_in_range(date)) }
     scope :closest_to, ->(date) {
       # this scope orders records by their proximity to the given date.
       # if a record covers the date, it will be prioritized.
@@ -43,9 +43,9 @@ module Interval
     }
 
     # Date relative scopes
-    scope :ongoing_today, -> { ongoing_on(Time.zone.today) }
+    scope :contains_today, -> { contains_date(Time.zone.today) }
     scope :starting_tomorrow_or_after, -> { started_on_or_after(Time.zone.tomorrow) }
-    scope :current_or_future, -> { ongoing_today.or(starting_tomorrow_or_after) }
+    scope :current_or_future, -> { contains_today.or(starting_tomorrow_or_after) }
   end
 
   # Validations
@@ -95,9 +95,9 @@ module Interval
 
   def invalid_date_order? = !valid_date_order?
 
-  def ongoing? = finished_on.nil?
+  def unfinished? = finished_on.nil?
 
-  def ongoing_today? = finished_on.nil? || finished_on.future?
+  def contains_today? = finished_on.nil? || finished_on.future?
 
   def complete? = finished_on.present?
 

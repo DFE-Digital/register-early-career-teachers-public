@@ -29,7 +29,7 @@ FactoryBot.define do
     finished_on { end_date }
     email { Faker::Internet.email }
 
-    trait :ongoing do
+    trait :unfinished do
       started_on { 1.year.ago }
       finished_on { nil }
     end

@@ -47,7 +47,7 @@ module GIAS::Schools
       end
 
       def gap_between?(group, period)
-        return false if group.any?(&:ongoing?)
+        return false if group.any?(&:unfinished?)
 
         group.map(&:finished_on).max < period.started_on
       end

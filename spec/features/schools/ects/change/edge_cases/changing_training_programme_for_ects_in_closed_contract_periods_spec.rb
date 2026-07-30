@@ -122,7 +122,7 @@ private
     )
     @ect_at_school_period = FactoryBot.create(
       :ect_at_school_period,
-      :ongoing,
+      :unfinished,
       started_on: Date.new(2021, 9, 1),
       teacher: @teacher,
       school: @school,
@@ -133,7 +133,7 @@ private
   def with_a_mentor
     mentor_at_school_period = FactoryBot.create(
       :mentor_at_school_period,
-      :ongoing,
+      :unfinished,
       school: @school,
       started_on: @ect_at_school_period.started_on
     )
@@ -148,7 +148,7 @@ private
   end
 
   def and_the_ect_switched_to_school_led_training
-    @school_led_training_period = FactoryBot.create(:training_period, :for_ect, :ongoing, :school_led, ect_at_school_period: @ect_at_school_period, started_on: @provider_led_training_period.finished_on + 1.day)
+    @school_led_training_period = FactoryBot.create(:training_period, :for_ect, :unfinished, :school_led, ect_at_school_period: @ect_at_school_period, started_on: @provider_led_training_period.finished_on + 1.day)
   end
 
   def when_i_am_logged_in_as_a_school_user

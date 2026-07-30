@@ -137,7 +137,7 @@ RSpec.describe Schools::Mentors::SummaryComponent, type: :component do
     context "when there are multiple mentors at the same school" do
       let(:second_mentor) { FactoryBot.create(:teacher, trs_first_name: "Sasuke", trs_last_name: "Uchiha") }
       let!(:second_mentor_at_school_period) do
-        FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: second_mentor, school:, started_on:)
+        FactoryBot.create(:mentor_at_school_period, :unfinished, teacher: second_mentor, school:, started_on:)
       end
 
       let(:ect1) { FactoryBot.create(:ect_at_school_period, teacher: ect1_teacher, school:, started_on:, finished_on: nil) }
@@ -183,7 +183,7 @@ RSpec.describe Schools::Mentors::SummaryComponent, type: :component do
 
       context "and there is also a current training period" do
         before do
-          FactoryBot.create(:training_period, :ongoing, :provider_led, :for_mentor, mentor_at_school_period:)
+          FactoryBot.create(:training_period, :unfinished, :provider_led, :for_mentor, mentor_at_school_period:)
         end
 
         include_examples "does not show training details"

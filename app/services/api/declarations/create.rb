@@ -225,7 +225,7 @@ module API::Declarations
       return if errors[:contract_period_year].any?
       return unless teacher
 
-      training_period_ongoing_today = training_periods.ongoing_today.first
+      training_period_ongoing_today = training_periods.contains_today.first
       return unless training_period_ongoing_today
 
       current_contract_period = training_period_ongoing_today.contract_period

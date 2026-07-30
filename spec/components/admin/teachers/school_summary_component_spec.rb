@@ -87,8 +87,8 @@ RSpec.describe Admin::Teachers::SchoolSummaryComponent, type: :component do
     end
 
     context "Mentor row" do
-      let(:older_mentor_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, started_on: school_period.started_on) }
-      let(:newer_mentor_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, started_on: school_period.started_on + 1.month) }
+      let(:older_mentor_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, school:, started_on: school_period.started_on) }
+      let(:newer_mentor_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, school:, started_on: school_period.started_on + 1.month) }
 
       it "appears as the last row" do
         expect(rendered).to have_css(".govuk-summary-list__row:last-child dt", text: "Mentor")

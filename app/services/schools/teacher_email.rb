@@ -14,11 +14,11 @@ module Schools
     attr_reader :email, :trn
 
     def email_in_use_by_ongoing_mentor?
-      MentorAtSchoolPeriod.joins(:teacher).where(email:).where.not(teacher: { trn: }).ongoing.exists?
+      MentorAtSchoolPeriod.joins(:teacher).where(email:).where.not(teacher: { trn: }).unfinished.exists?
     end
 
     def email_in_use_by_ongoing_ect?
-      ECTAtSchoolPeriod.joins(:teacher).where(email:).where.not(teacher: { trn: }).ongoing.exists?
+      ECTAtSchoolPeriod.joins(:teacher).where(email:).where.not(teacher: { trn: }).unfinished.exists?
     end
   end
 end

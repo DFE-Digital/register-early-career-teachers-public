@@ -13,7 +13,7 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::ConfirmationStep do
   let(:store) { FactoryBot.build(:session_repository, training_programme: "provider_led") }
   let(:author) { FactoryBot.build(:school_user, school_urn: school.urn) }
   let(:school) { FactoryBot.create(:school) }
-  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
+  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school:) }
   let(:params) { {} }
 
   describe "#previous_step" do
@@ -45,7 +45,7 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::ConfirmationStep do
       let!(:training_period) do
         FactoryBot.create(
           :training_period,
-          :ongoing,
+          :unfinished,
           :for_ect,
           :with_school_partnership,
           ect_at_school_period:,
@@ -63,7 +63,7 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::ConfirmationStep do
       let!(:training_period) do
         FactoryBot.create(
           :training_period,
-          :ongoing,
+          :unfinished,
           :for_ect,
           :with_only_expression_of_interest,
           ect_at_school_period:,

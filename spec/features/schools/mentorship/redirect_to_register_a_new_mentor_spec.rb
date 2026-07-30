@@ -58,14 +58,14 @@ RSpec.describe "Redirect to register a new mentor for an ECT" do
   end
 
   def and_there_is_an_ect_with_no_mentor_registered_at_the_school
-    @ect = FactoryBot.create(:ect_at_school_period, :with_training_period, :ongoing, lead_provider: @lead_provider, school: @school)
+    @ect = FactoryBot.create(:ect_at_school_period, :with_training_period, :unfinished, lead_provider: @lead_provider, school: @school)
     @ect_name = Teachers::Name.new(@ect.teacher).full_name
 
-    FactoryBot.create(:training_period, :ongoing, school_partnership: @school_partnership, ect_at_school_period: @ect)
+    FactoryBot.create(:training_period, :unfinished, school_partnership: @school_partnership, ect_at_school_period: @ect)
   end
 
   def and_there_is_a_mentor_registered_at_the_school_eligible_to_mentor_the_ect
-    @mentor = FactoryBot.create(:mentor_at_school_period, :ongoing, school: @school)
+    @mentor = FactoryBot.create(:mentor_at_school_period, :unfinished, school: @school)
     @mentor_name = Teachers::Name.new(@mentor.teacher).full_name
   end
 

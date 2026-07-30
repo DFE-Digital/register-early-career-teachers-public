@@ -69,7 +69,7 @@ describe Schools::RegisterMentorWizard::EmailAddressStep, type: :model do
   end
 
   context "previously registered with unexpected mentorship_status" do
-    let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing) }
+    let(:ect) { FactoryBot.create(:ect_at_school_period, :unfinished) }
     let(:store) do
       FactoryBot.build(:session_repository,
                        trn: "1234567",
@@ -82,7 +82,7 @@ describe Schools::RegisterMentorWizard::EmailAddressStep, type: :model do
     let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :email_address, store:, ect_id: ect.id) }
 
     before do
-      FactoryBot.create(:training_period, :provider_led, :ongoing, ect_at_school_period: ect)
+      FactoryBot.create(:training_period, :provider_led, :unfinished, ect_at_school_period: ect)
       allow(wizard.mentor).to receive_messages(
         email_taken?: false,
         previously_registered_as_mentor?: true,

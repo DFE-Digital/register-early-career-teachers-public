@@ -2,7 +2,7 @@ RSpec.describe "schools/register_mentor_wizard/previous_training_period_details.
   let(:current_school) { FactoryBot.create(:school) }
   let(:mentor_teacher) { FactoryBot.create(:teacher) }
 
-  let(:ect_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school: current_school) }
+  let(:ect_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school: current_school) }
 
   let(:wizard_store) do
     FactoryBot.build(
@@ -108,7 +108,7 @@ RSpec.describe "schools/register_mentor_wizard/previous_training_period_details.
     let!(:mentor_period) do
       FactoryBot.create(
         :mentor_at_school_period,
-        :ongoing,
+        :unfinished,
         teacher: mentor_teacher,
         school: previous_school
       )
@@ -122,7 +122,7 @@ RSpec.describe "schools/register_mentor_wizard/previous_training_period_details.
         :training_period,
         :for_mentor,
         :provider_led,
-        :ongoing,
+        :unfinished,
         mentor_at_school_period: mentor_period,
         school_partnership: nil,
         expression_of_interest:

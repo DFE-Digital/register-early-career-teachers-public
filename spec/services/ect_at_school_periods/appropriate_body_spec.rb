@@ -42,7 +42,7 @@ RSpec.describe ECTAtSchoolPeriods::AppropriateBody do
         let!(:induction_period) do
           FactoryBot.create(
             :induction_period,
-            :ongoing,
+            :unfinished,
             teacher: ect_at_school_period.teacher,
             started_on: ect_at_school_period.started_on.prev_day
           )
@@ -56,7 +56,7 @@ RSpec.describe ECTAtSchoolPeriods::AppropriateBody do
         let!(:induction_period) do
           FactoryBot.create(
             :induction_period,
-            :ongoing,
+            :unfinished,
             teacher: ect_at_school_period.teacher,
             started_on: ect_at_school_period.finished_on.next_day
           )
@@ -70,7 +70,7 @@ RSpec.describe ECTAtSchoolPeriods::AppropriateBody do
         let!(:induction_period) do
           FactoryBot.create(
             :induction_period,
-            :ongoing,
+            :unfinished,
             teacher: ect_at_school_period.teacher,
             started_on: ect_at_school_period.started_on
           )
@@ -107,7 +107,7 @@ RSpec.describe ECTAtSchoolPeriods::AppropriateBody do
         let!(:induction_period) do
           FactoryBot.create(
             :induction_period,
-            :ongoing,
+            :unfinished,
             teacher: ect_at_school_period.teacher,
             started_on: ect_at_school_period.started_on.prev_day
           )
@@ -121,7 +121,7 @@ RSpec.describe ECTAtSchoolPeriods::AppropriateBody do
         let!(:induction_period) do
           FactoryBot.create(
             :induction_period,
-            :ongoing,
+            :unfinished,
             teacher: ect_at_school_period.teacher,
             started_on: ect_at_school_period.finished_on.next_day
           )
@@ -135,7 +135,7 @@ RSpec.describe ECTAtSchoolPeriods::AppropriateBody do
         let!(:induction_period) do
           FactoryBot.create(
             :induction_period,
-            :ongoing,
+            :unfinished,
             teacher: ect_at_school_period.teacher,
             started_on: ect_at_school_period.started_on
           )
@@ -173,7 +173,7 @@ RSpec.describe ECTAtSchoolPeriods::AppropriateBody do
       let!(:induction_period) do
         FactoryBot.create(
           :induction_period,
-          :ongoing,
+          :unfinished,
           teacher: ect_at_school_period.teacher,
           started_on: ect_at_school_period.started_on.prev_day
         )
@@ -187,7 +187,7 @@ RSpec.describe ECTAtSchoolPeriods::AppropriateBody do
       let!(:induction_period) do
         FactoryBot.create(
           :induction_period,
-          :ongoing,
+          :unfinished,
           teacher: ect_at_school_period.teacher,
           started_on: ect_at_school_period.finished_on.next_day
         )
@@ -201,7 +201,7 @@ RSpec.describe ECTAtSchoolPeriods::AppropriateBody do
       let!(:induction_period) do
         FactoryBot.create(
           :induction_period,
-          :ongoing,
+          :unfinished,
           teacher: ect_at_school_period.teacher,
           started_on: ect_at_school_period.started_on
         )
@@ -241,7 +241,7 @@ RSpec.describe ECTAtSchoolPeriods::AppropriateBody do
         let!(:induction_period) do
           FactoryBot.create(
             :induction_period,
-            :ongoing,
+            :unfinished,
             teacher: ect_at_school_period.teacher,
             started_on: ect_at_school_period.started_on.prev_day
           )
@@ -255,7 +255,7 @@ RSpec.describe ECTAtSchoolPeriods::AppropriateBody do
         let!(:induction_period) do
           FactoryBot.create(
             :induction_period,
-            :ongoing,
+            :unfinished,
             teacher: ect_at_school_period.teacher,
             started_on: ect_at_school_period.finished_on.next_day
           )
@@ -269,7 +269,7 @@ RSpec.describe ECTAtSchoolPeriods::AppropriateBody do
         let!(:induction_period) do
           FactoryBot.create(
             :induction_period,
-            :ongoing,
+            :unfinished,
             teacher: ect_at_school_period.teacher,
             started_on: ect_at_school_period.started_on
           )
@@ -306,7 +306,7 @@ RSpec.describe ECTAtSchoolPeriods::AppropriateBody do
         let!(:induction_period) do
           FactoryBot.create(
             :induction_period,
-            :ongoing,
+            :unfinished,
             teacher: ect_at_school_period.teacher,
             started_on: ect_at_school_period.started_on.prev_day
           )
@@ -320,7 +320,7 @@ RSpec.describe ECTAtSchoolPeriods::AppropriateBody do
         let!(:induction_period) do
           FactoryBot.create(
             :induction_period,
-            :ongoing,
+            :unfinished,
             teacher: ect_at_school_period.teacher,
             started_on: ect_at_school_period.finished_on.next_day
           )
@@ -334,7 +334,7 @@ RSpec.describe ECTAtSchoolPeriods::AppropriateBody do
         let!(:induction_period) do
           FactoryBot.create(
             :induction_period,
-            :ongoing,
+            :unfinished,
             teacher: ect_at_school_period.teacher,
             started_on: ect_at_school_period.started_on
           )

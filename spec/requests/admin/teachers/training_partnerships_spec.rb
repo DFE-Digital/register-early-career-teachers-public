@@ -10,9 +10,9 @@ RSpec.describe "Admin::Teachers::TrainingPartnerships", type: :request do
   let(:other_delivery_partner) { FactoryBot.create(:delivery_partner) }
   let(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, year: contract_period.year, school:, lead_provider:, delivery_partner:) }
   let!(:other_school_partnership) { FactoryBot.create(:school_partnership, :for_year, year: contract_period.year, school:, lead_provider: other_lead_provider, delivery_partner: other_delivery_partner) }
-  let(:ect_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:) }
+  let(:ect_period) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher:, school:) }
   let(:schedule) { FactoryBot.create(:schedule, contract_period: school_partnership.contract_period) }
-  let(:training_period) { FactoryBot.create(:training_period, :ongoing, ect_at_school_period: ect_period, school_partnership:, schedule:) }
+  let(:training_period) { FactoryBot.create(:training_period, :unfinished, ect_at_school_period: ect_period, school_partnership:, schedule:) }
   let(:teacher_name) { Teachers::Name.new(teacher).full_name }
 
   describe "GET /admin/teachers/:teacher_id/training_periods/:training_period_id/partnership/new" do

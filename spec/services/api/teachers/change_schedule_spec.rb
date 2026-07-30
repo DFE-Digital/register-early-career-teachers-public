@@ -209,8 +209,8 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
           let(:teacher_type) { trainee_type }
 
           context "when invalid" do
-            let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :ongoing) }
-            let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on) }
+            let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :unfinished) }
+            let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :unfinished, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on) }
             let(:teacher_api_id) { SecureRandom.uuid }
 
             it { expect(instance.change_schedule).to be(false) }

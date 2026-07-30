@@ -14,7 +14,7 @@ describe Schools::ECTs::ChangeLeadProviderWizard::ConfirmationStep, type: :model
   let(:author) { FactoryBot.build(:school_user, school_urn: school.urn) }
   let(:school) { FactoryBot.create(:school) }
   let(:ect_at_school_period) do
-    FactoryBot.create(:ect_at_school_period, :ongoing, school:)
+    FactoryBot.create(:ect_at_school_period, :unfinished, school:)
   end
   let(:params) { {} }
 

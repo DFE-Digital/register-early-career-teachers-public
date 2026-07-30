@@ -30,7 +30,7 @@ RSpec.describe InductionPeriod do
     it { is_expected.not_to validate_absence_of(:outcome).with_message("Outcome cannot be set for ongoing induction periods") }
 
     context "when induction period is ongoing" do
-      subject { FactoryBot.build(:induction_period, :ongoing) }
+      subject { FactoryBot.build(:induction_period, :unfinished) }
 
       it { is_expected.to validate_absence_of(:outcome).with_message("Outcome cannot be set for ongoing induction periods") }
     end
@@ -129,7 +129,7 @@ RSpec.describe InductionPeriod do
           end
 
           it "returns false if it is not the first induction period and outcome has not changed" do
-            second_induction_period = FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:, started_on: "2023-01-01")
+            second_induction_period = FactoryBot.create(:induction_period, :unfinished, teacher:, appropriate_body_period:, started_on: "2023-01-01")
 
             expect(second_induction_period.send(:touch_teacher?)).to be(false)
           end
@@ -165,7 +165,7 @@ RSpec.describe InductionPeriod do
       it { is_expected.to validate_inclusion_of(:training_programme).in_array(%w[provider_led school_led]).with_message("Choose an induction programme") }
 
       context "when the induction pre-dates School-led and Provider-Led programme types and training_programme is blank" do
-        subject { FactoryBot.create(:induction_period, :ongoing, :pre_2021, :legacy_programme_type) }
+        subject { FactoryBot.create(:induction_period, :unfinished, :pre_2021, :legacy_programme_type) }
 
         it { is_expected.to be_valid }
       end
@@ -190,7 +190,7 @@ RSpec.describe InductionPeriod do
     end
 
     describe "#started_on_not_in_future" do
-      subject { FactoryBot.build(:induction_period, :ongoing, appropriate_body_period:, started_on:) }
+      subject { FactoryBot.build(:induction_period, :unfinished, appropriate_body_period:, started_on:) }
 
       context "when start date is today" do
         let(:started_on) { Date.current }
@@ -290,7 +290,7 @@ RSpec.describe InductionPeriod do
 
     describe "#number_of_terms" do
       context "when finished_on is empty" do
-        subject { FactoryBot.build(:induction_period, :ongoing, appropriate_body_period:) }
+        subject { FactoryBot.build(:induction_period, :unfinished, appropriate_body_period:) }
 
         it { is_expected.not_to validate_presence_of(:number_of_terms) }
       end
@@ -360,7 +360,7 @@ RSpec.describe InductionPeriod do
   end
 
   describe "scopes" do
-    let!(:ongoing) { FactoryBot.create(:induction_period, :ongoing) }
+    let!(:unfinished_period) { FactoryBot.create(:induction_period, :unfinished) }
     let!(:released) { FactoryBot.create(:induction_period) }
     let!(:passed) { FactoryBot.create(:induction_period, :pass) }
     let!(:failed) { FactoryBot.create(:induction_period, :fail) }
@@ -373,13 +373,13 @@ RSpec.describe InductionPeriod do
 
     describe ".without_outcome" do
       it "returns induction periods with no outcome" do
-        expect(described_class.without_outcome).to contain_exactly(ongoing, released)
+        expect(described_class.without_outcome).to contain_exactly(unfinished_period, released)
       end
     end
 
-    describe ".ongoing" do
+    describe ".unfinished" do
       it "returns unfinished induction periods" do
-        expect(described_class.ongoing).to contain_exactly(ongoing)
+        expect(described_class.unfinished).to contain_exactly(unfinished_period)
       end
     end
 
@@ -457,7 +457,7 @@ RSpec.describe InductionPeriod do
       end
 
       let!(:induction_period) do
-        FactoryBot.create(:induction_period, :ongoing,
+        FactoryBot.create(:induction_period, :unfinished,
                           teacher:,
                           started_on: "2025-01-01")
       end
@@ -487,7 +487,7 @@ RSpec.describe InductionPeriod do
       end
 
       let!(:induction_period) do
-        FactoryBot.create(:induction_period, :ongoing,
+        FactoryBot.create(:induction_period, :unfinished,
                           teacher:,
                           started_on: "2025-01-01")
       end

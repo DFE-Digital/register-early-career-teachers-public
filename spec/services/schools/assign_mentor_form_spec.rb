@@ -19,8 +19,8 @@ RSpec.describe Schools::AssignMentorForm, type: :model do
       context "when the mentor is not registered at the ect's school" do
         subject { described_class.new(ect:, mentor_id: mentor.id) }
 
-        let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing) }
-        let(:mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing) }
+        let(:ect) { FactoryBot.create(:ect_at_school_period, :unfinished) }
+        let(:mentor) { FactoryBot.create(:mentor_at_school_period, :unfinished) }
 
         before do
           subject.valid?
@@ -36,8 +36,8 @@ RSpec.describe Schools::AssignMentorForm, type: :model do
       context "when the mentor is not eligible for the ect" do
         subject { described_class.new(ect:, mentor_id: mentor.id) }
 
-        let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing) }
-        let(:mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, school: ect.school, teacher: ect.teacher) }
+        let(:ect) { FactoryBot.create(:ect_at_school_period, :unfinished) }
+        let(:mentor) { FactoryBot.create(:mentor_at_school_period, :unfinished, school: ect.school, teacher: ect.teacher) }
 
         before do
           subject.valid?
@@ -57,14 +57,14 @@ RSpec.describe Schools::AssignMentorForm, type: :model do
       let(:ect) do
         FactoryBot.create(
           :ect_at_school_period,
-          :ongoing,
+          :unfinished,
           started_on: 3.days.ago
         )
       end
       let(:mentor) do
         FactoryBot.create(
           :mentor_at_school_period,
-          :ongoing,
+          :unfinished,
           school: ect.school,
           started_on: 4.weeks.ago
         )

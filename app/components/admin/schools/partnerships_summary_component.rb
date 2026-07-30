@@ -44,7 +44,7 @@ module Admin
 
       def teachers_for(training_periods, period_type)
         training_periods
-          .select(&:ongoing_today?)
+          .select(&:contains_today?)
           .filter_map { |period| period.public_send(period_type)&.teacher }
           .uniq
           .sort_by { |teacher| teacher_full_name(teacher) }

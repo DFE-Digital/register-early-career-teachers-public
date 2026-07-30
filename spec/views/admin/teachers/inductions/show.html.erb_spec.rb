@@ -9,7 +9,7 @@ RSpec.describe "admin/teachers/inductions/show.html.erb" do
   end
 
   let!(:induction_period) do
-    FactoryBot.create(:induction_period, :ongoing, teacher:)
+    FactoryBot.create(:induction_period, :unfinished, teacher:)
   end
 
   before do
@@ -78,7 +78,7 @@ RSpec.describe "admin/teachers/inductions/show.html.erb" do
 
   context "when the latest induction period is not complete" do
     let!(:induction_period) do
-      FactoryBot.create(:induction_period, :ongoing, teacher:)
+      FactoryBot.create(:induction_period, :unfinished, teacher:)
     end
 
     it "does not display a link to reopen induction" do

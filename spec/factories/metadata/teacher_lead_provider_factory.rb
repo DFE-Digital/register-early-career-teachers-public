@@ -41,7 +41,7 @@ FactoryBot.define do
       ].compact.each do |teacher_type|
         at_school_period = FactoryBot.create(
           :"#{teacher_type}_at_school_period",
-          :ongoing,
+          :unfinished,
           school:,
           teacher:
         )

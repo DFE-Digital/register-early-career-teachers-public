@@ -1,14 +1,14 @@
 describe ECTAtSchoolPeriod do
   describe "declarative updates" do
     describe "school target" do
-      let(:instance) { FactoryBot.create(:ect_at_school_period, :ongoing, school: target) }
+      let(:instance) { FactoryBot.create(:ect_at_school_period, :unfinished, school: target) }
       let!(:target) { FactoryBot.create(:school) }
 
       it_behaves_like "a declarative metadata model", on_event: %i[create destroy update]
     end
 
     describe "teacher target" do
-      let(:instance) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: target) }
+      let(:instance) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher: target) }
       let!(:target) { FactoryBot.create(:teacher) }
 
       it_behaves_like "a declarative metadata model", on_event: %i[create destroy update]
@@ -25,12 +25,12 @@ describe ECTAtSchoolPeriod do
     it { is_expected.to have_many(:events) }
 
     describe ".current_or_next_training_period" do
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 1.year.ago) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, started_on: 1.year.ago) }
 
       it { is_expected.to have_one(:current_or_next_training_period).class_name("TrainingPeriod") }
 
       context "when there is a current period" do
-        let!(:training_period) { FactoryBot.create(:training_period, :ongoing, ect_at_school_period:) }
+        let!(:training_period) { FactoryBot.create(:training_period, :unfinished, ect_at_school_period:) }
 
         it "returns the current training_period" do
           expect(ect_at_school_period.current_or_next_training_period).to eql(training_period)
@@ -56,7 +56,7 @@ describe ECTAtSchoolPeriod do
     end
 
     describe "#current_or_next_or_latest_training_period" do
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 1.year.ago) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, started_on: 1.year.ago) }
 
       context "when there is a current period and a future period" do
         let!(:current_training_period) do
@@ -71,7 +71,7 @@ describe ECTAtSchoolPeriod do
         let!(:future_training_period) do
           FactoryBot.create(
             :training_period,
-            :ongoing,
+            :unfinished,
             :provider_led,
             ect_at_school_period:,
             started_on: current_training_period.finished_on.next_day
@@ -96,7 +96,7 @@ describe ECTAtSchoolPeriod do
         let!(:future_training_period) do
           FactoryBot.create(
             :training_period,
-            :ongoing,
+            :unfinished,
             :provider_led,
             ect_at_school_period:,
             started_on: next_training_period.finished_on.next_day
@@ -130,7 +130,7 @@ describe ECTAtSchoolPeriod do
       let(:ect_at_school_period) do
         FactoryBot.create(
           :ect_at_school_period,
-          :ongoing,
+          :unfinished,
           started_on: 2.years.ago
         )
       end
@@ -172,7 +172,7 @@ describe ECTAtSchoolPeriod do
 
     describe ".current_or_next_mentorship_period" do
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 1.year.ago, finished_on: nil) }
-      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school: ect_at_school_period.school) }
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, school: ect_at_school_period.school) }
       let(:mentorship_started_on) { 3.weeks.ago }
       let(:mentorship_finished_on) { nil }
 
@@ -200,7 +200,7 @@ describe ECTAtSchoolPeriod do
         let!(:future_mentorship_period) do
           FactoryBot.create(
             :mentorship_period,
-            :ongoing,
+            :unfinished,
             mentee: ect_at_school_period,
             mentor: mentor_at_school_period,
             started_on: mentorship_finished_on + 1.day,
@@ -225,8 +225,8 @@ describe ECTAtSchoolPeriod do
     describe ".latest_mentorship_period" do
       subject { ect_at_school_period.latest_mentorship_period }
 
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 1.year.ago) }
-      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school: ect_at_school_period.school) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, started_on: 1.year.ago) }
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, school: ect_at_school_period.school) }
       let(:mentorship_started_on) { 3.weeks.ago }
       let(:mentorship_finished_on) { nil }
       let!(:latest_mentorship_period) do
@@ -416,7 +416,7 @@ describe ECTAtSchoolPeriod do
       let!(:ongoing_ect_at_school_period) do
         FactoryBot.create(
           :ect_at_school_period,
-          :ongoing,
+          :unfinished,
           teacher:,
           school:,
           started_on: 1.year.ago
@@ -428,7 +428,7 @@ describe ECTAtSchoolPeriod do
         let(:concurrent_ongoing_period) do
           FactoryBot.build(
             :ect_at_school_period,
-            :ongoing,
+            :unfinished,
             teacher:,
             school: other_school,
             started_on: 1.week.from_now
@@ -445,7 +445,7 @@ describe ECTAtSchoolPeriod do
         let(:concurrent_ongoing_period) do
           FactoryBot.build(
             :ect_at_school_period,
-            :ongoing,
+            :unfinished,
             teacher:,
             school:,
             started_on: 1.week.from_now
@@ -538,16 +538,16 @@ describe ECTAtSchoolPeriod do
       let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, :teaching_school_hub) }
       let(:other_appropriate_body) { FactoryBot.create(:appropriate_body_period, :teaching_school_hub) }
 
-      let!(:period_without_induction_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school_reported_appropriate_body: appropriate_body_period) }
-      let!(:period_with_ongoing_induction_period_for_same_appropriate_body) { FactoryBot.create(:ect_at_school_period, :ongoing, school_reported_appropriate_body: appropriate_body_period) }
-      let!(:period_with_ongoing_induction_period_for_different_appropriate_body) { FactoryBot.create(:ect_at_school_period, :ongoing, school_reported_appropriate_body: appropriate_body_period) }
-      let!(:period_with_finished_induction_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school_reported_appropriate_body: appropriate_body_period) }
+      let!(:period_without_induction_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school_reported_appropriate_body: appropriate_body_period) }
+      let!(:period_with_ongoing_induction_period_for_same_appropriate_body) { FactoryBot.create(:ect_at_school_period, :unfinished, school_reported_appropriate_body: appropriate_body_period) }
+      let!(:period_with_ongoing_induction_period_for_different_appropriate_body) { FactoryBot.create(:ect_at_school_period, :unfinished, school_reported_appropriate_body: appropriate_body_period) }
+      let!(:period_with_finished_induction_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school_reported_appropriate_body: appropriate_body_period) }
       let!(:finished_period) { FactoryBot.create(:ect_at_school_period, :finished, school_reported_appropriate_body: appropriate_body_period) }
-      let!(:period_with_different_appropriate_body) { FactoryBot.create(:ect_at_school_period, :ongoing, school_reported_appropriate_body: other_appropriate_body) }
+      let!(:period_with_different_appropriate_body) { FactoryBot.create(:ect_at_school_period, :unfinished, school_reported_appropriate_body: other_appropriate_body) }
 
       before do
-        FactoryBot.create(:induction_period, :ongoing, appropriate_body_period:, teacher: period_with_ongoing_induction_period_for_same_appropriate_body.teacher)
-        FactoryBot.create(:induction_period, :ongoing, appropriate_body_period: other_appropriate_body, teacher: period_with_ongoing_induction_period_for_different_appropriate_body.teacher)
+        FactoryBot.create(:induction_period, :unfinished, appropriate_body_period:, teacher: period_with_ongoing_induction_period_for_same_appropriate_body.teacher)
+        FactoryBot.create(:induction_period, :unfinished, appropriate_body_period: other_appropriate_body, teacher: period_with_ongoing_induction_period_for_different_appropriate_body.teacher)
         FactoryBot.create(:induction_period, started_on: 1.year.ago, finished_on: 1.month.ago, teacher: period_with_finished_induction_period.teacher)
       end
 
@@ -572,7 +572,7 @@ describe ECTAtSchoolPeriod do
       let(:teacher_with_failed_induction) { FactoryBot.create(:teacher, :induction_failed) }
 
       let!(:period_1) { FactoryBot.create(:ect_at_school_period, :finished, teacher: teacher_with_passed_induction) }
-      let!(:period_2) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:) }
+      let!(:period_2) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher:) }
       let!(:period_3) { FactoryBot.create(:ect_at_school_period, :finished, teacher: teacher_with_failed_induction) }
 
       it "returns ect periods where the teacher's induction is not completed" do
@@ -589,17 +589,17 @@ describe ECTAtSchoolPeriod do
       let(:teacher_with_qts_claimed_by_different_ab) { FactoryBot.create(:teacher, trs_qts_awarded_on: 1.year.ago) }
 
       let!(:period_with_qts) do
-        FactoryBot.create(:ect_at_school_period, :ongoing, teacher: teacher_with_qts, school_reported_appropriate_body: appropriate_body_period)
+        FactoryBot.create(:ect_at_school_period, :unfinished, teacher: teacher_with_qts, school_reported_appropriate_body: appropriate_body_period)
       end
       let!(:period_without_qts) do
-        FactoryBot.create(:ect_at_school_period, :ongoing, teacher: teacher_without_qts, school_reported_appropriate_body: appropriate_body_period)
+        FactoryBot.create(:ect_at_school_period, :unfinished, teacher: teacher_without_qts, school_reported_appropriate_body: appropriate_body_period)
       end
       let!(:period_with_qts_claimed_by_different_ab) do
-        FactoryBot.create(:ect_at_school_period, :ongoing, teacher: teacher_with_qts_claimed_by_different_ab, school_reported_appropriate_body: appropriate_body_period)
+        FactoryBot.create(:ect_at_school_period, :unfinished, teacher: teacher_with_qts_claimed_by_different_ab, school_reported_appropriate_body: appropriate_body_period)
       end
 
       before do
-        FactoryBot.create(:induction_period, :ongoing, appropriate_body_period: other_appropriate_body, teacher: teacher_with_qts_claimed_by_different_ab)
+        FactoryBot.create(:induction_period, :unfinished, appropriate_body_period: other_appropriate_body, teacher: teacher_with_qts_claimed_by_different_ab)
       end
 
       describe ".without_qts_award" do
@@ -656,7 +656,7 @@ describe ECTAtSchoolPeriod do
   end
 
   describe "#reported_leaving_by?" do
-    subject(:period) { FactoryBot.create(:ect_at_school_period, :ongoing, reported_leaving_by_school_id: reporter_id) }
+    subject(:period) { FactoryBot.create(:ect_at_school_period, :unfinished, reported_leaving_by_school_id: reporter_id) }
 
     let(:reporting_school) { FactoryBot.create(:school) }
     let(:other_school) { FactoryBot.create(:school) }

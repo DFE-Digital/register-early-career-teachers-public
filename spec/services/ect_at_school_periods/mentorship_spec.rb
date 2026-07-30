@@ -1,8 +1,8 @@
 describe ECTAtSchoolPeriods::Mentorship do
   let(:school) { FactoryBot.create(:school) }
-  let(:mentee) { FactoryBot.create(:ect_at_school_period, :ongoing, school:, started_on: 3.years.ago) }
-  let(:mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, started_on: 3.years.ago) }
-  let(:old_mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, started_on: 3.years.ago) }
+  let(:mentee) { FactoryBot.create(:ect_at_school_period, :unfinished, school:, started_on: 3.years.ago) }
+  let(:mentor) { FactoryBot.create(:mentor_at_school_period, :unfinished, school:, started_on: 3.years.ago) }
+  let(:old_mentor) { FactoryBot.create(:mentor_at_school_period, :unfinished, school:, started_on: 3.years.ago) }
 
   describe "#current_or_next_mentorship_period" do
     subject { described_class.new(mentee).current_or_next_mentorship_period }
@@ -21,7 +21,7 @@ describe ECTAtSchoolPeriods::Mentorship do
 
     context "when the ect has an ongoing mentorship at a school" do
       let!(:old_mentorship) { FactoryBot.create(:mentorship_period, mentee:, mentor:, started_on: 2.years.ago) }
-      let!(:ongoing_mentorship) { FactoryBot.create(:mentorship_period, :ongoing, mentee:, mentor:, started_on: 1.year.ago) }
+      let!(:ongoing_mentorship) { FactoryBot.create(:mentorship_period, :unfinished, mentee:, mentor:, started_on: 1.year.ago) }
 
       it { is_expected.to eq(ongoing_mentorship) }
     end
@@ -45,7 +45,7 @@ describe ECTAtSchoolPeriods::Mentorship do
     context "when the ect has an ongoing mentorship at a school" do
       before do
         FactoryBot.create(:mentorship_period, mentee:, mentor:, started_on: 2.years.ago)
-        FactoryBot.create(:mentorship_period, :ongoing, mentee:, mentor:, started_on: 1.year.ago)
+        FactoryBot.create(:mentorship_period, :unfinished, mentee:, mentor:, started_on: 1.year.ago)
       end
 
       it { is_expected.to eql(mentor) }
@@ -70,7 +70,7 @@ describe ECTAtSchoolPeriods::Mentorship do
     context "when the ect has an ongoing mentorship at a school" do
       before do
         FactoryBot.create(:mentorship_period, mentee:, mentor:, started_on: 2.years.ago)
-        FactoryBot.create(:mentorship_period, :ongoing, mentee:, mentor:, started_on: 1.year.ago)
+        FactoryBot.create(:mentorship_period, :unfinished, mentee:, mentor:, started_on: 1.year.ago)
       end
 
       it { is_expected.to eql(Teachers::Name.new(mentor.teacher).full_name) }
@@ -92,7 +92,7 @@ describe ECTAtSchoolPeriods::Mentorship do
 
     context "when the ect has an ongoing mentorship at the school" do
       let!(:old_mentorship) { FactoryBot.create(:mentorship_period, mentee:, mentor:, started_on: 2.years.ago) }
-      let!(:ongoing_mentorship) { FactoryBot.create(:mentorship_period, :ongoing, mentee:, mentor:, started_on: 1.year.ago) }
+      let!(:ongoing_mentorship) { FactoryBot.create(:mentorship_period, :unfinished, mentee:, mentor:, started_on: 1.year.ago) }
 
       it { is_expected.to eq(ongoing_mentorship) }
     end
@@ -117,7 +117,7 @@ describe ECTAtSchoolPeriods::Mentorship do
     context "when the ect has an ongoing mentorship at a school" do
       before do
         FactoryBot.create(:mentorship_period, mentee:, mentor: old_mentor, started_on: 2.years.ago)
-        FactoryBot.create(:mentorship_period, :ongoing, mentee:, mentor:, started_on: 1.year.ago)
+        FactoryBot.create(:mentorship_period, :unfinished, mentee:, mentor:, started_on: 1.year.ago)
       end
 
       it { is_expected.to eql(mentor) }
@@ -143,7 +143,7 @@ describe ECTAtSchoolPeriods::Mentorship do
     context "when the ect has an ongoing mentorship at a school" do
       before do
         FactoryBot.create(:mentorship_period, mentee:, mentor: old_mentor, started_on: 2.years.ago)
-        FactoryBot.create(:mentorship_period, :ongoing, mentee:, mentor:, started_on: 1.year.ago)
+        FactoryBot.create(:mentorship_period, :unfinished, mentee:, mentor:, started_on: 1.year.ago)
       end
 
       it { is_expected.to eql(Teachers::Name.new(mentor.teacher).full_name) }

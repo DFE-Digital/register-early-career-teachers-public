@@ -28,12 +28,12 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Wiz
       delivery_partner:
     )
   end
-  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:) }
+  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher:, school:) }
   let(:schedule) { FactoryBot.create(:schedule, contract_period: current_contract_period) }
   let(:training_period) do
     FactoryBot.create(
       :training_period,
-      :ongoing,
+      :unfinished,
       ect_at_school_period:,
       school_partnership:,
       schedule:
@@ -97,7 +97,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Wiz
       let(:training_period) do
         FactoryBot.create(
           :training_period,
-          :ongoing,
+          :unfinished,
           :with_only_expression_of_interest,
           ect_at_school_period:,
           expression_of_interest: active_lead_provider,

@@ -181,10 +181,10 @@ class School < ApplicationRecord
   def eligible? = marked_as_eligible? || gias_school.eligible?
 
   def blocked_from_registering_new_ects?
-    independent? && section_41_approved? == false && TrainingPeriod.at_school(self).ongoing.exists?
+    independent? && section_41_approved? == false && TrainingPeriod.at_school(self).unfinished.exists?
   end
 
   def blocked_from_service_access?
-    independent? && section_41_approved? == false && !TrainingPeriod.at_school(self).ongoing.exists?
+    independent? && section_41_approved? == false && !TrainingPeriod.at_school(self).unfinished.exists?
   end
 end

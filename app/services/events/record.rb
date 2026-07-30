@@ -420,7 +420,7 @@ module Events
           urn: period.school.urn }
       end
 
-      time_period = if successor_period.ongoing?
+      time_period = if successor_period.unfinished?
                       "from #{successor_period.started_on}"
                     else
                       "between #{successor_period.started_on} and #{successor_period.finished_on}"

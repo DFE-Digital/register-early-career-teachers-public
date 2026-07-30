@@ -6,15 +6,15 @@ RSpec.describe API::TrainingPeriods::TeacherStatus do
     subject { service.status }
 
     context "when training period set to start in the future" do
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 1.week.from_now) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, started_on: 1.week.from_now) }
       let(:training_period) { FactoryBot.create(:training_period, :not_started_yet, ect_at_school_period:) }
 
       it { is_expected.to eq(:joining) }
     end
 
     context "when training period has started and not finished" do
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing) }
-      let(:training_period) { FactoryBot.create(:training_period, :ongoing, ect_at_school_period:) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished) }
+      let(:training_period) { FactoryBot.create(:training_period, :unfinished, ect_at_school_period:) }
 
       it { is_expected.to eq(:active) }
       it { expect(service).to be_active }

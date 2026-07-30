@@ -110,7 +110,7 @@ RSpec.describe API::Teachers::SchoolTransfers::Transfer do
         FactoryBot.build_stubbed(:training_period, finished_on: 1.day.from_now)
       end
       let(:joining_training_period) do
-        FactoryBot.build_stubbed(:training_period, :ongoing)
+        FactoryBot.build_stubbed(:training_period, :unfinished)
       end
 
       it { is_expected.to eq(:incomplete) }

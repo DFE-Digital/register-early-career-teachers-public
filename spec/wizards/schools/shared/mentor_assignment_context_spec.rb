@@ -14,7 +14,7 @@ RSpec.describe Schools::Shared::MentorAssignmentContext do
   let(:mentor_teacher) { FactoryBot.create(:teacher, trn: "1234567", trs_first_name: "Goku", trs_last_name: "Saiyan", mentor_became_ineligible_for_funding_reason: nil) }
   let(:ect_teacher) { FactoryBot.create(:teacher, trs_first_name: "King", trs_last_name: "Vegeta") }
 
-  let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher: mentor_teacher) }
+  let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, school:, teacher: mentor_teacher) }
   let(:ect_at_school_period) do
     FactoryBot.create(:ect_at_school_period, school:, teacher: ect_teacher, started_on: Date.new(2025, 5, 1))
   end
@@ -38,7 +38,7 @@ RSpec.describe Schools::Shared::MentorAssignmentContext do
         FactoryBot.create(
           :training_period,
           :provider_led,
-          :ongoing,
+          :unfinished,
           ect_at_school_period:,
           started_on:,
           finished_on:,
@@ -95,7 +95,7 @@ RSpec.describe Schools::Shared::MentorAssignmentContext do
       FactoryBot.create(
         :training_period,
         :provider_led,
-        :ongoing,
+        :unfinished,
         ect_at_school_period:,
         started_on:,
         finished_on:,

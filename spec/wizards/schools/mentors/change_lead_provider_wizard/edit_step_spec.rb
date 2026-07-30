@@ -13,9 +13,9 @@ describe Schools::Mentors::ChangeLeadProviderWizard::EditStep, type: :model do
   let(:store) { FactoryBot.build(:session_repository) }
   let(:author) { FactoryBot.build(:school_user, school_urn: school.urn) }
   let(:school) { FactoryBot.create(:school) }
-  let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:) }
+  let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, school:) }
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
-  let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, :with_school_partnership, mentor_at_school_period:, started_on: mentor_at_school_period.started_on) }
+  let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :unfinished, :with_school_partnership, mentor_at_school_period:, started_on: mentor_at_school_period.started_on) }
 
   let(:params) { { lead_provider_id: lead_provider.id } }
 
@@ -100,7 +100,7 @@ describe Schools::Mentors::ChangeLeadProviderWizard::EditStep, type: :model do
       FactoryBot.create(:contract_period, :current)
     end
     let(:mentor_at_school_period) do
-      FactoryBot.create(:mentor_at_school_period, :ongoing, school:, started_on:)
+      FactoryBot.create(:mentor_at_school_period, :unfinished, school:, started_on:)
     end
     let!(:current_lead_provider) do
       FactoryBot.create(:active_lead_provider, contract_period: current_contract_period)
@@ -109,7 +109,7 @@ describe Schools::Mentors::ChangeLeadProviderWizard::EditStep, type: :model do
       FactoryBot.create(
         :training_period,
         :for_mentor,
-        :ongoing,
+        :unfinished,
         :with_active_lead_provider,
         mentor_at_school_period:,
         started_on: training_started_on,

@@ -33,7 +33,7 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
       school:
     )
   end
-  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:) }
+  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher:, school:) }
   let(:schedule) { FactoryBot.create(:schedule, contract_period: current_contract_period) }
   let(:target_schedule) { FactoryBot.create(:schedule, contract_period: target_contract_period, identifier: schedule.identifier) }
   let(:eoi_lead_provider) { FactoryBot.create(:lead_provider) }
@@ -42,7 +42,7 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
   let(:eoi_only_training_period) do
     FactoryBot.create(
       :training_period,
-      :ongoing,
+      :unfinished,
       :with_only_expression_of_interest,
       ect_at_school_period:,
       expression_of_interest: active_lead_provider,
@@ -53,7 +53,7 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
   let(:future_eoi_only_training_period) do
     FactoryBot.create(
       :training_period,
-      :ongoing,
+      :unfinished,
       :with_only_expression_of_interest,
       ect_at_school_period:,
       expression_of_interest: active_lead_provider,
@@ -65,7 +65,7 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
   let(:training_period) do
     FactoryBot.create(
       :training_period,
-      :ongoing,
+      :unfinished,
       ect_at_school_period:,
       school_partnership:,
       schedule:,
@@ -159,7 +159,7 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
       let(:training_period) do
         FactoryBot.create(
           :training_period,
-          :ongoing,
+          :unfinished,
           ect_at_school_period: future_ect_at_school_period,
           school_partnership:,
           schedule:,
@@ -559,7 +559,7 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
       let(:training_period) do
         FactoryBot.create(
           :training_period,
-          :ongoing,
+          :unfinished,
           ect_at_school_period: future_ect_at_school_period,
           school_partnership:,
           schedule:,
@@ -592,7 +592,7 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
         let(:future_eoi_only_training_period) do
           FactoryBot.create(
             :training_period,
-            :ongoing,
+            :unfinished,
             :with_only_expression_of_interest,
             ect_at_school_period: future_ect_at_school_period,
             expression_of_interest: active_lead_provider,

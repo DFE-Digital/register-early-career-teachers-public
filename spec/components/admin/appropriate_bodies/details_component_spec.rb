@@ -8,7 +8,7 @@ RSpec.describe Admin::AppropriateBodies::DetailsComponent, type: :component do
   describe "ECTs" do
     context "with current ECTs" do
       before do
-        FactoryBot.create(:induction_period, :ongoing, appropriate_body_period:)
+        FactoryBot.create(:induction_period, :unfinished, appropriate_body_period:)
         render_inline(component)
       end
 

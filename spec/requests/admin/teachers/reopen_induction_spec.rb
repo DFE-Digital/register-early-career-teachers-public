@@ -33,7 +33,7 @@ describe "Admin::Teachers::ReopenInductionController" do
 
       context "when the last induction period is ongoing" do
         let!(:induction_period) do
-          FactoryBot.create(:induction_period, :ongoing, teacher:)
+          FactoryBot.create(:induction_period, :unfinished, teacher:)
         end
 
         it "redirects to the teacher page" do
@@ -107,7 +107,7 @@ describe "Admin::Teachers::ReopenInductionController" do
 
       context "when the last induction period is ongoing" do
         let!(:induction_period) do
-          FactoryBot.create(:induction_period, :ongoing, teacher:)
+          FactoryBot.create(:induction_period, :unfinished, teacher:)
         end
 
         it "redirects to the teacher page without reopening the induction period" do

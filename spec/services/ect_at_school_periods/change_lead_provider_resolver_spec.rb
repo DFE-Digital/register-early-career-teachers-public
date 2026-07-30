@@ -8,7 +8,7 @@ RSpec.describe ECTAtSchoolPeriods::ChangeLeadProviderResolver do
     let(:ect_at_school_period) do
       FactoryBot.create(
         :ect_at_school_period,
-        :ongoing,
+        :unfinished,
         school:,
         started_on: contract_period.started_on
       )
@@ -27,7 +27,7 @@ RSpec.describe ECTAtSchoolPeriods::ChangeLeadProviderResolver do
     let!(:training_period) do
       FactoryBot.create(
         :training_period,
-        :ongoing,
+        :unfinished,
         :provider_led,
         :with_only_expression_of_interest,
         ect_at_school_period:,

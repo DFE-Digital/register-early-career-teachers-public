@@ -11,7 +11,7 @@ module Schools
         end
 
         def active_record_at_school(urn)
-          @active_record_at_school ||= ECTAtSchoolPeriods::Search.new.ect_periods(trn: registration_store.trn, urn:).ongoing.last
+          @active_record_at_school ||= ECTAtSchoolPeriods::Search.new.ect_periods(trn: registration_store.trn, urn:).unfinished.last
         end
 
         def appropriate_body

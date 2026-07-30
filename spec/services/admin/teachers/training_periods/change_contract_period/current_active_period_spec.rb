@@ -25,7 +25,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::CurrentAc
   let(:ect_at_school_period) do
     FactoryBot.create(
       :ect_at_school_period,
-      :ongoing,
+      :unfinished,
       teacher:,
       school:,
       started_on: today.prev_year,
@@ -35,7 +35,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::CurrentAc
   let!(:training_period) do
     FactoryBot.create(
       :training_period,
-      :ongoing,
+      :unfinished,
       ect_at_school_period:,
       school_partnership:,
       schedule:,
@@ -83,7 +83,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::CurrentAc
     let!(:training_period) do
       FactoryBot.create(
         :training_period,
-        :ongoing,
+        :unfinished,
         :with_only_expression_of_interest,
         ect_at_school_period:,
         expression_of_interest: current_active_lead_provider,
@@ -178,12 +178,12 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::CurrentAc
   end
 
   context "for mentor training" do
-    let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, school:, started_on: today.prev_year) }
+    let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:, school:, started_on: today.prev_year) }
     let!(:training_period) do
       FactoryBot.create(
         :training_period,
         :for_mentor,
-        :ongoing,
+        :unfinished,
         mentor_at_school_period:,
         school_partnership:,
         schedule:,

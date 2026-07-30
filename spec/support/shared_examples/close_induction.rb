@@ -19,7 +19,7 @@ RSpec.shared_context "it closes an induction" do
   end
 
   let!(:induction_period) do
-    FactoryBot.create(:induction_period, :ongoing,
+    FactoryBot.create(:induction_period, :unfinished,
                       appropriate_body_period:,
                       teacher:)
   end

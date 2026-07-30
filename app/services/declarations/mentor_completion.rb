@@ -16,7 +16,7 @@ module Declarations
           finish_training_period! if training_period_ongoing_or_finishing_in_the_future?
         else
           mentor_not_completed_training!
-          create_training_period! unless latest_training_period.ongoing_today?
+          create_training_period! unless latest_training_period.contains_today?
         end
 
         record_completion_change_event!

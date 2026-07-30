@@ -9,10 +9,10 @@ module TasksIndex
 
       delegate :induction_tutor_name, to: :school
       delegate :ect_at_school_periods, to: :teacher
-      delegate :ongoing, to: :ect_at_school_periods, prefix: true
+      delegate :unfinished, to: :ect_at_school_periods, prefix: true
 
       def recorded_by_school_name
-        ect_at_school_periods_ongoing.first&.school_name || school_name
+        ect_at_school_periods_unfinished.first&.school_name || school_name
       end
     end
   end

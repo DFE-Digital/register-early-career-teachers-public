@@ -6,8 +6,8 @@ RSpec.describe GIAS::Schools::Close do
     let(:closed_on) { Date.current }
     let(:can_be_closed) { true }
     let(:school) { gias_school.school }
-    let!(:mentors) { FactoryBot.create_list(:mentor_at_school_period, 3, :ongoing, :with_training_period, school:) }
-    let!(:ects) { FactoryBot.create_list(:ect_at_school_period, 3, :ongoing, :with_training_period, school:) }
+    let!(:mentors) { FactoryBot.create_list(:mentor_at_school_period, 3, :unfinished, :with_training_period, school:) }
+    let!(:ects) { FactoryBot.create_list(:ect_at_school_period, 3, :unfinished, :with_training_period, school:) }
     let!(:unstarted_mentors) { FactoryBot.create_list(:mentor_at_school_period, 2, :with_training_period, school:, started_on: closed_on + 1.day) }
     let!(:unstarted_ects) { FactoryBot.create_list(:ect_at_school_period, 2, :with_training_period, school:, started_on: closed_on + 1.day) }
     let(:mentor_finish_service) { instance_double(MentorAtSchoolPeriods::Finish) }

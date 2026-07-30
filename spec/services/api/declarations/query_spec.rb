@@ -9,11 +9,11 @@ RSpec.describe API::Declarations::Query, :with_metadata do
       following_on_from_training_period.update!(finished_on: previous_finished_on)
       school_period = following_on_from_training_period.at_school_period
 
-      FactoryBot.create(:training_period, trait, :ongoing, school_partnership:, started_on: previous_finished_on + 1.day, "#{trainee}_at_school_period": school_period)
+      FactoryBot.create(:training_period, trait, :unfinished, school_partnership:, started_on: previous_finished_on + 1.day, "#{trainee}_at_school_period": school_period)
     else
       teacher ||= FactoryBot.create(:teacher)
-      school_period = FactoryBot.create(:"#{trainee}_at_school_period", :ongoing, teacher:)
-      FactoryBot.create(:training_period, trait, :ongoing, school_partnership:, "#{trainee}_at_school_period": school_period)
+      school_period = FactoryBot.create(:"#{trainee}_at_school_period", :unfinished, teacher:)
+      FactoryBot.create(:training_period, trait, :unfinished, school_partnership:, "#{trainee}_at_school_period": school_period)
     end
   end
 
@@ -90,7 +90,7 @@ RSpec.describe API::Declarations::Query, :with_metadata do
 
     describe "filtering" do
       describe "by `lead_provider_id`" do
-        let(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing)) }
+        let(:training_period) { FactoryBot.create(:training_period, :for_ect, :unfinished, ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished)) }
         let(:lead_provider_id) { training_period.lead_provider.id }
 
         let!(:declaration1) { FactoryBot.create(:declaration, training_period:) }
