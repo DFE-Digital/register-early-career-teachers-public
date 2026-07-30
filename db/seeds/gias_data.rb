@@ -366,7 +366,7 @@ FactoryBot.create(:gias_school_link,
 end
 
 FactoryBot.create(:gias_school_link,
-                  :successor_merged,
+                  :successor_amalgamated,
                   from_gias_school: girls_high_school,
                   to_gias_school: monstropolis_academy).tap do |school_link|
   describe_school_link(school_link)
