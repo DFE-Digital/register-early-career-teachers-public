@@ -1,4 +1,4 @@
-RSpec.describe GIAS::Schools::SchoolPartnerships::Transfer do
+RSpec.describe GIAS::Reconciliation::SchoolPartnerships::Transfer do
   subject(:service) do
     described_class.call(
       predecessor_school_partnership:,

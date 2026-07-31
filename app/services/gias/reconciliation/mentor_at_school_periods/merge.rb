@@ -1,4 +1,4 @@
-module GIAS::Schools
+module GIAS::Reconciliation
   module MentorAtSchoolPeriods
     class Merge
       def self.call(...) = new(...).call
@@ -68,7 +68,7 @@ module GIAS::Schools
 
       def update_mentorship_periods!
         mentorship_periods.each do |mentorship_period|
-          GIAS::Schools::ECTAtSchoolPeriods::Transfer.call(ect_at_school_period: mentorship_period.mentee, predecessor_school:, successor_school:)
+          GIAS::Reconciliation::ECTAtSchoolPeriods::Transfer.call(ect_at_school_period: mentorship_period.mentee, predecessor_school:, successor_school:)
           mentorship_period.mentor = successor_period
           mentorship_period.save!
         end
@@ -86,7 +86,7 @@ module GIAS::Schools
       end
 
       def successor_partnership(predecessor_school_partnership)
-        GIAS::Schools::SchoolPartnerships::Transfer.call(predecessor_school_partnership:, successor_school:)
+        GIAS::Reconciliation::SchoolPartnerships::Transfer.call(predecessor_school_partnership:, successor_school:)
       end
 
       def finished_on
