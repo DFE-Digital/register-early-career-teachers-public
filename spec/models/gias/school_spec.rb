@@ -383,9 +383,15 @@ describe GIAS::School do
           end
 
           context "when the link between the schools is not a merger" do
-            let(:link_type) { :successor_amalgamated }
+            let(:link_type) { :successor_split }
 
             it { is_expected.to be_falsy }
+          end
+
+          context "when the school is being amalgamated" do
+            let(:link_type) { :successor_amalgamated }
+
+            it { is_expected.to be_truthy }
           end
 
           context "when the school closes in the future" do
