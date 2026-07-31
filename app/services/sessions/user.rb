@@ -1,7 +1,8 @@
 module Sessions
   # Current user session base class
   class User
-    class UnrecognisedType < StandardError; end
+    class InvalidSession < StandardError; end
+    class UnrecognisedType < InvalidSession; end
 
     # @raise [Sessions::User::UnrecognisedType]
     #
@@ -16,9 +17,11 @@ module Sessions
       return unless (type = user_session&.dig("type"))
 
       user_props = user_session.except("type").symbolize_keys
-      type.constantize.new(**user_props)
-    rescue NameError
-      fail(UnrecognisedType, type)
+      session_user_class = type.safe_constantize
+
+      fail(UnrecognisedType, type) if session_user_class.nil?
+
+      session_user_class.new(**user_props)
     end
 
     attr_reader :email, :last_active_at

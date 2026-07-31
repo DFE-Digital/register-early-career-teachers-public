@@ -30,8 +30,7 @@ module Sessions
     end
 
     # @see Sessions::User
-    # @raise [Sessions::User::UnrecognisedType]
-    # @return [Sessions::User]
+    # @return [Sessions::User, nil]
     def current_user
       @current_user ||= load_from_session
     end
@@ -85,9 +84,10 @@ module Sessions
 
         record_new_activity(session_user)
       end
-    rescue ArgumentError => e
-      Sentry.capture_exception(e)
+    rescue Sessions::User::InvalidSession, ArgumentError => e
+      Sentry.capture_exception(e, level: :info)
       end_session!
+      nil
     end
 
     def record_new_activity(session_user)

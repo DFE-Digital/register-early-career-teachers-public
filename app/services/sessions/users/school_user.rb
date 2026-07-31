@@ -1,7 +1,7 @@
 module Sessions
   module Users
     class SchoolUser < User
-      class UnknownOrganisationURN < StandardError; end
+      class UnknownOrganisationURN < Sessions::User::InvalidSession; end
 
       USER_TYPE = :school_user
       PROVIDER = :dfe_sign_in

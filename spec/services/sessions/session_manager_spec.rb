@@ -153,6 +153,24 @@ RSpec.describe Sessions::Manager do
         expect { service.current_user }.not_to raise_error
       end
     end
+
+    context "when the records the session refers to no longer exist" do
+      let(:session) { ActionController::TestSession.new }
+
+      before do
+        cookies["id_token"] = "stale_token"
+        session["user_session"]["school_urn"] = "999999"
+        allow(Sentry).to receive(:capture_exception)
+      end
+
+      it "signs the user out, clears the id_token and reports to Sentry" do
+        expect(service.current_user).to be_nil
+        expect(session["user_session"]).to be_nil
+        expect(cookies["id_token"]).to be_nil
+        expect(Sentry).to have_received(:capture_exception)
+          .with(instance_of(Sessions::Users::SchoolUser::UnknownOrganisationURN), level: :info)
+      end
+    end
   end
 
   describe "#end_session!" do

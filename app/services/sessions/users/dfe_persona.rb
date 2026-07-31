@@ -1,8 +1,8 @@
 module Sessions
   module Users
     class DfEPersona < User
-      class DfEPersonaDisabledError < StandardError; end
-      class UnknownUserEmail < StandardError; end
+      class DfEPersonaDisabledError < Sessions::User::InvalidSession; end
+      class UnknownUserEmail < Sessions::User::InvalidSession; end
 
       include Sessions::ImpersonateSchoolUser
 
