@@ -1,4 +1,4 @@
-module GIAS::Schools
+module GIAS::Reconciliation
   module ECTAtSchoolPeriods
     class Transfer
       def self.call(...) = new(...).call
@@ -48,7 +48,7 @@ module GIAS::Schools
       end
 
       def successor_partnership(predecessor_school_partnership)
-        GIAS::Schools::SchoolPartnerships::Transfer.call(predecessor_school_partnership:, successor_school:)
+        GIAS::Reconciliation::SchoolPartnerships::Transfer.call(predecessor_school_partnership:, successor_school:)
       end
 
       def record_event!

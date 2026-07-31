@@ -1,4 +1,4 @@
-RSpec.describe GIAS::Schools::Merge do
+RSpec.describe GIAS::Reconciliation::Merge do
   subject(:service) { described_class.new(gias_school) }
 
   let(:gias_school) { FactoryBot.create(:gias_school, :with_school, :closed) }
@@ -28,25 +28,25 @@ RSpec.describe GIAS::Schools::Merge do
       it { expect(merge!).to be_falsey }
 
       it "does not find any overlapping `MentorAtSchoolPeriod` records" do
-        expect(GIAS::Schools::MentorAtSchoolPeriods::Overlapping).not_to receive(:find)
+        expect(GIAS::Reconciliation::MentorAtSchoolPeriods::Overlapping).not_to receive(:find)
 
         merge!
       end
 
       it "does not merge any `MentorAtSchoolPeriod` records" do
-        expect(GIAS::Schools::MentorAtSchoolPeriods::Merge).not_to receive(:call)
+        expect(GIAS::Reconciliation::MentorAtSchoolPeriods::Merge).not_to receive(:call)
 
         merge!
       end
 
       it "does not transfer any `MentorAtSchoolPeriod` records" do
-        expect(GIAS::Schools::MentorAtSchoolPeriods::Transfer).not_to receive(:call)
+        expect(GIAS::Reconciliation::MentorAtSchoolPeriods::Transfer).not_to receive(:call)
 
         merge!
       end
 
       it "does not transfer any `ECTAtSchoolPeriod` records" do
-        expect(GIAS::Schools::ECTAtSchoolPeriods::Transfer).not_to receive(:call)
+        expect(GIAS::Reconciliation::ECTAtSchoolPeriods::Transfer).not_to receive(:call)
 
         merge!
       end
@@ -87,12 +87,12 @@ RSpec.describe GIAS::Schools::Merge do
       end
 
       before do
-        allow(GIAS::Schools::MentorAtSchoolPeriods::Overlapping)
+        allow(GIAS::Reconciliation::MentorAtSchoolPeriods::Overlapping)
           .to receive(:find)
           .and_return([[mentor_at_school_period]])
-        allow(GIAS::Schools::MentorAtSchoolPeriods::Merge).to receive(:call)
-        allow(GIAS::Schools::MentorAtSchoolPeriods::Transfer).to receive(:call)
-        allow(GIAS::Schools::ECTAtSchoolPeriods::Transfer).to receive(:call)
+        allow(GIAS::Reconciliation::MentorAtSchoolPeriods::Merge).to receive(:call)
+        allow(GIAS::Reconciliation::MentorAtSchoolPeriods::Transfer).to receive(:call)
+        allow(GIAS::Reconciliation::ECTAtSchoolPeriods::Transfer).to receive(:call)
         allow(Events::Record).to receive(:record_school_merged_event!)
       end
 
@@ -101,7 +101,7 @@ RSpec.describe GIAS::Schools::Merge do
       it "finds overlapping `MentorAtSchoolPeriod` records for each mentor teacher" do
         merge!
 
-        expect(GIAS::Schools::MentorAtSchoolPeriods::Overlapping)
+        expect(GIAS::Reconciliation::MentorAtSchoolPeriods::Overlapping)
           .to have_received(:find)
           .with(
             teacher: mentor_teacher,
@@ -112,7 +112,7 @@ RSpec.describe GIAS::Schools::Merge do
       it "merges overlapping `MentorAtSchoolPeriod` records" do
         merge!
 
-        expect(GIAS::Schools::MentorAtSchoolPeriods::Merge)
+        expect(GIAS::Reconciliation::MentorAtSchoolPeriods::Merge)
           .to have_received(:call)
           .with(
             periods: [mentor_at_school_period],
@@ -124,7 +124,7 @@ RSpec.describe GIAS::Schools::Merge do
       it "transfers remaining `MentorAtSchoolPeriod` records" do
         merge!
 
-        expect(GIAS::Schools::MentorAtSchoolPeriods::Transfer)
+        expect(GIAS::Reconciliation::MentorAtSchoolPeriods::Transfer)
           .to have_received(:call)
           .with(
             mentor_at_school_period:,
@@ -136,7 +136,7 @@ RSpec.describe GIAS::Schools::Merge do
       it "transfers remaining `ECTAtSchoolPeriod` records" do
         merge!
 
-        expect(GIAS::Schools::ECTAtSchoolPeriods::Transfer)
+        expect(GIAS::Reconciliation::ECTAtSchoolPeriods::Transfer)
           .to have_received(:call)
           .with(
             ect_at_school_period:,

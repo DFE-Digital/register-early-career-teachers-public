@@ -1,4 +1,4 @@
-module GIAS::Schools
+module GIAS::Reconciliation
   class Replace
     def initialize(gias_school)
       @gias_school = gias_school

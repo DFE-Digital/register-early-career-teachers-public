@@ -1,4 +1,4 @@
-RSpec.describe GIAS::Schools::MentorAtSchoolPeriods::Overlapping do
+RSpec.describe GIAS::Reconciliation::MentorAtSchoolPeriods::Overlapping do
   subject(:groups) { described_class.find(teacher:, schools:) }
 
   let(:teacher) { FactoryBot.create(:teacher) }
