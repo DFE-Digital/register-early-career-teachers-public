@@ -27,13 +27,13 @@ class GIAS::SchoolLink < ApplicationRecord
   SUCCESSOR_MERGED = "Successor - merged"
   SUCCESSOR_SPLIT  = "Successor - Split School"
   SUCCESSOR_AMALGAMATED = "Successor - amalgamated"
-  SUCESSOR = "Successor"
+  SUCCESSOR = "Successor"
 
   SUCCESSOR_LINK_TYPES = [
     SUCCESSOR_AMALGAMATED,
     SUCCESSOR_MERGED,
     SUCCESSOR_SPLIT,
-    SUCESSOR
+    SUCCESSOR
   ].freeze
 
   LINK_TYPES = (OTHER_LINK_TYPES + MERGE_LINK_TYPES + SUCCESSOR_LINK_TYPES + PREDECESSOR_LINK_TYPES).uniq.sort.freeze

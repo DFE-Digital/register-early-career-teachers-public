@@ -125,7 +125,7 @@ private
   end
 
   def school_being_replaced?
-    successor_links.where(link_type: GIAS::SchoolLink::SUCESSOR).exists?
+    successor_links.where(link_type: GIAS::SchoolLink::SUCCESSOR).exists?
   end
 
   def school_being_merged_or_amalgamated?
