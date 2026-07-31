@@ -50,12 +50,12 @@ module GIAS::Reconciliation
 
       def update_mentorship_periods!
         mentorship_periods.each do |mentorship_period|
-          GIAS::Reconciliation::ECTAtSchoolPeriods::Transfer.call(ect_at_school_period: mentorship_period.mentee, predecessor_school:, successor_school:)
+          ECTAtSchoolPeriods::Transfer.call(ect_at_school_period: mentorship_period.mentee, predecessor_school:, successor_school:)
         end
       end
 
       def successor_partnership(predecessor_school_partnership)
-        GIAS::Reconciliation::SchoolPartnerships::Transfer.call(predecessor_school_partnership:, successor_school:)
+        SchoolPartnerships::Transfer.call(predecessor_school_partnership:, successor_school:)
       end
 
       def record_event!
