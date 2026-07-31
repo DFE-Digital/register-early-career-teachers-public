@@ -187,7 +187,7 @@ RSpec.describe GIAS::Reconciliation::Close do
         expect(ect_started_on_last_day.reload).to be_present
       end
 
-      it "finishes ongoing ect_at_school_periods which" do
+      it "finishes ongoing ect_at_school_periods" do
         ects.each do |ect_at_school_period|
           expect(ECTAtSchoolPeriods::Finish).to receive(:new).with(
             hash_including(ect_at_school_period:)
