@@ -1,5 +1,5 @@
 RSpec.describe GIAS::Importer, type: :service do
-  let(:importer) { described_class.new(auto_create_school: true) }
+  let(:importer) { described_class.new }
 
   let(:schools_csv_path) { Rails.root.join("spec/fixtures", "gias_schools_#{GIAS::Importer::SCHOOLS_FILENAME}") }
   let(:school_links_csv_path) { Rails.root.join("spec/fixtures", "gias_schools_#{GIAS::Importer::SCHOOL_LINKS_FILENAME}") }
@@ -59,42 +59,33 @@ RSpec.describe GIAS::Importer, type: :service do
   end
 
   describe "#import_schools" do
-    it "creates only schools that are eligible for import from the CSV data" do
-      expect { importer.send(:import_schools) }.to change(School, :count).by(3)
-    end
-
     it "assigns correct attributes to the schools" do
       importer.send(:import_schools)
 
-      school = School.find_by(urn: "20001")
+      school = GIAS::School.find_by(urn: "20001")
       expect(school.name).to eq("Example School 1")
       expect(school.address_line1).to eq("Main Street Primary")
       expect(school.type_name).to eq("Children's centre")
 
-      school = School.find_by(urn: "20002")
+      school = GIAS::School.find_by(urn: "20002")
       expect(school.name).to eq("Independent School")
       expect(school.address_line1).to eq("Beta School")
       expect(school.type_name).to eq("Other independent school")
 
-      school = School.find_by(urn: "20005")
+      school = GIAS::School.find_by(urn: "20005")
       expect(school.name).to eq("Example Recently Closed School")
       expect(school.address_line1).to eq("Sample House")
       expect(school.type_name).to eq("Local authority nursery school")
     end
 
-    context "when auto_create_school is false" do
-      let(:importer) { described_class.new(auto_create_school: false) }
+    it "imports eligible GIAS schools" do
+      expect { importer.send(:import_schools) }.to change(GIAS::School, :count).by(3)
+    end
 
-      it "imports eligible GIAS schools without creating School rows on first import" do
-        expect { importer.send(:import_schools) }.to change(GIAS::School, :count).by(3)
-        expect(School.count).to eq(0)
-      end
+    it "does not create School rows" do
+      FactoryBot.create(:gias_school, urn: 99_999)
 
-      it "does not create School rows in update mode" do
-        FactoryBot.create(:gias_school, urn: 99_999)
-
-        expect { importer.send(:import_schools) }.not_to change(School, :count)
-      end
+      expect { importer.send(:import_schools) }.not_to change(School, :count)
     end
   end
 
