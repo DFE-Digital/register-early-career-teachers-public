@@ -1,5 +1,7 @@
 module GIAS::Reconciliation
   class Close
+    def self.close!(gias_school) = new(gias_school).close!
+
     def initialize(gias_school)
       @gias_school = gias_school
     end
@@ -7,16 +9,6 @@ module GIAS::Reconciliation
     def close!
       return false unless gias_school.can_be_closed?
 
-      close_school!
-
-      true
-    end
-
-  private
-
-    attr_reader :gias_school
-
-    def close_school!
       ActiveRecord::Base.transaction do
         destroy_unstarted_mentorship_periods!
         destroy_unstarted_periods!
@@ -24,7 +16,13 @@ module GIAS::Reconciliation
 
         record_school_closed_event!
       end
+
+      true
     end
+
+  private
+
+    attr_reader :gias_school
 
     def finish_ongoing_periods!
       ect_at_school_periods.contains_date(closed_on).each do |ect_at_school_period|
