@@ -1,7 +1,7 @@
 module Sessions
   module Users
     class AppropriateBodyUser < User
-      class UnknownOrganisationId < StandardError; end
+      class UnknownOrganisationId < Sessions::User::InvalidSession; end
 
       USER_TYPE = :appropriate_body_user
       PROVIDER = :dfe_sign_in

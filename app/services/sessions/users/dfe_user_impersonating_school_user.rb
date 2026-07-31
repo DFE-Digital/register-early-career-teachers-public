@@ -1,7 +1,7 @@
 module Sessions
   module Users
     class DfEUserImpersonatingSchoolUser < DfEUser
-      class UnknownOrganisationURN < StandardError; end
+      class UnknownOrganisationURN < Sessions::User::InvalidSession; end
 
       attr_reader :original_type, :school
 

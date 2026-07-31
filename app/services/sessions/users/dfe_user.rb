@@ -1,7 +1,7 @@
 module Sessions
   module Users
     class DfEUser < User
-      class UnknownUserEmail < StandardError; end
+      class UnknownUserEmail < Sessions::User::InvalidSession; end
 
       include Sessions::ImpersonateSchoolUser
 
