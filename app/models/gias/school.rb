@@ -72,9 +72,9 @@ class GIAS::School < ApplicationRecord
   end
 
   def successor
-    return unless successors.one?
+    candidates = successors.take(2)
 
-    successors.first
+    candidates.first if candidates.one?
   end
 
   def can_be_closed?
