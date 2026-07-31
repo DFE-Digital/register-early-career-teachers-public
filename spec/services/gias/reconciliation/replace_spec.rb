@@ -1,4 +1,4 @@
-RSpec.describe GIAS::Schools::Replace do
+RSpec.describe GIAS::Reconciliation::Replace do
   describe "#replace!" do
     subject(:service) { described_class.new(gias_school).replace! }
 

@@ -1,4 +1,4 @@
-module GIAS::Schools
+module GIAS::Reconciliation
   module MentorAtSchoolPeriods
     class Overlapping
       def self.find(...) = new(...).find
