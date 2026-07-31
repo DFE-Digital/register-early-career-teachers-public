@@ -1,7 +1,7 @@
 RSpec.describe GIAS::Schools::Merge do
   subject(:service) { described_class.new(gias_school) }
 
-  let(:gias_school) { FactoryBot.create(:gias_school, :with_school, :closed) }
+  let(:gias_school) { FactoryBot.create(:gias_school, :with_school, :closed, closed_on: Date.yesterday) }
   let(:successor_gias_school) { FactoryBot.create(:gias_school, :with_school, :open) }
   let!(:school_link) do
     FactoryBot.create(
@@ -145,18 +145,22 @@ RSpec.describe GIAS::Schools::Merge do
           )
       end
 
-      it "records a school merged event" do
+      it "records a school merged event on each school record" do
         merge!
 
-        expect(Events::Record)
-          .to have_received(:record_school_merged_event!)
-          .with(
-            school: predecessor_school,
-            successor_gias_school:,
-            predecessor_gias_school: gias_school,
-            happened_at: gias_school.closed_on,
-            author: an_instance_of(Events::SystemAuthor)
-          )
+        aggregate_failures do
+          [predecessor_school, successor_school].each do |school|
+            expect(Events::Record)
+              .to have_received(:record_school_merged_event!)
+              .with(
+                school:,
+                successor_gias_school:,
+                predecessor_gias_school: gias_school,
+                happened_at: gias_school.closed_on,
+                author: an_instance_of(Events::SystemAuthor)
+              ).once
+          end
+        end
       end
     end
   end

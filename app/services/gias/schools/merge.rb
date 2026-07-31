@@ -36,7 +36,7 @@ module GIAS::Schools
           GIAS::Schools::ECTAtSchoolPeriods::Transfer.call(ect_at_school_period:, predecessor_school:, successor_school:)
         end
 
-        record_school_merged_event!
+        record_school_merged_events!
       end
     end
 
@@ -47,14 +47,16 @@ module GIAS::Schools
       )
     end
 
-    def record_school_merged_event!
-      Events::Record.record_school_merged_event!(
-        school: predecessor_school,
-        successor_gias_school: successor,
-        predecessor_gias_school: gias_school,
-        happened_at: closed_on,
-        author:
-      )
+    def record_school_merged_events!
+      [predecessor_school, successor_school].each do |affected_school|
+        Events::Record.record_school_merged_event!(
+          school: affected_school,
+          successor_gias_school: successor,
+          predecessor_gias_school: gias_school,
+          happened_at: closed_on,
+          author:
+        )
+      end
     end
 
     def predecessor_school = school
