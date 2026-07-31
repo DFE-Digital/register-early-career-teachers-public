@@ -101,7 +101,7 @@ class GIAS::School < ApplicationRecord
       successors.one? &&
       successor.open_status? &&
       successor.school.present? &&
-      school_being_merged?
+      school_being_merged_or_amalgamated?
   end
 
   def school_not_yet_opened?
@@ -128,7 +128,9 @@ private
     successor_links.where(link_type: GIAS::SchoolLink::SUCESSOR).exists?
   end
 
-  def school_being_merged?
-    successor_links.where(link_type: GIAS::SchoolLink::SUCCESSOR_MERGED).exists?
+  def school_being_merged_or_amalgamated?
+    successor_links.where(
+      link_type: [GIAS::SchoolLink::SUCCESSOR_MERGED, GIAS::SchoolLink::SUCCESSOR_AMALGAMATED]
+    ).exists?
   end
 end
