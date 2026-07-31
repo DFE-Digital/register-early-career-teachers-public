@@ -31,7 +31,7 @@ module Schools
       end
 
       def ect_lead_provider
-        @ect_lead_provider ||= ECTAtSchoolPeriods::CurrentTraining
+        @ect_lead_provider ||= ::ECTAtSchoolPeriods::CurrentTraining
           .new(@ect_at_school_period)
           .lead_provider_via_school_partnership_or_eoi
       end

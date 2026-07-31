@@ -35,7 +35,7 @@ module Support
       ActiveRecord::Base.transaction do
         move_withdrawal_details!
 
-        ECTAtSchoolPeriods::Finish.new(
+        ::ECTAtSchoolPeriods::Finish.new(
           ect_at_school_period:,
           finished_on: corrected_end_date,
           author:,

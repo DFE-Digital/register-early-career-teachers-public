@@ -13,7 +13,7 @@ module AppropriateBodies
     private
 
       def filtered_ect_at_school_periods(query_string)
-        ECTAtSchoolPeriods::TextSearch.new(initial_ect_at_school_periods, query_string:).search
+        ::ECTAtSchoolPeriods::TextSearch.new(initial_ect_at_school_periods, query_string:).search
       end
 
       def initial_ect_at_school_periods

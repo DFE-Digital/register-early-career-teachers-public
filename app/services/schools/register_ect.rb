@@ -145,7 +145,7 @@ module Schools
     end
 
     def finish_period(period)
-      ECTAtSchoolPeriods::Finish.new(
+      ::ECTAtSchoolPeriods::Finish.new(
         ect_at_school_period: period,
         finished_on: started_on.yesterday,
         author:

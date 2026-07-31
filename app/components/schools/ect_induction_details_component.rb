@@ -42,7 +42,7 @@ module Schools
     end
 
     def appropriate_body
-      @appropriate_body ||= ECTAtSchoolPeriods::AppropriateBody.new(@ect)
+      @appropriate_body ||= ::ECTAtSchoolPeriods::AppropriateBody.new(@ect)
     end
 
     def appropriate_body_html

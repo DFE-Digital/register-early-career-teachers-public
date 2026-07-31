@@ -15,7 +15,7 @@ module Schools
         def new_mentor_name = name_for(selected_mentor_at_school_period.teacher)
 
         def save!
-          ECTAtSchoolPeriods::SwitchMentor.switch(
+          ::ECTAtSchoolPeriods::SwitchMentor.switch(
             ect_at_school_period,
             to: selected_mentor_at_school_period,
             author:,
@@ -54,7 +54,7 @@ module Schools
         end
 
         def lead_provider_for_ect_at_school_period
-          @lead_provider_for_ect_at_school_period ||= ECTAtSchoolPeriods::CurrentTraining
+          @lead_provider_for_ect_at_school_period ||= ::ECTAtSchoolPeriods::CurrentTraining
             .new(ect_at_school_period)
             .lead_provider_via_school_partnership_or_eoi
         end

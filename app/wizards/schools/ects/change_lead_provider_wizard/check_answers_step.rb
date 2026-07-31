@@ -12,7 +12,7 @@ module Schools
         delegate :name, to: :new_lead_provider, prefix: true
 
         def save!
-          ECTAtSchoolPeriods::ChangeLeadProvider.call(
+          ::ECTAtSchoolPeriods::ChangeLeadProvider.call(
             ect_at_school_period,
             new_lead_provider:,
             old_lead_provider:,
@@ -27,7 +27,7 @@ module Schools
       private
 
         def old_lead_provider
-          @old_lead_provider ||= ECTAtSchoolPeriods::ChangeLeadProviderResolver
+          @old_lead_provider ||= ::ECTAtSchoolPeriods::ChangeLeadProviderResolver
             .new(ect_at_school_period)
             .call
         end

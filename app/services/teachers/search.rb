@@ -2,7 +2,14 @@ module Teachers
   class Search
     attr_reader :scope
 
-    def initialize(query_string: :ignore, appropriate_bodies: :ignore, ect_at_school: :ignore, mentor_at_school: :ignore, status: nil, in_progress: :ignore)
+    def initialize(
+      query_string: :ignore,
+      appropriate_bodies: :ignore,
+      ect_at_school: :ignore,
+      mentor_at_school: :ignore,
+      status: nil,
+      in_progress: :ignore
+    )
       @scope = Teacher.all
 
       where_ect_at(ect_at_school)

@@ -82,7 +82,7 @@ module Schools
       end
 
       def appropriate_body
-        @appropriate_body ||= ECTAtSchoolPeriods::AppropriateBody.new(ect_at_school_period)
+        @appropriate_body ||= ::ECTAtSchoolPeriods::AppropriateBody.new(ect_at_school_period)
       end
 
       def delivery_partner_row

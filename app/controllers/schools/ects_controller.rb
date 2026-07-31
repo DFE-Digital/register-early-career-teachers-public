@@ -5,33 +5,12 @@ module Schools
     include Schools::InductionRedirectable
 
     def index
-      search = Teachers::Search
-        .new(
-          ect_at_school: school,
-          in_progress: true,
-          query_string: params[:q]
-        )
-        .search
-        .includes(
-          ongoing_induction_period: :appropriate_body_period,
-          ect_at_school_periods: %i[latest_training_period mentorship_periods],
-          current_or_next_ect_at_school_period: [
-            { current_or_next_training_period: %i[
-              lead_provider
-              delivery_partner
-              expression_of_interest_lead_provider
-            ] },
-            { latest_training_period: %i[
-              lead_provider
-              delivery_partner
-              expression_of_interest_lead_provider
-            ] },
-            { current_or_next_mentorship_period: { mentor: :teacher } }
-          ]
-        )
-      @pagy, @teachers = pagy(search)
-
-      @number_of_teachers = Teachers::Search.new(ect_at_school: school, in_progress: true).count
+      teachers_query = ECTAtSchoolPeriods::Query.new(
+        school: @school,
+        query_string: params[:q]
+      )
+      @pagy, @teachers = pagy(teachers_query.teachers)
+      @number_of_teachers = teachers_query.teachers_count
     end
 
     def show

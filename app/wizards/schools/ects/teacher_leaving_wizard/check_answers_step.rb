@@ -54,7 +54,7 @@ module Schools
         end
 
         def report_teacher_leaving!(finished_on)
-          ECTAtSchoolPeriods::Finish.new(
+          ::ECTAtSchoolPeriods::Finish.new(
             ect_at_school_period:,
             finished_on:,
             author:,

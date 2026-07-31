@@ -37,7 +37,7 @@ module Schools
         end
 
         def current_lead_provider
-          @current_lead_provider ||= ECTAtSchoolPeriods::ChangeLeadProviderResolver
+          @current_lead_provider ||= ::ECTAtSchoolPeriods::ChangeLeadProviderResolver
             .new(ect_at_school_period)
             .call
         end

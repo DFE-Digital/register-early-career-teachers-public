@@ -77,7 +77,7 @@ module AppropriateBodies
       return unless ect_at_school_period
       return if ect_at_school_period.finished_on.present?
 
-      ECTAtSchoolPeriods::Finish.new(ect_at_school_period:, finished_on: Time.zone.today, author:, record_event: false).finish!
+      ::ECTAtSchoolPeriods::Finish.new(ect_at_school_period:, finished_on: Time.zone.today, author:, record_event: false).finish!
     end
 
     def ect_at_school_period
@@ -85,7 +85,7 @@ module AppropriateBodies
     end
 
     def destroy_unstarted_ect_period!
-      ECTAtSchoolPeriods::Destroy.call(ect_at_school_period:, author:, actioned_at: Date.current)
+      ::ECTAtSchoolPeriods::Destroy.call(ect_at_school_period:, author:, actioned_at: Date.current)
     end
 
     def mentorship_period

@@ -40,7 +40,7 @@ module Schools
       private
 
         def switch_training_programme_to_provider_led!
-          ECTAtSchoolPeriods::SwitchTraining.to_provider_led(
+          ::ECTAtSchoolPeriods::SwitchTraining.to_provider_led(
             ect_at_school_period,
             author:,
             lead_provider:
@@ -48,7 +48,7 @@ module Schools
         end
 
         def switch_training_programme_to_school_led!
-          ECTAtSchoolPeriods::SwitchTraining.to_school_led(
+          ::ECTAtSchoolPeriods::SwitchTraining.to_school_led(
             ect_at_school_period,
             author:
           )

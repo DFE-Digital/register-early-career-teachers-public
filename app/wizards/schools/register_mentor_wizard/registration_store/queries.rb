@@ -62,7 +62,7 @@ module Schools
         end
 
         def ect_training_service
-          @ect_training_service ||= ECTAtSchoolPeriods::CurrentTraining.new(ect)
+          @ect_training_service ||= ::ECTAtSchoolPeriods::CurrentTraining.new(ect)
         end
 
       private

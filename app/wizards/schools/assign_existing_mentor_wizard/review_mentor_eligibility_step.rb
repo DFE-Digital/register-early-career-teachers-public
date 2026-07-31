@@ -60,7 +60,7 @@ module Schools
       def school = mentor_at_school_period.school
 
       def lead_provider_for_current_ect_training
-        ECTAtSchoolPeriods::CurrentTraining
+        ::ECTAtSchoolPeriods::CurrentTraining
           .new(ect_at_school_period)
           .lead_provider_via_school_partnership_or_eoi
       end

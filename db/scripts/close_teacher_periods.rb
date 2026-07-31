@@ -9,7 +9,7 @@ def close_teacher_periods(trns:, author_email:, finished_on: Date.current)
 
       # ect_at_school_periods + associated periods
       teacher.ect_at_school_periods.unfinished.each do |period|
-        ECTAtSchoolPeriods::Finish.new(ect_at_school_period: period, finished_on:, author:).finish!
+        ::ECTAtSchoolPeriods::Finish.new(ect_at_school_period: period, finished_on:, author:).finish!
       end
 
       # mentor_at_school_periods + associated periods

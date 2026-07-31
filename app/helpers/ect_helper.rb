@@ -5,27 +5,27 @@ module ECTHelper
 
   # @param ect [ECTAtSchoolPeriod]
   def current_mentor_name(ect)
-    ECTAtSchoolPeriods::Mentorship.new(ect).current_mentor_name
+    ::ECTAtSchoolPeriods::Mentorship.new(ect).current_mentor_name
   end
 
   # @param ect [ECTAtSchoolPeriod]
   def latest_delivery_partner_name(ect)
-    ECTAtSchoolPeriods::CurrentTraining.new(ect).delivery_partner_name || self.class::EOI_DELIVERY_PARTNER_TEXT
+    ::ECTAtSchoolPeriods::CurrentTraining.new(ect).delivery_partner_name || self.class::EOI_DELIVERY_PARTNER_TEXT
   end
 
   # @param ect [ECTAtSchoolPeriod]
   def latest_lead_provider_name(ect)
-    ECTAtSchoolPeriods::CurrentTraining.new(ect).lead_provider_name
+    ::ECTAtSchoolPeriods::CurrentTraining.new(ect).lead_provider_name
   end
 
   # @param ect [ECTAtSchoolPeriod]
   def latest_mentor_name(ect)
-    ECTAtSchoolPeriods::Mentorship.new(ect).latest_mentor_name
+    ::ECTAtSchoolPeriods::Mentorship.new(ect).latest_mentor_name
   end
 
   # @param ect [ECTAtSchoolPeriod]
   def latest_eoi_lead_provider_name(ect)
-    ECTAtSchoolPeriods::CurrentTraining.new(ect).expression_of_interest_lead_provider_name
+    ::ECTAtSchoolPeriods::CurrentTraining.new(ect).expression_of_interest_lead_provider_name
   end
 
   # @param training_period [TrainingPeriod]
@@ -96,7 +96,7 @@ module ECTHelper
 
   # @param ect [ECTAtSchoolPeriod]
   def ect_mentor_name_or_assign_mentor_link(ect)
-    mentorship = ECTAtSchoolPeriods::Mentorship.new(ect)
+    mentorship = ::ECTAtSchoolPeriods::Mentorship.new(ect)
 
     return link_to_assign_mentor(ect) if mentorship.current_mentor.blank?
 

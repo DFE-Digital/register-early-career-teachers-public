@@ -11,7 +11,11 @@ module Schools
         end
 
         def active_record_at_school(urn)
-          @active_record_at_school ||= ECTAtSchoolPeriods::Search.new.ect_periods(trn: registration_store.trn, urn:).unfinished.last
+          @active_record_at_school ||= ::ECTAtSchoolPeriods::Search
+            .new
+            .ect_periods(trn: registration_store.trn, urn:)
+            .unfinished
+            .last
         end
 
         def appropriate_body
@@ -55,7 +59,7 @@ module Schools
 
         def previous_ect_at_school_period
           @previous_ect_at_school_period ||= begin
-            periods = ECTAtSchoolPeriods::Search
+            periods = ::ECTAtSchoolPeriods::Search
               .new(order: :started_on)
               .ect_periods(trn: registration_store.trn)
 
