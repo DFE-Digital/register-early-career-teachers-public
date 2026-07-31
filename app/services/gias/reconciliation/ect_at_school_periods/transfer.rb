@@ -65,7 +65,7 @@ module GIAS::Reconciliation
       def predecessor_gias_school = predecessor_school.gias_school
       def old_school_name_and_urn = ::Schools::Name.new(predecessor_school).name_and_urn
 
-      delegate :mentorship_periods, :training_periods, :events, :teacher, to: :ect_at_school_period
+      delegate :training_periods, :events, :teacher, to: :ect_at_school_period
 
       def author = Events::SystemAuthor.new
     end

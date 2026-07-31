@@ -37,7 +37,7 @@ module GIAS::Reconciliation
         Events::Record.record_teacher_ect_at_school_period_moved_school!(
           teacher: ect_at_school_period.teacher,
           ect_at_school_period:,
-          new_school: successor.school,
+          new_school:,
           old_school_name_and_urn:,
           happened_at:,
           author:
@@ -50,7 +50,7 @@ module GIAS::Reconciliation
         Events::Record.record_teacher_mentor_at_school_period_moved_school!(
           teacher: mentor_at_school_period.teacher,
           mentor_at_school_period:,
-          new_school: successor.school,
+          new_school:,
           old_school_name_and_urn:,
           happened_at:,
           author:
