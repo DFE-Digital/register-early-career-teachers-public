@@ -9,9 +9,8 @@ module GIAS
 
     # file_source - :gias to fetch files from GIAS API
     #               :local to fetch supplemental files from filesystem (childrens centres)
-    def initialize(auto_create_school:, file_source: :gias)
+    def initialize(file_source: :gias)
       @file_source = file_source
-      @auto_create_school = auto_create_school
     end
 
     def fetch
@@ -62,7 +61,7 @@ module GIAS
 
   private
 
-    attr_reader :gias_school, :school_row, :file_source, :auto_create_school
+    attr_reader :gias_school, :school_row, :file_source
 
     delegate :create_school!, :school, to: :gias_school
     delegate :attributes, :eligible_to_import?, :urn, to: :school_row
@@ -95,7 +94,6 @@ module GIAS
 
     def import_school!
       @gias_school = GIAS::School.create_with(attributes).find_or_create_by!(urn:)
-      create_school! if auto_create_school && school.blank?
     end
 
     def import_schools
@@ -132,9 +130,6 @@ module GIAS
       GIAS::School.transaction do
         gias_school.save!
         record_eligibility_change_event!(modifications) if eligible_change
-        # TODO: Handle gias_school.changes such as merges etc.
-        #       Simple academisations type close/reopen will be just changing the :urn on the counterpart
-        #       but links that are mergers and splits will need further thought
       end
     end
 
