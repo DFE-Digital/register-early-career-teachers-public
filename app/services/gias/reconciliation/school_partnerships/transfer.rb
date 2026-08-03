@@ -1,4 +1,4 @@
-module GIAS::Schools
+module GIAS::Reconciliation
   module SchoolPartnerships
     class Transfer
       def self.call(...) = new(...).call
