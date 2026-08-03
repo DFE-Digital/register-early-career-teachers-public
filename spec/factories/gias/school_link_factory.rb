@@ -31,7 +31,7 @@ FactoryBot.define do
     end
 
     trait :successor_unique do
-      link_type { GIAS::SchoolLink::SUCESSOR }
+      link_type { GIAS::SchoolLink::SUCCESSOR }
     end
 
     trait :other do

@@ -29,7 +29,17 @@ module GIAS::Reconciliation
       end
 
       def only_one_school?
-        schools.uniq.one? || ordered_mentor_at_school_periods.map(&:school_id).uniq.one?
+        schools.uniq.one? || mentor_periods_belong_to_one_school?
+      end
+
+      def mentor_periods_belong_to_one_school?
+        teacher
+          .mentor_at_school_periods
+          .where(school: schools)
+          .distinct
+          .limit(2)
+          .pluck(:school_id)
+          .one?
       end
 
       def group_mentor_at_school_periods
