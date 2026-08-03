@@ -21,6 +21,13 @@ RSpec.shared_examples "a training programme view" do |current_step:, back_path:,
     expect(sanitize(view.content_for(:page_title))).to eql("Which training programme will John Smith follow?")
   end
 
+  it "uses the fieldset legend as the page heading to avoid repeating the question for screen readers" do
+    render
+
+    expect(view.content_for(:page_header)).to be_blank
+    expect(rendered).to have_css("legend h1", text: "Which training programme will John Smith follow?")
+  end
+
   context "when the training programme is invalid" do
     before do
       wizard.valid_step?
