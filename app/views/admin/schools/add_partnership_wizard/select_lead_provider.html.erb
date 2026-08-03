@@ -3,6 +3,7 @@
 
   page_data(
     title:,
+    header: nil,
     error: @wizard.current_step.errors.present?,
     backlink_href: @wizard.previous_step_path
   )
@@ -15,7 +16,7 @@
 
       <%= f.govuk_radio_buttons_fieldset(
         :active_lead_provider_id,
-        legend: { text: title, hidden: true }
+        legend: { text: title, size: "l", tag: "h1" }
       ) do %>
         <% @wizard.active_lead_providers.each_with_index do |active_lead_provider, index| %>
           <%= f.govuk_radio_button(
