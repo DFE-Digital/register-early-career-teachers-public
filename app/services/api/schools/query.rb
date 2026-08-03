@@ -7,7 +7,7 @@ module API::Schools
     def initialize(contract_period_year:, lead_provider_id: :ignore, urn: :ignore, updated_since: :ignore, sort: { created_at: :asc })
       @lead_provider_id = lead_provider_id
       @contract_period_year = contract_period_year
-      @scope = School.eligible
+      @scope = schools_plus_in_partnership_flag
 
       or_where_school_partnership_exists(contract_period_year)
       where_contract_period_exists(contract_period_year)
@@ -16,6 +16,23 @@ module API::Schools
       where_urn_is(urn)
       where_updated_since(updated_since)
       set_sort_by(sort)
+    end
+
+    def schools_plus_in_partnership_flag
+      School.eligible.select(
+        <<~SQL.squish
+          *,
+          EXISTS (
+            SELECT 1
+            FROM school_partnerships sp
+            JOIN lead_provider_delivery_partnerships lpdp
+            ON sp.lead_provider_delivery_partnership_id = lpdp.id
+            JOIN active_lead_providers alp
+            ON lpdp.active_lead_provider_id = alp.id
+            WHERE alp.contract_period_year = #{contract_period_year}
+          ) AS in_partnership
+        SQL
+      )
     end
 
     def schools
