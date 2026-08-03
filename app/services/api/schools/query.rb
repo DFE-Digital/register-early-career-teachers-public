@@ -32,6 +32,7 @@ module API::Schools
             JOIN active_lead_providers alp
             ON lpdp.active_lead_provider_id = alp.id
             WHERE alp.contract_period_year = #{contract_period_year}
+            AND sp.school_id = schools.id
           ) AS in_partnership
         SQL
       )
