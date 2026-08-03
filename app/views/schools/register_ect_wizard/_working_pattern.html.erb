@@ -1,16 +1,17 @@
 <% page_data(
     title: "Is #{@ect.full_name}’s working pattern as an ECT full or part time?",
+    header: nil,
     error: @wizard.current_step.errors.present?,
     backlink_href: @wizard.previous_step_path,
 ) %>
 
-<p class="govuk-body">We'll pass this information on so adjustments can be made to training if needed.</p>
-
-
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
 
-  <%= f.govuk_radio_buttons_fieldset :working_pattern, legend: { text: "Is #{@ect.full_name}’s working pattern as an ECT full or part time?", hidden: true } do %>
+  <%= f.govuk_radio_buttons_fieldset :working_pattern,
+                                     legend: { text: "Is #{@ect.full_name}’s working pattern as an ECT full or part time?", size: "l", tag: "h1" } do %>
+    <p class="govuk-body">We’ll pass this information on so adjustments can be made to training if needed.</p>
+
     <%= f.govuk_radio_button :working_pattern, :full_time, label: { text: "Full time" }, link_errors: true %>
     <%= f.govuk_radio_button :working_pattern, :part_time, label: { text: "Part time" } %>
   <% end %>
