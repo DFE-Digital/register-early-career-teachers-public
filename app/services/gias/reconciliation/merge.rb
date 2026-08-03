@@ -1,4 +1,4 @@
-module GIAS::Schools
+module GIAS::Reconciliation
   class Merge
     def initialize(gias_school)
       @gias_school = gias_school
@@ -20,20 +20,20 @@ module GIAS::Schools
       ActiveRecord::Base.transaction do
         mentor_teachers.each do |teacher|
           overlapping_mentor_at_school_periods(teacher).each do |periods|
-            GIAS::Schools::MentorAtSchoolPeriods::Merge.call(periods:, predecessor_school:, successor_school:)
+            MentorAtSchoolPeriods::Merge.call(periods:, predecessor_school:, successor_school:)
           end
         end
 
         remaining_mentor_periods = predecessor_school.mentor_at_school_periods.reload
 
         remaining_mentor_periods.each do |mentor_at_school_period|
-          GIAS::Schools::MentorAtSchoolPeriods::Transfer.call(mentor_at_school_period:, predecessor_school:, successor_school:)
+          MentorAtSchoolPeriods::Transfer.call(mentor_at_school_period:, predecessor_school:, successor_school:)
         end
 
         remaining_ect_periods = predecessor_school.ect_at_school_periods.reload
 
         remaining_ect_periods.each do |ect_at_school_period|
-          GIAS::Schools::ECTAtSchoolPeriods::Transfer.call(ect_at_school_period:, predecessor_school:, successor_school:)
+          ECTAtSchoolPeriods::Transfer.call(ect_at_school_period:, predecessor_school:, successor_school:)
         end
 
         record_school_merged_event!
@@ -41,7 +41,7 @@ module GIAS::Schools
     end
 
     def overlapping_mentor_at_school_periods(teacher)
-      GIAS::Schools::MentorAtSchoolPeriods::Overlapping.find(
+      MentorAtSchoolPeriods::Overlapping.find(
         teacher:,
         schools: [predecessor_school, successor_school]
       )
