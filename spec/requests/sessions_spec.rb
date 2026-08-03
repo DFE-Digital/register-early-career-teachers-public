@@ -41,13 +41,9 @@ RSpec.describe "Sessions", type: :request do
     end
 
     it "signs the user out and redirects them to sign in" do
-      allow(Sentry).to receive(:capture_exception)
-
       get("/admin/teachers")
 
       expect(response).to redirect_to("/sign-in")
-      expect(Sentry).to have_received(:capture_exception)
-        .with(instance_of(Sessions::Users::DfEPersona::UnknownUserEmail), level: :info)
     end
   end
 

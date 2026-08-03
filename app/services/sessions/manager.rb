@@ -85,7 +85,9 @@ module Sessions
         record_new_activity(session_user)
       end
     rescue Sessions::User::InvalidSession, ArgumentError => e
-      Sentry.capture_exception(e, level: :info)
+      # This will be expected regularly in Staging, as any push will refresh the data,
+      # so only capture this in production.
+      Sentry.capture_exception(e, level: :info) if Rails.env.production?
       end_session!
       nil
     end

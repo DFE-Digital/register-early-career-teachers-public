@@ -163,12 +163,31 @@ RSpec.describe Sessions::Manager do
         allow(Sentry).to receive(:capture_exception)
       end
 
-      it "signs the user out, clears the id_token and reports to Sentry" do
+      it "signs the user out and clears the id_token" do
         expect(service.current_user).to be_nil
         expect(session["user_session"]).to be_nil
         expect(cookies["id_token"]).to be_nil
-        expect(Sentry).to have_received(:capture_exception)
-          .with(instance_of(Sessions::Users::SchoolUser::UnknownOrganisationURN), level: :info)
+      end
+
+      describe "Sentry reporting" do
+        subject { Sentry }
+
+        before do
+          allow(Rails.env).to receive(:production?).and_return(production)
+          service.current_user
+        end
+
+        context "in production" do
+          let(:production) { true }
+
+          it { is_expected.to have_received(:capture_exception).with(instance_of(Sessions::Users::SchoolUser::UnknownOrganisationURN), level: :info) }
+        end
+
+        context "not production" do
+          let(:production) { false }
+
+          it { is_expected.not_to have_received(:capture_exception) }
+        end
       end
     end
   end
