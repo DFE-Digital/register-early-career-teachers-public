@@ -72,9 +72,9 @@ class GIAS::School < ApplicationRecord
   end
 
   def successor
-    return unless successors.one?
+    candidates = successors.take(2)
 
-    successors.first
+    candidates.first if candidates.one?
   end
 
   def can_be_closed?
@@ -125,7 +125,7 @@ private
   end
 
   def school_being_replaced?
-    successor_links.where(link_type: GIAS::SchoolLink::SUCESSOR).exists?
+    successor_links.where(link_type: GIAS::SchoolLink::SUCCESSOR).exists?
   end
 
   def school_being_merged_or_amalgamated?

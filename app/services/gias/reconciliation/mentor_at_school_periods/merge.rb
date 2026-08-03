@@ -34,6 +34,8 @@ module GIAS::Reconciliation
 
       attr_reader :periods, :predecessor_school, :successor_school
 
+      # Periods to merge are provided by the Overlapping service, and always include
+      # at least one period from the successor school that the others will be merged into.
       def successor_period
         @successor_period ||= periods
           .select { |period| period.school == successor_school }

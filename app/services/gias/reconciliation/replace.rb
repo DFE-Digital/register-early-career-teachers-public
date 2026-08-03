@@ -1,5 +1,7 @@
 module GIAS::Reconciliation
   class Replace
+    def self.replace!(gias_school) = new(gias_school).replace!
+
     def initialize(gias_school)
       @gias_school = gias_school
     end
@@ -7,16 +9,6 @@ module GIAS::Reconciliation
     def replace!
       return false unless gias_school.can_be_replaced?
 
-      replace_school!
-
-      true
-    end
-
-  private
-
-    attr_reader :gias_school
-
-    def replace_school!
       ActiveRecord::Base.transaction do
         ect_at_school_periods_to_be_moved =
           school.ect_at_school_periods.includes(:teacher).load
@@ -32,14 +24,20 @@ module GIAS::Reconciliation
         record_ect_moved_to_new_school_event!(ect_at_school_periods_to_be_moved, old_school_name_and_urn)
         record_mentor_moved_to_new_school_event!(mentor_at_school_periods_to_be_moved, old_school_name_and_urn)
       end
+
+      true
     end
+
+  private
+
+    attr_reader :gias_school
 
     def record_ect_moved_to_new_school_event!(periods, old_school_name_and_urn)
       periods.each do |ect_at_school_period|
         Events::Record.record_teacher_ect_at_school_period_moved_school!(
           teacher: ect_at_school_period.teacher,
           ect_at_school_period:,
-          new_school: successor.school,
+          new_school:,
           old_school_name_and_urn:,
           happened_at:,
           author:
@@ -52,7 +50,7 @@ module GIAS::Reconciliation
         Events::Record.record_teacher_mentor_at_school_period_moved_school!(
           teacher: mentor_at_school_period.teacher,
           mentor_at_school_period:,
-          new_school: successor.school,
+          new_school:,
           old_school_name_and_urn:,
           happened_at:,
           author:

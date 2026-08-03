@@ -1,5 +1,7 @@
 module GIAS::Reconciliation
   class Merge
+    def self.merge!(gias_school) = new(gias_school).merge!
+
     def initialize(gias_school)
       @gias_school = gias_school
     end
@@ -7,16 +9,6 @@ module GIAS::Reconciliation
     def merge!
       return false unless gias_school.can_be_merged?
 
-      merge_school!
-
-      true
-    end
-
-  private
-
-    attr_reader :gias_school
-
-    def merge_school!
       ActiveRecord::Base.transaction do
         mentor_teachers.each do |teacher|
           overlapping_mentor_at_school_periods(teacher).each do |periods|
@@ -38,7 +30,13 @@ module GIAS::Reconciliation
 
         record_school_merged_event!
       end
+
+      true
     end
+
+  private
+
+    attr_reader :gias_school
 
     def overlapping_mentor_at_school_periods(teacher)
       MentorAtSchoolPeriods::Overlapping.find(

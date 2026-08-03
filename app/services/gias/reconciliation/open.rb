@@ -1,5 +1,7 @@
 module GIAS::Reconciliation
   class Open
+    def self.open!(gias_school) = new(gias_school).open!
+
     def initialize(gias_school)
       @gias_school = gias_school
     end
@@ -7,7 +9,10 @@ module GIAS::Reconciliation
     def open!
       return false unless gias_school.can_be_opened?
 
-      open_school!
+      ActiveRecord::Base.transaction do
+        gias_school.create_school!
+        record_school_opened_event!
+      end
 
       true
     end
@@ -15,13 +20,6 @@ module GIAS::Reconciliation
   private
 
     attr_reader :gias_school
-
-    def open_school!
-      ActiveRecord::Base.transaction do
-        gias_school.create_school!
-        record_school_opened_event!
-      end
-    end
 
     def record_school_opened_event!
       Events::Record.record_school_opened_event!(
