@@ -23,7 +23,8 @@ module API
       def default_query_conditions
         @default_query_conditions ||= {
           contract_period_year: contract_period&.year,
-          lead_provider_id: current_lead_provider.id
+          lead_provider_id: current_lead_provider.id,
+          include_in_partnership_flag: true
         }
       end
 

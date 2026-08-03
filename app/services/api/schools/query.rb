@@ -4,11 +4,13 @@ module API::Schools
 
     attr_reader :scope, :sort, :lead_provider_id, :contract_period_year
 
-    def initialize(contract_period_year:, lead_provider_id: :ignore, urn: :ignore, updated_since: :ignore, sort: { created_at: :asc })
+    def initialize(contract_period_year:, lead_provider_id: :ignore, urn: :ignore, updated_since: :ignore, sort: { created_at: :asc }, include_in_partnership_flag: false)
       @lead_provider_id = lead_provider_id
       @contract_period_year = contract_period_year
-      @scope = schools_plus_in_partnership_flag
 
+      @scope = School.eligible
+
+      with_in_partnership_flag if include_in_partnership_flag
       or_where_school_partnership_exists(contract_period_year)
       where_contract_period_exists(contract_period_year)
       where_lead_provider_is(lead_provider_id)
@@ -18,8 +20,8 @@ module API::Schools
       set_sort_by(sort)
     end
 
-    def schools_plus_in_partnership_flag
-      School.eligible.select(
+    def with_in_partnership_flag
+      @scope = scope.select(
         <<~SQL.squish
           *,
           EXISTS (
