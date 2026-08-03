@@ -1,5 +1,6 @@
 <% page_data(
   title: "Select new contract period for #{@wizard.teacher_name}",
+  header: nil,
   error: @wizard.current_step.errors.present?,
   backlink_href: admin_teacher_training_path(@teacher)
 ) %>
@@ -11,7 +12,7 @@
 
       <%= f.govuk_radio_buttons_fieldset(
         :contract_period_year,
-        legend: { text: "Select new contract period for #{@wizard.teacher_name}", hidden: true }
+        legend: { text: "Select new contract period for #{@wizard.teacher_name}", size: "l", tag: "h1" }
       ) do %>
         <% @wizard.contract_periods.each_with_index do |contract_period, index| %>
           <%= f.govuk_radio_button(
