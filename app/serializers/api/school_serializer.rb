@@ -11,10 +11,8 @@ class API::SchoolSerializer < Blueprinter::Base
     field(:cohort) do |_, options|
       options[:contract_period_year].to_s
     end
-    field(:in_partnership) do |data, options|
+    field(:in_partnership) do |data, _options|
       data[:school].in_partnership
-      # data[:school].school_partnerships.joins(lead_provider_delivery_partnership: :active_lead_provider).where(active_lead_provider: { contract_period_year: options[:contract_period_year]}).any?
-      # contract_period_metadata(school: data[:school], options:).in_partnership
     end
     field(:induction_programme_choice) do |data, options|
       contract_period_metadata(school: data[:school], options:).induction_programme_choice

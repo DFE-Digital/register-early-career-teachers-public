@@ -19,6 +19,13 @@ describe API::SchoolSerializer, type: :serializer do
   end
   let(:created_at) { Time.utc(2023, 7, 1, 12, 0, 0) }
   let(:api_updated_at) { Time.utc(2023, 7, 2, 12, 0, 0) }
+  let(:in_partnership) do
+    SchoolPartnership
+      .joins(lead_provider_delivery_partnership: :active_lead_provider)
+      .where(active_lead_provider: { contract_period_year: contract_period.year })
+      .where(school_id: school.id)
+      .any?
+  end
 
   before do
     # Ensure other metadata exists.
@@ -27,6 +34,10 @@ describe API::SchoolSerializer, type: :serializer do
 
     FactoryBot.create(:school_contract_period_metadata, school:, contract_period: other_contract_period)
     FactoryBot.create(:school_lead_provider_contract_period_metadata, school:, contract_period: other_contract_period, lead_provider: other_lead_provider)
+
+    # add 'transient' in_partnership attribute required by serializer
+    school.singleton_class.attr_accessor(:in_partnership)
+    school.in_partnership = in_partnership
   end
 
   describe "core attributes" do
@@ -43,7 +54,7 @@ describe API::SchoolSerializer, type: :serializer do
       expect(attributes["name"]).to eq(school.name)
       expect(attributes["urn"]).to eq(school.urn.to_s)
       expect(attributes["cohort"]).to eq(contract_period.year.to_s)
-      expect(attributes["in_partnership"]).to eq(contract_period_metadata.in_partnership)
+      expect(attributes["in_partnership"]).to eq(in_partnership)
       expect(attributes["induction_programme_choice"]).to eq(contract_period_metadata.induction_programme_choice)
       expect(attributes["expression_of_interest"]).to eq(lead_provider_contract_period_metadata.expression_of_interest_or_school_partnership)
       expect(attributes["induction_tutor_name"]).not_to be_nil
