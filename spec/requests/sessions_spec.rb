@@ -32,6 +32,21 @@ RSpec.describe "Sessions", type: :request do
     end
   end
 
+  describe "requesting a page after the records in the session have been deleted" do
+    let(:user) { FactoryBot.create(:user, :admin) }
+
+    before do
+      sign_in_as(:dfe_user, user:)
+      user.destroy!
+    end
+
+    it "signs the user out and redirects them to sign in" do
+      get("/admin/teachers")
+
+      expect(response).to redirect_to("/sign-in")
+    end
+  end
+
   describe "POST /auth/:provider/callback" do
     let(:first_name) { Faker::Name.first_name }
     let(:last_name) { Faker::Name.last_name }

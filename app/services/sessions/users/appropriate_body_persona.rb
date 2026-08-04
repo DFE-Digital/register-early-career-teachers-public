@@ -1,8 +1,8 @@
 module Sessions
   module Users
     class AppropriateBodyPersona < User
-      class AppropriateBodyPersonaDisabledError < StandardError; end
-      class UnknownAppropriateBodyPeriodId < StandardError; end
+      class AppropriateBodyPersonaDisabledError < Sessions::User::InvalidSession; end
+      class UnknownAppropriateBodyPeriodId < Sessions::User::InvalidSession; end
 
       USER_TYPE = :appropriate_body_user
       PROVIDER = :persona
