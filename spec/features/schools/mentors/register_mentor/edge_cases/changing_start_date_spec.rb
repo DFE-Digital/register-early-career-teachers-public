@@ -271,7 +271,6 @@ RSpec.describe "Registering a mentor", :js do
   end
 
   def then_i_should_be_taken_to_lead_provider_page
-    page.screenshot(path: "tmp/lead_provider_page.png")
     expect(page).to have_path("/school/register-mentor/lead-provider")
   end
 
