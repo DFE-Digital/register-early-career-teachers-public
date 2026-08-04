@@ -10,6 +10,10 @@ RSpec.describe "Schools API", :with_metadata, type: :request do
     # And a training period within an ongoing ECT at school period so all fields are populated
     lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
     school = FactoryBot.create(:school, :ineligible, :with_induction_tutor)
+    # add 'transient' in_partnership attribute required by serializer
+    school.singleton_class.attr_accessor(:in_partnership)
+    school.in_partnership = true
+
     school_partnership = FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school:)
     ect_at_school_period = FactoryBot.create(:ect_at_school_period, :unfinished, school:)
     FactoryBot.create(:training_period, :provider_led, :unfinished, ect_at_school_period:, school_partnership:)

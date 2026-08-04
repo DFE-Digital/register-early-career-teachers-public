@@ -15,7 +15,6 @@ module Metadata
 
     validates :school, presence: true
     validates :contract_period, presence: true
-    validates :in_partnership, inclusion: { in: [true, false] }
     validates :induction_programme_choice, inclusion: { in: induction_programme_choices.keys }
     validates :school_id, uniqueness: { scope: %i[contract_period_year] }
 

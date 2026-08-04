@@ -101,14 +101,15 @@ RSpec.describe API::Schools::Query, :with_metadata do
 
       it "adds a transient attribute to the school" do
         contract_period = FactoryBot.create(:contract_period)
-        school = FactoryBot.create(:school, :eligible)
+        FactoryBot.create(:school, :eligible)
 
         expect(described_class.new(contract_period_year: contract_period.year, include_in_partnership_flag:).schools.first).to respond_to(:in_partnership)
       end
-
     end
 
     context "when there is existing partnerships" do
+      subject(:result) { described_class.new(contract_period_year:, include_in_partnership_flag:).schools }
+
       let!(:contract_period) { FactoryBot.create(:contract_period) }
       let(:contract_period_year) { contract_period.year }
       let(:school1) { FactoryBot.create(:school, :eligible) }
@@ -116,9 +117,6 @@ RSpec.describe API::Schools::Query, :with_metadata do
       let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, contract_period:) }
       let!(:school1_partnership) { FactoryBot.create(:school_partnership, school: school1, lead_provider_delivery_partnership:) }
       let!(:school2_partnership) { FactoryBot.create(:school_partnership, school: school2, lead_provider_delivery_partnership:) }
-
-
-      subject(:result) { described_class.new(contract_period_year:, include_in_partnership_flag:).schools }
 
       it "returns all schools" do
         expect(result).to contain_exactly(school1, school2)
@@ -133,7 +131,7 @@ RSpec.describe API::Schools::Query, :with_metadata do
 
         it "includes the in_partnership flag" do
           result.each do |school|
-            expect(school).to be_in_partnership
+            expect(school.in_partnership).to be true
           end
         end
       end
