@@ -15,6 +15,7 @@ class SchoolPartnership < ApplicationRecord
 
   touch -> { self }, when_changing: %i[lead_provider_delivery_partnership_id], timestamp_attribute: :api_updated_at
   touch -> { declarations }, when_changing: %i[lead_provider_delivery_partnership_id], timestamp_attribute: :api_updated_at
+  touch -> { teachers }, when_changing: %i[lead_provider_delivery_partnership_id], timestamp_attribute: :api_updated_at
   refresh_metadata -> { school }, on_event: %i[create destroy update]
 
   # Validations
@@ -41,4 +42,15 @@ class SchoolPartnership < ApplicationRecord
     joins(lead_provider_delivery_partnership: :active_lead_provider)
       .order("active_lead_providers.contract_period_year DESC, school_partnerships.created_at DESC")
   }
+
+  def teachers
+    # We can't use a has-many through association here because a TrainingPeriod
+    # can have a Teacher via the ECTAtSchoolPeriod or MentorAtSchoolPeriod.
+    teacher_ids = training_periods
+        .left_joins(:ect_at_school_period, :mentor_at_school_period)
+        .select("COALESCE(ect_at_school_periods.teacher_id, mentor_at_school_periods.teacher_id)")
+        .distinct
+
+    Teacher.where(id: teacher_ids)
+  end
 end

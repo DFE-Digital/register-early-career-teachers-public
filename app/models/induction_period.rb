@@ -110,9 +110,8 @@ private
 
   def touch_teacher?
     first_period = saved_change_to_id? && teacher.induction_periods.count == 1
-    outcome_changed = saved_change_to_outcome?
 
-    first_period || outcome_changed
+    first_period || saved_change_to_outcome? || saved_change_to_finished_on?
   end
 
   def at_most_one_outcome_per_teacher

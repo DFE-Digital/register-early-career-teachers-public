@@ -30,6 +30,8 @@ class API::SchoolPartnershipSerializer < Blueprinter::Base
       Schools::InductionTutorEmail.new(school: partnership.school).email_or_gias_contact
     end
 
+    # Changes to this field will be reflected in the `updated_at` via the nightly
+    # TouchSchoolPartnershipForParticipantsCurrentlyTrainingJob.
     field(:participants_currently_training) do |partnership, _options|
       partnership.ongoing_training_periods.size
     end

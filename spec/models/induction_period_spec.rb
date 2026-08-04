@@ -139,6 +139,12 @@ RSpec.describe InductionPeriod do
 
             expect(second_induction_period.send(:touch_teacher?)).to be(true)
           end
+
+          it "returns true if it is not the first induction period but finished_on is set" do
+            second_induction_period = FactoryBot.create(:induction_period, teacher:, appropriate_body_period:, started_on: "2023-01-01", finished_on: "2023-06-01")
+
+            expect(second_induction_period.send(:touch_teacher?)).to be(true)
+          end
         end
 
         context "when an existing induction period is updated" do
@@ -152,6 +158,12 @@ RSpec.describe InductionPeriod do
             induction_period.update!(started_on: "2018-01-01")
 
             expect(induction_period.send(:touch_teacher?)).to be(false)
+          end
+
+          it "returns true if the finished_on is changed" do
+            induction_period.update!(finished_on: "2019-01-01")
+
+            expect(induction_period.send(:touch_teacher?)).to be(true)
           end
         end
       end

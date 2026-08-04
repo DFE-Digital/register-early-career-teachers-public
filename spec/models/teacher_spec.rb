@@ -25,6 +25,8 @@ describe Teacher do
                       mentor_first_became_eligible_for_training_at
                       ect_payments_frozen_year
                       mentor_payments_frozen_year
+                      trs_induction_completed_date
+                      trs_induction_start_date
                     ],
                     timestamp_attribute: :api_updated_at
 
