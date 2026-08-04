@@ -1,9 +1,14 @@
 describe API::SchoolSerializer, type: :serializer do
   subject(:response) do
-    options = { contract_period_year: contract_period.year, lead_provider_id: lead_provider.id }
+    options = {
+      contract_period_year: contract_period.year,
+      lead_provider_id: lead_provider.id,
+      in_partnership_override_value: in_partnership,
+    }
     JSON.parse(described_class.render(school, **options))
   end
 
+  let(:in_partnership) { true }
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
   let(:contract_period) { FactoryBot.create(:contract_period) }
   let(:gias_school) { FactoryBot.create(:gias_school, primary_contact_email:) }
@@ -19,13 +24,6 @@ describe API::SchoolSerializer, type: :serializer do
   end
   let(:created_at) { Time.utc(2023, 7, 1, 12, 0, 0) }
   let(:api_updated_at) { Time.utc(2023, 7, 2, 12, 0, 0) }
-  let(:in_partnership) do
-    SchoolPartnership
-      .joins(lead_provider_delivery_partnership: :active_lead_provider)
-      .where(active_lead_provider: { contract_period_year: contract_period.year })
-      .where(school_id: school.id)
-      .any?
-  end
 
   before do
     # Ensure other metadata exists.
@@ -34,10 +32,6 @@ describe API::SchoolSerializer, type: :serializer do
 
     FactoryBot.create(:school_contract_period_metadata, school:, contract_period: other_contract_period)
     FactoryBot.create(:school_lead_provider_contract_period_metadata, school:, contract_period: other_contract_period, lead_provider: other_lead_provider)
-
-    # add 'transient' in_partnership attribute required by serializer
-    school.singleton_class.attr_accessor(:in_partnership)
-    school.in_partnership = in_partnership
   end
 
   describe "core attributes" do

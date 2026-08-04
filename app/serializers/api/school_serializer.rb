@@ -11,8 +11,16 @@ class API::SchoolSerializer < Blueprinter::Base
     field(:cohort) do |_, options|
       options[:contract_period_year].to_s
     end
-    field(:in_partnership) do |data, _options|
-      data[:school].in_partnership
+    field(:in_partnership) do |data, options|
+      # override the transient in_partnership injected by Schools::Query if
+      # this is being called outside of the normal controller actions
+      # e.g. by specs
+      in_partnership = options[:in_partnership_override_value]
+      if in_partnership.nil?
+        data[:school].in_partnership
+      else
+        in_partnership
+      end
     end
     field(:induction_programme_choice) do |data, options|
       contract_period_metadata(school: data[:school], options:).induction_programme_choice
