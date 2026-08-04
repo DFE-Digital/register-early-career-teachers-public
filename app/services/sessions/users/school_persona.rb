@@ -1,8 +1,8 @@
 module Sessions
   module Users
     class SchoolPersona < User
-      class SchoolPersonaDisabledError < StandardError; end
-      class UnknownSchoolURN < StandardError; end
+      class SchoolPersonaDisabledError < Sessions::User::InvalidSession; end
+      class UnknownSchoolURN < Sessions::User::InvalidSession; end
 
       USER_TYPE = :school_user
       PROVIDER = :persona
