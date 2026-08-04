@@ -23,7 +23,7 @@ module AppropriateBodies::Importers
       where e.heading = 'placeholder'
       and e.event_type = 'induction_period_opened'
       and e.teacher_id = t.id
-      and e.appropriate_body_period_id = ab.id;
+      and e.appropriate_body_period_id = ab.id
     CLAIMED
       update events e
       set heading = t.trs_first_name || ' ' || t.trs_last_name || ' was released by ' || ab.name
@@ -31,7 +31,7 @@ module AppropriateBodies::Importers
       where e.heading = 'placeholder'
       and e.event_type = 'induction_period_closed'
       and e.teacher_id = t.id
-      and e.appropriate_body_period_id = ab.id;
+      and e.appropriate_body_period_id = ab.id
     RELEASED
       update events e
       set heading = t.trs_first_name || ' ' || t.trs_last_name || ' passed induction'
@@ -39,7 +39,7 @@ module AppropriateBodies::Importers
       where e.heading = 'placeholder'
       and e.event_type = 'teacher_passes_induction'
       and e.teacher_id = t.id
-      and e.appropriate_body_period_id = ab.id;
+      and e.appropriate_body_period_id = ab.id
     PASSED
       update events e
       set heading = t.trs_first_name || ' ' || t.trs_last_name || ' failed induction'
@@ -47,17 +47,21 @@ module AppropriateBodies::Importers
       where e.heading = 'placeholder'
       and e.event_type = 'teacher_fails_induction'
       and e.teacher_id = t.id
-      and e.appropriate_body_period_id = ab.id;
+      and e.appropriate_body_period_id = ab.id
     FAILED
 
     # @return [Hash{String => Array<Struct>}] All inductions including previously imported
     attr_reader :teachers_with_inductions
     # @return [TeacherParser]
     attr_reader :teachers
+    # @return [Array<String>]
+    attr_reader :existing_trns
     # @return [Logger]
     attr_reader :logger
 
     def initialize(teachers_csv:, induction_period_csv:, logger: nil)
+      @existing_trns = Teacher.pluck(:trn)
+
       @teachers_with_inductions =
         InductionPeriodParser.new(data_csv: induction_period_csv).periods_by_trn
 
@@ -124,42 +128,51 @@ module AppropriateBodies::Importers
         finalised_rows.each_slice(BATCH_SIZE).each do |batch|
           induction_period_data = batch.map(&:to_record)
           induction_period_result = InductionPeriod.insert_all!(induction_period_data, returning: [:id])
-
           logger.info("Induction periods inserted: #{induction_period_result.count}")
 
-          event_data = batch
-                        .each_with_index { |row, i| row.id = induction_period_result[i]["id"] }
-                        .flat_map(&:events).flatten
-
-          event_result = Event.insert_all!(event_data)
-
-          logger.info("Events inserted: #{event_result.count}")
+          batch.each_with_index { |row, i| row.id = induction_period_result[i]["id"] }
+          event_data = batch.flat_map(&:events)
+          event_data.each_slice(BATCH_SIZE) do |event_batch|
+            event_result = Event.insert_all!(event_batch)
+            logger.info("Events inserted: #{event_result.count}")
+          end
         end
       end
     end
 
     def import_induction_extensions
-      data = teachers.rows.select { |tir| tir.extension_terms.present? }.map do |row|
-        {
-          teacher_id: teacher_trn_to_id.fetch(row.trn),
-          number_of_terms: row.extension_terms
-        }
-      end
+      ActiveRecord::Base.transaction do
+        teachers.rows.select { |tir| tir.extension_terms.present? }.each_slice(BATCH_SIZE).each do |batch|
+          data = batch.map do |row|
+            {
+              teacher_id: teacher_trn_to_id.fetch(row.trn),
+              number_of_terms: row.extension_terms
+            }
+          end
 
-      extension_result = InductionExtension.insert_all!(data)
-      logger.info("Induction extensions inserted: #{extension_result.count}")
+          extension_result = InductionExtension.insert_all!(data)
+
+          logger.info("Induction extensions inserted: #{extension_result.count}")
+        end
+      end
     end
 
     def update_event_titles
-      ActiveRecord::Base.connection.execute(STATEMENTS.join(";"))
-      logger.info "Event heading placeholders replaced"
+      ActiveRecord::Base.transaction do
+        STATEMENTS.each do |statement|
+          ActiveRecord::Base.connection.execute(statement)
+        end
+
+        logger.info "Event heading placeholders replaced"
+      end
     end
 
     # @return [Array<AppropriateBodies::Importers::InductionPeriodParser::Row>]
     def finalised_rows
       induction_period_rows = []
+      target_trns = teachers.trns - existing_trns
 
-      teachers_with_inductions.slice(*teachers.trns).each do |trn, induction_periods|
+      teachers_with_inductions.slice(*target_trns).each do |trn, induction_periods|
         induction_periods.each do |ip|
           ip.teacher_id = teacher_trn_to_id.fetch(trn)
           ip.appropriate_body_period_id = ab_legacy_uuid_to_id.fetch(ip.legacy_appropriate_body_id)
