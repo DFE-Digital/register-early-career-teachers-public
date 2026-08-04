@@ -17,14 +17,14 @@ RSpec.describe AppropriateBodies::Importers::InductionPeriodParser do
   let!(:ab_1) { FactoryBot.create(:appropriate_body_period, :local_authority) }
   let!(:ab_2) { FactoryBot.create(:appropriate_body_period, :local_authority) }
   let!(:ab_3) { FactoryBot.create(:appropriate_body_period, :local_authority) }
-  let!(:ab_4) { FactoryBot.create(:appropriate_body_period, :local_authority) }
-  let!(:ab_5) { FactoryBot.create(:appropriate_body_period, :local_authority) }
+  let!(:ab_4) { FactoryBot.create(:appropriate_body_period, :teaching_school_hub, dqt_id: Faker::Internet.uuid) }
+  let!(:ab_5) { FactoryBot.create(:appropriate_body_period, :istip, dqt_id: Faker::Internet.uuid) }
 
   let!(:ect_1) { FactoryBot.create(:teacher, :induction_passed) }
   let!(:ect_2) { FactoryBot.create(:teacher, :induction_failed_in_wales) }
   let!(:ect_3) { FactoryBot.create(:teacher, trs_induction_status: "None") }
-  let!(:ect_4) { FactoryBot.create(:teacher, id: described_class::UNWANTED_TEACHER_IDS[0]) }
-  let!(:ect_5) { FactoryBot.create(:teacher, id: described_class::UNWANTED_TEACHER_IDS[1]) }
+  let!(:ect_4) { FactoryBot.create(:teacher) }
+  let!(:ect_5) { FactoryBot.create(:teacher) }
 
   let(:sample_csv_data) do
     <<~CSV
@@ -143,14 +143,6 @@ RSpec.describe AppropriateBodies::Importers::InductionPeriodParser do
       end
     end
 
-    # it "orders inductions by start date" do
-    #   # TODO: - add more dates
-    # end
-
-    # it "applies the ECT's induction status to their final period" do
-    #   # TODO
-    # end
-
     context "when started_on is nil" do
       let(:sample_csv_data) do
         <<~CSV
@@ -211,21 +203,6 @@ RSpec.describe AppropriateBodies::Importers::InductionPeriodParser do
       end
     end
 
-    context "when teacher_id is excluded" do
-      let(:sample_csv_data) do
-        <<~CSV
-          appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
-          #{ab_1.dqt_id},01/01/2012 00:00:00,01/02/2012 00:00:00,,1,#{ect_4.trn}
-        CSV
-      end
-
-      it "is rejected because teacher exists with data" do
-        expect(parsed).to be_empty
-        expect(fake_logger).to have_received(:error).once.with(/teacher already exists with inductions/)
-        expect(fake_logger).to have_received(:error).once.with(/trn: .* dqt_id:/)
-      end
-    end
-
     context "when started_on is invalid" do
       let(:sample_csv_data) do
         <<~CSV
@@ -252,6 +229,21 @@ RSpec.describe AppropriateBodies::Importers::InductionPeriodParser do
       it "does not import the row" do
         expect(parsed).to be_empty
         expect(fake_logger).to have_received(:error).once.with(/started_on is greater than finished_on/)
+        expect(fake_logger).to have_received(:error).once.with(/trn: .* dqt_id:/)
+      end
+    end
+
+    context "when the induction period is 1 day or shorter" do
+      let(:sample_csv_data) do
+        <<~CSV
+          appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
+          #{ab_1.dqt_id},01/01/2023 00:00:00,01/01/2023 00:00:00,Core Induction Programme,3,#{ect_1.trn}
+        CSV
+      end
+
+      it "rejects the row and logs an error" do
+        expect(parsed).to be_empty
+        expect(fake_logger).to have_received(:error).once.with(/1 day or shorter/)
         expect(fake_logger).to have_received(:error).once.with(/trn: .* dqt_id:/)
       end
     end
@@ -330,15 +322,16 @@ RSpec.describe AppropriateBodies::Importers::InductionPeriodParser do
         end
       end
 
-      context "when the finish date is later than the import cutoff date" do
+      context "when an LA AB period non-LA AB period span 2024-08-31" do
         let(:sample_csv_data) do
           <<~CSV
             appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
             #{ab_1.dqt_id},01/01/2019 00:00:00,10/31/2024 00:00:00,Core Induction Programme,3,#{ect_1.trn}
+            #{ab_4.dqt_id},01/01/2019 00:00:00,10/31/2024 00:00:00,Core Induction Programme,3,#{ect_2.trn}
           CSV
         end
 
-        it "trims the end date to 2024-08-31" do
+        it "trims the LA end date leaving the non-LA end date unchanged" do
           expect(parsed_to_record).to eql(
             {
               ect_1.trn => [
@@ -351,9 +344,49 @@ RSpec.describe AppropriateBodies::Importers::InductionPeriodParser do
                   induction_programme: "pre_september_2021",
                   number_of_terms: 3.0,
                 }
+              ],
+              ect_2.trn => [
+                {
+                  teacher_id: nil,
+                  appropriate_body_period_id: nil,
+                  outcome: :fail,
+                  started_on: Date.new(2019, 1, 1),
+                  finished_on: Date.new(2024, 10, 31),
+                  induction_programme: "pre_september_2021",
+                  number_of_terms: 3.0,
+                }
               ]
             }
           )
+        end
+      end
+
+      context "when merging periods results in a 1-day or shorter period" do
+        let(:sample_csv_data) do
+          <<~CSV
+            appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
+            #{ab_1.dqt_id},01/01/2022 00:00:00,01/01/2022 00:00:00,Full Induction Programme,1,#{ect_1.trn}
+            #{ab_1.dqt_id},01/01/2022 00:00:00,01/01/2022 00:00:00,Full Induction Programme,2,#{ect_1.trn}
+          CSV
+        end
+
+        it "rejects the merged period because it is too short" do
+          expect(parsed).to be_empty
+          expect(fake_logger).to have_received(:error).with(/1 day or shorter/).at_least(:once)
+        end
+      end
+
+      context "when the LA period starts on or after the cutoff date" do
+        let(:sample_csv_data) do
+          <<~CSV
+            appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
+            #{ab_1.dqt_id},08/31/2024 00:00:00,10/31/2024 00:00:00,Core Induction Programme,3,#{ect_1.trn}
+          CSV
+        end
+
+        it "produces a one-day period that is then rejected" do
+          expect(parsed).to be_empty
+          expect(fake_logger).to have_received(:error).with(/1 day or shorter/)
         end
       end
 
@@ -922,6 +955,37 @@ RSpec.describe AppropriateBodies::Importers::InductionPeriodParser do
           end
         end
       end
+    end
+  end
+
+  describe "rejected CSV output" do
+    let(:sample_csv_data) do
+      <<~CSV
+        appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
+        #{ab_1.dqt_id},01/01/2023 00:00:00,01/01/2023 00:00:00,Core Induction Programme,3,#{ect_1.trn}
+        #{ab_1.dqt_id},02/02/2023 00:00:00,01/01/2023 00:00:00,Core Induction Programme,3,#{ect_2.trn}
+      CSV
+    end
+
+    before do
+      FileUtils.rm_f(described_class::PARSER_ERROR_CSV)
+      parsed
+    end
+
+    it "writes a header row" do
+      lines = File.readlines(described_class::PARSER_ERROR_CSV)
+      expect(lines.first.chomp).to eq("reason,trn,dqt_id,started_on,finished_on")
+    end
+
+    it "writes one row per rejected record" do
+      lines = File.readlines(described_class::PARSER_ERROR_CSV)
+      expect(lines.count).to be >= 3 # header + at least 2 rejections
+    end
+
+    it "includes the rejection reason" do
+      contents = File.read(described_class::PARSER_ERROR_CSV)
+      expect(contents).to include("1 day or shorter")
+      expect(contents).to include("started_on is greater than finished_on")
     end
   end
 end
