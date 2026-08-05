@@ -4,6 +4,7 @@ RSpec.describe GIASImportJob, type: :job do
       importer = instance_spy(GIAS::Importer)
 
       allow(GIAS::Importer).to receive(:new).and_return(importer)
+      allow(importer).to receive(:fetch)
 
       described_class.new.perform
 
