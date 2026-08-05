@@ -6,10 +6,6 @@ module TeachersIndex
       @appropriate_body = appropriate_body_period
     end
 
-    def render?
-      Rails.application.config.enable_appropriate_body_records_to_review
-    end
-
   private
 
     attr_reader :appropriate_body
