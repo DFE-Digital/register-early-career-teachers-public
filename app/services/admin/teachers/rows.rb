@@ -9,8 +9,6 @@ module Admin
         "mentor" => "Mentor",
       }.freeze
 
-      ROLE_SORT_ORDER = ROLE_NAMES.keys.append(NO_ROLE_ASSIGNED).each_with_index.to_h.freeze
-
       Row = Data.define(:teacher, :role, :contract_period) do
         delegate :id, to: :teacher, prefix: true
         delegate :trn, to: :teacher
@@ -31,14 +29,6 @@ module Admin
 
           contract_period
         end
-
-        def sort_key
-          [
-            name.to_s.downcase,
-            Rows::ROLE_SORT_ORDER.fetch(role),
-            teacher.id
-          ]
-        end
       end
 
       def initialize(role: nil, contract_period: nil)
@@ -49,9 +39,7 @@ module Admin
       def rows(teachers)
         rows = teachers.flat_map { |teacher| rows_for_teacher(teacher) }
         rows = filter_by_role(rows)
-        rows = filter_by_contract_period(rows)
-
-        sort_rows(rows)
+        filter_by_contract_period(rows)
       end
 
     private
@@ -112,10 +100,6 @@ module Admin
         return rows if contract_period.blank?
 
         rows.select { |row| row.contract_period == contract_period }
-      end
-
-      def sort_rows(rows)
-        rows.sort_by(&:sort_key)
       end
     end
   end
