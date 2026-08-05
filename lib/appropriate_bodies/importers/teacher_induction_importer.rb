@@ -54,13 +54,18 @@ module AppropriateBodies::Importers
     attr_reader :teachers_with_inductions
     # @return [TeacherParser]
     attr_reader :teachers
-    # @return [Array<String>]
+    # @return [Set<String>]
     attr_reader :existing_trns
+    # @return [Set<String>]
+    attr_reader :existing_trns_without_inductions
+    # @return [Set<String>]
+    attr_reader :importing_trns_with_inductions
     # @return [Logger]
     attr_reader :logger
 
     def initialize(teachers_csv:, induction_period_csv:, logger: nil)
-      @existing_trns = Teacher.pluck(:trn)
+      @existing_trns = Teacher.pluck(:trn).to_set
+      @existing_trns_without_inductions = Teacher.left_joins(:induction_periods).where(induction_periods: { id: nil }).pluck(:trn).to_set
 
       @teachers_with_inductions =
         InductionPeriodParser.new(data_csv: induction_period_csv).periods_by_trn
@@ -70,6 +75,8 @@ module AppropriateBodies::Importers
           data_csv: teachers_csv,
           trns_with_induction_periods: @teachers_with_inductions.keys
         )
+
+      @importing_trns_with_inductions = @teachers.trns.to_set
 
       File.open(IMPORT_INFO_LOG, "w") { |f| f.truncate(0) }
       @logger = logger || Logger.new(IMPORT_INFO_LOG, File::CREAT)
@@ -170,7 +177,8 @@ module AppropriateBodies::Importers
     # @return [Array<AppropriateBodies::Importers::InductionPeriodParser::Row>]
     def finalised_rows
       induction_period_rows = []
-      target_trns = teachers.trns - existing_trns
+
+      target_trns = ((importing_trns_with_inductions - existing_trns) + existing_trns_without_inductions).to_a
 
       teachers_with_inductions.slice(*target_trns).each do |trn, induction_periods|
         induction_periods.each do |ip|

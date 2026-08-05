@@ -56,25 +56,38 @@ RSpec.describe AppropriateBodies::Importers::TeacherInductionImporter do
     end
 
     context "when a teacher is already persisted" do
-      let(:persisted_trn) { "2345678" }
+      let(:teacher) { lisa }
 
       let(:induction_period_csv) do
         <<~CSV
           appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
-          #{ab_1.dqt_id},01/01/2012 00:00:00,10/31/2012 00:00:00,Core Induction Programme,,#{persisted_trn}
+          #{ab_1.dqt_id},01/01/2012 00:00:00,10/31/2012 00:00:00,Core Induction Programme,,#{teacher.trn}
         CSV
       end
 
-      it "does not import any induction periods for that teacher" do
-        expect { induction_importer.import! }.not_to raise_error
+      context "without induction data" do
+        it "imports data" do
+          expect(teacher.induction_periods.count).to eq(0)
+          expect { induction_importer.import! }.not_to raise_error
+          expect(teacher.reload.induction_periods.count).to eq(1)
+        end
+      end
 
-        persisted_teacher = Teacher.find_by(trn: persisted_trn)
-        expect(persisted_teacher.induction_periods).to be_empty
+      context "with induction data" do
+        before { FactoryBot.create(:induction_period, teacher:) }
+
+        it "skips import" do
+          expect(teacher.induction_periods.count).to eq(1)
+          expect { induction_importer.import! }.not_to raise_error
+          expect(teacher.induction_periods.count).to eq(1)
+        end
       end
     end
 
     it "imports expected data", :aggregate_failures do
       expect(AppropriateBodyPeriod.count).to eq(2)
+
+      FactoryBot.create(:induction_period, :fail, teacher: lisa)
 
       expect { induction_importer.import! }.not_to raise_error
 
@@ -83,11 +96,11 @@ RSpec.describe AppropriateBodies::Importers::TeacherInductionImporter do
       expect(Teacher.induction_status_passed.count).to eq(1)
       expect(Teacher.induction_status_failed.count).to eq(2) # 1 already + 1 imported
       expect(Teacher.induction_status_failed_in_wales.count).to eq(1)
-      expect(InductionPeriod.count).to eq(4)
+      expect(InductionPeriod.count).to eq(6)
 
       # Lisa was InProgress and imported in the first round but has since failed
-      # therefore her IPs should not be imported
-      expect(lisa.induction_periods).to be_empty
+      # therefore her IPs should not be imported again and duplicated
+      expect(lisa.induction_periods.count).to be(1)
 
       # Tina has Passed after two inductions
       # therefore her timeline should reflect this
