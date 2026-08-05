@@ -6,8 +6,6 @@ RSpec.describe API::Declarations::Clawback, type: :model do
   let(:lead_provider_id) { declaration.training_period.lead_provider.id }
   let(:contract_period) { declaration.training_period.contract_period }
 
-  before { ensure_active_lead_providers_are_consistent }
-
   context "when lead_provider_id is missing" do
     let(:declaration) { FactoryBot.create(:declaration, :paid) }
     let(:lead_provider_id) { nil }
@@ -81,9 +79,22 @@ RSpec.describe API::Declarations::Clawback, type: :model do
   end
 
   context "when the declaration's payment statement deadline date is in the past" do
-    let(:declaration) { FactoryBot.create(:declaration, :paid) }
-
-    before { declaration.payment_statement.update!(deadline_date: Date.yesterday, payment_date: Date.tomorrow) }
+    let(:declaration) do
+      FactoryBot.create(
+        :declaration,
+        :paid,
+        payment_statement:,
+        active_lead_provider: payment_statement.active_lead_provider
+      )
+    end
+    let(:payment_statement) do
+      FactoryBot.create(
+        :statement,
+        :paid,
+        deadline_date: Date.yesterday,
+        payment_date: Date.tomorrow
+      )
+    end
 
     it { is_expected.to have_one_error_only }
 
@@ -134,13 +145,5 @@ RSpec.describe API::Declarations::Clawback, type: :model do
 
       clawback
     end
-  end
-
-private
-
-  def ensure_active_lead_providers_are_consistent
-    # Using update_all bypasses the readonly check on that attribute.
-    active_lead_provider_id = declaration.training_period.active_lead_provider.id
-    Contract.where(id: declaration.payment_statement.contract).update_all(active_lead_provider_id:)
   end
 end
