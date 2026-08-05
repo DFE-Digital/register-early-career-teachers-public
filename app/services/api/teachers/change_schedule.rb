@@ -5,9 +5,7 @@ module API::Teachers
     attribute :contract_period_year
     attribute :schedule_identifier
 
-    validates :schedule_identifier, presence: { message: "The property '#/schedule_identifier' must be present and correspond to a valid schedule." }
-    validates :schedule_identifier, inclusion: { in: Schedule.identifiers.keys, message: "Enter a valid schedule identifier." }, allow_blank: true
-    validate :schedule_acceptable_for_change, if: -> { errors[:schedule_identifier].empty? }
+    validate :schedule_acceptable_for_change
     validate :contract_period_acceptable_for_change, if: -> { training_period && errors[:contract_period_year].empty? }
     validate :teacher_can_change_schedule, if: -> { training_period && errors[:teacher_api_id].empty? }
 
@@ -27,6 +25,8 @@ module API::Teachers
   private
 
     def schedule_acceptable_for_change
+      return errors.add(:schedule_identifier, "The property '#/schedule_identifier' must be present and correspond to a valid schedule.") if schedule_identifier.blank?
+      return errors.add(:schedule_identifier, "Enter a valid schedule identifier.") if Schedule.identifiers.keys.exclude?(schedule_identifier)
       return errors.add(:schedule_identifier, "The property '#/schedule_identifier' must be present and correspond to a valid schedule.") unless schedule
       return unless training_period
       return errors.add(:schedule_identifier, "Selected schedule is already on the profile") if schedule == training_period.schedule
