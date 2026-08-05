@@ -71,10 +71,11 @@ RSpec.describe Admin::Teachers::Rows do
     end
 
     context "when sorting rows" do
-      let!(:sasuke) { FactoryBot.create(:teacher, trs_first_name: "Sasuke", trs_last_name: "Uchiha") }
-      let!(:naruto) { FactoryBot.create(:teacher, trs_first_name: "Naruto", trs_last_name: "Uzumaki") }
+      let!(:sasuke) { FactoryBot.create(:teacher, trs_first_name: "Sasuke", trs_last_name: "Uchiha", created_at: 1.day.ago) }
+      let!(:naruto) { FactoryBot.create(:teacher, trs_first_name: "Naruto", trs_last_name: "Uzumaki", created_at: 2.days.ago) }
       let!(:sasuke_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher: sasuke) }
       let!(:naruto_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher: naruto) }
+      let(:teachers) { Admin::Teachers::Search.new.teacher_scope.where(id: [sasuke, naruto]) }
 
       before do
         [sasuke_ect_at_school_period, naruto_ect_at_school_period].each do |ect_at_school_period|
@@ -96,8 +97,8 @@ RSpec.describe Admin::Teachers::Rows do
         end
       end
 
-      it "orders rows alphabetically by full name" do
-        expect(rows_builder.rows(teachers).map(&:name)).to eq(["Naruto Uzumaki", "Sasuke Uchiha"])
+      it "orders rows by creation time" do
+        expect(rows_builder.rows(teachers).map(&:name)).to eq(["Sasuke Uchiha", "Naruto Uzumaki"])
       end
     end
 
