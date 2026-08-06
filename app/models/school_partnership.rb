@@ -44,13 +44,6 @@ class SchoolPartnership < ApplicationRecord
   }
 
   def teachers
-    # We can't use a has-many through association here because a TrainingPeriod
-    # can have a Teacher via the ECTAtSchoolPeriod or MentorAtSchoolPeriod.
-    teacher_ids = training_periods
-        .left_joins(:ect_at_school_period, :mentor_at_school_period)
-        .select("COALESCE(ect_at_school_periods.teacher_id, mentor_at_school_periods.teacher_id)")
-        .distinct
-
-    Teacher.where(id: teacher_ids)
+    Teacher.with_training_periods(training_periods)
   end
 end

@@ -452,6 +452,24 @@ describe Teacher do
   end
 
   describe "scopes" do
+    describe ".with_training_periods" do
+      subject { described_class.with_training_periods(training_periods) }
+
+      let(:ect_training_period) { FactoryBot.create(:training_period, :for_ect) }
+      let(:mentor_training_period) { FactoryBot.create(:training_period, :for_mentor) }
+      let(:ect) { ect_training_period.teacher }
+      let(:mentor) { mentor_training_period.teacher }
+      let(:training_periods) { TrainingPeriod.where(id: [ect_training_period, mentor_training_period]) }
+
+      before do
+        # Teachers with other training periods should not be included.
+        FactoryBot.create(:training_period, :for_ect)
+        FactoryBot.create(:training_period, :for_mentor)
+      end
+
+      it { is_expected.to contain_exactly(ect, mentor) }
+    end
+
     describe ".search" do
       it "searches the 'search' column using a tsquery" do
         expect(Teacher.search("Joey").to_sql).to end_with(%{WHERE (teachers.search @@ to_tsquery('unaccented', 'Joey:*'))})

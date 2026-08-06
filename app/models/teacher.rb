@@ -143,6 +143,16 @@ class Teacher < ApplicationRecord
   scope :induction_status_required_to_complete, -> { where(trs_induction_status: "RequiredToComplete") }
   scope :not_failed, -> { where.not(trs_induction_status: %w[Failed FailedInWales]).or(induction_status_missing) }
   scope :not_passed, -> { where.not(trs_induction_status: "Passed").or(induction_status_missing) }
+  scope :with_training_periods, ->(training_periods) {
+    where(
+      id: training_periods
+        .left_joins(:ect_at_school_period, :mentor_at_school_period)
+        .select(
+          "COALESCE(ect_at_school_periods.teacher_id, mentor_at_school_periods.teacher_id)"
+        )
+        .distinct
+    )
+  }
 
   normalizes :trs_first_name, :trs_last_name, with: -> { it&.squish }
   normalizes :corrected_name, with: -> { it&.squish }
