@@ -111,7 +111,7 @@ RSpec.describe InductionPeriod do
       context "target teacher" do
         let(:target) { FactoryBot.create(:teacher) }
 
-        it_behaves_like "a declarative touch model", on_event: %i[create update], when_changing: %i[started_on finished_on outcome], timestamp_attribute: :api_updated_at, target_optional: false
+        it_behaves_like "a declarative touch model", on_event: %i[create update destroy], when_changing: %i[started_on finished_on outcome], timestamp_attribute: :api_updated_at, target_optional: false
         it_behaves_like "a declarative metadata model", on_event: %i[create destroy update], when_changing: %i[outcome finished_on]
       end
     end

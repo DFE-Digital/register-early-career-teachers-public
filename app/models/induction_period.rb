@@ -17,7 +17,7 @@ class InductionPeriod < ApplicationRecord
   belongs_to :teacher
   has_many :events
 
-  touch -> { teacher }, on_event: %i[create update], when_changing: %i[started_on finished_on outcome], timestamp_attribute: :api_updated_at
+  touch -> { teacher }, on_event: %i[create update destroy], when_changing: %i[started_on finished_on outcome], timestamp_attribute: :api_updated_at
 
   refresh_metadata -> { teacher },
                    on_event: %i[create destroy update],
