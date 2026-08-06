@@ -14,6 +14,7 @@ RSpec.describe API::Teachers::Query, :with_metadata do
 
       it { expect(result.lead_provider_metadata.map { |metadata| metadata.association(:latest_ect_training_period) }).to all(be_loaded) }
       it { expect(result.lead_provider_metadata.map { |metadata| metadata.association(:latest_mentor_training_period) }).to all(be_loaded) }
+      it { expect(result.lead_provider_metadata.map { |metadata| metadata.association(:ect_assigned_mentor_latest_school_period) }).to all(be_loaded) }
 
       it "preloads latest_ect_training_period and latest_mentor_training_period associations" do
         latest_training_periods = result.lead_provider_metadata
@@ -36,14 +37,28 @@ RSpec.describe API::Teachers::Query, :with_metadata do
           end
         end
       end
+
+      it "preloads the ect_assigned_mentor_latest_school_period associations" do
+        latest_school_periods = result.lead_provider_metadata.map(&:ect_assigned_mentor_latest_school_period).compact
+
+        expect(latest_school_periods).not_to be_empty
+
+        latest_school_periods.each do |school_period|
+          expect(school_period.association(:teacher)).to be_loaded
+          expect(school_period.association(:school)).to be_loaded
+        end
+      end
     end
 
     let(:instance) { described_class.new }
     let(:teacher) { FactoryBot.create(:teacher) }
     let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, started_on: 1.year.ago, finished_on: nil) }
+    let(:school) { ect_at_school_period.school }
     let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, started_on: 1.year.ago, finished_on: nil) }
+    let(:assigned_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, started_on: ect_at_school_period.started_on) }
     let!(:latest_ect_training_period) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: 1.month.ago, finished_on: nil) }
     let!(:latest_mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: 1.month.ago, finished_on: nil) }
+    let!(:mentorship_period) { FactoryBot.create(:mentorship_period, :ongoing, started_on: ect_at_school_period.started_on + 1.day, mentor: assigned_mentor_at_school_period, mentee: ect_at_school_period) }
 
     describe "#teachers" do
       subject(:result) do

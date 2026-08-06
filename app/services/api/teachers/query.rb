@@ -70,7 +70,7 @@ module API::Teachers
               schedule: [],
             },
             latest_mentor_contract_period: [],
-            ect_assigned_mentor_latest_school_period: :teacher
+            ect_assigned_mentor_latest_school_period: %i[teacher school]
           }
         )
     end
