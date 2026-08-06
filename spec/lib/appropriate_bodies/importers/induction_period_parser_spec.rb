@@ -966,6 +966,7 @@ RSpec.describe AppropriateBodies::Importers::InductionPeriodParser do
         #{ab_1.dqt_id},02/02/2023 00:00:00,01/01/2023 00:00:00,Core Induction Programme,3,#{ect_2.trn}
       CSV
     end
+    let(:output) { File.readlines(described_class::PARSER_ERROR_CSV) }
 
     before do
       FileUtils.rm_f(described_class::PARSER_ERROR_CSV)
@@ -973,19 +974,15 @@ RSpec.describe AppropriateBodies::Importers::InductionPeriodParser do
     end
 
     it "writes a header row" do
-      lines = File.readlines(described_class::PARSER_ERROR_CSV)
-      expect(lines.first.chomp).to eq("reason,trn,dqt_id,started_on,finished_on")
+      expect(output.first.chomp).to eq("reason,trn,dqt_id,dqt_id_other,started_on,started_on_other,finished_on,finished_on_other")
     end
 
     it "writes one row per rejected record" do
-      lines = File.readlines(described_class::PARSER_ERROR_CSV)
-      expect(lines.count).to be >= 3 # header + at least 2 rejections
+      expect(output.count).to eq(3)
     end
 
     it "includes the rejection reason" do
-      contents = File.read(described_class::PARSER_ERROR_CSV)
-      expect(contents).to include("1 day or shorter")
-      expect(contents).to include("started_on is greater than finished_on")
+      expect(output.join).to include("1 day or shorter").and(include("started_on is greater than finished_on"))
     end
   end
 end

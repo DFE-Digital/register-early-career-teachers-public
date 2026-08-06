@@ -226,7 +226,7 @@ module AppropriateBodies::Importers
           if row.trn.nil? || row.legacy_appropriate_body_id.nil?
             log_error("cannot be imported because TRN or AB is missing",
                       trn: row.trn,
-                      dqt_id: row.legacy_appropriate_body_id)
+                      dqt_id: [row.legacy_appropriate_body_id, nil])
           else
             false
           end
@@ -235,7 +235,7 @@ module AppropriateBodies::Importers
           if row.started_on.nil?
             log_error("cannot be imported because started_on is nil",
                       trn: row.trn,
-                      dqt_id: row.legacy_appropriate_body_id)
+                      dqt_id: [row.legacy_appropriate_body_id, nil])
           else
             false
           end
@@ -244,7 +244,7 @@ module AppropriateBodies::Importers
           if row.finished_on.nil?
             log_error("cannot be imported because finished_on is nil",
                       trn: row.trn,
-                      dqt_id: row.legacy_appropriate_body_id)
+                      dqt_id: [row.legacy_appropriate_body_id, nil])
           else
             false
           end
@@ -253,7 +253,7 @@ module AppropriateBodies::Importers
           if row.started_on == Date.new(1, 1, 1)
             log_error("cannot be imported because started_on is 0001-01-01",
                       trn: row.trn,
-                      dqt_id: row.legacy_appropriate_body_id)
+                      dqt_id: [row.legacy_appropriate_body_id, nil])
           else
             false
           end
@@ -262,7 +262,7 @@ module AppropriateBodies::Importers
           if row.finished_on && row.started_on > row.finished_on
             log_error("cannot be imported because started_on is greater than finished_on",
                       trn: row.trn,
-                      dqt_id: row.legacy_appropriate_body_id)
+                      dqt_id: [row.legacy_appropriate_body_id, nil])
           else
             false
           end
@@ -271,7 +271,7 @@ module AppropriateBodies::Importers
           if row.legacy_appropriate_body_id.in?(offshore_dqt_uuids)
             log_error("cannot be imported because AB is offshore",
                       trn: row.trn,
-                      dqt_id: row.legacy_appropriate_body_id)
+                      dqt_id: [row.legacy_appropriate_body_id, nil])
           else
             false
           end
@@ -402,7 +402,7 @@ module AppropriateBodies::Importers
                     log_error(
                       "cannot be imported because two overlapping induction periods with the same appropriate body and programme could not be resolved",
                       trn: current.trn,
-                      dqt_id: current.legacy_appropriate_body_id,
+                      dqt_id: [current.legacy_appropriate_body_id, nil],
                       started_on: [sibling.started_on, current.started_on],
                       finished_on: [sibling.finished_on, current.finished_on]
                     )
@@ -487,7 +487,7 @@ module AppropriateBodies::Importers
             log_error(
               "cannot be imported because the induction period is 1 day or shorter",
               trn: edited_period.trn,
-              dqt_id: edited_period.legacy_appropriate_body_id,
+              dqt_id: [edited_period.legacy_appropriate_body_id, nil],
               started_on: [original[:started_on], edited_period.started_on],
               finished_on: [original[:finished_on], edited_period.finished_on]
             )
@@ -531,17 +531,14 @@ module AppropriateBodies::Importers
 
     # @param message [String]
     # @param trn [String]
-    # @param dqt_id [String, Array<String>]
-    # @param started_on [Date]
-    # @param finished_on [Date]
-    # @return [void]
-    def log_error(message, trn:, dqt_id:, started_on: nil, finished_on: nil)
+    # @param dqt_id [Array<String>]
+    # @param started_on [Array<Date>]
+    # @param finished_on [Array<Date>]
+    def log_error(message, trn:, dqt_id: [nil, nil], started_on: [nil, nil], finished_on: [nil, nil])
       log_error_csv(message, trn:, dqt_id:, started_on:, finished_on:)
 
-      uuids = Array(dqt_id).join(", ")
-      dates = [started_on, finished_on].compact.map(&:to_s).join(" to ")
-      suffix = dates.empty? ? "" : " dates: #{dates}"
-      logger.error("#{message} trn: #{trn} dqt_id: #{uuids}#{suffix}")
+      uuids = dqt_id.join(", ")
+      logger.error("#{message} trn: #{trn} dqt_id: #{uuids}")
     end
 
     # @param datetime [String]
@@ -554,18 +551,21 @@ module AppropriateBodies::Importers
     end
 
     def error_csv_header
-      CSV.generate_line(%w[reason trn dqt_id started_on finished_on])
+      CSV.generate_line(%w[
+        reason
+        trn
+        dqt_id
+        dqt_id_other
+        started_on
+        started_on_other
+        finished_on
+        finished_on_other
+      ])
     end
 
-    def log_error_csv(message, trn:, dqt_id:, started_on: nil, finished_on: nil)
+    def log_error_csv(message, trn:, dqt_id:, started_on:, finished_on:)
       File.open(PARSER_ERROR_CSV, "a") do |f|
-        f.puts(CSV.generate_line([
-          message,
-          trn,
-          Array(dqt_id).join("; "),
-          Array(started_on).map(&:to_s).join("; "),
-          Array(finished_on).map(&:to_s).join("; ")
-        ]))
+        f.puts(CSV.generate_line([message, trn, *dqt_id, *started_on, *finished_on]))
       end
     end
   end
