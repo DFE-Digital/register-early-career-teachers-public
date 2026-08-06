@@ -11,7 +11,7 @@ describe AdminHelper do
 
   describe "#role_options" do
     it "returns the roles as objects for use in radio collection" do
-      expect(role_options.map(&:identifier)).to match_array(%i[admin finance user_manager])
+      expect(role_options.map(&:identifier)).to match_array(%i[admin finance product_team user_manager])
     end
   end
 
