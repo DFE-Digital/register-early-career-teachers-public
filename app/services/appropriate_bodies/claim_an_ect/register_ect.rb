@@ -5,7 +5,8 @@ module AppropriateBodies
 
       attr_reader :appropriate_body_period,
                   :pending_induction_submission,
-                  :author
+                  :author,
+                  :induction_period
 
       def initialize(appropriate_body_period:, pending_induction_submission:, author:)
         @appropriate_body_period = appropriate_body_period
@@ -61,7 +62,7 @@ module AppropriateBodies
 
       # @return [Boolean]
       def create_induction_period
-        InductionPeriods::CreateInductionPeriod.new(
+        @induction_period = InductionPeriods::CreateInductionPeriod.new(
           author:,
           teacher:,
           params: {
