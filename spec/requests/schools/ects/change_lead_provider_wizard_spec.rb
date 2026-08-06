@@ -39,6 +39,12 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController" do
       lead_provider: other_lead_provider
     )
   end
+  let(:lead_provider_delivery_partnership) do
+    FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, contract_period:)
+  end
+  let(:school_partnership) do
+    FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:)
+  end
 
   describe "GET #new" do
     subject { get path_for_step("edit") }
@@ -97,6 +103,28 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController" do
         it "returns ok" do
           subject
           expect(response).to have_http_status(:ok)
+        end
+      end
+
+      context "when the latest training period has finished" do
+        let!(:training_period) do
+          FactoryBot.create(
+            :training_period,
+            :for_ect,
+            :provider_led,
+            ect_at_school_period:,
+            started_on: ect_at_school_period.started_on,
+            finished_on: 1.month.ago.to_date,
+            school_partnership:
+          )
+        end
+
+        it "offers the other lead providers, excluding the one they were training with" do
+          subject
+
+          expect(response).to have_http_status(:ok)
+          expect(response.body).to include(other_lead_provider.name)
+          expect(response.body).not_to include(lead_provider.name)
         end
       end
     end
@@ -261,6 +289,49 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController" do
 
           expect(Events::Record).to have_received(:record_teacher_training_lead_provider_updated_event!)
           expect(response).to redirect_to(path_for_step("confirmation"))
+        end
+      end
+
+      context "when the latest training period has finished" do
+        let!(:training_period) do
+          FactoryBot.create(
+            :training_period,
+            :for_ect,
+            :provider_led,
+            ect_at_school_period:,
+            started_on: ect_at_school_period.started_on,
+            finished_on: 1.month.ago.to_date,
+            school_partnership:
+          )
+        end
+
+        it "shows the previous lead provider and completes the change" do
+          subject
+
+          follow_redirect!
+
+          expect(response.body).to include(lead_provider.name)
+
+          post(path_for_step("check-answers"))
+
+          expect(response).to redirect_to(path_for_step("confirmation"))
+
+          training = current_training_for(ect_at_school_period.reload)
+          expect(training.lead_provider_via_school_partnership_or_eoi).to eq(other_lead_provider)
+        end
+
+        it "records the previous lead provider on the event" do
+          allow(Events::Record).to receive(:record_teacher_training_lead_provider_updated_event!)
+
+          subject
+          follow_redirect!
+          post(path_for_step("check-answers"))
+
+          expect(Events::Record).to have_received(:record_teacher_training_lead_provider_updated_event!)
+            .with(hash_including(
+                    old_lead_provider_name: lead_provider.name,
+                    new_lead_provider_name: other_lead_provider.name
+                  ))
         end
       end
 
