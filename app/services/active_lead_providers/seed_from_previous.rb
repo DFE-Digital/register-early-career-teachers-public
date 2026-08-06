@@ -5,11 +5,11 @@
 # rolled forward to the new period's year.
 #
 # It Errors if it cannot do this.
-class ActiveLeadProviders::SeedFromPrevious
+class ActiveLeadProviders::SeedFromPrevious < ApplicationService
   class PreviousActiveLeadProviderError < StandardError; end
   class AlreadyPopulatedError < StandardError; end
 
-  attr_reader :active_lead_provider
+  attribute :active_lead_provider
 
   delegate :lead_provider, to: :active_lead_provider
   delegate :name, to: :lead_provider, prefix: true
@@ -17,10 +17,9 @@ class ActiveLeadProviders::SeedFromPrevious
   delegate :lead_provider_delivery_partnerships, :contracts, :statements,
            to: :previous_activation, prefix: :previous
 
-  def initialize(active_lead_provider:)
+  def initialize(...)
+    super
     raise ArgumentError, "active_lead_provider is required" if active_lead_provider.blank?
-
-    @active_lead_provider = active_lead_provider
   end
 
   def call
