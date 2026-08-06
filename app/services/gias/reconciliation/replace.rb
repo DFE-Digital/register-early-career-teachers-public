@@ -7,7 +7,7 @@ module GIAS::Reconciliation
     end
 
     def replace!
-      return false unless gias_school.can_be_replaced?
+      return false unless eligibility.can_be_replaced?
 
       ActiveRecord::Base.transaction do
         ect_at_school_periods_to_be_moved =
@@ -31,6 +31,10 @@ module GIAS::Reconciliation
   private
 
     attr_reader :gias_school
+
+    def eligibility
+      @eligibility ||= GIAS::Reconciliation::Eligibility.new(gias_school)
+    end
 
     def record_ect_moved_to_new_school_event!(periods, old_school_name_and_urn)
       periods.each do |ect_at_school_period|

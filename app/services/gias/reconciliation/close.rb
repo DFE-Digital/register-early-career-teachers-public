@@ -7,7 +7,7 @@ module GIAS::Reconciliation
     end
 
     def close!
-      return false unless gias_school.can_be_closed?
+      return false unless eligibility.can_be_closed?
 
       ActiveRecord::Base.transaction do
         destroy_unstarted_mentorship_periods!
@@ -23,6 +23,10 @@ module GIAS::Reconciliation
   private
 
     attr_reader :gias_school
+
+    def eligibility
+      @eligibility ||= GIAS::Reconciliation::Eligibility.new(gias_school)
+    end
 
     def finish_ongoing_periods!
       ect_at_school_periods.contains_date(closed_on).each do |ect_at_school_period|
