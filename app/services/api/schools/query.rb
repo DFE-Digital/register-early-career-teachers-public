@@ -4,11 +4,13 @@ module API::Schools
 
     attr_reader :scope, :sort, :lead_provider_id, :contract_period_year
 
-    def initialize(contract_period_year:, lead_provider_id: :ignore, urn: :ignore, updated_since: :ignore, sort: { created_at: :asc })
+    def initialize(contract_period_year:, lead_provider_id: :ignore, urn: :ignore, updated_since: :ignore, sort: { created_at: :asc }, include_in_partnership_flag: false)
       @lead_provider_id = lead_provider_id
       @contract_period_year = contract_period_year
+
       @scope = School.eligible
 
+      with_in_partnership_flag if include_in_partnership_flag
       or_where_school_partnership_exists(contract_period_year)
       where_contract_period_exists(contract_period_year)
       where_lead_provider_is(lead_provider_id)
@@ -16,6 +18,24 @@ module API::Schools
       where_urn_is(urn)
       where_updated_since(updated_since)
       set_sort_by(sort)
+    end
+
+    def with_in_partnership_flag
+      @scope = scope.select(
+        <<~SQL.squish
+          *,
+          EXISTS (
+            SELECT 1
+            FROM school_partnerships sp
+            JOIN lead_provider_delivery_partnerships lpdp
+            ON sp.lead_provider_delivery_partnership_id = lpdp.id
+            JOIN active_lead_providers alp
+            ON lpdp.active_lead_provider_id = alp.id
+            WHERE alp.contract_period_year = #{contract_period_year}
+            AND sp.school_id = schools.id
+          ) AS in_partnership
+        SQL
+      )
     end
 
     def schools
@@ -67,8 +87,9 @@ module API::Schools
     end
 
     def school_ids_with_partnership(contract_period_year)
-      Metadata::SchoolContractPeriod
-        .where(contract_period_year:, in_partnership: true)
+      SchoolPartnership
+        .joins(lead_provider_delivery_partnership: :active_lead_provider)
+        .where(active_lead_provider: { contract_period_year: })
         .select(:school_id)
     end
 

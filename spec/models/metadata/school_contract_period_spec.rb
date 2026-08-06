@@ -9,7 +9,7 @@ describe Metadata::SchoolContractPeriod do
       Metadata::SchoolContractPeriod.bypass_update_restrictions { example.run }
     end
 
-    it_behaves_like "a declarative touch model", on_event: %i[update], when_changing: %i[in_partnership induction_programme_choice], timestamp_attribute: :api_updated_at
+    it_behaves_like "a declarative touch model", on_event: %i[update], when_changing: %i[induction_programme_choice], timestamp_attribute: :api_updated_at
   end
 
   describe "enums" do
@@ -28,8 +28,6 @@ describe Metadata::SchoolContractPeriod do
 
     it { is_expected.to validate_presence_of(:school) }
     it { is_expected.to validate_presence_of(:contract_period) }
-    it { is_expected.to allow_values(true, false).for(:in_partnership) }
-    it { is_expected.not_to allow_values(nil, "").for(:in_partnership) }
     it { is_expected.to allow_values(*described_class.induction_programme_choices.keys).for(:induction_programme_choice) }
     it { is_expected.to validate_uniqueness_of(:school_id).scoped_to(:contract_period_year) }
   end

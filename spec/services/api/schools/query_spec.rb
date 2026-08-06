@@ -73,9 +73,12 @@ RSpec.describe API::Schools::Query, :with_metadata do
   describe "#schools" do
     subject(:query) { described_class.new(**query_params) }
 
+    let(:include_in_partnership_flag) { false }
+
     let(:query_params) do
       {
         contract_period_year:,
+        include_in_partnership_flag:,
       }
     end
 
@@ -86,8 +89,29 @@ RSpec.describe API::Schools::Query, :with_metadata do
       expect(described_class.new(contract_period_year: contract_period.year).schools).to eq([school])
     end
 
+    context "when the include_in_partnership_flag is true" do
+      let(:include_in_partnership_flag) { true }
+
+      it "returns all eligible schools" do
+        contract_period = FactoryBot.create(:contract_period)
+        school = FactoryBot.create(:school, :eligible)
+
+        expect(described_class.new(contract_period_year: contract_period.year).schools.map(&:urn)).to eq([school.urn])
+      end
+
+      it "adds a transient attribute to the school" do
+        contract_period = FactoryBot.create(:contract_period)
+        FactoryBot.create(:school, :eligible)
+
+        expect(described_class.new(contract_period_year: contract_period.year, include_in_partnership_flag:).schools.first).to respond_to(:in_partnership)
+      end
+    end
+
     context "when there is existing partnerships" do
+      subject(:result) { described_class.new(contract_period_year:, include_in_partnership_flag:).schools }
+
       let!(:contract_period) { FactoryBot.create(:contract_period) }
+      let(:contract_period_year) { contract_period.year }
       let(:school1) { FactoryBot.create(:school, :eligible) }
       let(:school2) { FactoryBot.create(:school, :ineligible) }
       let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, contract_period:) }
@@ -95,7 +119,21 @@ RSpec.describe API::Schools::Query, :with_metadata do
       let!(:school2_partnership) { FactoryBot.create(:school_partnership, school: school2, lead_provider_delivery_partnership:) }
 
       it "returns all schools" do
-        expect(described_class.new(contract_period_year: contract_period.year).schools).to contain_exactly(school1, school2)
+        expect(result).to contain_exactly(school1, school2)
+      end
+
+      context "when the include_in_partnership_flag is true" do
+        let(:include_in_partnership_flag) { true }
+
+        it "returns all schools" do
+          expect(result.map(&:urn)).to contain_exactly(school1.urn, school2.urn)
+        end
+
+        it "includes the in_partnership flag" do
+          result.each do |school|
+            expect(school.in_partnership).to be true
+          end
+        end
       end
     end
 

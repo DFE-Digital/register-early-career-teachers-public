@@ -517,7 +517,6 @@ erDiagram
     datetime api_updated_at
     integer contract_period_year
     datetime created_at
-    boolean in_partnership
     enum induction_programme_choice
     integer school_id
     datetime updated_at

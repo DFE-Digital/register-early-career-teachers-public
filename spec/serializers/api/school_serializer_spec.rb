@@ -1,9 +1,14 @@
 describe API::SchoolSerializer, type: :serializer do
   subject(:response) do
-    options = { contract_period_year: contract_period.year, lead_provider_id: lead_provider.id }
+    options = {
+      contract_period_year: contract_period.year,
+      lead_provider_id: lead_provider.id,
+      in_partnership_override_value: in_partnership,
+    }
     JSON.parse(described_class.render(school, **options))
   end
 
+  let(:in_partnership) { true }
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
   let(:contract_period) { FactoryBot.create(:contract_period) }
   let(:gias_school) { FactoryBot.create(:gias_school, primary_contact_email:) }
@@ -43,7 +48,7 @@ describe API::SchoolSerializer, type: :serializer do
       expect(attributes["name"]).to eq(school.name)
       expect(attributes["urn"]).to eq(school.urn.to_s)
       expect(attributes["cohort"]).to eq(contract_period.year.to_s)
-      expect(attributes["in_partnership"]).to eq(contract_period_metadata.in_partnership)
+      expect(attributes["in_partnership"]).to eq(in_partnership)
       expect(attributes["induction_programme_choice"]).to eq(contract_period_metadata.induction_programme_choice)
       expect(attributes["expression_of_interest"]).to eq(lead_provider_contract_period_metadata.expression_of_interest_or_school_partnership)
       expect(attributes["induction_tutor_name"]).not_to be_nil

@@ -3,13 +3,16 @@ RSpec.describe "Schools API", :with_metadata, type: :request do
   let(:lead_provider) { active_lead_provider.lead_provider }
   let(:contract_period) { active_lead_provider.contract_period }
   let(:serializer) { API::SchoolSerializer }
-  let(:serializer_options) { { contract_period_year: contract_period.id, lead_provider_id: lead_provider.id } }
+  let(:serializer_options) do
+    { contract_period_year: contract_period.id, lead_provider_id: lead_provider.id, in_partnership_override_value: true }
+  end
 
   def create_resource(active_lead_provider:)
     # Set up a school with a provider-led training programme linked to the given active lead provider
     # And a training period within an ongoing ECT at school period so all fields are populated
     lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
     school = FactoryBot.create(:school, :ineligible, :with_induction_tutor)
+
     school_partnership = FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school:)
     ect_at_school_period = FactoryBot.create(:ect_at_school_period, :unfinished, school:)
     FactoryBot.create(:training_period, :provider_led, :unfinished, ect_at_school_period:, school_partnership:)

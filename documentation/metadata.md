@@ -60,7 +60,6 @@ classDiagram
         }
 
         class SchoolContractPeriod {
-            -boolean in_partnership
             -enum induction_programme_choice
             -datetime updated_at
 
