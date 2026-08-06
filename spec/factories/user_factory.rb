@@ -17,10 +17,13 @@ FactoryBot.define do
       role { "user_manager" }
       sequence(:email) { |n| "user.manager#{n}@education.gov.uk" }
     end
-
     trait :finance do
       role { "finance" }
       sequence(:email) { |n| "finance.user#{n}@education.gov.uk" }
+    end
+    trait :product_team do
+      role { "product_team" }
+      sequence(:email) { |n| "product.team.user#{n}@education.gov.uk" }
     end
   end
 end
