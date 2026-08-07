@@ -1,0 +1,8 @@
+<% if mentorship.current_mentor.blank? %>
+  <%= govuk_warning_text(text: assign_or_create_mentor_link) %>
+<% else %>
+  <%= mentorship.current_mentor_name %>
+  <% if upcoming_mentorships.any? %>
+    <%= govuk_list(upcoming_mentorship_descriptions, classes: "govuk-hint") %>
+  <% end %>
+<% end %>

@@ -16,6 +16,7 @@ module Schools::ECTs
             :school_reported_appropriate_body,
             {
               current_or_next_mentorship_period: { mentor: :teacher },
+              upcoming_mentorship_periods: { mentor: :teacher },
               current_or_next_training_period: %i[
                 lead_provider
                 expression_of_interest

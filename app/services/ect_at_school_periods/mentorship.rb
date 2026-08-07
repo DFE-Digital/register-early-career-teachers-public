@@ -10,6 +10,10 @@ module ECTAtSchoolPeriods
       @current_or_next_mentorship_period ||= ect_at_school_period.current_or_next_mentorship_period
     end
 
+    def upcoming_mentorship_periods
+      @upcoming_mentorship_periods ||= ect_at_school_period.upcoming_mentorship_periods
+    end
+
     def latest_mentorship_period
       @latest_mentorship_period ||= ect_at_school_period.latest_mentorship_period
     end
