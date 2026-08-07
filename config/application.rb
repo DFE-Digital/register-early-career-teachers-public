@@ -55,6 +55,7 @@ module RegisterEarlyCareerTeachers
     config.enable_teaching_school_hubs = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_HUBS", false))
     config.enable_incident_banner = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_INCIDENT_BANNER", false))
     config.enable_maintenance_banner = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_MAINTENANCE_BANNER", false))
+    config.enable_admin_data_fixes = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_ADMIN_DATA_FIXES", false))
     config.enable_sentry = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_SENTRY", false))
     config.enable_blazer = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_BLAZER", false))
     config.enable_time_travel = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_TIME_TRAVEL", false))
