@@ -1,12 +1,9 @@
-require "csv"
-
 module AppropriateBodies::Importers
   class InductionPeriodParser
     PARSER_ERROR_LOG = "tmp/dqt_induction_period_parser.log"
+    PARSER_ERROR_CSV = "tmp/dqt_induction_period_parser_rejected.csv"
 
-    # 2 legacy teachers with inductions have already been imported manually
-    UNWANTED_TEACHER_IDS = [76_075, 93_314].freeze
-    # Import cut off date
+    # Local Authorities (LAs) lost AB status
     CUTOFF_DATE = Date.new(2024, 8, 31).freeze
 
     InductionEvent = Struct.new(
@@ -198,16 +195,15 @@ module AppropriateBodies::Importers
                   :data_csv,
                   :logger,
                   :offshore_dqt_uuids,
-                  :all_dqt_uuids,
-                  :trns_already_persisted_with_inductions
+                  :la_dqt_uuids
 
     def initialize(data_csv:, logger: nil)
       @data_csv = data_csv
       @offshore_dqt_uuids = OFFSHORE_DQT_UUIDS.to_set
-      @all_dqt_uuids = AppropriateBodyPeriod.pluck(:dqt_id).to_set
-      @trns_already_persisted_with_inductions = Teacher.where(id: UNWANTED_TEACHER_IDS).pluck(:trn).to_set
+      @la_dqt_uuids = AppropriateBodyPeriod.local_authority.pluck(:dqt_id).to_set
 
       File.open(PARSER_ERROR_LOG, "w") { |f| f.truncate(0) }
+      File.write(PARSER_ERROR_CSV, error_csv_header)
       @logger = logger || Logger.new(PARSER_ERROR_LOG, File::CREAT)
     end
 
@@ -230,7 +226,7 @@ module AppropriateBodies::Importers
           if row.trn.nil? || row.legacy_appropriate_body_id.nil?
             log_error("cannot be imported because TRN or AB is missing",
                       trn: row.trn,
-                      dqt_id: row.legacy_appropriate_body_id)
+                      dqt_id: [row.legacy_appropriate_body_id, nil])
           else
             false
           end
@@ -239,7 +235,7 @@ module AppropriateBodies::Importers
           if row.started_on.nil?
             log_error("cannot be imported because started_on is nil",
                       trn: row.trn,
-                      dqt_id: row.legacy_appropriate_body_id)
+                      dqt_id: [row.legacy_appropriate_body_id, nil])
           else
             false
           end
@@ -248,7 +244,7 @@ module AppropriateBodies::Importers
           if row.finished_on.nil?
             log_error("cannot be imported because finished_on is nil",
                       trn: row.trn,
-                      dqt_id: row.legacy_appropriate_body_id)
+                      dqt_id: [row.legacy_appropriate_body_id, nil])
           else
             false
           end
@@ -257,7 +253,7 @@ module AppropriateBodies::Importers
           if row.started_on == Date.new(1, 1, 1)
             log_error("cannot be imported because started_on is 0001-01-01",
                       trn: row.trn,
-                      dqt_id: row.legacy_appropriate_body_id)
+                      dqt_id: [row.legacy_appropriate_body_id, nil])
           else
             false
           end
@@ -266,7 +262,7 @@ module AppropriateBodies::Importers
           if row.finished_on && row.started_on > row.finished_on
             log_error("cannot be imported because started_on is greater than finished_on",
                       trn: row.trn,
-                      dqt_id: row.legacy_appropriate_body_id)
+                      dqt_id: [row.legacy_appropriate_body_id, nil])
           else
             false
           end
@@ -275,16 +271,7 @@ module AppropriateBodies::Importers
           if row.legacy_appropriate_body_id.in?(offshore_dqt_uuids)
             log_error("cannot be imported because AB is offshore",
                       trn: row.trn,
-                      dqt_id: row.legacy_appropriate_body_id)
-          else
-            false
-          end
-        }
-        .reject { |row|
-          if row.trn.in?(trns_already_persisted_with_inductions)
-            log_error("cannot be imported because teacher already exists with inductions",
-                      trn: row.trn,
-                      dqt_id: row.legacy_appropriate_body_id)
+                      dqt_id: [row.legacy_appropriate_body_id, nil])
           else
             false
           end
@@ -314,10 +301,10 @@ module AppropriateBodies::Importers
             end
 
             # retard end date (add if missing) if it postdates the initial import
-            if current.legacy_appropriate_body_id.in?(all_dqt_uuids) && current.finished_on > CUTOFF_DATE
+            if current.legacy_appropriate_body_id.in?(la_dqt_uuids) && current.finished_on > CUTOFF_DATE
               current.notes << {
                 heading:,
-                body: "Induction period curtailed because it finished after appropriate body status lost",
+                body: "Induction period curtailed because it finished after LA lost appropriate body status",
                 data: { originals: [current.dup] }
               }
 
@@ -412,7 +399,13 @@ module AppropriateBodies::Importers
                     }
 
                   else
-                    fail
+                    log_error(
+                      "cannot be imported because two overlapping induction periods with the same appropriate body and programme could not be resolved",
+                      trn: current.trn,
+                      dqt_id: [current.legacy_appropriate_body_id, nil],
+                      started_on: [sibling.started_on, current.started_on],
+                      finished_on: [sibling.finished_on, current.finished_on]
+                    )
                   end
 
                 # same appropriate body and conflicting programme type
@@ -473,14 +466,33 @@ module AppropriateBodies::Importers
                     }
                     keep << current
                   else
-                    fail
+                    log_error(
+                      "cannot be imported because two overlapping induction periods with different appropriate bodies could not be deconflicted",
+                      trn: current.trn,
+                      dqt_id: [current.legacy_appropriate_body_id, sibling.legacy_appropriate_body_id],
+                      started_on: [sibling.started_on, current.started_on],
+                      finished_on: [sibling.finished_on, current.finished_on]
+                    )
                   end
 
                 end
               end
           end
 
-          keep = keep.reject { |edited_period| edited_period.length <= 1 }
+          keep = keep.reject do |edited_period|
+            next false if edited_period.length > 1
+
+            original = edited_period.notes.dig(0, :data, :originals)&.first.to_h
+
+            log_error(
+              "cannot be imported because the induction period is 1 day or shorter",
+              trn: edited_period.trn,
+              dqt_id: [edited_period.legacy_appropriate_body_id, nil],
+              started_on: [original[:started_on], edited_period.started_on],
+              finished_on: [original[:finished_on], edited_period.finished_on]
+            )
+            true
+          end
 
           next if keep.empty?
 
@@ -519,10 +531,13 @@ module AppropriateBodies::Importers
 
     # @param message [String]
     # @param trn [String]
-    # @param dqt_id [String, Array<String>]
-    # @return [void]
-    def log_error(message, trn:, dqt_id:)
-      uuids = Array(dqt_id).join(", ")
+    # @param dqt_id [Array<String>]
+    # @param started_on [Array<Date>]
+    # @param finished_on [Array<Date>]
+    def log_error(message, trn:, dqt_id:, started_on: nil, finished_on: nil)
+      log_error_csv(message, trn:, dqt_id:, started_on:, finished_on:)
+
+      uuids = dqt_id.join(", ")
       logger.error("#{message} trn: #{trn} dqt_id: #{uuids}")
     end
 
@@ -533,6 +548,25 @@ module AppropriateBodies::Importers
 
       date = datetime.first(10)
       Date.strptime(date, "%m/%d/%Y")
+    end
+
+    def error_csv_header
+      CSV.generate_line(%w[
+        reason
+        trn
+        dqt_id
+        dqt_id_other
+        started_on
+        started_on_other
+        finished_on
+        finished_on_other
+      ])
+    end
+
+    def log_error_csv(message, trn:, dqt_id:, started_on: nil, finished_on: nil)
+      File.open(PARSER_ERROR_CSV, "a") do |f|
+        f.puts(CSV.generate_line([message, trn, *dqt_id, *started_on, *finished_on]))
+      end
     end
   end
 end
