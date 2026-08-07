@@ -3,10 +3,12 @@ RSpec.describe GIAS::Reconciliation::Open do
     subject(:service) { described_class.new(gias_school).open! }
 
     let!(:gias_school) { FactoryBot.create(:gias_school, status: :open) }
-    let(:can_be_opened) { true }
+    let(:gias_school_can_be_opened?) { true }
+    let(:eligibility) { instance_double(GIAS::Reconciliation::Eligibility) }
 
     before do
-      allow(gias_school).to receive(:can_be_opened?).and_return(can_be_opened)
+      allow(GIAS::Reconciliation::Eligibility).to receive(:new).with(gias_school).and_return(eligibility)
+      allow(eligibility).to receive(:can_be_opened?).and_return(gias_school_can_be_opened?)
     end
 
     it { is_expected.to be_truthy }
@@ -57,7 +59,7 @@ RSpec.describe GIAS::Reconciliation::Open do
     end
 
     context "when the school cannot be opened" do
-      let(:can_be_opened) { false }
+      let(:gias_school_can_be_opened?) { false }
 
       it { is_expected.to be_falsy }
 

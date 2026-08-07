@@ -11,6 +11,7 @@ RSpec.describe GIAS::Reconciliation::Merge do
       to_gias_school: successor_gias_school
     )
   end
+  let(:eligibility) { instance_double(GIAS::Reconciliation::Eligibility) }
 
   describe "#merge!" do
     subject(:merge!) { service.merge! }
@@ -19,7 +20,8 @@ RSpec.describe GIAS::Reconciliation::Merge do
     let(:successor_school) { successor_gias_school.school }
 
     before do
-      allow(gias_school).to receive(:can_be_merged?).and_return(gias_school_can_be_merged?)
+      allow(GIAS::Reconciliation::Eligibility).to receive(:new).with(gias_school).and_return(eligibility)
+      allow(eligibility).to receive(:can_be_merged?).and_return(gias_school_can_be_merged?)
     end
 
     context "when the GIAS school cannot be merged" do

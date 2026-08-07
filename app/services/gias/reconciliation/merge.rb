@@ -7,7 +7,7 @@ module GIAS::Reconciliation
     end
 
     def merge!
-      return false unless gias_school.can_be_merged?
+      return false unless eligibility.can_be_merged?
 
       ActiveRecord::Base.transaction do
         mentor_teachers.each do |teacher|
@@ -37,6 +37,10 @@ module GIAS::Reconciliation
   private
 
     attr_reader :gias_school
+
+    def eligibility
+      @eligibility ||= GIAS::Reconciliation::Eligibility.new(gias_school)
+    end
 
     def overlapping_mentor_at_school_periods(teacher)
       MentorAtSchoolPeriods::Overlapping.find(

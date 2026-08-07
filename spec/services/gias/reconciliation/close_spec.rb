@@ -4,7 +4,7 @@ RSpec.describe GIAS::Reconciliation::Close do
 
     let(:gias_school) { FactoryBot.create(:gias_school, :with_school, status: :closed, closed_on:) }
     let(:closed_on) { Date.current }
-    let(:can_be_closed) { true }
+    let(:gias_school_can_be_closed?) { true }
     let(:school) { gias_school.school }
     let!(:mentors) { FactoryBot.create_list(:mentor_at_school_period, 3, :unfinished, :with_training_period, school:) }
     let!(:ects) { FactoryBot.create_list(:ect_at_school_period, 3, :unfinished, :with_training_period, school:) }
@@ -13,11 +13,12 @@ RSpec.describe GIAS::Reconciliation::Close do
     let(:mentor_finish_service) { instance_double(MentorAtSchoolPeriods::Finish) }
     let(:ect_finish_service) { instance_double(ECTAtSchoolPeriods::Finish) }
     let(:mentorship_finished_on) { nil }
+    let(:eligibility) { instance_double(GIAS::Reconciliation::Eligibility) }
 
     before do
       create_mentorship_period(ects.first, mentors.first)
-
-      allow(gias_school).to receive(:can_be_closed?).and_return(can_be_closed)
+      allow(GIAS::Reconciliation::Eligibility).to receive(:new).with(gias_school).and_return(eligibility)
+      allow(eligibility).to receive(:can_be_closed?).and_return(gias_school_can_be_closed?)
 
       allow(MentorAtSchoolPeriods::Finish).to receive(:new).and_return(mentor_finish_service)
       allow(mentor_finish_service).to receive(:finish_periods_at_reported_school!)
@@ -153,7 +154,7 @@ RSpec.describe GIAS::Reconciliation::Close do
     end
 
     context "when the school cannot be closed" do
-      let(:can_be_closed) { false }
+      let(:gias_school_can_be_closed?) { false }
 
       it { is_expected.to be_falsy }
 

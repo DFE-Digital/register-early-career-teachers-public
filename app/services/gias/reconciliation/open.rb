@@ -7,7 +7,7 @@ module GIAS::Reconciliation
     end
 
     def open!
-      return false unless gias_school.can_be_opened?
+      return false unless eligibility.can_be_opened?
 
       ActiveRecord::Base.transaction do
         gias_school.create_school!
@@ -20,6 +20,10 @@ module GIAS::Reconciliation
   private
 
     attr_reader :gias_school
+
+    def eligibility
+      @eligibility ||= GIAS::Reconciliation::Eligibility.new(gias_school)
+    end
 
     def record_school_opened_event!
       Events::Record.record_school_opened_event!(

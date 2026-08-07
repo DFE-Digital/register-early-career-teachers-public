@@ -8,13 +8,15 @@ RSpec.describe GIAS::Reconciliation::Replace do
     let(:other_gias_school) { FactoryBot.create(:gias_school) }
     let!(:school_link) { FactoryBot.create(:gias_school_link, link_type, from_gias_school: gias_school, to_gias_school: successor_gias_school) }
     let(:link_type) { :successor_unique }
+    let(:eligibility) { instance_double(GIAS::Reconciliation::Eligibility) }
 
     before do
-      allow(gias_school).to receive(:can_be_replaced?).and_return(can_be_replaced)
+      allow(GIAS::Reconciliation::Eligibility).to receive(:new).with(gias_school).and_return(eligibility)
+      allow(eligibility).to receive(:can_be_replaced?).and_return(gias_school_can_be_replaced?)
     end
 
     context "when the school can be replaced" do
-      let(:can_be_replaced) { true }
+      let(:gias_school_can_be_replaced?) { true }
 
       it { is_expected.to be_truthy }
 
@@ -88,7 +90,7 @@ RSpec.describe GIAS::Reconciliation::Replace do
     end
 
     context "when the school is cannot be replaced" do
-      let(:can_be_replaced) { false }
+      let(:gias_school_can_be_replaced?) { false }
 
       it { is_expected.to be_falsy }
 
