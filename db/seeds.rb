@@ -23,12 +23,17 @@ seed_files = Dir["db/seeds/*.rb"].sort_by do |path|
   priority_seeds.index(filename.chomp(".rb")) || Float::INFINITY
 end
 
-DeclarativeUpdates.skip(:metadata) do
-  seed_files.each do |seed_file|
-    puts "\r\n🪴 planting #{seed_file}"
+SemanticLogger.silence(:warn) do
+  DeclarativeUpdates.skip(:metadata) do
+    seed_files.each do |seed_file|
+      puts "\r\n🪴 planting #{seed_file}"
 
-    ApplicationRecord.transaction { load(seed_file) }
+      ApplicationRecord.transaction { load(seed_file) }
+    end
   end
+  puts "\n🚜 seeding complete"
+  puts "🌱🌱🌱🌱🌱🌱🌱🌱🌱"
+  puts "\n" * 5
 end
 
 # Refresh all metadata
