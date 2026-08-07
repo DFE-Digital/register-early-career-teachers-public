@@ -34,11 +34,22 @@ describe GIAS::School do
 
   describe "declarative touch" do
     let(:instance) { FactoryBot.create(:gias_school, :with_school) }
-    let(:target) { instance.contract_period_metadata }
 
     before { Metadata::Handlers::School.new(instance.school).refresh_metadata! }
 
-    it_behaves_like "a declarative touch model", when_changing: %i[name], timestamp_attribute: :api_updated_at
+    context "when the target is contract period metadata" do
+      let(:target) { instance.contract_period_metadata }
+
+      it_behaves_like "a declarative touch model", when_changing: %i[name primary_contact_email secondary_contact_email], timestamp_attribute: :api_updated_at
+    end
+
+    context "when the target is school partnerships" do
+      before { FactoryBot.create(:school_partnership, school: instance.school) }
+
+      let(:target) { instance.school_partnerships }
+
+      it_behaves_like "a declarative touch model", when_changing: %i[primary_contact_email secondary_contact_email], timestamp_attribute: :api_updated_at
+    end
   end
 
   describe "db indexes" do
@@ -68,6 +79,7 @@ describe GIAS::School do
     it { is_expected.to have_many(:predecessor_links).class_name("GIAS::SchoolLink").with_foreign_key(:urn).with_primary_key(:urn).conditions(link_type: GIAS::SchoolLink::PREDECESSOR_LINK_TYPES) }
     it { is_expected.to have_many(:successors).through(:successor_links).source(:to_gias_school).class_name("GIAS::School") }
     it { is_expected.to have_many(:predecessors).through(:predecessor_links).source(:from_gias_school).class_name("GIAS::School") }
+    it { is_expected.to have_many(:school_partnerships).through(:school) }
   end
 
   describe "validations" do

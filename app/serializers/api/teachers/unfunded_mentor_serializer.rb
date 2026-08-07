@@ -3,6 +3,10 @@ class API::Teachers::UnfundedMentorSerializer < Blueprinter::Base
     exclude :id
 
     field(:full_name) { |teacher| Teachers::Name.new(teacher).full_name }
+    # Email is derived from the latest mentor assignment for the requested lead
+    # provider. Consequently, direct email changes on the mentor will result in the
+    # `updated_at` changing, however mentor assignments that result in email changes
+    # will not be reflected in the `updated_at` timestamp.
     field(:email) do |teacher, options|
       lead_provider_id = options[:lead_provider_id]
 
