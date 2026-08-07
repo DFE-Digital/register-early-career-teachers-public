@@ -5,7 +5,7 @@ module ECTAtSchoolPeriods
     end
 
     def call
-      current_training_lead_provider || withdrawn_or_deferred_lead_provider
+      current_training_lead_provider || latest_training_lead_provider
     end
 
   private
@@ -20,9 +20,9 @@ module ECTAtSchoolPeriods
       nil
     end
 
-    def withdrawn_or_deferred_lead_provider
+    def latest_training_lead_provider
       training_period = ect_at_school_period.latest_training_period
-      return unless training_period.status.in?(%i[withdrawn deferred])
+      return if training_period.blank?
 
       if training_period.only_expression_of_interest?
         training_period.expression_of_interest&.lead_provider
