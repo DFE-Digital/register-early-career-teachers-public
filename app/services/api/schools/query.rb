@@ -61,8 +61,9 @@ module API::Schools
     end
 
     def school_ids_with_partnership(contract_period_year)
-      Metadata::SchoolContractPeriod
-        .where(contract_period_year:, in_partnership: true)
+      SchoolPartnership
+        .joins(lead_provider_delivery_partnership: :active_lead_provider)
+        .where(active_lead_provider: { contract_period_year: })
         .select(:school_id)
     end
 

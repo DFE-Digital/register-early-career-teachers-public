@@ -503,7 +503,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_13_112837) do
     t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
     t.integer "contract_period_year", null: false
     t.datetime "created_at", null: false
-    t.boolean "in_partnership", null: false
     t.enum "induction_programme_choice", null: false, enum_type: "induction_programme_choice"
     t.bigint "school_id", null: false
     t.datetime "updated_at", null: false
