@@ -12,7 +12,6 @@ FactoryBot.define do
     end
 
     updated_at { Faker::Time.between(from: 1.month.ago, to: Time.zone.now) }
-    in_partnership { Faker::Boolean.boolean }
     induction_programme_choice { Metadata::SchoolContractPeriod.induction_programme_choices.keys.sample }
   end
 end
