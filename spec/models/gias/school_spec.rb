@@ -67,7 +67,7 @@ describe GIAS::School do
     it { is_expected.to have_many(:successor_links).class_name("GIAS::SchoolLink").with_foreign_key(:urn).with_primary_key(:urn).conditions(link_type: GIAS::SchoolLink::SUCCESSOR_LINK_TYPES) }
     it { is_expected.to have_many(:predecessor_links).class_name("GIAS::SchoolLink").with_foreign_key(:urn).with_primary_key(:urn).conditions(link_type: GIAS::SchoolLink::PREDECESSOR_LINK_TYPES) }
     it { is_expected.to have_many(:successors).through(:successor_links).source(:to_gias_school).class_name("GIAS::School") }
-    it { is_expected.to have_many(:predecessors).through(:predecessor_links).source(:from_gias_school).class_name("GIAS::School") }
+    it { is_expected.to have_many(:predecessors).through(:predecessor_links).source(:to_gias_school).class_name("GIAS::School") }
   end
 
   describe "validations" do
