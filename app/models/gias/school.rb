@@ -21,11 +21,11 @@ class GIAS::School < ApplicationRecord
   has_many :contract_period_metadata, class_name: "Metadata::SchoolContractPeriod", through: :school
   has_many :gias_school_links, class_name: "GIAS::SchoolLink", foreign_key: :urn, dependent: :destroy, inverse_of: :from_gias_school
 
-  has_many :successor_links,   -> { where(link_type: GIAS::SchoolLink::SUCCESSOR_LINK_TYPES) },   class_name: "GIAS::SchoolLink", foreign_key: :urn, primary_key: :urn
+  has_many :successor_links,   -> { where(link_type: GIAS::SchoolLink::SUCCESSOR_LINK_TYPES) }, class_name: "GIAS::SchoolLink", foreign_key: :urn, primary_key: :urn
   has_many :predecessor_links, -> { where(link_type: GIAS::SchoolLink::PREDECESSOR_LINK_TYPES) }, class_name: "GIAS::SchoolLink", foreign_key: :urn, primary_key: :urn
 
   has_many :successors, class_name: "GIAS::School", through: :successor_links, source: :to_gias_school
-  has_many :predecessors, class_name: "GIAS::School", through: :predecessor_links, source: :from_gias_school
+  has_many :predecessors, class_name: "GIAS::School", through: :predecessor_links, source: :to_gias_school
 
   # Validations
   validates :establishment_number,
