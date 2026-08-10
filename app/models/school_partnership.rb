@@ -15,6 +15,7 @@ class SchoolPartnership < ApplicationRecord
 
   touch -> { self }, when_changing: %i[lead_provider_delivery_partnership_id], timestamp_attribute: :api_updated_at
   touch -> { declarations }, when_changing: %i[lead_provider_delivery_partnership_id], timestamp_attribute: :api_updated_at
+  touch -> { teachers }, when_changing: %i[lead_provider_delivery_partnership_id], timestamp_attribute: :api_updated_at
   refresh_metadata -> { school }, on_event: %i[create destroy update]
 
   # Validations
@@ -41,4 +42,8 @@ class SchoolPartnership < ApplicationRecord
     joins(lead_provider_delivery_partnership: :active_lead_provider)
       .order("active_lead_providers.contract_period_year DESC, school_partnerships.created_at DESC")
   }
+
+  def teachers
+    Teacher.with_training_periods(training_periods)
+  end
 end

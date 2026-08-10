@@ -20,6 +20,15 @@ describe SchoolPartnership do
       it_behaves_like "a declarative touch model", when_changing: %i[lead_provider_delivery_partnership_id], timestamp_attribute: :api_updated_at
     end
 
+    describe "declarative touch target teachers" do
+      let(:instance) { FactoryBot.create(:school_partnership) }
+      let(:target) { instance.teachers }
+
+      before { FactoryBot.create(:training_period, school_partnership: instance) }
+
+      it_behaves_like "a declarative touch model", when_changing: %i[lead_provider_delivery_partnership_id], timestamp_attribute: :api_updated_at
+    end
+
     describe "declarative metadata" do
       let(:instance) { FactoryBot.create(:school_partnership, school: target) }
       let!(:target) { FactoryBot.create(:school) }
@@ -76,6 +85,24 @@ describe SchoolPartnership do
       expect(subject).to validate_uniqueness_of(:school_id)
                            .scoped_to(:lead_provider_delivery_partnership_id)
                            .with_message("School and lead provider delivery partnership combination must be unique")
+    end
+  end
+
+  describe "#teachers" do
+    subject { instance.teachers }
+
+    let(:instance) { FactoryBot.create(:school_partnership) }
+    let!(:ect_training_period) { FactoryBot.create(:training_period, :for_ect, school_partnership: instance) }
+    let!(:mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, school_partnership: instance) }
+
+    before do
+      # Teachers with other partnerships should not be included.
+      FactoryBot.create(:training_period, :for_ect, :with_school_partnership)
+      FactoryBot.create(:training_period, :for_mentor, :with_school_partnership)
+    end
+
+    it "returns the teachers associated with the training periods" do
+      expect(subject).to contain_exactly(ect_training_period.teacher, mentor_training_period.teacher)
     end
   end
 

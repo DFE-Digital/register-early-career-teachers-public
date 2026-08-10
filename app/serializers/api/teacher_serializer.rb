@@ -37,6 +37,10 @@ class API::TeacherSerializer < Blueprinter::Base
         end
       end
       field(:training_status) { |(training_period, _, _)| API::TrainingPeriods::TrainingStatus.new(training_period:).status }
+      # Participant status is partly derived from the current date. As time passes,
+      # the status may change (for example, `joining` → `active` or `leaving` →
+      # `left`) without any database record being updated, so `updated_at` will not
+      # necessarily change.
       field(:participant_status) { |(training_period, teacher, _)| API::TrainingPeriods::TeacherStatus.new(latest_training_period: training_period, teacher:).status }
       field(:eligible_for_funding) do |(training_period, teacher, _)|
         teacher_type = training_period.for_ect? ? :ect : :mentor
