@@ -35,6 +35,7 @@ describe "admin/users/new.html.erb" do
     expect(rendered).to have_css("label.govuk-radios__label", text: "Admin")
     expect(rendered).to have_css("label.govuk-radios__label", text: "User manager")
     expect(rendered).to have_css("label.govuk-radios__label", text: "Finance")
+    expect(rendered).to have_css("label.govuk-radios__label", text: "Product team")
   end
 
   it "has an add user button" do

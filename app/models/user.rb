@@ -41,11 +41,11 @@ class User < ApplicationRecord
   end
 
   def can_manage_users?
-    user_manager? || finance?
+    user_manager? || finance? || product_team?
   end
 
   def finance_access?
-    finance?
+    finance? || product_team?
   end
 
 private
