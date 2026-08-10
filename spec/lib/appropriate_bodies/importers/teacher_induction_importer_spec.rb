@@ -1,4 +1,4 @@
-RSpec.xdescribe AppropriateBodies::Importers::TeacherInductionImporter do # problematic
+RSpec.describe AppropriateBodies::Importers::TeacherInductionImporter do
   subject(:induction_importer) do
     described_class.new(
       teachers_csv:,
