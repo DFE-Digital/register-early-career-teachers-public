@@ -39,6 +39,13 @@ RSpec.describe "schools/register_ect_wizard/find_ect.html.erb" do
     expect(rendered).to have_selector("form[action='#{schools_register_ect_wizard_find_ect_path}']")
   end
 
+  it "uses h2's for the teacher reference number and date of birth fields" do
+    render
+
+    expect(rendered).to have_css("h2", text: "Teacher reference number (TRN)")
+    expect(rendered).to have_css("h2", text: "Date of birth")
+  end
+
   describe "test guidance" do
     let(:current_user) { double(appropriate_body_user?: false, school_user?: true) }
 
