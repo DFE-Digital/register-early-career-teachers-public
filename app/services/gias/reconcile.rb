@@ -1,38 +1,70 @@
 module GIAS
   class Reconcile
-    class UnreconcilableSchoolError < StandardError; end
-
     def initialize(urns)
-      @gias_schools = GIAS::School.where(urn: urns)
-      @unreconcilable_urns = []
+      @urns_to_reconcile = urns.dup
     end
 
     def call
-      gias_schools.find_each do |gias_school|
-        reconcile(gias_school)
-      rescue StandardError => e
-        @unreconcilable_urns << gias_school.urn
+      replace!
+      open!
+      merge!
+      close!
 
-        Sentry.capture_exception(
-          e,
-          extra: metadata(gias_school)
-        )
-      end
+      log_failures
 
-      @unreconcilable_urns
+      urns_to_reconcile
     end
 
   private
 
-    attr_reader :gias_schools
+    attr_accessor :urns_to_reconcile
 
-    def reconcile(gias_school)
-      return if GIAS::Reconciliation::Replace.replace!(gias_school)
-      return if GIAS::Reconciliation::Open.open!(gias_school)
-      return if GIAS::Reconciliation::Merge.merge!(gias_school)
-      return if GIAS::Reconciliation::Close.close!(gias_school)
+    def replace!
+      gias_schools_to_reconcile.find_each do |gias_school|
+        capture_error(gias_school) do
+          if GIAS::Reconciliation::Replace.replace!(gias_school)
+            urns_to_reconcile.delete(gias_school.urn)
+            urns_to_reconcile.delete(gias_school.successor.urn)
+          end
+        end
+      end
+    end
 
-      raise UnreconcilableSchoolError, "School with URN #{gias_school.urn} could not be reconciled"
+    def merge!
+      gias_schools_to_reconcile.find_each do |gias_school|
+        capture_error(gias_school) do
+          if GIAS::Reconciliation::Merge.merge!(gias_school)
+            urns_to_reconcile.delete(gias_school.urn)
+            urns_to_reconcile.delete(gias_school.successor.urn)
+          end
+        end
+      end
+    end
+
+    def open!
+      gias_schools_to_reconcile.find_each do |gias_school|
+        capture_error(gias_school) do
+          if GIAS::Reconciliation::Open.open!(gias_school)
+            urns_to_reconcile.delete(gias_school.urn)
+          end
+        end
+      end
+    end
+
+    def close!
+      gias_schools_to_reconcile.find_each do |gias_school|
+        capture_error(gias_school) do
+          if GIAS::Reconciliation::Close.close!(gias_school)
+            urns_to_reconcile.delete(gias_school.urn)
+          end
+        end
+      end
+    end
+
+    def capture_error(gias_school)
+      yield
+    rescue StandardError => e
+      Sentry.capture_exception(e, extra: metadata(gias_school))
     end
 
     def metadata(gias_school)
@@ -43,6 +75,16 @@ module GIAS
         predecessor_urns: gias_school.predecessors&.pluck(:urn),
         successor_urns: gias_school.successors&.pluck(:urn)
       }
+    end
+
+    def log_failures
+      gias_schools_to_reconcile.find_each do |gias_school|
+        Sentry.capture_message("Could not reconcile school with URN #{gias_school.urn}", level: :info, extra: metadata(gias_school))
+      end
+    end
+
+    def gias_schools_to_reconcile
+      GIAS::School.where(urn: urns_to_reconcile)
     end
   end
 end

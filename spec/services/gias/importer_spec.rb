@@ -93,8 +93,26 @@ RSpec.describe GIAS::Importer, type: :service do
     end
 
     context "when GIAS schools already exist in the database" do
-      before do
-        FactoryBot.create(:gias_school, urn: replaced_school_urn)
+      let!(:existing_school) do
+        FactoryBot.create(:gias_school,
+                          status: "open",
+                          urn: independent_school_urn,
+                          address_line1: "Beta School",
+                          address_line2: "Oak Road",
+                          address_line3: "Rivertown",
+                          administrative_district_name: "Sample Borough",
+                          establishment_number: nil,
+                          local_authority_code: 801,
+                          name: "Independent School",
+                          opened_on: Date.new(2012, 6, 15),
+                          postcode: "EX2 2BB",
+                          primary_contact_email: "beta.hub@example.org",
+                          secondary_contact_email: "info.beta@example.org",
+                          section_41_approved: false,
+                          type_name: "Other independent school",
+                          phase_name: "Not applicable",
+                          ukprn: nil,
+                          eligible: false)
       end
 
       it "calls `fetch_and_update`" do
@@ -104,11 +122,11 @@ RSpec.describe GIAS::Importer, type: :service do
       end
 
       it "imports eligible GIAS schools" do
-        expect { importer.fetch }.to change(GIAS::School, :count).by(3)
+        expect { importer.fetch }.to change(GIAS::School, :count).by(2)
       end
 
       it "imports GIAS school links for the imported and existing GIAS schools" do
-        expect { importer.fetch }.to change(GIAS::SchoolLink, :count).by(3)
+        expect { importer.fetch }.to change(GIAS::SchoolLink, :count).by(2)
       end
 
       it "assigns correct attributes to the GIAS schools" do
@@ -155,29 +173,7 @@ RSpec.describe GIAS::Importer, type: :service do
       end
 
       context "when an existing school and its links have not changed" do
-        let!(:existing_school) do
-          FactoryBot.create(:gias_school,
-                            status: "open",
-                            urn: independent_school_urn,
-                            address_line1: "Beta School",
-                            address_line2: "Oak Road",
-                            address_line3: "Rivertown",
-                            administrative_district_name: "Sample Borough",
-                            establishment_number: nil,
-                            local_authority_code: 801,
-                            name: "Independent School",
-                            opened_on: Date.new(2012, 6, 15),
-                            postcode: "EX2 2BB",
-                            primary_contact_email: "beta.hub@example.org",
-                            secondary_contact_email: "info.beta@example.org",
-                            section_41_approved: false,
-                            type_name: "Other independent school",
-                            phase_name: "Not applicable",
-                            ukprn: nil,
-                            eligible: false)
-        end
-
-        let!(:school_link) { FactoryBot.create(:gias_school_link, urn: independent_school_urn, link_urn: 20_003, link_type: "Other") }
+        let!(:existing_link) { FactoryBot.create(:gias_school_link, urn: existing_school.urn, link_urn: 20_003, link_type: "Other") }
 
         it "returns a list of URNs which excludes existing schools that have not changed" do
           urns = importer.fetch
@@ -196,29 +192,33 @@ RSpec.describe GIAS::Importer, type: :service do
         end
       end
 
-      it "returns a list of URNs which includes schools with new gias links" do
-        urns = importer.fetch
+      context "when a school has an existing gias link that is effective today" do
+        let!(:existing_link) { FactoryBot.create(:gias_school_link, urn: existing_school.urn, link_urn: 20_003, link_type: "Other", link_date: Date.current) }
 
-        expect(urns).to include(replaced_school_urn)
+        it "returns a list of URNs which includes schools with existing gias_links" do
+          urns = importer.fetch
+
+          expect(urns).to include(existing_school.urn)
+        end
       end
 
-      context "when a school has an existing gias link that has not changed" do
-        let!(:existing_link) { FactoryBot.create(:gias_school_link, urn: replaced_school_urn, link_urn: 20_008, link_type: GIAS::SchoolLink::SUCCESSOR) }
+      context "when a school has an existing gias link that is effective in the future" do
+        let!(:existing_link) { FactoryBot.create(:gias_school_link, urn: existing_school.urn, link_urn: 20_003, link_type: "Other", link_date: Date.current + 1) }
 
         it "returns a list of URNs which excludes schools with existing gias_links" do
           urns = importer.fetch
 
-          expect(urns).not_to include(replaced_school_urn)
+          expect(urns).not_to include(existing_school.urn)
         end
       end
 
       context "when a school has an existing gias link that has changed" do
-        let!(:existing_link) { FactoryBot.create(:gias_school_link, urn: replaced_school_urn, link_urn: 20_008, link_type: GIAS::SchoolLink::SUCCESSOR_SPLIT) }
+        let!(:existing_link) { FactoryBot.create(:gias_school_link, urn: existing_school.urn, link_urn: 20_003, link_type: GIAS::SchoolLink::SUCCESSOR_SPLIT) }
 
         it "returns a list of URNs which includes schools with updated gias links" do
           urns = importer.fetch
 
-          expect(urns).to include(replaced_school_urn)
+          expect(urns).to include(existing_school.urn)
         end
       end
     end

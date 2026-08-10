@@ -76,12 +76,16 @@ module GIAS
         link = gias_school.gias_school_links
                           .create_with(link_date:, link_type:, link_urn:)
                           .find_or_create_by!(link_urn:)
-        urns_for_reconciliation << link.urn if link.link_type != link_type || link.previously_new_record?
+        urns_for_reconciliation << link.urn if needs_reconciliation?(link, link_type)
 
         link.update!(link_type:) if link.link_type != link_type
       end
 
       true
+    end
+
+    def needs_reconciliation?(link, imported_link_type)
+      link.link_type != imported_link_type || link.previously_new_record? || link.link_date == Date.current
     end
 
     def parse_school_row(row)
