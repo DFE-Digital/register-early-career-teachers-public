@@ -31,7 +31,7 @@ RSpec.describe BlazerQueries::PostClosureSchoolLinks do
     subject(:rows) { rows_for(described_class::SCHOOLS_QUERY_NAME) }
 
     context "when a school we closed has since been given a successor link" do
-      let!(:school) { close_school!(urn: 100_001) }
+      let!(:school) { closed_school!(urn: 100_001) }
       let!(:link) { link_to_successor!(school, link_type: GIAS::SchoolLink::SUCCESSOR_MERGED) }
 
       before { finish_at_closure!(school) }
@@ -52,9 +52,8 @@ RSpec.describe BlazerQueries::PostClosureSchoolLinks do
     end
 
     context "when the closure finished some periods and deleted others" do
-      let!(:school) { close_school!(urn: 100_002) }
-
       before do
+        school = closed_school!(urn: 100_002)
         link_to_successor!(school)
         2.times { finish_at_closure!(school, role: :ect) }
         finish_at_closure!(school, role: :mentor)
@@ -72,9 +71,8 @@ RSpec.describe BlazerQueries::PostClosureSchoolLinks do
     end
 
     context "when the link arrived three weeks after the closure" do
-      let!(:school) { close_school!(urn: 100_003) }
-
       before do
+        school = closed_school!(urn: 100_003)
         link = link_to_successor!(school)
         link.update_columns(created_at: closed_on + 21.days, updated_at: closed_on + 21.days)
         finish_at_closure!(school)
@@ -86,9 +84,8 @@ RSpec.describe BlazerQueries::PostClosureSchoolLinks do
     end
 
     context "when some of the affected teachers have been registered again" do
-      let!(:school) { close_school!(urn: 100_040) }
-
       before do
+        school = closed_school!(urn: 100_040)
         link = link_to_successor!(school)
         register_at!(School.find_by(urn: link.link_urn), teacher: finish_at_closure!(school).teacher)
         register_at!(FactoryBot.create(:school), teacher: finish_at_closure!(school).teacher)
@@ -106,7 +103,7 @@ RSpec.describe BlazerQueries::PostClosureSchoolLinks do
 
     context "when the teachers had already left before the school closed" do
       before do
-        school = close_school!(urn: 100_004)
+        school = closed_school!(urn: 100_004)
         link_to_successor!(school)
         finish_at_closure!(school, finished_on: closed_on - 1.month)
       end
@@ -116,7 +113,7 @@ RSpec.describe BlazerQueries::PostClosureSchoolLinks do
 
     context "when no link has arrived since the closure" do
       before do
-        school = close_school!(urn: 100_010)
+        school = closed_school!(urn: 100_010)
         finish_at_closure!(school)
       end
 
@@ -125,7 +122,7 @@ RSpec.describe BlazerQueries::PostClosureSchoolLinks do
 
     context "when the only link to arrive was a predecessor" do
       before do
-        school = close_school!(urn: 100_011)
+        school = closed_school!(urn: 100_011)
         link_to_successor!(school, link_type: GIAS::SchoolLink::PREDECESSOR_LINK_TYPES.first)
         finish_at_closure!(school)
       end
@@ -135,7 +132,7 @@ RSpec.describe BlazerQueries::PostClosureSchoolLinks do
 
     context "when the only link to arrive would not have changed how we closed the school" do
       before do
-        school = close_school!(urn: 100_012)
+        school = closed_school!(urn: 100_012)
         link_to_successor!(school, link_type: "Sixth Form Centre Link")
         finish_at_closure!(school)
       end
@@ -143,9 +140,9 @@ RSpec.describe BlazerQueries::PostClosureSchoolLinks do
       it { is_expected.to be_empty }
     end
 
-    context "when we did not close the school ourselves" do
+    context "when there is no closure event recorded" do
       before do
-        school = close_school!(urn: 100_020, record_closure: false)
+        school = closed_school!(urn: 100_020, record_closure: false)
         link_to_successor!(school)
         finish_at_closure!(school)
       end
@@ -155,7 +152,7 @@ RSpec.describe BlazerQueries::PostClosureSchoolLinks do
 
     context "when nobody was registered at the school when it closed" do
       before do
-        school = close_school!(urn: 100_030)
+        school = closed_school!(urn: 100_030)
         link_to_successor!(school)
       end
 
@@ -167,7 +164,7 @@ RSpec.describe BlazerQueries::PostClosureSchoolLinks do
     subject(:rows) { rows_for(described_class::TEACHERS_QUERY_NAME) }
 
     context "when the closure finished an ECT period and a mentor period" do
-      let!(:school) { close_school!(urn: 200_001) }
+      let!(:school) { closed_school!(urn: 200_001) }
       let!(:link) { link_to_successor!(school) }
       let!(:ect_period) do
         finish_at_closure!(school, teacher: FactoryBot.create(:teacher, trn: "1234567", corrected_name: "Alice Adams"))
@@ -206,7 +203,7 @@ RSpec.describe BlazerQueries::PostClosureSchoolLinks do
     end
 
     context "when the closure deleted a period that had not started" do
-      let!(:school) { close_school!(urn: 200_002) }
+      let!(:school) { closed_school!(urn: 200_002) }
       let!(:teacher) { delete_unstarted_at_closure!(school, role: :mentor) }
 
       before { link_to_successor!(school) }
@@ -223,9 +220,8 @@ RSpec.describe BlazerQueries::PostClosureSchoolLinks do
     end
 
     context "when the teacher has since been registered at the linked school" do
-      let!(:school) { close_school!(urn: 200_003) }
-
       before do
+        school = closed_school!(urn: 200_003)
         link = link_to_successor!(school)
         register_at!(School.find_by(urn: link.link_urn), teacher: finish_at_closure!(school).teacher)
       end
@@ -264,7 +260,7 @@ RSpec.describe BlazerQueries::PostClosureSchoolLinks do
     ActiveRecord::Base.connection.select_all(statement).to_a
   end
 
-  def close_school!(urn:, closed_on: self.closed_on, record_closure: true)
+  def closed_school!(urn:, closed_on: self.closed_on, record_closure: true)
     gias_school = FactoryBot.create(:gias_school, urn:, status: "closed", closed_on:)
     school = FactoryBot.create(:school, urn:, gias_school:, create_contract_period: false)
 
@@ -282,15 +278,16 @@ RSpec.describe BlazerQueries::PostClosureSchoolLinks do
     school
   end
 
-  def link_to_successor!(school, link_type: GIAS::SchoolLink::SUCCESSOR, successor_urn: nil, status: "open", registered: true)
-    successor_urn ||= school.urn + 1
-    successor_gias_school = FactoryBot.create(:gias_school, urn: successor_urn, status:)
-    FactoryBot.create(:school, urn: successor_urn, gias_school: successor_gias_school, create_contract_period: false) if registered
+  def link_to_successor!(school, link_type: GIAS::SchoolLink::SUCCESSOR)
+    # The link factory only builds GIAS schools, but link_school_registered_in_rect
+    # reads the schools table, and the default factory status is random.
+    successor = FactoryBot.create(:gias_school, status: "open")
+    FactoryBot.create(:school, urn: successor.urn, gias_school: successor, create_contract_period: false)
 
     FactoryBot.create(
       :gias_school_link,
       from_gias_school: school.gias_school,
-      to_gias_school: successor_gias_school,
+      to_gias_school: successor,
       link_type:,
       link_date: closed_on - 1.week
     )
