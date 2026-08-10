@@ -5,6 +5,7 @@ describe AdminHelper do
         expect(role_name(:admin)).to eql("Admin")
         expect(role_name(:user_manager)).to eql("User manager")
         expect(role_name(:finance)).to eql("Finance")
+        expect(role_name(:product_team)).to eql("Product team")
       end
     end
   end

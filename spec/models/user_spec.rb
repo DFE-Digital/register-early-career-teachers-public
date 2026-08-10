@@ -44,7 +44,7 @@ describe User do
   end
 
   describe "enums" do
-    it "has a roles enum with admin, finance and user_manager" do
+    it "has a roles enum with admin, finance, user_manager, product_team" do
       expect(subject).to(
         define_enum_for(:role)
           .with_values({ admin: "admin",
@@ -53,6 +53,22 @@ describe User do
                          product_team: "product_team" })
           .backed_by_column_of_type(:enum)
       )
+    end
+  end
+
+  describe "#can_manage_users?" do
+    it "allows product team users to manage users" do
+      user = FactoryBot.build(:user, :product_team)
+
+      expect(user.can_manage_users?).to be(true)
+    end
+  end
+
+  describe "#finance_access?" do
+    it "allows product team users to access finance" do
+      user = FactoryBot.build(:user, :product_team)
+
+      expect(user.finance_access?).to be(true)
     end
   end
 
