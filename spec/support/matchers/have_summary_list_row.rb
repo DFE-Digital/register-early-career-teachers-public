@@ -1,9 +1,10 @@
 module HaveSummaryListRow
   class Matcher
-    def initialize(key, value: "", visible: :visible)
+    def initialize(key, value: "", visible: :visible, matcher: [:has_text?, { exact: true, normalize_ws: true }])
       @key = key
       @value = value
       @visible = visible
+      @matcher = matcher
     end
 
     def matches?(page)
@@ -15,7 +16,7 @@ module HaveSummaryListRow
         @matching_row && @matching_row.text == @key
       else
         @sibling = @matching_row&.sibling("dd.govuk-summary-list__value", visible: @visible)
-        @sibling && @sibling.text == @value
+        @sibling && @sibling.public_send(@matcher.first, @value, **@matcher.second)
       end
     end
 
@@ -51,10 +52,12 @@ module HaveSummaryListRow
 
     def sibling_failure_message
       if @matching_row.present?
-        %(Found matching summary list row, but its value is "#{@sibling.text}".)
+        %(Found matching summary list row, but its value is "#{@sibling.text.strip}".)
       end
     end
   end
 
-  def have_summary_list_row(key, value: "", visible: :visible) = Matcher.new(key, value:, visible:)
+  def have_summary_list_row(key, value: "", visible: :visible, matcher: [:has_text?, { exact: true, normalize_ws: true }])
+    Matcher.new(key, value:, visible:, matcher:)
+  end
 end

@@ -10,6 +10,9 @@ class ECTAtSchoolPeriod < ApplicationRecord
 
   has_many :mentorship_periods, inverse_of: :mentee, dependent: :destroy
   has_many :mentors, through: :mentorship_periods, source: :mentor
+  has_many :upcoming_mentorship_periods,
+           -> { starting_tomorrow_or_after.earliest_first },
+           class_name: "MentorshipPeriod"
   has_many :training_periods, inverse_of: :ect_at_school_period, dependent: :destroy
   has_many :mentor_at_school_periods, through: :teacher
 

@@ -33,6 +33,106 @@ RSpec.describe "ECT summary" do
 
         expect(response).to have_http_status(:ok)
       end
+
+      context "when a school's ECT has current and upcoming mentorship periods" do
+        let(:ect_at_school_period) do
+          FactoryBot.create(
+            :ect_at_school_period,
+            :unfinished,
+            school:,
+            started_on: 2.years.ago
+          )
+        end
+
+        let(:current_mentor) do
+          FactoryBot.create(:teacher, trs_first_name: "Moby", trs_last_name: "Dick")
+        end
+        let(:current_mentor_at_school_period) do
+          FactoryBot.create(
+            :mentor_at_school_period,
+            :unfinished,
+            started_on: ect_at_school_period.started_on,
+            school:,
+            teacher: current_mentor
+          )
+        end
+        let!(:current_mentorship_period) do
+          FactoryBot.create(
+            :mentorship_period,
+            started_on: current_mentor_at_school_period.started_on,
+            finished_on: 1.month.from_now,
+            mentee: ect_at_school_period,
+            mentor: current_mentor_at_school_period
+          )
+        end
+
+        let(:future_mentor) do
+          FactoryBot.create(:teacher, trs_first_name: "John", trs_last_name: "Smith")
+        end
+        let(:future_mentor_at_school_period) do
+          FactoryBot.create(
+            :mentor_at_school_period,
+            :unfinished,
+            started_on: ect_at_school_period.started_on,
+            school:,
+            teacher: future_mentor
+          )
+        end
+        let!(:future_mentorship_period) do
+          FactoryBot.create(
+            :mentorship_period,
+            started_on: current_mentorship_period.finished_on.next_day,
+            finished_on: current_mentorship_period.finished_on.next_year,
+            mentee: ect_at_school_period,
+            mentor: future_mentor_at_school_period
+          )
+        end
+
+        let(:another_future_mentor) do
+          FactoryBot.create(:teacher, trs_first_name: "Jane", trs_last_name: "Smith")
+        end
+        let(:another_future_mentor_at_school_period) do
+          FactoryBot.create(
+            :mentor_at_school_period,
+            :unfinished,
+            started_on: ect_at_school_period.started_on,
+            school:,
+            teacher: another_future_mentor
+          )
+        end
+        let!(:another_future_mentorship_period) do
+          FactoryBot.create(
+            :mentorship_period,
+            :unfinished,
+            started_on: future_mentorship_period.finished_on.next_day,
+            mentee: ect_at_school_period,
+            mentor: another_future_mentor_at_school_period
+          )
+        end
+
+        it "displays the current and upcoming mentorship periods" do
+          subject
+          page = Capybara.string(response.body)
+
+          current_mentor_name = Teachers::Name.new(current_mentor).full_name
+          expect(page).to have_text(current_mentor_name)
+          expect(page).not_to have_css(".govuk-hint", text: current_mentor_name)
+
+          future_mentor_name = Teachers::Name.new(future_mentor).full_name
+          future_mentor_start_date = future_mentorship_period.started_on.to_fs(:govuk)
+          expect(page).to have_css(
+            ".govuk-hint",
+            text: "#{future_mentor_name} (from #{future_mentor_start_date})"
+          )
+
+          another_future_mentor_name = Teachers::Name.new(another_future_mentor).full_name
+          another_future_mentor_start_date = another_future_mentorship_period.started_on.to_fs(:govuk)
+          expect(page).to have_css(
+            ".govuk-hint",
+            text: "#{another_future_mentor_name} (from #{another_future_mentor_start_date})"
+          )
+        end
+      end
     end
   end
 

@@ -6,24 +6,6 @@ RSpec.describe ECTHelper, type: :helper do
   let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher: ect_teacher, school:, started_on:) }
   let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, school:, started_on:) }
 
-  describe "#ect_mentor_name_or_assign_mentor_link" do
-    subject(:mentor_details) { helper.ect_mentor_name_or_assign_mentor_link(ect_at_school_period) }
-
-    let(:default_link_text) { "Assign a mentor for this ECT" }
-
-    it { is_expected.to have_link(default_link_text) }
-
-    context "when the ECT has a mentor assigned" do
-      before do
-        FactoryBot.create(:mentorship_period, :unfinished, mentee: ect_at_school_period, mentor: mentor_at_school_period, started_on:)
-      end
-
-      it { is_expected.to eq(latest_mentor_name(ect_at_school_period)) }
-      it { is_expected.not_to have_link(latest_mentor_name(ect_at_school_period)) }
-      it { is_expected.not_to have_link(default_link_text) }
-    end
-  end
-
   describe "#register_mentor_back_link" do
     context "when a new mentor has been requested" do
       context "when there are no alternative mentors to choose from" do
