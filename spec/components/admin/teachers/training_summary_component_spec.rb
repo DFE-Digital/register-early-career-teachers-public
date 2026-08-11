@@ -17,7 +17,7 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
 
       context "when the partnership is confirmed" do
         it "shows the combined card title" do
-          expect(rendered_content).to have_css(".govuk-summary-card__title", text: "#{training_period.lead_provider_name} & #{training_period.delivery_partner_name}")
+          expect(rendered_content).to have_css("h4.govuk-summary-card__title", text: "#{training_period.lead_provider_name} & #{training_period.delivery_partner_name}")
         end
 
         it "shows the lead provider row" do
