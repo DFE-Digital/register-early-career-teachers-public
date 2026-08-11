@@ -179,10 +179,25 @@ RSpec.describe "Admin finance active lead provider contracts", type: :request do
           travel_to(1.day.after(contract_period.finished_on)) { example.run }
         end
 
+        it "allows creating a new contract" do
+          expect { post contracts_path, params: contract_params }.to change(Contract, :count).by(1)
+
+          created_contract = Contract.last
+          expect(response).to redirect_to(admin_contract_period_active_lead_provider_contract_path(contract_period, active_lead_provider, created_contract))
+        end
+      end
+
+      context "when editing a frozen contract period" do
+        let(:contract_period) { FactoryBot.create(:contract_period, :previous, payments_frozen_at: 1.week.ago) }
+
+        around do |example|
+          travel_to(1.day.after(contract_period.payments_frozen_at)) { example.run }
+        end
+
         it "blocks creating a new contract" do
           expect { post contracts_path, params: contract_params }.not_to change(Contract, :count)
           expect(response).to redirect_to(contracts_path)
-          expect(flash[:error]).to eq("Contracts cannot be changed once the contract period has finished")
+          expect(flash[:error]).to eq("Contracts cannot be changed once payments have been frozen for the contract period")
         end
       end
     end

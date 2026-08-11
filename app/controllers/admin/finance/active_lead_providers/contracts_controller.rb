@@ -4,8 +4,7 @@ module Admin::Finance::ActiveLeadProviders
 
     before_action :set_active_lead_provider
     before_action :set_contract, only: %i[show edit update delete destroy]
-    before_action :redirect_unless_editable, only: %i[edit update]
-    before_action :redirect_if_finished, only: %i[new create delete destroy]
+    before_action :redirect_unless_editable, only: %i[new create delete destroy edit update]
 
     def index
       @breadcrumbs = {
@@ -96,15 +95,8 @@ module Admin::Finance::ActiveLeadProviders
     def redirect_unless_editable
       unless @active_lead_provider.editable?
         redirect_to contracts_path,
-                    flash: { error: "Contracts cannot be changed once the contract period has started" }
+                    flash: { error: "Contracts cannot be changed once payments have been frozen for the contract period" }
       end
-    end
-
-    def redirect_if_finished
-      return unless @active_lead_provider.finished_on_before_today?
-
-      redirect_to contracts_path,
-                  flash: { error: "Contracts cannot be changed once the contract period has finished" }
     end
 
     def contract_params
