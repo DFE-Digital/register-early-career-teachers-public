@@ -36,7 +36,11 @@ module BlazerQueries
                        "link, where GIAS has since given a successor link to, and that " \
                        "had ECTs or mentors registered when they closed. Those " \
                        "teachers had their periods finished or deleted instead of " \
-                       "being moved to the linked school. Row per closed school & link.",
+                       "being moved to the linked school. Row per closed school & link. " \
+                       "Assumes GIAS does not revise a closure date after the school " \
+                       "has closed: if it did, the periods would keep the date we " \
+                       "acted on, match nothing, and the school would drop out of " \
+                       "this report rather than appear with a wrong date.",
           statement: <<~SQL.strip
             #{common_ctes}
             SELECT
@@ -56,8 +60,8 @@ module BlazerQueries
               counts.teachers_affected,
               counts.ect_periods_affected,
               counts.mentor_periods_affected,
-              counts.teachers_registered_elsewhere_since,
-              counts.teachers_registered_at_linked_school_since
+              counts.teachers_at_another_school_after_closure,
+              counts.teachers_at_linked_school_after_closure
             FROM late_links l
             INNER JOIN LATERAL (
               SELECT
@@ -65,11 +69,11 @@ module BlazerQueries
                 COUNT(*) FILTER (WHERE a.role = 'ECT') AS ect_periods_affected,
                 COUNT(*) FILTER (WHERE a.role = 'Mentor') AS mentor_periods_affected,
                 COUNT(DISTINCT a.teacher_id) FILTER (
-                  WHERE #{registered_elsewhere_since_sql}
-                ) AS teachers_registered_elsewhere_since,
+                  WHERE #{at_another_school_after_closure_sql}
+                ) AS teachers_at_another_school_after_closure,
                 COUNT(DISTINCT a.teacher_id) FILTER (
-                  WHERE #{registered_at_linked_school_since_sql}
-                ) AS teachers_registered_at_linked_school_since
+                  WHERE #{at_linked_school_after_closure_sql}
+                ) AS teachers_at_linked_school_after_closure
               FROM affected a
               WHERE a.closure_event_id = l.closure_event_id
             ) counts ON counts.teachers_affected > 0
@@ -84,11 +88,13 @@ module BlazerQueries
           description: "The teachers behind '#{SCHOOLS_QUERY_NAME}'. One row per " \
                        "ECT or mentor period that RECT finished or deleted when we " \
                        "closed a school GIAS has since linked to a successor. " \
-                       "'registered_elsewhere_since' and " \
-                       "'registered_at_linked_school_since' flag teachers who have " \
-                       "already been registered again (at any other school / at the " \
-                       "linked school) on or after the closure date, so they " \
-                       "probably need no further action.",
+                       "'at_another_school_after_closure' and " \
+                       "'at_linked_school_after_closure' flag teachers holding a " \
+                       "period at another school (or at the linked school) that had " \
+                       "not already ended before the closure, so they are probably " \
+                       "placed already and need no further action. These are period " \
+                       "dates, not registration dates: a school can backdate or " \
+                       "future-date a start date.",
           statement: <<~SQL.strip
             #{common_ctes}
             SELECT
@@ -108,8 +114,8 @@ module BlazerQueries
               a.what_happened,
               a.started_on AS period_started_on,
               a.finished_on AS period_finished_on,
-              #{registered_elsewhere_since_sql} AS registered_elsewhere_since,
-              #{registered_at_linked_school_since_sql} AS registered_at_linked_school_since
+              #{at_another_school_after_closure_sql} AS at_another_school_after_closure,
+              #{at_linked_school_after_closure_sql} AS at_linked_school_after_closure
             FROM late_links l
             INNER JOIN affected a ON a.closure_event_id = l.closure_event_id
             INNER JOIN teachers t ON t.id = a.teacher_id
@@ -228,36 +234,36 @@ module BlazerQueries
         SQL
       end
 
-      def registered_elsewhere_since_sql
+      def at_another_school_after_closure_sql
         <<~SQL.strip
           EXISTS (
                 SELECT 1 FROM ect_at_school_periods x
                 WHERE x.teacher_id = a.teacher_id
                   AND x.school_id <> a.school_id
-                  AND x.started_on >= a.closed_on
+                  AND (x.started_on >= a.closed_on OR x.finished_on IS NULL OR x.finished_on > a.closed_on)
                 UNION ALL
                 SELECT 1 FROM mentor_at_school_periods x
                 WHERE x.teacher_id = a.teacher_id
                   AND x.school_id <> a.school_id
-                  AND x.started_on >= a.closed_on
+                  AND (x.started_on >= a.closed_on OR x.finished_on IS NULL OR x.finished_on > a.closed_on)
               )
         SQL
       end
 
-      def registered_at_linked_school_since_sql
+      def at_linked_school_after_closure_sql
         <<~SQL.strip
           EXISTS (
                 SELECT 1 FROM ect_at_school_periods x
                 INNER JOIN schools xs ON xs.id = x.school_id
                 WHERE x.teacher_id = a.teacher_id
                   AND xs.urn = l.link_urn
-                  AND x.started_on >= a.closed_on
+                  AND (x.started_on >= a.closed_on OR x.finished_on IS NULL OR x.finished_on > a.closed_on)
                 UNION ALL
                 SELECT 1 FROM mentor_at_school_periods x
                 INNER JOIN schools xs ON xs.id = x.school_id
                 WHERE x.teacher_id = a.teacher_id
                   AND xs.urn = l.link_urn
-                  AND x.started_on >= a.closed_on
+                  AND (x.started_on >= a.closed_on OR x.finished_on IS NULL OR x.finished_on > a.closed_on)
               )
         SQL
       end

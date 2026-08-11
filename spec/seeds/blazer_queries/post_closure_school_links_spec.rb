@@ -95,8 +95,8 @@ RSpec.describe BlazerQueries::PostClosureSchoolLinks do
       it "counts them apart from the teachers still needing action" do
         expect(rows.fetch(0)).to include(
           "teachers_affected" => 3,
-          "teachers_registered_elsewhere_since" => 2,
-          "teachers_registered_at_linked_school_since" => 1
+          "teachers_at_another_school_after_closure" => 2,
+          "teachers_at_linked_school_after_closure" => 1
         )
       end
     end
@@ -192,8 +192,8 @@ RSpec.describe BlazerQueries::PostClosureSchoolLinks do
           "what_happened" => "period finished on the closure date",
           "period_started_on" => closed_on - 1.year,
           "period_finished_on" => closed_on,
-          "registered_elsewhere_since" => false,
-          "registered_at_linked_school_since" => false
+          "at_another_school_after_closure" => false,
+          "at_linked_school_after_closure" => false
         )
       end
 
@@ -228,9 +228,49 @@ RSpec.describe BlazerQueries::PostClosureSchoolLinks do
 
       it "flags them as needing no further action" do
         expect(rows.fetch(0)).to include(
-          "registered_elsewhere_since" => true,
-          "registered_at_linked_school_since" => true
+          "at_another_school_after_closure" => true,
+          "at_linked_school_after_closure" => true
         )
+      end
+    end
+
+    # A mentor can hold posts at several schools at once, so one that predates
+    # the closure and outlives it still means somebody has them.
+    context "when the teacher still mentors elsewhere under a period that predates the closure" do
+      before do
+        school = closed_school!(urn: 200_004)
+        link_to_successor!(school)
+        teacher = finish_at_closure!(school, role: :mentor).teacher
+        FactoryBot.create(
+          :mentor_at_school_period,
+          teacher:,
+          school: FactoryBot.create(:school),
+          started_on: closed_on - 1.year,
+          finished_on: nil
+        )
+      end
+
+      it "flags them as already placed" do
+        expect(rows.fetch(0)).to include("at_another_school_after_closure" => true)
+      end
+    end
+
+    context "when the teacher's only other period ended before the closure" do
+      before do
+        school = closed_school!(urn: 200_005)
+        link_to_successor!(school)
+        teacher = finish_at_closure!(school, role: :mentor).teacher
+        FactoryBot.create(
+          :mentor_at_school_period,
+          teacher:,
+          school: FactoryBot.create(:school),
+          started_on: closed_on - 1.year,
+          finished_on: closed_on - 1.month
+        )
+      end
+
+      it "does not flag them" do
+        expect(rows.fetch(0)).to include("at_another_school_after_closure" => false)
       end
     end
   end
