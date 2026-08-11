@@ -2,7 +2,9 @@ describe "admin/users/index.html.erb" do
   let(:user_manager_user) { FactoryBot.create(:user, :user_manager, name: "User manager user") }
   let(:finance_user) { FactoryBot.create(:user, :finance, name: "Finance user") }
   let(:admin_user) { FactoryBot.create(:user, :admin, name: "Admin user") }
-  let(:users) { [user_manager_user, finance_user, admin_user] }
+  let(:product_team_user) { FactoryBot.create(:user, :product_team, name: "Product team user") }
+
+  let(:users) { [user_manager_user, finance_user, product_team_user, admin_user] }
 
   before do
     assign(:users, users)
@@ -14,13 +16,14 @@ describe "admin/users/index.html.erb" do
   end
 
   it "displays a list of all DfE staff" do
-    expect(rendered).to have_css("table.govuk-table > tbody > tr", count: 3)
+    expect(rendered).to have_css("table.govuk-table > tbody > tr", count: 4)
   end
 
   it "displays the user names as links to the profile pages" do
     aggregate_failures do
       expect(rendered).to have_link(user_manager_user.name, href: admin_user_path(user_manager_user))
       expect(rendered).to have_link(finance_user.name, href: admin_user_path(finance_user))
+      expect(rendered).to have_link(product_team_user.name, href: admin_user_path(product_team_user))
       expect(rendered).to have_link(admin_user.name, href: admin_user_path(admin_user))
     end
   end
@@ -28,6 +31,7 @@ describe "admin/users/index.html.erb" do
   it "displays the elevated roles but not regular admin" do
     expect(rendered).to have_css("td", text: "User manager")
     expect(rendered).to have_css("td", text: "Finance")
+    expect(rendered).to have_css("td", text: "Product team")
     expect(rendered).to have_css("td", text: "Admin")
   end
 end

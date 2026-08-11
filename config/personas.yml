@@ -47,6 +47,16 @@
   type: DfE staff
   role: finance
 
+- name: Inspector Gadget
+  email: inspector.gadget@education.gov.uk
+  appropriate_body_name: Null
+  dfe_staff: Yes
+  school_name: Null
+  image: personas/inspector-gadget.png
+  alt: Inspector Gadget wearing a grey trench coat and hat, with mechanical arms extending from his hat.
+  type: DfE staff
+  role: product_team
+
 - name: Bob Belcher
   email: bob.belcher@education.gov.uk
   appropriate_body_name: Null
