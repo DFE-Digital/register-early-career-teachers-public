@@ -7,7 +7,7 @@ class MigrationFixes::Processor
   end
 
   def process!(data_change: {})
-    return if data_change.blank? || data_change.empty?
+    return MigrationFixes::Result.new(data_change:) if data_change.blank?
 
     object_type = data_change[:object_type].camelcase.constantize
     object_id = data_change[:object_id]

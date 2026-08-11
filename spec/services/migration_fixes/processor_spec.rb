@@ -107,5 +107,17 @@ describe MigrationFixes::Processor do
         expect(result.error.message).to eq("Unknown action 'unknown'")
       end
     end
+
+    context "when the data change is blank" do
+      it "returns a successful no-op result" do
+        result = processor.process!(data_change: {})
+
+        expect(result).to be_a(MigrationFixes::Result)
+        expect(result).to be_success
+        expect(result.data_change).to eq({})
+        expect(result.target_object).to be_nil
+        expect(result.error).to be_nil
+      end
+    end
   end
 end
