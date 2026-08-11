@@ -37,6 +37,10 @@ describe TestGuidanceComponent, type: :component do
         end
       end
 
+      it "renders the guidance title as a h2" do
+        expect(rendered_content).to have_css("h2", text: "Information to review this journey")
+      end
+
       context "with an Appropriate body persona" do
         let(:current_user) { double(appropriate_body_user?: true, school_user?: false) }
 
@@ -65,6 +69,10 @@ describe TestGuidanceComponent, type: :component do
 
       it "contains a list of fake TRNs" do
         expect(rendered_content).to have_text("Enter any TRN with the date of birth 03-02-1977 to register a random ECT.")
+      end
+
+      it "renders the guidance title as a h2" do
+        expect(rendered_content).to have_css("h2", text: "Information to review this journey")
       end
     end
   end
