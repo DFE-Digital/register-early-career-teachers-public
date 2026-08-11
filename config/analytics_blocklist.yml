@@ -285,7 +285,6 @@
   - id
   - school_id
   - contract_period_year
-  - in_partnership
   - induction_programme_choice
   - created_at
   - updated_at
