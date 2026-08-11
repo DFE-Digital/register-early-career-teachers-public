@@ -79,7 +79,7 @@ RSpec.describe "admin/delivery_partners/delivery_partnerships/new.html.erb" do
       render
 
       expect(rendered).to have_css(".govuk-inset-text")
-      expect(rendered).to have_css("h3", text: "Currently working with:")
+      expect(rendered).to have_css("p", text: "Currently working with:")
       expect(rendered).to have_css("li", text: "Lead Provider 1")
     end
 

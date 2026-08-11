@@ -5,7 +5,7 @@
 
   <% if current_partnerships.any? %>
     <div class="govuk-inset-text">
-      <h3 class="govuk-heading-s">Currently working with:</h3>
+      <p class="govuk-body govuk-!-font-weight-bold">Currently working with:</p>
       <%= govuk_list(current_partnership_names, type: :bullet) %>
     </div>
   <% end %>
