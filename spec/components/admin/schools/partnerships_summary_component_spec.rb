@@ -43,8 +43,8 @@ RSpec.describe Admin::Schools::PartnershipsSummaryComponent, type: :component do
 
     describe "card titles" do
       it "renders the lead provider and delivery partner names" do
-        expect(rendered).to have_css(".govuk-summary-card__title", text: "Alpha Provider and Delta Partner")
-        expect(rendered).to have_css(".govuk-summary-card__title", text: "Beta Provider and Gamma Partner")
+        expect(rendered).to have_css("h4.govuk-summary-card__title", text: "Alpha Provider and Delta Partner")
+        expect(rendered).to have_css("h4.govuk-summary-card__title", text: "Beta Provider and Gamma Partner")
       end
     end
 
