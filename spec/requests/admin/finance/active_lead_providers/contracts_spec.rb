@@ -85,19 +85,16 @@ RSpec.describe "Admin finance active lead provider contracts", type: :request do
         band_terms_attributes: {
           "0" => {
             band_id: alp_bands[0].id,
-            service_fee_percentage: "20",
             output_fee_percentage: "80",
             fee_per_declaration: "100"
           },
           "1" => {
             band_id: alp_bands[1].id,
-            service_fee_percentage: "20",
             output_fee_percentage: "80",
             fee_per_declaration: "100"
           },
           "2" => {
             band_id: alp_bands[2].id,
-            service_fee_percentage: "20",
             output_fee_percentage: "80",
             fee_per_declaration: "100"
           },
@@ -138,6 +135,7 @@ RSpec.describe "Admin finance active lead provider contracts", type: :request do
         created_contract = Contract.last
         expect(response).to redirect_to(admin_contract_period_active_lead_provider_contract_path(contract_period, active_lead_provider, created_contract))
         expect(created_contract.banded_fee_structure.band_terms.size).to eq(3)
+        expect(created_contract.banded_fee_structure.band_terms.map(&:service_fee_ratio)).to all(eq(0.2))
         expect(created_contract.flat_rate_fee_structure.fee_per_declaration).to eq(500)
         expect(created_contract.flat_rate_fee_structure.recruitment_target).to eq(100)
       end
@@ -310,7 +308,6 @@ RSpec.describe "Admin finance active lead provider contracts", type: :request do
                 id: band_term.id,
                 band_id: band_term.band_id,
                 fee_per_declaration: "999",
-                service_fee_percentage: "20",
                 output_fee_percentage: "80",
               },
             },
@@ -347,6 +344,8 @@ RSpec.describe "Admin finance active lead provider contracts", type: :request do
           expect(response).to redirect_to(contract_path)
           expect(contract.reload.vat_rate).to eq(0.1)
           expect(band_term.reload.fee_per_declaration).to eq(999)
+          expect(band_term.output_fee_ratio).to eq(0.8)
+          expect(band_term.service_fee_ratio).to eq(0.2)
         end
       end
 

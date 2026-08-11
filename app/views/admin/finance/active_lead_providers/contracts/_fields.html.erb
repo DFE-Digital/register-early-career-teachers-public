@@ -56,6 +56,8 @@
 
   <h3 class="govuk-heading-s">Bands</h3>
 
+  <p class="govuk-hint" id="bands-service-fee-hint">Service fee is 100% minus the output fee.</p>
+
   <%= govuk_table do |table| %>
     <% table.with_head do |head| %>
       <% head.with_row do |row| %>
@@ -80,20 +82,28 @@
             <% row.with_cell(text: band_term.min_declarations.to_s) %>
             <% row.with_cell(text: band_term.max_declarations.to_s) %>
             <% row.with_cell do %>
-              <%= bt.text_field :service_fee_percentage,
+              <%= tag.input type: "text",
                     class: "govuk-input govuk-input--width-5 app-input-read-only",
                     inputmode: "numeric",
                     readonly: true,
                     tabindex: -1,
                     aria: { label: "Band #{("A".ord + index).chr} service fee percentage" },
                     data: { band_target: "servicePercentage" } %>
+              <span id="band-<%= ("a".ord + index).chr %>-service-fee-status"
+                    class="govuk-visually-hidden"
+                    aria-live="polite"
+                    aria-atomic="true"
+                    data-band-target="serviceFeeStatus"></span>
             <% end %>
             <% row.with_cell do %>
               <%= bt.text_field :output_fee_percentage,
-                    class: "govuk-input govuk-input--width-5 #{" govuk-input--error" if bt.object.errors[:output_fee_ratio].any?}",
-                    aria: { label: "Band #{("A".ord + index).chr} output fee percentage" },
+                    class: "govuk-input govuk-input--width-5 #{" govuk-input--error" if bt.object.errors[:output_fee_percentage].any?}",
+                    aria: {
+                      label: "Band #{("A".ord + index).chr} output fee percentage",
+                      describedby: "bands-service-fee-hint band-#{("a".ord + index).chr}-service-fee-status"
+                    },
                     inputmode: "numeric",
-                    data: { band_target: "outputPercentage", action: "input->band#updateServiceFee" } %>
+                    data: { band_target: "outputPercentage", action: "input->band#updateServiceFee change->band#roundAndCapOutputFee" } %>
             <% end %>
             <% row.with_cell do %>
               <%= bt.text_field :fee_per_declaration,

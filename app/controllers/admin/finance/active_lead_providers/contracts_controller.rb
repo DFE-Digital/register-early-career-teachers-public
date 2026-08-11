@@ -118,7 +118,6 @@ module Admin::Finance::ActiveLeadProviders
                     band_id
                     fee_per_declaration
                     output_fee_percentage
-                    service_fee_percentage
                     _destroy
                   ]
                 ]
