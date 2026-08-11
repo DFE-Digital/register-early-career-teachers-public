@@ -13,7 +13,7 @@
 <h2 class="govuk-heading-m">Timeline</h2>
 
 <% if @events.any? %>
-  <%= render(TimelineComponent.new(@events)) %>
+  <%= render(TimelineComponent.new(@events, heading_level: 3)) %>
 <% else %>
   <p class='govuk-body'>No timeline of events for this teacher.</p>
 <% end %>
