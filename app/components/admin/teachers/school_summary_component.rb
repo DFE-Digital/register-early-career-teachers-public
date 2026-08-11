@@ -12,7 +12,7 @@ module Admin
       end
 
       def call
-        govuk_summary_card(title: card_title) do |card|
+        govuk_summary_card(title: card_title, heading_level: 4) do |card|
           card.with_summary_list(actions: false) do |list|
             rows.each do |row|
               list.with_row do |r|
