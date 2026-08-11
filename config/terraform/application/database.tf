@@ -34,7 +34,7 @@ module "postgres-snapshot" {
   azure_enable_monitoring        = false
   azure_enable_backup_storage    = false
   server_version                 = "16"
-  azure_extensions               = ["btree_gin", "citext", "pgcrypto", "pg_trgm", "unaccent"]
+  azure_extensions               = ["btree_gin", "citext", "pgcrypto", "pg_trgm", "unaccent", "plpgsql"]
   azure_enable_high_availability = false
   azure_sku_name                 = var.postgres_snapshot_flexible_server_sku
 }
