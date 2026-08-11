@@ -30,7 +30,9 @@ class MigrationFixes::Processor
       raise ArgumentError, "Unknown action '#{action}'"
     end
 
-    target_object
+    MigrationFixes::Result.new(data_change:, target_object:)
+  rescue StandardError => e
+    MigrationFixes::Result.new(data_change:, error: e)
   end
 
 private

@@ -77,7 +77,8 @@ describe "Real data check for teacher 34082" do
       attrs = data_change[:attributes].stringify_keys.to_a.flatten.join(",")
       data_change[:attributes] = attrs
 
-      processor.process!(data_change:)
+      result = processor.process!(data_change:)
+      raise result.error unless result.success?
     end
   end
 
