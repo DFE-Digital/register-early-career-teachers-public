@@ -1,4 +1,4 @@
-describe MigrationFixes::Result do
+describe MigrationFixes::Processor::Result do
   let(:data_change) { { action: "update" } }
 
   describe "#success?" do
@@ -7,10 +7,11 @@ describe MigrationFixes::Result do
 
       result = described_class.new(
         data_change:,
-        target_object:
+        target_object:,
+        error: nil
       )
 
-      expect(result.success?).to be(true)
+      expect(result).to be_success
       expect(result.data_change).to eq(data_change)
       expect(result.target_object).to eq(target_object)
       expect(result.error).to be_nil
@@ -21,10 +22,11 @@ describe MigrationFixes::Result do
 
       result = described_class.new(
         data_change:,
+        target_object: nil,
         error:
       )
 
-      expect(result.success?).to be(false)
+      expect(result).not_to be_success
       expect(result.data_change).to eq(data_change)
       expect(result.target_object).to be_nil
       expect(result.error).to equal(error)
