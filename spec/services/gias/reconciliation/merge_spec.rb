@@ -3,6 +3,9 @@ RSpec.describe GIAS::Reconciliation::Merge do
 
   let(:gias_school) { FactoryBot.create(:gias_school, :with_school, :closed) }
   let(:successor_gias_school) { FactoryBot.create(:gias_school, :with_school, :open) }
+  let(:predecessor_school) { gias_school.school }
+  let(:successor_school) { successor_gias_school.school }
+
   let!(:school_link) do
     FactoryBot.create(
       :gias_school_link,
@@ -11,13 +14,36 @@ RSpec.describe GIAS::Reconciliation::Merge do
       to_gias_school: successor_gias_school
     )
   end
+
+  let(:mentor_at_two_schools_teacher) { FactoryBot.create(:teacher) }
+  let!(:overlapping_mentor_at_school_period_1) do
+    FactoryBot.create(
+      :mentor_at_school_period,
+      teacher: mentor_at_two_schools_teacher,
+      school: predecessor_school,
+      started_on: 1.year.ago
+    )
+  end
+  let!(:overlapping_mentor_at_school_period_2) do
+    FactoryBot.create(
+      :mentor_at_school_period,
+      teacher: mentor_at_two_schools_teacher,
+      school: successor_school,
+      started_on: 6.months.ago
+    )
+  end
+  let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school: predecessor_school) }
+  let!(:ect_at_school_period) do
+    FactoryBot.create(
+      :ect_at_school_period,
+      school: predecessor_school
+    )
+  end
+
   let(:eligibility) { instance_double(GIAS::Reconciliation::Eligibility) }
 
   describe "#merge!" do
     subject(:merge!) { service.merge! }
-
-    let(:predecessor_school) { gias_school.school }
-    let(:successor_school) { successor_gias_school.school }
 
     before do
       allow(GIAS::Reconciliation::Eligibility).to receive(:new).with(gias_school).and_return(eligibility)
@@ -58,55 +84,51 @@ RSpec.describe GIAS::Reconciliation::Merge do
 
         merge!
       end
+
+      it "does not destroy any events associated with the predecessor school" do
+        FactoryBot.create(:event, school: predecessor_school)
+
+        expect { merge! }.not_to(change { predecessor_school.events.count })
+      end
+
+      it "does not destroy any school_partnerships associated with the predecessor school" do
+        FactoryBot.create(:school_partnership, school: predecessor_school)
+
+        expect { merge! }.not_to(change { predecessor_school.school_partnerships.count })
+      end
+
+      it "does not destroy the predecessor school" do
+        expect { merge! }.not_to change { School.exists?(predecessor_school.id) }.from(true)
+      end
     end
 
     context "when the GIAS school can be merged" do
       let(:gias_school_can_be_merged?) { true }
 
-      let(:predecessor_school) { FactoryBot.create(:school) }
-      let(:gias_school) do
-        FactoryBot.create(
-          :gias_school,
-          :with_school,
-          :closed,
-          school: predecessor_school
-        )
-      end
-
-      let(:mentor_teacher) { FactoryBot.create(:teacher) }
-      let!(:mentor_at_school_period) do
-        FactoryBot.create(
-          :mentor_at_school_period,
-          teacher: mentor_teacher,
-          school: predecessor_school
-        )
-      end
-      let!(:ect_at_school_period) do
-        FactoryBot.create(
-          :ect_at_school_period,
-          school: predecessor_school
-        )
-      end
-
       before do
-        allow(GIAS::Reconciliation::MentorAtSchoolPeriods::Overlapping)
-          .to receive(:find)
-          .and_return([[mentor_at_school_period]])
-        allow(GIAS::Reconciliation::MentorAtSchoolPeriods::Merge).to receive(:call)
-        allow(GIAS::Reconciliation::MentorAtSchoolPeriods::Transfer).to receive(:call)
-        allow(GIAS::Reconciliation::ECTAtSchoolPeriods::Transfer).to receive(:call)
+        allow(GIAS::Reconciliation::MentorAtSchoolPeriods::Overlapping).to receive(:find).and_call_original
+        allow(GIAS::Reconciliation::MentorAtSchoolPeriods::Merge).to receive(:call).and_call_original
+        allow(GIAS::Reconciliation::MentorAtSchoolPeriods::Transfer).to receive(:call).and_call_original
+        allow(GIAS::Reconciliation::ECTAtSchoolPeriods::Transfer).to receive(:call).and_call_original
         allow(Events::Record).to receive(:record_school_merged_event!)
       end
 
       it { expect(merge!).to be_truthy }
 
-      it "finds overlapping `MentorAtSchoolPeriod` records for each mentor teacher" do
+      it "finds overlapping `MentorAtSchoolPeriod` records for each teacher mentoring at the school" do
         merge!
 
         expect(GIAS::Reconciliation::MentorAtSchoolPeriods::Overlapping)
           .to have_received(:find)
           .with(
-            teacher: mentor_teacher,
+            teacher: mentor_at_two_schools_teacher,
+            schools: [predecessor_school, successor_school]
+          )
+
+        expect(GIAS::Reconciliation::MentorAtSchoolPeriods::Overlapping)
+          .to have_received(:find)
+          .with(
+            teacher: mentor_at_school_period.teacher,
             schools: [predecessor_school, successor_school]
           )
       end
@@ -117,7 +139,7 @@ RSpec.describe GIAS::Reconciliation::Merge do
         expect(GIAS::Reconciliation::MentorAtSchoolPeriods::Merge)
           .to have_received(:call)
           .with(
-            periods: [mentor_at_school_period],
+            periods: [overlapping_mentor_at_school_period_1, overlapping_mentor_at_school_period_2],
             predecessor_school:,
             successor_school:
           )
@@ -147,13 +169,29 @@ RSpec.describe GIAS::Reconciliation::Merge do
           )
       end
 
+      it "deletes any events associated with the predecessor school" do
+        event = FactoryBot.create(:event, school: predecessor_school)
+
+        expect { merge! }.to change { Event.exists?(event.id) }.from(true).to(false)
+      end
+
+      it "destroys any school_partnerships associated with the predecessor school" do
+        school_partnership = FactoryBot.create(:school_partnership, school: predecessor_school)
+
+        expect { merge! }.to change { SchoolPartnership.exists?(school_partnership.id) }.from(true).to(false)
+      end
+
+      it "destroys the school" do
+        expect { merge! }.to change { School.exists?(predecessor_school.id) }.from(true).to(false)
+      end
+
       it "records a school merged event" do
         merge!
 
         expect(Events::Record)
           .to have_received(:record_school_merged_event!)
           .with(
-            school: predecessor_school,
+            school: successor_school,
             successor_gias_school:,
             predecessor_gias_school: gias_school,
             happened_at: gias_school.closed_on,
