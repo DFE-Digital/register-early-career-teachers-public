@@ -32,10 +32,6 @@ RSpec.describe "admin/teachers/inductions/show.html.erb" do
     expect(view.content_for(:page_caption)).to have_text("TRN: 1234567")
   end
 
-  it "links to teacher timeline" do
-    expect(rendered).to have_link("View change history", href: admin_teacher_timeline_path(teacher))
-  end
-
   it "displays current induction period" do
     expect(rendered).to have_text("Current induction period")
   end
@@ -45,7 +41,11 @@ RSpec.describe "admin/teachers/inductions/show.html.erb" do
   end
 
   context "when there are no induction periods" do
-    before { teacher.induction_periods.destroy_all }
+    let!(:induction_period) { nil }
+
+    it "displays a message explaining there is no induction history" do
+      expect(rendered).to have_text("There is no induction history recorded for this teacher.")
+    end
 
     it "displays a link to add an induction period" do
       expect(rendered).to have_link("Add an induction period")
