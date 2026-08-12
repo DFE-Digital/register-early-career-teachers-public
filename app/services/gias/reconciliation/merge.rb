@@ -10,6 +10,8 @@ module GIAS::Reconciliation
       return false unless eligibility.can_be_merged?
 
       ActiveRecord::Base.transaction do
+        ensure_successor_school_exists!
+
         mentor_teachers.each do |teacher|
           overlapping_mentor_at_school_periods(teacher).each do |periods|
             MentorAtSchoolPeriods::Merge.call(periods:, predecessor_school:, successor_school:)
@@ -42,6 +44,13 @@ module GIAS::Reconciliation
       @eligibility ||= GIAS::Reconciliation::Eligibility.new(gias_school)
     end
 
+    def ensure_successor_school_exists!
+      return if successor.school.present?
+
+      successor.create_school!
+      record_successor_school_opened_event!
+    end
+
     def overlapping_mentor_at_school_periods(teacher)
       MentorAtSchoolPeriods::Overlapping.find(
         teacher:,
@@ -54,6 +63,15 @@ module GIAS::Reconciliation
         school: predecessor_school,
         successor_gias_school: successor,
         predecessor_gias_school: gias_school,
+        happened_at: closed_on,
+        author:
+      )
+    end
+
+    def record_successor_school_opened_event!
+      Events::Record.record_school_opened_event!(
+        school: successor.school,
+        gias_school: successor,
         happened_at: closed_on,
         author:
       )

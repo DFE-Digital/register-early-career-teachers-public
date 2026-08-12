@@ -19,7 +19,7 @@ RSpec.describe GIAS::Reconcile, type: :service do
     end
 
     context "when there are schools to reconcile" do
-      let(:urns) { [20_001, 20_002, 20_003, 20_005] }
+      let(:urns) { [20_001, 20_002, 20_003, 20_005, 20_006, 20_007] }
       let(:open_gias_school) { FactoryBot.create(:gias_school, status: "open", urn: 20_001) }
       let(:replaced_gias_school) { FactoryBot.create(:gias_school, :closed, urn: 20_002) }
       let(:merged_gias_school) { FactoryBot.create(:gias_school, :closed, urn: 20_003) }

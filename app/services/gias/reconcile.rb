@@ -6,8 +6,8 @@ module GIAS
 
     def call
       replace!
-      open!
       merge!
+      open!
       close!
 
       log_failures
