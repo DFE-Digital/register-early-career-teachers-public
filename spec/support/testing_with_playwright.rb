@@ -27,8 +27,18 @@ RSpec.configure do |config|
 
   # Close Playwright page after each feature spec
   config.after(type: :feature) do |example|
+    heading_hierarchy_failure = nil
+
+    if example.exception.nil? && !page.closed?
+      begin
+        expect(page).to have_valid_heading_hierarchy
+      rescue RSpec::Expectations::ExpectationNotMetError => e
+        heading_hierarchy_failure = e
+      end
+    end
+
     # Take screenshots on failure for feature tests
-    if example.exception
+    if example.exception || heading_hierarchy_failure
       # Generate a filename based on the test
       filename = "#{example.metadata[:file_path].gsub(/[^0-9A-Za-z]/, '_')}_line#{example.metadata[:line_number]}_#{Time.zone.now.strftime('%Y%m%d%H%M%S')}.png"
       screenshot_path = SCREENSHOT_DIR.join(filename)
@@ -36,7 +46,7 @@ RSpec.configure do |config|
       # Take screenshot if page is available
       if defined?(page) && page.respond_to?(:screenshot)
         begin
-          page.screenshot(path: screenshot_path)
+          page.screenshot(path: screenshot_path.to_s)
           puts "\nScreenshot saved to: #{screenshot_path}"
         rescue StandardError => e
           puts "\nFailed to take screenshot: #{e.message}"
@@ -45,6 +55,8 @@ RSpec.configure do |config|
     end
 
     page.close
+
+    raise heading_hierarchy_failure if heading_hierarchy_failure
   end
 
   # Close Playwright browser after the suite's finished
