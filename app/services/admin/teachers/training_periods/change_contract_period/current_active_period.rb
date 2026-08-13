@@ -29,7 +29,7 @@ module Admin
 
             if training_period.only_expression_of_interest? && equivalent_framework_agreement.blank?
               raise ActiveLeadProviderNotFoundError,
-                    "No active lead provider found for #{training_period.expression_of_interest_lead_provider.name} in contract period #{contract_period.year}"
+                    "No lead provider framework agreement found for #{training_period.expression_of_interest_lead_provider.name} in contract period #{contract_period.year}"
             end
 
             ActiveRecord::Base.transaction do

@@ -89,7 +89,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Che
 
         it "adds an active lead provider error" do
           expect(step.save!).to be(false)
-          expect(step.errors[:base]).to include("An active lead provider could not be found for the selected contract period")
+          expect(step.errors[:base]).to include("A lead provider framework agreement could not be found for the selected contract period")
         end
       end
     end

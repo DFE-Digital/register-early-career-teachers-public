@@ -19,7 +19,7 @@ class Contract < ApplicationRecord
   scope :most_recent_first, -> { order(created_at: :desc) }
 
   # Validations
-  validates :framework_agreement, presence: { message: "An active lead provider must be set" }
+  validates :framework_agreement, presence: { message: "A lead provider framework agreement must be set" }
   validates :contract_type,
             presence: { message: "Enter a contract type" },
             inclusion: { in: Contract.contract_types.keys, message: "Choose a valid contract type" }

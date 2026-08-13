@@ -54,7 +54,7 @@ describe Contract do
 
       it "is not valid" do
         expect(contract).not_to be_valid
-        expect(contract.errors[:framework_agreement]).to include("An active lead provider must be set")
+        expect(contract.errors[:framework_agreement]).to include("A lead provider framework agreement must be set")
       end
     end
 

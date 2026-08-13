@@ -11,9 +11,9 @@ describe LeadProviderDeliveryPartnership do
   describe "validation" do
     subject { FactoryBot.create(:lead_provider_delivery_partnership) }
 
-    it { is_expected.to validate_presence_of(:active_lead_provider_id).with_message("Select an active lead provider") }
+    it { is_expected.to validate_presence_of(:active_lead_provider_id).with_message("Select a lead provider framework agreement") }
     it { is_expected.to validate_presence_of(:delivery_partner_id).with_message("Select a delivery partner") }
-    it { is_expected.to validate_uniqueness_of(:delivery_partner_id).scoped_to(:active_lead_provider_id).with_message("Delivery partner and active lead provider pairing must be unique") }
+    it { is_expected.to validate_uniqueness_of(:delivery_partner_id).scoped_to(:active_lead_provider_id).with_message("Delivery partner and lead provider framework agreement pairing must be unique") }
   end
 
   describe "scopes" do

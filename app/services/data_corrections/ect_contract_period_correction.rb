@@ -222,7 +222,7 @@ module DataCorrections
             lead_provider:,
             contract_period: replacement_contract_period
           ),
-          "replacement active lead provider"
+          "replacement lead provider framework agreement"
         )
     end
 

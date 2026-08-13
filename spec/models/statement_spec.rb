@@ -43,7 +43,7 @@ describe Statement do
       it "is not valid to create another statement with the same month and year for the same active lead provider" do
         statement = described_class.new(contract:, month: 5, year: 2024)
         expect(statement).not_to be_valid
-        expect(statement.errors[:base]).to include("Statement with the same month and year already exists for this active lead provider")
+        expect(statement.errors[:base]).to include("Statement with the same month and year already exists for this framework agreement")
       end
 
       it "is valid to create another statement with the same month and year for a different active lead provider" do

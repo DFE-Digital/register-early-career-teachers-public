@@ -68,7 +68,7 @@ RSpec.describe Contract::BandedFeeStructure::BandTerm, type: :model do
         it "raises an error" do
           expect(band.framework_agreement).not_to eq(contract.framework_agreement)
           expect { band_term }.to raise_error(
-            ActiveRecord::RecordInvalid, "Validation failed: Band must belong to the contract's active lead provider"
+            ActiveRecord::RecordInvalid, "Validation failed: Band must belong to the contract's lead provider framework agreement"
           )
         end
       end

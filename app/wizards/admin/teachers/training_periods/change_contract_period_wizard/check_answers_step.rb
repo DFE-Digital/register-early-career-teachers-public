@@ -25,7 +25,7 @@ module Admin
             false
           rescue CurrentActivePeriodChange::ActiveLeadProviderNotFoundError,
                  FuturePeriodChange::ActiveLeadProviderNotFoundError
-            errors.add(:base, "An active lead provider could not be found for the selected contract period")
+            errors.add(:base, "A lead provider framework agreement could not be found for the selected contract period")
             false
           end
 

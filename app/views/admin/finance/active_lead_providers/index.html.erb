@@ -6,11 +6,11 @@
 </p>
 
 <% unless @editable %>
-  <p class="govuk-hint">This contract period has started, so active lead providers are no longer editable.</p>
+  <p class="govuk-hint">This contract period has started, so lead provider framework agreements are no longer editable.</p>
 <% end %>
 
 <% if @framework_agreements.none? %>
-  <p class='govuk-body'>No active lead providers for <%= @contract_period.year %></p>
+  <p class='govuk-body'>No lead provider framework agreements for <%= @contract_period.year %></p>
 <% else %>
   <%= govuk_table do |table| %>
     <% table.with_head do |head| %>

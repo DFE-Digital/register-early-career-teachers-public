@@ -57,7 +57,7 @@ private
     return unless band && banded_fee_structure&.contract
     return if band.framework_agreement == banded_fee_structure.contract.framework_agreement
 
-    errors.add(:band, "must belong to the contract's active lead provider")
+    errors.add(:band, "must belong to the contract's lead provider framework agreement")
   end
 
   def sum_of_ratios_equals_one

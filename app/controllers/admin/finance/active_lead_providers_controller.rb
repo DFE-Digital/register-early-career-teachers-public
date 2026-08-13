@@ -63,7 +63,7 @@ module Admin::Finance
     def redirect_unless_contract_period_editable
       return if @contract_period.editable?
 
-      flash[:error] = "Active lead providers cannot be changed once the contract period has started"
+      flash[:error] = "Lead provider framework agreements cannot be changed once the contract period has started"
       redirect_to admin_contract_period_active_lead_providers_path(@contract_period)
     end
 

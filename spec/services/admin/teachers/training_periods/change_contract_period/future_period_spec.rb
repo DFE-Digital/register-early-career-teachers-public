@@ -212,7 +212,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::FuturePer
           service_call
         }.to raise_error(
           described_class::ActiveLeadProviderNotFoundError,
-          "No active lead provider found for #{current_framework_agreement.lead_provider.name} in contract period #{target_contract_period.year}"
+          "No lead provider framework agreement found for #{current_framework_agreement.lead_provider.name} in contract period #{target_contract_period.year}"
         )
       end
     end
