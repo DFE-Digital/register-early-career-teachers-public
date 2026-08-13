@@ -1,4 +1,4 @@
-describe MigrationFixes::Processor do
+describe Admin::DataFixes::Processor do
   subject(:processor) { described_class.new }
 
   let!(:target_object) { FactoryBot.create(:training_period) }
@@ -112,7 +112,7 @@ describe MigrationFixes::Processor do
       it "returns a successful no-op result" do
         result = processor.process!(data_change: {})
 
-        expect(result).to be_a(MigrationFixes::Processor::Result)
+        expect(result).to be_a(Admin::DataFixes::Processor::Result)
         expect(result).to be_success
         expect(result.data_change).to eq({})
         expect(result.target_object).to be_nil

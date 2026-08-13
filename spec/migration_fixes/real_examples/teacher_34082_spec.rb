@@ -70,7 +70,7 @@ describe "Real data check for teacher 34082" do
   end
 
   before do
-    processor = MigrationFixes::Processor.new
+    processor = Admin::DataFixes::Processor.new
 
     migration_fixes.each do |data_change|
       # convert from easy to read hash to string version as per CSV
