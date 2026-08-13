@@ -65,13 +65,18 @@ end
   },
   {
     name: "TRS not found",
-    statement: "SELECT id AS teacher_id, trs_not_found FROM teachers WHERE trs_not_found=true",
+    statement: "SELECT id AS teacher_id, trs_data_last_refreshed_at FROM teachers WHERE trs_response='not_found'",
     description: "TRS syncing has flagged missing records"
   },
   {
     name: "TRS deactivated",
-    statement: "SELECT id AS teacher_id, trs_deactivated FROM teachers WHERE trs_deactivated=true",
+    statement: "SELECT id AS teacher_id, trs_data_last_refreshed_at FROM teachers WHERE trs_response='gone'",
     description: "TRS syncing has flagged deactivated records"
+  },
+  {
+    name: "TRS permanent redirects",
+    statement: "SELECT id AS teacher_id, trn, trs_redirected_to, trs_data_last_refreshed_at FROM teachers WHERE trs_response='permanent_redirect'",
+    description: "TRS syncing has flagged records merged into another TRN"
   },
   {
     name: "Active lead provider bands",

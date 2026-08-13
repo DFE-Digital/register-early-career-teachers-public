@@ -171,14 +171,13 @@ describe Teachers::RefreshTRSAttributes do
         expect(service.refresh!).to eq(:teacher_merged)
         teacher.reload
 
-        expect(teacher).to be_trs_not_found
+        expect(teacher).to be_trs_response_permanent_redirect
       end
 
       it "records the TRN the teacher was merged into" do
         service.refresh!
         teacher.reload
 
-        expect(teacher).to be_trs_response_permanent_redirect
         expect(teacher.trs_redirected_to).to eq(TRS::TestAPIClient::MERGED_TRN_REDIRECTS_TO)
       end
 
@@ -201,7 +200,7 @@ describe Teachers::RefreshTRSAttributes do
         service.refresh!
         teacher.reload
 
-        expect(teacher).to be_trs_not_found
+        expect(teacher).to be_trs_response_not_found
       end
 
       it "adds a teacher_trs_not_found event" do
@@ -311,7 +310,7 @@ describe Teachers::RefreshTRSAttributes do
         expect(service.refresh!).to eq(:teacher_deactivated)
         teacher.reload
 
-        expect(teacher).to be_trs_deactivated
+        expect(teacher).to be_trs_response_gone
       end
 
       it "adds a teacher_trs_deactivated event" do

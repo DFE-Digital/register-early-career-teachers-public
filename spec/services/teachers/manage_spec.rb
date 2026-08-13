@@ -327,14 +327,14 @@ RSpec.describe Teachers::Manage do
     end
 
     context "when the teacher is not yet flagged" do
-      it "sets the trs_deactivated flag to true" do
-        expect(teacher.trs_deactivated).to be(false)
+      it "records the TRS response as gone" do
+        expect(teacher.trs_response).to be_nil
 
         service.mark_teacher_as_deactivated!(trs_data_last_refreshed_at:)
         teacher.reload
 
         expect(teacher.trs_data_last_refreshed_at).to be_within(0.001.seconds).of(trs_data_last_refreshed_at)
-        expect(teacher.trs_deactivated).to be(true)
+        expect(teacher).to be_trs_response_gone
       end
     end
   end
@@ -353,14 +353,14 @@ RSpec.describe Teachers::Manage do
     end
 
     context "when the teacher is not yet flagged" do
-      it "sets the trs_not_found flag to true" do
-        expect(teacher.trs_not_found).to be(false)
+      it "records the TRS response as not found" do
+        expect(teacher.trs_response).to be_nil
 
         service.mark_teacher_as_not_found!(trs_data_last_refreshed_at:)
         teacher.reload
 
         expect(teacher.trs_data_last_refreshed_at).to be_within(0.001.seconds).of(trs_data_last_refreshed_at)
-        expect(teacher.trs_not_found).to be(true)
+        expect(teacher).to be_trs_response_not_found
       end
     end
 

@@ -6,7 +6,7 @@ module Teachers
 
     # @param teacher [Teacher]
     def perform(teacher:)
-      return if teacher.trnless? || teacher.trs_deactivated? || teacher.trs_not_found?
+      return if teacher.trnless? || !teacher.syncable_with_trs?
 
       Teachers::RefreshTRSAttributes.new(teacher, api_client:).refresh!
     end

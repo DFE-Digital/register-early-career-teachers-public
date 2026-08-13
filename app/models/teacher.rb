@@ -11,7 +11,7 @@ class Teacher < ApplicationRecord
 
   TRS_RESPONSES = %i[ok not_found gone permanent_redirect].index_with(&:to_s).freeze
 
-  self.ignored_columns = %i[search]
+  self.ignored_columns = %i[search trs_deactivated trs_not_found]
 
   # Enums
   enum :migration_mode, MIGRATION_MODES, validate: { message: "Must be latest_induction_records, all_induction_records or not_migrated" }, suffix: true
@@ -132,10 +132,7 @@ class Teacher < ApplicationRecord
 
   scope :with_trn, -> { where.not(trn: nil) }
   scope :without_trn, -> { where(trnless: true) }
-  scope :deactivated_in_trs, -> { where(trs_deactivated: true) }
-  scope :active_in_trs, -> { where(trs_deactivated: false) }
-  scope :not_found_in_trs, -> { where(trs_not_found: true) } # TRS returned either 404 or 308
-  scope :found_in_trs, -> { where(trs_not_found: false) }
+  scope :syncable_with_trs, -> { where(trs_response: [nil, :ok]) }
   scope :without_qts_award, -> { where(trs_qts_awarded_on: nil) }
   scope :induction_status_missing, -> { where(trs_induction_status: nil) }
   scope :induction_status_passed, -> { where(trs_induction_status: "Passed") }
@@ -163,5 +160,9 @@ class Teacher < ApplicationRecord
   # Methods
   def eligible_for_funding?
     Teachers::MentorFundingEligibility.new(trn:).eligible?
+  end
+
+  def syncable_with_trs?
+    trs_response.nil? || trs_response_ok?
   end
 end
