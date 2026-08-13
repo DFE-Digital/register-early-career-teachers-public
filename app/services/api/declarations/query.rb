@@ -67,7 +67,7 @@ module API::Declarations
         .joins(
           training_period: {
             school_partnership: {
-              lead_provider_delivery_partnership: :active_lead_provider
+              lead_provider_delivery_partnership: :framework_agreement
             }
           }
         )

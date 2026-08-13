@@ -3,11 +3,11 @@ RSpec.describe Contracts::Update do
 
   let(:user) { FactoryBot.create(:user, :admin) }
   let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
 
   let(:contract) do
     FactoryBot.create(:contract, :for_ittecf_ectp,
-                      active_lead_provider:)
+                      framework_agreement:)
   end
   let(:banded_fee_structure) { contract.banded_fee_structure }
   let!(:band_term) do
@@ -19,8 +19,8 @@ RSpec.describe Contracts::Update do
                       service_fee_ratio: 0.30)
   end
   let(:alp_band) do
-    FactoryBot.create(:active_lead_provider_band,
-                      active_lead_provider:)
+    FactoryBot.create(:framework_agreement_band,
+                      framework_agreement:)
   end
 
   let(:output_fee_percentage) { 80 }

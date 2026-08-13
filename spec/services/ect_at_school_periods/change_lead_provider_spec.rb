@@ -21,18 +21,18 @@ module ECTAtSchoolPeriods
     end
 
     let(:lead_provider) { FactoryBot.create(:lead_provider) }
-    let!(:active_lead_provider) do
+    let!(:framework_agreement) do
       FactoryBot.create(
-        :active_lead_provider,
+        :framework_agreement,
         lead_provider:,
         contract_period:
       )
     end
 
     let(:old_lead_provider) { FactoryBot.create(:lead_provider) }
-    let(:current_active_lead_provider) do
+    let(:current_framework_agreement) do
       FactoryBot.create(
-        :active_lead_provider,
+        :framework_agreement,
         lead_provider: old_lead_provider,
         contract_period:
       )
@@ -42,7 +42,7 @@ module ECTAtSchoolPeriods
       let(:lead_provider_delivery_partnership) do
         FactoryBot.create(
           :lead_provider_delivery_partnership,
-          active_lead_provider: current_active_lead_provider
+          framework_agreement: current_framework_agreement
         )
       end
       let(:school_partnership) do
@@ -302,7 +302,7 @@ module ECTAtSchoolPeriods
           :with_only_expression_of_interest,
           ect_at_school_period:,
           started_on: ect_at_school_period.started_on,
-          expression_of_interest: current_active_lead_provider
+          expression_of_interest: current_framework_agreement
         )
       end
 
@@ -393,9 +393,9 @@ module ECTAtSchoolPeriods
         let(:contract_period_2024) { FactoryBot.create(:contract_period, :with_schedules, year: 2024) }
         let!(:extended_schedule) { FactoryBot.create(:schedule, contract_period: contract_period_2024, identifier: "ecf-extended-september") }
 
-        let(:new_active_lead_provider) do
+        let(:new_framework_agreement) do
           FactoryBot.create(
-            :active_lead_provider,
+            :framework_agreement,
             lead_provider: old_lead_provider,
             contract_period: current_contract_period
           )
@@ -442,7 +442,7 @@ module ECTAtSchoolPeriods
             :with_only_expression_of_interest,
             ect_at_school_period:,
             started_on: ect_at_school_period.started_on,
-            expression_of_interest: current_active_lead_provider
+            expression_of_interest: current_framework_agreement
           )
         end
 
@@ -487,7 +487,7 @@ module ECTAtSchoolPeriods
             :with_only_expression_of_interest,
             ect_at_school_period:,
             started_on: ect_at_school_period.started_on,
-            expression_of_interest: current_active_lead_provider
+            expression_of_interest: current_framework_agreement
           )
         end
 

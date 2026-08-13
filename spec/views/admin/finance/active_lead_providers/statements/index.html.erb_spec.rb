@@ -3,19 +3,19 @@ RSpec.describe "admin/finance/active_lead_providers/statements/index.html.erb" d
     FactoryBot.create(:contract_period, year: 2099, started_on: Date.new(2099, 6, 1), finished_on: Date.new(2100, 5, 31))
   end
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Lead Provider 1") }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:, lead_provider:) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement, contract_period:, lead_provider:) }
 
   let(:november_statement) do
-    FactoryBot.create(:statement, :open, :output_fee, active_lead_provider:, month: 11, year: 2099)
+    FactoryBot.create(:statement, :open, :output_fee, framework_agreement:, month: 11, year: 2099)
   end
   let(:december_statement) do
-    FactoryBot.create(:statement, :paid, :service_fee, active_lead_provider:, month: 12, year: 2099)
+    FactoryBot.create(:statement, :paid, :service_fee, framework_agreement:, month: 12, year: 2099)
   end
   let(:raw_statements) { [november_statement, december_statement] }
   let(:pagy) { Pagy.new(count: raw_statements.count, limit: 10, page: 1) }
 
   before do
-    assign(:active_lead_provider, active_lead_provider)
+    assign(:framework_agreement, framework_agreement)
     assign(:statements, raw_statements)
     assign(:pagy, pagy)
     assign(:breadcrumbs, {
@@ -46,7 +46,7 @@ RSpec.describe "admin/finance/active_lead_providers/statements/index.html.erb" d
     expect(rows.count).to eq(2)
     expect(rows[0].text).to include("November 2099")
     expect(rows[1].text).to include("December 2099")
-    expect(rendered).to have_link("November 2099", href: admin_contract_period_active_lead_provider_statement_path(contract_period, active_lead_provider, november_statement))
+    expect(rendered).to have_link("November 2099", href: admin_contract_period_active_lead_provider_statement_path(contract_period, framework_agreement, november_statement))
     expect(rendered).to have_content("Output")
     expect(rendered).to have_content("Service")
     expect(rendered).to have_css(".govuk-tag.govuk-tag--blue", text: "Open")
@@ -54,7 +54,7 @@ RSpec.describe "admin/finance/active_lead_providers/statements/index.html.erb" d
     expect(rendered).to have_content(november_statement.deadline_date.to_fs(:govuk))
     expect(rendered).to have_content(december_statement.payment_date.to_fs(:govuk))
 
-    expect(rendered).to have_link("Add statement", href: new_admin_contract_period_active_lead_provider_statement_path(contract_period, active_lead_provider))
+    expect(rendered).to have_link("Add statement", href: new_admin_contract_period_active_lead_provider_statement_path(contract_period, framework_agreement))
     expect(rendered).not_to have_selector("a[aria-disabled='true']", text: "Add statement")
   end
 
@@ -66,7 +66,7 @@ RSpec.describe "admin/finance/active_lead_providers/statements/index.html.erb" d
     it "renders the add button in an enabled state" do
       render
 
-      expect(rendered).to have_link("Add statement", href: new_admin_contract_period_active_lead_provider_statement_path(contract_period, active_lead_provider))
+      expect(rendered).to have_link("Add statement", href: new_admin_contract_period_active_lead_provider_statement_path(contract_period, framework_agreement))
       expect(rendered).not_to have_selector("a[aria-disabled='true']", text: "Add statement")
     end
   end

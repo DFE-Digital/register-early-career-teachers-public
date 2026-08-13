@@ -1,6 +1,6 @@
 RSpec.describe SchoolPartnerships::Update do
   let!(:school_partnership) { FactoryBot.create(:school_partnership) }
-  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: school_partnership.active_lead_provider) }
+  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement: school_partnership.framework_agreement) }
 
   let(:service) do
     described_class.new(

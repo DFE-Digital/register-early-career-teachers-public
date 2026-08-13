@@ -1,13 +1,13 @@
 RSpec.describe "admin/finance/active_lead_providers/contracts/new.html.erb" do
   let(:contract_period) { FactoryBot.create(:contract_period, :next) }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement, contract_period:) }
   let(:contract) { Contract.new }
   let(:contracts_path) do
-    admin_contract_period_active_lead_provider_contracts_path(contract_period, active_lead_provider)
+    admin_contract_period_active_lead_provider_contracts_path(contract_period, framework_agreement)
   end
 
   before do
-    assign(:active_lead_provider, active_lead_provider)
+    assign(:framework_agreement, framework_agreement)
     assign(:contract, contract)
   end
 

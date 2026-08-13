@@ -18,8 +18,8 @@ describe "Schools::Mentors::ChangeLeadProviderWizard Requests" do
   let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :unfinished, mentor_at_school_period:, started_on:, school_partnership:) }
   let(:old_lead_provider) { FactoryBot.create(:lead_provider) }
   let(:new_lead_provider) { lead_provider }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider: old_lead_provider, contract_period:) }
-  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, contract_period:) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider: old_lead_provider, contract_period:) }
+  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:, contract_period:) }
   let(:school_partnership) { FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:) }
 
   describe "GET #new" do
@@ -155,7 +155,7 @@ describe "Schools::Mentors::ChangeLeadProviderWizard Requests" do
                                 :with_only_expression_of_interest,
                                 mentor_at_school_period:,
                                 started_on:,
-                                expression_of_interest: active_lead_provider)
+                                expression_of_interest: framework_agreement)
             end
 
             before do

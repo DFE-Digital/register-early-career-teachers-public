@@ -88,18 +88,18 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::Available
 
     context "for an EOI only training period" do
       before do
-        FactoryBot.create(:active_lead_provider, lead_provider: active_lead_provider.lead_provider, contract_period: target_contract_period)
-        FactoryBot.create(:active_lead_provider, contract_period: other_contract_period)
+        FactoryBot.create(:framework_agreement, lead_provider: framework_agreement.lead_provider, contract_period: target_contract_period)
+        FactoryBot.create(:framework_agreement, contract_period: other_contract_period)
       end
 
-      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period: current_contract_period) }
+      let(:framework_agreement) { FactoryBot.create(:framework_agreement, contract_period: current_contract_period) }
       let(:training_period) do
         FactoryBot.create(
           :training_period,
           :unfinished,
           :with_only_expression_of_interest,
           ect_at_school_period:,
-          expression_of_interest: active_lead_provider,
+          expression_of_interest: framework_agreement,
           schedule:
         )
       end

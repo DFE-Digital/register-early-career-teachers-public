@@ -350,15 +350,15 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
 
               delivery_partner = ect_training_period.school_partnership.delivery_partner
 
-              active_lead_provider_2024 = FactoryBot.create(
-                :active_lead_provider,
+              framework_agreement_2024 = FactoryBot.create(
+                :framework_agreement,
                 lead_provider:,
                 contract_period: contract_period_2024
               )
 
               lead_provider_delivery_partnership_2024 = FactoryBot.create(
                 :lead_provider_delivery_partnership,
-                active_lead_provider: active_lead_provider_2024,
+                framework_agreement: framework_agreement_2024,
                 delivery_partner:
               )
 

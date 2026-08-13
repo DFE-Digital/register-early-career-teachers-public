@@ -1,4 +1,4 @@
-describe ActiveLeadProvider do
+describe FrameworkAgreement do
   describe "associations" do
     it { is_expected.to belong_to(:contract_period).with_foreign_key(:contract_period_year) }
     it { is_expected.to belong_to(:lead_provider) }
@@ -9,11 +9,11 @@ describe ActiveLeadProvider do
     it { is_expected.to have_many(:expressions_of_interest).class_name("TrainingPeriod").inverse_of(:expression_of_interest) }
     it { is_expected.to have_many(:events) }
     it { is_expected.to have_many(:contracts) }
-    it { is_expected.to have_many(:bands).class_name("ActiveLeadProvider::Band").order(allocation_order: :asc) }
+    it { is_expected.to have_many(:bands).class_name("FrameworkAgreement::Band").order(allocation_order: :asc) }
   end
 
   describe "validations" do
-    subject { FactoryBot.create(:active_lead_provider) }
+    subject { FactoryBot.create(:framework_agreement) }
 
     it { is_expected.to validate_presence_of(:lead_provider_id).with_message("Choose a lead provider") }
     it { is_expected.to validate_presence_of(:contract_period_year).with_message("Choose a contract period") }
@@ -21,7 +21,7 @@ describe ActiveLeadProvider do
   end
 
   describe "#editable?" do
-    subject { FactoryBot.create(:active_lead_provider, contract_period:) }
+    subject { FactoryBot.create(:framework_agreement, contract_period:) }
 
     let(:contract_period) { FactoryBot.create(:contract_period) }
 
@@ -39,20 +39,20 @@ describe ActiveLeadProvider do
     let!(:rp_2) { FactoryBot.create(:contract_period) }
     let!(:lp_1) { FactoryBot.create(:lead_provider) }
     let!(:lp_2) { FactoryBot.create(:lead_provider) }
-    let!(:active_lead_provider_1) { FactoryBot.create(:active_lead_provider, contract_period: rp_1, lead_provider: lp_1) }
-    let!(:active_lead_provider_2) { FactoryBot.create(:active_lead_provider, contract_period: rp_1, lead_provider: lp_2) }
-    let!(:active_lead_provider_3) { FactoryBot.create(:active_lead_provider, contract_period: rp_2, lead_provider: lp_1) }
-    let!(:active_lead_provider_4) { FactoryBot.create(:active_lead_provider, contract_period: rp_2, lead_provider: lp_2) }
+    let!(:framework_agreement_1) { FactoryBot.create(:framework_agreement, contract_period: rp_1, lead_provider: lp_1) }
+    let!(:framework_agreement_2) { FactoryBot.create(:framework_agreement, contract_period: rp_1, lead_provider: lp_2) }
+    let!(:framework_agreement_3) { FactoryBot.create(:framework_agreement, contract_period: rp_2, lead_provider: lp_1) }
+    let!(:framework_agreement_4) { FactoryBot.create(:framework_agreement, contract_period: rp_2, lead_provider: lp_2) }
 
     describe ".for_contract_period" do
       it "returns provider partnerships only for the specified academic year" do
-        expect(described_class.for_contract_period(rp_1.id)).to contain_exactly(active_lead_provider_1, active_lead_provider_2)
+        expect(described_class.for_contract_period(rp_1.id)).to contain_exactly(framework_agreement_1, framework_agreement_2)
       end
     end
 
     describe ".for_lead_provider" do
       it "returns provider partnerships only for the specified lead provider" do
-        expect(described_class.for_lead_provider(lp_2.id)).to contain_exactly(active_lead_provider_2, active_lead_provider_4)
+        expect(described_class.for_lead_provider(lp_2.id)).to contain_exactly(framework_agreement_2, framework_agreement_4)
       end
     end
 
@@ -60,16 +60,16 @@ describe ActiveLeadProvider do
       let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
       let(:other_delivery_partner) { FactoryBot.create(:delivery_partner) }
       let(:contract_period) { FactoryBot.create(:contract_period) }
-      let!(:available_alp_1) { FactoryBot.create(:active_lead_provider, contract_period:) }
-      let!(:available_alp_2) { FactoryBot.create(:active_lead_provider, contract_period:) }
-      let!(:assigned_alp) { FactoryBot.create(:active_lead_provider, contract_period:) }
-      let!(:different_year_alp) { FactoryBot.create(:active_lead_provider, :for_year, year: contract_period.year + 1) }
+      let!(:available_alp_1) { FactoryBot.create(:framework_agreement, contract_period:) }
+      let!(:available_alp_2) { FactoryBot.create(:framework_agreement, contract_period:) }
+      let!(:assigned_alp) { FactoryBot.create(:framework_agreement, contract_period:) }
+      let!(:different_year_alp) { FactoryBot.create(:framework_agreement, :for_year, year: contract_period.year + 1) }
 
       # Create an existing partnership for one of the ALPs
       let!(:existing_partnership) do
         FactoryBot.create(:lead_provider_delivery_partnership,
                           delivery_partner:,
-                          active_lead_provider: assigned_alp)
+                          framework_agreement: assigned_alp)
       end
 
       it "returns available lead providers for the delivery partner and contract period" do
@@ -90,7 +90,7 @@ describe ActiveLeadProvider do
       it "includes lead providers assigned to other delivery partners" do
         FactoryBot.create(:lead_provider_delivery_partnership,
                           delivery_partner: other_delivery_partner,
-                          active_lead_provider: available_alp_1)
+                          framework_agreement: available_alp_1)
 
         result = described_class.available_for_delivery_partner(delivery_partner, contract_period)
         expect(result).to include(available_alp_1)
@@ -113,21 +113,21 @@ describe ActiveLeadProvider do
 
     describe ".for_contract_period_year" do
       it "returns provider partnerships only for the specified contract period year" do
-        expect(described_class.for_contract_period_year(rp_1.year)).to contain_exactly(active_lead_provider_1, active_lead_provider_2)
+        expect(described_class.for_contract_period_year(rp_1.year)).to contain_exactly(framework_agreement_1, framework_agreement_2)
       end
     end
 
     describe ".without_existing_partnership_for" do
       let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
       let(:contract_period) { FactoryBot.create(:contract_period) }
-      let!(:available_alp) { FactoryBot.create(:active_lead_provider, contract_period:) }
-      let!(:partnered_alp) { FactoryBot.create(:active_lead_provider, contract_period:) }
-      let!(:different_period_alp) { FactoryBot.create(:active_lead_provider) }
+      let!(:available_alp) { FactoryBot.create(:framework_agreement, contract_period:) }
+      let!(:partnered_alp) { FactoryBot.create(:framework_agreement, contract_period:) }
+      let!(:different_period_alp) { FactoryBot.create(:framework_agreement) }
 
       before do
         FactoryBot.create(:lead_provider_delivery_partnership,
                           delivery_partner:,
-                          active_lead_provider: partnered_alp)
+                          framework_agreement: partnered_alp)
       end
 
       it "returns active lead providers without existing partnerships for the delivery partner and contract period" do
@@ -143,10 +143,10 @@ describe ActiveLeadProvider do
 
       it "includes active lead providers that have partnerships with other delivery partners" do
         other_delivery_partner = FactoryBot.create(:delivery_partner)
-        other_partnered_alp = FactoryBot.create(:active_lead_provider, contract_period:)
+        other_partnered_alp = FactoryBot.create(:framework_agreement, contract_period:)
         FactoryBot.create(:lead_provider_delivery_partnership,
                           delivery_partner: other_delivery_partner,
-                          active_lead_provider: other_partnered_alp)
+                          framework_agreement: other_partnered_alp)
 
         result = described_class.without_existing_partnership_for(delivery_partner, contract_period)
         expect(result).to include(other_partnered_alp)
@@ -154,9 +154,9 @@ describe ActiveLeadProvider do
     end
 
     describe ".with_lead_provider_ordered_by_name" do
-      let!(:zebra_alp) { FactoryBot.create(:active_lead_provider, lead_provider: FactoryBot.create(:lead_provider, name: "Zebra Provider")) }
-      let!(:alpha_alp) { FactoryBot.create(:active_lead_provider, lead_provider: FactoryBot.create(:lead_provider, name: "Alpha Provider")) }
-      let!(:beta_alp) { FactoryBot.create(:active_lead_provider, lead_provider: FactoryBot.create(:lead_provider, name: "Beta Provider")) }
+      let!(:zebra_alp) { FactoryBot.create(:framework_agreement, lead_provider: FactoryBot.create(:lead_provider, name: "Zebra Provider")) }
+      let!(:alpha_alp) { FactoryBot.create(:framework_agreement, lead_provider: FactoryBot.create(:lead_provider, name: "Alpha Provider")) }
+      let!(:beta_alp) { FactoryBot.create(:framework_agreement, lead_provider: FactoryBot.create(:lead_provider, name: "Beta Provider")) }
 
       it "returns active lead providers ordered by lead provider name" do
         result = described_class.with_lead_provider_ordered_by_name
@@ -172,10 +172,10 @@ describe ActiveLeadProvider do
   end
 
   describe "#bands_can_be_added_and_removed?" do
-    subject { active_lead_provider.bands_can_be_added_and_removed? }
+    subject { framework_agreement.bands_can_be_added_and_removed? }
 
     let(:contract_period) { FactoryBot.create(:contract_period, :next) }
-    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
+    let(:framework_agreement) { FactoryBot.create(:framework_agreement, contract_period:) }
 
     context "when there are no contracts" do
       context "and the contract period has not started" do
@@ -189,7 +189,7 @@ describe ActiveLeadProvider do
 
     context "when there are contracts" do
       before do
-        FactoryBot.create(:contract, active_lead_provider:)
+        FactoryBot.create(:contract, framework_agreement:)
       end
 
       context "and the contract period has not started" do

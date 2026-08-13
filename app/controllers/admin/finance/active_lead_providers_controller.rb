@@ -12,26 +12,26 @@ module Admin::Finance
         @contract_period.year.to_s => admin_contract_period_path(@contract_period),
       }
       @editable = @contract_period.editable?
-      @active_lead_providers = @contract_period
-        .active_lead_providers
+      @framework_agreements = @contract_period
+        .framework_agreements
         .with_lead_provider_ordered_by_name
         .includes(:contracts, :statements, :delivery_partners)
     end
 
     def new
-      @active_lead_provider = @contract_period.active_lead_providers.build
+      @framework_agreement = @contract_period.framework_agreements.build
       @available_lead_providers = available_lead_providers
     end
 
     def create
-      @active_lead_provider = ::ActiveLeadProviders::Create.new(
+      @framework_agreement = ::ActiveLeadProviders::Create.new(
         author: current_user,
         contract_period: @contract_period,
-        lead_provider_id: active_lead_provider_params[:lead_provider_id]
+        lead_provider_id: framework_agreement_params[:lead_provider_id]
       ).call
 
-      if @active_lead_provider.persisted?
-        flash[:notice] = "#{@active_lead_provider.lead_provider.name} added"
+      if @framework_agreement.persisted?
+        flash[:notice] = "#{@framework_agreement.lead_provider.name} added"
         redirect_to admin_contract_period_active_lead_providers_path(@contract_period)
       else
         @available_lead_providers = available_lead_providers
@@ -44,9 +44,9 @@ module Admin::Finance
     end
 
     def destroy
-      active_lead_provider = @contract_period.active_lead_providers.find(params[:id])
-      lead_provider_name = active_lead_provider.lead_provider.name
-      ::ActiveLeadProviders::CascadeDelete.new(active_lead_provider:, author: current_user).call
+      framework_agreement = @contract_period.framework_agreements.find(params[:id])
+      lead_provider_name = framework_agreement.lead_provider.name
+      ::ActiveLeadProviders::CascadeDelete.new(framework_agreement:, author: current_user).call
       flash[:notice] = "#{lead_provider_name} removed"
       redirect_to admin_contract_period_active_lead_providers_path(@contract_period)
     rescue ::ActiveLeadProviders::CascadeDelete::CascadeDeleteError => e
@@ -69,12 +69,12 @@ module Admin::Finance
 
     def available_lead_providers
       LeadProvider
-        .where.not(id: @contract_period.active_lead_providers.select(:lead_provider_id))
+        .where.not(id: @contract_period.framework_agreements.select(:lead_provider_id))
         .alphabetical
     end
 
-    def active_lead_provider_params
-      params.expect(active_lead_provider: [:lead_provider_id])
+    def framework_agreement_params
+      params.expect(framework_agreement: [:lead_provider_id])
     end
   end
 end

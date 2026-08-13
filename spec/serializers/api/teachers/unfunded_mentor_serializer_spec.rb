@@ -80,7 +80,7 @@ describe API::Teachers::UnfundedMentorSerializer, type: :serializer do
         :school_partnership,
         :for_year,
         lead_provider: other_lead_provider,
-        year: school_partnership_for_lead_provider.lead_provider_delivery_partnership.active_lead_provider.contract_period_year
+        year: school_partnership_for_lead_provider.lead_provider_delivery_partnership.framework_agreement.contract_period_year
       )
     end
 

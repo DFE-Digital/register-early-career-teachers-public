@@ -7,8 +7,8 @@ RSpec.describe "Declarations endpoint", :with_metadata, openapi_spec: "v3/swagge
     FactoryBot.create(
       :school_partnership,
       :for_year,
-      lead_provider: active_lead_provider.lead_provider,
-      year: active_lead_provider.contract_period.year
+      lead_provider: framework_agreement.lead_provider,
+      year: framework_agreement.contract_period.year
     )
   end
   let(:training_period) do

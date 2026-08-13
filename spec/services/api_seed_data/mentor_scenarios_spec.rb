@@ -49,7 +49,7 @@ RSpec.describe APISeedData::MentorScenarios do
       instance.send(:mentor_with_three_ects_2025)
 
       mentors_count = Teacher
-        .joins(mentor_at_school_periods: { training_periods: :active_lead_provider })
+        .joins(mentor_at_school_periods: { training_periods: :framework_agreement })
         .where(active_lead_providers: { contract_period_year: contract_period_2025.year })
         .distinct
         .count
@@ -61,7 +61,7 @@ RSpec.describe APISeedData::MentorScenarios do
       instance.send(:mentor_with_three_ects_2025)
 
       ects_count = Teacher
-        .joins(ect_at_school_periods: { training_periods: :active_lead_provider })
+        .joins(ect_at_school_periods: { training_periods: :framework_agreement })
         .where(active_lead_providers: { contract_period_year: contract_period_2025.year })
         .distinct
         .count
@@ -73,7 +73,7 @@ RSpec.describe APISeedData::MentorScenarios do
       instance.send(:mentor_with_three_ects_2025)
 
       schools = Teacher
-        .joins(ect_at_school_periods: { training_periods: :active_lead_provider })
+        .joins(ect_at_school_periods: { training_periods: :framework_agreement })
         .where(active_lead_providers: { contract_period_year: contract_period_2025.year })
         .pluck("ect_at_school_periods.school_id").uniq
 
@@ -109,7 +109,7 @@ RSpec.describe APISeedData::MentorScenarios do
       instance.send(:mentor_with_two_ects_2024)
 
       mentors_count = Teacher
-        .joins(mentor_at_school_periods: { training_periods: :active_lead_provider })
+        .joins(mentor_at_school_periods: { training_periods: :framework_agreement })
         .where(active_lead_providers: { contract_period_year: contract_period_2024.year })
         .distinct
         .count
@@ -121,7 +121,7 @@ RSpec.describe APISeedData::MentorScenarios do
       instance.send(:mentor_with_two_ects_2024)
 
       ects_count = Teacher
-        .joins(ect_at_school_periods: { training_periods: :active_lead_provider })
+        .joins(ect_at_school_periods: { training_periods: :framework_agreement })
         .where(active_lead_providers: { contract_period_year: contract_period_2024.year })
         .distinct
         .count
@@ -133,7 +133,7 @@ RSpec.describe APISeedData::MentorScenarios do
       instance.send(:mentor_with_two_ects_2024)
 
       schools = Teacher
-        .joins(ect_at_school_periods: { training_periods: :active_lead_provider })
+        .joins(ect_at_school_periods: { training_periods: :framework_agreement })
         .where(active_lead_providers: { contract_period_year: contract_period_2024.year })
         .pluck("ect_at_school_periods.school_id").uniq
 

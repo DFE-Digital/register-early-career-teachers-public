@@ -102,7 +102,7 @@ module ECTAtSchoolPeriods
         let(:lead_provider) { ect_training_period.lead_provider }
 
         before do
-          ect_training_period.active_lead_provider.update!(contract_period:)
+          ect_training_period.framework_agreement.update!(contract_period:)
         end
 
         it "assigns a mentor" do

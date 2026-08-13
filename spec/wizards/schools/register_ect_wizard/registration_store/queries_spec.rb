@@ -71,9 +71,9 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
     )
   end
 
-  def create_active_lead_provider(contract_period:, lead_provider:)
+  def create_framework_agreement(contract_period:, lead_provider:)
     FactoryBot.create(
-      :active_lead_provider,
+      :framework_agreement,
       contract_period:,
       lead_provider:
     )
@@ -242,8 +242,8 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
       let(:another_lead_provider) { FactoryBot.create(:lead_provider) }
 
       before do
-        create_active_lead_provider(contract_period:, lead_provider:)
-        create_active_lead_provider(contract_period:, lead_provider: another_lead_provider)
+        create_framework_agreement(contract_period:, lead_provider:)
+        create_framework_agreement(contract_period:, lead_provider: another_lead_provider)
       end
 
       it "returns the active lead providers for the contract period" do
@@ -271,8 +271,8 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
       end
 
       before do
-        create_active_lead_provider(contract_period: contract_period_2024, lead_provider: lead_provider_2024)
-        create_active_lead_provider(contract_period:, lead_provider:)
+        create_framework_agreement(contract_period: contract_period_2024, lead_provider: lead_provider_2024)
+        create_framework_agreement(contract_period:, lead_provider:)
         stub_previous_training(previous_training_period, previous_ect_period:)
       end
 
@@ -302,8 +302,8 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
       end
 
       before do
-        create_active_lead_provider(contract_period: contract_period_2024, lead_provider: lead_provider_2024)
-        create_active_lead_provider(contract_period:, lead_provider:)
+        create_framework_agreement(contract_period: contract_period_2024, lead_provider: lead_provider_2024)
+        create_framework_agreement(contract_period:, lead_provider:)
         stub_previous_training(previous_training_period, previous_ect_period:)
       end
 
@@ -328,8 +328,8 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
       end
 
       before do
-        create_active_lead_provider(contract_period: contract_period_2021, lead_provider: lead_provider_2021)
-        create_active_lead_provider(contract_period:, lead_provider:)
+        create_framework_agreement(contract_period: contract_period_2021, lead_provider: lead_provider_2021)
+        create_framework_agreement(contract_period:, lead_provider:)
         stub_previous_training(previous_training_period, previous_ect_period:)
       end
 
@@ -353,7 +353,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
       end
 
       before do
-        create_active_lead_provider(contract_period:, lead_provider:)
+        create_framework_agreement(contract_period:, lead_provider:)
         stub_previous_training(previous_training_period, previous_ect_period:)
       end
 

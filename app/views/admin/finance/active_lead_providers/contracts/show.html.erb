@@ -41,9 +41,9 @@
 
 <% if @contract.editable? %>
   <div class="govuk-button-group govuk-!-margin-top-6">
-    <%= govuk_button_link_to "Edit", edit_admin_contract_period_active_lead_provider_contract_path(@active_lead_provider.contract_period, @active_lead_provider, @contract) %>
+    <%= govuk_button_link_to "Edit", edit_admin_contract_period_active_lead_provider_contract_path(@framework_agreement.contract_period, @framework_agreement, @contract) %>
     <%= govuk_button_to "Delete",
-          delete_admin_contract_period_active_lead_provider_contract_path(@active_lead_provider.contract_period, @active_lead_provider, @contract),
+          delete_admin_contract_period_active_lead_provider_contract_path(@framework_agreement.contract_period, @framework_agreement, @contract),
           method: :get,
           secondary: true,
           disabled: @contract.statements.any? %>

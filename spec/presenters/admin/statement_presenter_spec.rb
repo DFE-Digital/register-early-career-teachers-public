@@ -63,8 +63,8 @@ describe Admin::StatementPresenter do
 
   describe "#lead_provider_name" do
     let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Some LP") }
-    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
-    let(:contract) { FactoryBot.create(:contract, active_lead_provider:) }
+    let(:framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:) }
+    let(:contract) { FactoryBot.create(:contract, framework_agreement:) }
     let(:statement) { FactoryBot.build(:statement, contract:) }
 
     it "returns the lead provider name" do
@@ -74,8 +74,8 @@ describe Admin::StatementPresenter do
 
   describe "#contract_period_year" do
     let(:contract_period) { FactoryBot.create(:contract_period, year: 2022) }
-    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
-    let(:contract) { FactoryBot.create(:contract, active_lead_provider:) }
+    let(:framework_agreement) { FactoryBot.create(:framework_agreement, contract_period:) }
+    let(:contract) { FactoryBot.create(:contract, framework_agreement:) }
     let(:statement) { FactoryBot.build(:statement, contract:) }
 
     it "returns the lead provider name" do

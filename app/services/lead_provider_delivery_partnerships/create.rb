@@ -2,10 +2,10 @@ module LeadProviderDeliveryPartnerships
   class Create
     attr_reader :lead_provider_delivery_partnership, :author
 
-    def initialize(author:, active_lead_provider:, params:)
+    def initialize(author:, framework_agreement:, params:)
       @author = author
       @lead_provider_delivery_partnership = LeadProviderDeliveryPartnership.new(
-        params.merge(active_lead_provider:)
+        params.merge(framework_agreement:)
       )
     end
 

@@ -3,17 +3,17 @@ RSpec.describe Admin::Statements::ClawbacksComponent, type: :component do
 
   let(:statement) { FactoryBot.create(:statement, contract:) }
 
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
 
   let(:banded_fee_structure) do
     FactoryBot.build(:contract_banded_fee_structure,
                      band_terms: [
                        FactoryBot.build(:contract_banded_fee_structure_band_term,
-                                        band: FactoryBot.create(:active_lead_provider_band,
-                                                                active_lead_provider:)),
+                                        band: FactoryBot.create(:framework_agreement_band,
+                                                                framework_agreement:)),
                        FactoryBot.build(:contract_banded_fee_structure_band_term,
-                                        band: FactoryBot.create(:active_lead_provider_band,
-                                                                active_lead_provider:)),
+                                        band: FactoryBot.create(:framework_agreement_band,
+                                                                framework_agreement:)),
                      ])
   end
 

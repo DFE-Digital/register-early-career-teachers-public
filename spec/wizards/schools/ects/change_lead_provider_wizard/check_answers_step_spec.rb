@@ -23,17 +23,17 @@ describe Schools::ECTs::ChangeLeadProviderWizard::CheckAnswersStep do
     )
   end
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
-  let!(:active_lead_provider) do
+  let!(:framework_agreement) do
     FactoryBot.create(
-      :active_lead_provider,
+      :framework_agreement,
       lead_provider:,
       contract_period:
     )
   end
   let(:old_lead_provider) { FactoryBot.create(:lead_provider) }
-  let(:current_active_lead_provider) do
+  let(:current_framework_agreement) do
     FactoryBot.create(
-      :active_lead_provider,
+      :framework_agreement,
       lead_provider: old_lead_provider,
       contract_period:
     )
@@ -46,7 +46,7 @@ describe Schools::ECTs::ChangeLeadProviderWizard::CheckAnswersStep do
       :with_only_expression_of_interest,
       ect_at_school_period:,
       started_on: ect_at_school_period.started_on,
-      expression_of_interest: current_active_lead_provider
+      expression_of_interest: current_framework_agreement
     )
   end
   let(:params) { {} }
@@ -71,9 +71,9 @@ describe Schools::ECTs::ChangeLeadProviderWizard::CheckAnswersStep do
     context "when current training lead provider cannot be resolved" do
       let(:withdrawn_lead_provider) { FactoryBot.create(:lead_provider) }
 
-      let(:withdrawn_active_lead_provider) do
+      let(:withdrawn_framework_agreement) do
         FactoryBot.create(
-          :active_lead_provider,
+          :framework_agreement,
           lead_provider: withdrawn_lead_provider,
           contract_period:
         )
@@ -88,7 +88,7 @@ describe Schools::ECTs::ChangeLeadProviderWizard::CheckAnswersStep do
           :with_only_expression_of_interest,
           ect_at_school_period:,
           started_on: ect_at_school_period.started_on,
-          expression_of_interest: withdrawn_active_lead_provider
+          expression_of_interest: withdrawn_framework_agreement
         )
       end
 
@@ -110,9 +110,9 @@ describe Schools::ECTs::ChangeLeadProviderWizard::CheckAnswersStep do
     context "when current training lead provider cannot be resolved and latest TP is deferred" do
       let(:deferred_lead_provider) { FactoryBot.create(:lead_provider) }
 
-      let(:deferred_active_lead_provider) do
+      let(:deferred_framework_agreement) do
         FactoryBot.create(
-          :active_lead_provider,
+          :framework_agreement,
           lead_provider: deferred_lead_provider,
           contract_period:
         )
@@ -126,7 +126,7 @@ describe Schools::ECTs::ChangeLeadProviderWizard::CheckAnswersStep do
           :with_only_expression_of_interest,
           ect_at_school_period:,
           started_on: ect_at_school_period.started_on,
-          expression_of_interest: deferred_active_lead_provider
+          expression_of_interest: deferred_framework_agreement
         )
 
         training_period.update!(

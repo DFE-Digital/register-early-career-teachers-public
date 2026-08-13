@@ -9,13 +9,13 @@ RSpec.describe Admin::SelectLeadProvidersFormComponent, type: :component do
   let(:lead_provider_3) { FactoryBot.create(:lead_provider, name: "Lead Provider Three") }
 
   let(:contract_period) { FactoryBot.create(:contract_period, year:, started_on: 1.month.from_now, finished_on: 2.months.from_now) }
-  let(:active_lead_provider_1) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_1, contract_period:) }
-  let(:active_lead_provider_2) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_2, contract_period:) }
-  let(:active_lead_provider_3) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_3, contract_period:) }
+  let(:framework_agreement_1) { FactoryBot.create(:framework_agreement, lead_provider: lead_provider_1, contract_period:) }
+  let(:framework_agreement_2) { FactoryBot.create(:framework_agreement, lead_provider: lead_provider_2, contract_period:) }
+  let(:framework_agreement_3) { FactoryBot.create(:framework_agreement, lead_provider: lead_provider_3, contract_period:) }
 
   let(:current_partnerships) do
     [
-      FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner:, active_lead_provider: active_lead_provider_1)
+      FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner:, framework_agreement: framework_agreement_1)
     ]
   end
 
@@ -34,14 +34,14 @@ RSpec.describe Admin::SelectLeadProvidersFormComponent, type: :component do
     describe "#all_lead_providers_for_period" do
       it "returns all active lead providers for the contract period" do
         providers = component.send(:all_lead_providers_for_period)
-        expect(providers).to contain_exactly(active_lead_provider_1, active_lead_provider_2, active_lead_provider_3)
+        expect(providers).to contain_exactly(framework_agreement_1, framework_agreement_2, framework_agreement_3)
       end
     end
 
     describe "#currently_selected_ids" do
       it "returns string array of active lead provider IDs" do
         ids = component.send(:currently_selected_ids)
-        expect(ids).to eq([active_lead_provider_1.id.to_s])
+        expect(ids).to eq([framework_agreement_1.id.to_s])
       end
     end
 

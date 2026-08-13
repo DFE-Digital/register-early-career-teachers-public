@@ -10,8 +10,8 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
   let(:mentor)  { FactoryBot.create(:mentor_at_school_period, teacher:, school:, started_on: mentor_start_date, finished_on: nil) }
 
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Hidden leaf village") }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
-  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:) }
+  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:) }
   let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school:) }
 
   describe "eligibility states" do
@@ -30,7 +30,7 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
             mentor_at_school_period: mentor,
             started_on: mentor_start_date,
             finished_on: nil,
-            expression_of_interest: active_lead_provider
+            expression_of_interest: framework_agreement
           )
         end
 
@@ -152,7 +152,7 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
 
     context "when there are multiple current provider-led mentor training periods" do
       let(:other_lead_provider) { FactoryBot.create(:lead_provider, name: "Konohagakure") }
-      let(:other_active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider: other_lead_provider) }
+      let(:other_framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider: other_lead_provider) }
 
       before do
         FactoryBot.create(
@@ -160,7 +160,7 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
           mentor_at_school_period: mentor,
           started_on: mentor_start_date,
           finished_on: mentor_start_date + 1.week,
-          expression_of_interest: other_active_lead_provider
+          expression_of_interest: other_framework_agreement
         )
 
         FactoryBot.create(

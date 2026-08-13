@@ -3,16 +3,16 @@ RSpec.describe Admin::Statements::DeclarationComponent, type: :component do
 
   subject(:component) { described_class.new(statement:) }
 
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
-  let!(:contract_period) { active_lead_provider.contract_period }
-  let(:contract) { FactoryBot.create(:contract, contract_trait, active_lead_provider:, contract_period:) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
+  let!(:contract_period) { framework_agreement.contract_period }
+  let(:contract) { FactoryBot.create(:contract, contract_trait, framework_agreement:, contract_period:) }
   let(:contract_trait) { :for_ecf }
   let(:statement_trait) { :output_fee }
-  let(:statement) { FactoryBot.create(:statement, :payable, statement_trait, active_lead_provider:, contract:) }
+  let(:statement) { FactoryBot.create(:statement, :payable, statement_trait, framework_agreement:, contract:) }
 
-  let(:ect_training_period) { FactoryBot.create(:training_period, :for_ect, :unfinished, :with_active_lead_provider, active_lead_provider:, ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished)) }
+  let(:ect_training_period) { FactoryBot.create(:training_period, :for_ect, :unfinished, :with_framework_agreement, framework_agreement:, ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished)) }
   let!(:ect_declaration) { FactoryBot.create(:declaration, :voided, training_period: ect_training_period, payment_statement: statement) }
-  let(:mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, :unfinished, :with_active_lead_provider, active_lead_provider:, mentor_at_school_period: FactoryBot.create(:mentor_at_school_period, :unfinished)) }
+  let(:mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, :unfinished, :with_framework_agreement, framework_agreement:, mentor_at_school_period: FactoryBot.create(:mentor_at_school_period, :unfinished)) }
   let!(:mentor_declaration) { FactoryBot.create(:declaration, :voided, training_period: mentor_training_period, payment_statement: statement) }
 
   let(:started_flatrate) do

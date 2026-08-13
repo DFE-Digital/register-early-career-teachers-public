@@ -82,8 +82,8 @@ module Teachers
       # Do nothing
     end
 
-    def active_lead_provider
-      ActiveLeadProvider.find_or_create_by!(lead_provider:, contract_period:)
+    def framework_agreement
+      FrameworkAgreement.find_or_create_by!(lead_provider:, contract_period:)
     end
 
     def school_partnership

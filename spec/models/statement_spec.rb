@@ -1,12 +1,12 @@
 describe Statement do
   describe "associations" do
-    it { is_expected.to have_one(:active_lead_provider).through(:contract) }
+    it { is_expected.to have_one(:framework_agreement).through(:contract) }
     it { is_expected.to have_many(:adjustments).dependent(:destroy) }
     it { is_expected.to have_many(:audit_notes).dependent(:destroy) }
     it { is_expected.to have_many(:payment_declarations).class_name("Declaration").inverse_of(:payment_statement) }
     it { is_expected.to have_many(:clawback_declarations).class_name("Declaration").inverse_of(:clawback_statement) }
-    it { is_expected.to have_one(:lead_provider).through(:active_lead_provider) }
-    it { is_expected.to have_one(:contract_period).through(:active_lead_provider) }
+    it { is_expected.to have_one(:lead_provider).through(:framework_agreement) }
+    it { is_expected.to have_one(:contract_period).through(:framework_agreement) }
     it { is_expected.to belong_to(:contract) }
   end
 
@@ -35,10 +35,10 @@ describe Statement do
     end
 
     describe "uniqueness of month and year for the same active lead provider" do
-      let(:active_lead_provider) { contract.active_lead_provider }
+      let(:framework_agreement) { contract.framework_agreement }
       let(:contract) { FactoryBot.create(:contract) }
 
-      before { FactoryBot.create(:statement, active_lead_provider:, month: 5, year: 2024) }
+      before { FactoryBot.create(:statement, framework_agreement:, month: 5, year: 2024) }
 
       it "is not valid to create another statement with the same month and year for the same active lead provider" do
         statement = described_class.new(contract:, month: 5, year: 2024)
@@ -47,8 +47,8 @@ describe Statement do
       end
 
       it "is valid to create another statement with the same month and year for a different active lead provider" do
-        other_active_lead_provider = FactoryBot.create(:active_lead_provider)
-        other_contract = FactoryBot.create(:contract, active_lead_provider: other_active_lead_provider)
+        other_framework_agreement = FactoryBot.create(:framework_agreement)
+        other_contract = FactoryBot.create(:contract, framework_agreement: other_framework_agreement)
         statement = FactoryBot.build(:statement, contract: other_contract, month: 5, year: 2024, deadline_date: Date.new(2024, 5, 1).prev_day, payment_date: Date.new(2024, 5, 25))
 
         expect(statement).to be_valid
@@ -286,7 +286,7 @@ describe Statement do
                         deadline_date: Date.yesterday)
     end
 
-    let(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, year: statement.contract_period.year, active_lead_provider: statement.active_lead_provider) }
+    let(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, year: statement.contract_period.year, framework_agreement: statement.framework_agreement) }
 
     let!(:declaration) { FactoryBot.create(:declaration, :with_ect, declaration_type: "started", payment_status: "payable", school_partnership:, payment_statement: statement) }
     let!(:clawback_declaration) { FactoryBot.create(:declaration, :with_ect, declaration_type: "started", clawback_status: "awaiting_clawback", school_partnership:, clawback_statement: statement) }

@@ -7,9 +7,9 @@ describe TeacherHistories::TrainingPeriodBuilder do
   let(:school) { FactoryBot.create(:school) }
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Lead provider one") }
   let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:, contract_period:) }
   let(:delivery_partner) { FactoryBot.create(:delivery_partner, name: "Delivery partner one") }
-  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
+  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:, delivery_partner:) }
   let!(:school_partnership) { FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:) }
 
   let(:schedule) { FactoryBot.create(:schedule, contract_period:) }
@@ -18,7 +18,7 @@ describe TeacherHistories::TrainingPeriodBuilder do
   let!(:milestone_retained_2) { FactoryBot.create(:milestone, :retained_2, schedule:, start_date: Date.new(2026, 6, 15), milestone_date: Date.new(2026, 8, 15)) }
   let!(:milestone_completed) { FactoryBot.create(:milestone, :completed, schedule:, start_date: Date.new(2026, 10, 15), milestone_date: Date.new(2026, 12, 18)) }
 
-  let(:contract) { FactoryBot.create(:contract, active_lead_provider:) }
+  let(:contract) { FactoryBot.create(:contract, framework_agreement:) }
   let!(:statement) { FactoryBot.create(:statement, contract:) }
 
   describe "adding declarations" do

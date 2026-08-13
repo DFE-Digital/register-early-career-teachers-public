@@ -8,28 +8,28 @@ RSpec.describe DeliveryPartners::AddLeadProviderPairings do
   let!(:lead_provider_2) { FactoryBot.create(:lead_provider, name: "Lead Provider 2") }
   let!(:lead_provider_3) { FactoryBot.create(:lead_provider, name: "Lead Provider 3") }
 
-  let!(:active_lead_provider_1) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_1, contract_period:) }
-  let!(:active_lead_provider_2) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_2, contract_period:) }
-  let!(:active_lead_provider_3) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_3, contract_period:) }
+  let!(:framework_agreement_1) { FactoryBot.create(:framework_agreement, lead_provider: lead_provider_1, contract_period:) }
+  let!(:framework_agreement_2) { FactoryBot.create(:framework_agreement, lead_provider: lead_provider_2, contract_period:) }
+  let!(:framework_agreement_3) { FactoryBot.create(:framework_agreement, lead_provider: lead_provider_3, contract_period:) }
 
   let(:service) do
     described_class.new(
       delivery_partner:,
       contract_period:,
-      active_lead_provider_ids: new_active_lead_provider_ids,
+      framework_agreement_ids: new_framework_agreement_ids,
       author:
     )
   end
 
   describe "#add!" do
     context "when adding new partnerships" do
-      let(:new_active_lead_provider_ids) { [active_lead_provider_1.id, active_lead_provider_2.id] }
+      let(:new_framework_agreement_ids) { [framework_agreement_1.id, framework_agreement_2.id] }
 
       it "creates new lead provider delivery partnerships" do
         expect { service.add! }.to change(LeadProviderDeliveryPartnership, :count).by(2)
 
         partnerships = delivery_partner.lead_provider_delivery_partnerships.reload
-        expect(partnerships.map(&:active_lead_provider_id)).to contain_exactly(active_lead_provider_1.id, active_lead_provider_2.id)
+        expect(partnerships.map(&:active_lead_provider_id)).to contain_exactly(framework_agreement_1.id, framework_agreement_2.id)
       end
 
       it "records partnership added events" do
@@ -48,21 +48,21 @@ RSpec.describe DeliveryPartners::AddLeadProviderPairings do
         FactoryBot.create(
           :lead_provider_delivery_partnership,
           delivery_partner:,
-          active_lead_provider: active_lead_provider_1
+          framework_agreement: framework_agreement_1
         )
       end
 
       context "when adding only new partnerships" do
-        let(:new_active_lead_provider_ids) { [active_lead_provider_2.id, active_lead_provider_3.id] }
+        let(:new_framework_agreement_ids) { [framework_agreement_2.id, framework_agreement_3.id] }
 
         it "preserves existing partnerships and adds only the new ones" do
           expect { service.add! }.to change(LeadProviderDeliveryPartnership, :count).by(2)
 
           partnerships = delivery_partner.lead_provider_delivery_partnerships.reload
           expect(partnerships.map(&:active_lead_provider_id)).to contain_exactly(
-            active_lead_provider_1.id, # existing - preserved
-            active_lead_provider_2.id, # new - added
-            active_lead_provider_3.id  # new - added
+            framework_agreement_1.id, # existing - preserved
+            framework_agreement_2.id, # new - added
+            framework_agreement_3.id  # new - added
           )
         end
 
@@ -75,7 +75,7 @@ RSpec.describe DeliveryPartners::AddLeadProviderPairings do
       end
 
       context "when submitting existing partnerships (should be no-op)" do
-        let(:new_active_lead_provider_ids) { [active_lead_provider_1.id] }
+        let(:new_framework_agreement_ids) { [framework_agreement_1.id] }
 
         it "does not create or remove any partnerships" do
           expect { service.add! }.not_to change(LeadProviderDeliveryPartnership, :count)
@@ -91,7 +91,7 @@ RSpec.describe DeliveryPartners::AddLeadProviderPairings do
     end
 
     context "when there are errors" do
-      let(:new_active_lead_provider_ids) { [active_lead_provider_1.id] }
+      let(:new_framework_agreement_ids) { [framework_agreement_1.id] }
 
       it "returns false and logs error when ActiveRecord::RecordInvalid is raised" do
         create_service = instance_double(LeadProviderDeliveryPartnerships::Create)

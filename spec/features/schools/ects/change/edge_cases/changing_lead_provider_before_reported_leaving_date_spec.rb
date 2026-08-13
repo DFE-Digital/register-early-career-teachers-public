@@ -175,28 +175,28 @@ RSpec.describe "Changing lead provider before the ECTs reported leaving date" do
 private
 
   def and_the_ect_is_doing_provider_led_training
-    active_lead_provider = FactoryBot.create(
-      :active_lead_provider,
+    framework_agreement = FactoryBot.create(
+      :framework_agreement,
       contract_period: @contract_period
     )
-    @lead_provider = active_lead_provider.lead_provider
+    @lead_provider = framework_agreement.lead_provider
     FactoryBot.create(
       :training_period,
       :for_ect,
       :unfinished,
       :provider_led,
-      :with_active_lead_provider,
+      :with_framework_agreement,
       ect_at_school_period: @ect_at_school_period,
-      active_lead_provider:
+      framework_agreement:
     )
   end
 
   def and_there_is_another_lead_provider
-    active_lead_provider = FactoryBot.create(
-      :active_lead_provider,
+    framework_agreement = FactoryBot.create(
+      :framework_agreement,
       contract_period: @contract_period
     )
-    @another_lead_provider = active_lead_provider.lead_provider
+    @another_lead_provider = framework_agreement.lead_provider
   end
 
   def then_i_can_change_the_lead_provider

@@ -1,18 +1,18 @@
 module DeliveryPartners
   class UpdateLeadProviderPairings
-    attr_reader :delivery_partner, :contract_period, :active_lead_provider_ids, :author
+    attr_reader :delivery_partner, :contract_period, :framework_agreement_ids, :author
 
-    def initialize(delivery_partner:, contract_period:, active_lead_provider_ids:, author:)
+    def initialize(delivery_partner:, contract_period:, framework_agreement_ids:, author:)
       @delivery_partner = delivery_partner
       @contract_period = contract_period
-      @active_lead_provider_ids = active_lead_provider_ids
+      @framework_agreement_ids = framework_agreement_ids
       @author = author
     end
 
     def update!
       ActiveRecord::Base.transaction do
-        ids_to_add = active_lead_provider_ids_to_add
-        ids_to_remove = active_lead_provider_ids_to_remove
+        ids_to_add = framework_agreement_ids_to_add
+        ids_to_remove = framework_agreement_ids_to_remove
 
         remove_partnerships(ids_to_remove)
         add_partnerships(ids_to_add)
@@ -31,24 +31,24 @@ module DeliveryPartners
         .for_contract_period(contract_period)
     end
 
-    def current_active_lead_provider_ids
-      @current_active_lead_provider_ids ||= current_partnerships.map(&:active_lead_provider_id)
+    def current_framework_agreement_ids
+      @current_framework_agreement_ids ||= current_partnerships.map(&:active_lead_provider_id)
     end
 
-    def active_lead_provider_ids_to_add
-      active_lead_provider_ids - current_active_lead_provider_ids
+    def framework_agreement_ids_to_add
+      framework_agreement_ids - current_framework_agreement_ids
     end
 
-    def active_lead_provider_ids_to_remove
-      current_active_lead_provider_ids - active_lead_provider_ids
+    def framework_agreement_ids_to_remove
+      current_framework_agreement_ids - framework_agreement_ids
     end
 
     def add_partnerships(ids_to_add)
       ids_to_add.each do |active_lead_provider_id|
-        active_lead_provider = ActiveLeadProvider.find(active_lead_provider_id)
+        framework_agreement = FrameworkAgreement.find(active_lead_provider_id)
         LeadProviderDeliveryPartnerships::Create.new(
           author:,
-          active_lead_provider:,
+          framework_agreement:,
           params: { delivery_partner_id: delivery_partner.id }
         ).call
       end
@@ -59,17 +59,17 @@ module DeliveryPartners
         partnership = current_partnerships.find_by(active_lead_provider_id:)
         next unless partnership
 
-        active_lead_provider = partnership.active_lead_provider
+        framework_agreement = partnership.framework_agreement
 
-        record_partnership_removed_event(active_lead_provider, partnership)
+        record_partnership_removed_event(framework_agreement, partnership)
         partnership.destroy!
       end
     end
 
-    def record_partnership_removed_event(active_lead_provider, removed_partnership)
+    def record_partnership_removed_event(framework_agreement, removed_partnership)
       Events::Record.record_lead_provider_delivery_partnership_removed_event!(
         delivery_partner:,
-        lead_provider: active_lead_provider.lead_provider,
+        lead_provider: framework_agreement.lead_provider,
         contract_period:,
         author:,
         lead_provider_delivery_partnership: removed_partnership

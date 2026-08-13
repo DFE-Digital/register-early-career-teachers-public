@@ -1,7 +1,7 @@
 <%= content_for(:error_summary) { form.govuk_error_summary } %>
 
 <%= form.govuk_collection_select :contract_id,
-    active_lead_provider.contracts,
+    framework_agreement.contracts,
     :id,
     :description,
     label: { text: "Contract", size: "m" },

@@ -2,21 +2,21 @@ module Admin::Finance::ActiveLeadProviders
   class LeadProviderDeliveryPartnershipsController < Admin::Finance::BaseController
     layout "full"
 
-    before_action :set_active_lead_provider
+    before_action :set_framework_agreement
     before_action :set_lead_provider_delivery_partnership, only: %i[delete destroy]
     before_action :redirect_unless_editable, only: %i[new create delete destroy]
 
     def index
-      contract_period = @active_lead_provider.contract_period
+      contract_period = @framework_agreement.contract_period
 
       @breadcrumbs = {
         "Finance" => admin_finance_path,
         "Contract periods" => admin_contract_periods_path,
-        @active_lead_provider.contract_period_year.to_s => admin_contract_period_path(contract_period),
-        @active_lead_provider.lead_provider_name => admin_contract_period_active_lead_providers_path(contract_period),
+        @framework_agreement.contract_period_year.to_s => admin_contract_period_path(contract_period),
+        @framework_agreement.lead_provider_name => admin_contract_period_active_lead_providers_path(contract_period),
       }
       @pagy, @lead_provider_delivery_partnerships = pagy(
-        @active_lead_provider.lead_provider_delivery_partnerships.includes(:delivery_partner).order("delivery_partners.name")
+        @framework_agreement.lead_provider_delivery_partnerships.includes(:delivery_partner).order("delivery_partners.name")
       )
     end
 
@@ -28,7 +28,7 @@ module Admin::Finance::ActiveLeadProviders
     def create
       ::LeadProviderDeliveryPartnerships::Create.new(
         author: current_user,
-        active_lead_provider: @active_lead_provider,
+        framework_agreement: @framework_agreement,
         params: lead_provider_delivery_partnership_params
       ).call
 
@@ -56,18 +56,18 @@ module Admin::Finance::ActiveLeadProviders
 
   private
 
-    def set_active_lead_provider
-      @active_lead_provider = ActiveLeadProvider
+    def set_framework_agreement
+      @framework_agreement = FrameworkAgreement
         .includes(:contract_period, :lead_provider)
         .find(params[:active_lead_provider_id])
     end
 
     def set_lead_provider_delivery_partnership
-      @lead_provider_delivery_partnership = @active_lead_provider.lead_provider_delivery_partnerships.find(params[:id])
+      @lead_provider_delivery_partnership = @framework_agreement.lead_provider_delivery_partnerships.find(params[:id])
     end
 
     def redirect_unless_editable
-      unless @active_lead_provider.editable?
+      unless @framework_agreement.editable?
         redirect_to index_path,
                     flash: {
                       error: "Delivery partnerships cannot be changed once the contract period has started"
@@ -80,12 +80,12 @@ module Admin::Finance::ActiveLeadProviders
     end
 
     def available_delivery_partners
-      DeliveryPartner.where.not(id: @active_lead_provider.delivery_partner_ids).order(:name)
+      DeliveryPartner.where.not(id: @framework_agreement.delivery_partner_ids).order(:name)
     end
 
     def index_path
       admin_contract_period_active_lead_provider_lead_provider_delivery_partnerships_path(
-        @active_lead_provider.contract_period, @active_lead_provider
+        @framework_agreement.contract_period, @framework_agreement
       )
     end
   end

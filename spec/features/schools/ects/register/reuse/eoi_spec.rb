@@ -46,14 +46,14 @@ RSpec.describe "Registering an ECT - reuse previous EOI" do
 
     @last_chosen_lead_provider = FactoryBot.create(:lead_provider, name: "Orange Institute")
 
-    previous_year_active_lead_provider = FactoryBot.create(
-      :active_lead_provider,
+    previous_year_framework_agreement = FactoryBot.create(
+      :framework_agreement,
       lead_provider: @last_chosen_lead_provider,
       contract_period: previous_contract_period
     )
 
     FactoryBot.create(
-      :active_lead_provider,
+      :framework_agreement,
       lead_provider: @last_chosen_lead_provider,
       contract_period: @current_contract_period
     )
@@ -82,7 +82,7 @@ RSpec.describe "Registering an ECT - reuse previous EOI" do
       :training_period,
       ect_at_school_period: earlier_registration_at_current_school,
       training_programme: "provider_led",
-      expression_of_interest: previous_year_active_lead_provider,
+      expression_of_interest: previous_year_framework_agreement,
       school_partnership: nil,
       started_on: Date.new(2024, 9, 1),
       finished_on: Date.new(2025, 6, 30)

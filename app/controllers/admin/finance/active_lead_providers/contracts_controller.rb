@@ -2,7 +2,7 @@ module Admin::Finance::ActiveLeadProviders
   class ContractsController < Admin::Finance::BaseController
     layout "full"
 
-    before_action :set_active_lead_provider
+    before_action :set_framework_agreement
     before_action :set_contract, only: %i[show edit update delete destroy]
     before_action :redirect_unless_editable, only: %i[edit update]
     before_action :redirect_if_finished, only: %i[new create delete destroy]
@@ -11,30 +11,30 @@ module Admin::Finance::ActiveLeadProviders
       @breadcrumbs = {
         "Finance" => admin_finance_path,
         "Contract periods" => admin_contract_periods_path,
-        @active_lead_provider.contract_period_year.to_s => admin_contract_period_path(@active_lead_provider.contract_period),
-        @active_lead_provider.lead_provider_name => admin_contract_period_active_lead_providers_path(@active_lead_provider.contract_period),
+        @framework_agreement.contract_period_year.to_s => admin_contract_period_path(@framework_agreement.contract_period),
+        @framework_agreement.lead_provider_name => admin_contract_period_active_lead_providers_path(@framework_agreement.contract_period),
       }
-      @contracts = @active_lead_provider.contracts.includes(:statements).order(:created_at)
+      @contracts = @framework_agreement.contracts.includes(:statements).order(:created_at)
     end
 
     def show
       @breadcrumbs = {
         "Finance" => admin_finance_path,
         "Contract periods" => admin_contract_periods_path,
-        @active_lead_provider.contract_period_year.to_s => admin_contract_period_path(@active_lead_provider.contract_period),
-        @active_lead_provider.lead_provider_name => admin_contract_period_active_lead_providers_path(@active_lead_provider.contract_period),
-        "Contracts" => admin_contract_period_active_lead_provider_contracts_path(@active_lead_provider.contract_period, @active_lead_provider),
+        @framework_agreement.contract_period_year.to_s => admin_contract_period_path(@framework_agreement.contract_period),
+        @framework_agreement.lead_provider_name => admin_contract_period_active_lead_providers_path(@framework_agreement.contract_period),
+        "Contracts" => admin_contract_period_active_lead_provider_contracts_path(@framework_agreement.contract_period, @framework_agreement),
       }
     end
 
     def new
-      @contract = ::Contracts::Build.new(active_lead_provider: @active_lead_provider).call
+      @contract = ::Contracts::Build.new(framework_agreement: @framework_agreement).call
     end
 
     def create
       @contract = ::Contracts::Create.new(
         author: current_user,
-        active_lead_provider: @active_lead_provider,
+        framework_agreement: @framework_agreement,
         params: contract_params
       ).call
 
@@ -73,20 +73,20 @@ module Admin::Finance::ActiveLeadProviders
 
   private
 
-    def set_active_lead_provider
-      @active_lead_provider = ActiveLeadProvider
+    def set_framework_agreement
+      @framework_agreement = FrameworkAgreement
         .includes(:contract_period, :lead_provider, :bands)
         .find(params.expect(:active_lead_provider_id))
     end
 
     def set_contract
-      @contract = @active_lead_provider.contracts
+      @contract = @framework_agreement.contracts
         .includes(
           :statements,
           :flat_rate_fee_structure,
           banded_fee_structure: {
             band_terms: {
-              band: { active_lead_provider: :bands }
+              band: { framework_agreement: :bands }
             }
           }
         )
@@ -94,14 +94,14 @@ module Admin::Finance::ActiveLeadProviders
     end
 
     def redirect_unless_editable
-      unless @active_lead_provider.editable?
+      unless @framework_agreement.editable?
         redirect_to contracts_path,
                     flash: { error: "Contracts cannot be changed once the contract period has started" }
       end
     end
 
     def redirect_if_finished
-      return unless @active_lead_provider.finished_on_before_today?
+      return unless @framework_agreement.finished_on_before_today?
 
       redirect_to contracts_path,
                   flash: { error: "Contracts cannot be changed once the contract period has finished" }
@@ -144,13 +144,13 @@ module Admin::Finance::ActiveLeadProviders
 
     def contract_path(contract)
       admin_contract_period_active_lead_provider_contract_path(
-        @active_lead_provider.contract_period, @active_lead_provider, contract
+        @framework_agreement.contract_period, @framework_agreement, contract
       )
     end
 
     def contracts_path
       admin_contract_period_active_lead_provider_contracts_path(
-        @active_lead_provider.contract_period, @active_lead_provider
+        @framework_agreement.contract_period, @framework_agreement
       )
     end
   end

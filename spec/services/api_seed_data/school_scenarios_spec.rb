@@ -8,7 +8,7 @@ RSpec.describe APISeedData::SchoolScenarios do
   let(:contract_period_2025) { FactoryBot.create(:contract_period, year: 2025) }
 
   let(:lead_provider_count) { LeadProvider.count }
-  let(:active_lead_provider_count) { ActiveLeadProvider.count }
+  let(:framework_agreement_count) { FrameworkAgreement.count }
 
   before do
     allow(Logger).to receive(:new).with($stdout) { logger }
@@ -16,8 +16,8 @@ RSpec.describe APISeedData::SchoolScenarios do
 
     # Create lead providers with active lead providers for both contract periods
     FactoryBot.create_list(:lead_provider, 2).each do |lead_provider|
-      FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: contract_period_2024)
-      FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: contract_period_2025)
+      FactoryBot.create(:framework_agreement, lead_provider:, contract_period: contract_period_2024)
+      FactoryBot.create(:framework_agreement, lead_provider:, contract_period: contract_period_2025)
     end
 
     # Create delivery partners
@@ -92,13 +92,13 @@ RSpec.describe APISeedData::SchoolScenarios do
     it "creates schools with participants that rolled over from 2024 to 2025" do
       LeadProvider.find_each do |lead_provider|
         teachers_with_2024 = Teacher
-          .joins(ect_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } }] })
+          .joins(ect_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } }] })
           .where(schedules: { contract_period_year: 2024 })
           .where(active_lead_providers: { lead_provider_id: lead_provider.id })
           .select(:id)
 
         teachers_with_2025 = Teacher
-          .joins(ect_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } }] })
+          .joins(ect_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } }] })
           .where(schedules: { contract_period_year: 2025 })
           .where(active_lead_providers: { lead_provider_id: lead_provider.id })
           .select(:id)
@@ -138,7 +138,7 @@ RSpec.describe APISeedData::SchoolScenarios do
     end
 
     it "creates schools with partnerships but no participants" do
-      expect(schools_with_partnership_no_participants.count).to eq(2 * active_lead_provider_count)
+      expect(schools_with_partnership_no_participants.count).to eq(2 * framework_agreement_count)
     end
   end
 
@@ -264,7 +264,7 @@ RSpec.describe APISeedData::SchoolScenarios do
 
     let(:schools_with_multiple_lp_partnerships) do
       School
-        .joins(school_partnerships: { lead_provider_delivery_partnership: :active_lead_provider })
+        .joins(school_partnerships: { lead_provider_delivery_partnership: :framework_agreement })
         .group("schools.id")
         .having("COUNT(DISTINCT active_lead_providers.lead_provider_id) > 1")
     end

@@ -165,8 +165,8 @@ RSpec.describe "Admin teachers index", type: :request do
 
             school_partnership = FactoryBot.create(
               :school_partnership,
-              :with_active_lead_provider,
-              active_lead_provider: FactoryBot.create(:active_lead_provider, contract_period: non_matching_contract_period),
+              :with_framework_agreement,
+              framework_agreement: FactoryBot.create(:framework_agreement, contract_period: non_matching_contract_period),
               school: ect_at_school_period.school
             )
 
@@ -189,8 +189,8 @@ RSpec.describe "Admin teachers index", type: :request do
 
           matching_school_partnership = FactoryBot.create(
             :school_partnership,
-            :with_active_lead_provider,
-            active_lead_provider: FactoryBot.create(:active_lead_provider, contract_period: matching_contract_period),
+            :with_framework_agreement,
+            framework_agreement: FactoryBot.create(:framework_agreement, contract_period: matching_contract_period),
             school: matching_ect_at_school_period.school
           )
 

@@ -23,7 +23,7 @@ module Events
                 :lead_provider,
                 :delivery_partner,
                 :pending_induction_submission_batch,
-                :active_lead_provider,
+                :framework_agreement,
                 :lead_provider_delivery_partnership,
                 :statement,
                 :statement_adjustment,
@@ -55,7 +55,7 @@ module Events
       lead_provider: nil,
       delivery_partner: nil,
       pending_induction_submission_batch: nil,
-      active_lead_provider: nil,
+      framework_agreement: nil,
       lead_provider_delivery_partnership: nil,
       statement: nil,
       statement_adjustment: nil,
@@ -86,7 +86,7 @@ module Events
       @lead_provider = lead_provider
       @delivery_partner = delivery_partner
       @pending_induction_submission_batch = pending_induction_submission_batch
-      @active_lead_provider = active_lead_provider
+      @framework_agreement = framework_agreement
       @lead_provider_delivery_partnership = lead_provider_delivery_partnership
       @statement = statement
       @statement_adjustment = statement_adjustment
@@ -933,12 +933,12 @@ module Events
     def self.record_statement_authorised_for_payment_event!(author:, statement:, happened_at: Time.zone.now)
       event_type = :statement_authorised_for_payment
 
-      active_lead_provider = statement.active_lead_provider
-      lead_provider        = active_lead_provider.lead_provider
+      framework_agreement = statement.framework_agreement
+      lead_provider        = framework_agreement.lead_provider
       heading              = "Statement authorised for payment"
 
       metadata = {
-        contract_period_year: active_lead_provider.contract_period_year
+        contract_period_year: framework_agreement.contract_period_year
       }
 
       new(
@@ -946,7 +946,7 @@ module Events
         author:,
         heading:,
         statement:,
-        active_lead_provider:,
+        framework_agreement:,
         lead_provider:,
         happened_at:,
         metadata:
@@ -956,12 +956,12 @@ module Events
     def self.record_statement_marked_payable!(author:, statement:, happened_at: Time.current)
       event_type = :statement_marked_payable
 
-      active_lead_provider = statement.active_lead_provider
-      lead_provider        = active_lead_provider.lead_provider
+      framework_agreement = statement.framework_agreement
+      lead_provider        = framework_agreement.lead_provider
       heading              = "Statement marked as payable"
 
       metadata = {
-        contract_period_year: active_lead_provider.contract_period_year
+        contract_period_year: framework_agreement.contract_period_year
       }
 
       new(
@@ -969,7 +969,7 @@ module Events
         author:,
         heading:,
         statement:,
-        active_lead_provider:,
+        framework_agreement:,
         lead_provider:,
         happened_at:,
         metadata:
@@ -987,8 +987,8 @@ module Events
       }
 
       statement = statement_adjustment.statement
-      active_lead_provider = statement.active_lead_provider
-      lead_provider = active_lead_provider.lead_provider
+      framework_agreement = statement.framework_agreement
+      lead_provider = framework_agreement.lead_provider
 
       new(
         event_type:,
@@ -996,7 +996,7 @@ module Events
         heading:,
         statement:,
         statement_adjustment:,
-        active_lead_provider:,
+        framework_agreement:,
         lead_provider:,
         happened_at: Time.zone.now,
         metadata:
@@ -1012,8 +1012,8 @@ module Events
       }
 
       statement = statement_adjustment.statement
-      active_lead_provider = statement.active_lead_provider
-      lead_provider = active_lead_provider.lead_provider
+      framework_agreement = statement.framework_agreement
+      lead_provider = framework_agreement.lead_provider
 
       new(
         event_type:,
@@ -1021,7 +1021,7 @@ module Events
         heading:,
         statement:,
         statement_adjustment:,
-        active_lead_provider:,
+        framework_agreement:,
         lead_provider:,
         happened_at: Time.zone.now,
         metadata:
@@ -1037,15 +1037,15 @@ module Events
       }
 
       statement = statement_adjustment.statement
-      active_lead_provider = statement.active_lead_provider
-      lead_provider = active_lead_provider.lead_provider
+      framework_agreement = statement.framework_agreement
+      lead_provider = framework_agreement.lead_provider
 
       new(
         event_type:,
         author:,
         heading:,
         statement:,
-        active_lead_provider:,
+        framework_agreement:,
         lead_provider:,
         happened_at: Time.zone.now,
         metadata:
@@ -1086,13 +1086,13 @@ module Events
 
     # Active Lead Provider Events
 
-    def self.record_active_lead_provider_created_event!(author:, active_lead_provider:, happened_at: Time.zone.now)
+    def self.record_active_lead_provider_created_event!(author:, framework_agreement:, happened_at: Time.zone.now)
       event_type = :active_lead_provider_created
-      lead_provider = active_lead_provider.lead_provider
-      contract_period = active_lead_provider.contract_period
+      lead_provider = framework_agreement.lead_provider
+      contract_period = framework_agreement.contract_period
       heading = "#{lead_provider.name} added for #{contract_period.year}"
 
-      new(event_type:, author:, heading:, active_lead_provider:, lead_provider:, happened_at:).record_event!
+      new(event_type:, author:, heading:, framework_agreement:, lead_provider:, happened_at:).record_event!
     end
 
     # The active lead provider is destroyed before this fires, so we record the
@@ -1108,28 +1108,28 @@ module Events
 
     def self.record_contract_created_event!(author:, contract:, happened_at: Time.zone.now)
       event_type = :contract_created
-      active_lead_provider = contract.active_lead_provider
-      lead_provider = active_lead_provider.lead_provider
+      framework_agreement = contract.framework_agreement
+      lead_provider = framework_agreement.lead_provider
       heading = "Contract created: #{contract.description} for #{lead_provider.name}"
 
-      new(event_type:, author:, heading:, active_lead_provider:, lead_provider:, happened_at:).record_event!
+      new(event_type:, author:, heading:, framework_agreement:, lead_provider:, happened_at:).record_event!
     end
 
     def self.record_contract_updated_event!(author:, contract:, modifications:, happened_at: Time.zone.now)
       event_type = :contract_updated
-      active_lead_provider = contract.active_lead_provider
-      lead_provider = active_lead_provider.lead_provider
+      framework_agreement = contract.framework_agreement
+      lead_provider = framework_agreement.lead_provider
       heading = "Contract updated: #{contract.description} for #{lead_provider.name}"
 
-      new(event_type:, author:, heading:, active_lead_provider:, lead_provider:, happened_at:, modifications:).record_event!
+      new(event_type:, author:, heading:, framework_agreement:, lead_provider:, happened_at:, modifications:).record_event!
     end
 
-    def self.record_contract_deleted_event!(author:, contract:, active_lead_provider:, happened_at: Time.zone.now)
+    def self.record_contract_deleted_event!(author:, contract:, framework_agreement:, happened_at: Time.zone.now)
       event_type = :contract_deleted
-      lead_provider = active_lead_provider.lead_provider
+      lead_provider = framework_agreement.lead_provider
       heading = "Contract deleted: #{contract.description} for #{lead_provider.name}"
 
-      new(event_type:, author:, heading:, active_lead_provider:, lead_provider:, happened_at:).record_event!
+      new(event_type:, author:, heading:, framework_agreement:, lead_provider:, happened_at:).record_event!
     end
 
     # Delivery Partner Events
@@ -1307,8 +1307,8 @@ module Events
     def self.record_statement_created_event!(author:, statement:)
       event_type = :statement_created
 
-      active_lead_provider = statement.active_lead_provider
-      lead_provider        = active_lead_provider.lead_provider
+      framework_agreement = statement.framework_agreement
+      lead_provider        = framework_agreement.lead_provider
       heading              = "Statement created: #{Statements::Period.for(statement)} #{statement.fee_type} for #{lead_provider.name}"
 
       new(
@@ -1316,7 +1316,7 @@ module Events
         author:,
         heading:,
         statement:,
-        active_lead_provider:,
+        framework_agreement:,
         lead_provider:,
         happened_at: Time.zone.now
       ).record_event!
@@ -1325,8 +1325,8 @@ module Events
     def self.record_statement_updated_event!(author:, statement:, modifications:)
       event_type = :statement_updated
 
-      active_lead_provider = statement.active_lead_provider
-      lead_provider        = active_lead_provider.lead_provider
+      framework_agreement = statement.framework_agreement
+      lead_provider        = framework_agreement.lead_provider
       heading              = "Statement updated: #{Statements::Period.for(statement)} #{statement.fee_type} for #{lead_provider.name}"
 
       new(
@@ -1334,22 +1334,22 @@ module Events
         author:,
         heading:,
         statement:,
-        active_lead_provider:,
+        framework_agreement:,
         lead_provider:,
         happened_at: Time.zone.now,
         modifications:
       ).record_event!
     end
 
-    def self.record_statement_deleted_event!(author:, active_lead_provider:, modifications:, heading:)
+    def self.record_statement_deleted_event!(author:, framework_agreement:, modifications:, heading:)
       event_type = :statement_deleted
-      lead_provider = active_lead_provider.lead_provider
+      lead_provider = framework_agreement.lead_provider
 
       new(
         event_type:,
         author:,
         heading:,
-        active_lead_provider:,
+        framework_agreement:,
         lead_provider:,
         happened_at: Time.zone.now,
         modifications:
@@ -1417,36 +1417,36 @@ module Events
 
     ## band events
 
-    def self.record_active_lead_provider_band_added_event!(author:, band:)
+    def self.record_framework_agreement_band_added_event!(author:, band:)
       event_type = :band_added
-      active_lead_provider = band.active_lead_provider
-      lead_provider = active_lead_provider.lead_provider
-      contract_period = active_lead_provider.contract_period
+      framework_agreement = band.framework_agreement
+      lead_provider = framework_agreement.lead_provider
+      contract_period = framework_agreement.contract_period
       heading = "Band #{band.letter} added to #{lead_provider.name} for #{contract_period.year}"
 
       new(
         event_type:,
         author:,
         heading:,
-        active_lead_provider:,
+        framework_agreement:,
         lead_provider:,
         contract_period:,
         happened_at: Time.zone.now
       ).record_event!
     end
 
-    def self.record_active_lead_provider_band_updated_event!(author:, band:, modifications:)
+    def self.record_framework_agreement_band_updated_event!(author:, band:, modifications:)
       event_type = :band_updated
-      active_lead_provider = band.active_lead_provider
-      lead_provider = active_lead_provider.lead_provider
-      contract_period = active_lead_provider.contract_period
+      framework_agreement = band.framework_agreement
+      lead_provider = framework_agreement.lead_provider
+      contract_period = framework_agreement.contract_period
       heading = "Band #{band.letter} updated for #{lead_provider.name} for #{contract_period.year}"
 
       new(
         event_type:,
         author:,
         heading:,
-        active_lead_provider:,
+        framework_agreement:,
         lead_provider:,
         contract_period:,
         happened_at: Time.zone.now,
@@ -1454,17 +1454,17 @@ module Events
       ).record_event!
     end
 
-    def self.record_active_lead_provider_band_deleted_event!(author:, active_lead_provider:, band_letter:)
+    def self.record_framework_agreement_band_deleted_event!(author:, framework_agreement:, band_letter:)
       event_type = :band_deleted
-      contract_period = active_lead_provider.contract_period
-      lead_provider = active_lead_provider.lead_provider
+      contract_period = framework_agreement.contract_period
+      lead_provider = framework_agreement.lead_provider
       heading = "Band #{band_letter} deleted for #{lead_provider.name} for #{contract_period.year}"
 
       new(
         event_type:,
         author:,
         heading:,
-        active_lead_provider:,
+        framework_agreement:,
         lead_provider:,
         contract_period:,
         happened_at: Time.zone.now
@@ -1518,7 +1518,7 @@ module Events
         school_partnership:,
         lead_provider:,
         delivery_partner:,
-        active_lead_provider:,
+        framework_agreement:,
         lead_provider_delivery_partnership:,
         statement:,
         statement_adjustment:,

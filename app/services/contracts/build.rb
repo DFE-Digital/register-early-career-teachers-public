@@ -1,18 +1,18 @@
 module Contracts
   class Build
-    attr_reader :active_lead_provider
+    attr_reader :framework_agreement
 
-    def initialize(active_lead_provider:)
-      @active_lead_provider = active_lead_provider
+    def initialize(framework_agreement:)
+      @framework_agreement = framework_agreement
     end
 
     def call
-      contract = active_lead_provider.contracts.build
+      contract = framework_agreement.contracts.build
       banded_fee_structure = contract.build_banded_fee_structure
 
       previous_terms_by_band_id = previous_band_terms.index_by(&:band_id)
 
-      active_lead_provider.bands.each do |alp_band|
+      framework_agreement.bands.each do |alp_band|
         previous_term = previous_terms_by_band_id[alp_band.id]
 
         banded_fee_structure.band_terms.build(
@@ -36,7 +36,7 @@ module Contracts
     end
 
     def previous_contract
-      active_lead_provider
+      framework_agreement
         .contracts
         .most_recent_first
         .includes(banded_fee_structure: { band_terms: :band })

@@ -1,12 +1,12 @@
 class LeadProviderDeliveryPartnership < ApplicationRecord
   include DeclarativeUpdates
 
-  belongs_to :active_lead_provider
+  belongs_to :framework_agreement, foreign_key: :active_lead_provider_id
   belongs_to :delivery_partner
   has_many :school_partnerships
   has_many :events, dependent: :nullify
-  has_one :lead_provider, through: :active_lead_provider
-  has_one :contract_period, through: :active_lead_provider
+  has_one :lead_provider, through: :framework_agreement
+  has_one :contract_period, through: :framework_agreement
 
   delegate :name, to: :delivery_partner, prefix: true
 
@@ -19,15 +19,15 @@ class LeadProviderDeliveryPartnership < ApplicationRecord
   validates :ecf_id, uniqueness: { case_sensitive: false }, allow_nil: true
 
   scope :with_delivery_partner, ->(delivery_partner_id) { where(delivery_partner_id:) }
-  scope :with_active_lead_provider, ->(active_lead_provider_id) { where(active_lead_provider_id:) }
+  scope :with_framework_agreement, ->(active_lead_provider_id) { where(active_lead_provider_id:) }
   scope :for_contract_period, ->(contract_period) {
-    joins(:active_lead_provider)
+    joins(:framework_agreement)
       .where(active_lead_providers: { contract_period_year: contract_period.year })
-      .includes(active_lead_provider: :lead_provider)
+      .includes(framework_agreement: :lead_provider)
   }
-  scope :active_lead_provider_ids_for, ->(delivery_partner, contract_period) {
+  scope :framework_agreement_ids_for, ->(delivery_partner, contract_period) {
     where(delivery_partner:)
-      .joins(:active_lead_provider)
+      .joins(:framework_agreement)
       .where(active_lead_providers: { contract_period_year: contract_period.year })
       .select(:active_lead_provider_id)
   }

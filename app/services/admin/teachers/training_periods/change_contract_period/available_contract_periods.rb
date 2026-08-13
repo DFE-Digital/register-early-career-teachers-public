@@ -17,7 +17,7 @@ module Admin
             scope = base_scope.most_recent_first
             scope = scope.where.not(year: existing_contract_period.year) if existing_contract_period
             scope = scope.where.not(year: excluded_frozen_years)
-            scope = scope.where(year: equivalent_active_lead_providers.select(:contract_period_year)) if eoi_only?
+            scope = scope.where(year: equivalent_framework_agreements.select(:contract_period_year)) if eoi_only?
             scope
           end
 
@@ -51,8 +51,8 @@ module Admin
             training_period.only_expression_of_interest?
           end
 
-          def equivalent_active_lead_providers
-            ActiveLeadProvider.where(lead_provider: training_period.expression_of_interest_lead_provider)
+          def equivalent_framework_agreements
+            FrameworkAgreement.where(lead_provider: training_period.expression_of_interest_lead_provider)
           end
 
           def original_frozen_contract_period_year

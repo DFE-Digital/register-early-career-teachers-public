@@ -3,11 +3,11 @@ namespace :product_review do
   task "3731" => :environment do
     ucl = LeadProvider.find_by!(name: "UCL Institute of Education")
     contract_period = ContractPeriod.find_by!(year: 2024)
-    active_lead_provider = ActiveLeadProvider.find_by!(lead_provider: ucl, contract_period:)
+    framework_agreement = FrameworkAgreement.find_by!(lead_provider: ucl, contract_period:)
 
     statement = Statement
       .joins(:contract)
-      .where(contracts: { active_lead_provider_id: active_lead_provider.id, contract_type: "ecf" })
+      .where(contracts: { active_lead_provider_id: framework_agreement.id, contract_type: "ecf" })
       .find_by!(month: 10, year: 2024, fee_type: "output")
 
     refundable = Declaration

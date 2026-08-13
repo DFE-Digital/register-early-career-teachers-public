@@ -1,9 +1,9 @@
 RSpec.shared_examples "a sortable endpoint" do |additional_sorts = []|
   let!(:resources) do
     [
-      travel_to(2.days.ago) { create_resource(active_lead_provider:) }.tap { set_updated_at(resource: it, value: 2.hours.ago) },
-      create_resource(active_lead_provider:).tap { set_updated_at(resource: it, value: 3.hours.ago) },
-      travel_to(5.days.ago) { create_resource(active_lead_provider:) }.tap { set_updated_at(resource: it, value: 1.day.ago) },
+      travel_to(2.days.ago) { create_resource(framework_agreement:) }.tap { set_updated_at(resource: it, value: 2.hours.ago) },
+      create_resource(framework_agreement:).tap { set_updated_at(resource: it, value: 3.hours.ago) },
+      travel_to(5.days.ago) { create_resource(framework_agreement:) }.tap { set_updated_at(resource: it, value: 1.day.ago) },
     ]
   end
 

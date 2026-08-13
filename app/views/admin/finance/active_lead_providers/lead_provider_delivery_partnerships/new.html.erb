@@ -1,15 +1,15 @@
 <%
   page_data(
-    title: "Add delivery partner to #{@active_lead_provider.lead_provider_name} for #{@active_lead_provider.contract_period_year}",
+    title: "Add delivery partner to #{@framework_agreement.lead_provider_name} for #{@framework_agreement.contract_period_year}",
     error: @lead_provider_delivery_partnership.errors.present?,
-    backlink_href: admin_contract_period_active_lead_provider_lead_provider_delivery_partnerships_path(@active_lead_provider.contract_period, @active_lead_provider)
+    backlink_href: admin_contract_period_active_lead_provider_lead_provider_delivery_partnerships_path(@framework_agreement.contract_period, @framework_agreement)
   )
 %>
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <%= form_with model: @lead_provider_delivery_partnership,
-                   url: admin_contract_period_active_lead_provider_lead_provider_delivery_partnerships_path(@active_lead_provider.contract_period, @active_lead_provider),
+                   url: admin_contract_period_active_lead_provider_lead_provider_delivery_partnerships_path(@framework_agreement.contract_period, @framework_agreement),
                    method: :post do |f| %>
       <%= content_for(:error_summary) { f.govuk_error_summary } %>
       <%= f.govuk_collection_select :delivery_partner_id,

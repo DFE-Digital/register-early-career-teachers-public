@@ -1,12 +1,12 @@
 describe API::StatementSerializer, type: :serializer do
   subject(:response) { JSON.parse(described_class.render(statement)) }
 
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement, contract_period:) }
   let(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
   let!(:statement) do
     FactoryBot.create(
       :statement,
-      active_lead_provider:,
+      framework_agreement:,
       api_id: "fe1a5280-1b13-4b09-b9c7-e2b01d37e851",
       month: 7,
       year: 2023,

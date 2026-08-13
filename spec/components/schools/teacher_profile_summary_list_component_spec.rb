@@ -61,15 +61,15 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
 
       lead_provider = FactoryBot.create(:lead_provider, name: "Ambition Institute")
 
-      active_lead_provider = FactoryBot.create(
-        :active_lead_provider,
+      framework_agreement = FactoryBot.create(
+        :framework_agreement,
         lead_provider:,
         contract_period: training_period.schedule.contract_period
       )
 
       training_period.update!(
         school_partnership: nil,
-        expression_of_interest: active_lead_provider
+        expression_of_interest: framework_agreement
       )
 
       render_inline(component)
@@ -98,15 +98,15 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
 
       lead_provider = FactoryBot.create(:lead_provider, name: "Ambition Institute")
 
-      active_lead_provider = FactoryBot.create(
-        :active_lead_provider,
+      framework_agreement = FactoryBot.create(
+        :framework_agreement,
         lead_provider:,
         contract_period: training_period.schedule.contract_period
       )
 
       training_period.update!(
         school_partnership: nil,
-        expression_of_interest: active_lead_provider
+        expression_of_interest: framework_agreement
       )
 
       render_inline(component)

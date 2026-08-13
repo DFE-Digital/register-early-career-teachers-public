@@ -16,13 +16,13 @@ module APISeedData
 
       log_plant_info("statements")
 
-      active_lead_providers_by_lead_provider.each do |lead_provider, active_lead_providers|
+      framework_agreements_by_lead_provider.each do |lead_provider, framework_agreements|
         statements = []
 
-        active_lead_providers.each do |active_lead_provider|
-          next if active_lead_provider.contracts.empty?
+        framework_agreements.each do |framework_agreement|
+          next if framework_agreement.contracts.empty?
 
-          contract_year = active_lead_provider.contract_period.year
+          contract_year = framework_agreement.contract_period.year
           year_month_pairs = statement_year_month_pairs(contract_year)
 
           statements += year_month_pairs.each_with_index.map { |(year, month), index|
@@ -33,8 +33,8 @@ module APISeedData
             # Distribute contracts across statements evenly and in order, so if there are
             # 3 contracts, the first 1/3rd of statements get the first, the next 1/3rd get the
             # second, and the final 1/3rd get the third.
-            contract_index = (index * active_lead_provider.contracts.size) / year_month_pairs.size
-            contract = active_lead_provider.contracts[contract_index]
+            contract_index = (index * framework_agreement.contracts.size) / year_month_pairs.size
+            contract = framework_agreement.contracts[contract_index]
 
             attributes = {
               contract:,
@@ -46,13 +46,13 @@ module APISeedData
               fee_type: statement_fee_type,
             }
 
-            existing = find_existing_statement(active_lead_provider, year, month)
+            existing = find_existing_statement(framework_agreement, year, month)
 
             if existing
               existing.update!(attributes)
               existing
             else
-              FactoryBot.create(:statement, active_lead_provider:, **attributes)
+              FactoryBot.create(:statement, framework_agreement:, **attributes)
             end
           }.compact
         end
@@ -63,14 +63,14 @@ module APISeedData
 
   private
 
-    def active_lead_providers_by_lead_provider
-      active_lead_providers.group_by(&:lead_provider)
+    def framework_agreements_by_lead_provider
+      framework_agreements.group_by(&:lead_provider)
     end
 
-    def find_existing_statement(active_lead_provider, year, month)
+    def find_existing_statement(framework_agreement, year, month)
       Statement
-        .joins(contract: :active_lead_provider)
-        .where(contract: { active_lead_provider: })
+        .joins(contract: :framework_agreement)
+        .where(contract: { framework_agreement: })
         .find_by(year:, month:)
     end
 

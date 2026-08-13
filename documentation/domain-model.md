@@ -11,7 +11,16 @@ erDiagram
     datetime updated_at
   }
   Contract_BandedFeeStructure_BandTerm }o--|| Contract_BandedFeeStructure : belongs_to
-  Contract_BandedFeeStructure_BandTerm }o--|| ActiveLeadProvider_Band : belongs_to
+  Contract_BandedFeeStructure_BandTerm }o--|| FrameworkAgreement_Band : belongs_to
+  FrameworkAgreement_Band {
+    integer id
+    integer active_lead_provider_id
+    integer allocation_order
+    integer capacity
+    datetime created_at
+    datetime updated_at
+  }
+  FrameworkAgreement_Band }o--|| FrameworkAgreement : belongs_to
   Contract_FlatRateFeeStructure {
     integer id
     integer contract_id
@@ -33,15 +42,6 @@ erDiagram
     decimal uplift_target_ratio
   }
   Contract_BandedFeeStructure }o--|| Contract : belongs_to
-  ActiveLeadProvider_Band {
-    integer id
-    integer active_lead_provider_id
-    integer allocation_order
-    integer capacity
-    datetime created_at
-    datetime updated_at
-  }
-  ActiveLeadProvider_Band }o--|| ActiveLeadProvider : belongs_to
   User {
     integer id
     datetime created_at
@@ -80,7 +80,7 @@ erDiagram
   TrainingPeriod }o--|| MentorAtSchoolPeriod : belongs_to
   TrainingPeriod }o--|| SchoolPartnership : belongs_to
   TrainingPeriod }o--|| Schedule : belongs_to
-  TrainingPeriod }o--|| ActiveLeadProvider : belongs_to
+  TrainingPeriod }o--|| FrameworkAgreement : belongs_to
   TeacherIdChange {
     integer id
     uuid api_from_teacher_id
@@ -312,7 +312,7 @@ erDiagram
     uuid ecf_id
     datetime updated_at
   }
-  LeadProviderDeliveryPartnership }o--|| ActiveLeadProvider : belongs_to
+  LeadProviderDeliveryPartnership }o--|| FrameworkAgreement : belongs_to
   LeadProviderDeliveryPartnership }o--|| DeliveryPartner : belongs_to
   LeadProvider {
     integer id
@@ -348,6 +348,15 @@ erDiagram
     datetime updated_at
   }
   InductionExtension }o--|| Teacher : belongs_to
+  FrameworkAgreement {
+    integer id
+    integer contract_period_year
+    datetime created_at
+    integer lead_provider_id
+    datetime updated_at
+  }
+  FrameworkAgreement }o--|| ContractPeriod : belongs_to
+  FrameworkAgreement }o--|| LeadProvider : belongs_to
   ECTAtSchoolPeriod {
     integer id
     datetime created_at
@@ -438,7 +447,7 @@ erDiagram
     datetime updated_at
     decimal vat_rate
   }
-  Contract }o--|| ActiveLeadProvider : belongs_to
+  Contract }o--|| FrameworkAgreement : belongs_to
   AppropriateBodyPeriod {
     integer id
     integer appropriate_body_id
@@ -459,15 +468,6 @@ erDiagram
     datetime updated_at
   }
   AppropriateBody }o--|| DfESignInOrganisation : belongs_to
-  ActiveLeadProvider {
-    integer id
-    integer contract_period_year
-    datetime created_at
-    integer lead_provider_id
-    datetime updated_at
-  }
-  ActiveLeadProvider }o--|| ContractPeriod : belongs_to
-  ActiveLeadProvider }o--|| LeadProvider : belongs_to
   SupportQuery {
     integer id
     datetime created_at

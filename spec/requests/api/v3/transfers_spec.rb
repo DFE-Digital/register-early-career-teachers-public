@@ -4,14 +4,14 @@ RSpec.describe "Participant transfers API", type: :request do
   let(:serializer) { API::Teachers::SchoolTransferSerializer }
   let(:serializer_options) { { lead_provider_id: lead_provider.id } }
   let(:query) { API::Teachers::SchoolTransfers::Query }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
-  let(:lead_provider) { active_lead_provider.lead_provider }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
+  let(:lead_provider) { framework_agreement.lead_provider }
 
-  def create_resource(active_lead_provider:)
+  def create_resource(framework_agreement:)
     teacher = FactoryBot.create(:teacher)
     build_new_school_transfer(
       teacher:,
-      lead_provider: active_lead_provider.lead_provider
+      lead_provider: framework_agreement.lead_provider
     )
     teacher.tap { Metadata::Handlers::Teacher.new(it).refresh_metadata! }
   end
@@ -35,7 +35,7 @@ RSpec.describe "Participant transfers API", type: :request do
   end
 
   describe "#show" do
-    let(:resource) { create_resource(active_lead_provider:) }
+    let(:resource) { create_resource(framework_agreement:) }
     let(:path_id) { resource.api_id }
     let(:path) { transfers_api_v3_participant_path(path_id) }
 

@@ -2,21 +2,21 @@ module Admin::Finance::ActiveLeadProviders
   class StatementsController < Admin::Finance::BaseController
     layout "full"
 
-    before_action :set_active_lead_provider
+    before_action :set_framework_agreement
     before_action :set_statement, only: %i[show edit update delete destroy]
     before_action :redirect_unless_addable, only: %i[new create]
     before_action :redirect_unless_editable, only: %i[edit update delete destroy]
 
     def index
-      contract_period = @active_lead_provider.contract_period
+      contract_period = @framework_agreement.contract_period
 
       @breadcrumbs = {
         "Finance" => admin_finance_path,
         "Contract periods" => admin_contract_periods_path,
-        @active_lead_provider.contract_period_year.to_s => admin_contract_period_path(contract_period),
-        @active_lead_provider.lead_provider_name => admin_contract_period_active_lead_providers_path(contract_period),
+        @framework_agreement.contract_period_year.to_s => admin_contract_period_path(contract_period),
+        @framework_agreement.lead_provider_name => admin_contract_period_active_lead_providers_path(contract_period),
       }
-      @pagy, @statements = pagy(@active_lead_provider.statements.order(year: :asc, month: :asc))
+      @pagy, @statements = pagy(@framework_agreement.statements.order(year: :asc, month: :asc))
     end
 
     def show
@@ -66,25 +66,25 @@ module Admin::Finance::ActiveLeadProviders
 
   private
 
-    def set_active_lead_provider
-      @active_lead_provider = ActiveLeadProvider
+    def set_framework_agreement
+      @framework_agreement = FrameworkAgreement
         .includes(:contract_period, :lead_provider)
         .find(params[:active_lead_provider_id])
     end
 
     def set_statement
-      @statement = @active_lead_provider.statements.find(params[:id])
+      @statement = @framework_agreement.statements.find(params[:id])
     end
 
     def redirect_unless_addable
-      if @active_lead_provider.contract_period.payments_frozen?
+      if @framework_agreement.contract_period.payments_frozen?
         redirect_to statements_path,
                     flash: { error: "Statements cannot be added once the contract period is frozen" }
       end
     end
 
     def redirect_unless_editable
-      unless @active_lead_provider.editable?
+      unless @framework_agreement.editable?
         redirect_to statements_path,
                     flash: {
                       error: "Statements cannot be changed once the contract period has started"
@@ -99,16 +99,16 @@ module Admin::Finance::ActiveLeadProviders
       permitted = params.expect(statement: %i[contract_id month year deadline_date payment_date])
       return permitted unless permitted.key?(:contract_id)
 
-      scoped_contract = @active_lead_provider.contracts.find_by(id: permitted[:contract_id])
+      scoped_contract = @framework_agreement.contracts.find_by(id: permitted[:contract_id])
       permitted.merge(contract_id: scoped_contract&.id)
     end
 
     def statement_path(statement)
-      admin_contract_period_active_lead_provider_statement_path(@active_lead_provider.contract_period, @active_lead_provider, statement)
+      admin_contract_period_active_lead_provider_statement_path(@framework_agreement.contract_period, @framework_agreement, statement)
     end
 
     def statements_path
-      admin_contract_period_active_lead_provider_statements_path(@active_lead_provider.contract_period, @active_lead_provider)
+      admin_contract_period_active_lead_provider_statements_path(@framework_agreement.contract_period, @framework_agreement)
     end
   end
 end

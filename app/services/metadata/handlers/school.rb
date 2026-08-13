@@ -67,7 +67,7 @@ module Metadata::Handlers
 
     def school_partnership_contract_period_years
       @school_partnership_contract_period_years ||= school.school_partnerships
-        .includes(lead_provider_delivery_partnership: :active_lead_provider)
+        .includes(lead_provider_delivery_partnership: :framework_agreement)
         .pluck(:contract_period_year)
         .uniq
     end

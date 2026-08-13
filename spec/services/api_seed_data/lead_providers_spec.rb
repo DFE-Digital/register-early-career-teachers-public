@@ -23,21 +23,21 @@ RSpec.describe APISeedData::LeadProviders do
         expect(lead_provider).to be_present
 
         attributes[:contract_period_years].each do |year|
-          active_lead_provider = ActiveLeadProvider.find_by(
+          framework_agreement = FrameworkAgreement.find_by(
             lead_provider:,
             contract_period: ContractPeriod.find_by!(year:)
           )
-          expect(active_lead_provider).to be_present
+          expect(framework_agreement).to be_present
         end
       end
     end
 
     it "does not create data when already present" do
       expect { instance.plant }.to change(LeadProvider, :count).by(described_class::DATA.count)
-        .and change(ActiveLeadProvider, :count).by(all_registration_years.count)
+        .and change(FrameworkAgreement, :count).by(all_registration_years.count)
 
       expect { instance.plant }.not_to change(LeadProvider, :count)
-      expect { instance.plant }.not_to change(ActiveLeadProvider, :count)
+      expect { instance.plant }.not_to change(FrameworkAgreement, :count)
     end
 
     it "logs the creation of lead providers" do

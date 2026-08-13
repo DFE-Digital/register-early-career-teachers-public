@@ -165,7 +165,7 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
 
   context "when latest training period is an expression of interest only" do
     let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Jimmy Provider") }
-    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
+    let(:framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:) }
     let(:training_period) do
       FactoryBot.create(
         :training_period,
@@ -174,7 +174,7 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
         :with_only_expression_of_interest,
         ect_at_school_period:,
         started_on:,
-        expression_of_interest: active_lead_provider
+        expression_of_interest: framework_agreement
       )
     end
 

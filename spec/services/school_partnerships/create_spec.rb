@@ -6,8 +6,8 @@ RSpec.describe SchoolPartnerships::Create do
   let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
   let(:author) { Events::LeadProviderAPIAuthor.new(lead_provider:) }
 
-  let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
-  let!(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
+  let!(:framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:, contract_period:) }
+  let!(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:, delivery_partner:) }
 
   let(:service) do
     described_class.new(
@@ -58,7 +58,7 @@ RSpec.describe SchoolPartnerships::Create do
         :training_period,
         :with_only_expression_of_interest,
         ect_at_school_period:,
-        expression_of_interest: active_lead_provider,
+        expression_of_interest: framework_agreement,
         started_on: Date.new(2025, 3, 1),
         finished_on: Date.new(2025, 3, 31)
       )

@@ -6,7 +6,7 @@ describe API::SchoolPartnerships::Query do
   describe "preloading relationships" do
     shared_examples "preloaded associations" do
       it { expect(result.association(:delivery_partner)).to be_loaded }
-      it { expect(result.association(:active_lead_provider)).to be_loaded }
+      it { expect(result.association(:framework_agreement)).to be_loaded }
       it { expect(result.association(:school)).to be_loaded }
       it { expect(result.school.association(:gias_school)).to be_loaded }
     end
@@ -55,8 +55,8 @@ describe API::SchoolPartnerships::Query do
     describe "filtering" do
       describe "by `lead_provider`" do
         let(:lead_provider) { FactoryBot.create(:lead_provider) }
-        let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
-        let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+        let(:framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:) }
+        let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:) }
         let!(:school_partnership1) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
         let!(:school_partnership2) { FactoryBot.create(:school_partnership) }
         let!(:school_partnership3) { FactoryBot.create(:school_partnership) }
@@ -91,12 +91,12 @@ describe API::SchoolPartnerships::Query do
         let(:contract_period1) { FactoryBot.create(:contract_period) }
         let(:contract_period2) { FactoryBot.create(:contract_period) }
         let(:contract_period3) { FactoryBot.create(:contract_period) }
-        let(:active_lead_provider1) { FactoryBot.create(:active_lead_provider, contract_period: contract_period1) }
-        let(:active_lead_provider2) { FactoryBot.create(:active_lead_provider, contract_period: contract_period2) }
-        let(:active_lead_provider3) { FactoryBot.create(:active_lead_provider, contract_period: contract_period3) }
-        let(:lead_provider_delivery_partnership1) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider1) }
-        let(:lead_provider_delivery_partnership2) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider2) }
-        let(:lead_provider_delivery_partnership3) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider3) }
+        let(:framework_agreement1) { FactoryBot.create(:framework_agreement, contract_period: contract_period1) }
+        let(:framework_agreement2) { FactoryBot.create(:framework_agreement, contract_period: contract_period2) }
+        let(:framework_agreement3) { FactoryBot.create(:framework_agreement, contract_period: contract_period3) }
+        let(:lead_provider_delivery_partnership1) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement: framework_agreement1) }
+        let(:lead_provider_delivery_partnership2) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement: framework_agreement2) }
+        let(:lead_provider_delivery_partnership3) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement: framework_agreement3) }
         let!(:school_partnership1) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: lead_provider_delivery_partnership1) }
         let!(:school_partnership2) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: lead_provider_delivery_partnership2) }
         let!(:school_partnership3) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: lead_provider_delivery_partnership3) }
@@ -336,8 +336,8 @@ describe API::SchoolPartnerships::Query do
     let(:school) { FactoryBot.create(:school) }
     let!(:school_id) { school.id }
 
-    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
-    let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
+    let(:framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:, contract_period:) }
+    let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:, delivery_partner:) }
     let!(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school:) }
 
     let(:query_params) { { lead_provider_id:, school_id:, delivery_partner_api_ids:, contract_period_years: } }

@@ -14,10 +14,10 @@ module SchoolPartnerships
       return nil unless previous_school_partnership.school_id == school.id
 
       previous_lead_provider_delivery_partnership = previous_school_partnership.lead_provider_delivery_partnership
-      previous_active_lead_provider = previous_lead_provider_delivery_partnership&.active_lead_provider
-      return nil unless previous_lead_provider_delivery_partnership && previous_active_lead_provider
+      previous_framework_agreement = previous_lead_provider_delivery_partnership&.framework_agreement
+      return nil unless previous_lead_provider_delivery_partnership && previous_framework_agreement
 
-      previous_lead_provider_id = previous_active_lead_provider.lead_provider_id
+      previous_lead_provider_id = previous_framework_agreement.lead_provider_id
       previous_delivery_partner_id = previous_lead_provider_delivery_partnership.delivery_partner_id
 
       current_active_lead_provider_id = find_current_active_lead_provider_id(
@@ -51,12 +51,12 @@ module SchoolPartnerships
 
     def find_previous_school_partnership(id)
       SchoolPartnership
-        .includes(lead_provider_delivery_partnership: :active_lead_provider)
+        .includes(lead_provider_delivery_partnership: :framework_agreement)
         .find_by(id:)
     end
 
     def find_current_active_lead_provider_id(lead_provider_id:, year:)
-      ActiveLeadProvider
+      FrameworkAgreement
         .for_lead_provider(lead_provider_id)
         .for_contract_period_year(year)
         .pick(:id)

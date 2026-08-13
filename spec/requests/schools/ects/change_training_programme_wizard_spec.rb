@@ -188,8 +188,8 @@ describe "Schools::ECTs::ChangeTrainingProgrammeWizardController" do
 
       context "when changing from school-led to provider-led training" do
         let(:lead_provider) { FactoryBot.create(:lead_provider) }
-        let!(:active_lead_provider) do
-          FactoryBot.create(:active_lead_provider, contract_period:, lead_provider:)
+        let!(:framework_agreement) do
+          FactoryBot.create(:framework_agreement, contract_period:, lead_provider:)
         end
         let!(:training_period) do
           FactoryBot.create(

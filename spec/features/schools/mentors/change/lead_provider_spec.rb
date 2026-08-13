@@ -5,9 +5,9 @@ describe "School user can change a mentor's lead provider" do
     and_there_is_a_mentor
     and_i_am_logged_in_as_a_school_user
 
-    and_there_is_an_active_lead_provider
+    and_there_is_an_framework_agreement
     with_provider_led_training
-    and_there_is_another_active_lead_provider
+    and_there_is_another_framework_agreement
   end
 
   context "when an active lead provider is selected" do
@@ -86,16 +86,16 @@ private
     @contract_period = FactoryBot.create(:contract_period, :current)
   end
 
-  def and_there_is_an_active_lead_provider
+  def and_there_is_an_framework_agreement
     lead_provider = FactoryBot.create(:lead_provider, name: "Testing Provider")
-    @active_lead_provider = FactoryBot.create(
-      :active_lead_provider,
+    @framework_agreement = FactoryBot.create(
+      :framework_agreement,
       lead_provider:,
       contract_period: @contract_period
     )
     lead_provider_delivery_partnership = FactoryBot.create(
       :lead_provider_delivery_partnership,
-      active_lead_provider: @active_lead_provider,
+      framework_agreement: @framework_agreement,
       contract_period: @contract_period
     )
     @school_partnership = FactoryBot.create(
@@ -117,10 +117,10 @@ private
     )
   end
 
-  def and_there_is_another_active_lead_provider
+  def and_there_is_another_framework_agreement
     lead_provider = FactoryBot.create(:lead_provider, name: "Other Lead Provider")
-    @other_active_lead_provider = FactoryBot.create(
-      :active_lead_provider,
+    @other_framework_agreement = FactoryBot.create(
+      :framework_agreement,
       contract_period: @contract_period,
       lead_provider:
     )
@@ -128,7 +128,7 @@ private
 
   def with_a_partnership_with_the_school
     lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership,
-                                                           active_lead_provider: @other_active_lead_provider,
+                                                           framework_agreement: @other_framework_agreement,
                                                            contract_period: @contract_period)
     @other_school_partnership = FactoryBot.create(
       :school_partnership,

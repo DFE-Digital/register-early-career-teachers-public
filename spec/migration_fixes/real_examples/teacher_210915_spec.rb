@@ -6,13 +6,13 @@ describe "Real data check for teacher 210915 (missing training period and declar
   # dependencies referenced in migration_fixes
   let!(:lead_provider) { FactoryBot.create(:lead_provider, id: 6, name: "Ambition Institute") }
   let!(:delivery_partner) { FactoryBot.create(:delivery_partner, id: 221, name: "The Three Rivers Teaching School Hub") }
-  let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
-  let!(:lpdp) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
+  let!(:framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:, contract_period:) }
+  let!(:lpdp) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:, delivery_partner:) }
   let!(:school_partnership) { FactoryBot.create(:school_partnership, id: 47_614, school: school_1, lead_provider_delivery_partnership: lpdp) }
   let(:contract_period) { FactoryBot.create(:contract_period, year: 2023, mentor_funding_enabled: false) }
   let!(:schedule) { FactoryBot.create(:schedule, id: 54, identifier: "ecf-standard-september", contract_period:) }
-  let!(:statement_1) { FactoryBot.create(:statement, id: 628, active_lead_provider:) }
-  let!(:statement_2) { FactoryBot.create(:statement, id: 220, active_lead_provider:) }
+  let!(:statement_1) { FactoryBot.create(:statement, id: 628, framework_agreement:) }
+  let!(:statement_2) { FactoryBot.create(:statement, id: 220, framework_agreement:) }
 
   let(:migration_fixes) do
     [

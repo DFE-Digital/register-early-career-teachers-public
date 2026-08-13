@@ -49,7 +49,7 @@ module Admin
       def set_available_partnerships
         @available_partnerships =
           SchoolPartnership
-          .includes(lead_provider_delivery_partnership: [:delivery_partner, { active_lead_provider: :lead_provider }])
+          .includes(lead_provider_delivery_partnership: [:delivery_partner, { framework_agreement: :lead_provider }])
           .where(school: @school)
           .for_contract_period_year(contract_period_year)
           .where.not(id: @training_period.school_partnership_id)

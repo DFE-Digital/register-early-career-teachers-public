@@ -67,7 +67,7 @@ describe "School user can change early career teachers mentor" do
 
     it "changes the mentor to an existing mentor with a different lead provider" do
       and_there_is_a_contract_period
-      and_there_is_an_active_lead_provider
+      and_there_is_an_framework_agreement
       with_provider_led_training
       and_the_mentee_has_an_assigned_mentor
       and_there_is_another_registered_mentor
@@ -182,10 +182,10 @@ private
     @contract_period = FactoryBot.create(:contract_period, :with_schedules, :current)
   end
 
-  def and_there_is_an_active_lead_provider
+  def and_there_is_an_framework_agreement
     lead_provider = FactoryBot.create(:lead_provider, name: "Testing Provider")
-    @active_lead_provider = FactoryBot.create(
-      :active_lead_provider,
+    @framework_agreement = FactoryBot.create(
+      :framework_agreement,
       contract_period: @contract_period,
       lead_provider:
     )
@@ -212,7 +212,7 @@ private
       started_on: @ect_at_school_period.started_on
     )
     @provider_led_training_period
-      .active_lead_provider
+      .framework_agreement
       .update!(contract_period: @contract_period)
   end
 

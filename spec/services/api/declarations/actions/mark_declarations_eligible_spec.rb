@@ -3,8 +3,8 @@ RSpec.describe Declarations::Actions::MarkDeclarationsEligible do
     subject(:mark) { described_class.new(declarations:, author:).mark }
 
     let(:author) { Events::SystemAuthor.new }
-    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
-    let(:training_period) { FactoryBot.create(:training_period, :with_active_lead_provider, active_lead_provider:) }
+    let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
+    let(:training_period) { FactoryBot.create(:training_period, :with_framework_agreement, framework_agreement:) }
     let!(:no_payment_declaration) { FactoryBot.create(:declaration, :no_payment, declaration_type: :"retained-1", training_period:) }
     let!(:another_no_payment_declaration) { FactoryBot.create(:declaration, :no_payment, declaration_type: :"extended-1", training_period:) }
     let(:declarations) { [no_payment_declaration, another_no_payment_declaration] }
@@ -14,7 +14,7 @@ RSpec.describe Declarations::Actions::MarkDeclarationsEligible do
         :statement,
         :open,
         :output_fee,
-        active_lead_provider:,
+        framework_agreement:,
         deadline_date: Time.zone.today
       )
     end
@@ -23,7 +23,7 @@ RSpec.describe Declarations::Actions::MarkDeclarationsEligible do
         :statement,
         :open,
         :output_fee,
-        active_lead_provider:,
+        framework_agreement:,
         deadline_date: 1.day.from_now
       )
     end
@@ -32,7 +32,7 @@ RSpec.describe Declarations::Actions::MarkDeclarationsEligible do
         :statement,
         :open,
         :output_fee,
-        active_lead_provider:,
+        framework_agreement:,
         deadline_date: 1.day.ago
       )
     end
@@ -41,7 +41,7 @@ RSpec.describe Declarations::Actions::MarkDeclarationsEligible do
         :statement,
         :open,
         :service_fee,
-        active_lead_provider:,
+        framework_agreement:,
         deadline_date: Time.zone.today
       )
     end

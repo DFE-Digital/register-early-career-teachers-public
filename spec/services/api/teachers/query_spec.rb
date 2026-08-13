@@ -124,9 +124,9 @@ RSpec.describe API::Teachers::Query, :with_metadata do
         let(:contract_period1) { FactoryBot.create(:contract_period) }
         let(:contract_period2) { FactoryBot.create(:contract_period) }
         let(:contract_period3) { FactoryBot.create(:contract_period) }
-        let(:school_partnership1) { FactoryBot.create(:school_partnership, active_lead_provider: FactoryBot.create(:active_lead_provider, contract_period: contract_period1)) }
-        let(:school_partnership2) { FactoryBot.create(:school_partnership, active_lead_provider: FactoryBot.create(:active_lead_provider, contract_period: contract_period2)) }
-        let(:school_partnership3) { FactoryBot.create(:school_partnership, active_lead_provider: FactoryBot.create(:active_lead_provider, contract_period: contract_period3)) }
+        let(:school_partnership1) { FactoryBot.create(:school_partnership, framework_agreement: FactoryBot.create(:framework_agreement, contract_period: contract_period1)) }
+        let(:school_partnership2) { FactoryBot.create(:school_partnership, framework_agreement: FactoryBot.create(:framework_agreement, contract_period: contract_period2)) }
+        let(:school_partnership3) { FactoryBot.create(:school_partnership, framework_agreement: FactoryBot.create(:framework_agreement, contract_period: contract_period3)) }
         let!(:teacher1) { FactoryBot.create(:training_period, :for_ect, :unfinished, ect_at_school_period: ect_at_school_period_1, school_partnership: school_partnership1).teacher }
         let!(:teacher2) { FactoryBot.create(:training_period, :for_mentor, :unfinished, mentor_at_school_period:, school_partnership: school_partnership2).teacher }
         let!(:teacher3) { FactoryBot.create(:training_period, :for_ect, :unfinished, ect_at_school_period: ect_at_school_period_2, school_partnership: school_partnership3).teacher }

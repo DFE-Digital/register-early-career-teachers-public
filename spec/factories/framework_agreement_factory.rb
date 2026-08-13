@@ -1,10 +1,10 @@
 FactoryBot.define do
-  factory(:active_lead_provider) do
+  factory(:framework_agreement) do
     association :lead_provider
     association :contract_period
 
     initialize_with do
-      ActiveLeadProvider.find_or_initialize_by(lead_provider:, contract_period:)
+      FrameworkAgreement.find_or_initialize_by(lead_provider:, contract_period:)
     end
 
     trait :for_year do

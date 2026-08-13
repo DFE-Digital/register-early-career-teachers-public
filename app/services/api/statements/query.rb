@@ -37,7 +37,7 @@ module API::Statements
     def preload_associations(results)
       results
         .strict_loading
-        .includes(:active_lead_provider)
+        .includes(:framework_agreement)
     end
 
     def where_lead_provider_is(lead_provider_id)
@@ -49,7 +49,7 @@ module API::Statements
     def where_contract_period_year_in(contract_period_years)
       return if ignore?(filter: contract_period_years, ignore_empty_array: false)
 
-      @scope = scope.joins(:active_lead_provider).where(active_lead_provider: { contract_period_year: contract_period_years })
+      @scope = scope.joins(:framework_agreement).where(framework_agreement: { contract_period_year: contract_period_years })
     end
 
     def where_updated_since(updated_since)

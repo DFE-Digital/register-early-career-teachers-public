@@ -1,13 +1,13 @@
 RSpec.describe "Admin finance active lead provider contracts", type: :request do
   let(:contract_period) { FactoryBot.create(:contract_period, :current) }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
-  let!(:contract) { FactoryBot.create(:contract, :for_ecf, active_lead_provider:) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement, contract_period:) }
+  let!(:contract) { FactoryBot.create(:contract, :for_ecf, framework_agreement:) }
 
-  let(:contract_path) { admin_contract_period_active_lead_provider_contract_path(contract_period, active_lead_provider, contract) }
-  let(:contracts_path) { admin_contract_period_active_lead_provider_contracts_path(contract_period, active_lead_provider) }
-  let(:new_path) { new_admin_contract_period_active_lead_provider_contract_path(contract_period, active_lead_provider) }
-  let(:edit_path) { edit_admin_contract_period_active_lead_provider_contract_path(contract_period, active_lead_provider, contract) }
-  let(:delete_path) { delete_admin_contract_period_active_lead_provider_contract_path(contract_period, active_lead_provider, contract) }
+  let(:contract_path) { admin_contract_period_active_lead_provider_contract_path(contract_period, framework_agreement, contract) }
+  let(:contracts_path) { admin_contract_period_active_lead_provider_contracts_path(contract_period, framework_agreement) }
+  let(:new_path) { new_admin_contract_period_active_lead_provider_contract_path(contract_period, framework_agreement) }
+  let(:edit_path) { edit_admin_contract_period_active_lead_provider_contract_path(contract_period, framework_agreement, contract) }
+  let(:delete_path) { delete_admin_contract_period_active_lead_provider_contract_path(contract_period, framework_agreement, contract) }
 
   describe "GET .../contracts" do
     it "redirects to sign in path when not signed in" do
@@ -61,13 +61,13 @@ RSpec.describe "Admin finance active lead provider contracts", type: :request do
 
   describe "POST .../contracts" do
     let(:contract_period) { FactoryBot.create(:contract_period, :next) }
-    let(:active_lead_provider) do
-      FactoryBot.create(:active_lead_provider,
+    let(:framework_agreement) do
+      FactoryBot.create(:framework_agreement,
                         contract_period:)
     end
     let!(:alp_bands) do
-      FactoryBot.create_list(:active_lead_provider_band, 3,
-                             active_lead_provider:)
+      FactoryBot.create_list(:framework_agreement_band, 3,
+                             framework_agreement:)
     end
 
     let(:flat_rate_fee_structure_attributes) do
@@ -136,7 +136,7 @@ RSpec.describe "Admin finance active lead provider contracts", type: :request do
         expect { post contracts_path, params: contract_params }.to change(Contract, :count).by(1)
 
         created_contract = Contract.last
-        expect(response).to redirect_to(admin_contract_period_active_lead_provider_contract_path(contract_period, active_lead_provider, created_contract))
+        expect(response).to redirect_to(admin_contract_period_active_lead_provider_contract_path(contract_period, framework_agreement, created_contract))
         expect(created_contract.banded_fee_structure.band_terms.size).to eq(3)
         expect(created_contract.flat_rate_fee_structure.fee_per_declaration).to eq(500)
         expect(created_contract.flat_rate_fee_structure.recruitment_target).to eq(100)
@@ -168,7 +168,7 @@ RSpec.describe "Admin finance active lead provider contracts", type: :request do
           expect { post contracts_path, params: contract_params }.to change(Contract, :count).by(1)
 
           created_contract = Contract.last
-          expect(response).to redirect_to(admin_contract_period_active_lead_provider_contract_path(contract_period, active_lead_provider, created_contract))
+          expect(response).to redirect_to(admin_contract_period_active_lead_provider_contract_path(contract_period, framework_agreement, created_contract))
         end
       end
 
@@ -192,7 +192,7 @@ RSpec.describe "Admin finance active lead provider contracts", type: :request do
     let(:contract_period) { FactoryBot.create(:contract_period, :next) }
     let!(:contract) do
       FactoryBot.create(:contract, :for_ittecf_ectp,
-                        :with_bands_and_band_terms, active_lead_provider:)
+                        :with_bands_and_band_terms, framework_agreement:)
     end
 
     it "redirects to sign in path when not signed in" do
@@ -228,13 +228,13 @@ RSpec.describe "Admin finance active lead provider contracts", type: :request do
 
   describe "PATCH .../contracts/:id" do
     let(:contract_period) { FactoryBot.create(:contract_period, :next) }
-    let(:active_lead_provider) do
-      FactoryBot.create(:active_lead_provider,
+    let(:framework_agreement) do
+      FactoryBot.create(:framework_agreement,
                         contract_period:)
     end
     let!(:contract) do
       FactoryBot.create(:contract, :for_ittecf_ectp,
-                        :with_bands_and_band_terms, active_lead_provider:)
+                        :with_bands_and_band_terms, framework_agreement:)
     end
     let(:band_term) { contract.banded_fee_structure.band_terms.first }
 
@@ -290,7 +290,7 @@ RSpec.describe "Admin finance active lead provider contracts", type: :request do
 
     let!(:contract) do
       FactoryBot.create(:contract, :for_ittecf_ectp, :with_bands_and_band_terms,
-                        active_lead_provider:)
+                        framework_agreement:)
     end
 
     it "redirects to sign in path when not signed in" do
@@ -311,7 +311,7 @@ RSpec.describe "Admin finance active lead provider contracts", type: :request do
       include_context "sign in as finance DfE user"
 
       context "when the contract has statements" do
-        before { FactoryBot.create(:statement, contract:, active_lead_provider:) }
+        before { FactoryBot.create(:statement, contract:, framework_agreement:) }
 
         it "redirects back with an error and does not delete the contract" do
           expect { delete contract_path }.not_to change(Contract, :count)

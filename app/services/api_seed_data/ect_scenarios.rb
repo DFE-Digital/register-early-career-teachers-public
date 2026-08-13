@@ -28,13 +28,13 @@ module APISeedData
       contract_period_mentor = find_contract_period(mentor_year)
       return unless contract_period_2025 && contract_period_mentor
 
-      active_lead_providers.for_contract_period(contract_period_2025.year).each do |ect_active_lead_provider|
-        mentor_active_lead_provider = active_lead_providers.for_contract_period(contract_period_mentor.year).for_lead_provider(ect_active_lead_provider.lead_provider_id).first
-        school = find_school_with_partnerships_in_both_periods(mentor_active_lead_provider, ect_active_lead_provider)
+      framework_agreements.for_contract_period(contract_period_2025.year).each do |ect_framework_agreement|
+        mentor_framework_agreement = framework_agreements.for_contract_period(contract_period_mentor.year).for_lead_provider(ect_framework_agreement.lead_provider_id).first
+        school = find_school_with_partnerships_in_both_periods(mentor_framework_agreement, ect_framework_agreement)
         next unless school
 
-        mentee_school_partnership = find_school_partnership_for(school, ect_active_lead_provider)
-        mentor_school_partnership = find_school_partnership_for(school, mentor_active_lead_provider)
+        mentee_school_partnership = find_school_partnership_for(school, ect_framework_agreement)
+        mentor_school_partnership = find_school_partnership_for(school, mentor_framework_agreement)
         next unless mentee_school_partnership && mentor_school_partnership
 
         mentorship_period = create_mentorship_period_for(
@@ -42,7 +42,7 @@ module APISeedData
           mentor_school_partnership:
         )
 
-        log_seed_info("Created ECT (TRN: #{mentorship_period.mentee.teacher.trn}) from #{mentee_school_partnership.contract_period.year} with mentor from #{mentor_school_partnership.contract_period.year} with #{ect_active_lead_provider.lead_provider.name}", colour: Colourize::COLOURS.keys.sample)
+        log_seed_info("Created ECT (TRN: #{mentorship_period.mentee.teacher.trn}) from #{mentee_school_partnership.contract_period.year} with mentor from #{mentor_school_partnership.contract_period.year} with #{ect_framework_agreement.lead_provider.name}", colour: Colourize::COLOURS.keys.sample)
       end
     end
 
@@ -50,15 +50,15 @@ module APISeedData
       ContractPeriod.find_by(year:)
     end
 
-    def find_school_with_partnerships_in_both_periods(mentor_active_lead_provider, ect_active_lead_provider)
+    def find_school_with_partnerships_in_both_periods(mentor_framework_agreement, ect_framework_agreement)
       mentor_schools = School
-        .joins(school_partnerships: { lead_provider_delivery_partnership: :active_lead_provider })
-        .where(school_partnerships: { lead_provider_delivery_partnerships: { active_lead_provider: mentor_active_lead_provider } })
+        .joins(school_partnerships: { lead_provider_delivery_partnership: :framework_agreement })
+        .where(school_partnerships: { lead_provider_delivery_partnerships: { framework_agreement: mentor_framework_agreement } })
         .pluck(:id)
 
       ect_schools = School
-        .joins(school_partnerships: { lead_provider_delivery_partnership: :active_lead_provider })
-        .where(school_partnerships: { lead_provider_delivery_partnerships: { active_lead_provider: ect_active_lead_provider } })
+        .joins(school_partnerships: { lead_provider_delivery_partnership: :framework_agreement })
+        .where(school_partnerships: { lead_provider_delivery_partnerships: { framework_agreement: ect_framework_agreement } })
         .pluck(:id)
 
       School
@@ -67,11 +67,11 @@ module APISeedData
         .first
     end
 
-    def find_school_partnership_for(school, active_lead_provider)
+    def find_school_partnership_for(school, framework_agreement)
       school
       .school_partnerships
-      .includes(lead_provider_delivery_partnership: :active_lead_provider)
-      .where(lead_provider_delivery_partnerships: { active_lead_provider: })
+      .includes(lead_provider_delivery_partnership: :framework_agreement)
+      .where(lead_provider_delivery_partnerships: { framework_agreement: })
       .order("RANDOM()")
       .first
     end

@@ -1847,8 +1847,8 @@ RSpec.describe Events::Record do
           heading: "Statement adjustment added: #{statement_adjustment.payment_type}",
           statement:,
           statement_adjustment:,
-          active_lead_provider: statement.active_lead_provider,
-          lead_provider: statement.active_lead_provider.lead_provider,
+          framework_agreement: statement.framework_agreement,
+          lead_provider: statement.framework_agreement.lead_provider,
           event_type: :statement_adjustment_added,
           happened_at: Time.zone.now,
           metadata:,
@@ -2022,8 +2022,8 @@ RSpec.describe Events::Record do
           heading: "Statement adjustment updated: #{statement_adjustment.payment_type}",
           statement:,
           statement_adjustment:,
-          active_lead_provider: statement.active_lead_provider,
-          lead_provider: statement.active_lead_provider.lead_provider,
+          framework_agreement: statement.framework_agreement,
+          lead_provider: statement.framework_agreement.lead_provider,
           event_type: :statement_adjustment_updated,
           happened_at: Time.zone.now,
           metadata:,
@@ -2048,8 +2048,8 @@ RSpec.describe Events::Record do
         expect(RecordEventJob).to have_received(:perform_later).with(
           heading: "Statement adjustment deleted: #{statement_adjustment.payment_type}",
           statement:,
-          active_lead_provider: statement.active_lead_provider,
-          lead_provider: statement.active_lead_provider.lead_provider,
+          framework_agreement: statement.framework_agreement,
+          lead_provider: statement.framework_agreement.lead_provider,
           event_type: :statement_adjustment_deleted,
           happened_at: Time.zone.now,
           metadata:,
@@ -2076,11 +2076,11 @@ RSpec.describe Events::Record do
           heading: "Statement authorised for payment",
           event_type: :statement_authorised_for_payment,
           statement:,
-          active_lead_provider: statement.active_lead_provider,
-          lead_provider: statement.active_lead_provider.lead_provider,
+          framework_agreement: statement.framework_agreement,
+          lead_provider: statement.framework_agreement.lead_provider,
           happened_at: statement.marked_as_paid_at,
           metadata: hash_including(
-            contract_period_year: statement.active_lead_provider.contract_period.year
+            contract_period_year: statement.framework_agreement.contract_period.year
           ),
           **author_params
         )
@@ -2102,11 +2102,11 @@ RSpec.describe Events::Record do
           heading: "Statement marked as payable",
           event_type: :statement_marked_payable,
           statement:,
-          active_lead_provider: statement.active_lead_provider,
-          lead_provider: statement.active_lead_provider.lead_provider,
+          framework_agreement: statement.framework_agreement,
+          lead_provider: statement.framework_agreement.lead_provider,
           happened_at: Time.current,
           metadata: hash_including(
-            contract_period_year: statement.active_lead_provider.contract_period.year
+            contract_period_year: statement.framework_agreement.contract_period.year
           ),
           **author_params
         )
@@ -2118,9 +2118,9 @@ RSpec.describe Events::Record do
     let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
     let(:lead_provider) { FactoryBot.create(:lead_provider) }
     let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
-    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
+    let(:framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:, contract_period:) }
     let(:lead_provider_delivery_partnership) do
-      FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner:, active_lead_provider:)
+      FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner:, framework_agreement:)
     end
 
     it "records the event with correct attributes" do
@@ -2174,14 +2174,14 @@ RSpec.describe Events::Record do
   describe ".record_active_lead_provider_created_event!" do
     let(:lead_provider) { FactoryBot.create(:lead_provider) }
     let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
-    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
+    let(:framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:, contract_period:) }
 
     it "queues a RecordEventJob with the correct values" do
       freeze_time do
-        Events::Record.record_active_lead_provider_created_event!(author:, active_lead_provider:)
+        Events::Record.record_active_lead_provider_created_event!(author:, framework_agreement:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
-          active_lead_provider:,
+          framework_agreement:,
           lead_provider:,
           heading: "#{lead_provider.name} added for #{contract_period.year}",
           event_type: :active_lead_provider_created,
@@ -2219,8 +2219,8 @@ RSpec.describe Events::Record do
     let(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, :current) }
 
     let(:lead_provider) { FactoryBot.create(:lead_provider) }
-    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
-    let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, contract_period:) }
+    let(:framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:, contract_period:) }
+    let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:, contract_period:) }
     let(:school_partnership) { FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:) }
     let(:started_on) { mid_year }
 
@@ -3052,11 +3052,11 @@ RSpec.describe Events::Record do
         Events::Record.record_statement_created_event!(author:, statement:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
-          heading: "Statement created: #{Statements::Period.for(statement)} #{statement.fee_type} for #{statement.active_lead_provider.lead_provider.name}",
+          heading: "Statement created: #{Statements::Period.for(statement)} #{statement.fee_type} for #{statement.framework_agreement.lead_provider.name}",
           event_type: :statement_created,
           statement:,
-          active_lead_provider: statement.active_lead_provider,
-          lead_provider: statement.active_lead_provider.lead_provider,
+          framework_agreement: statement.framework_agreement,
+          lead_provider: statement.framework_agreement.lead_provider,
           happened_at: Time.current,
           **author_params
         )
@@ -3075,11 +3075,11 @@ RSpec.describe Events::Record do
         Events::Record.record_statement_updated_event!(author:, statement:, modifications: raw_modifications)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
-          heading: "Statement updated: #{Statements::Period.for(statement)} #{statement.fee_type} for #{statement.active_lead_provider.lead_provider.name}",
+          heading: "Statement updated: #{Statements::Period.for(statement)} #{statement.fee_type} for #{statement.framework_agreement.lead_provider.name}",
           event_type: :statement_updated,
           statement:,
-          active_lead_provider: statement.active_lead_provider,
-          lead_provider: statement.active_lead_provider.lead_provider,
+          framework_agreement: statement.framework_agreement,
+          lead_provider: statement.framework_agreement.lead_provider,
           happened_at: Time.current,
           modifications: anything,
           metadata: raw_modifications,
@@ -3091,7 +3091,7 @@ RSpec.describe Events::Record do
 
   describe ".record_statement_deleted_event!" do
     let(:statement) { FactoryBot.create(:statement) }
-    let(:active_lead_provider) { statement.active_lead_provider }
+    let(:framework_agreement) { statement.framework_agreement }
 
     it "queues a RecordEventJob with the correct values" do
       freeze_time do
@@ -3099,7 +3099,7 @@ RSpec.describe Events::Record do
 
         Events::Record.record_statement_deleted_event!(
           author:,
-          active_lead_provider:,
+          framework_agreement:,
           modifications:,
           heading: "Statement deleted"
         )
@@ -3107,8 +3107,8 @@ RSpec.describe Events::Record do
         expect(RecordEventJob).to have_received(:perform_later).with(
           heading: "Statement deleted",
           event_type: :statement_deleted,
-          active_lead_provider:,
-          lead_provider: active_lead_provider.lead_provider,
+          framework_agreement:,
+          lead_provider: framework_agreement.lead_provider,
           happened_at: Time.current,
           modifications: anything,
           metadata: anything,
@@ -3309,13 +3309,13 @@ RSpec.describe Events::Record do
       FactoryBot.create(:lead_provider,
                         name: "XYZ")
     end
-    let(:active_lead_provider) do
-      FactoryBot.create(:active_lead_provider,
+    let(:framework_agreement) do
+      FactoryBot.create(:framework_agreement,
                         lead_provider:)
     end
     let(:contract) do
       FactoryBot.create(:contract, :for_ittecf_ectp, :with_bands_and_band_terms,
-                        active_lead_provider:)
+                        framework_agreement:)
     end
 
     describe ".record_contract_created_event!" do
@@ -3324,7 +3324,7 @@ RSpec.describe Events::Record do
           Events::Record.record_contract_created_event!(author:, contract:)
 
           expect(RecordEventJob).to have_received(:perform_later).with(
-            active_lead_provider:,
+            framework_agreement:,
             lead_provider:,
             heading: "Contract created: ITTECF ECTP No statements for XYZ",
             event_type: :contract_created,
@@ -3348,7 +3348,7 @@ RSpec.describe Events::Record do
           Events::Record.record_contract_updated_event!(author:, contract:, modifications:)
 
           expect(RecordEventJob).to have_received(:perform_later).with(
-            active_lead_provider:,
+            framework_agreement:,
             lead_provider:,
             heading: "Contract updated: ITTECF ECTP No statements for XYZ",
             event_type: :contract_updated,
@@ -3367,10 +3367,10 @@ RSpec.describe Events::Record do
     describe ".record_contract_deleted_event!" do
       it "queues a RecordEventJob with the correct values" do
         freeze_time do
-          Events::Record.record_contract_deleted_event!(author:, contract:, active_lead_provider:)
+          Events::Record.record_contract_deleted_event!(author:, contract:, framework_agreement:)
 
           expect(RecordEventJob).to have_received(:perform_later).with(
-            active_lead_provider:,
+            framework_agreement:,
             lead_provider:,
             heading: "Contract deleted: ITTECF ECTP No statements for XYZ",
             event_type: :contract_deleted,
@@ -3382,22 +3382,22 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe ".record_active_lead_provider_band_added_event!" do
-    let(:band) { FactoryBot.create(:active_lead_provider_band) }
+  describe ".record_framework_agreement_band_added_event!" do
+    let(:band) { FactoryBot.create(:framework_agreement_band) }
 
     it "queues a RecordEventJob with the correct values" do
       freeze_time do
-        Events::Record.record_active_lead_provider_band_added_event!(author:, band:)
+        Events::Record.record_framework_agreement_band_added_event!(author:, band:)
 
-        active_lead_provider = band.active_lead_provider
-        lead_provider = active_lead_provider.lead_provider
-        contract_period = active_lead_provider.contract_period
+        framework_agreement = band.framework_agreement
+        lead_provider = framework_agreement.lead_provider
+        contract_period = framework_agreement.contract_period
         heading = "Band #{band.letter} added to #{lead_provider.name} for #{contract_period.year}"
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           heading:,
           event_type: :band_added,
-          active_lead_provider:,
+          framework_agreement:,
           lead_provider:,
           contract_period:,
           happened_at: Time.zone.now,
@@ -3407,25 +3407,25 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe ".record_active_lead_provider_band_updated_event!" do
-    let(:band) { FactoryBot.create(:active_lead_provider_band, capacity: 500) }
+  describe ".record_framework_agreement_band_updated_event!" do
+    let(:band) { FactoryBot.create(:framework_agreement_band, capacity: 500) }
 
     it "queues a RecordEventJob with the correct values" do
       freeze_time do
         band.capacity = 1000
         raw_modifications = band.changes
 
-        active_lead_provider = band.active_lead_provider
-        lead_provider = active_lead_provider.lead_provider
-        contract_period = active_lead_provider.contract_period
+        framework_agreement = band.framework_agreement
+        lead_provider = framework_agreement.lead_provider
+        contract_period = framework_agreement.contract_period
         heading = "Band #{band.letter} updated for #{lead_provider.name} for #{contract_period.year}"
 
-        Events::Record.record_active_lead_provider_band_updated_event!(author:, band:, modifications: raw_modifications)
+        Events::Record.record_framework_agreement_band_updated_event!(author:, band:, modifications: raw_modifications)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           heading:,
           event_type: :band_updated,
-          active_lead_provider:,
+          framework_agreement:,
           lead_provider:,
           contract_period:,
           happened_at: Time.zone.now,
@@ -3437,25 +3437,25 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe ".record_active_lead_provider_band_deleted_event!" do
-    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+  describe ".record_framework_agreement_band_deleted_event!" do
+    let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
 
     it "queues a RecordEventJob with the correct values" do
       freeze_time do
-        lead_provider = active_lead_provider.lead_provider
-        contract_period = active_lead_provider.contract_period
+        lead_provider = framework_agreement.lead_provider
+        contract_period = framework_agreement.contract_period
         heading = "Band C deleted for #{lead_provider.name} for #{contract_period.year}"
 
-        Events::Record.record_active_lead_provider_band_deleted_event!(
+        Events::Record.record_framework_agreement_band_deleted_event!(
           author:,
-          active_lead_provider:,
+          framework_agreement:,
           band_letter: "C"
         )
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           heading:,
           event_type: :band_deleted,
-          active_lead_provider:,
+          framework_agreement:,
           lead_provider:,
           contract_period:,
           happened_at: Time.zone.now,

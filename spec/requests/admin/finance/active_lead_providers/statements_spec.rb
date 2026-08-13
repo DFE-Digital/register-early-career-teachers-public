@@ -3,16 +3,16 @@ RSpec.describe "Admin finance active lead provider statements", type: :request d
 
   let(:contract_period) { FactoryBot.create(:contract_period, :next) }
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Lead Provider 1") }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:, lead_provider:) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement, contract_period:, lead_provider:) }
 
-  let(:index_path) { admin_contract_period_active_lead_provider_statements_path(contract_period, active_lead_provider) }
-  let(:new_path) { new_admin_contract_period_active_lead_provider_statement_path(contract_period, active_lead_provider) }
-  let(:statement_path) { admin_contract_period_active_lead_provider_statement_path(contract_period, active_lead_provider, statement) }
-  let(:edit_path) { edit_admin_contract_period_active_lead_provider_statement_path(contract_period, active_lead_provider, statement) }
-  let(:delete_path) { delete_admin_contract_period_active_lead_provider_statement_path(contract_period, active_lead_provider, statement) }
+  let(:index_path) { admin_contract_period_active_lead_provider_statements_path(contract_period, framework_agreement) }
+  let(:new_path) { new_admin_contract_period_active_lead_provider_statement_path(contract_period, framework_agreement) }
+  let(:statement_path) { admin_contract_period_active_lead_provider_statement_path(contract_period, framework_agreement, statement) }
+  let(:edit_path) { edit_admin_contract_period_active_lead_provider_statement_path(contract_period, framework_agreement, statement) }
+  let(:delete_path) { delete_admin_contract_period_active_lead_provider_statement_path(contract_period, framework_agreement, statement) }
 
   describe "GET .../statements" do
-    let!(:statement) { FactoryBot.create(:statement, :open, :output_fee, active_lead_provider:, month: 11, year: contract_period.year) }
+    let!(:statement) { FactoryBot.create(:statement, :open, :output_fee, framework_agreement:, month: 11, year: contract_period.year) }
 
     it "redirects to sign in path when not signed in" do
       get index_path
@@ -81,7 +81,7 @@ RSpec.describe "Admin finance active lead provider statements", type: :request d
   end
 
   describe "POST .../statements" do
-    let!(:contract) { FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider:) }
+    let!(:contract) { FactoryBot.create(:contract, :for_ittecf_ectp, framework_agreement:) }
 
     let(:params) do
       {
@@ -102,7 +102,7 @@ RSpec.describe "Admin finance active lead provider statements", type: :request d
         }.to change(Statement, :count).by(1)
 
         statement = Statement.last
-        expect(response).to redirect_to(admin_contract_period_active_lead_provider_statement_path(contract_period, active_lead_provider, statement))
+        expect(response).to redirect_to(admin_contract_period_active_lead_provider_statement_path(contract_period, framework_agreement, statement))
         expect(statement.contract).to eq(contract)
         expect(statement).to be_status_open
       end
@@ -163,7 +163,7 @@ RSpec.describe "Admin finance active lead provider statements", type: :request d
   end
 
   describe "GET .../statements/:id" do
-    let(:statement) { FactoryBot.create(:statement, :open, :output_fee, active_lead_provider:, month: 11, year: contract_period.year) }
+    let(:statement) { FactoryBot.create(:statement, :open, :output_fee, framework_agreement:, month: 11, year: contract_period.year) }
 
     context "when signed in as a finance DfE user" do
       include_context "sign in as finance DfE user"
@@ -185,7 +185,7 @@ RSpec.describe "Admin finance active lead provider statements", type: :request d
   end
 
   describe "GET .../statements/:id/edit" do
-    let(:statement) { FactoryBot.create(:statement, :open, :output_fee, active_lead_provider:, month: 11, year: contract_period.year) }
+    let(:statement) { FactoryBot.create(:statement, :open, :output_fee, framework_agreement:, month: 11, year: contract_period.year) }
 
     context "when signed in as a finance DfE user" do
       include_context "sign in as finance DfE user"
@@ -216,7 +216,7 @@ RSpec.describe "Admin finance active lead provider statements", type: :request d
   end
 
   describe "PATCH .../statements/:id" do
-    let(:statement) { FactoryBot.create(:statement, :open, :output_fee, active_lead_provider:, month: 11, year: contract_period.year) }
+    let(:statement) { FactoryBot.create(:statement, :open, :output_fee, framework_agreement:, month: 11, year: contract_period.year) }
 
     context "when signed in as a finance DfE user" do
       include_context "sign in as finance DfE user"
@@ -276,7 +276,7 @@ RSpec.describe "Admin finance active lead provider statements", type: :request d
   end
 
   describe "GET .../statements/:id/delete" do
-    let(:statement) { FactoryBot.create(:statement, :open, :output_fee, active_lead_provider:, month: 11, year: contract_period.year) }
+    let(:statement) { FactoryBot.create(:statement, :open, :output_fee, framework_agreement:, month: 11, year: contract_period.year) }
 
     context "when signed in as a finance DfE user" do
       include_context "sign in as finance DfE user"
@@ -307,7 +307,7 @@ RSpec.describe "Admin finance active lead provider statements", type: :request d
   end
 
   describe "DELETE .../statements/:id" do
-    let!(:statement) { FactoryBot.create(:statement, :open, :output_fee, active_lead_provider:, month: 11, year: contract_period.year) }
+    let!(:statement) { FactoryBot.create(:statement, :open, :output_fee, framework_agreement:, month: 11, year: contract_period.year) }
 
     context "when signed in as a finance DfE user" do
       include_context "sign in as finance DfE user"
@@ -320,7 +320,7 @@ RSpec.describe "Admin finance active lead provider statements", type: :request d
       end
 
       context "when the statement has declarations" do
-        let!(:declaration) { FactoryBot.create(:declaration, :eligible, active_lead_provider:, payment_statement: statement) }
+        let!(:declaration) { FactoryBot.create(:declaration, :eligible, framework_agreement:, payment_statement: statement) }
 
         it "does not destroy it and redirects to the statement with an error" do
           expect {

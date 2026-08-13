@@ -10,8 +10,8 @@ describe "Changing lead provider when the ECT started training in a closed contr
 
   it "creates an expression of interest when changing the lead provider to one the school has no existing partnership with" do
     and_there_is_another_lead_provider
-    and_there_is_an_active_lead_provider_in_the_open_contract_period
-    and_there_is_a_third_active_lead_provider
+    and_there_is_an_framework_agreement_in_the_open_contract_period
+    and_there_is_a_third_framework_agreement
     and_i_am_logged_in_as_a_school_user
 
     when_i_visit_the_ect_page
@@ -37,7 +37,7 @@ describe "Changing lead provider when the ECT started training in a closed contr
   it "uses an existing partnership when changing the lead provider" do
     and_there_is_another_lead_provider
     and_there_is_a_school_partnership_in_the_open_contract_period
-    and_there_is_a_third_active_lead_provider
+    and_there_is_a_third_framework_agreement
     and_i_am_logged_in_as_a_school_user
 
     when_i_visit_the_ect_page
@@ -92,7 +92,7 @@ private
   end
 
   def and_there_is_a_school_partnership_in_the_closed_contract_period
-    @school_partnership = FactoryBot.create(:school_partnership, :with_active_lead_provider, :for_year, year: 2021, school: @school)
+    @school_partnership = FactoryBot.create(:school_partnership, :with_framework_agreement, :for_year, year: 2021, school: @school)
   end
 
   def with_confirmed_provider_led_training
@@ -112,9 +112,9 @@ private
     @lead_provider = FactoryBot.create(:lead_provider, name: "Other Lead Provider")
   end
 
-  def and_there_is_an_active_lead_provider_in_the_open_contract_period
-    @other_active_lead_provider = FactoryBot.create(
-      :active_lead_provider,
+  def and_there_is_an_framework_agreement_in_the_open_contract_period
+    @other_framework_agreement = FactoryBot.create(
+      :framework_agreement,
       :for_year,
       year: 2024,
       lead_provider: @lead_provider
@@ -123,16 +123,16 @@ private
 
   def and_there_is_a_school_partnership_in_the_open_contract_period
     @other_school_partnership = FactoryBot.create(:school_partnership,
-                                                  :with_active_lead_provider,
+                                                  :with_framework_agreement,
                                                   :for_year, year: 2024,
                                                              school: @school, lead_provider: @lead_provider)
-    @other_active_lead_provider = @other_school_partnership.active_lead_provider
+    @other_framework_agreement = @other_school_partnership.framework_agreement
   end
 
-  def and_there_is_a_third_active_lead_provider
+  def and_there_is_a_third_framework_agreement
     lead_provider = FactoryBot.create(:lead_provider, name: "A Third Testing Provider")
-    @third_active_lead_provider = FactoryBot.create(
-      :active_lead_provider,
+    @third_framework_agreement = FactoryBot.create(
+      :framework_agreement,
       :for_year,
       year: 2025,
       lead_provider:
@@ -158,9 +158,9 @@ private
   end
 
   def and_i_can_only_see_lead_providers_from_2024_contract_periods_as_options
-    expect(page.get_by_text(@other_active_lead_provider.lead_provider.name)).to be_visible
+    expect(page.get_by_text(@other_framework_agreement.lead_provider.name)).to be_visible
     expect(page.get_by_text(@school_partnership.lead_provider.name)).not_to be_visible
-    expect(page.get_by_text(@third_active_lead_provider.lead_provider.name)).not_to be_visible
+    expect(page.get_by_text(@third_framework_agreement.lead_provider.name)).not_to be_visible
   end
 
   def when_i_choose_lead_provider(name)
@@ -195,7 +195,7 @@ private
   end
 
   def and_the_training_period_has_an_expression_of_interest_for_the_new_lead_provider
-    expect(@new_training_period.expression_of_interest).to eq(@other_active_lead_provider)
+    expect(@new_training_period.expression_of_interest).to eq(@other_framework_agreement)
   end
 
   def and_the_expression_of_interest_is_in_the_open_contract_period
@@ -226,6 +226,6 @@ private
   end
 
   def then_the_ects_training_is_awaiting_confirmation_from_the_new_lead_provider
-    expect(page.get_by_text("Awaiting confirmation by #{@other_active_lead_provider.lead_provider.name}")).to be_visible
+    expect(page.get_by_text("Awaiting confirmation by #{@other_framework_agreement.lead_provider.name}")).to be_visible
   end
 end

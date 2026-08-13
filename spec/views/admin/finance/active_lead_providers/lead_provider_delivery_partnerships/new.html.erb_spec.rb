@@ -3,14 +3,14 @@ RSpec.describe "admin/finance/active_lead_providers/lead_provider_delivery_partn
     FactoryBot.create(:contract_period, year: 2099, started_on: Date.new(2099, 6, 1), finished_on: Date.new(2100, 5, 31))
   end
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:, lead_provider:) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement, contract_period:, lead_provider:) }
   let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
   let(:lead_provider_delivery_partnership) { LeadProviderDeliveryPartnership.new }
 
-  let(:index_path) { admin_contract_period_active_lead_provider_lead_provider_delivery_partnerships_path(contract_period, active_lead_provider) }
+  let(:index_path) { admin_contract_period_active_lead_provider_lead_provider_delivery_partnerships_path(contract_period, framework_agreement) }
 
   before do
-    assign(:active_lead_provider, active_lead_provider)
+    assign(:framework_agreement, framework_agreement)
     assign(:lead_provider_delivery_partnership, lead_provider_delivery_partnership)
     assign(:available_delivery_partners, [delivery_partner])
   end

@@ -42,7 +42,7 @@ module AtSchoolPeriod
 
     scope :with_partnerships_for_contract_period, ->(year) {
       joins(training_periods: {
-        active_lead_provider: :contract_period
+        framework_agreement: :contract_period
       }).where(contract_periods: { year: })
     }
 

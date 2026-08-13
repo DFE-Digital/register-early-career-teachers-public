@@ -287,17 +287,17 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
       let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Spec Lead Provider") }
       let(:delivery_partner) { FactoryBot.create(:delivery_partner, name: "Spec Delivery Partner") }
 
-      let!(:previous_active_lead_provider) do
+      let!(:previous_framework_agreement) do
         FactoryBot.create(
-          :active_lead_provider,
+          :framework_agreement,
           lead_provider:,
           contract_period: previous_contract_period
         )
       end
 
-      let!(:current_active_lead_provider) do
+      let!(:current_framework_agreement) do
         FactoryBot.create(
-          :active_lead_provider,
+          :framework_agreement,
           lead_provider:,
           contract_period: current_contract_period
         )
@@ -306,7 +306,7 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
       let!(:previous_lead_provider_delivery_partnership) do
         FactoryBot.create(
           :lead_provider_delivery_partnership,
-          active_lead_provider: previous_active_lead_provider,
+          framework_agreement: previous_framework_agreement,
           delivery_partner:
         )
       end
@@ -314,7 +314,7 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
       let!(:current_lead_provider_delivery_partnership) do
         FactoryBot.create(
           :lead_provider_delivery_partnership,
-          active_lead_provider: current_active_lead_provider,
+          framework_agreement: current_framework_agreement,
           delivery_partner:
         )
       end

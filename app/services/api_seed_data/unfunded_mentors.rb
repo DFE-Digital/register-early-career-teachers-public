@@ -46,11 +46,11 @@ module APISeedData
     end
 
     def setup_data
-      lead_providers = active_lead_providers.map(&:lead_provider).uniq
+      lead_providers = framework_agreements.map(&:lead_provider).uniq
 
       partnerships = SchoolPartnership.includes(
         lead_provider_delivery_partnership: {
-          active_lead_provider: %i[lead_provider contract_period]
+          framework_agreement: %i[lead_provider contract_period]
         }
       )
 

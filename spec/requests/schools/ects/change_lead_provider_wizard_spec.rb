@@ -14,8 +14,8 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController" do
   let(:lead_provider) do
     FactoryBot.create(:lead_provider, name: "Testing Provider")
   end
-  let(:active_lead_provider) do
-    FactoryBot.create(:active_lead_provider, contract_period:, lead_provider:)
+  let(:framework_agreement) do
+    FactoryBot.create(:framework_agreement, contract_period:, lead_provider:)
   end
   let!(:training_period) do
     FactoryBot.create(
@@ -26,21 +26,21 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController" do
       :with_only_expression_of_interest,
       ect_at_school_period:,
       started_on: ect_at_school_period.started_on,
-      expression_of_interest: active_lead_provider
+      expression_of_interest: framework_agreement
     )
   end
   let(:other_lead_provider) do
     FactoryBot.create(:lead_provider, name: "Other Lead Provider")
   end
-  let!(:other_active_lead_provider) do
+  let!(:other_framework_agreement) do
     FactoryBot.create(
-      :active_lead_provider,
+      :framework_agreement,
       contract_period:,
       lead_provider: other_lead_provider
     )
   end
   let(:lead_provider_delivery_partnership) do
-    FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, contract_period:)
+    FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:, contract_period:)
   end
   let(:school_partnership) do
     FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:)
@@ -259,7 +259,7 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController" do
               )
             end
 
-            let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, contract_period:) }
+            let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:, contract_period:) }
             let(:school_partnership) { FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:) }
 
             it "keeps the same contract period and schedule" do

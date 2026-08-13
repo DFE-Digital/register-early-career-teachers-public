@@ -1,10 +1,10 @@
 FactoryBot.define do
   factory(:declaration) do
     transient do
-      active_lead_provider { FactoryBot.create(:active_lead_provider) }
+      framework_agreement { FactoryBot.create(:framework_agreement) }
     end
 
-    training_period { FactoryBot.create(:training_period, :with_active_lead_provider, active_lead_provider:) }
+    training_period { FactoryBot.create(:training_period, :with_framework_agreement, framework_agreement:) }
 
     payment_status { :no_payment }
     clawback_status { :no_clawback }
@@ -66,34 +66,34 @@ FactoryBot.define do
 
     trait :eligible do
       payment_status { :eligible }
-      payment_statement { FactoryBot.create(:statement, :open, active_lead_provider: training_period.active_lead_provider) }
+      payment_statement { FactoryBot.create(:statement, :open, framework_agreement: training_period.framework_agreement) }
     end
 
     trait :payable do
       payment_status { :payable }
-      payment_statement { FactoryBot.create(:statement, :payable, active_lead_provider: training_period.active_lead_provider) }
+      payment_statement { FactoryBot.create(:statement, :payable, framework_agreement: training_period.framework_agreement) }
     end
 
     trait :paid do
       payment_status { :paid }
-      payment_statement { FactoryBot.create(:statement, :paid, active_lead_provider: training_period.active_lead_provider) }
+      payment_statement { FactoryBot.create(:statement, :paid, framework_agreement: training_period.framework_agreement) }
     end
 
     trait :voided do
       payment_status { :voided }
-      payment_statement { FactoryBot.create(:statement, :paid, active_lead_provider: training_period.active_lead_provider) }
+      payment_statement { FactoryBot.create(:statement, :paid, framework_agreement: training_period.framework_agreement) }
     end
 
     trait :awaiting_clawback do
       paid
       clawback_status { :awaiting_clawback }
-      clawback_statement { FactoryBot.create(:statement, :payable, active_lead_provider: training_period.active_lead_provider) }
+      clawback_statement { FactoryBot.create(:statement, :payable, framework_agreement: training_period.framework_agreement) }
     end
 
     trait :clawed_back do
       paid
       clawback_status { :clawed_back }
-      clawback_statement { FactoryBot.create(:statement, :paid, active_lead_provider: training_period.active_lead_provider) }
+      clawback_statement { FactoryBot.create(:statement, :paid, framework_agreement: training_period.framework_agreement) }
     end
 
     trait :billable_or_changeable do
@@ -104,7 +104,7 @@ FactoryBot.define do
       transient do
         school_partnership { nil }
         training_period { nil }
-        active_lead_provider { nil }
+        framework_agreement { nil }
         started_on { declaration_date }
         declaration_type { "started" }
         payment_status { "no_payment" }
@@ -121,7 +121,7 @@ FactoryBot.define do
 
         teacher = create(:teacher)
         school = school_partnership.school
-        active_lead_provider = school_partnership.active_lead_provider
+        framework_agreement = school_partnership.framework_agreement
 
         ect_at_school_period =
           create(
@@ -153,14 +153,14 @@ FactoryBot.define do
 
         if Declaration::BILLABLE_PAYMENT_STATUSES.include?(payment_status) && !evaluator.payment_statement
           statement_trait = payment_status == "eligible" ? :open : payment_status.to_sym
-          declaration.payment_statement = FactoryBot.create(:statement, statement_trait, active_lead_provider:)
+          declaration.payment_statement = FactoryBot.create(:statement, statement_trait, framework_agreement:)
         else
           declaration.payment_statement = evaluator.payment_statement
         end
 
         if Declaration::REFUNDABLE_CLAWBACK_STATUSES.include?(clawback_status) && !evaluator.clawback_statement
           statement_trait = clawback_status == "awaiting_clawback" ? :payable : :paid
-          declaration.clawback_statement = FactoryBot.create(:statement, statement_trait, active_lead_provider:)
+          declaration.clawback_statement = FactoryBot.create(:statement, statement_trait, framework_agreement:)
         else
           declaration.clawback_statement = evaluator.clawback_statement
         end
@@ -171,7 +171,7 @@ FactoryBot.define do
       transient do
         school_partnership { nil }
         training_period { nil }
-        active_lead_provider { nil }
+        framework_agreement { nil }
         started_on { declaration_date }
         declaration_type { "started" }
         payment_status { "no_payment" }
@@ -189,7 +189,7 @@ FactoryBot.define do
 
         teacher = create(:teacher)
         school = school_partnership.school
-        active_lead_provider = school_partnership.active_lead_provider
+        framework_agreement = school_partnership.framework_agreement
 
         mentor_at_school_period = create(
           :mentor_at_school_period,
@@ -220,14 +220,14 @@ FactoryBot.define do
 
         if Declaration::BILLABLE_PAYMENT_STATUSES.include?(payment_status) && !evaluator.payment_statement
           statement_trait = payment_status == "eligible" ? :open : payment_status.to_sym
-          declaration.payment_statement = FactoryBot.create(:statement, statement_trait, active_lead_provider:)
+          declaration.payment_statement = FactoryBot.create(:statement, statement_trait, framework_agreement:)
         else
           declaration.payment_statement = evaluator.payment_statement
         end
 
         if Declaration::REFUNDABLE_CLAWBACK_STATUSES.include?(clawback_status) && !evaluator.clawback_statement
           statement_trait = clawback_status == "awaiting_clawback" ? :payable : :paid
-          declaration.clawback_statement = FactoryBot.create(:statement, statement_trait, active_lead_provider:)
+          declaration.clawback_statement = FactoryBot.create(:statement, statement_trait, framework_agreement:)
         else
           declaration.clawback_statement = evaluator.clawback_statement
         end

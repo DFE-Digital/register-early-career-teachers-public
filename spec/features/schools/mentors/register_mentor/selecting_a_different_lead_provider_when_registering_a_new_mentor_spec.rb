@@ -56,7 +56,7 @@ RSpec.describe "Selecting a different lead provider" do
     contract_period = @contract_period
 
     @another_lead_provider = FactoryBot.create(:lead_provider, name: "Another lead provider")
-    FactoryBot.create(:active_lead_provider, lead_provider: @another_lead_provider, contract_period:)
+    FactoryBot.create(:framework_agreement, lead_provider: @another_lead_provider, contract_period:)
 
     @ect = FactoryBot.create(:ect_at_school_period, :unfinished, school: @school)
     @training_period = FactoryBot.create(:training_period, :unfinished, :provider_led, ect_at_school_period: @ect, school_partnership: @school_partnership)

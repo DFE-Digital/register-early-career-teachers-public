@@ -1,8 +1,8 @@
 RSpec.describe Admin::Statements::SelectorComponent, type: :component do
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period: statement_contract_period) }
-  let(:statement) { FactoryBot.create(:statement, active_lead_provider:) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement, contract_period: statement_contract_period) }
+  let(:statement) { FactoryBot.create(:statement, framework_agreement:) }
   let(:component) { described_class.new statement: }
-  let(:statement_lead_provider) { statement.active_lead_provider.lead_provider }
+  let(:statement_lead_provider) { statement.framework_agreement.lead_provider }
   let(:statement_contract_period) { FactoryBot.create(:contract_period, year: 2034) }
 
   describe ".lead_providers" do
@@ -17,7 +17,7 @@ RSpec.describe Admin::Statements::SelectorComponent, type: :component do
 
   describe ".lead_provider_id" do
     it "returns lead_provider_id from statement" do
-      expect(component.lead_provider_id).to eq(statement.active_lead_provider.lead_provider_id)
+      expect(component.lead_provider_id).to eq(statement.framework_agreement.lead_provider_id)
     end
   end
 
@@ -38,7 +38,7 @@ RSpec.describe Admin::Statements::SelectorComponent, type: :component do
 
   describe ".contract_period_year" do
     it "returns contract_period_year from statement" do
-      expect(component.contract_period_year).to eq(statement.active_lead_provider.contract_period_year)
+      expect(component.contract_period_year).to eq(statement.framework_agreement.contract_period_year)
     end
   end
 

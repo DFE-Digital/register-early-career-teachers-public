@@ -2,14 +2,14 @@ FactoryBot.define do
   factory(:statement) do
     transient do
       contract_period { create(:contract_period, :current) }
-      active_lead_provider { association(:active_lead_provider, contract_period:) }
+      framework_agreement { association(:framework_agreement, contract_period:) }
 
       month_year_pair do
-        contract_year = active_lead_provider.contract_period.year
+        contract_year = framework_agreement.contract_period.year
         last_year, last_month =
           Statement
-            .joins(contract: :active_lead_provider)
-            .where(contract: { active_lead_provider: })
+            .joins(contract: :framework_agreement)
+            .where(contract: { framework_agreement: })
             .order(year: :desc, month: :desc)
             .pick(:year, :month)
 
@@ -22,7 +22,7 @@ FactoryBot.define do
     end
 
     allow_creation_with_past_deadline_date { true }
-    contract { association(:contract, :for_ittecf_ectp, active_lead_provider:) }
+    contract { association(:contract, :for_ittecf_ectp, framework_agreement:) }
     api_id { SecureRandom.uuid }
 
     month { month_year_pair[:month] }

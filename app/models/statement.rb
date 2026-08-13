@@ -13,9 +13,9 @@ class Statement < ApplicationRecord
   has_many :audit_notes, dependent: :destroy
   has_many :payment_declarations, inverse_of: :payment_statement, class_name: "Declaration"
   has_many :clawback_declarations, inverse_of: :clawback_statement, class_name: "Declaration"
-  has_one :active_lead_provider, through: :contract
-  has_one :lead_provider, through: :active_lead_provider
-  has_one :contract_period, through: :active_lead_provider
+  has_one :framework_agreement, through: :contract
+  has_one :lead_provider, through: :framework_agreement
+  has_one :contract_period, through: :framework_agreement
 
   # Enums
   enum :status,
@@ -108,10 +108,10 @@ class Statement < ApplicationRecord
 private
 
   def unique_lead_provider_month_year
-    return unless active_lead_provider
+    return unless framework_agreement
 
     existing = Statement.joins(:contract)
-                        .where(contracts: { active_lead_provider_id: active_lead_provider.id })
+                        .where(contracts: { active_lead_provider_id: framework_agreement.id })
                         .where(month:, year:)
                         .where.not(id:)
                         .exists?

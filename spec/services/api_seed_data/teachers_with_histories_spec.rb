@@ -268,7 +268,7 @@ RSpec.describe APISeedData::TeachersWithHistories do
       training_period = TrainingPeriod.all.sample
       training_status = ::API::TrainingPeriods::TrainingStatus.new(training_period:).status
       expect(logger).to have_received(:info).with(/(training period - provider-led - #{training_status})/).at_least(:once)
-      expect(logger).to have_received(:info).with(/trained by #{training_period.school_partnership.active_lead_provider.lead_provider.name} \(LP\)/).at_least(:once)
+      expect(logger).to have_received(:info).with(/trained by #{training_period.school_partnership.framework_agreement.lead_provider.name} \(LP\)/).at_least(:once)
       expect(logger).to have_received(:info).with(/and #{training_period.school_partnership.delivery_partner.name} \(DP\)/).at_least(:once)
     end
 

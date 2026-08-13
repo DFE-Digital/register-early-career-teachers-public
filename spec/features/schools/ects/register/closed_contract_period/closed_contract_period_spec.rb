@@ -105,14 +105,14 @@ RSpec.describe "Registering an ECT - closed contract period" do
       last_chosen_lead_provider: @lead_provider
     )
 
-    @closed_active_lead_provider = FactoryBot.create(
-      :active_lead_provider,
+    @closed_framework_agreement = FactoryBot.create(
+      :framework_agreement,
       lead_provider: @lead_provider,
       contract_period: @closed_contract_period
     )
 
-    @open_active_lead_provider = FactoryBot.create(
-      :active_lead_provider,
+    @open_framework_agreement = FactoryBot.create(
+      :framework_agreement,
       lead_provider: @lead_provider,
       contract_period: @open_contract_period
     )
@@ -135,12 +135,12 @@ RSpec.describe "Registering an ECT - closed contract period" do
   def and_the_previous_training_period_used_a_confirmed_partnership
     @previous_training_period = FactoryBot.create(
       :training_period,
-      :with_active_lead_provider,
+      :with_framework_agreement,
       ect_at_school_period: @previous_ect_at_school_period,
       training_programme: "provider_led",
       started_on: Date.new(2022, 9, 1),
       finished_on: Date.new(2023, 7, 31),
-      active_lead_provider: @closed_active_lead_provider
+      framework_agreement: @closed_framework_agreement
     )
   end
 
@@ -151,7 +151,7 @@ RSpec.describe "Registering an ECT - closed contract period" do
       training_programme: "provider_led",
       started_on: Date.new(2022, 9, 1),
       finished_on: Date.new(2023, 7, 31),
-      expression_of_interest: @closed_active_lead_provider,
+      expression_of_interest: @closed_framework_agreement,
       school_partnership: nil
     )
   end
@@ -159,7 +159,7 @@ RSpec.describe "Registering an ECT - closed contract period" do
   def and_a_current_2024_confirmed_partnership_exists
     @open_delivery_partnership = FactoryBot.create(
       :lead_provider_delivery_partnership,
-      active_lead_provider: @open_active_lead_provider,
+      framework_agreement: @open_framework_agreement,
       delivery_partner: @delivery_partner
     )
 
@@ -173,7 +173,7 @@ RSpec.describe "Registering an ECT - closed contract period" do
   def and_no_current_2024_confirmed_partnership_exists
     @open_delivery_partnership = FactoryBot.create(
       :lead_provider_delivery_partnership,
-      active_lead_provider: @open_active_lead_provider,
+      framework_agreement: @open_framework_agreement,
       delivery_partner: @delivery_partner
     )
   end

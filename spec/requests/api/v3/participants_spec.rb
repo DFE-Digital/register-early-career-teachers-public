@@ -2,11 +2,11 @@ RSpec.describe "Participants API", :with_touches, type: :request do
   let(:serializer) { API::TeacherSerializer }
   let(:serializer_options) { { lead_provider_id: lead_provider.id } }
   let(:query) { API::Teachers::Query }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
-  let(:lead_provider) { active_lead_provider.lead_provider }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
+  let(:lead_provider) { framework_agreement.lead_provider }
 
-  def create_resource(active_lead_provider:, from_participant_id: nil, training_status: nil)
-    lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
+  def create_resource(framework_agreement:, from_participant_id: nil, training_status: nil)
+    lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:)
     school_partnership = FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:)
     teacher = FactoryBot.create(:teacher)
 
@@ -48,7 +48,7 @@ RSpec.describe "Participants API", :with_touches, type: :request do
   end
 
   describe "#show" do
-    let(:resource) { create_resource(active_lead_provider:) }
+    let(:resource) { create_resource(framework_agreement:) }
     let(:path_id) { resource.api_id }
     let(:path) { api_v3_participant_path(path_id) }
 
@@ -62,7 +62,7 @@ RSpec.describe "Participants API", :with_touches, type: :request do
     let(:path) { change_schedule_api_v3_participant_path(resource.api_id) }
     let(:service) { API::Teachers::ChangeSchedule }
     let(:resource_type) { Teacher }
-    let!(:resource) { create_resource(active_lead_provider:) }
+    let!(:resource) { create_resource(framework_agreement:) }
     let(:schedule_identifier) { FactoryBot.create(:schedule, contract_period:).identifier }
     let(:contract_period) { FactoryBot.create(:contract_period) }
     let(:contract_period_year) { contract_period.year.to_s }
@@ -123,7 +123,7 @@ RSpec.describe "Participants API", :with_touches, type: :request do
     let(:path) { defer_api_v3_participant_path(resource.api_id) }
     let(:service) { API::Teachers::Defer }
     let(:resource_type) { Teacher }
-    let(:resource) { travel_to(3.days.ago) { create_resource(active_lead_provider:) } }
+    let(:resource) { travel_to(3.days.ago) { create_resource(framework_agreement:) } }
     let(:reason) { service::DEFERRAL_REASONS.sample }
     let(:course_identifier) { "ecf-induction" }
     let(:service_args) do
@@ -156,7 +156,7 @@ RSpec.describe "Participants API", :with_touches, type: :request do
     let(:path) { resume_api_v3_participant_path(resource.api_id) }
     let(:service) { API::Teachers::Resume }
     let(:resource_type) { Teacher }
-    let(:resource) { travel_to(3.days.ago) {  create_resource(active_lead_provider:, training_status: :withdrawn) } }
+    let(:resource) { travel_to(3.days.ago) {  create_resource(framework_agreement:, training_status: :withdrawn) } }
     let(:course_identifier) { "ecf-induction" }
     let(:service_args) do
       {
@@ -186,7 +186,7 @@ RSpec.describe "Participants API", :with_touches, type: :request do
     let(:path) { withdraw_api_v3_participant_path(resource.api_id) }
     let(:service) { API::Teachers::Withdraw }
     let(:resource_type) { Teacher }
-    let(:resource) { travel_to(3.days.ago) { create_resource(active_lead_provider:) } }
+    let(:resource) { travel_to(3.days.ago) { create_resource(framework_agreement:) } }
     let(:reason) { service::WITHDRAWAL_REASONS.sample }
     let(:course_identifier) { "ecf-mentor" }
     let(:service_args) do

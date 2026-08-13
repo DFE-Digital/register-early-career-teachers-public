@@ -46,30 +46,30 @@ module Admin
 
         def selected_contract_period_label
           [
-            selected_active_lead_provider&.contract_period_year,
+            selected_framework_agreement&.contract_period_year,
             selected_contract_period&.year,
             store.contract_period_year
           ].compact.first&.to_s
         end
 
-        def active_lead_providers
-          ActiveLeadProvider
+        def framework_agreements
+          FrameworkAgreement
             .for_contract_period_year(store.contract_period_year)
             .with_lead_provider_ordered_by_name
         end
 
-        def selected_active_lead_provider
+        def selected_framework_agreement
           return if store.active_lead_provider_id.blank?
 
-          @selected_active_lead_provider ||= ActiveLeadProvider.includes(:lead_provider).find_by(id: store.active_lead_provider_id)
+          @selected_framework_agreement ||= FrameworkAgreement.includes(:lead_provider).find_by(id: store.active_lead_provider_id)
         end
 
         def selected_lead_provider
-          selected_active_lead_provider&.lead_provider
+          selected_framework_agreement&.lead_provider
         end
 
         def delivery_partners
-          selected_active_lead_provider&.delivery_partners&.order(:name) || DeliveryPartner.none
+          selected_framework_agreement&.delivery_partners&.order(:name) || DeliveryPartner.none
         end
 
         def selected_delivery_partner
@@ -80,7 +80,7 @@ module Admin
 
         def lead_provider_delivery_partnership
           LeadProviderDeliveryPartnership.find_by(
-            active_lead_provider: selected_active_lead_provider,
+            framework_agreement: selected_framework_agreement,
             delivery_partner: selected_delivery_partner
           )
         end

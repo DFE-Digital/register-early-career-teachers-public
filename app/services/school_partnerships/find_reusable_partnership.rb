@@ -13,7 +13,7 @@ module SchoolPartnerships
     # Returns a single SchoolPartnership (the best match) or nil
     def call
       return nil unless school && lead_provider && contract_period
-      return nil unless active_lead_provider
+      return nil unless framework_agreement
 
       current_year_partnership || most_recent_compatible_partnership
     end
@@ -24,9 +24,9 @@ module SchoolPartnerships
       @contract_period_year ||= to_year(contract_period)
     end
 
-    def active_lead_provider
-      @active_lead_provider ||=
-        ActiveLeadProvider
+    def framework_agreement
+      @framework_agreement ||=
+        FrameworkAgreement
           .for_lead_provider(lead_provider.id)
           .for_contract_period_year(contract_period_year)
           .first
@@ -37,17 +37,17 @@ module SchoolPartnerships
         SchoolPartnerships::Search
           .new(school:, lead_provider:)
           .school_partnerships
-          .joins(lead_provider_delivery_partnership: :active_lead_provider)
+          .joins(lead_provider_delivery_partnership: :framework_agreement)
           .where(
             lead_provider_delivery_partnership: {
-              delivery_partner_id: delivery_partner_ids_for_active_lead_provider
+              delivery_partner_id: delivery_partner_ids_for_framework_agreement
             }
           )
           .unscope(:order)
     end
 
-    def delivery_partner_ids_for_active_lead_provider
-      active_lead_provider
+    def delivery_partner_ids_for_framework_agreement
+      framework_agreement
         .lead_provider_delivery_partnerships
         .select(:delivery_partner_id)
     end

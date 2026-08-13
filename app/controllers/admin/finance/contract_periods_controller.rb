@@ -63,7 +63,7 @@ module Admin::Finance
   private
 
     def set_contract_period
-      @contract_period = ContractPeriod.includes(:active_lead_providers, :schedules).find(params[:id])
+      @contract_period = ContractPeriod.includes(:framework_agreements, :schedules).find(params[:id])
     end
 
     def contract_period_params
@@ -81,7 +81,7 @@ module Admin::Finance
 
     def set_contract_period_flags
       @editable = @contract_period.editable?
-      @has_lead_providers = @contract_period.active_lead_providers.any?
+      @has_lead_providers = @contract_period.framework_agreements.any?
       @has_schedules = @contract_period.schedules.any?
     end
 

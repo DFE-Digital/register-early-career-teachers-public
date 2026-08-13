@@ -1,6 +1,6 @@
 RSpec.describe Contract::BandedFeeStructure::BandTerm, type: :model do
   describe "associations" do
-    it { is_expected.to belong_to(:band).class_name("ActiveLeadProvider::Band") }
+    it { is_expected.to belong_to(:band).class_name("FrameworkAgreement::Band") }
     it { is_expected.to belong_to(:banded_fee_structure).class_name("Contract::BandedFeeStructure") }
   end
 
@@ -43,30 +43,30 @@ RSpec.describe Contract::BandedFeeStructure::BandTerm, type: :model do
       end
     end
 
-    describe "#band_belongs_to_contracts_active_lead_provider" do
+    describe "#band_belongs_to_contracts_framework_agreement" do
       subject(:band_term) do
         FactoryBot.create(:contract_banded_fee_structure_band_term,
                           banded_fee_structure: contract.banded_fee_structure,
                           band:)
       end
 
-      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
-      let!(:contract) { FactoryBot.create(:contract, :for_ecf, active_lead_provider:) }
+      let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
+      let!(:contract) { FactoryBot.create(:contract, :for_ecf, framework_agreement:) }
 
       context "when the band and contract ALP match" do
-        let!(:band) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:) }
+        let!(:band) { FactoryBot.create(:framework_agreement_band, framework_agreement:) }
 
         it "is valid" do
-          expect(band.active_lead_provider).to eq(contract.active_lead_provider)
+          expect(band.framework_agreement).to eq(contract.framework_agreement)
           expect(band_term).to be_valid
         end
       end
 
       context "when the band and contract ALP do not match" do
-        let!(:band) { FactoryBot.create(:active_lead_provider_band) }
+        let!(:band) { FactoryBot.create(:framework_agreement_band) }
 
         it "raises an error" do
-          expect(band.active_lead_provider).not_to eq(contract.active_lead_provider)
+          expect(band.framework_agreement).not_to eq(contract.framework_agreement)
           expect { band_term }.to raise_error(
             ActiveRecord::RecordInvalid, "Validation failed: Band must belong to the contract's active lead provider"
           )

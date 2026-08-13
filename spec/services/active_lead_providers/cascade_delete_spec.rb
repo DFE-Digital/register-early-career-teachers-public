@@ -1,17 +1,17 @@
 describe ActiveLeadProviders::CascadeDelete do
-  subject(:service) { described_class.new(active_lead_provider:, author:) }
+  subject(:service) { described_class.new(framework_agreement:, author:) }
 
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
   let!(:contract) do
     FactoryBot.create(:contract, :for_ittecf_ectp, :with_bands_and_band_terms,
-                      active_lead_provider:)
+                      framework_agreement:)
   end
   let(:flat_rate_fee_structure) { contract.flat_rate_fee_structure }
   let(:banded_fee_structure) { contract.banded_fee_structure }
-  let!(:statement) { FactoryBot.create(:statement, contract:, active_lead_provider:) }
+  let!(:statement) { FactoryBot.create(:statement, contract:, framework_agreement:) }
   let!(:statement_adjustment) { FactoryBot.create(:statement_adjustment, statement:) }
   let!(:lead_provider_delivery_partnership) do
-    FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
+    FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:)
   end
   let(:user) { FactoryBot.create(:user, :admin) }
   let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
@@ -22,19 +22,19 @@ describe ActiveLeadProviders::CascadeDelete do
     flat_rate_fee_structure_id = flat_rate_fee_structure.id
     banded_fee_structure_id = banded_fee_structure.id
     band_term_ids = banded_fee_structure.band_terms.pluck(:id)
-    band_ids = active_lead_provider.bands.pluck(:id)
+    band_ids = framework_agreement.bands.pluck(:id)
     delivery_partner = lead_provider_delivery_partnership.delivery_partner
-    lead_provider = active_lead_provider.lead_provider
-    contract_period = active_lead_provider.contract_period
+    lead_provider = framework_agreement.lead_provider
+    contract_period = framework_agreement.contract_period
 
     service.call
 
-    expect(ActiveLeadProvider).not_to exist(active_lead_provider.id)
+    expect(FrameworkAgreement).not_to exist(framework_agreement.id)
     expect(Contract).not_to exist(contract.id)
     expect(Contract::FlatRateFeeStructure).not_to exist(flat_rate_fee_structure_id)
     expect(Contract::BandedFeeStructure).not_to exist(banded_fee_structure_id)
     expect(Contract::BandedFeeStructure::BandTerm.where(id: band_term_ids)).not_to exist
-    expect(ActiveLeadProvider::Band.where(id: band_ids)).not_to exist
+    expect(FrameworkAgreement::Band.where(id: band_ids)).not_to exist
     expect(Statement).not_to exist(statement.id)
     expect(Statement::Adjustment).not_to exist(statement_adjustment.id)
     expect(LeadProviderDeliveryPartnership).not_to exist(lead_provider_delivery_partnership.id)
@@ -43,10 +43,10 @@ describe ActiveLeadProviders::CascadeDelete do
   end
 
   it "wraps the deletions in a transaction" do
-    allow(active_lead_provider).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed)
+    allow(framework_agreement).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed)
 
     expect { service.call }.to raise_error(ActiveRecord::RecordNotDestroyed)
-    expect(ActiveLeadProvider).to exist(active_lead_provider.id)
+    expect(FrameworkAgreement).to exist(framework_agreement.id)
     expect(Contract).to exist(contract.id)
     expect(Statement).to exist(statement.id)
     expect(LeadProviderDeliveryPartnership).to exist(lead_provider_delivery_partnership.id)
@@ -55,24 +55,24 @@ describe ActiveLeadProviders::CascadeDelete do
 
   describe "raising an exception when usage data is present" do
     it "raises when a declaration references one of its statements, destroying nothing" do
-      FactoryBot.create(:declaration, active_lead_provider:, payment_statement: statement)
+      FactoryBot.create(:declaration, framework_agreement:, payment_statement: statement)
 
       expect { service.call }.to raise_error(described_class::CascadeDeleteError, "Declarations are present")
-      expect(ActiveLeadProvider).to exist(active_lead_provider.id)
+      expect(FrameworkAgreement).to exist(framework_agreement.id)
     end
 
     it "raises when a training period references one of its school partnerships, destroying nothing" do
-      FactoryBot.create(:training_period, :with_active_lead_provider, active_lead_provider:)
+      FactoryBot.create(:training_period, :with_framework_agreement, framework_agreement:)
 
       expect { service.call }.to raise_error(described_class::CascadeDeleteError, "Training periods are present")
-      expect(ActiveLeadProvider).to exist(active_lead_provider.id)
+      expect(FrameworkAgreement).to exist(framework_agreement.id)
     end
 
     it "raises when an expression of interest references it, destroying nothing" do
-      FactoryBot.create(:training_period, :with_only_expression_of_interest, expression_of_interest: active_lead_provider)
+      FactoryBot.create(:training_period, :with_only_expression_of_interest, expression_of_interest: framework_agreement)
 
       expect { service.call }.to raise_error(described_class::CascadeDeleteError, "Expressions of interest are present")
-      expect(ActiveLeadProvider).to exist(active_lead_provider.id)
+      expect(FrameworkAgreement).to exist(framework_agreement.id)
     end
   end
 end

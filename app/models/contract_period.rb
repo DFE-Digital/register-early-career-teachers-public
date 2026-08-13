@@ -4,9 +4,9 @@ class ContractPeriod < ApplicationRecord
   ECF_FIRST_YEAR = 2020
 
   # Associations
-  has_many :active_lead_providers, inverse_of: :contract_period
+  has_many :framework_agreements, inverse_of: :contract_period
   has_many :schedules, inverse_of: :contract_period
-  has_many :lead_provider_delivery_partnerships, through: :active_lead_providers
+  has_many :lead_provider_delivery_partnerships, through: :framework_agreements
   has_many :school_partnerships, through: :lead_provider_delivery_partnerships
 
   # Scopes

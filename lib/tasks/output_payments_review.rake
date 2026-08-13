@@ -36,25 +36,25 @@ module ProductReview
       end
 
       def find_or_create_output_statement!(contract)
-        alp = contract.active_lead_provider
+        alp = contract.framework_agreement
 
         existing = Statement.where(contract:, fee_type: "output", status: :paid).first
         return existing if existing
 
         reassignable = Statement
           .joins(:contract)
-          .where(contracts: { active_lead_provider: alp }, fee_type: "output", status: :paid)
+          .where(contracts: { framework_agreement: alp }, fee_type: "output", status: :paid)
           .first
         if reassignable
           reassignable.update!(contract:)
           return reassignable
         end
 
-        FactoryBot.create(:statement, :paid, :output_fee, contract:, active_lead_provider: alp)
+        FactoryBot.create(:statement, :paid, :output_fee, contract:, framework_agreement: alp)
       end
 
       def create_declarations!(statement:, declaration_counts:, participant_type:)
-        alp = statement.contract.active_lead_provider
+        alp = statement.contract.framework_agreement
         schedule = Schedule.find_by!(contract_period: alp.contract_period, identifier: "ecf-standard-september")
 
         declaration_counts.each do |declaration_type, count|
@@ -68,8 +68,8 @@ module ProductReview
             training_period = FactoryBot.create(
               :training_period,
               participant_type == :ect ? :for_ect : :for_mentor,
-              :with_active_lead_provider,
-              active_lead_provider: alp,
+              :with_framework_agreement,
+              framework_agreement: alp,
               schedule:
             )
 
@@ -103,27 +103,27 @@ namespace :product_review do
     ActiveRecord::Base.transaction do
       # --- Pre-2025 (ECF) ---
       ecf_contract = Contract
-        .joins(active_lead_provider: %i[lead_provider contract_period])
+        .joins(framework_agreement: %i[lead_provider contract_period])
         .where(contract_type: :ecf, lead_providers: { id: lead_provider.id })
         .merge(ContractPeriod.where(mentor_funding_enabled: false))
         .first!
       helper.add_bands!(ecf_contract)
 
       ecf_statement = helper.find_or_create_output_statement!(ecf_contract)
-      helper.log "ECF (#{ecf_contract.active_lead_provider.contract_period.year}): statement ##{ecf_statement.id}, #{Date::MONTHNAMES[ecf_statement.month]}", indent: 1
+      helper.log "ECF (#{ecf_contract.framework_agreement.contract_period.year}): statement ##{ecf_statement.id}, #{Date::MONTHNAMES[ecf_statement.month]}", indent: 1
 
       helper.create_declarations!(statement: ecf_statement, declaration_counts: helper::ECT_DECLARATION_COUNTS, participant_type: :ect)
 
       # --- Post-2025 (ITTECF_ECTP) ---
       ittecf_contract = Contract
-        .joins(active_lead_provider: %i[lead_provider contract_period])
+        .joins(framework_agreement: %i[lead_provider contract_period])
         .where(contract_type: :ittecf_ectp, lead_providers: { id: lead_provider.id })
         .merge(ContractPeriod.where(mentor_funding_enabled: true))
         .first!
       helper.add_bands!(ittecf_contract)
 
       ittecf_statement = helper.find_or_create_output_statement!(ittecf_contract)
-      helper.log "ITTECF_ECTP (#{ittecf_contract.active_lead_provider.contract_period.year}): statement ##{ittecf_statement.id}, #{Date::MONTHNAMES[ittecf_statement.month]}", indent: 1
+      helper.log "ITTECF_ECTP (#{ittecf_contract.framework_agreement.contract_period.year}): statement ##{ittecf_statement.id}, #{Date::MONTHNAMES[ittecf_statement.month]}", indent: 1
 
       helper.log "ECT declarations:", indent: 2
       helper.create_declarations!(statement: ittecf_statement, declaration_counts: helper::ECT_DECLARATION_COUNTS, participant_type: :ect)

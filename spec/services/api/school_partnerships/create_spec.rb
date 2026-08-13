@@ -20,8 +20,8 @@ RSpec.describe API::SchoolPartnerships::Create, type: :model do
   let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
   let(:delivery_partner_api_id) { delivery_partner.api_id }
 
-  let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
-  let!(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
+  let!(:framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:, contract_period:) }
+  let!(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:, delivery_partner:) }
 
   describe "validations" do
     subject { service }
@@ -99,8 +99,8 @@ RSpec.describe API::SchoolPartnerships::Create, type: :model do
     context "when a school partnership already exists for the lead provider and a different contract period" do
       before do
         contract_period = FactoryBot.create(:contract_period, :previous)
-        active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:)
-        lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:)
+        framework_agreement = FactoryBot.create(:framework_agreement, lead_provider:, contract_period:)
+        lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:, delivery_partner:)
 
         FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:)
       end
@@ -111,8 +111,8 @@ RSpec.describe API::SchoolPartnerships::Create, type: :model do
     context "when a school partnership already exists for the the contract period and a different lead provider" do
       before do
         lead_provider = FactoryBot.create(:lead_provider)
-        active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:)
-        lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:)
+        framework_agreement = FactoryBot.create(:framework_agreement, lead_provider:, contract_period:)
+        lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:, delivery_partner:)
 
         FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:)
       end

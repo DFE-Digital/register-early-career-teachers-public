@@ -3,10 +3,10 @@ RSpec.describe APISeedData::Teachers::SchoolTransfers do
   let(:instance) { described_class.new(verbose:) }
   let(:environment) { "sandbox" }
   let(:logger) { instance_double(Logger, info: nil, "formatter=" => nil, "level=" => nil) }
-  let!(:active_lead_providers) { FactoryBot.create_list(:active_lead_provider, 3) }
-  let(:lead_provider1) { active_lead_providers.first.lead_provider }
-  let(:lead_provider2) { active_lead_providers.second.lead_provider }
-  let(:lead_provider3) { active_lead_providers.third.lead_provider }
+  let!(:framework_agreements) { FactoryBot.create_list(:framework_agreement, 3) }
+  let(:lead_provider1) { framework_agreements.first.lead_provider }
+  let(:lead_provider2) { framework_agreements.second.lead_provider }
+  let(:lead_provider3) { framework_agreements.third.lead_provider }
 
   before do
     allow(Logger).to receive(:new).with($stdout) { logger }

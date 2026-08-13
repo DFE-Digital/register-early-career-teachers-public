@@ -7,7 +7,7 @@ name = "Teach First"
 contract_period_year = 2025
 
 contract = LeadProvider.find_by!(name:)
-  .active_lead_providers.find_by!(contract_period_year:)
+  .framework_agreements.find_by!(contract_period_year:)
   .contracts.sole
 
 band = contract.banded_fee_structure.bands.last

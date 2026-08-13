@@ -1,4 +1,4 @@
-class ActiveLeadProvider::Band < ApplicationRecord
+class FrameworkAgreement::Band < ApplicationRecord
   self.table_name = "active_lead_provider_bands"
 
   attr_accessor :allow_creation_when_contracted_or_after_contract_period_start
@@ -6,14 +6,14 @@ class ActiveLeadProvider::Band < ApplicationRecord
   attr_readonly :allocation_order
 
   # Associations
-  belongs_to :active_lead_provider
+  belongs_to :framework_agreement, foreign_key: :active_lead_provider_id
 
   has_many :band_terms,
            class_name: "Contract::BandedFeeStructure::BandTerm",
            inverse_of: :band
 
   # Validations
-  validates :active_lead_provider,
+  validates :framework_agreement,
             presence: { message: "Choose a lead provider" }
 
   validates :allocation_order,
@@ -40,11 +40,11 @@ class ActiveLeadProvider::Band < ApplicationRecord
 
   before_validation :assign_allocation_order,
                     on: :create,
-                    if: -> { active_lead_provider.present? }
+                    if: -> { framework_agreement.present? }
 
   before_destroy :abort_unless_bands_can_be_added_and_removed
 
-  delegate :bands_can_be_added_and_removed?, to: :active_lead_provider
+  delegate :bands_can_be_added_and_removed?, to: :framework_agreement
 
   # @return [Integer, nil]
   def min_declarations
@@ -67,7 +67,7 @@ class ActiveLeadProvider::Band < ApplicationRecord
   end
 
   def last?
-    active_lead_provider.bands.last == self
+    framework_agreement.bands.last == self
   end
 
   def editable?
@@ -82,7 +82,7 @@ private
 
   # Read-only
   def assign_allocation_order
-    self.allocation_order = active_lead_provider.bands.count + 1
+    self.allocation_order = framework_agreement.bands.count + 1
   end
 
   # @return [Boolean]
@@ -106,7 +106,7 @@ private
   end
 
   def bands_can_be_added_and_removed
-    unless active_lead_provider.present? && bands_can_be_added_and_removed?
+    unless framework_agreement.present? && bands_can_be_added_and_removed?
       errors.add(:base, "Bands cannot be added or deleted once a contract is in place or the contract period has begun")
     end
   end
@@ -130,10 +130,10 @@ private
   end
 
   def prior_bands
-    if active_lead_provider.association(:bands).loaded?
-      active_lead_provider.bands.select { |band| band.allocation_order < allocation_order }
+    if framework_agreement.association(:bands).loaded?
+      framework_agreement.bands.select { |band| band.allocation_order < allocation_order }
     else
-      active_lead_provider.bands.where("allocation_order < ?", allocation_order)
+      framework_agreement.bands.where("allocation_order < ?", allocation_order)
     end
   end
 end

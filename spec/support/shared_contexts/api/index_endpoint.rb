@@ -4,16 +4,16 @@ shared_examples "an index endpoint" do
   context "when 2 resources exist for the lead provider" do
     let!(:resources) do
       [
-        create_resource(active_lead_provider:),
-        create_resource(active_lead_provider:)
+        create_resource(framework_agreement:),
+        create_resource(framework_agreement:)
       ]
     end
 
     before do
       # Resource for a different lead provider/contract period.
-      contract_period = FactoryBot.create(:contract_period, year: active_lead_provider.contract_period.year + 1)
+      contract_period = FactoryBot.create(:contract_period, year: framework_agreement.contract_period.year + 1)
       lead_provider = FactoryBot.create(:lead_provider, name: "Other Lead Provider")
-      create_resource(active_lead_provider: FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:))
+      create_resource(framework_agreement: FactoryBot.create(:framework_agreement, lead_provider:, contract_period:))
     end
 
     it "returns the correct resources in a serialized format" do

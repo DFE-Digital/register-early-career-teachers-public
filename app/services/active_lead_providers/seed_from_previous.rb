@@ -9,18 +9,18 @@ class ActiveLeadProviders::SeedFromPrevious
   class PreviousActiveLeadProviderError < StandardError; end
   class AlreadyPopulatedError < StandardError; end
 
-  attr_reader :active_lead_provider
+  attr_reader :framework_agreement
 
-  delegate :lead_provider, to: :active_lead_provider
+  delegate :lead_provider, to: :framework_agreement
   delegate :name, to: :lead_provider, prefix: true
-  delegate :contract_period, to: :active_lead_provider, prefix: :current
+  delegate :contract_period, to: :framework_agreement, prefix: :current
   delegate :lead_provider_delivery_partnerships, :contracts, :statements,
            to: :previous_activation, prefix: :previous
 
-  def initialize(active_lead_provider:)
-    raise ArgumentError, "active_lead_provider is required" if active_lead_provider.blank?
+  def initialize(framework_agreement:)
+    raise ArgumentError, "framework_agreement is required" if framework_agreement.blank?
 
-    @active_lead_provider = active_lead_provider
+    @framework_agreement = framework_agreement
   end
 
   def call
@@ -29,7 +29,7 @@ class ActiveLeadProviders::SeedFromPrevious
       raise PreviousActiveLeadProviderError,
             "Key info for #{lead_provider_name} is missing previous delivery partnerships, contracts or statements."
     end
-    raise AlreadyPopulatedError, "#{lead_provider_name} already has data for #{current_contract_period.year}" if active_lead_provider_populated?
+    raise AlreadyPopulatedError, "#{lead_provider_name} already has data for #{current_contract_period.year}" if framework_agreement_populated?
 
     # This is a large graph, so let's make all or nothing...
     ActiveRecord::Base.transaction do
@@ -42,7 +42,7 @@ class ActiveLeadProviders::SeedFromPrevious
 private
 
   def previous_activation
-    @previous_activation ||= previous_contract_period&.active_lead_providers&.find_by(lead_provider:)
+    @previous_activation ||= previous_contract_period&.framework_agreements&.find_by(lead_provider:)
   end
 
   def previous_contract_period
@@ -60,14 +60,14 @@ private
       previous_contracts.empty? || previous_statements.empty?
   end
 
-  def active_lead_provider_populated?
-    active_lead_provider.lead_provider_delivery_partnerships.any? ||
-      active_lead_provider.contracts.any?
+  def framework_agreement_populated?
+    framework_agreement.lead_provider_delivery_partnerships.any? ||
+      framework_agreement.contracts.any?
   end
 
   def create_new_delivery_partnerships
     previous_lead_provider_delivery_partnerships.each do |previous_partnership|
-      active_lead_provider.lead_provider_delivery_partnerships.create!(delivery_partner: previous_partnership.delivery_partner)
+      framework_agreement.lead_provider_delivery_partnerships.create!(delivery_partner: previous_partnership.delivery_partner)
     end
   end
 
@@ -75,7 +75,7 @@ private
     # Bands need to be added before contracts and before the contract period starts
     if previous_activation
       previous_activation.bands.each do |band|
-        active_lead_provider.bands.create!(allocation_order: band.allocation_order, capacity: band.capacity)
+        framework_agreement.bands.create!(allocation_order: band.allocation_order, capacity: band.capacity)
       end
     end
   end
@@ -89,7 +89,7 @@ private
     #
     previous_contract = previous_latest_contract
 
-    active_lead_provider.contracts.create!(
+    framework_agreement.contracts.create!(
       contract_type: previous_contract.contract_type,
       banded_fee_structure: build_banded_fee_structure(previous_contract.banded_fee_structure),
       flat_rate_fee_structure: build_flat_rate_fee_structure(previous_contract.flat_rate_fee_structure),
@@ -104,7 +104,7 @@ private
     new_fee_structure = previous_fee_structure.dup
 
     previous_fee_structure.band_terms.each do |previous_term|
-      band = active_lead_provider.bands.find_by!(allocation_order: previous_term.band.allocation_order)
+      band = framework_agreement.bands.find_by!(allocation_order: previous_term.band.allocation_order)
 
       new_fee_structure.band_terms.build(
         band:,

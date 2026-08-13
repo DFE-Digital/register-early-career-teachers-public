@@ -9,7 +9,7 @@
   <p class="govuk-hint">This contract period has started, so active lead providers are no longer editable.</p>
 <% end %>
 
-<% if @active_lead_providers.none? %>
+<% if @framework_agreements.none? %>
   <p class='govuk-body'>No active lead providers for <%= @contract_period.year %></p>
 <% else %>
   <%= govuk_table do |table| %>
@@ -24,7 +24,7 @@
       <% end %>
     <% end %>
     <% table.with_body do |body| %>
-      <% @active_lead_providers.each do |alp| %>
+      <% @framework_agreements.each do |alp| %>
         <% body.with_row do |row| %>
           <% row.with_cell(text: alp.lead_provider.name) %>
           <% row.with_cell do %>
