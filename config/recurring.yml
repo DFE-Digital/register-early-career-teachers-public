@@ -46,6 +46,12 @@ production:
     command: Blazer.send_failing_checks
     schedule: every day at 8am
 
+migration:
+  check_validity:
+    class: CheckValidityJob
+    queue: check_validity
+    schedule: every day at 3am
+
 sandbox:
   clear_solid_queue_finished_jobs:
     command: "SolidQueue::Job.clear_finished_in_batches(sleep_between_batches: 0.3)"
