@@ -5,13 +5,14 @@ describe AdminHelper do
         expect(role_name(:admin)).to eql("Admin")
         expect(role_name(:user_manager)).to eql("User manager")
         expect(role_name(:finance)).to eql("Finance")
+        expect(role_name(:product_team)).to eql("Product team")
       end
     end
   end
 
   describe "#role_options" do
     it "returns the roles as objects for use in radio collection" do
-      expect(role_options.map(&:identifier)).to match_array(%i[admin finance user_manager])
+      expect(role_options.map(&:identifier)).to match_array(%i[admin finance product_team user_manager])
     end
   end
 

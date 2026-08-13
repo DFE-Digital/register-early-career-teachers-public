@@ -5,9 +5,10 @@ class User < ApplicationRecord
     admin: "Admin",
     user_manager: "User manager",
     finance: "Finance",
+    product_team: "Product team",
   }.freeze
 
-  enum :role, ROLES.keys.index_with(&:to_s), validate: { message: "Must be admin, finance or user_manager" }
+  enum :role, ROLES.keys.index_with(&:to_s), validate: { message: "Must be admin, finance, user_manager or product_team" }
 
   encrypts :otp_secret
 
@@ -40,11 +41,11 @@ class User < ApplicationRecord
   end
 
   def can_manage_users?
-    user_manager? || finance?
+    user_manager? || finance? || product_team?
   end
 
   def finance_access?
-    finance?
+    finance? || product_team?
   end
 
 private

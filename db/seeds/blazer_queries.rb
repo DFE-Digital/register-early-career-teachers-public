@@ -84,3 +84,6 @@ end
 
 require Rails.root.join("db/seeds/blazer_queries/school_comms")
 BlazerQueries::SchoolComms.sync!
+
+require Rails.root.join("db/seeds/blazer_queries/post_closure_school_links")
+BlazerQueries::PostClosureSchoolLinks.sync!

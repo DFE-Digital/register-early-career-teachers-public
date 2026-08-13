@@ -81,6 +81,15 @@ describe "admin/users/show.html.erb" do
     end
   end
 
+  context "when the user is a product team user" do
+    let(:role) { :product_team }
+
+    it "displays the product team role" do
+      expect(rendered).to have_css("dt", text: "Role")
+      expect(rendered).to have_css("dd", text: "Product team")
+    end
+  end
+
   context "when otp school sign-in flag is enabled" do
     let(:otp_school_sign_in_enabled) { true }
 
