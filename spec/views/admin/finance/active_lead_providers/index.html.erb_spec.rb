@@ -2,7 +2,7 @@ RSpec.describe "admin/finance/active_lead_providers/index.html.erb" do
   let(:contract_period) { FactoryBot.create(:contract_period, :next) }
   let(:framework_agreements) { FactoryBot.create_list(:framework_agreement, 3, contract_period:) }
   let(:add_button_text) { "Add a lead provider" }
-  let(:started_hint) { "This contract period has started, so active lead providers are no longer editable." }
+  let(:started_hint) { "This contract period has started, so lead provider framework agreements are no longer editable." }
 
   before do
     assign(:contract_period, contract_period)
@@ -78,7 +78,7 @@ RSpec.describe "admin/finance/active_lead_providers/index.html.erb" do
     it "displays an empty state message" do
       render
 
-      expect(rendered).to have_content("No active lead providers for #{contract_period.year}")
+      expect(rendered).to have_content("No lead provider framework agreements for #{contract_period.year}")
     end
   end
 end

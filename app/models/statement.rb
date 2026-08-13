@@ -118,7 +118,7 @@ private
 
     return unless existing
 
-    errors.add(:base, "Statement with the same month and year already exists for this active lead provider")
+    errors.add(:base, "Statement with the same month and year already exists for this framework agreement")
   end
 
   def payable_or_paid?

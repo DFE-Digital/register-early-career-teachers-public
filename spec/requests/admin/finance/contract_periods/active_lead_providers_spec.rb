@@ -1,7 +1,7 @@
 RSpec.describe "Admin active lead providers", type: :request do
   let(:contract_period) { FactoryBot.create(:contract_period, :next) }
   let(:index_path) { admin_contract_period_active_lead_providers_path(contract_period) }
-  let(:started_error) { "Active lead providers cannot be changed once the contract period has started" }
+  let(:started_error) { "Lead provider framework agreements cannot be changed once the contract period has started" }
 
   describe "GET /admin/contract-periods/:contract_period_id/active-lead-providers" do
     it "redirects to sign in path when not signed in" do

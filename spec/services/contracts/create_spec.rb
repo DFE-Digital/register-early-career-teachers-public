@@ -63,7 +63,7 @@ describe Contracts::Create do
     let(:alp_band) { FactoryBot.create(:framework_agreement_band) }
 
     it "does not create a contract or event" do
-      expect { service.call }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Banded fee structure band terms band must belong to the contract's active lead provider")
+      expect { service.call }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Banded fee structure band terms band must belong to the contract's lead provider framework agreement")
       expect(Events::Record).not_to have_received(:record_contract_created_event!)
     end
   end
