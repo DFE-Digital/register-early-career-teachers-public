@@ -239,6 +239,52 @@ RSpec.describe "Admin finance active lead provider contracts", type: :request do
         end
       end
     end
+
+    context "when editing the current contract period" do
+      include_context "sign in as finance DfE user"
+
+      around do |example|
+        travel_to(1.day.after(contract_period.started_on)) { example.run }
+      end
+
+      it "renders the edit page" do
+        get edit_path
+
+        expect(response.status).to eq(200)
+      end
+    end
+
+    context "when editing a past contract period" do
+      include_context "sign in as finance DfE user"
+
+      let(:contract_period) { FactoryBot.create(:contract_period, :previous) }
+
+      around do |example|
+        travel_to(1.day.after(contract_period.finished_on)) { example.run }
+      end
+
+      it "renders the edit page" do
+        get edit_path
+
+        expect(response.status).to eq(200)
+      end
+    end
+
+    context "when editing a frozen contract period" do
+      include_context "sign in as finance DfE user"
+
+      let(:contract_period) { FactoryBot.create(:contract_period, :previous, payments_frozen_at: 1.week.ago) }
+
+      around do |example|
+        travel_to(1.day.after(contract_period.payments_frozen_at)) { example.run }
+      end
+
+      it "blocks editing a contract" do
+        get edit_path
+        expect(response).to redirect_to(contracts_path)
+        expect(flash[:error]).to eq("Contracts cannot be changed once payments have been frozen for the contract period")
+      end
+    end
   end
 
   describe "PATCH .../contracts/:id" do
@@ -290,12 +336,48 @@ RSpec.describe "Admin finance active lead provider contracts", type: :request do
     context "when signed in as a finance DfE user" do
       include_context "sign in as finance DfE user"
 
-      it "updates the contract and its band terms" do
-        patch contract_path, params: update_params
+      context "when editing the current contract period" do
+        around do |example|
+          travel_to(1.day.after(contract_period.started_on)) { example.run }
+        end
 
-        expect(response).to redirect_to(contract_path)
-        expect(contract.reload.vat_rate).to eq(0.1)
-        expect(band_term.reload.fee_per_declaration).to eq(999)
+        it "updates the contract and its band terms" do
+          patch contract_path, params: update_params
+
+          expect(response).to redirect_to(contract_path)
+          expect(contract.reload.vat_rate).to eq(0.1)
+          expect(band_term.reload.fee_per_declaration).to eq(999)
+        end
+      end
+
+      context "when editing a past contract period" do
+        let(:contract_period) { FactoryBot.create(:contract_period, :previous) }
+
+        around do |example|
+          travel_to(1.day.after(contract_period.finished_on)) { example.run }
+        end
+
+        it "updates the contract and its band terms" do
+          patch contract_path, params: update_params
+
+          expect(response).to redirect_to(contract_path)
+          expect(contract.reload.vat_rate).to eq(0.1)
+          expect(band_term.reload.fee_per_declaration).to eq(999)
+        end
+      end
+
+      context "when editing a frozen contract period" do
+        let(:contract_period) { FactoryBot.create(:contract_period, :previous, payments_frozen_at: 1.week.ago) }
+
+        around do |example|
+          travel_to(1.day.after(contract_period.payments_frozen_at)) { example.run }
+        end
+
+        it "blocks editing a contract" do
+          patch contract_path, params: update_params
+          expect(response).to redirect_to(contracts_path)
+          expect(flash[:error]).to eq("Contracts cannot be changed once payments have been frozen for the contract period")
+        end
       end
     end
   end
@@ -336,14 +418,44 @@ RSpec.describe "Admin finance active lead provider contracts", type: :request do
       end
 
       context "when the contract has no statements" do
-        around do |example|
-          travel_to(1.day.after(contract_period.started_on)) { example.run }
+        context "when deleting in the current contract period" do
+          around do |example|
+            travel_to(1.day.after(contract_period.started_on)) { example.run }
+          end
+
+          it "allows deleting a contract" do
+            expect { delete contract_path }.to change(Contract, :count).by(-1)
+            expect(response).to redirect_to(contracts_path)
+            expect(flash[:notice]).to eq("Contract deleted")
+          end
         end
 
-        it "allows deleting a contract" do
-          expect { delete contract_path }.to change(Contract, :count).by(-1)
-          expect(response).to redirect_to(contracts_path)
-          expect(flash[:notice]).to eq("Contract deleted")
+        context "when deleting in a past contract period" do
+          let(:contract_period) { FactoryBot.create(:contract_period, :previous) }
+
+          around do |example|
+            travel_to(1.day.after(contract_period.finished_on)) { example.run }
+          end
+
+          it "allows deleting a contract" do
+            expect { delete contract_path }.to change(Contract, :count).by(-1)
+            expect(response).to redirect_to(contracts_path)
+            expect(flash[:notice]).to eq("Contract deleted")
+          end
+        end
+
+        context "when deleting from a frozen contract period" do
+          let(:contract_period) { FactoryBot.create(:contract_period, :previous, payments_frozen_at: 1.week.ago) }
+
+          around do |example|
+            travel_to(1.day.after(contract_period.payments_frozen_at)) { example.run }
+          end
+
+          it "redirects back with an error and does not delete the contract" do
+            expect { delete contract_path }.not_to change(Contract, :count)
+            expect(response).to redirect_to(contracts_path)
+            expect(flash[:error]).to eq("Contracts cannot be changed once payments have been frozen for the contract period")
+          end
         end
       end
     end
