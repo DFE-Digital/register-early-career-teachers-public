@@ -9,6 +9,10 @@ RSpec.describe Sessions::Users::DfEPersona do
     let(:user_props) { { email: } }
   end
 
+  it_behaves_like "a fingerprintable user" do
+    let(:user_props) { { email: } }
+  end
+
   context "when personas are disabled" do
     before { allow(Rails.application.config).to receive(:enable_personas).and_return(false) }
 

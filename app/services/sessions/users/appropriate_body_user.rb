@@ -1,6 +1,8 @@
 module Sessions
   module Users
     class AppropriateBodyUser < User
+      include Fingerprint
+
       class UnknownOrganisationId < Sessions::User::InvalidSession; end
 
       USER_TYPE = :appropriate_body_user

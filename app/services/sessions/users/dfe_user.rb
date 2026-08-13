@@ -3,6 +3,7 @@ module Sessions
     class DfEUser < User
       class UnknownUserEmail < Sessions::User::InvalidSession; end
 
+      include Fingerprint
       include Sessions::ImpersonateSchoolUser
 
       USER_TYPE = :dfe_staff_user

@@ -24,6 +24,12 @@ RSpec.describe Sessions::Users::AppropriateBodyUser do
     end
   end
 
+  it_behaves_like "a fingerprintable user" do
+    let(:user_props) do
+      { email:, name:, dfe_sign_in_organisation_id:, dfe_sign_in_user_id:, dfe_sign_in_roles: }
+    end
+  end
+
   context "when no appropriate body is found" do
     let(:dfe_sign_in_organisation_id) { SecureRandom.uuid }
 

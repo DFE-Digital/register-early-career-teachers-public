@@ -9,6 +9,10 @@ RSpec.describe Sessions::Users::DfEUser do
     let(:user_props) { { email: } }
   end
 
+  it_behaves_like "a fingerprintable user" do
+    let(:user_props) { { email: } }
+  end
+
   context "when there is no user with the given email" do
     let(:email) { Faker::Internet.email }
 

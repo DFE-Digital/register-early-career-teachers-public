@@ -32,6 +32,7 @@ module Sessions
     end
 
     def dfe_analytics_user_id = nil
+    def fingerprint = nil
 
     # User?
     def dfe_sign_in_authorisable? = false

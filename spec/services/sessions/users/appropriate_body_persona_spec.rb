@@ -13,6 +13,10 @@ RSpec.describe Sessions::Users::AppropriateBodyPersona do
     let(:user_props) { { email:, name:, appropriate_body_period_id: } }
   end
 
+  it_behaves_like "an unfingerprintable user" do
+    let(:user_props) { { email:, name:, appropriate_body_period_id: } }
+  end
+
   context "when personas are disabled" do
     before { allow(Rails.application.config).to receive(:enable_personas).and_return(false) }
 

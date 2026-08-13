@@ -46,14 +46,6 @@ private
   end
 
   def current_user_dfe_sign_in_user_fingerprint
-    dfe_sign_in_user_id = current_user.try(:dfe_sign_in_user_id)
-
-    return if dfe_sign_in_user_id.blank?
-
-    OpenSSL::HMAC.hexdigest(
-      "SHA256",
-      Rails.application.secret_key_base,
-      dfe_sign_in_user_id
-    )
+    current_user&.fingerprint
   end
 end

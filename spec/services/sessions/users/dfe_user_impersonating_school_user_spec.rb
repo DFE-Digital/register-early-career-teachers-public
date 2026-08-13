@@ -1,4 +1,4 @@
-describe "Sessions::Users::DfEUserImpersonatingSchoolUser" do
+describe Sessions::Users::DfEUserImpersonatingSchoolUser do # rubocop:disable RSpec/SpecFilePathFormat
   subject(:dfe_user_impersonating_school_user) { Sessions::Users::DfEUserImpersonatingSchoolUser.new(email: user.email, school_urn:, original_type:) }
 
   let(:email) { "timothy.dalton@education.gov.uk" }
@@ -9,6 +9,10 @@ describe "Sessions::Users::DfEUserImpersonatingSchoolUser" do
 
   it "has user type :dfe_user_impersonating_school_user" do
     expect(Sessions::Users::DfEUserImpersonatingSchoolUser::USER_TYPE).to be(:dfe_user_impersonating_school_user)
+  end
+
+  it_behaves_like "a fingerprintable user" do
+    let(:user_props) { { email: user.email, school_urn: school.urn, original_type: } }
   end
 
   describe "initialization" do

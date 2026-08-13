@@ -3,6 +3,8 @@ module Sessions
     class SchoolUser < User
       class UnknownOrganisationURN < Sessions::User::InvalidSession; end
 
+      include Fingerprint
+
       USER_TYPE = :school_user
       PROVIDER = :dfe_sign_in
 
