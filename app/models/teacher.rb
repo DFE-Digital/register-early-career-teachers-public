@@ -9,6 +9,8 @@ class Teacher < ApplicationRecord
 
   TRN_FORMAT = %r{\A\d{7}\z}
 
+  TRS_RESPONSES = %i[ok not_found gone permanent_redirect].index_with(&:to_s).freeze
+
   self.ignored_columns = %i[search]
 
   # Enums
@@ -22,6 +24,7 @@ class Teacher < ApplicationRecord
     registered_in_error: "registered_in_error",
     teacher_record_merged: "teacher_record_merged",
   }
+  enum :trs_response, TRS_RESPONSES, prefix: true
 
   # Associations
   has_many :ect_at_school_periods, inverse_of: :teacher

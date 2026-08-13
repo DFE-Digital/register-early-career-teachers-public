@@ -40,6 +40,8 @@ shared:
     - trs_data_last_refreshed_at
     - trs_deactivated
     - trs_not_found
+    - trs_response
+    - trs_redirected_to
     - trs_induction_start_date
     - trs_induction_completed_date
     - trs_first_name
