@@ -1,4 +1,8 @@
 class MigrationFixes::Processor
+  Result = Data.define(:data_change, :target_object, :error) do
+    def success? = error.nil?
+  end
+
   attr_reader :batch_refs, :update_readonly_attrs
 
   def initialize(update_readonly_attrs: false)
@@ -7,7 +11,7 @@ class MigrationFixes::Processor
   end
 
   def process!(data_change: {})
-    return if data_change.blank? || data_change.empty?
+    return Result.new(data_change:, target_object: nil, error: nil) if data_change.blank?
 
     object_type = data_change[:object_type].camelcase.constantize
     object_id = data_change[:object_id]
@@ -30,7 +34,9 @@ class MigrationFixes::Processor
       raise ArgumentError, "Unknown action '#{action}'"
     end
 
-    target_object
+    Result.new(data_change:, target_object:, error: nil)
+  rescue StandardError => e
+    Result.new(data_change:, target_object: nil, error: e)
   end
 
 private

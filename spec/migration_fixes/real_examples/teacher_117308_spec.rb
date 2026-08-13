@@ -31,7 +31,8 @@ describe "Real data check for teacher 117308" do
 
   before do
     migration_fixes.each do |data_change|
-      processor.process!(data_change:)
+      result = processor.process!(data_change:)
+      raise result.error unless result.success?
     end
   end
 
