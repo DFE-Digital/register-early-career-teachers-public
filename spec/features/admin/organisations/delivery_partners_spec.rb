@@ -53,7 +53,7 @@ RSpec.describe "Admin organisations delivery partners" do
     and_delivery_partners_exist
     and_a_known_delivery_partner_exists
     and_a_contract_period_exists
-    and_an_active_lead_provider_exists
+    and_an_framework_agreement_exists
 
     when_i_click_organisations_on_the_top_menu
     when_i_click_delivery_partners_link
@@ -87,9 +87,9 @@ RSpec.describe "Admin organisations delivery partners" do
     @contract_period = FactoryBot.create(:contract_period, :current)
   end
 
-  def and_an_active_lead_provider_exists
+  def and_an_framework_agreement_exists
     @lead_provider = FactoryBot.create(:lead_provider)
-    FactoryBot.create(:active_lead_provider, lead_provider: @lead_provider, contract_period: @contract_period)
+    FactoryBot.create(:framework_agreement, lead_provider: @lead_provider, contract_period: @contract_period)
   end
 
   def when_i_click_organisations_on_the_top_menu

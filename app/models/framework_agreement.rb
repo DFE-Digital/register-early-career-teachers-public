@@ -1,15 +1,17 @@
-class ActiveLeadProvider < ApplicationRecord
+class FrameworkAgreement < ApplicationRecord
+  self.table_name = "active_lead_providers"
+
   # Associations
-  belongs_to :contract_period, inverse_of: :active_lead_providers, foreign_key: :contract_period_year
-  belongs_to :lead_provider, inverse_of: :active_lead_providers
-  has_many :lead_provider_delivery_partnerships
+  belongs_to :contract_period, inverse_of: :framework_agreements, foreign_key: :contract_period_year
+  belongs_to :lead_provider, inverse_of: :framework_agreements
+  has_many :lead_provider_delivery_partnerships, foreign_key: :active_lead_provider_id
   has_many :school_partnerships, through: :lead_provider_delivery_partnerships
   has_many :delivery_partners, through: :lead_provider_delivery_partnerships
   has_many :expressions_of_interest, class_name: "TrainingPeriod", foreign_key: "expression_of_interest_id", inverse_of: :expression_of_interest
-  has_many :events
-  has_many :contracts
+  has_many :events, foreign_key: :active_lead_provider_id
+  has_many :contracts, foreign_key: :active_lead_provider_id
   has_many :statements, through: :contracts
-  has_many :bands, -> { order(allocation_order: :asc) }, class_name: "ActiveLeadProvider::Band"
+  has_many :bands, -> { order(allocation_order: :asc) }, class_name: "FrameworkAgreement::Band", foreign_key: :active_lead_provider_id
 
   # Validations
   validates :contract_period_year,
@@ -24,7 +26,7 @@ class ActiveLeadProvider < ApplicationRecord
   scope :for_lead_provider, ->(lead_provider_id) { where(lead_provider_id:) }
   scope :without_existing_partnership_for, ->(delivery_partner, contract_period) {
     where.not(
-      id: LeadProviderDeliveryPartnership.active_lead_provider_ids_for(delivery_partner, contract_period)
+      id: LeadProviderDeliveryPartnership.framework_agreement_ids_for(delivery_partner, contract_period)
     )
   }
   scope :with_lead_provider_ordered_by_name, -> { includes(:lead_provider).order("lead_providers.name") }

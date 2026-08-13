@@ -14,7 +14,7 @@ module ActiveLeadProviders::Bands
 
       ActiveRecord::Base.transaction do
         band.save!
-        Events::Record.record_active_lead_provider_band_updated_event!(author:, band:, modifications:)
+        Events::Record.record_framework_agreement_band_updated_event!(author:, band:, modifications:)
       end
 
       band

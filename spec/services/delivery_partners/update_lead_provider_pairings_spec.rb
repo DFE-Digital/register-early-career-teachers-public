@@ -8,28 +8,28 @@ RSpec.describe DeliveryPartners::UpdateLeadProviderPairings do
   let!(:lead_provider_2) { FactoryBot.create(:lead_provider, name: "Lead Provider 2") }
   let!(:lead_provider_3) { FactoryBot.create(:lead_provider, name: "Lead Provider 3") }
 
-  let!(:active_lead_provider_1) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_1, contract_period:) }
-  let!(:active_lead_provider_2) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_2, contract_period:) }
-  let!(:active_lead_provider_3) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_3, contract_period:) }
+  let!(:framework_agreement_1) { FactoryBot.create(:framework_agreement, lead_provider: lead_provider_1, contract_period:) }
+  let!(:framework_agreement_2) { FactoryBot.create(:framework_agreement, lead_provider: lead_provider_2, contract_period:) }
+  let!(:framework_agreement_3) { FactoryBot.create(:framework_agreement, lead_provider: lead_provider_3, contract_period:) }
 
   let(:service) do
     described_class.new(
       delivery_partner:,
       contract_period:,
-      active_lead_provider_ids: new_active_lead_provider_ids,
+      framework_agreement_ids: new_framework_agreement_ids,
       author:
     )
   end
 
   describe "#update!" do
     context "when adding new partnerships" do
-      let(:new_active_lead_provider_ids) { [active_lead_provider_1.id, active_lead_provider_2.id] }
+      let(:new_framework_agreement_ids) { [framework_agreement_1.id, framework_agreement_2.id] }
 
       it "creates new lead provider delivery partnerships" do
         expect { service.update! }.to change(LeadProviderDeliveryPartnership, :count).by(2)
 
         partnerships = delivery_partner.lead_provider_delivery_partnerships.reload
-        expect(partnerships.map(&:active_lead_provider_id)).to contain_exactly(active_lead_provider_1.id, active_lead_provider_2.id)
+        expect(partnerships.map(&:active_lead_provider_id)).to contain_exactly(framework_agreement_1.id, framework_agreement_2.id)
       end
 
       it "records partnership added events" do
@@ -48,35 +48,35 @@ RSpec.describe DeliveryPartners::UpdateLeadProviderPairings do
         FactoryBot.create(
           :lead_provider_delivery_partnership,
           delivery_partner:,
-          active_lead_provider: active_lead_provider_1
+          framework_agreement: framework_agreement_1
         )
       end
 
       context "when keeping existing and adding new partnerships" do
-        let(:new_active_lead_provider_ids) { [active_lead_provider_1.id, active_lead_provider_2.id, active_lead_provider_3.id] }
+        let(:new_framework_agreement_ids) { [framework_agreement_1.id, framework_agreement_2.id, framework_agreement_3.id] }
 
         it "keeps existing partnerships and adds new ones" do
           expect { service.update! }.to change(LeadProviderDeliveryPartnership, :count).by(2)
 
           partnerships = delivery_partner.lead_provider_delivery_partnerships.reload
           expect(partnerships.map(&:active_lead_provider_id)).to contain_exactly(
-            active_lead_provider_1.id, # existing - kept because it's in the submitted list
-            active_lead_provider_2.id, # new - added
-            active_lead_provider_3.id  # new - added
+            framework_agreement_1.id, # existing - kept because it's in the submitted list
+            framework_agreement_2.id, # new - added
+            framework_agreement_3.id  # new - added
           )
         end
       end
 
       context "when replacing existing partnerships with new ones" do
-        let(:new_active_lead_provider_ids) { [active_lead_provider_2.id, active_lead_provider_3.id] }
+        let(:new_framework_agreement_ids) { [framework_agreement_2.id, framework_agreement_3.id] }
 
         it "removes existing partnerships and adds new ones" do
           expect { service.update! }.to change(LeadProviderDeliveryPartnership, :count).by(1) # -1 + 2 = 1
 
           partnerships = delivery_partner.lead_provider_delivery_partnerships.reload
           expect(partnerships.map(&:active_lead_provider_id)).to contain_exactly(
-            active_lead_provider_2.id,
-            active_lead_provider_3.id
+            framework_agreement_2.id,
+            framework_agreement_3.id
           )
         end
 
@@ -94,7 +94,7 @@ RSpec.describe DeliveryPartners::UpdateLeadProviderPairings do
         FactoryBot.create(
           :lead_provider_delivery_partnership,
           delivery_partner:,
-          active_lead_provider: active_lead_provider_1
+          framework_agreement: framework_agreement_1
         )
       end
 
@@ -102,18 +102,18 @@ RSpec.describe DeliveryPartners::UpdateLeadProviderPairings do
         FactoryBot.create(
           :lead_provider_delivery_partnership,
           delivery_partner:,
-          active_lead_provider: active_lead_provider_2
+          framework_agreement: framework_agreement_2
         )
       end
 
       context "when unchecking some partnerships" do
-        let(:new_active_lead_provider_ids) { [active_lead_provider_1.id] }
+        let(:new_framework_agreement_ids) { [framework_agreement_1.id] }
 
         it "removes unchecked partnerships" do
           expect { service.update! }.to change(LeadProviderDeliveryPartnership, :count).by(-1)
 
           partnerships = delivery_partner.lead_provider_delivery_partnerships.reload
-          expect(partnerships.map(&:active_lead_provider_id)).to contain_exactly(active_lead_provider_1.id)
+          expect(partnerships.map(&:active_lead_provider_id)).to contain_exactly(framework_agreement_1.id)
         end
 
         it "records partnership removed events" do
@@ -124,7 +124,7 @@ RSpec.describe DeliveryPartners::UpdateLeadProviderPairings do
       end
 
       context "when unchecking all partnerships" do
-        let(:new_active_lead_provider_ids) { [] }
+        let(:new_framework_agreement_ids) { [] }
 
         it "removes all partnerships" do
           expect { service.update! }.to change(LeadProviderDeliveryPartnership, :count).by(-2)
@@ -141,15 +141,15 @@ RSpec.describe DeliveryPartners::UpdateLeadProviderPairings do
       end
 
       context "when adding and removing partnerships in the same operation" do
-        let(:new_active_lead_provider_ids) { [active_lead_provider_2.id, active_lead_provider_3.id] }
+        let(:new_framework_agreement_ids) { [framework_agreement_2.id, framework_agreement_3.id] }
 
         it "removes unchecked partnerships and adds new ones" do
           expect { service.update! }.not_to change(LeadProviderDeliveryPartnership, :count) # -1 + 1 = 0
 
           partnerships = delivery_partner.lead_provider_delivery_partnerships.reload
           expect(partnerships.map(&:active_lead_provider_id)).to contain_exactly(
-            active_lead_provider_2.id,
-            active_lead_provider_3.id
+            framework_agreement_2.id,
+            framework_agreement_3.id
           )
         end
 
@@ -167,11 +167,11 @@ RSpec.describe DeliveryPartners::UpdateLeadProviderPairings do
         FactoryBot.create(
           :lead_provider_delivery_partnership,
           delivery_partner:,
-          active_lead_provider: active_lead_provider_1
+          framework_agreement: framework_agreement_1
         )
       end
 
-      let(:new_active_lead_provider_ids) { [active_lead_provider_1.id] }
+      let(:new_framework_agreement_ids) { [framework_agreement_1.id] }
 
       it "does not change partnerships" do
         expect { service.update! }.not_to change(LeadProviderDeliveryPartnership, :count)
@@ -189,7 +189,7 @@ RSpec.describe DeliveryPartners::UpdateLeadProviderPairings do
     end
 
     context "when there is a database error" do
-      let(:new_active_lead_provider_ids) { [active_lead_provider_1.id] }
+      let(:new_framework_agreement_ids) { [framework_agreement_1.id] }
 
       before do
         create_service = instance_double(LeadProviderDeliveryPartnerships::Create)

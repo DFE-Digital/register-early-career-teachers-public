@@ -84,7 +84,7 @@ RSpec.describe API::Declarations::Clawback, type: :model do
         :declaration,
         :paid,
         payment_statement:,
-        active_lead_provider: payment_statement.active_lead_provider
+        framework_agreement: payment_statement.framework_agreement
       )
     end
     let(:payment_statement) do
@@ -115,7 +115,7 @@ RSpec.describe API::Declarations::Clawback, type: :model do
       FactoryBot.create(
         :statement,
         deadline_date: declaration.declaration_date + 1.month,
-        active_lead_provider: declaration.training_period.active_lead_provider
+        framework_agreement: declaration.training_period.framework_agreement
       )
     end
 

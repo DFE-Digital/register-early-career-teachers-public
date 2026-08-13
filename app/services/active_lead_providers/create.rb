@@ -3,7 +3,7 @@
 # lead provider so callers can inspect validation errors when it isn't persisted;
 # SeedFromPrevious errors are allowed to propagate.
 class ActiveLeadProviders::Create
-  attr_reader :active_lead_provider
+  attr_reader :framework_agreement
 
   def initialize(author:, contract_period:, lead_provider_id:)
     @author = author
@@ -12,14 +12,14 @@ class ActiveLeadProviders::Create
   end
 
   def call
-    @active_lead_provider = contract_period.active_lead_providers.build(lead_provider_id:)
+    @framework_agreement = contract_period.framework_agreements.build(lead_provider_id:)
 
-    if active_lead_provider.save
-      Events::Record.record_active_lead_provider_created_event!(author:, active_lead_provider:)
-      ActiveLeadProviders::SeedFromPrevious.new(active_lead_provider:).call
+    if framework_agreement.save
+      Events::Record.record_active_lead_provider_created_event!(author:, framework_agreement:)
+      ActiveLeadProviders::SeedFromPrevious.new(framework_agreement:).call
     end
 
-    active_lead_provider
+    framework_agreement
   end
 
 private

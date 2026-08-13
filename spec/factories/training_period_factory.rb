@@ -68,16 +68,16 @@ FactoryBot.define do
       end
     end
 
-    trait :with_active_lead_provider do
+    trait :with_framework_agreement do
       with_school_partnership
 
       transient do
-        active_lead_provider { association :active_lead_provider }
+        framework_agreement { association :framework_agreement }
       end
 
       school_partnership do
-        association :school_partnership, :with_active_lead_provider,
-                    active_lead_provider:,
+        association :school_partnership, :with_framework_agreement,
+                    framework_agreement:,
                     school: school_period_school
       end
     end
@@ -113,14 +113,14 @@ FactoryBot.define do
         contract_period = training_period.school_partnership&.contract_period ||
           training_period.contract_period ||
           FactoryBot.create(:contract_period, :current)
-        training_period.expression_of_interest = FactoryBot.create(:active_lead_provider, contract_period:)
+        training_period.expression_of_interest = FactoryBot.create(:framework_agreement, contract_period:)
       end
     end
 
     trait :with_only_expression_of_interest do
       with_schedule
       school_partnership { nil }
-      association :expression_of_interest, factory: :active_lead_provider
+      association :expression_of_interest, factory: :framework_agreement
     end
 
     trait :unfinished do

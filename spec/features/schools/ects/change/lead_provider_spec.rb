@@ -5,9 +5,9 @@ describe "School user can change ECT's lead provider" do
     given_there_is_a_school
     and_there_is_an_ect(started_on: 1.week.ago)
     and_there_is_a_contract_period
-    and_there_is_an_active_lead_provider
+    and_there_is_an_framework_agreement
     with_provider_led_training
-    and_there_is_another_active_lead_provider
+    and_there_is_another_framework_agreement
     and_i_am_logged_in_as_a_school_user
 
     when_i_visit_the_ect_page
@@ -32,10 +32,10 @@ describe "School user can change ECT's lead provider" do
     given_there_is_a_school
     and_there_is_an_ect(started_on: Date.current)
     and_there_is_a_contract_period
-    and_there_is_an_active_lead_provider
+    and_there_is_an_framework_agreement
     with_confirmed_provider_led_training
-    and_there_is_another_active_lead_provider
-    and_there_is_a_third_active_lead_provider
+    and_there_is_another_framework_agreement
+    and_there_is_a_third_framework_agreement
     and_i_am_logged_in_as_a_school_user
 
     when_i_visit_the_ect_page
@@ -57,9 +57,9 @@ describe "School user can change ECT's lead provider" do
       given_there_is_a_school
       and_there_is_an_ect(started_on: 1.week.ago)
       and_there_is_a_contract_period
-      and_there_is_an_active_lead_provider
+      and_there_is_an_framework_agreement
       with_provider_led_training
-      and_there_is_another_active_lead_provider
+      and_there_is_another_framework_agreement
       and_i_am_logged_in_as_a_school_user
 
       when_i_visit_the_ect_page
@@ -96,10 +96,10 @@ private
     @contract_period = FactoryBot.create(:contract_period, :with_schedules, :current)
   end
 
-  def and_there_is_an_active_lead_provider
+  def and_there_is_an_framework_agreement
     lead_provider = FactoryBot.create(:lead_provider, name: "Current Lead Provider")
-    @active_lead_provider = FactoryBot.create(
-      :active_lead_provider,
+    @framework_agreement = FactoryBot.create(
+      :framework_agreement,
       contract_period: @contract_period,
       lead_provider:
     )
@@ -114,14 +114,14 @@ private
       :with_only_expression_of_interest,
       ect_at_school_period: @ect,
       started_on: @ect.started_on,
-      expression_of_interest: @active_lead_provider
+      expression_of_interest: @framework_agreement
     )
   end
 
   def with_confirmed_provider_led_training
     lead_provider_delivery_partnership = FactoryBot.create(
       :lead_provider_delivery_partnership,
-      active_lead_provider: @active_lead_provider,
+      framework_agreement: @framework_agreement,
       contract_period: @contract_period
     )
     school_partnership = FactoryBot.create(
@@ -141,19 +141,19 @@ private
     )
   end
 
-  def and_there_is_another_active_lead_provider
+  def and_there_is_another_framework_agreement
     lead_provider = FactoryBot.create(:lead_provider, name: "Other Lead Provider")
-    @other_active_lead_provider = FactoryBot.create(
-      :active_lead_provider,
+    @other_framework_agreement = FactoryBot.create(
+      :framework_agreement,
       contract_period: @contract_period,
       lead_provider:
     )
   end
 
-  def and_there_is_a_third_active_lead_provider
+  def and_there_is_a_third_framework_agreement
     lead_provider = FactoryBot.create(:lead_provider, name: "A Third Testing Provider")
-    @third_active_lead_provider = FactoryBot.create(
-      :active_lead_provider,
+    @third_framework_agreement = FactoryBot.create(
+      :framework_agreement,
       contract_period: @contract_period,
       lead_provider:
     )
@@ -178,7 +178,7 @@ private
   end
 
   def and_the_current_lead_provider_is_not_an_option
-    expect(page.get_by_label(@active_lead_provider.lead_provider.name)).not_to be_visible
+    expect(page.get_by_label(@framework_agreement.lead_provider.name)).not_to be_visible
   end
 
   def when_i_choose_lead_provider(name)

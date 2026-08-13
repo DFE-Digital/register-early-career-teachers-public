@@ -4,7 +4,7 @@ RSpec.describe "admin/finance/contract_periods/show.html.erb" do
   before do
     assign(:contract_period, contract_period)
     assign(:editable, !contract_period.started_on_or_before_today?)
-    assign(:has_lead_providers, contract_period.active_lead_providers.any?)
+    assign(:has_lead_providers, contract_period.framework_agreements.any?)
     assign(:has_schedules, contract_period.schedules.any?)
     assign(:breadcrumbs, {
       "Finance" => admin_finance_path,
@@ -99,7 +99,7 @@ RSpec.describe "admin/finance/contract_periods/show.html.erb" do
       end
 
       before do
-        FactoryBot.create(:active_lead_provider, contract_period:)
+        FactoryBot.create(:framework_agreement, contract_period:)
       end
 
       it "shows the task as completed and selectable" do
@@ -118,7 +118,7 @@ RSpec.describe "admin/finance/contract_periods/show.html.erb" do
       end
 
       before do
-        FactoryBot.create(:active_lead_provider, contract_period:)
+        FactoryBot.create(:framework_agreement, contract_period:)
       end
 
       it "shows the task as completed and selectable" do

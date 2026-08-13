@@ -432,8 +432,8 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
 
     describe "#previous_lead_provider_name" do
       let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Confirmed LP") }
-      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
-      let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+      let(:framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:) }
+      let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:) }
 
       before do
         FactoryBot.create(
@@ -500,7 +500,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
       let!(:lp_out) { FactoryBot.create(:lead_provider) }
 
       before do
-        FactoryBot.create(:active_lead_provider, contract_period:, lead_provider: lp_in)
+        FactoryBot.create(:framework_agreement, contract_period:, lead_provider: lp_in)
         store.start_date = "1 March 2025"
       end
 
@@ -533,9 +533,9 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
 
       let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Confirmed LP") }
       let(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, year: 2024) }
-      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
+      let(:framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:, contract_period:) }
       let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
-      let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
+      let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:, delivery_partner:) }
       let(:school) { FactoryBot.create(:school) }
       let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school:) }
       let(:teacher) { FactoryBot.create(:teacher) }

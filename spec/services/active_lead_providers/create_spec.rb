@@ -17,12 +17,12 @@ describe ActiveLeadProviders::Create do
 
     it "builds and saves the active lead provider, records the created event, then seeds it from the previous period" do
       result = nil
-      expect { result = service.call }.to change(ActiveLeadProvider, :count).by(1)
+      expect { result = service.call }.to change(FrameworkAgreement, :count).by(1)
 
       expect(result).to be_persisted
       expect(result).to have_attributes(contract_period_year: contract_period.year, lead_provider_id: lead_provider.id)
-      expect(Events::Record).to have_received(:record_active_lead_provider_created_event!).with(author:, active_lead_provider: result)
-      expect(ActiveLeadProviders::SeedFromPrevious).to have_received(:new).with(active_lead_provider: result)
+      expect(Events::Record).to have_received(:record_active_lead_provider_created_event!).with(author:, framework_agreement: result)
+      expect(ActiveLeadProviders::SeedFromPrevious).to have_received(:new).with(framework_agreement: result)
       expect(seed).to have_received(:call)
     end
   end
@@ -32,7 +32,7 @@ describe ActiveLeadProviders::Create do
 
     it "does not save, record an event, or seed, and returns the unpersisted record carrying its errors" do
       result = nil
-      expect { result = service.call }.not_to change(ActiveLeadProvider, :count)
+      expect { result = service.call }.not_to change(FrameworkAgreement, :count)
 
       expect(result).not_to be_persisted
       expect(result.errors[:lead_provider_id]).to include("Choose a lead provider")

@@ -1,7 +1,7 @@
 def describe_school_partnership(sp)
   delivery_partner_name = sp.lead_provider_delivery_partnership.delivery_partner.name
-  lead_provider_name = sp.lead_provider_delivery_partnership.active_lead_provider.lead_provider.name
-  contract_period_year = sp.lead_provider_delivery_partnership.active_lead_provider.contract_period.year
+  lead_provider_name = sp.lead_provider_delivery_partnership.framework_agreement.lead_provider.name
+  contract_period_year = sp.lead_provider_delivery_partnership.framework_agreement.contract_period.year
   school_name = sp.school.gias_school.name
 
   print_seed_info("#{school_name} has partnered with:")
@@ -11,13 +11,13 @@ def describe_school_partnership(sp)
 end
 
 def find_or_create_lead_provider_delivery_partnership(lead_provider:, delivery_partner:, contract_period:)
-  active_lead_provider = ActiveLeadProvider.find_by!(
+  framework_agreement = FrameworkAgreement.find_by!(
     lead_provider:,
     contract_period:
   )
 
   LeadProviderDeliveryPartnership.find_or_create_by!(
-    active_lead_provider:,
+    framework_agreement:,
     delivery_partner:
   )
 end

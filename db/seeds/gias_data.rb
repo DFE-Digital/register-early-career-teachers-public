@@ -182,8 +182,8 @@ def populate_school(gias_school, lead_provider, counter = 0)
   delivery_partner = DeliveryPartner.find_by!(name: "Artisan Education Group")
 
   [rp2025, rp2026].each do |contract_period|
-    active_lead_provider = ActiveLeadProvider.find_by!(lead_provider:, contract_period:)
-    lead_provider_delivery_partnership = LeadProviderDeliveryPartnership.find_or_create_by!(active_lead_provider:, delivery_partner:)
+    framework_agreement = FrameworkAgreement.find_by!(lead_provider:, contract_period:)
+    lead_provider_delivery_partnership = LeadProviderDeliveryPartnership.find_or_create_by!(framework_agreement:, delivery_partner:)
     SchoolPartnership.find_or_create_by!(school:, lead_provider_delivery_partnership:)
   end
 

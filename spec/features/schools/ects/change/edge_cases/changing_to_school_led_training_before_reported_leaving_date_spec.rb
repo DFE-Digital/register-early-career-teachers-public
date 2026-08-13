@@ -126,17 +126,17 @@ private
 
   def and_the_ect_is_doing_provider_led_training
     contract_period = FactoryBot.create(:contract_period, :current)
-    active_lead_provider = FactoryBot.create(:active_lead_provider, contract_period:)
+    framework_agreement = FactoryBot.create(:framework_agreement, contract_period:)
     FactoryBot.create(
       :training_period,
       :for_ect,
       :unfinished,
       :provider_led,
-      :with_active_lead_provider,
+      :with_framework_agreement,
       ect_at_school_period: @ect_at_school_period,
-      active_lead_provider:
+      framework_agreement:
     )
-    @lead_provider = active_lead_provider.lead_provider
+    @lead_provider = framework_agreement.lead_provider
   end
 
   def then_i_can_change_the_training_programme

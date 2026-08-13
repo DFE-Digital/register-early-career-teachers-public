@@ -3,14 +3,14 @@ RSpec.describe "admin/finance/active_lead_providers/lead_provider_delivery_partn
     FactoryBot.create(:contract_period, year: 2099, started_on: Date.new(2099, 6, 1), finished_on: Date.new(2100, 5, 31))
   end
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:, lead_provider:) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement, contract_period:, lead_provider:) }
   let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
-  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
+  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:, delivery_partner:) }
   let(:partnerships) { [lead_provider_delivery_partnership] }
   let(:pagy) { Pagy.new(count: partnerships.count, limit: 10, page: 1) }
 
   before do
-    assign(:active_lead_provider, active_lead_provider)
+    assign(:framework_agreement, framework_agreement)
     assign(:lead_provider_delivery_partnerships, partnerships)
     assign(:pagy, pagy)
     assign(:breadcrumbs, {
@@ -31,8 +31,8 @@ RSpec.describe "admin/finance/active_lead_providers/lead_provider_delivery_partn
     expect(view.content_for(:backlink_or_breadcrumb)).to have_link(lead_provider.name, href: admin_contract_period_active_lead_providers_path(contract_period))
 
     expect(rendered).to have_link(delivery_partner.name, href: admin_delivery_partner_path(delivery_partner))
-    expect(rendered).to have_link("Remove", href: delete_admin_contract_period_active_lead_provider_lead_provider_delivery_partnership_path(contract_period, active_lead_provider, lead_provider_delivery_partnership))
-    expect(rendered).to have_link("Add delivery partner", href: new_admin_contract_period_active_lead_provider_lead_provider_delivery_partnership_path(contract_period, active_lead_provider))
+    expect(rendered).to have_link("Remove", href: delete_admin_contract_period_active_lead_provider_lead_provider_delivery_partnership_path(contract_period, framework_agreement, lead_provider_delivery_partnership))
+    expect(rendered).to have_link("Add delivery partner", href: new_admin_contract_period_active_lead_provider_lead_provider_delivery_partnership_path(contract_period, framework_agreement))
     expect(rendered).not_to have_selector("a[aria-disabled='true']", text: "Add delivery partner")
   end
 

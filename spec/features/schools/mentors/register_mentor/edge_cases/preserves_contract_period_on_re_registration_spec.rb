@@ -52,16 +52,16 @@ private
   end
 
   def and_there_is_an_ect_with_no_mentor_registered_at_the_school
-    @active_lead_provider = FactoryBot.create(:active_lead_provider,
-                                              lead_provider: @lead_provider,
-                                              contract_period: @contract_period)
+    @framework_agreement = FactoryBot.create(:framework_agreement,
+                                             lead_provider: @lead_provider,
+                                             contract_period: @contract_period)
     @ect = FactoryBot.create(:ect_at_school_period, :unfinished, school: @school)
     FactoryBot.create(:training_period, :provider_led, :unfinished,
                       ect_at_school_period: @ect,
                       school_partnership: FactoryBot.create(:school_partnership,
                                                             school: @school,
                                                             lead_provider_delivery_partnership: FactoryBot.create(:lead_provider_delivery_partnership,
-                                                                                                                  active_lead_provider: @active_lead_provider)))
+                                                                                                                  framework_agreement: @framework_agreement)))
     @ect_name = Teachers::Name.new(@ect.teacher).full_name
   end
 
@@ -70,9 +70,9 @@ private
     @another_school = FactoryBot.create(:school, urn: "7654321")
     @teacher = FactoryBot.create(:teacher, trn:, trs_first_name: "Kirk", trs_last_name: "Van Houten", corrected_name: nil)
 
-    older_active_lead_provider = FactoryBot.create(:active_lead_provider,
-                                                   lead_provider: @lead_provider,
-                                                   contract_period: @previous_contract_period)
+    older_framework_agreement = FactoryBot.create(:framework_agreement,
+                                                  lead_provider: @lead_provider,
+                                                  contract_period: @previous_contract_period)
 
     @existing_mentor_at_school_period = FactoryBot.create(:mentor_at_school_period,
                                                           teacher: @teacher,
@@ -83,7 +83,7 @@ private
     FactoryBot.create(:training_period, :provider_led, :for_mentor, :with_only_expression_of_interest,
                       mentor_at_school_period: @existing_mentor_at_school_period,
                       started_on: @existing_mentor_at_school_period.started_on,
-                      expression_of_interest: older_active_lead_provider)
+                      expression_of_interest: older_framework_agreement)
   end
 
   def and_i_sign_in_as_that_school_user

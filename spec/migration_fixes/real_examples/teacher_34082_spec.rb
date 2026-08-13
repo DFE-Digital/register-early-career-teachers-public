@@ -10,12 +10,12 @@ describe "Real data check for teacher 34082" do
   let!(:schedule_2) { FactoryBot.create(:schedule, id: 20, identifier: "ecf-extended-september", contract_period: contract_period_2024) }
   let!(:school_1) { FactoryBot.create(:school) }
   let!(:school_2) { FactoryBot.create(:school) }
-  let!(:active_lead_provider_1) { FactoryBot.create(:active_lead_provider, id: 7, lead_provider: lead_provider_3, contract_period: contract_period_2022) }
-  let!(:active_lead_provider_2) { FactoryBot.create(:active_lead_provider, id: 20, lead_provider: lead_provider_2, contract_period: contract_period_2024) }
-  let!(:active_lead_provider_3) { FactoryBot.create(:active_lead_provider, id: 19, lead_provider: lead_provider_3, contract_period: contract_period_2024) }
-  let!(:lpdp_1) { FactoryBot.create(:lead_provider_delivery_partnership, id: 577, active_lead_provider: active_lead_provider_1, delivery_partner: delivery_partner_1) }
-  let!(:lpdp_2) { FactoryBot.create(:lead_provider_delivery_partnership, id: 154, active_lead_provider: active_lead_provider_2, delivery_partner: delivery_partner_2) }
-  let!(:lpdp_3) { FactoryBot.create(:lead_provider_delivery_partnership, id: 401, active_lead_provider: active_lead_provider_3, delivery_partner: delivery_partner_1) }
+  let!(:framework_agreement_1) { FactoryBot.create(:framework_agreement, id: 7, lead_provider: lead_provider_3, contract_period: contract_period_2022) }
+  let!(:framework_agreement_2) { FactoryBot.create(:framework_agreement, id: 20, lead_provider: lead_provider_2, contract_period: contract_period_2024) }
+  let!(:framework_agreement_3) { FactoryBot.create(:framework_agreement, id: 19, lead_provider: lead_provider_3, contract_period: contract_period_2024) }
+  let!(:lpdp_1) { FactoryBot.create(:lead_provider_delivery_partnership, id: 577, framework_agreement: framework_agreement_1, delivery_partner: delivery_partner_1) }
+  let!(:lpdp_2) { FactoryBot.create(:lead_provider_delivery_partnership, id: 154, framework_agreement: framework_agreement_2, delivery_partner: delivery_partner_2) }
+  let!(:lpdp_3) { FactoryBot.create(:lead_provider_delivery_partnership, id: 401, framework_agreement: framework_agreement_3, delivery_partner: delivery_partner_1) }
   let!(:school_partnership_1) { FactoryBot.create(:school_partnership, id: 70_197, school: school_1, lead_provider_delivery_partnership: lpdp_1) }
   let!(:school_partnership_2) { FactoryBot.create(:school_partnership, id: 38_127, school: school_2, lead_provider_delivery_partnership: lpdp_2) }
   let!(:school_partnership_3) { FactoryBot.create(:school_partnership, id: 16_275, school: school_1, lead_provider_delivery_partnership: lpdp_3) }

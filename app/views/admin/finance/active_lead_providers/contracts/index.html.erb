@@ -1,7 +1,7 @@
 <% page_data(title: "Contracts", breadcrumbs: @breadcrumbs) %>
 
 <p class="govuk-body">
-  Contracts for <%= @active_lead_provider.lead_provider_name %> in the <%= @active_lead_provider.contract_period_year %> contract period.
+  Contracts for <%= @framework_agreement.lead_provider_name %> in the <%= @framework_agreement.contract_period_year %> contract period.
 </p>
 
 <% if @contracts.none? %>
@@ -13,7 +13,7 @@
         <% row.with_cell(text: "Contract type") %>
         <% row.with_cell(text: "Created") %>
         <% row.with_cell(text: "Statement period") %>
-        <% row.with_cell(text: "") if @active_lead_provider.editable? %>
+        <% row.with_cell(text: "") if @framework_agreement.editable? %>
       <% end %>
     <% end %>
     <% table.with_body do |body| %>
@@ -22,16 +22,16 @@
           <% row.with_cell do %>
             <%= govuk_link_to(
                   contract.contract_type.humanize.upcase,
-                  admin_contract_period_active_lead_provider_contract_path(@active_lead_provider.contract_period, @active_lead_provider, contract),
-                  visually_hidden_suffix: "contract for #{@active_lead_provider.lead_provider_name} created #{contract.created_at.to_date.to_fs(:govuk)}"
+                  admin_contract_period_active_lead_provider_contract_path(@framework_agreement.contract_period, @framework_agreement, contract),
+                  visually_hidden_suffix: "contract for #{@framework_agreement.lead_provider_name} created #{contract.created_at.to_date.to_fs(:govuk)}"
                 ) %>
           <% end %>
           <% row.with_cell(text: contract.created_at.to_date.to_fs(:govuk)) %>
           <% row.with_cell(text: contract.statement_range_description) %>
-          <% if @active_lead_provider.editable? %>
+          <% if @framework_agreement.editable? %>
             <% row.with_cell do %>
               <%= govuk_button_to "Delete",
-                    delete_admin_contract_period_active_lead_provider_contract_path(@active_lead_provider.contract_period, @active_lead_provider, contract),
+                    delete_admin_contract_period_active_lead_provider_contract_path(@framework_agreement.contract_period, @framework_agreement, contract),
                     method: :get,
                     secondary: true,
                     disabled: contract.statements.any?,
@@ -45,8 +45,8 @@
   <% end %>
 <% end %>
 
-<% if @active_lead_provider.editable? %>
+<% if @framework_agreement.editable? %>
   <div class="govuk-!-text-align-right">
-    <%= govuk_button_link_to "Add contract", new_admin_contract_period_active_lead_provider_contract_path(@active_lead_provider.contract_period, @active_lead_provider) %>
+    <%= govuk_button_link_to "Add contract", new_admin_contract_period_active_lead_provider_contract_path(@framework_agreement.contract_period, @framework_agreement) %>
   </div>
 <% end %>

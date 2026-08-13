@@ -1,12 +1,12 @@
 RSpec.describe "admin/finance/active_lead_providers/index.html.erb" do
   let(:contract_period) { FactoryBot.create(:contract_period, :next) }
-  let(:active_lead_providers) { FactoryBot.create_list(:active_lead_provider, 3, contract_period:) }
+  let(:framework_agreements) { FactoryBot.create_list(:framework_agreement, 3, contract_period:) }
   let(:add_button_text) { "Add a lead provider" }
   let(:started_hint) { "This contract period has started, so active lead providers are no longer editable." }
 
   before do
     assign(:contract_period, contract_period)
-    assign(:active_lead_providers, active_lead_providers)
+    assign(:framework_agreements, framework_agreements)
     assign(:editable, !contract_period.started_on_or_before_today?)
     assign(:breadcrumbs, {
       "Finance" => admin_finance_path,
@@ -32,7 +32,7 @@ RSpec.describe "admin/finance/active_lead_providers/index.html.erb" do
     expect(rendered).to have_css(".govuk-table__head th", text: "Delivery partners")
 
     expect(rendered).to have_css(".govuk-table__body > tr", count: 3)
-    active_lead_providers.each do |alp|
+    framework_agreements.each do |alp|
       expect(rendered).to have_css("tr", text: alp.lead_provider.name)
       expect(rendered).to have_link("0 contracts", href: admin_contract_period_active_lead_provider_contracts_path(contract_period, alp))
       expect(rendered).to have_link("0 statements", href: admin_contract_period_active_lead_provider_statements_path(contract_period, alp))
@@ -40,7 +40,7 @@ RSpec.describe "admin/finance/active_lead_providers/index.html.erb" do
     end
 
     expect(rendered).to have_css(".govuk-button--secondary", count: 3, text: "Remove")
-    active_lead_providers.each do |alp|
+    framework_agreements.each do |alp|
       expect(rendered).to have_css(
         "form[action='#{admin_contract_period_active_lead_provider_path(contract_period, alp)}']"
       )
@@ -63,7 +63,7 @@ RSpec.describe "admin/finance/active_lead_providers/index.html.erb" do
       expect(rendered).not_to have_css(".govuk-button--secondary", text: "Remove")
       expect(rendered).not_to have_link(add_button_text)
 
-      active_lead_providers.each do |alp|
+      framework_agreements.each do |alp|
         name = alp.lead_provider.name
         expect(rendered).to have_link("0 contracts for #{name}", href: admin_contract_period_active_lead_provider_contracts_path(contract_period, alp))
         expect(rendered).to have_link("0 statements for #{name}", href: admin_contract_period_active_lead_provider_statements_path(contract_period, alp))
@@ -73,7 +73,7 @@ RSpec.describe "admin/finance/active_lead_providers/index.html.erb" do
   end
 
   context "when there are no active lead providers" do
-    let(:active_lead_providers) { [] }
+    let(:framework_agreements) { [] }
 
     it "displays an empty state message" do
       render

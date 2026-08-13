@@ -2,16 +2,16 @@
   page_data(
     title: "Add statement",
     error: @statement.errors.present?,
-    backlink_href: admin_contract_period_active_lead_provider_statements_path(@active_lead_provider.contract_period, @active_lead_provider)
+    backlink_href: admin_contract_period_active_lead_provider_statements_path(@framework_agreement.contract_period, @framework_agreement)
   )
 %>
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <%= form_with model: @statement,
-                   url: admin_contract_period_active_lead_provider_statements_path(@active_lead_provider.contract_period, @active_lead_provider),
+                   url: admin_contract_period_active_lead_provider_statements_path(@framework_agreement.contract_period, @framework_agreement),
                    method: :post do |f| %>
-      <%= render "fields", form: f, active_lead_provider: @active_lead_provider, contract_period: @active_lead_provider.contract_period %>
+      <%= render "fields", form: f, framework_agreement: @framework_agreement, contract_period: @framework_agreement.contract_period %>
       <%= f.govuk_submit "Save" %>
     <% end %>
   </div>

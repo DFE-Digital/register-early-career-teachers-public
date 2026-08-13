@@ -12,8 +12,8 @@ RSpec.describe Backfill::RecordDeclarationEvent do
     allow($stdout).to receive(:puts)
   end
 
-  let(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, year:, active_lead_provider:) }
-  let(:active_lead_provider) { statement.active_lead_provider }
+  let(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, year:, framework_agreement:) }
+  let(:framework_agreement) { statement.framework_agreement }
   let(:contract) { statement.contract }
   let(:year) { statement.contract_period.year }
 

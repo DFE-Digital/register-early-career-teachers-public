@@ -67,8 +67,8 @@ module Backfill
 
   private
 
-    delegate :active_lead_provider, to: :statement
-    delegate :lead_provider, to: :active_lead_provider
+    delegate :framework_agreement, to: :statement
+    delegate :lead_provider, to: :framework_agreement
 
     def declaration_type(declaration)
       declaration.declaration_type.split("-").first.to_sym
@@ -94,9 +94,9 @@ module Backfill
         happened_at:,
         statement:,
         lead_provider:,
-        active_lead_provider:,
+        framework_agreement:,
         metadata: {
-          contract_period_year: active_lead_provider.contract_period_year
+          contract_period_year: framework_agreement.contract_period_year
         },
         author_name: "System",
         author_type: "system"

@@ -52,12 +52,12 @@ RSpec.describe Schools::AssignExistingMentorWizard::ReviewMentorEligibilityStep 
     end
 
     before do
-      active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:)
+      framework_agreement = FactoryBot.create(:framework_agreement, lead_provider:, contract_period:)
 
       school_partnership = FactoryBot.create(
         :school_partnership,
         school:,
-        lead_provider_delivery_partnership: FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
+        lead_provider_delivery_partnership: FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:)
       )
       FactoryBot.create(:training_period, :unfinished, :provider_led,
                         ect_at_school_period:,

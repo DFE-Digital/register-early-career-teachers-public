@@ -105,17 +105,17 @@ describe Schools::ECTs::ChangeLeadProviderWizard::EditStep do
       FactoryBot.create(:ect_at_school_period, :unfinished, school:, started_on:)
     end
     let!(:current_lead_provider) do
-      FactoryBot.create(:active_lead_provider, contract_period: current_contract_period)
+      FactoryBot.create(:framework_agreement, contract_period: current_contract_period)
     end
     let!(:training_period) do
       FactoryBot.create(
         :training_period,
         :for_ect,
         :unfinished,
-        :with_active_lead_provider,
+        :with_framework_agreement,
         ect_at_school_period:,
         started_on: training_period_started_on,
-        active_lead_provider: current_lead_provider
+        framework_agreement: current_lead_provider
       )
     end
     let(:training_period_started_on) { ect_at_school_period.started_on }
@@ -128,14 +128,14 @@ describe Schools::ECTs::ChangeLeadProviderWizard::EditStep do
 
     context "when there are active lead providers in the current contract period" do
       let(:started_on) { current_contract_period.started_on.next_month }
-      let!(:active_lead_provider) do
-        FactoryBot.create(:active_lead_provider, contract_period: current_contract_period)
+      let!(:framework_agreement) do
+        FactoryBot.create(:framework_agreement, contract_period: current_contract_period)
       end
       let!(:other_lead_provider) do
-        FactoryBot.create(:active_lead_provider, contract_period: current_contract_period)
+        FactoryBot.create(:framework_agreement, contract_period: current_contract_period)
       end
 
-      it { is_expected.to contain_exactly(active_lead_provider.lead_provider, other_lead_provider.lead_provider) }
+      it { is_expected.to contain_exactly(framework_agreement.lead_provider, other_lead_provider.lead_provider) }
     end
 
     context "when the latest training period is in a different contract period to the ects start date" do
@@ -144,13 +144,13 @@ describe Schools::ECTs::ChangeLeadProviderWizard::EditStep do
       let(:started_on) { original_contract_period.started_on.next_week }
       let(:training_period_started_on) { current_contract_period.started_on.next_week }
       let!(:original_contract_period_lead_provider) do
-        FactoryBot.create(:active_lead_provider, contract_period: original_contract_period)
+        FactoryBot.create(:framework_agreement, contract_period: original_contract_period)
       end
-      let!(:active_lead_provider) do
-        FactoryBot.create(:active_lead_provider, contract_period: current_contract_period)
+      let!(:framework_agreement) do
+        FactoryBot.create(:framework_agreement, contract_period: current_contract_period)
       end
 
-      it { is_expected.to contain_exactly(active_lead_provider.lead_provider) }
+      it { is_expected.to contain_exactly(framework_agreement.lead_provider) }
     end
 
     context "when the ECT started provider-led training in a frozen contract period" do
@@ -164,13 +164,13 @@ describe Schools::ECTs::ChangeLeadProviderWizard::EditStep do
       let(:started_on) { frozen_contract_period.started_on.next_week }
       let(:training_period_started_on) { started_on }
       let!(:current_lead_provider) do
-        FactoryBot.create(:active_lead_provider, contract_period: frozen_contract_period)
+        FactoryBot.create(:framework_agreement, contract_period: frozen_contract_period)
       end
-      let!(:replacement_active_lead_provider) do
-        FactoryBot.create(:active_lead_provider, :for_year, year: 2024)
+      let!(:replacement_framework_agreement) do
+        FactoryBot.create(:framework_agreement, :for_year, year: 2024)
       end
 
-      it { is_expected.to contain_exactly(replacement_active_lead_provider.lead_provider) }
+      it { is_expected.to contain_exactly(replacement_framework_agreement.lead_provider) }
     end
   end
 end

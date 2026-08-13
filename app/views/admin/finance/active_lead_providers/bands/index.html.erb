@@ -1,7 +1,7 @@
 <% page_data(title: "Bands", breadcrumbs: @breadcrumbs) %>
 
 <p class="govuk-body">
-  Bands for <%= @active_lead_provider.lead_provider_name %> in the <%= @active_lead_provider.contract_period_year %> contract period.
+  Bands for <%= @framework_agreement.lead_provider_name %> in the <%= @framework_agreement.contract_period_year %> contract period.
 </p>
 
 <% if @bands.none? %>
@@ -27,7 +27,7 @@
               <% if band.editable? %>
                 <%= govuk_link_to(
                   "Change",
-                  edit_admin_contract_period_active_lead_provider_band_path(@active_lead_provider.contract_period, @active_lead_provider, band),
+                  edit_admin_contract_period_active_lead_provider_band_path(@framework_agreement.contract_period, @framework_agreement, band),
                   secondary: true,
                   no_visited_state: true,
                   visually_hidden_suffix: band_label(band:),
@@ -37,7 +37,7 @@
               <% if band.deletable? %>
                 <%= govuk_button_to(
                   "Delete",
-                  admin_contract_period_active_lead_provider_band_path(@active_lead_provider.contract_period, @active_lead_provider, band),
+                  admin_contract_period_active_lead_provider_band_path(@framework_agreement.contract_period, @framework_agreement, band),
                   method: :delete,
                   warning: true,
                   visually_hidden_suffix: band_label(band:),
@@ -52,6 +52,6 @@
   <% end %>
 <% end %>
 
-<% if @active_lead_provider.bands_can_be_added_and_removed? %>
-  <%= govuk_button_link_to "Add band", new_admin_contract_period_active_lead_provider_band_path(@active_lead_provider.contract_period, @active_lead_provider) %>
+<% if @framework_agreement.bands_can_be_added_and_removed? %>
+  <%= govuk_button_link_to "Add band", new_admin_contract_period_active_lead_provider_band_path(@framework_agreement.contract_period, @framework_agreement) %>
 <% end %>

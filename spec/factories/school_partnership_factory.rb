@@ -23,14 +23,14 @@ FactoryBot.define do
       end
     end
 
-    trait :with_active_lead_provider do
+    trait :with_framework_agreement do
       transient do
-        active_lead_provider { association :active_lead_provider }
+        framework_agreement { association :framework_agreement }
       end
 
       lead_provider_delivery_partnership do
         association :lead_provider_delivery_partnership,
-                    active_lead_provider:
+                    framework_agreement:
       end
     end
   end

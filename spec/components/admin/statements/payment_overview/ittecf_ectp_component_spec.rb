@@ -2,7 +2,7 @@ RSpec.describe Admin::Statements::PaymentOverview::IttecfEctpComponent, type: :c
   let(:component) { described_class.new statement: }
 
   let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, :for_year, year: 2025, lead_provider:) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement, :for_year, year: 2025, lead_provider:) }
   let(:lead_provider) { FactoryBot.create(:lead_provider, vat_registered:) }
   let(:vat_registered) { true }
 
@@ -32,7 +32,7 @@ RSpec.describe Admin::Statements::PaymentOverview::IttecfEctpComponent, type: :c
   let(:monthly_service_fee) { 1_000 }
 
   let(:contract) do
-    FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider:, vat_rate: 0.20, banded_fee_structure:, flat_rate_fee_structure:)
+    FactoryBot.create(:contract, :for_ittecf_ectp, framework_agreement:, vat_rate: 0.20, banded_fee_structure:, flat_rate_fee_structure:)
   end
 
   let(:flat_rate_fee_structure) do

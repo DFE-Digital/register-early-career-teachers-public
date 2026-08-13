@@ -4,7 +4,7 @@ RSpec.describe "Registering an ECT" do
   before do
     travel_to Date.new(2025, 9, 1)
     create_contract_period_for_start_date
-    create_lead_provider_and_active_lead_provider
+    create_lead_provider_and_framework_agreement
     create_school_with_previous_choices
     create_appropriate_bodies
     create_reusable_previous_partnership
@@ -114,29 +114,29 @@ RSpec.describe "Registering an ECT" do
     @contract_period_previous = FactoryBot.create(:contract_period, :with_schedules, year: @previous_contract_year)
   end
 
-  def create_lead_provider_and_active_lead_provider
+  def create_lead_provider_and_framework_agreement
     @orange_institute_lead_provider = FactoryBot.create(:lead_provider, name: "Orange Institute")
     @reuse_delivery_partner = FactoryBot.create(:delivery_partner, name: "DP for Reuse")
 
     @alp_previous_year = FactoryBot.create(
-      :active_lead_provider,
+      :framework_agreement,
       lead_provider: @orange_institute_lead_provider,
       contract_period_year: @previous_contract_year
     )
     @alp_current_year = FactoryBot.create(
-      :active_lead_provider,
+      :framework_agreement,
       lead_provider: @orange_institute_lead_provider,
       contract_period_year: @current_contract_year
     )
 
     @lpdp_previous_year = FactoryBot.create(
       :lead_provider_delivery_partnership,
-      active_lead_provider: @alp_previous_year,
+      framework_agreement: @alp_previous_year,
       delivery_partner: @reuse_delivery_partner
     )
     @lpdp_current_year = FactoryBot.create(
       :lead_provider_delivery_partnership,
-      active_lead_provider: @alp_current_year,
+      framework_agreement: @alp_current_year,
       delivery_partner: @reuse_delivery_partner
     )
   end

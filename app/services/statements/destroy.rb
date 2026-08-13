@@ -12,8 +12,8 @@ module Statements
     def call
       raise DeletionError, "Cannot delete a statement with declarations" if statement.referenced_by_declarations?
 
-      active_lead_provider = statement.active_lead_provider
-      lead_provider = active_lead_provider.lead_provider
+      framework_agreement = statement.framework_agreement
+      lead_provider = framework_agreement.lead_provider
       heading = "Statement deleted: #{Statements::Period.for(statement)} #{statement.fee_type} for #{lead_provider.name}"
       modifications = statement.attributes.transform_values { |value| [value, nil] }
 
@@ -21,7 +21,7 @@ module Statements
         statement.destroy!
         Events::Record.record_statement_deleted_event!(
           author:,
-          active_lead_provider:,
+          framework_agreement:,
           modifications:,
           heading:
         )

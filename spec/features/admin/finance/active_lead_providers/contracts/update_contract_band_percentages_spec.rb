@@ -95,15 +95,15 @@ RSpec.describe "Update contract band percentages", :js do
   def given_an_editable_contract_with_bands_exists
     @contract_period = FactoryBot.create(:contract_period, :next)
 
-    @active_lead_provider = FactoryBot.create(:active_lead_provider,
-                                              contract_period: @contract_period)
+    @framework_agreement = FactoryBot.create(:framework_agreement,
+                                             contract_period: @contract_period)
 
     @contract = FactoryBot.create(:contract, :for_ittecf_ectp, :with_bands_and_band_terms,
-                                  active_lead_provider: @active_lead_provider)
+                                  framework_agreement: @framework_agreement)
   end
 
   def when_i_visit_the_contract_edit_page
-    page.goto(edit_admin_finance_active_lead_provider_contract_path)
+    page.goto(edit_admin_finance_framework_agreement_contract_path)
   end
 
   def then_i_see_the_banded_fee_structure_table
@@ -190,7 +190,7 @@ RSpec.describe "Update contract band percentages", :js do
     page.locator("#band-a-service-fee-status")
   end
 
-  def edit_admin_finance_active_lead_provider_contract_path
-    "/admin/finance/contract-periods/#{@contract_period.year}/active-lead-providers/#{@active_lead_provider.id}/contracts/#{@contract.id}/edit"
+  def edit_admin_finance_framework_agreement_contract_path
+    "/admin/finance/contract-periods/#{@contract_period.year}/active-lead-providers/#{@framework_agreement.id}/contracts/#{@contract.id}/edit"
   end
 end

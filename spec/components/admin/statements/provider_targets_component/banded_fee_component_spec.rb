@@ -1,7 +1,7 @@
 RSpec.describe Admin::Statements::ProviderTargetsComponent::BandedFeeComponent, type: :component do
   subject(:component) { described_class.new(contract:) }
 
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
 
   let(:uplift_target_ratio) { 0.33 }
 
@@ -22,8 +22,8 @@ RSpec.describe Admin::Statements::ProviderTargetsComponent::BandedFeeComponent, 
   end
 
   let(:active_lead_provider_bands) do
-    FactoryBot.create_list(:active_lead_provider_band, 3,
-                           active_lead_provider:,
+    FactoryBot.create_list(:framework_agreement_band, 3,
+                           framework_agreement:,
                            capacity: 50)
   end
 

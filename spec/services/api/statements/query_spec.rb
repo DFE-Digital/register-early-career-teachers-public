@@ -10,7 +10,7 @@ RSpec.describe API::Statements::Query do
       end
     end
 
-    let(:association) { :active_lead_provider }
+    let(:association) { :framework_agreement }
     let(:instance) { described_class.new(included_associations: [association]) }
     let!(:statement) { FactoryBot.create(:statement) }
 
@@ -34,8 +34,8 @@ RSpec.describe API::Statements::Query do
   end
 
   describe "#statements" do
-    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
-    let(:lead_provider) { active_lead_provider.lead_provider }
+    let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
+    let(:lead_provider) { framework_agreement.lead_provider }
 
     it "returns all statements" do
       statement = FactoryBot.create(:statement)
@@ -56,7 +56,7 @@ RSpec.describe API::Statements::Query do
 
     describe "filtering" do
       describe "by `lead_provider`" do
-        let!(:statement1) { FactoryBot.create(:statement, active_lead_provider:) }
+        let!(:statement1) { FactoryBot.create(:statement, framework_agreement:) }
         let!(:statement2) { FactoryBot.create(:statement) }
         let!(:statement3) { FactoryBot.create(:statement) }
 
@@ -150,8 +150,8 @@ RSpec.describe API::Statements::Query do
         let(:updated_since) { 1.day.ago }
 
         it "filters by `updated_since`" do
-          FactoryBot.create(:statement, active_lead_provider:, api_updated_at: 2.days.ago)
-          statement2 = FactoryBot.create(:statement, active_lead_provider:, api_updated_at: Time.zone.now)
+          FactoryBot.create(:statement, framework_agreement:, api_updated_at: 2.days.ago)
+          statement2 = FactoryBot.create(:statement, framework_agreement:, api_updated_at: Time.zone.now)
 
           query = described_class.new(lead_provider_id: lead_provider.id, updated_since:)
 
@@ -249,11 +249,11 @@ RSpec.describe API::Statements::Query do
   end
 
   describe "#statement_by_api_id" do
-    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
-    let(:lead_provider) { active_lead_provider.lead_provider }
+    let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
+    let(:lead_provider) { framework_agreement.lead_provider }
 
     it "returns the statement for a Lead Provider" do
-      statement = FactoryBot.create(:statement, active_lead_provider:)
+      statement = FactoryBot.create(:statement, framework_agreement:)
       query = described_class.new
 
       expect(query.statement_by_api_id(statement.api_id)).to eq(statement)
@@ -266,8 +266,8 @@ RSpec.describe API::Statements::Query do
     end
 
     it "raises an error if the statement is not in the filtered query" do
-      other_active_lead_provider = FactoryBot.create(:active_lead_provider)
-      other_statement = FactoryBot.create(:statement, active_lead_provider: other_active_lead_provider)
+      other_framework_agreement = FactoryBot.create(:framework_agreement)
+      other_statement = FactoryBot.create(:statement, framework_agreement: other_framework_agreement)
 
       query = described_class.new(lead_provider_id: lead_provider.id)
 
@@ -280,11 +280,11 @@ RSpec.describe API::Statements::Query do
   end
 
   describe "#statement_by_id" do
-    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
-    let(:lead_provider) { active_lead_provider.lead_provider }
+    let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
+    let(:lead_provider) { framework_agreement.lead_provider }
 
     it "returns the statement for a Lead Provider" do
-      statement = FactoryBot.create(:statement, active_lead_provider:)
+      statement = FactoryBot.create(:statement, framework_agreement:)
       query = described_class.new
 
       expect(query.statement_by_id(statement.id)).to eq(statement)
@@ -297,8 +297,8 @@ RSpec.describe API::Statements::Query do
     end
 
     it "raises an error if the statement is not in the filtered query" do
-      other_active_lead_provider = FactoryBot.create(:active_lead_provider)
-      other_statement = FactoryBot.create(:statement, active_lead_provider: other_active_lead_provider)
+      other_framework_agreement = FactoryBot.create(:framework_agreement)
+      other_statement = FactoryBot.create(:statement, framework_agreement: other_framework_agreement)
 
       query = described_class.new(lead_provider_id: lead_provider.id)
 

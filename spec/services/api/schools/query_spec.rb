@@ -81,8 +81,8 @@ RSpec.describe API::Schools::Query, :with_metadata do
         let!(:school2) { FactoryBot.create(:school, :ineligible) }
         let!(:school3) { FactoryBot.create(:school, :ineligible) }
         let(:another_contract_period) { FactoryBot.create(:contract_period) }
-        let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period: another_contract_period) }
-        let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+        let(:framework_agreement) { FactoryBot.create(:framework_agreement, contract_period: another_contract_period) }
+        let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:) }
         let!(:school_partnership) { FactoryBot.create(:school_partnership, school: school3, lead_provider_delivery_partnership:) }
         let(:contract_period_year) { contract_period.year }
 

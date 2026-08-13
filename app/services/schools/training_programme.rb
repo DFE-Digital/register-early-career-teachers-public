@@ -32,7 +32,7 @@ module Schools
     def ect_at_school_period_ids_by_contract_period_year
       @ect_at_school_period_ids_by_contract_period_year ||= school
         .ect_at_school_periods
-        .joins(training_periods: { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } })
+        .joins(training_periods: { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } })
         .pluck(:contract_period_year, :id)
         .group_by(&:first)
         .transform_values { |pairs| pairs.map(&:last) }
@@ -41,7 +41,7 @@ module Schools
     def mentors_at_school_periods_contract_period_years
       @mentors_at_school_periods_contract_period_years ||= school
         .mentor_at_school_periods
-        .joins(training_periods: { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } })
+        .joins(training_periods: { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } })
         .pluck(:contract_period_year)
     end
 

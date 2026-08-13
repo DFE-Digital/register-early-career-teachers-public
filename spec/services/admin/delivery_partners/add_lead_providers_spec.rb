@@ -8,8 +8,8 @@ RSpec.describe Admin::DeliveryPartners::AddLeadProviders do
   let!(:lead_provider_1) { FactoryBot.create(:lead_provider, name: "Lead Provider 1") }
   let!(:lead_provider_2) { FactoryBot.create(:lead_provider, name: "Lead Provider 2") }
 
-  let!(:active_lead_provider_1) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_1, contract_period:) }
-  let!(:active_lead_provider_2) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_2, contract_period:) }
+  let!(:framework_agreement_1) { FactoryBot.create(:framework_agreement, lead_provider: lead_provider_1, contract_period:) }
+  let!(:framework_agreement_2) { FactoryBot.create(:framework_agreement, lead_provider: lead_provider_2, contract_period:) }
 
   let(:service) do
     described_class.new(
@@ -22,7 +22,7 @@ RSpec.describe Admin::DeliveryPartners::AddLeadProviders do
 
   describe "#call" do
     context "when all parameters are valid" do
-      let(:lead_provider_ids) { [active_lead_provider_1.id.to_s, active_lead_provider_2.id.to_s] }
+      let(:lead_provider_ids) { [framework_agreement_1.id.to_s, framework_agreement_2.id.to_s] }
 
       it "executes successfully without raising an exception" do
         expect { service.call }.not_to raise_error
@@ -38,7 +38,7 @@ RSpec.describe Admin::DeliveryPartners::AddLeadProviders do
         expect(DeliveryPartners::AddLeadProviderPairings).to receive(:new).with(
           delivery_partner:,
           contract_period:,
-          active_lead_provider_ids: [active_lead_provider_1.id, active_lead_provider_2.id],
+          framework_agreement_ids: [framework_agreement_1.id, framework_agreement_2.id],
           author:
         ).and_call_original
 
@@ -48,13 +48,13 @@ RSpec.describe Admin::DeliveryPartners::AddLeadProviders do
 
     context "when contract period is in the future" do
       let(:contract_period) { FactoryBot.create(:contract_period, year: 2026, started_on: 1.year.from_now, finished_on: 2.years.from_now) }
-      let(:lead_provider_ids) { [active_lead_provider_1.id.to_s, active_lead_provider_2.id.to_s] }
+      let(:lead_provider_ids) { [framework_agreement_1.id.to_s, framework_agreement_2.id.to_s] }
 
       it "calls UpdateLeadProviderPairings" do
         expect(DeliveryPartners::UpdateLeadProviderPairings).to receive(:new).with(
           delivery_partner:,
           contract_period:,
-          active_lead_provider_ids: [active_lead_provider_1.id, active_lead_provider_2.id],
+          framework_agreement_ids: [framework_agreement_1.id, framework_agreement_2.id],
           author:
         ).and_call_original
 
@@ -63,7 +63,7 @@ RSpec.describe Admin::DeliveryPartners::AddLeadProviders do
     end
 
     context "when delivery partner does not exist" do
-      let(:lead_provider_ids) { [active_lead_provider_1.id.to_s] }
+      let(:lead_provider_ids) { [framework_agreement_1.id.to_s] }
 
       before { delivery_partner.destroy! }
 
@@ -73,7 +73,7 @@ RSpec.describe Admin::DeliveryPartners::AddLeadProviders do
     end
 
     context "when contract period does not exist" do
-      let(:lead_provider_ids) { [active_lead_provider_1.id.to_s] }
+      let(:lead_provider_ids) { [framework_agreement_1.id.to_s] }
       let(:year) { 2099 }
 
       it "raises a ValidationError" do
@@ -104,7 +104,7 @@ RSpec.describe Admin::DeliveryPartners::AddLeadProviders do
           FactoryBot.create(
             :lead_provider_delivery_partnership,
             delivery_partner:,
-            active_lead_provider: active_lead_provider_1
+            framework_agreement: framework_agreement_1
           )
 
           expect { service.call }.to change(LeadProviderDeliveryPartnership, :count).by(-1)
@@ -113,7 +113,7 @@ RSpec.describe Admin::DeliveryPartners::AddLeadProviders do
     end
 
     context "when lead provider IDs contain blank values" do
-      let(:lead_provider_ids) { [active_lead_provider_1.id.to_s, "", "   ", active_lead_provider_2.id.to_s] }
+      let(:lead_provider_ids) { [framework_agreement_1.id.to_s, "", "   ", framework_agreement_2.id.to_s] }
 
       it "filters out blank values and succeeds" do
         expect { service.call }.not_to raise_error
@@ -145,7 +145,7 @@ RSpec.describe Admin::DeliveryPartners::AddLeadProviders do
     end
 
     context "when the partnership service fails" do
-      let(:lead_provider_ids) { [active_lead_provider_1.id.to_s] }
+      let(:lead_provider_ids) { [framework_agreement_1.id.to_s] }
 
       before do
         add_service_double = instance_double(DeliveryPartners::AddLeadProviderPairings)
@@ -159,7 +159,7 @@ RSpec.describe Admin::DeliveryPartners::AddLeadProviders do
     end
 
     context "when an unexpected error occurs" do
-      let(:lead_provider_ids) { [active_lead_provider_1.id.to_s] }
+      let(:lead_provider_ids) { [framework_agreement_1.id.to_s] }
 
       before do
         add_service_double = instance_double(DeliveryPartners::AddLeadProviderPairings)

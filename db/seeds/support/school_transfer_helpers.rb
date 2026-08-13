@@ -115,20 +115,20 @@ private
 
   def school_partnership_between(lead_provider:, school:, from:)
     existing_school_partnership = SchoolPartnership
-      .includes(:active_lead_provider)
-      .joins(:active_lead_provider)
-      .find_by(active_lead_provider: { lead_provider: }, school:)
+      .includes(:framework_agreement)
+      .joins(:framework_agreement)
+      .find_by(framework_agreement: { lead_provider: }, school:)
 
     unless existing_school_partnership
       contract_period = ContractPeriod.started_on_or_before(from).latest_first.first.presence || FactoryBot.create(:contract_period)
 
       lead_provider_delivery_partnership = LeadProviderDeliveryPartnership
-        .includes(:active_lead_provider)
-        .joins(:active_lead_provider)
-        .find_by(active_lead_provider: { lead_provider:, contract_period: }) || FactoryBot.create(
+        .includes(:framework_agreement)
+        .joins(:framework_agreement)
+        .find_by(framework_agreement: { lead_provider:, contract_period: }) || FactoryBot.create(
           :lead_provider_delivery_partnership,
-          active_lead_provider: FactoryBot.create(
-            :active_lead_provider,
+          framework_agreement: FactoryBot.create(
+            :framework_agreement,
             lead_provider:,
             contract_period:
           )

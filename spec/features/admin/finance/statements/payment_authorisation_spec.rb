@@ -22,7 +22,7 @@ RSpec.describe "Payment authorisation for statement" do
   end
 
   def and_i_have_a_payable_declaration_for_the_statement
-    school_partnership = FactoryBot.create(:school_partnership, :for_year, year: @statement.contract_period.year, active_lead_provider: @statement.active_lead_provider)
+    school_partnership = FactoryBot.create(:school_partnership, :for_year, year: @statement.contract_period.year, framework_agreement: @statement.framework_agreement)
     @declaration = FactoryBot.create(:declaration, :with_ect, declaration_type: "started", payment_status: "payable", school_partnership:, payment_statement: @statement)
   end
 

@@ -39,22 +39,22 @@ RSpec.describe Admin::Teachers::Search do
 
         matching_school_partnership = FactoryBot.create(
           :school_partnership,
-          :with_active_lead_provider,
-          active_lead_provider: FactoryBot.create(:active_lead_provider, contract_period: contract_period_2024),
+          :with_framework_agreement,
+          framework_agreement: FactoryBot.create(:framework_agreement, contract_period: contract_period_2024),
           school: matching_ect_at_school_period.school
         )
 
         old_school_partnership = FactoryBot.create(
           :school_partnership,
-          :with_active_lead_provider,
-          active_lead_provider: FactoryBot.create(:active_lead_provider, contract_period: contract_period_2024),
+          :with_framework_agreement,
+          framework_agreement: FactoryBot.create(:framework_agreement, contract_period: contract_period_2024),
           school: non_matching_old_ect_at_school_period.school
         )
 
         current_school_partnership = FactoryBot.create(
           :school_partnership,
-          :with_active_lead_provider,
-          active_lead_provider: FactoryBot.create(:active_lead_provider, contract_period: contract_period_2025),
+          :with_framework_agreement,
+          framework_agreement: FactoryBot.create(:framework_agreement, contract_period: contract_period_2025),
           school: non_matching_latest_ect_at_school_period.school
         )
 
@@ -105,22 +105,22 @@ RSpec.describe Admin::Teachers::Search do
 
         matching_school_partnership = FactoryBot.create(
           :school_partnership,
-          :with_active_lead_provider,
-          active_lead_provider: FactoryBot.create(:active_lead_provider, contract_period: contract_period_2024),
+          :with_framework_agreement,
+          framework_agreement: FactoryBot.create(:framework_agreement, contract_period: contract_period_2024),
           school: matching_mentor_at_school_period.school
         )
 
         old_school_partnership = FactoryBot.create(
           :school_partnership,
-          :with_active_lead_provider,
-          active_lead_provider: FactoryBot.create(:active_lead_provider, contract_period: contract_period_2024),
+          :with_framework_agreement,
+          framework_agreement: FactoryBot.create(:framework_agreement, contract_period: contract_period_2024),
           school: non_matching_old_mentor_at_school_period.school
         )
 
         latest_school_partnership = FactoryBot.create(
           :school_partnership,
-          :with_active_lead_provider,
-          active_lead_provider: FactoryBot.create(:active_lead_provider, contract_period: contract_period_2025),
+          :with_framework_agreement,
+          framework_agreement: FactoryBot.create(:framework_agreement, contract_period: contract_period_2025),
           school: non_matching_latest_mentor_at_school_period.school
         )
 

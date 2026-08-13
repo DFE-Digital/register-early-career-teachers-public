@@ -1,13 +1,13 @@
 RSpec.describe Admin::Statements::OutputPaymentsComponent, type: :component do
   subject(:component) { described_class.new(statement:) }
 
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
   let(:statement) { FactoryBot.create(:statement, contract:) }
 
   let(:band_terms) do
     [100, 75, 50].map do |fee_per_declaration|
-      band = FactoryBot.create(:active_lead_provider_band,
-                               active_lead_provider:,
+      band = FactoryBot.create(:framework_agreement_band,
+                               framework_agreement:,
                                capacity:)
 
       FactoryBot.build(:contract_banded_fee_structure_band_term,
@@ -85,7 +85,7 @@ RSpec.describe Admin::Statements::OutputPaymentsComponent, type: :component do
   context "for `ecf` contracts" do
     let(:contract) do
       FactoryBot.create(:contract, :for_ecf,
-                        active_lead_provider:,
+                        framework_agreement:,
                         banded_fee_structure:)
     end
 
@@ -158,7 +158,7 @@ RSpec.describe Admin::Statements::OutputPaymentsComponent, type: :component do
   context "for `ittecf_ectp` contracts" do
     let(:contract) do
       FactoryBot.create(:contract, :for_ittecf_ectp,
-                        active_lead_provider:,
+                        framework_agreement:,
                         banded_fee_structure:)
     end
 
@@ -206,7 +206,7 @@ RSpec.describe Admin::Statements::OutputPaymentsComponent, type: :component do
   context "for service fee statements" do
     let(:contract) do
       FactoryBot.create(:contract, :for_ecf,
-                        active_lead_provider:,
+                        framework_agreement:,
                         banded_fee_structure:)
     end
 

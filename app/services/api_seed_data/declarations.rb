@@ -7,17 +7,17 @@ module APISeedData
 
       log_plant_info("declarations")
 
-      active_lead_providers.product(teacher_types).each do |active_lead_provider, teacher_type|
-        log_seed_info("#{active_lead_provider.lead_provider.name} - #{teacher_type}", indent: 4)
+      framework_agreements.product(teacher_types).each do |framework_agreement, teacher_type|
+        log_seed_info("#{framework_agreement.lead_provider.name} - #{teacher_type}", indent: 4)
 
         MAX_TEACHERS_WITH_DECLARATIONS.times do
-          school_partnership = find_random_school_partnership(active_lead_provider)
+          school_partnership = find_random_school_partnership(framework_agreement)
           next unless school_partnership
 
           training_periods = find_random_training_periods_without_declarations(school_partnership, teacher_type)
           next if training_periods.blank?
 
-          create_declarations!(active_lead_provider, training_periods)
+          create_declarations!(framework_agreement, training_periods)
         end
       end
     end
@@ -28,11 +28,11 @@ module APISeedData
       %i[ect mentor]
     end
 
-    def active_lead_providers
+    def framework_agreements
       super.to_a
     end
 
-    def create_declarations!(active_lead_provider, training_periods)
+    def create_declarations!(framework_agreement, training_periods)
       teacher = training_periods.first.teacher
       log_seed_info(::Teachers::Name.new(teacher).full_name, indent: 4)
 
@@ -44,7 +44,7 @@ module APISeedData
                                 teacher.mentor_declarations
                               end
 
-      declaration_types(training_period, active_lead_provider).each do |declaration_type|
+      declaration_types(training_period, framework_agreement).each do |declaration_type|
         schedule = training_period.schedule
         declaration_date = declaration_date(schedule, declaration_type)
 
@@ -52,13 +52,13 @@ module APISeedData
 
         payment_status = Declaration.payment_statuses.keys.sample
         unless payment_status == "no_payment"
-          payment_statement = find_random_statement(active_lead_provider)
+          payment_statement = find_random_statement(framework_agreement)
           next unless payment_statement
         end
 
         clawback_status = clawback_status(payment_status)
         unless clawback_status == "no_clawback"
-          clawback_statement = find_random_statement(active_lead_provider, (payment_statement.deadline_date + 1.day)..)
+          clawback_statement = find_random_statement(framework_agreement, (payment_statement.deadline_date + 1.day)..)
           next unless clawback_statement
         end
 
@@ -94,10 +94,10 @@ module APISeedData
       log_seed_info("#{declaration.declaration_type} - #{declaration.overall_status} - #{declaration.declaration_date.to_date}", indent: 6)
     end
 
-    def find_random_statement(active_lead_provider, deadline_date = :ignore)
+    def find_random_statement(framework_agreement, deadline_date = :ignore)
       ::Statements::Search.new(
-        lead_provider_id: active_lead_provider.lead_provider.id,
-        contract_period_years: active_lead_provider.contract_period_year,
+        lead_provider_id: framework_agreement.lead_provider.id,
+        contract_period_years: framework_agreement.contract_period_year,
         fee_type: "output",
         deadline_date:
       )
@@ -111,8 +111,8 @@ module APISeedData
       Declaration.clawback_statuses.keys.sample
     end
 
-    def declaration_types(training_period, active_lead_provider)
-      if training_period.for_mentor? && active_lead_provider.contract_period.mentor_funding_enabled?
+    def declaration_types(training_period, framework_agreement)
+      if training_period.for_mentor? && framework_agreement.contract_period.mentor_funding_enabled?
         return %w[started completed]
       end
 
@@ -131,8 +131,8 @@ module APISeedData
       Faker::Date.between(from: milestone.start_date, to: milestone.milestone_date || end_date)
     end
 
-    def find_random_school_partnership(active_lead_provider)
-      active_lead_provider.school_partnerships.sample
+    def find_random_school_partnership(framework_agreement)
+      framework_agreement.school_partnerships.sample
     end
 
     def find_random_training_periods_without_declarations(school_partnership, teacher_type)

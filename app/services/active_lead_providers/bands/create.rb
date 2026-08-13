@@ -2,16 +2,16 @@ module ActiveLeadProviders::Bands
   class Create
     attr_reader :author, :band
 
-    def initialize(author:, active_lead_provider:, capacity:)
+    def initialize(author:, framework_agreement:, capacity:)
       @author = author
-      @band = ActiveLeadProvider::Band.new(active_lead_provider:, capacity:)
+      @band = FrameworkAgreement::Band.new(framework_agreement:, capacity:)
     end
 
     def create!
       ActiveRecord::Base.transaction do
         band.save!
 
-        Events::Record.record_active_lead_provider_band_added_event!(author:, band:)
+        Events::Record.record_framework_agreement_band_added_event!(author:, band:)
       end
 
       band

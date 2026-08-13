@@ -50,7 +50,7 @@ describe Schools::Mentors::ChangeLeadProviderWizard::EditStep, type: :model do
     end
 
     context "when the lead_provider has not changed" do
-      let(:params) { { lead_provider_id: training_period.active_lead_provider.lead_provider.id } }
+      let(:params) { { lead_provider_id: training_period.framework_agreement.lead_provider.id } }
 
       it "is invalid" do
         expect(current_step).to be_invalid
@@ -103,17 +103,17 @@ describe Schools::Mentors::ChangeLeadProviderWizard::EditStep, type: :model do
       FactoryBot.create(:mentor_at_school_period, :unfinished, school:, started_on:)
     end
     let!(:current_lead_provider) do
-      FactoryBot.create(:active_lead_provider, contract_period: current_contract_period)
+      FactoryBot.create(:framework_agreement, contract_period: current_contract_period)
     end
     let!(:training_period) do
       FactoryBot.create(
         :training_period,
         :for_mentor,
         :unfinished,
-        :with_active_lead_provider,
+        :with_framework_agreement,
         mentor_at_school_period:,
         started_on: training_started_on,
-        active_lead_provider: current_lead_provider
+        framework_agreement: current_lead_provider
       )
     end
     let(:training_started_on) { mentor_at_school_period.started_on }
@@ -126,19 +126,19 @@ describe Schools::Mentors::ChangeLeadProviderWizard::EditStep, type: :model do
 
     context "when there are active lead providers in the current contract period" do
       let(:started_on) { current_contract_period.started_on.next_month }
-      let!(:active_lead_provider) do
-        FactoryBot.create(:active_lead_provider, contract_period: current_contract_period)
+      let!(:framework_agreement) do
+        FactoryBot.create(:framework_agreement, contract_period: current_contract_period)
       end
       let!(:other_lead_provider) do
-        FactoryBot.create(:active_lead_provider, contract_period: current_contract_period)
+        FactoryBot.create(:framework_agreement, contract_period: current_contract_period)
       end
 
-      it { is_expected.to contain_exactly(active_lead_provider.lead_provider, other_lead_provider.lead_provider) }
+      it { is_expected.to contain_exactly(framework_agreement.lead_provider, other_lead_provider.lead_provider) }
 
       context "when the mentor started on the last day of the contract period" do
         let(:started_on) { current_contract_period.finished_on }
 
-        it { is_expected.to contain_exactly(active_lead_provider.lead_provider, other_lead_provider.lead_provider) }
+        it { is_expected.to contain_exactly(framework_agreement.lead_provider, other_lead_provider.lead_provider) }
       end
     end
 
@@ -148,13 +148,13 @@ describe Schools::Mentors::ChangeLeadProviderWizard::EditStep, type: :model do
       let(:started_on) { original_contract_period.started_on.next_week }
       let(:training_started_on) { current_contract_period.started_on.next_week }
       let!(:original_contract_period_lead_provider) do
-        FactoryBot.create(:active_lead_provider, contract_period: original_contract_period)
+        FactoryBot.create(:framework_agreement, contract_period: original_contract_period)
       end
-      let!(:active_lead_provider) do
-        FactoryBot.create(:active_lead_provider, contract_period: current_contract_period)
+      let!(:framework_agreement) do
+        FactoryBot.create(:framework_agreement, contract_period: current_contract_period)
       end
 
-      it { is_expected.to contain_exactly(active_lead_provider.lead_provider) }
+      it { is_expected.to contain_exactly(framework_agreement.lead_provider) }
     end
   end
 end

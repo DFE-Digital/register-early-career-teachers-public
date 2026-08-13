@@ -5,7 +5,7 @@ RSpec.describe Statements::AuthorisePayment do
   let(:author)    { Sessions::Users::DfEPersona.new(email: user.email) }
 
   let!(:statement) { FactoryBot.create(:statement, :payable, deadline_date: Date.yesterday) }
-  let(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, year: statement.contract_period.year, active_lead_provider: statement.active_lead_provider) }
+  let(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, year: statement.contract_period.year, framework_agreement: statement.framework_agreement) }
 
   describe "#authorise!" do
     context "when the statement is not payable" do

@@ -13,8 +13,8 @@ describe Schools::TrainingProgramme do
     end
 
     context "when school has ects or mentors for the given contract period" do
-      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
-      let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+      let(:framework_agreement) { FactoryBot.create(:framework_agreement, contract_period:) }
+      let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:) }
       let!(:school_partnership) { FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:) }
 
       context "when school has at least one mentor in training" do
@@ -70,7 +70,7 @@ describe Schools::TrainingProgramme do
           FactoryBot.create(:training_period,
                             :for_mentor,
                             :with_no_school_partnership,
-                            expression_of_interest: FactoryBot.create(:active_lead_provider, contract_period:),
+                            expression_of_interest: FactoryBot.create(:framework_agreement, contract_period:),
                             mentor_at_school_period:,
                             started_on: mentor_at_school_period.started_on)
         end

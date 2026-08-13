@@ -10,11 +10,11 @@ RSpec.describe Teachers::Merge do
   describe "#merge!" do
     context "when the destination has no conflicting records (clean merge)" do
       let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher: source) }
-      let!(:ect_training_period) { FactoryBot.create(:training_period, :for_ect, :with_active_lead_provider, ect_at_school_period:, started_on: ect_at_school_period.started_on, finished_on: nil) }
+      let!(:ect_training_period) { FactoryBot.create(:training_period, :for_ect, :with_framework_agreement, ect_at_school_period:, started_on: ect_at_school_period.started_on, finished_on: nil) }
       let!(:ect_declaration) { FactoryBot.create(:declaration, training_period: ect_training_period) }
 
       let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, teacher: source) }
-      let!(:mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, :with_active_lead_provider, mentor_at_school_period:, started_on: mentor_at_school_period.started_on, finished_on: nil) }
+      let!(:mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, :with_framework_agreement, mentor_at_school_period:, started_on: mentor_at_school_period.started_on, finished_on: nil) }
       let!(:mentor_declaration) { FactoryBot.create(:declaration, training_period: mentor_training_period) }
 
       let!(:induction_period) { FactoryBot.create(:induction_period, teacher: source) }
@@ -137,7 +137,7 @@ RSpec.describe Teachers::Merge do
 
     describe "declaration participant identity via the API serializer" do
       let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher: source) }
-      let!(:ect_training_period) { FactoryBot.create(:training_period, :for_ect, :with_active_lead_provider, ect_at_school_period:, started_on: ect_at_school_period.started_on, finished_on: nil) }
+      let!(:ect_training_period) { FactoryBot.create(:training_period, :for_ect, :with_framework_agreement, ect_at_school_period:, started_on: ect_at_school_period.started_on, finished_on: nil) }
       let!(:declaration) { FactoryBot.create(:declaration, training_period: ect_training_period) }
 
       it "reports the moved declaration under the destination participant id" do

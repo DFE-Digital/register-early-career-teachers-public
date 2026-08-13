@@ -8,12 +8,12 @@ module ActiveLeadProviders
 
     class CascadeDeleteError < StandardError; end
 
-    attr_reader :active_lead_provider, :author
+    attr_reader :framework_agreement, :author
 
-    delegate :lead_provider, :contract_period, to: :active_lead_provider
+    delegate :lead_provider, :contract_period, to: :framework_agreement
 
-    def initialize(active_lead_provider:, author:)
-      @active_lead_provider = active_lead_provider
+    def initialize(framework_agreement:, author:)
+      @framework_agreement = framework_agreement
       @author = author
     end
 
@@ -25,7 +25,7 @@ module ActiveLeadProviders
         destroy_contracts!
         destroy_lead_provider_delivery_partnerships!
         destroy_active_lead_provider_bands!
-        active_lead_provider.destroy!
+        framework_agreement.destroy!
       end
 
       Events::Record.record_active_lead_provider_deleted_event!(author:, lead_provider:, contract_period:)
@@ -36,39 +36,39 @@ module ActiveLeadProviders
     def reject_if_in_use!
       raise CascadeDeleteError, "Declarations are present" if declarations.exists?
       raise CascadeDeleteError, "Training periods are present" if training_periods.exists?
-      raise CascadeDeleteError, "Expressions of interest are present" if active_lead_provider.expressions_of_interest.exists?
+      raise CascadeDeleteError, "Expressions of interest are present" if framework_agreement.expressions_of_interest.exists?
     end
 
     def declarations
-      statement_ids = active_lead_provider.statements.ids
+      statement_ids = framework_agreement.statements.ids
       Declaration.where(payment_statement_id: statement_ids).or(Declaration.where(clawback_statement_id: statement_ids))
     end
 
     def training_periods
-      TrainingPeriod.where(school_partnership_id: active_lead_provider.school_partnerships.ids)
+      TrainingPeriod.where(school_partnership_id: framework_agreement.school_partnerships.ids)
     end
 
     def destroy_statements!
-      statement_ids = active_lead_provider.statements.ids
+      statement_ids = framework_agreement.statements.ids
       Statement.where(id: statement_ids).destroy_all
     end
 
     def destroy_contracts!
-      active_lead_provider.contracts.destroy_all
+      framework_agreement.contracts.destroy_all
     end
 
     # Bands enforce that only the last band can be destroyed.
     # During cascade delete we remove them from last to first,
     # resetting the association after each so the next band is now last.
     def destroy_active_lead_provider_bands!
-      active_lead_provider.bands.reverse_each do |band|
+      framework_agreement.bands.reverse_each do |band|
         band.destroy!
-        active_lead_provider.bands.reset
+        framework_agreement.bands.reset
       end
     end
 
     def destroy_lead_provider_delivery_partnerships!
-      lpdp_ids = active_lead_provider.lead_provider_delivery_partnerships.ids
+      lpdp_ids = framework_agreement.lead_provider_delivery_partnerships.ids
       school_partnership_ids = SchoolPartnership.where(lead_provider_delivery_partnership_id: lpdp_ids).ids
       SchoolPartnership.where(id: school_partnership_ids).destroy_all
       LeadProviderDeliveryPartnership.where(id: lpdp_ids).destroy_all

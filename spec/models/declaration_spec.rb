@@ -66,8 +66,8 @@ describe Declaration do
       subject(:declaration) { FactoryBot.build(:declaration, declaration_type:, training_period:, sparsity_uplift:, pupil_premium_uplift:) }
 
       let(:contract_period) { FactoryBot.create(:contract_period, uplift_fees_enabled:) }
-      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
-      let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+      let(:framework_agreement) { FactoryBot.create(:framework_agreement, contract_period:) }
+      let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:) }
       let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
       let(:training_period) { FactoryBot.create(:training_period, school_partnership:) }
       let(:declaration_type) { :started }
@@ -188,12 +188,12 @@ describe Declaration do
       describe "contract period consistent across associations" do
         let(:training_period) { FactoryBot.create(:training_period) }
 
-        let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period: training_period.contract_period) }
-        let(:statement) { FactoryBot.create(:statement, active_lead_provider:) }
+        let(:framework_agreement) { FactoryBot.create(:framework_agreement, contract_period: training_period.contract_period) }
+        let(:statement) { FactoryBot.create(:statement, framework_agreement:) }
 
         let(:mismatch_contract_period) { FactoryBot.create(:contract_period, year: training_period.contract_period.year + 1) }
-        let(:mismatch_active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period: mismatch_contract_period) }
-        let(:mismatch_statement) { FactoryBot.create(:statement, active_lead_provider: mismatch_active_lead_provider) }
+        let(:mismatch_framework_agreement) { FactoryBot.create(:framework_agreement, contract_period: mismatch_contract_period) }
+        let(:mismatch_statement) { FactoryBot.create(:statement, framework_agreement: mismatch_framework_agreement) }
 
         context "checking contract period matches with payment statement" do
           context "when contract periods match" do

@@ -14,11 +14,11 @@ module APISeedData
 
       log_plant_info("lead provider delivery partnerships")
 
-      active_lead_providers.find_each do |active_lead_provider|
-        DELIVERY_PARTNERS_PER_LEAD_PROVIDER.times { create_lead_provider_delivery_partnership(active_lead_provider) }
+      framework_agreements.find_each do |framework_agreement|
+        DELIVERY_PARTNERS_PER_LEAD_PROVIDER.times { create_lead_provider_delivery_partnership(framework_agreement) }
         SHARED_DELIVERY_PARTNERS_PER_LEAD_PROVIDER.times do |index|
           delivery_partner = shared_delivery_partner(index)
-          create_lead_provider_delivery_partnership(active_lead_provider, delivery_partner:)
+          create_lead_provider_delivery_partnership(framework_agreement, delivery_partner:)
         end
       end
 
@@ -57,10 +57,10 @@ module APISeedData
 
     def log_row_info(lead_provider)
       count_by_contract_period_year = LeadProviderDeliveryPartnership
-        .joins(active_lead_provider: :lead_provider)
-        .where(active_lead_provider: { lead_provider: })
-        .group("active_lead_provider.contract_period_year")
-        .order("active_lead_provider.contract_period_year")
+        .joins(framework_agreement: :lead_provider)
+        .where(framework_agreement: { lead_provider: })
+        .group("framework_agreement.contract_period_year")
+        .order("framework_agreement.contract_period_year")
         .count
 
       name_space = " " * COL_WIDTHS[:lead_provider_name]
@@ -84,16 +84,16 @@ module APISeedData
       coloured_count.rjust(COL_WIDTHS[:year] + offset)
     end
 
-    def create_lead_provider_delivery_partnership(active_lead_provider, delivery_partner: nil)
-      delivery_partner ||= find_random_available_delivery_partner(active_lead_provider)
+    def create_lead_provider_delivery_partnership(framework_agreement, delivery_partner: nil)
+      delivery_partner ||= find_random_available_delivery_partner(framework_agreement)
 
-      return if active_lead_provider.lead_provider_delivery_partnerships.exists?(delivery_partner:)
+      return if framework_agreement.lead_provider_delivery_partnerships.exists?(delivery_partner:)
 
-      FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:)
+      FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:, delivery_partner:)
     end
 
-    def find_random_available_delivery_partner(active_lead_provider)
-      existing_delivery_partners = active_lead_provider.lead_provider_delivery_partnerships.pluck(:delivery_partner_id)
+    def find_random_available_delivery_partner(framework_agreement)
+      existing_delivery_partners = framework_agreement.lead_provider_delivery_partnerships.pluck(:delivery_partner_id)
 
       DeliveryPartner
         .where.not(id: existing_delivery_partners)
@@ -105,7 +105,7 @@ module APISeedData
       DeliveryPartner.order(:name).offset(index).limit(1).first
     end
 
-    def active_lead_providers
+    def framework_agreements
       super.where(contract_period: relevant_contract_periods)
     end
 

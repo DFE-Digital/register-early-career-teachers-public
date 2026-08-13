@@ -88,12 +88,12 @@ module API::SchoolPartnerships
     end
 
     def school_partnership_does_not_already_exists
-      return unless school && active_lead_provider
+      return unless school && framework_agreement
 
       existing_school_partnership = school
         .school_partnerships
         .joins(:lead_provider_delivery_partnership)
-        .exists?(lead_provider_delivery_partnerships: { active_lead_provider: })
+        .exists?(lead_provider_delivery_partnerships: { framework_agreement: })
 
       errors.add(:school_api_id, "You are already in a confirmed partnership with this school for the entered contract period.") if existing_school_partnership
     end
@@ -104,16 +104,16 @@ module API::SchoolPartnerships
       errors.add(:delivery_partner_api_id, "The '#/delivery_partner_api_id' you have entered is invalid. Check delivery partner details and try again.") unless delivery_partner
     end
 
-    def active_lead_provider
+    def framework_agreement
       return unless lead_provider && contract_period
 
-      @active_lead_provider ||= lead_provider.active_lead_providers.find_by(contract_period:)
+      @framework_agreement ||= lead_provider.framework_agreements.find_by(contract_period:)
     end
 
     def lead_provider_delivery_partnership
-      return unless active_lead_provider && delivery_partner
+      return unless framework_agreement && delivery_partner
 
-      @lead_provider_delivery_partnership ||= delivery_partner.lead_provider_delivery_partnerships.find_by(active_lead_provider:, delivery_partner:)
+      @lead_provider_delivery_partnership ||= delivery_partner.lead_provider_delivery_partnerships.find_by(framework_agreement:, delivery_partner:)
     end
 
     def lead_provider_delivery_partnership_exists

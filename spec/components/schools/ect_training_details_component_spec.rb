@@ -3,8 +3,8 @@ RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
 
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Ambition Institute") }
   let(:delivery_partner) { FactoryBot.create(:delivery_partner, name: "Test Delivery Partner") }
-  let(:active_lead_provider) { FactoryBot.build(:active_lead_provider, lead_provider:) }
-  let(:lead_provider_delivery_partnership) { FactoryBot.build(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
+  let(:framework_agreement) { FactoryBot.build(:framework_agreement, lead_provider:) }
+  let(:lead_provider_delivery_partnership) { FactoryBot.build(:lead_provider_delivery_partnership, framework_agreement:, delivery_partner:) }
   let(:school_partnership) { FactoryBot.build(:school_partnership, lead_provider_delivery_partnership:, school: ect_at_school_period.school) }
   let(:teacher) { FactoryBot.create(:teacher, trn: "9876543", trs_first_name: "John", trs_last_name: "Doe") }
   let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
@@ -70,7 +70,7 @@ RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
       let(:training_period) do
         FactoryBot.create(:training_period, :provider_led, ect_at_school_period:, started_on: ect_at_school_period.started_on, finished_on: ect_at_school_period.finished_on) do |tp|
           tp.school_partnership = nil
-          tp.expression_of_interest = FactoryBot.create(:active_lead_provider)
+          tp.expression_of_interest = FactoryBot.create(:framework_agreement)
         end
       end
 
@@ -235,7 +235,7 @@ RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
           deferral_reason: TrainingPeriod.deferral_reasons.keys.first
         ) do |tp|
           tp.school_partnership = nil
-          tp.expression_of_interest = FactoryBot.create(:active_lead_provider)
+          tp.expression_of_interest = FactoryBot.create(:framework_agreement)
         end
       end
 
@@ -275,7 +275,7 @@ RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
       let(:training_period) do
         FactoryBot.create(:training_period, :provider_led, ect_at_school_period:, started_on: ect_at_school_period.started_on, finished_on: ect_at_school_period.finished_on) do |tp|
           tp.school_partnership = nil
-          tp.expression_of_interest = FactoryBot.create(:active_lead_provider)
+          tp.expression_of_interest = FactoryBot.create(:framework_agreement)
         end
       end
 

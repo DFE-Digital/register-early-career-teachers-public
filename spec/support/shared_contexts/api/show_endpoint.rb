@@ -23,9 +23,9 @@ shared_examples "a show endpoint" do
 
   context "when the resource exists but does not belong to the lead provider" do
     let(:resource) do
-      contract_period = FactoryBot.create(:contract_period, year: active_lead_provider.contract_period.year + 1)
+      contract_period = FactoryBot.create(:contract_period, year: framework_agreement.contract_period.year + 1)
       lead_provider = FactoryBot.create(:lead_provider, name: "Other Lead Provider")
-      create_resource(active_lead_provider: FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:))
+      create_resource(framework_agreement: FactoryBot.create(:framework_agreement, lead_provider:, contract_period:))
     end
 
     it "returns 404 not found" do

@@ -57,7 +57,7 @@ module TeacherHistories
     def build_provider_data(lead_provider:, contract_period:)
       if (school_partnership = SchoolPartnerships::Search.new(school: mentor_at_school_period.school, lead_provider:, contract_period:).school_partnerships.first)
         { school_partnership: }
-      elsif (expression_of_interest = LeadProviders::Active.new(lead_provider).active_lead_providers(contract_period).first)
+      elsif (expression_of_interest = LeadProviders::Active.new(lead_provider).framework_agreements(contract_period).first)
         { expression_of_interest: }
       end
     end

@@ -7,16 +7,16 @@ module LeadProviders
     end
 
     def active_in_contract_period?(contract_period)
-      lead_provider.active_lead_providers.exists?(contract_period:)
+      lead_provider.framework_agreements.exists?(contract_period:)
     end
 
-    def active_lead_providers(contract_period)
-      lead_provider.active_lead_providers.where(contract_period:)
+    def framework_agreements(contract_period)
+      lead_provider.framework_agreements.where(contract_period:)
     end
 
     def self.in_contract_period(contract_period)
       LeadProvider
-        .joins(:active_lead_providers)
+        .joins(:framework_agreements)
         .where(active_lead_providers: { contract_period_year: contract_period.id })
     end
   end

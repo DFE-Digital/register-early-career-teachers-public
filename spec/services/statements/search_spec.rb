@@ -1,7 +1,7 @@
 RSpec.describe Statements::Search do
   describe "#statements" do
-    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
-    let(:lead_provider) { active_lead_provider.lead_provider }
+    let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
+    let(:lead_provider) { framework_agreement.lead_provider }
 
     it "returns all statements" do
       statement = FactoryBot.create(:statement)
@@ -22,7 +22,7 @@ RSpec.describe Statements::Search do
 
     describe "filtering" do
       describe "by `lead_provider`" do
-        let!(:statement1) { FactoryBot.create(:statement, active_lead_provider:) }
+        let!(:statement1) { FactoryBot.create(:statement, framework_agreement:) }
         let!(:statement2) { FactoryBot.create(:statement) }
         let!(:statement3) { FactoryBot.create(:statement) }
 

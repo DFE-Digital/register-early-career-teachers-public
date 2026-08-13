@@ -68,7 +68,7 @@ RSpec.describe "Registering a mentor", :js do
     school_partnership_for_ect = make_partnership_for(@school, @contract_period, lead_provider_name: "Xavier's School for Gifted Youngsters")
 
     @another_lead_provider = FactoryBot.create(:lead_provider, name: "Another lead provider")
-    FactoryBot.create(:active_lead_provider, lead_provider: @another_lead_provider, contract_period: @contract_period)
+    FactoryBot.create(:framework_agreement, lead_provider: @another_lead_provider, contract_period: @contract_period)
 
     @ect_at_school_period = FactoryBot.create(:ect_at_school_period, :unfinished, school: @school)
     @training_period = FactoryBot.create(

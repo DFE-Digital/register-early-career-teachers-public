@@ -3,15 +3,15 @@ RSpec.describe "admin/finance/active_lead_providers/statements/show.html.erb" do
     FactoryBot.create(:contract_period, year: 2099, started_on: Date.new(2099, 6, 1), finished_on: Date.new(2100, 5, 31))
   end
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Lead Provider 1") }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:, lead_provider:) }
-  let(:statement) { FactoryBot.create(:statement, :open, :output_fee, active_lead_provider:, month: 11, year: 2099) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement, contract_period:, lead_provider:) }
+  let(:statement) { FactoryBot.create(:statement, :open, :output_fee, framework_agreement:, month: 11, year: 2099) }
 
-  let(:index_path) { admin_contract_period_active_lead_provider_statements_path(contract_period, active_lead_provider) }
-  let(:edit_path) { edit_admin_contract_period_active_lead_provider_statement_path(contract_period, active_lead_provider, statement) }
-  let(:delete_path) { delete_admin_contract_period_active_lead_provider_statement_path(contract_period, active_lead_provider, statement) }
+  let(:index_path) { admin_contract_period_active_lead_provider_statements_path(contract_period, framework_agreement) }
+  let(:edit_path) { edit_admin_contract_period_active_lead_provider_statement_path(contract_period, framework_agreement, statement) }
+  let(:delete_path) { delete_admin_contract_period_active_lead_provider_statement_path(contract_period, framework_agreement, statement) }
 
   before do
-    assign(:active_lead_provider, active_lead_provider)
+    assign(:framework_agreement, framework_agreement)
     assign(:statement, statement)
   end
 
@@ -36,7 +36,7 @@ RSpec.describe "admin/finance/active_lead_providers/statements/show.html.erb" do
 
   context "when the contract period is payments frozen" do
     let(:contract_period) { FactoryBot.create(:contract_period, :with_payments_frozen) }
-    let(:statement) { FactoryBot.create(:statement, :open, :output_fee, active_lead_provider:) }
+    let(:statement) { FactoryBot.create(:statement, :open, :output_fee, framework_agreement:) }
 
     it "renders the Edit and Delete buttons in a disabled state" do
       render
@@ -48,7 +48,7 @@ RSpec.describe "admin/finance/active_lead_providers/statements/show.html.erb" do
 
   context "when the contract period is not payments frozen" do
     let(:contract_period) { FactoryBot.create(:contract_period) }
-    let(:statement) { FactoryBot.create(:statement, :open, :output_fee, active_lead_provider:) }
+    let(:statement) { FactoryBot.create(:statement, :open, :output_fee, framework_agreement:) }
 
     it "renders the Edit and Delete buttons in an enabled state" do
       render

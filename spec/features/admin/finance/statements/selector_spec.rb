@@ -20,13 +20,13 @@ RSpec.describe "Admin finance statement selector" do
   def given_statement_exist_with_dropdown_options
     @lead_provider1 = FactoryBot.create(:lead_provider)
     @contract_period1 = FactoryBot.create(:contract_period)
-    @active_lead_provider1 = FactoryBot.create(:active_lead_provider, lead_provider: @lead_provider1, contract_period: @contract_period1)
-    @statement1 = FactoryBot.create(:statement, active_lead_provider: @active_lead_provider1, year: 2024, month: 7)
+    @framework_agreement1 = FactoryBot.create(:framework_agreement, lead_provider: @lead_provider1, contract_period: @contract_period1)
+    @statement1 = FactoryBot.create(:statement, framework_agreement: @framework_agreement1, year: 2024, month: 7)
 
     @lead_provider2 = FactoryBot.create(:lead_provider)
     @contract_period2 = FactoryBot.create(:contract_period)
-    @active_lead_provider2 = FactoryBot.create(:active_lead_provider, lead_provider: @lead_provider2, contract_period: @contract_period2)
-    @statement2 = FactoryBot.create(:statement, active_lead_provider: @active_lead_provider2, year: 2025, month: 5)
+    @framework_agreement2 = FactoryBot.create(:framework_agreement, lead_provider: @lead_provider2, contract_period: @contract_period2)
+    @statement2 = FactoryBot.create(:statement, framework_agreement: @framework_agreement2, year: 2025, month: 5)
   end
 
   def when_i_visit_the_statement_page

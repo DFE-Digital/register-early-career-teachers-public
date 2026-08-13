@@ -61,7 +61,7 @@ private
     end
 
     if training_period.expression_of_interest.present?
-      list = active_lead_provider_dependencies(training_period.expression_of_interest, list)
+      list = framework_agreement_dependencies(training_period.expression_of_interest, list)
     end
 
     if training_period.schedule.present?
@@ -98,7 +98,7 @@ private
 
     lpdp_list[partnership.id.to_s] = { label: "lpdp_#{lpdp_list.count + 1}", data: partnership }
 
-    list = active_lead_provider_dependencies(partnership.active_lead_provider, list)
+    list = framework_agreement_dependencies(partnership.framework_agreement, list)
 
     dp_list = list[:delivery_partners] ||= {}
     delivery_partner = partnership.delivery_partner
@@ -109,11 +109,11 @@ private
     list
   end
 
-  def active_lead_provider_dependencies(alp, list)
-    alp_list = list[:active_lead_providers] ||= {}
+  def framework_agreement_dependencies(alp, list)
+    alp_list = list[:framework_agreements] ||= {}
     return list if alp_list[alp.id.to_s].present?
 
-    alp_list[alp.id.to_s] = { label: "active_lead_provider_#{alp_list.count + 1}", data: alp }
+    alp_list[alp.id.to_s] = { label: "framework_agreement_#{alp_list.count + 1}", data: alp }
 
     lp_list = list[:lead_providers] ||= {}
     lead_provider = alp.lead_provider

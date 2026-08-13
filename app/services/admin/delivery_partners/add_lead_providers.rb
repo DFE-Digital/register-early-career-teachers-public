@@ -32,12 +32,12 @@ module Admin
 
       def validate_lead_provider_ids
         # Filter out empty values that might be sent by form helpers
-        @active_lead_provider_ids = (lead_provider_ids || [])
+        @framework_agreement_ids = (lead_provider_ids || [])
           .reject(&:blank?)
           .map(&:to_i)
 
         # Allow empty selections for future contract periods that haven't started yet
-        if @active_lead_provider_ids.empty? && @contract_period.started_on_or_before_today?
+        if @framework_agreement_ids.empty? && @contract_period.started_on_or_before_today?
           raise NoLeadProvidersSelectedError, "Select at least one lead provider"
         end
       end
@@ -48,7 +48,7 @@ module Admin
                    ::DeliveryPartners::AddLeadProviderPairings.new(
                      delivery_partner: @delivery_partner,
                      contract_period: @contract_period,
-                     active_lead_provider_ids: @active_lead_provider_ids,
+                     framework_agreement_ids: @framework_agreement_ids,
                      author:
                    ).add!
                  else
@@ -56,7 +56,7 @@ module Admin
                    ::DeliveryPartners::UpdateLeadProviderPairings.new(
                      delivery_partner: @delivery_partner,
                      contract_period: @contract_period,
-                     active_lead_provider_ids: @active_lead_provider_ids,
+                     framework_agreement_ids: @framework_agreement_ids,
                      author:
                    ).update!
                  end

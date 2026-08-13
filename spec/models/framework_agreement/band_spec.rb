@@ -1,14 +1,14 @@
-RSpec.describe ActiveLeadProvider::Band, type: :model do
+RSpec.describe FrameworkAgreement::Band, type: :model do
   let(:contract_period) { FactoryBot.create(:contract_period, :next) }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement, contract_period:) }
 
   describe "associations" do
-    it { is_expected.to belong_to(:active_lead_provider) }
+    it { is_expected.to belong_to(:framework_agreement) }
     it { is_expected.to have_many(:band_terms).class_name("Contract::BandedFeeStructure::BandTerm").inverse_of(:band) }
   end
 
   describe "validations" do
-    it { is_expected.to validate_presence_of(:active_lead_provider).with_message("Choose a lead provider") }
+    it { is_expected.to validate_presence_of(:framework_agreement).with_message("Choose a lead provider") }
 
     it { is_expected.to validate_numericality_of(:allocation_order).is_greater_than(0).only_integer.with_message("Allocation order must be a number greater than zero") }
 
@@ -16,7 +16,7 @@ RSpec.describe ActiveLeadProvider::Band, type: :model do
     it { is_expected.to validate_numericality_of(:capacity).is_greater_than(0).only_integer.with_message("Capacity must be a number greater than zero") }
 
     context "changing capacity" do
-      let(:band) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:, capacity: 500) }
+      let(:band) { FactoryBot.create(:framework_agreement_band, framework_agreement:, capacity: 500) }
 
       it "validates that capacity can only be increased" do
         band.capacity = 100
@@ -30,7 +30,7 @@ RSpec.describe ActiveLeadProvider::Band, type: :model do
   end
 
   describe "immutability" do
-    let!(:first_band) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:) }
+    let!(:first_band) { FactoryBot.create(:framework_agreement_band, framework_agreement:) }
 
     context "with only one band" do
       it "allows changing the capacity of the last band" do
@@ -44,7 +44,7 @@ RSpec.describe ActiveLeadProvider::Band, type: :model do
     end
 
     context "with multiple bands" do
-      let!(:last_band) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:) }
+      let!(:last_band) { FactoryBot.create(:framework_agreement_band, framework_agreement:) }
 
       it "prevents changing the capacity of a band that is not the last" do
         expect { first_band.update!(capacity: 999) }.to raise_error(ActiveRecord::RecordNotSaved)
@@ -68,14 +68,14 @@ RSpec.describe ActiveLeadProvider::Band, type: :model do
 
   describe "#allocation_order" do
     it "auto-assigns the next position" do
-      expect(FactoryBot.create(:active_lead_provider_band, active_lead_provider:).allocation_order).to eq 1
-      expect(FactoryBot.create(:active_lead_provider_band, active_lead_provider:).allocation_order).to eq 2
-      expect(FactoryBot.create(:active_lead_provider_band, active_lead_provider:).allocation_order).to eq 3
+      expect(FactoryBot.create(:framework_agreement_band, framework_agreement:).allocation_order).to eq 1
+      expect(FactoryBot.create(:framework_agreement_band, framework_agreement:).allocation_order).to eq 2
+      expect(FactoryBot.create(:framework_agreement_band, framework_agreement:).allocation_order).to eq 3
     end
 
     context "when the allocation order of a persisted band is edited" do
       subject(:band) do
-        FactoryBot.create(:active_lead_provider_band, active_lead_provider:)
+        FactoryBot.create(:framework_agreement_band, framework_agreement:)
       end
 
       it "raises a read-only error" do
@@ -90,8 +90,8 @@ RSpec.describe ActiveLeadProvider::Band, type: :model do
 
     context "without allocation_order" do
       let(:band) do
-        FactoryBot.build(:active_lead_provider_band,
-                         active_lead_provider:,
+        FactoryBot.build(:framework_agreement_band,
+                         framework_agreement:,
                          allocation_order: nil)
       end
 
@@ -99,18 +99,18 @@ RSpec.describe ActiveLeadProvider::Band, type: :model do
     end
 
     context "with the first band" do
-      let(:band) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:) }
+      let(:band) { FactoryBot.create(:framework_agreement_band, framework_agreement:) }
 
       it { is_expected.to eq 1 }
     end
 
     context "with a subsequent band" do
       before do
-        FactoryBot.create(:active_lead_provider_band, active_lead_provider:, capacity: 100)
-        FactoryBot.create(:active_lead_provider_band, active_lead_provider:, capacity: 50)
+        FactoryBot.create(:framework_agreement_band, framework_agreement:, capacity: 100)
+        FactoryBot.create(:framework_agreement_band, framework_agreement:, capacity: 50)
       end
 
-      let(:band) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:) }
+      let(:band) { FactoryBot.create(:framework_agreement_band, framework_agreement:) }
 
       it "sums previous capacities plus one" do
         expect(band.min_declarations).to eq 151
@@ -122,13 +122,13 @@ RSpec.describe ActiveLeadProvider::Band, type: :model do
     context "when unallocated" do
       subject { band.max_declarations }
 
-      let(:band) { FactoryBot.build(:active_lead_provider_band, active_lead_provider:) }
+      let(:band) { FactoryBot.build(:framework_agreement_band, framework_agreement:) }
 
       it { is_expected.to be_nil }
     end
 
     context "with the first band" do
-      let(:band) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:, capacity: 100) }
+      let(:band) { FactoryBot.create(:framework_agreement_band, framework_agreement:, capacity: 100) }
 
       it "equals the capacity" do
         expect(band.max_declarations).to eq 100
@@ -137,11 +137,11 @@ RSpec.describe ActiveLeadProvider::Band, type: :model do
 
     context "with a subsequent band" do
       before do
-        FactoryBot.create(:active_lead_provider_band, active_lead_provider:, capacity: 100)
-        FactoryBot.create(:active_lead_provider_band, active_lead_provider:, capacity: 50)
+        FactoryBot.create(:framework_agreement_band, framework_agreement:, capacity: 100)
+        FactoryBot.create(:framework_agreement_band, framework_agreement:, capacity: 50)
       end
 
-      let(:band) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:, capacity: 200) }
+      let(:band) { FactoryBot.create(:framework_agreement_band, framework_agreement:, capacity: 200) }
 
       it "sums all capacities" do
         expect(band.max_declarations).to eq 350
@@ -151,11 +151,11 @@ RSpec.describe ActiveLeadProvider::Band, type: :model do
 
   describe "#letter" do
     before do
-      FactoryBot.create_list(:active_lead_provider_band, 6, active_lead_provider:)
+      FactoryBot.create_list(:framework_agreement_band, 6, framework_agreement:)
     end
 
     it "bands alphabetically in allocation order" do
-      expect(active_lead_provider.bands.map(&:letter)).to eq(%w[A B C D E F])
+      expect(framework_agreement.bands.map(&:letter)).to eq(%w[A B C D E F])
     end
   end
 
@@ -163,17 +163,17 @@ RSpec.describe ActiveLeadProvider::Band, type: :model do
     context "when the contract period has not started" do
       it "permits adding a band" do
         expect {
-          active_lead_provider.bands.create(capacity: 400)
-        }.to change(ActiveLeadProvider::Band, :count).by(1)
+          framework_agreement.bands.create(capacity: 400)
+        }.to change(FrameworkAgreement::Band, :count).by(1)
       end
 
       context "when there is a contract in place" do
-        let!(:contract) { FactoryBot.create(:contract, active_lead_provider:) }
+        let!(:contract) { FactoryBot.create(:contract, framework_agreement:) }
 
         it "prevents adding a band" do
           expect {
-            active_lead_provider.bands.create(capacity: 400)
-          }.not_to change(ActiveLeadProvider::Band, :count)
+            framework_agreement.bands.create(capacity: 400)
+          }.not_to change(FrameworkAgreement::Band, :count)
         end
       end
     end
@@ -182,19 +182,19 @@ RSpec.describe ActiveLeadProvider::Band, type: :model do
       it "prevents adding a band" do
         travel_to(contract_period.started_on + 1.day) do
           expect {
-            active_lead_provider.bands.create(capacity: 400)
-          }.not_to change(ActiveLeadProvider::Band, :count)
+            framework_agreement.bands.create(capacity: 400)
+          }.not_to change(FrameworkAgreement::Band, :count)
         end
       end
 
       context "when there is a contract in place" do
-        let!(:contract) { FactoryBot.create(:contract, active_lead_provider:) }
+        let!(:contract) { FactoryBot.create(:contract, framework_agreement:) }
 
         it "prevents adding a band" do
           travel_to(contract_period.started_on + 1.day) do
             expect {
-              active_lead_provider.bands.create(capacity: 400)
-            }.not_to change(ActiveLeadProvider::Band, :count)
+              framework_agreement.bands.create(capacity: 400)
+            }.not_to change(FrameworkAgreement::Band, :count)
           end
         end
       end
@@ -202,22 +202,22 @@ RSpec.describe ActiveLeadProvider::Band, type: :model do
   end
 
   describe "removing the last band" do
-    let!(:existing_band) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:) }
+    let!(:existing_band) { FactoryBot.create(:framework_agreement_band, framework_agreement:) }
 
     context "when the contract period has not started" do
       it "permits removing a band" do
         expect {
           existing_band.destroy
-        }.to change(ActiveLeadProvider::Band, :count).by(-1)
+        }.to change(FrameworkAgreement::Band, :count).by(-1)
       end
 
       context "when there is a contract in place" do
-        let!(:contract) { FactoryBot.create(:contract, active_lead_provider:) }
+        let!(:contract) { FactoryBot.create(:contract, framework_agreement:) }
 
         it "prevents removing a band" do
           expect {
             existing_band.destroy
-          }.not_to change(ActiveLeadProvider::Band, :count)
+          }.not_to change(FrameworkAgreement::Band, :count)
         end
       end
     end
@@ -227,18 +227,18 @@ RSpec.describe ActiveLeadProvider::Band, type: :model do
         travel_to(contract_period.started_on + 1.day) do
           expect {
             existing_band.destroy
-          }.not_to change(ActiveLeadProvider::Band, :count)
+          }.not_to change(FrameworkAgreement::Band, :count)
         end
       end
 
       context "when there is a contract in place" do
-        let!(:contract) { FactoryBot.create(:contract, active_lead_provider:) }
+        let!(:contract) { FactoryBot.create(:contract, framework_agreement:) }
 
         it "prevents adding a band" do
           travel_to(contract_period.started_on + 1.day) do
             expect {
               existing_band.destroy
-            }.not_to change(ActiveLeadProvider::Band, :count)
+            }.not_to change(FrameworkAgreement::Band, :count)
           end
         end
       end
@@ -246,9 +246,9 @@ RSpec.describe ActiveLeadProvider::Band, type: :model do
   end
 
   describe "#last?" do
-    let!(:band_a) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:) }
-    let!(:band_b) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:) }
-    let!(:band_c) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:) }
+    let!(:band_a) { FactoryBot.create(:framework_agreement_band, framework_agreement:) }
+    let!(:band_b) { FactoryBot.create(:framework_agreement_band, framework_agreement:) }
+    let!(:band_c) { FactoryBot.create(:framework_agreement_band, framework_agreement:) }
 
     context "when the band is the last in the allocation order" do
       it "returns true" do
@@ -265,9 +265,9 @@ RSpec.describe ActiveLeadProvider::Band, type: :model do
   end
 
   describe "#editable?" do
-    let!(:band_a) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:) }
-    let!(:band_b) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:) }
-    let!(:band_c) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:) }
+    let!(:band_a) { FactoryBot.create(:framework_agreement_band, framework_agreement:) }
+    let!(:band_b) { FactoryBot.create(:framework_agreement_band, framework_agreement:) }
+    let!(:band_c) { FactoryBot.create(:framework_agreement_band, framework_agreement:) }
 
     context "when the band is the last in the allocation order" do
       it "returns true" do
@@ -284,9 +284,9 @@ RSpec.describe ActiveLeadProvider::Band, type: :model do
   end
 
   describe "#deletable?" do
-    let!(:band_a) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:) }
-    let!(:band_b) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:) }
-    let!(:band_c) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:) }
+    let!(:band_a) { FactoryBot.create(:framework_agreement_band, framework_agreement:) }
+    let!(:band_b) { FactoryBot.create(:framework_agreement_band, framework_agreement:) }
+    let!(:band_c) { FactoryBot.create(:framework_agreement_band, framework_agreement:) }
 
     context "when the active lead provider does not have any contracts" do
       context "and the contract period has not started" do
@@ -317,7 +317,7 @@ RSpec.describe ActiveLeadProvider::Band, type: :model do
 
     context "when the active lead provider has a contract" do
       before do
-        FactoryBot.create(:contract, active_lead_provider:)
+        FactoryBot.create(:contract, framework_agreement:)
       end
 
       context "and the contract period has not started" do

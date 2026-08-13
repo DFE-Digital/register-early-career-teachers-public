@@ -10,7 +10,7 @@ class API::StatementSerializer < Blueprinter::Base
 
     field(:month) { |s, _| Date::MONTHNAMES[s.month] }
     field(:year) { |s, _| s.year.to_s }
-    field(:cohort) { |s, _| s.active_lead_provider.contract_period_year.to_s }
+    field(:cohort) { |s, _| s.framework_agreement.contract_period_year.to_s }
     field :deadline_date, name: :cut_off_date
     field :payment_date
     field(:paid?, name: :paid)

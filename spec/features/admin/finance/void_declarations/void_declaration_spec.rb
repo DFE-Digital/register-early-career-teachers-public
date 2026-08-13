@@ -22,8 +22,8 @@ private
   end
 
   def and_a_future_output_fee_statement_exists
-    active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider: @declaration.training_period.lead_provider, contract_period: @declaration.training_period.contract_period)
-    FactoryBot.create(:statement, :output_fee, active_lead_provider:)
+    framework_agreement = FactoryBot.create(:framework_agreement, lead_provider: @declaration.training_period.lead_provider, contract_period: @declaration.training_period.contract_period)
+    FactoryBot.create(:statement, :output_fee, framework_agreement:)
   end
 
   def when_i_visit_the_teacher_declarations_page

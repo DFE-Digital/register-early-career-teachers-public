@@ -18,9 +18,9 @@ RSpec.describe "schools/ects/show.html.erb" do
   end
 
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Ambition institute") }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:) }
   let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
-  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
+  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:, delivery_partner:) }
   let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school: current_ect_period.school) }
   let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Alpha Teaching School Hub") }
   let(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Barry", trs_last_name: "White", corrected_name: "Baz White") }

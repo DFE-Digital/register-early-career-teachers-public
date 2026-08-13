@@ -1,9 +1,9 @@
 <%
-  contract_period = @active_lead_provider.contract_period
-  statement_path = admin_contract_period_active_lead_provider_statement_path(contract_period, @active_lead_provider, @statement)
+  contract_period = @framework_agreement.contract_period
+  statement_path = admin_contract_period_active_lead_provider_statement_path(contract_period, @framework_agreement, @statement)
   page_data(
     title: "Delete statement",
-    caption: @active_lead_provider.lead_provider_name,
+    caption: @framework_agreement.lead_provider_name,
     backlink_href: statement_path
   )
 %>

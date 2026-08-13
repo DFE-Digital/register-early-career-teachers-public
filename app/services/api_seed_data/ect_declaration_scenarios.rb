@@ -19,8 +19,8 @@ module APISeedData
   private
 
     def seed_retained_1_declaration_without_started_declaration
-      active_lead_providers.find_each do |active_lead_provider|
-        school_partnership = school_partnerships(active_lead_provider:).sample
+      framework_agreements.find_each do |framework_agreement|
+        school_partnership = school_partnerships(framework_agreement:).sample
         school = school_partnership.school
         school_time_period = { started_on: Date.new(contract_period.year, 9, 2), finished_on: nil }
         teacher = create_teacher(school_time_period:)
@@ -32,13 +32,13 @@ module APISeedData
         milestone = training_period.schedule.milestones.where(declaration_type: :"retained-1").sample
         create_declaration(state: :paid, declaration_type: :"retained-1", training_period:, declaration_date: milestone.start_date + 2.months)
 
-        log_seed_info("Created participant for #{school_partnership.active_lead_provider.lead_provider.name} with retained-1 declaration and no started declaration")
+        log_seed_info("Created participant for #{school_partnership.framework_agreement.lead_provider.name} with retained-1 declaration and no started declaration")
       end
     end
 
     def seed_paid_started_declaration_and_submitted_retained_2_declaration
-      active_lead_providers.find_each do |active_lead_provider|
-        school_partnership = school_partnerships(active_lead_provider:).sample
+      framework_agreements.find_each do |framework_agreement|
+        school_partnership = school_partnerships(framework_agreement:).sample
         school = school_partnership.school
         school_time_period = { started_on: Date.new(contract_period.year, 9, 1), finished_on: nil }
         teacher = create_teacher(school_time_period:)
@@ -53,7 +53,7 @@ module APISeedData
         milestone = training_period.schedule.milestones.where(declaration_type: :"retained-2").sample
         create_declaration(state: :no_payment, declaration_type: :"retained-2", training_period:, declaration_date: milestone.start_date + 3.months)
 
-        log_seed_info("Created participant for #{school_partnership.active_lead_provider.lead_provider.name} with paid started declaration and submitted retained-2 declaration")
+        log_seed_info("Created participant for #{school_partnership.framework_agreement.lead_provider.name} with paid started declaration and submitted retained-2 declaration")
       end
     end
 
@@ -61,18 +61,18 @@ module APISeedData
       @contract_period ||= ContractPeriod.find_by(year: 2025)
     end
 
-    def active_lead_providers
-      @active_lead_providers ||= super.where(contract_period:)
+    def framework_agreements
+      @framework_agreements ||= super.where(contract_period:)
     end
 
     def schedule
       Schedule.find_by(contract_period:, identifier: "ecf-standard-september")
     end
 
-    def school_partnerships(active_lead_provider:)
+    def school_partnerships(framework_agreement:)
       SchoolPartnership
         .joins(:school, :lead_provider_delivery_partnership, :contract_period)
-        .where(lead_provider_delivery_partnership: { active_lead_provider: })
+        .where(lead_provider_delivery_partnership: { framework_agreement: })
     end
 
     def create_declaration(state:, declaration_type:, training_period:, declaration_date:)

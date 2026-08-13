@@ -107,7 +107,7 @@ module Schools
 
         partnership
           .lead_provider_delivery_partnership
-          .active_lead_provider
+          .framework_agreement
           .contract_period_year == contract_period.year
       end
 
@@ -130,12 +130,12 @@ module Schools
         training_period = most_recent_provider_led_expression_of_interest_training_period_up_to(contract_period)
         return false unless training_period
 
-        active_lead_provider = ActiveLeadProvider.find_by(id: training_period.expression_of_interest_id)
-        return false unless active_lead_provider
+        framework_agreement = FrameworkAgreement.find_by(id: training_period.expression_of_interest_id)
+        return false unless framework_agreement
 
-        ActiveLeadProvider.exists?(
+        FrameworkAgreement.exists?(
           contract_period_year: contract_period.year,
-          lead_provider_id: active_lead_provider.lead_provider_id
+          lead_provider_id: framework_agreement.lead_provider_id
         )
       end
 
@@ -144,7 +144,7 @@ module Schools
         return false unless reusable_partnership_id && contract_period
 
         SchoolPartnership
-          .joins(lead_provider_delivery_partnership: :active_lead_provider)
+          .joins(lead_provider_delivery_partnership: :framework_agreement)
           .where(id: reusable_partnership_id)
           .where(active_lead_providers: { contract_period_year: contract_period.year })
           .exists?
@@ -183,7 +183,7 @@ module Schools
           .where(training_programme: "provider_led")
           .where.not(expression_of_interest_id: nil)
           .joins("INNER JOIN active_lead_providers ON active_lead_providers.id = training_periods.expression_of_interest_id")
-          .where(active_lead_providers: { contract_period_year: contract_period.year, lead_provider: school.last_chosen_lead_provider })
+          .merge(FrameworkAgreement.where(contract_period_year: contract_period.year, lead_provider: school.last_chosen_lead_provider))
           .order(started_on: :desc, id: :desc)
           .first
       end
@@ -195,7 +195,7 @@ module Schools
           .where.not(expression_of_interest_id: nil)
           .where("training_periods.started_on <= ?", contract_period.finished_on)
           .joins("INNER JOIN active_lead_providers ON active_lead_providers.id = training_periods.expression_of_interest_id")
-          .where(active_lead_providers: { lead_provider: school.last_chosen_lead_provider })
+          .merge(FrameworkAgreement.where(lead_provider: school.last_chosen_lead_provider))
           .order(started_on: :desc, id: :desc)
           .first
       end

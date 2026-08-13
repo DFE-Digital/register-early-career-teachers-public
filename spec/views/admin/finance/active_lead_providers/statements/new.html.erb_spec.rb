@@ -3,14 +3,14 @@ RSpec.describe "admin/finance/active_lead_providers/statements/new.html.erb" do
     FactoryBot.create(:contract_period, year: 2099, started_on: Date.new(2099, 6, 1), finished_on: Date.new(2100, 5, 31))
   end
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Lead Provider 1") }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:, lead_provider:) }
-  let!(:contract) { FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider:) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement, contract_period:, lead_provider:) }
+  let!(:contract) { FactoryBot.create(:contract, :for_ittecf_ectp, framework_agreement:) }
   let(:statement) { Statement.new }
 
-  let(:index_path) { admin_contract_period_active_lead_provider_statements_path(contract_period, active_lead_provider) }
+  let(:index_path) { admin_contract_period_active_lead_provider_statements_path(contract_period, framework_agreement) }
 
   before do
-    assign(:active_lead_provider, active_lead_provider)
+    assign(:framework_agreement, framework_agreement)
     assign(:statement, statement)
   end
 

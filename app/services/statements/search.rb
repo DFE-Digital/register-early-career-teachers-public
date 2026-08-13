@@ -14,7 +14,7 @@ module Statements
                    deadline_date: :ignore,
                    status: :ignore,
                    order: :payment_date)
-      @scope = Statement.distinct.includes(active_lead_provider: %i[lead_provider contract_period])
+      @scope = Statement.distinct.includes(framework_agreement: %i[lead_provider contract_period])
 
       where_lead_provider_is(lead_provider_id)
       where_contract_period_year_in(contract_period_years)

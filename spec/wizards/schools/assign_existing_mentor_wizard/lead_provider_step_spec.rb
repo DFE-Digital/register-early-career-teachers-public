@@ -57,7 +57,7 @@ RSpec.describe Schools::AssignExistingMentorWizard::LeadProviderStep do
   describe "#save" do
     let(:store) { OpenStruct.new(lead_provider_id: nil) }
     let(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, :current) }
-    let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
+    let!(:framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:, contract_period:) }
 
     let(:wizard) do
       instance_double(
@@ -122,7 +122,7 @@ RSpec.describe Schools::AssignExistingMentorWizard::LeadProviderStep do
                           :with_no_school_partnership,
                           ect_at_school_period:,
                           started_on:,
-                          expression_of_interest: active_lead_provider)
+                          expression_of_interest: framework_agreement)
 
         FactoryBot.create(:mentorship_period,
                           started_on:,

@@ -8,7 +8,7 @@ describe "Unfunded mentors endpoint", :with_metadata, openapi_spec: "v3/swagger.
   let(:lead_provider_delivery_partnership) do
     FactoryBot.create(
       :lead_provider_delivery_partnership,
-      active_lead_provider:
+      framework_agreement:
     )
   end
 

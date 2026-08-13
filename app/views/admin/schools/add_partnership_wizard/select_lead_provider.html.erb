@@ -18,11 +18,11 @@
         :active_lead_provider_id,
         legend: { text: title, size: "l", tag: "h1" }
       ) do %>
-        <% @wizard.active_lead_providers.each_with_index do |active_lead_provider, index| %>
+        <% @wizard.framework_agreements.each_with_index do |framework_agreement, index| %>
           <%= f.govuk_radio_button(
             :active_lead_provider_id,
-            active_lead_provider.id,
-            label: { text: active_lead_provider.lead_provider.name },
+            framework_agreement.id,
+            label: { text: framework_agreement.lead_provider.name },
             link_errors: index.zero?
           ) %>
         <% end %>

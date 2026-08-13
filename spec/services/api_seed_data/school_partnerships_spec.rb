@@ -13,9 +13,9 @@ RSpec.describe APISeedData::SchoolPartnerships do
     stub_const("#{described_class}::SCHOOL_PARTNERSHIPS_PER_ACTIVE_LEAD_PROVIDER", 2)
     stub_const("#{described_class}::SAME_SCHOOL_DIFFERENT_DELIVERY_PARTNER_PER_ACTIVE_LEAD_PROVIDER", 1)
 
-    FactoryBot.create_list(:active_lead_provider, 2, contract_period:)
-    ActiveLeadProvider.find_each do |active_lead_provider|
-      FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
+    FactoryBot.create_list(:framework_agreement, 2, contract_period:)
+    FrameworkAgreement.find_each do |framework_agreement|
+      FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:)
     end
     FactoryBot.create_list(:delivery_partner, 2)
     FactoryBot.create_list(:school, 2, create_contract_period: false)

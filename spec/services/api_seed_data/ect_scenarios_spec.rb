@@ -52,7 +52,7 @@ RSpec.describe APISeedData::ECTScenarios do
       instance.ect_2025_with_2024_mentor
 
       ects_count = Teacher
-        .joins(ect_at_school_periods: { training_periods: :active_lead_provider })
+        .joins(ect_at_school_periods: { training_periods: :framework_agreement })
         .where(active_lead_providers: { contract_period_year: contract_period_2025.year })
         .distinct
         .count
@@ -64,7 +64,7 @@ RSpec.describe APISeedData::ECTScenarios do
       instance.ect_2025_with_2024_mentor
 
       mentors_count = Teacher
-        .joins(mentor_at_school_periods: { training_periods: :active_lead_provider })
+        .joins(mentor_at_school_periods: { training_periods: :framework_agreement })
         .where(active_lead_providers: { contract_period_year: contract_period_2024.year })
         .distinct
         .count
@@ -77,8 +77,8 @@ RSpec.describe APISeedData::ECTScenarios do
 
       mentorships = MentorshipPeriod
         .joins(:mentor, :mentee)
-        .where(mentee: ECTAtSchoolPeriod.joins(training_periods: :active_lead_provider).where(active_lead_providers: { contract_period_year: contract_period_2025.year }))
-        .where(mentor: MentorAtSchoolPeriod.joins(training_periods: :active_lead_provider).where(active_lead_providers: { contract_period_year: contract_period_2024.year }))
+        .where(mentee: ECTAtSchoolPeriod.joins(training_periods: :framework_agreement).where(active_lead_providers: { contract_period_year: contract_period_2025.year }))
+        .where(mentor: MentorAtSchoolPeriod.joins(training_periods: :framework_agreement).where(active_lead_providers: { contract_period_year: contract_period_2024.year }))
 
       expect(mentorships.count).to be >= 1
 
@@ -117,7 +117,7 @@ RSpec.describe APISeedData::ECTScenarios do
       instance.ect_2025_with_2023_mentor
 
       ects_count = Teacher
-        .joins(ect_at_school_periods: { training_periods: :active_lead_provider })
+        .joins(ect_at_school_periods: { training_periods: :framework_agreement })
         .where(active_lead_providers: { contract_period_year: contract_period_2025.year })
         .distinct
         .count
@@ -129,7 +129,7 @@ RSpec.describe APISeedData::ECTScenarios do
       instance.ect_2025_with_2023_mentor
 
       mentors_count = Teacher
-        .joins(mentor_at_school_periods: { training_periods: :active_lead_provider })
+        .joins(mentor_at_school_periods: { training_periods: :framework_agreement })
         .where(active_lead_providers: { contract_period_year: contract_period_2023.year })
         .distinct
         .count
@@ -142,8 +142,8 @@ RSpec.describe APISeedData::ECTScenarios do
 
       mentorships = MentorshipPeriod
         .joins(:mentor, :mentee)
-        .where(mentee: ECTAtSchoolPeriod.joins(training_periods: :active_lead_provider).where(active_lead_providers: { contract_period_year: contract_period_2025.year }))
-        .where(mentor: MentorAtSchoolPeriod.joins(training_periods: :active_lead_provider).where(active_lead_providers: { contract_period_year: contract_period_2023.year }))
+        .where(mentee: ECTAtSchoolPeriod.joins(training_periods: :framework_agreement).where(active_lead_providers: { contract_period_year: contract_period_2025.year }))
+        .where(mentor: MentorAtSchoolPeriod.joins(training_periods: :framework_agreement).where(active_lead_providers: { contract_period_year: contract_period_2023.year }))
 
       expect(mentorships.count).to be >= 1
 

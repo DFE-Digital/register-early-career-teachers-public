@@ -54,7 +54,7 @@ module API::SchoolPartnerships
       return if ignore?(filter: lead_provider_id)
 
       @scope = scope
-        .joins(:active_lead_provider)
+        .joins(:framework_agreement)
         .where(
           lead_provider_delivery_partnership: { active_lead_providers: { lead_provider_id: } }
         )
@@ -64,7 +64,7 @@ module API::SchoolPartnerships
       return if ignore?(filter: contract_period_years, ignore_empty_array: false)
 
       @scope = scope
-        .joins(:active_lead_provider)
+        .joins(:framework_agreement)
         .where(
           lead_provider_delivery_partnership: { active_lead_providers: { contract_period_year: contract_period_years } }
         )

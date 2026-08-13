@@ -5,8 +5,8 @@ module TrainingPeriodSources
     @contract_period ||= ContractPeriod.current
   end
 
-  def active_lead_provider
-    @active_lead_provider ||= ActiveLeadProvider.find_by!(lead_provider:, contract_period:)
+  def framework_agreement
+    @framework_agreement ||= FrameworkAgreement.find_by!(lead_provider:, contract_period:)
   end
 
   def earliest_matching_school_partnership
@@ -14,6 +14,6 @@ module TrainingPeriodSources
   end
 
   def expression_of_interest
-    earliest_matching_school_partnership ? nil : active_lead_provider
+    earliest_matching_school_partnership ? nil : framework_agreement
   end
 end

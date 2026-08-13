@@ -42,7 +42,7 @@ module Teachers
       training_period.update!(
         schedule:,
         school_partnership:,
-        expression_of_interest: training_period.expression_of_interest.present? ? school_partnership.active_lead_provider : nil
+        expression_of_interest: training_period.expression_of_interest.present? ? school_partnership.framework_agreement : nil
       )
 
       record_change_schedule_event!(original_training_period: training_period, original_schedule:, new_training_period: training_period)

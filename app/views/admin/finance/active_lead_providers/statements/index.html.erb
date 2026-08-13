@@ -1,7 +1,7 @@
 <% page_data(title: "Statements", breadcrumbs: @breadcrumbs) %>
 
 <p class="govuk-body">
-  Statements for <%= @active_lead_provider.lead_provider_name %> in the <%= @active_lead_provider.contract_period_year %> contract period.
+  Statements for <%= @framework_agreement.lead_provider_name %> in the <%= @framework_agreement.contract_period_year %> contract period.
 </p>
 
 <% if @statements.none? %>
@@ -17,8 +17,8 @@
         [
           govuk_link_to(
             Statements::Period.for(statement),
-            admin_contract_period_active_lead_provider_statement_path(@active_lead_provider.contract_period, @active_lead_provider, statement),
-            visually_hidden_suffix: "statement for #{@active_lead_provider.lead_provider_name}"
+            admin_contract_period_active_lead_provider_statement_path(@framework_agreement.contract_period, @framework_agreement, statement),
+            visually_hidden_suffix: "statement for #{@framework_agreement.lead_provider_name}"
           ),
           statement.fee_type.humanize,
           statement.deadline_date.to_fs(:govuk),
@@ -32,4 +32,4 @@
 
 <%= render Shared::PaginationSummaryComponent.new(pagy: @pagy, record_name: "statements") %>
 
-<%= govuk_button_link_to("Add statement", new_admin_contract_period_active_lead_provider_statement_path(@active_lead_provider.contract_period, @active_lead_provider), disabled: @active_lead_provider.contract_period.payments_frozen?) %>
+<%= govuk_button_link_to("Add statement", new_admin_contract_period_active_lead_provider_statement_path(@framework_agreement.contract_period, @framework_agreement), disabled: @framework_agreement.contract_period.payments_frozen?) %>

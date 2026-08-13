@@ -5,7 +5,7 @@ module Admin
         attribute :active_lead_provider_id, :integer
 
         validates :active_lead_provider_id, presence: { message: "Select a lead provider" }
-        validate :active_lead_provider_available
+        validate :framework_agreement_available
 
         def self.permitted_params = %i[active_lead_provider_id]
 
@@ -21,9 +21,9 @@ module Admin
           store.delivery_partner_id = nil
         end
 
-        def active_lead_provider_available
+        def framework_agreement_available
           return if active_lead_provider_id.blank?
-          return if wizard.active_lead_providers.where(id: active_lead_provider_id).exists?
+          return if wizard.framework_agreements.where(id: active_lead_provider_id).exists?
 
           errors.add(:active_lead_provider_id, "Select a lead provider")
         end
