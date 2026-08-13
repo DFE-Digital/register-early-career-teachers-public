@@ -3,8 +3,7 @@
 # 1. teacher name changes
 # 2. induction status and date changes
 # 3. QTS and ITT changes
-# 4. teacher deactivated in TRS
-# 5. teacher not found in TRS
+# 4. the response TRS last gave for the teacher's TRN: deactivated, not found or merged
 #
 # @see Teachers::Manageable
 class Teachers::Manage
