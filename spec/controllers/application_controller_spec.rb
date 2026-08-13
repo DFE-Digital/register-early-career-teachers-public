@@ -35,7 +35,7 @@ RSpec.describe ApplicationController, type: :controller do
 
     expect(Sentry).to have_received(:set_user).with(
       email:,
-      id: nil,
+      id: dfe_sign_in_user_id,
       dfe_sign_in_user_fingerprint:
     )
   end
@@ -47,7 +47,7 @@ RSpec.describe ApplicationController, type: :controller do
 
     expect(payload).to include(
       current_user_class: "Sessions::Users::SchoolUser",
-      current_user_id: nil,
+      current_user_id: dfe_sign_in_user_id,
       current_user_dfe_sign_in_user_fingerprint: dfe_sign_in_user_fingerprint
     )
     expect(payload).not_to have_key(:current_user_dfe_sign_in_user_id)

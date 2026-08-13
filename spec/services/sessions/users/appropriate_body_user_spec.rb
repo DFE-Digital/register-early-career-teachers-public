@@ -72,6 +72,12 @@ RSpec.describe Sessions::Users::AppropriateBodyUser do
     end
   end
 
+  describe "#id" do
+    it "returns the id of the user in DfE SignIn" do
+      expect(appropriate_body_user.id).to eql(dfe_sign_in_user_id)
+    end
+  end
+
   describe "#has_authorised_role?" do
     it { expect(appropriate_body_user).to have_authorised_role }
   end

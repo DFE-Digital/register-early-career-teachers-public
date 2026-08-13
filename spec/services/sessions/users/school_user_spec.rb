@@ -73,6 +73,12 @@ RSpec.describe Sessions::Users::SchoolUser do
     end
   end
 
+  describe "#id" do
+    it "returns the id of the user in DfE SignIn" do
+      expect(school_user.id).to eql(dfe_sign_in_user_id)
+    end
+  end
+
   describe "user type methods" do
     it { expect(school_user).to be_school_user }
     it { expect(school_user).to be_dfe_sign_in_authorisable }

@@ -73,6 +73,12 @@ module Sessions
       # @return [Array<String>]
       alias_method :roles, :dfe_sign_in_roles
 
+      # dfe-analytics is configured to add the current_user#id to the web
+      # request log, so alias it here
+      #
+      # @return [String] the UUID returned by DfE Sign-in
+      alias_method :id, :dfe_sign_in_user_id
+
     private
 
       def appropriate_body_period_from(dfe_sign_in_organisation_id)
