@@ -36,8 +36,7 @@ module GIAS::Reconciliation
         closed_on_or_before_today? &&
         school.present? &&
         school_being_merged_or_amalgamated? &&
-        has_one_open_successor? &&
-        successor.school.present?
+        has_one_open_successor?
     end
 
   private

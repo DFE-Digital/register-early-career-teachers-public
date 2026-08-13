@@ -1,5 +1,7 @@
 RSpec.describe GIAS::Reconciliation::Merge do
-  subject(:service) { described_class.new(gias_school) }
+  subject(:service) { described_class.new(gias_school, refresh_metadata:) }
+
+  let(:refresh_metadata) { true }
 
   let(:gias_school) { FactoryBot.create(:gias_school, :with_school, :closed) }
   let(:successor_gias_school) { FactoryBot.create(:gias_school, :with_school, :open) }
@@ -33,14 +35,13 @@ RSpec.describe GIAS::Reconciliation::Merge do
     )
   end
   let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school: predecessor_school) }
-  let!(:ect_at_school_period) do
-    FactoryBot.create(
-      :ect_at_school_period,
-      school: predecessor_school
-    )
-  end
+  let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school: predecessor_school) }
 
   let(:eligibility) { instance_double(GIAS::Reconciliation::Eligibility) }
+
+  let(:school_metadata_handler) { instance_spy(Metadata::Handlers::School) }
+  let(:teacher_metadata_handler) { instance_spy(Metadata::Handlers::Teacher) }
+  let(:teachers) { [mentor_at_two_schools_teacher, mentor_at_school_period.teacher, ect_at_school_period.teacher] }
 
   describe "#merge!" do
     subject(:merge!) { service.merge! }
@@ -85,20 +86,66 @@ RSpec.describe GIAS::Reconciliation::Merge do
         merge!
       end
 
-      it "does not destroy any events associated with the predecessor school" do
-        FactoryBot.create(:event, school: predecessor_school)
+      it "does not refresh the school metadata" do
+        expect(Metadata::Handlers::School).not_to receive(:new)
 
-        expect { merge! }.not_to(change { predecessor_school.events.count })
+        merge!
       end
 
-      it "does not destroy any school_partnerships associated with the predecessor school" do
-        FactoryBot.create(:school_partnership, school: predecessor_school)
+      it "does not refresh the metadata for any teachers mentoring at the school" do
+        expect(Metadata::Handlers::Teacher).not_to receive(:new)
 
-        expect { merge! }.not_to(change { predecessor_school.school_partnerships.count })
+        merge!
       end
 
       it "does not destroy the predecessor school" do
-        expect { merge! }.not_to change { School.exists?(predecessor_school.id) }.from(true)
+        merge!
+
+        expect(School).to exist(predecessor_school.id)
+      end
+
+      context "when there are events associated with the predecessor school" do
+        let!(:event) { FactoryBot.create(:event, school: predecessor_school) }
+
+        it "does not destroy any events associated with the predecessor school" do
+          merge!
+
+          expect(Event).to exist(event.id)
+        end
+      end
+
+      context "when there are school_partnerships associated with the predecessor school" do
+        let!(:school_partnership) { FactoryBot.create(:school_partnership, school: predecessor_school) }
+
+        it "does not destroy any school_partnerships associated with the predecessor school" do
+          merge!
+
+          expect(SchoolPartnership).to exist(school_partnership.id)
+        end
+      end
+
+      context "when there is school_contract_period metadata associated with the predecessor school" do
+        let!(:school_contract_period) do
+          FactoryBot.create(:school_contract_period_metadata, school: predecessor_school)
+        end
+
+        it "does not destroy any school_contract_period metadata associated with the predecessor school" do
+          merge!
+
+          expect(Metadata::SchoolContractPeriod).to exist(school_contract_period.id)
+        end
+      end
+
+      context "when there is school_lead_provider_contract_period metadata associated with the predecessor school" do
+        let!(:school_lead_provider_contract_period) do
+          FactoryBot.create(:school_lead_provider_contract_period_metadata, school: predecessor_school)
+        end
+
+        it "does not destroy any school_lead_provider_contract_period metadata associated with the predecessor school" do
+          merge!
+
+          expect(Metadata::SchoolLeadProviderContractPeriod).to exist(school_lead_provider_contract_period.id)
+        end
       end
     end
 
@@ -169,20 +216,90 @@ RSpec.describe GIAS::Reconciliation::Merge do
           )
       end
 
-      it "deletes any events associated with the predecessor school" do
-        event = FactoryBot.create(:event, school: predecessor_school)
+      it "destroys the predecessor school" do
+        merge!
 
-        expect { merge! }.to change { Event.exists?(event.id) }.from(true).to(false)
+        expect(School).not_to exist(predecessor_school.id)
       end
 
-      it "destroys any school_partnerships associated with the predecessor school" do
-        school_partnership = FactoryBot.create(:school_partnership, school: predecessor_school)
+      it "does not call any metadata refresh handlers during the process" do
+        expect(Metadata::Resolver).not_to receive(:resolve_handler)
 
-        expect { merge! }.to change { SchoolPartnership.exists?(school_partnership.id) }.from(true).to(false)
+        merge!
       end
 
-      it "destroys the school" do
-        expect { merge! }.to change { School.exists?(predecessor_school.id) }.from(true).to(false)
+      it "refreshes the school's metadata after the update" do
+        allow(Metadata::Handlers::School).to receive(:new).and_return(school_metadata_handler)
+        expect(school_metadata_handler).to receive(:refresh_metadata!)
+
+        merge!
+      end
+
+      it "refreshes the metadata for each teacher mentoring at the school after the update" do
+        allow(Metadata::Handlers::Teacher)
+          .to receive(:new)
+          .and_return(teacher_metadata_handler)
+
+        merge!
+
+        teachers.each do |teacher|
+          expect(Metadata::Handlers::Teacher)
+            .to have_received(:new)
+            .with(teacher)
+            .once
+        end
+
+        expect(teacher_metadata_handler)
+          .to have_received(:refresh_metadata!)
+          .exactly(teachers.count).times
+      end
+
+      context "when called with `refresh_metadata: false`" do
+        let(:refresh_metadata) { false }
+
+        it "does not refresh any metadata" do
+          expect(Metadata::Handlers::School).not_to receive(:new)
+          expect(Metadata::Handlers::Teacher).not_to receive(:new)
+
+          merge!
+        end
+      end
+
+      context "when there are events associated with the predecessor school" do
+        let!(:event) { FactoryBot.create(:event, school: predecessor_school) }
+
+        it "deletes any events associated with the predecessor school" do
+          merge!
+
+          expect(Event).not_to exist(school_id: predecessor_school.id)
+        end
+      end
+
+      context "when there are school_partnerships associated with the predecessor school" do
+        let!(:school_partnership) { FactoryBot.create(:school_partnership, school: predecessor_school) }
+
+        it "destroys any school_partnerships associated with the predecessor school" do
+          merge!
+
+          expect(SchoolPartnership).not_to exist(school_partnership.id)
+        end
+      end
+
+      context "when there is metadata associated with the predecessor school" do
+        let!(:school_contract_period) { FactoryBot.create(:school_contract_period_metadata, school: predecessor_school) }
+        let!(:school_lead_provider_contract_period) { FactoryBot.create(:school_lead_provider_contract_period_metadata, school: predecessor_school) }
+
+        it "destroys any school_contract_period metadata associated with the predecessor school" do
+          merge!
+
+          expect(Metadata::SchoolContractPeriod).not_to exist(school_contract_period.id)
+        end
+
+        it "destroys any school_lead_provider_contract_period metadata associated with the predecessor school" do
+          merge!
+
+          expect(Metadata::SchoolLeadProviderContractPeriod).not_to exist(school_lead_provider_contract_period.id)
+        end
       end
 
       it "records a school merged event" do
