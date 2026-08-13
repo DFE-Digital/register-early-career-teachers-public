@@ -36,6 +36,12 @@ FactoryBot.define do
       trs_not_found { true }
     end
 
+    trait :merged_in_trs do
+      trs_not_found { true }
+      trs_response { :permanent_redirect }
+      trs_redirected_to { APISeedData::Helpers::TRNGenerator.next }
+    end
+
     trait :early_roll_out_mentor do
       mentor_became_ineligible_for_funding_on { Date.new(2021, 4, 19) }
       mentor_became_ineligible_for_funding_reason { "completed_during_early_roll_out" }

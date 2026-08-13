@@ -142,6 +142,26 @@ describe Teachers::RefreshTRSAttributes do
           end
         end
       end
+
+      context "when the teacher has been merged in TRS" do
+        include_context "test TRS API returns a merged teacher"
+
+        let(:fake_manage) do
+          double(Teachers::Manage,
+                 mark_teacher_as_merged!: true)
+        end
+
+        it "passes on the destination TRN when TRS reports the teacher as 'Permanent Redirect'" do
+          freeze_time do
+            expect(service.refresh!).to eq(:teacher_merged)
+            expect(fake_manage).to have_received(:mark_teacher_as_merged!).once.with(
+              trs_data_last_refreshed_at: Time.zone.now,
+              redirected_to: TRS::TestAPIClient::MERGED_TRN_REDIRECTS_TO,
+              event_body: "TRN #{teacher.trn} redirects to TRN #{TRS::TestAPIClient::MERGED_TRN_REDIRECTS_TO}"
+            )
+          end
+        end
+      end
     end
 
     context "when the TRN or DoB in TRS have changed" do
@@ -152,6 +172,14 @@ describe Teachers::RefreshTRSAttributes do
         teacher.reload
 
         expect(teacher).to be_trs_not_found
+      end
+
+      it "records the TRN the teacher was merged into" do
+        service.refresh!
+        teacher.reload
+
+        expect(teacher).to be_trs_response_permanent_redirect
+        expect(teacher.trs_redirected_to).to eq(TRS::TestAPIClient::MERGED_TRN_REDIRECTS_TO)
       end
 
       it "adds a teacher_trs_merged event" do

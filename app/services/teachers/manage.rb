@@ -108,11 +108,11 @@ class Teachers::Manage
     end
   end
 
-  def mark_teacher_as_merged!(trs_data_last_refreshed_at:, event_body:)
+  def mark_teacher_as_merged!(trs_data_last_refreshed_at:, redirected_to:, event_body:)
     fail(AlreadyFlagged) if teacher.trs_not_found?
 
     Teacher.transaction do
-      teacher.update!(trs_not_found: true, trs_data_last_refreshed_at:)
+      teacher.update!(trs_not_found: true, trs_response: :permanent_redirect, trs_redirected_to: redirected_to, trs_data_last_refreshed_at:)
       record_teacher_merged_event(event_body)
       update_induction_status_indicator
     end

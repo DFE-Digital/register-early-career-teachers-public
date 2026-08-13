@@ -391,4 +391,31 @@ RSpec.describe Teachers::Manage do
       end
     end
   end
+
+  describe "#mark_teacher_as_merged!" do
+    subject(:mark_teacher_as_merged) do
+      service.mark_teacher_as_merged!(trs_data_last_refreshed_at:, redirected_to:, event_body: "merged")
+    end
+
+    let(:trs_data_last_refreshed_at) { 2.minutes.ago }
+    let(:redirected_to) { "1234567" }
+
+    context "when the teacher is already flagged" do
+      let(:teacher) { FactoryBot.create(:teacher, :merged_in_trs) }
+
+      it { expect { mark_teacher_as_merged }.to raise_error(Teachers::Manage::AlreadyFlagged) }
+    end
+
+    context "when the teacher is not yet flagged" do
+      before { mark_teacher_as_merged }
+
+      it "records the TRN the teacher was merged into" do
+        teacher.reload
+
+        expect(teacher.trs_redirected_to).to eq(redirected_to)
+        expect(teacher).to be_trs_response_permanent_redirect
+        expect(teacher.trs_data_last_refreshed_at).to be_within(0.001.seconds).of(trs_data_last_refreshed_at)
+      end
+    end
+  end
 end
