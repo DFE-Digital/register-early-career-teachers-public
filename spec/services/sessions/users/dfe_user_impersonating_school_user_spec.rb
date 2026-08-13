@@ -17,6 +17,14 @@ describe "Sessions::Users::DfEUserImpersonatingSchoolUser" do
     it { expect(dfe_user_impersonating_school_user.original_type).to eql(original_type) }
   end
 
+  describe "#id" do
+    it { expect(dfe_user_impersonating_school_user.id).to eql(user.id) }
+  end
+
+  describe "#dfe_analytics_user_id" do
+    it { expect(dfe_user_impersonating_school_user.dfe_analytics_user_id).to eql(user.id) }
+  end
+
   describe "#to_h" do
     it "returns the session details" do
       expect(dfe_user_impersonating_school_user.to_h.except("last_active_at")).to eq(

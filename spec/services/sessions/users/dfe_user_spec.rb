@@ -36,6 +36,14 @@ RSpec.describe Sessions::Users::DfEUser do
     it { is_expected.to delegate_method(:can_manage_users?).to(:user) }
   end
 
+  describe "#id" do
+    it { expect(dfe_user.id).to eql(user.id) }
+  end
+
+  describe "#dfe_analytics_user_id" do
+    it { expect(dfe_user.dfe_analytics_user_id).to eql(user.id) }
+  end
+
   describe "#provider" do
     it { expect(dfe_user.provider).to be(:otp) }
   end

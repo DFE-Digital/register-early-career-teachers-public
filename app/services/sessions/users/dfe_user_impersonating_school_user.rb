@@ -7,6 +7,8 @@ module Sessions
 
       USER_TYPE = :dfe_user_impersonating_school_user
 
+      alias_method :dfe_analytics_user_id, :id
+
       def initialize(email:, school_urn:, original_type:, **)
         @user = user_from(email)
         @id = user.id

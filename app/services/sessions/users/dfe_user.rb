@@ -10,6 +10,8 @@ module Sessions
 
       attr_reader :id, :name, :user
 
+      alias_method :dfe_analytics_user_id, :id
+
       def initialize(email:, **)
         @user = user_from(email)
         @id = user.id

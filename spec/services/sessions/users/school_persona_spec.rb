@@ -29,6 +29,10 @@ RSpec.describe Sessions::Users::SchoolPersona do
     end
   end
 
+  describe "#dfe_analytics_user_id" do
+    it { expect(school_persona.dfe_analytics_user_id).to be_nil }
+  end
+
   describe "#provider" do
     it { expect(school_persona.provider).to be(:persona) }
   end

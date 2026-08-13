@@ -73,6 +73,9 @@ module Sessions
       # @return [Array<String>]
       alias_method :roles, :dfe_sign_in_roles
 
+      # @return [String]
+      alias_method :dfe_analytics_user_id, :dfe_sign_in_user_id
+
     private
 
       def appropriate_body_period_from(dfe_sign_in_organisation_id)
