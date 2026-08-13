@@ -3,7 +3,7 @@
     <h3 class="govuk-heading-m"><%= "#{year} partnerships" %></h3>
 
     <% school_partnerships_by_year[year].each do |school_partnership| %>
-      <%= govuk_summary_card(title: school_partnership_title(school_partnership)) do |card| %>
+      <%= govuk_summary_card(title: school_partnership_title(school_partnership), heading_level: 4) do |card| %>
         <%= card.with_summary_list(actions: false) do |list| %>
           <% list.with_row do |row| %>
             <% row.with_key(text: "Lead provider") %>

@@ -168,6 +168,10 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
       expect(rendered).to have_content("We’ll email #{mentor.full_name} to confirm that you’ve registered them as a mentor.")
     end
 
+    it "renders the 'What happens next' subheading as a h2" do
+      expect(rendered).to have_css("h2", text: "What happens next")
+    end
+
     it "mentions passing on details to the lead provider for mentor training" do
       expect(rendered).to have_content("We’ll pass on their details to FraggleRock")
     end

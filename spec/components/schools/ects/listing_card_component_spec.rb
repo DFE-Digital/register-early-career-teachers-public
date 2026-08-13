@@ -11,6 +11,12 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
   let(:valid_withdrawal_reason) { TrainingPeriod.withdrawal_reasons.keys.first }
   let(:valid_deferral_reason) { TrainingPeriod.deferral_reasons.keys.first }
 
+  it "renders the ECT name as a h2" do
+    render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:))
+
+    expect(rendered_content).to have_css("h2.govuk-summary-card__title", text: "Naruto Uzumaki")
+  end
+
   context "when the ECT has a mentor assigned" do
     before do
       FactoryBot.create(:mentorship_period, :unfinished, started_on: ect_at_school_period.started_on, mentee: ect_at_school_period, mentor:)
