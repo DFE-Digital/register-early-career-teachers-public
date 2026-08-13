@@ -31,6 +31,11 @@ default: &default
 
 migration: &migration
   workers:
+    - queues: [check_validity]
+      threads: 2
+      processes: 2
+      polling_interval: 0.1
+
     - queues: ["*"]
       threads: 2
       processes: 2
@@ -83,6 +88,9 @@ development:
 
 test:
   <<: *non_production
+
+migration:
+  <<: *migration
 
 production:
   <<: *default
