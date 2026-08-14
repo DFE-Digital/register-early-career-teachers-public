@@ -8,11 +8,32 @@ RSpec.describe Contract::BandedFeeStructure::BandTerm, type: :model do
     it { is_expected.to validate_presence_of(:fee_per_declaration).with_message("Fee per declaration is required") }
     it { is_expected.to validate_numericality_of(:fee_per_declaration).is_greater_than(0).with_message("Fee per declaration must be a number greater than zero") }
 
-    it { is_expected.to validate_presence_of(:output_fee_ratio).with_message("Output fee ratio is required") }
-    it { is_expected.to validate_numericality_of(:output_fee_ratio).is_in(0..1).with_message("Output fee ratio must be between 0 and 1") }
+    describe "service_fee_ratio" do
+      subject(:band_term) { FactoryBot.build_stubbed(:contract_banded_fee_structure_band_term) }
 
-    it { is_expected.to validate_presence_of(:service_fee_ratio).with_message("Service fee ratio is required") }
-    it { is_expected.to validate_numericality_of(:service_fee_ratio).is_in(0..1).with_message("Service fee ratio must be between 0 and 1") }
+      it "is required once an output fee has been set" do
+        band_term.service_fee_ratio = nil
+        expect(band_term).to be_invalid
+        expect(band_term.errors[:service_fee_ratio]).to eq(["Service fee ratio is required"])
+      end
+    end
+
+    describe "output_fee_percentage" do
+      subject(:band_term) { FactoryBot.build_stubbed(:contract_banded_fee_structure_band_term) }
+
+      it "must be present and between 0 and 100, reporting against the field the user filled in" do
+        band_term.output_fee_percentage = nil
+        expect(band_term).to be_invalid
+        expect(band_term.errors[:output_fee_percentage]).to eq(["Output fee percentage is required"])
+
+        band_term.output_fee_percentage = 150
+        expect(band_term).to be_invalid
+        expect(band_term.errors[:output_fee_percentage]).to eq(["Output fee percentage must be between 0 and 100"])
+
+        band_term.output_fee_percentage = 60
+        expect(band_term).to be_valid
+      end
+    end
 
     describe "output_fee_ratio + service_fee_ratio" do
       subject(:band_term) do
@@ -111,22 +132,20 @@ RSpec.describe Contract::BandedFeeStructure::BandTerm, type: :model do
     end
 
     describe "#output_fee_percentage=" do
-      it "overrides and rounds output_fee_ratio" do
+      it "overrides and rounds output_fee_ratio and derives service_fee_ratio" do
         band_term.output_fee_percentage = 34.56
         expect(band_term.output_fee_ratio.to_f).to eq(0.35)
+        expect(band_term.service_fee_ratio.to_f).to eq(0.65)
+
+        band_term.output_fee_percentage = nil
+        expect(band_term.output_fee_ratio).to be_nil
+        expect(band_term.service_fee_ratio).to be_nil
       end
     end
 
     describe "#service_fee_percentage" do
       it "converts and rounds service_fee_ratio" do
         expect(band_term.service_fee_percentage).to eq(46)
-      end
-    end
-
-    describe "#service_fee_percentage=" do
-      it "overrides and rounds service_fee_ratio" do
-        band_term.service_fee_percentage = 67.89
-        expect(band_term.service_fee_ratio.to_f).to eq(0.68)
       end
     end
   end
