@@ -11,7 +11,7 @@ RSpec.describe Admin::DataFixes::InlineCSV do
 
       it "validates the CSV is present" do
         parse
-        expect(inline_csv.errors).to be_added(:csv_string, "can't be blank")
+        expect(inline_csv.errors).to be_added(:csv_string, "CSV can’t be blank")
       end
     end
 
@@ -27,7 +27,7 @@ RSpec.describe Admin::DataFixes::InlineCSV do
 
       it "validates the CSV is formatted correctly" do
         parse
-        expect(inline_csv.errors).to be_added(:csv_string, "is malformed")
+        expect(inline_csv.errors).to be_added(:csv_string, "CSV is malformed")
       end
     end
 
@@ -43,7 +43,7 @@ RSpec.describe Admin::DataFixes::InlineCSV do
 
       it "validates the CSV has the correct headers" do
         parse
-        expect(inline_csv.errors).to be_added(:csv_string, "has invalid headers")
+        expect(inline_csv.errors).to be_added(:csv_string, "CSV has invalid headers")
       end
     end
 
@@ -60,7 +60,7 @@ RSpec.describe Admin::DataFixes::InlineCSV do
 
       it "validates the CSV has the correct headers" do
         parse
-        expect(inline_csv.errors).to be_added(:csv_string, "has invalid headers")
+        expect(inline_csv.errors).to be_added(:csv_string, "CSV has invalid headers")
       end
     end
 
@@ -77,7 +77,7 @@ RSpec.describe Admin::DataFixes::InlineCSV do
 
       it "validates the CSV has the correct headers" do
         parse
-        expect(inline_csv.errors).to be_added(:csv_string, "has invalid headers")
+        expect(inline_csv.errors).to be_added(:csv_string, "CSV has invalid headers")
       end
     end
 
@@ -92,19 +92,22 @@ RSpec.describe Admin::DataFixes::InlineCSV do
 
       it { is_expected.to be_truthy }
 
-      it "returns an array of structured row data" do
-        parsed_data = parse
-        expect(parsed_data.first).to have_attributes(
-          object_type: "something",
-          object_id: "1",
-          action: "create",
-          attributes: "attribute1,value1,attribute2,value2"
-        )
-        expect(parsed_data.second).to have_attributes(
-          object_type: "another_thing",
-          object_id: "2",
-          action: "destroy",
-          attributes: ""
+      it "returns an array of hashes containing data changes" do
+        expect(parse).to eq(
+          [
+            {
+              "object_type" => "something",
+              "object_id" => "1",
+              "action" => "create",
+              "attributes" => "attribute1,value1,attribute2,value2"
+            },
+            {
+              "object_type" => "another_thing",
+              "object_id" => "2",
+              "action" => "destroy",
+              "attributes" => ""
+            }
+          ]
         )
       end
     end
