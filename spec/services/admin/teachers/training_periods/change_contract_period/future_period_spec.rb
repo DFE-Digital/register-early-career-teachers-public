@@ -211,7 +211,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::FuturePer
         expect {
           service_call
         }.to raise_error(
-          described_class::ActiveLeadProviderNotFoundError,
+          described_class::FrameworkAgreementNotFoundError,
           "No lead provider framework agreement found for #{current_framework_agreement.lead_provider.name} in contract period #{target_contract_period.year}"
         )
       end

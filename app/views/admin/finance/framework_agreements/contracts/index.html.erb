@@ -1,0 +1,52 @@
+<% page_data(title: "Contracts", breadcrumbs: @breadcrumbs) %>
+
+<p class="govuk-body">
+  Contracts for <%= @framework_agreement.lead_provider_name %> in the <%= @framework_agreement.contract_period_year %> contract period.
+</p>
+
+<% if @contracts.none? %>
+  <p class="govuk-body">No contracts found</p>
+<% else %>
+  <%= govuk_table do |table| %>
+    <% table.with_head do |head| %>
+      <% head.with_row do |row| %>
+        <% row.with_cell(text: "Contract type") %>
+        <% row.with_cell(text: "Created") %>
+        <% row.with_cell(text: "Statement period") %>
+        <% row.with_cell(text: "") if @framework_agreement.editable? %>
+      <% end %>
+    <% end %>
+    <% table.with_body do |body| %>
+      <% @contracts.each do |contract| %>
+        <% body.with_row do |row| %>
+          <% row.with_cell do %>
+            <%= govuk_link_to(
+                  contract.contract_type.humanize.upcase,
+                  admin_contract_period_framework_agreement_contract_path(@framework_agreement.contract_period, @framework_agreement, contract),
+                  visually_hidden_suffix: "contract for #{@framework_agreement.lead_provider_name} created #{contract.created_at.to_date.to_fs(:govuk)}"
+                ) %>
+          <% end %>
+          <% row.with_cell(text: contract.created_at.to_date.to_fs(:govuk)) %>
+          <% row.with_cell(text: contract.statement_range_description) %>
+          <% if @framework_agreement.editable? %>
+            <% row.with_cell do %>
+              <%= govuk_button_to "Delete",
+                    delete_admin_contract_period_framework_agreement_contract_path(@framework_agreement.contract_period, @framework_agreement, contract),
+                    method: :get,
+                    secondary: true,
+                    disabled: contract.statements.any?,
+                    visually_hidden_suffix: contract.contract_type.humanize.upcase,
+                    class: "govuk-!-margin-bottom-0" %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<% if @framework_agreement.editable? %>
+  <div class="govuk-!-text-align-right">
+    <%= govuk_button_link_to "Add contract", new_admin_contract_period_framework_agreement_contract_path(@framework_agreement.contract_period, @framework_agreement) %>
+  </div>
+<% end %>

@@ -5,7 +5,7 @@ module Admin
         class FuturePeriod
           class UnsupportedTrainingPeriodError < StandardError; end
           class ScheduleNotFoundError < StandardError; end
-          class ActiveLeadProviderNotFoundError < StandardError; end
+          class FrameworkAgreementNotFoundError < StandardError; end
 
           attr_reader :training_period, :contract_period, :school_partnership, :author
 
@@ -28,7 +28,7 @@ module Admin
             end
 
             if training_period.only_expression_of_interest? && equivalent_framework_agreement.blank?
-              raise ActiveLeadProviderNotFoundError,
+              raise FrameworkAgreementNotFoundError,
                     "No lead provider framework agreement found for #{training_period.expression_of_interest_lead_provider.name} in contract period #{contract_period.year}"
             end
 
