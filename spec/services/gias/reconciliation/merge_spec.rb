@@ -17,23 +17,6 @@ RSpec.describe GIAS::Reconciliation::Merge do
     )
   end
 
-  let(:mentor_at_two_schools_teacher) { FactoryBot.create(:teacher) }
-  let!(:overlapping_mentor_at_school_period_1) do
-    FactoryBot.create(
-      :mentor_at_school_period,
-      teacher: mentor_at_two_schools_teacher,
-      school: predecessor_school,
-      started_on: 1.year.ago
-    )
-  end
-  let!(:overlapping_mentor_at_school_period_2) do
-    FactoryBot.create(
-      :mentor_at_school_period,
-      teacher: mentor_at_two_schools_teacher,
-      school: successor_school,
-      started_on: 6.months.ago
-    )
-  end
   let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school: predecessor_school) }
   let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school: predecessor_school) }
 
@@ -41,7 +24,6 @@ RSpec.describe GIAS::Reconciliation::Merge do
 
   let(:school_metadata_handler) { instance_spy(Metadata::Handlers::School) }
   let(:teacher_metadata_handler) { instance_spy(Metadata::Handlers::Teacher) }
-  let(:teachers) { [mentor_at_two_schools_teacher, mentor_at_school_period.teacher, ect_at_school_period.teacher] }
 
   describe "#merge!" do
     subject(:merge!) { service.merge! }
@@ -162,46 +144,109 @@ RSpec.describe GIAS::Reconciliation::Merge do
 
       it { expect(merge!).to be_truthy }
 
-      it "finds overlapping `MentorAtSchoolPeriod` records for each teacher mentoring at the school" do
-        merge!
+      context "when the successor school does not have a school record" do
+        let(:successor_gias_school) { FactoryBot.create(:gias_school, :open) }
 
-        expect(GIAS::Reconciliation::MentorAtSchoolPeriods::Overlapping)
-          .to have_received(:find)
-          .with(
+        it "creates a school record for the successor GIAS school" do
+          merge!
+
+          expect(successor_gias_school.reload.school).to be_present
+        end
+
+        it "records a school opened event for the successor GIAS school" do
+          allow(Events::Record).to receive(:record_school_opened_event!)
+
+          merge!
+
+          expect(Events::Record)
+            .to have_received(:record_school_opened_event!)
+            .with(
+              school: successor_gias_school.reload.school,
+              gias_school: successor_gias_school,
+              happened_at: gias_school.closed_on,
+              author: an_instance_of(Events::SystemAuthor)
+            )
+        end
+
+        it "does not merge any records because there are none at the successor school" do
+          expect(GIAS::Reconciliation::MentorAtSchoolPeriods::Merge).not_to receive(:call)
+
+          merge!
+        end
+
+        it "transfers all `MentorAtSchoolPeriod` records" do
+          merge!
+
+          expect(GIAS::Reconciliation::MentorAtSchoolPeriods::Transfer)
+            .to have_received(:call)
+            .with(
+              mentor_at_school_period:,
+              predecessor_school:,
+              successor_school:
+            )
+        end
+      end
+
+      context "when the successor school already has a school record" do
+        let(:mentor_at_two_schools_teacher) { FactoryBot.create(:teacher) }
+        let!(:overlapping_mentor_at_school_period_1) do
+          FactoryBot.create(
+            :mentor_at_school_period,
             teacher: mentor_at_two_schools_teacher,
-            schools: [predecessor_school, successor_school]
+            school: predecessor_school,
+            started_on: 1.year.ago
           )
-
-        expect(GIAS::Reconciliation::MentorAtSchoolPeriods::Overlapping)
-          .to have_received(:find)
-          .with(
-            teacher: mentor_at_school_period.teacher,
-            schools: [predecessor_school, successor_school]
+        end
+        let!(:overlapping_mentor_at_school_period_2) do
+          FactoryBot.create(
+            :mentor_at_school_period,
+            teacher: mentor_at_two_schools_teacher,
+            school: successor_school,
+            started_on: 6.months.ago
           )
-      end
+        end
 
-      it "merges overlapping `MentorAtSchoolPeriod` records" do
-        merge!
+        it "finds overlapping `MentorAtSchoolPeriod` records for each teacher mentoring at the school" do
+          merge!
 
-        expect(GIAS::Reconciliation::MentorAtSchoolPeriods::Merge)
-          .to have_received(:call)
-          .with(
-            periods: [overlapping_mentor_at_school_period_1, overlapping_mentor_at_school_period_2],
-            predecessor_school:,
-            successor_school:
-          )
-      end
+          expect(GIAS::Reconciliation::MentorAtSchoolPeriods::Overlapping)
+            .to have_received(:find)
+            .with(
+              teacher: mentor_at_two_schools_teacher,
+              schools: [predecessor_school, successor_school]
+            )
 
-      it "transfers remaining `MentorAtSchoolPeriod` records" do
-        merge!
+          expect(GIAS::Reconciliation::MentorAtSchoolPeriods::Overlapping)
+            .to have_received(:find)
+            .with(
+              teacher: mentor_at_school_period.teacher,
+              schools: [predecessor_school, successor_school]
+            )
+        end
 
-        expect(GIAS::Reconciliation::MentorAtSchoolPeriods::Transfer)
-          .to have_received(:call)
-          .with(
-            mentor_at_school_period:,
-            predecessor_school:,
-            successor_school:
-          )
+        it "merges overlapping `MentorAtSchoolPeriod` records" do
+          merge!
+
+          expect(GIAS::Reconciliation::MentorAtSchoolPeriods::Merge)
+            .to have_received(:call)
+            .with(
+              periods: [overlapping_mentor_at_school_period_1, overlapping_mentor_at_school_period_2],
+              predecessor_school:,
+              successor_school:
+            )
+        end
+
+        it "transfers remaining `MentorAtSchoolPeriod` records" do
+          merge!
+
+          expect(GIAS::Reconciliation::MentorAtSchoolPeriods::Transfer)
+            .to have_received(:call)
+            .with(
+              mentor_at_school_period:,
+              predecessor_school:,
+              successor_school:
+            )
+        end
       end
 
       it "transfers remaining `ECTAtSchoolPeriod` records" do
@@ -242,16 +287,19 @@ RSpec.describe GIAS::Reconciliation::Merge do
 
         merge!
 
-        teachers.each do |teacher|
-          expect(Metadata::Handlers::Teacher)
-            .to have_received(:new)
-            .with(teacher)
-            .once
-        end
+        expect(Metadata::Handlers::Teacher)
+          .to have_received(:new)
+          .with(mentor_at_school_period.teacher)
+          .once
+
+        expect(Metadata::Handlers::Teacher)
+          .to have_received(:new)
+          .with(ect_at_school_period.teacher)
+          .once
 
         expect(teacher_metadata_handler)
           .to have_received(:refresh_metadata!)
-          .exactly(teachers.count).times
+          .twice
       end
 
       context "when called with `refresh_metadata: false`" do
@@ -314,31 +362,6 @@ RSpec.describe GIAS::Reconciliation::Merge do
             happened_at: gias_school.closed_on,
             author: an_instance_of(Events::SystemAuthor)
           )
-      end
-
-      context "when the successor school does not have a school record" do
-        let(:successor_gias_school) { FactoryBot.create(:gias_school, :open) }
-
-        it "creates a school record for the successor GIAS school" do
-          expect { merge! }.to change(School, :count).by(1)
-
-          expect(successor_gias_school.reload.school).to be_present
-        end
-
-        it "records a school opened event for the successor GIAS school" do
-          allow(Events::Record).to receive(:record_school_opened_event!)
-
-          merge!
-
-          expect(Events::Record)
-            .to have_received(:record_school_opened_event!)
-            .with(
-              school: successor_gias_school.reload.school,
-              gias_school: successor_gias_school,
-              happened_at: gias_school.closed_on,
-              author: an_instance_of(Events::SystemAuthor)
-            )
-        end
       end
     end
   end

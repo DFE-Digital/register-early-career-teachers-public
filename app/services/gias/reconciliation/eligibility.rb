@@ -49,10 +49,6 @@ module GIAS::Reconciliation
       closed_on <= Date.current
     end
 
-    def school_merged_event_recorded?
-      Event.where(school:, event_type: :school_merged).exists?
-    end
-
     def school_closed_event_recorded?
       Event.where(school:, event_type: :school_closed).exists?
     end

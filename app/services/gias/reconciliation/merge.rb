@@ -34,10 +34,10 @@ module GIAS::Reconciliation
             ECTAtSchoolPeriods::Transfer.call(ect_at_school_period:, predecessor_school:, successor_school:)
           end
 
-          destroy_predecessor_school_events!
-          destroy_predecessor_school_partnerships!
           destroy_predecessor_school_metadata!
-          destroy_predecessor_school!
+          predecessor_school.events.each(&:destroy!)
+          predecessor_school.school_partnerships.each(&:destroy!)
+          predecessor_school.destroy!
 
           record_school_merged_event!
         end
@@ -71,21 +71,9 @@ module GIAS::Reconciliation
       )
     end
 
-    def destroy_predecessor_school_partnerships!
-      predecessor_school.school_partnerships.destroy_all
-    end
-
     def destroy_predecessor_school_metadata!
       Metadata::SchoolContractPeriod.where(school_id: predecessor_school.id).delete_all
       Metadata::SchoolLeadProviderContractPeriod.where(school_id: predecessor_school.id).delete_all
-    end
-
-    def destroy_predecessor_school_events!
-      predecessor_school.events.destroy_all
-    end
-
-    def destroy_predecessor_school!
-      predecessor_school.destroy!
     end
 
     def record_school_merged_event!
