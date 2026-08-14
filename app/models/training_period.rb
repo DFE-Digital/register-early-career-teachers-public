@@ -98,7 +98,7 @@ class TrainingPeriod < ApplicationRecord
   end
 
   # Callbacks
-  before_destroy :abort_destruction_when_billable_declarations_exist
+  before_destroy :destroy_non_billable_declarations
 
   # Scopes
   scope :for_ect, ->(ect_at_school_period_id) { where(ect_at_school_period_id:) }
@@ -199,11 +199,14 @@ class TrainingPeriod < ApplicationRecord
 
 private
 
-  def abort_destruction_when_billable_declarations_exist
-    return unless declarations.billable.exists?
+  def destroy_non_billable_declarations
+    if declarations.billable.exists?
+      errors.add(:base, "Cannot delete a training period with billable declarations")
+      throw(:abort)
+    end
 
-    errors.add(:base, "Cannot delete a training period with billable declarations")
-    throw(:abort)
+    declarations.non_billable.find_each(&:destroy!)
+    true
   end
 
   def only_one_at_school_period_present

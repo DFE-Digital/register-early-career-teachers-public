@@ -97,6 +97,7 @@ class Declaration < ApplicationRecord
   # Declaration can be both billable and refundable, paid in one month and clawed_back in another
   scope :billable, -> { where(payment_status: BILLABLE_PAYMENT_STATUSES) }
   scope :refundable, -> { where(clawback_status: REFUNDABLE_CLAWBACK_STATUSES) }
+  scope :non_billable, -> { where.not(payment_status: BILLABLE_PAYMENT_STATUSES) }
 
   touch -> { self },
         timestamp_attribute: :api_updated_at,

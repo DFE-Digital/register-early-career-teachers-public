@@ -211,12 +211,10 @@ describe ECTAtSchoolPeriods::Finish do
       context "when there is a training period that is set to finish before the date the ECT leaves the school" do
         let(:existing_finished_on) { 1.week.ago.to_date }
         let!(:training_period) do
-          FactoryBot.create(
-            :training_period,
-            ect_at_school_period:,
-            started_on:,
-            finished_on: existing_finished_on
-          )
+          FactoryBot.create(:training_period,
+                            ect_at_school_period:,
+                            started_on:,
+                            finished_on: existing_finished_on)
         end
         let(:finished_on) { 1.week.from_now.to_date }
 
@@ -229,12 +227,10 @@ describe ECTAtSchoolPeriods::Finish do
       context "when there is a training period that is set to finish after the date the ECT leaves the school" do
         let(:existing_finished_on) { 1.week.from_now.to_date }
         let!(:training_period) do
-          FactoryBot.create(
-            :training_period,
-            ect_at_school_period:,
-            started_on:,
-            finished_on: existing_finished_on
-          )
+          FactoryBot.create(:training_period,
+                            ect_at_school_period:,
+                            started_on:,
+                            finished_on: existing_finished_on)
         end
         let(:finished_on) { 1.week.ago.to_date }
 
@@ -247,11 +243,9 @@ describe ECTAtSchoolPeriods::Finish do
       context "when the training period has not started yet" do
         let(:training_start_date) { finished_on + 1.week }
         let!(:training_period) do
-          FactoryBot.create(
-            :training_period,
-            ect_at_school_period:,
-            started_on: training_start_date
-          )
+          FactoryBot.create(:training_period,
+                            ect_at_school_period:,
+                            started_on: training_start_date)
         end
 
         it "deletes the training period" do
@@ -266,6 +260,35 @@ describe ECTAtSchoolPeriods::Finish do
           expect(Events::Record).to have_received(:record_teacher_left_school_as_ect!).once.with(
             hash_including(author:, ect_at_school_period:, school:, teacher:, training_period: nil, happened_at: finished_on)
           )
+        end
+      end
+
+      context "when an unstarted training period has declarations" do
+        let!(:training_period) do
+          FactoryBot.create(:training_period,
+                            ect_at_school_period:,
+                            started_on: finished_on.next_day,
+                            finished_on: nil)
+        end
+
+        context "with a non-billable declaration" do
+          let!(:declaration) { FactoryBot.create(:declaration, :no_payment, training_period:) }
+
+          it "destroys the unstarted period and its declaration" do
+            subject.finish!
+
+            expect { training_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+            expect { declaration.reload }.to raise_error(ActiveRecord::RecordNotFound)
+          end
+        end
+
+        context "with a billable declaration" do
+          let!(:declaration) { FactoryBot.create(:declaration, :paid, training_period:) }
+
+          it "raises and does not destroy the training period" do
+            expect { subject.finish! }.to raise_error(ActiveRecord::RecordNotDestroyed)
+            expect { training_period.reload }.not_to raise_error
+          end
         end
       end
     end
