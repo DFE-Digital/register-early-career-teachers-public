@@ -1,7 +1,8 @@
 class GIASImportJob < ApplicationJob
   queue_as :default
 
+  # TODO: Enable automatic reconciliation
   def perform
-    GIAS::Importer.new(auto_create_school: false).fetch
+    GIAS::Importer.new.fetch
   end
 end

@@ -9,13 +9,52 @@ module GIAS
 
     # file_source - :gias to fetch files from GIAS API
     #               :local to fetch supplemental files from filesystem (childrens centres)
-    def initialize(auto_create_school:, file_source: :gias)
+    def initialize(file_source: :gias)
       @file_source = file_source
-      @auto_create_school = auto_create_school
+      @urns_for_reconciliation = []
     end
 
     def fetch
-      import_only? ? fetch_and_import_only : fetch_and_update
+      first_import? ? fetch_and_import_only : fetch_and_update
+
+      urns_for_reconciliation.compact.uniq
+    end
+
+  private
+
+    attr_reader :gias_school, :school_row, :file_source
+    attr_accessor :urns_for_reconciliation
+
+    delegate :attributes, :eligible_to_import?, :urn, to: :school_row
+
+    # We need to import schools first in an empty DB.  This will skip schools closed before 2020
+    # It's more efficient to skip metadata during import and refresh it all in background jobs
+    # at the end when creating a lot of schools.
+
+    def fetch_and_import_only
+      DeclarativeUpdates.skip(:metadata) do
+        import_schools
+        import_school_links
+      end
+
+      Metadata::Handlers::School.refresh_all_metadata!(async: true)
+    end
+
+    def fetch_and_update
+      import_schools
+      import_school_links
+    end
+
+    def first_import?
+      @first_import ||= GIAS::School.count.zero?
+    end
+
+    def import_schools
+      foreach_school_row { |row| parse_school_row(row) }
+    end
+
+    def import_school_links
+      foreach_school_link_row { |row| parse_school_link_row(row) }
     end
 
     def foreach_school_row(&block)
@@ -24,23 +63,6 @@ module GIAS
 
     def foreach_school_link_row(&block)
       CSV.foreach(school_links_file_path, headers: true, encoding: ENCODING, &block)
-    end
-
-    def number_of_schools_to_import
-      @number_of_schools_to_import ||= File.foreach(schools_file_path, encoding: ENCODING).count
-    end
-
-    def number_of_school_links_to_import
-      @number_of_school_links_to_import ||= File.foreach(school_links_file_path, encoding: ENCODING).count
-    end
-
-    def parse_school_row(row)
-      @school_row = GIAS::SchoolRow.new(row)
-      if eligible_to_import?
-        import_only? ? import_school! : update_school!
-      end
-
-      true
     end
 
     def parse_school_link_row(row)
@@ -54,56 +76,69 @@ module GIAS
         link = gias_school.gias_school_links
                           .create_with(link_date:, link_type:, link_urn:)
                           .find_or_create_by!(link_urn:)
+        urns_for_reconciliation << link.urn if needs_reconciliation?(link, link_type)
+
         link.update!(link_type:) if link.link_type != link_type
       end
 
       true
     end
 
-  private
+    def needs_reconciliation?(link, imported_link_type)
+      link.link_type != imported_link_type || link.previously_new_record? || link.link_date == Date.current
+    end
 
-    attr_reader :gias_school, :school_row, :file_source, :auto_create_school
+    def parse_school_row(row)
+      @school_row = GIAS::SchoolRow.new(row)
 
-    delegate :create_school!, :school, to: :gias_school
-    delegate :attributes, :eligible_to_import?, :urn, to: :school_row
-
-    # import only doesn't try to work out what has changed and does not include "closed" schools
-    # we need to import schools first in an empty DB
-    def fetch_and_import_only
-      # It's more efficient to skip metadata during import and refresh it
-      # all in background jobs at the end when creating a lot of schools.
-      DeclarativeUpdates.skip(:metadata) do
-        import_schools
-        import_school_links
+      if eligible_to_import?
+        first_import? ? import_school! : update_school!
       end
 
-      Metadata::Handlers::School.refresh_all_metadata!(async: true)
-    end
-
-    def fetch_and_update
-      import_school_links
-      import_schools
-    end
-
-    def gias_files
-      @gias_files ||= GIAS::APIClient.new.get_files
-    end
-
-    def import_only?
-      @import_only ||= GIAS::School.count.zero?
+      true
     end
 
     def import_school!
       @gias_school = GIAS::School.create_with(attributes).find_or_create_by!(urn:)
-      create_school! if auto_create_school && school.blank?
+      urns_for_reconciliation << urn if @gias_school.previously_new_record?
     end
 
-    def import_schools
-      foreach_school_row { |row| parse_school_row(row) }
+    def update_school!
+      @gias_school = GIAS::School.find_by(urn:)
+      gias_school ? sync_changes! : import_school!
     end
 
-    def import_school_links
-      foreach_school_link_row { |row| parse_school_link_row(row) }
+    def sync_changes!
+      gias_school.assign_attributes(attributes)
+      return unless gias_school.changed?
+
+      modifications = gias_school.changes
+      eligible_change = modifications["eligible"]
+
+      GIAS::School.transaction do
+        gias_school.save!
+        record_eligibility_change_event!(modifications) if eligible_change
+      end
+
+      urns_for_reconciliation << gias_school.urn
+    end
+
+    def record_eligibility_change_event!(modifications)
+      eligibility = modifications.fetch("eligible").last
+      school = gias_school.school
+      school_name = school&.name || gias_school.name
+
+      Events::Record.record_school_eligibility_changed_event!(
+        author: Events::SystemAuthor.new,
+        school:,
+        school_name:,
+        eligibility:,
+        modifications:
+      )
+    end
+
+    def gias_files
+      @gias_files ||= GIAS::APIClient.new.get_files
     end
 
     def schools_file_path
@@ -120,41 +155,6 @@ module GIAS
       else
         Rails.application.config.gias_supplemental_links_path
       end
-    end
-
-    def sync_changes!
-      gias_school.assign_attributes(attributes)
-      return unless gias_school.changed?
-
-      modifications = gias_school.changes
-      eligible_change = modifications["eligible"]
-
-      GIAS::School.transaction do
-        gias_school.save!
-        record_eligibility_change_event!(modifications) if eligible_change
-        # TODO: Handle gias_school.changes such as merges etc.
-        #       Simple academisations type close/reopen will be just changing the :urn on the counterpart
-        #       but links that are mergers and splits will need further thought
-      end
-    end
-
-    def update_school!
-      @gias_school = GIAS::School.find_by(urn:)
-      gias_school ? sync_changes! : import_school!
-    end
-
-    def record_eligibility_change_event!(modifications)
-      eligibility = modifications.fetch("eligible").last
-      school = gias_school.school
-      school_name = school&.name || gias_school.name
-
-      Events::Record.record_school_eligibility_changed_event!(
-        author: Events::SystemAuthor.new,
-        school:,
-        school_name:,
-        eligibility:,
-        modifications:
-      )
     end
   end
 end

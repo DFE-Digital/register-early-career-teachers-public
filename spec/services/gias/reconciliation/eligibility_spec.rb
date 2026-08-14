@@ -20,6 +20,14 @@ RSpec.describe GIAS::Reconciliation::Eligibility do
       it { is_expected.to be false }
     end
 
+    context "when the school is a predecessor" do
+      before do
+        FactoryBot.create(:gias_school_link, :predecessor, to_gias_school: gias_school)
+      end
+
+      it { is_expected.to be false }
+    end
+
     context "when a school closure event has already been recorded" do
       let(:gias_school) { FactoryBot.create(:gias_school, :with_school, status: :closed, closed_on:) }
 
@@ -79,6 +87,22 @@ RSpec.describe GIAS::Reconciliation::Eligibility do
     context "when the school has a successor" do
       before do
         FactoryBot.create(:gias_school_link, :successor, from_gias_school: gias_school)
+      end
+
+      it { is_expected.to be false }
+    end
+
+    context "when the school is a successor" do
+      before do
+        FactoryBot.create(:gias_school_link, :successor, to_gias_school: gias_school)
+      end
+
+      it { is_expected.to be false }
+    end
+
+    context "when the school is a predecessor" do
+      before do
+        FactoryBot.create(:gias_school_link, :predecessor, to_gias_school: gias_school)
       end
 
       it { is_expected.to be false }
@@ -215,12 +239,6 @@ RSpec.describe GIAS::Reconciliation::Eligibility do
 
       context "when the successor is not open" do
         let(:successor) { FactoryBot.create(:gias_school, status: :proposed_to_open) }
-
-        it { is_expected.to be false }
-      end
-
-      context "when the successor has no associated school" do
-        let(:successor) { FactoryBot.create(:gias_school, status: :open) }
 
         it { is_expected.to be false }
       end

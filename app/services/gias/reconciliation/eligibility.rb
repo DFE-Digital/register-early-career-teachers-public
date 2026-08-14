@@ -9,14 +9,17 @@ module GIAS::Reconciliation
         closed_on_or_before_today? &&
         school.present? &&
         !school_closed_event_recorded? &&
-        successors.empty?
+        successors.empty? &&
+        not_a_predecessor?
     end
 
     def can_be_opened?
       open_status? &&
         school.blank? &&
-        predecessors.empty? &&
-        successors.empty?
+        no_predecessors? &&
+        not_a_successor? &&
+        successors.empty? &&
+        not_a_predecessor?
     end
 
     def can_be_replaced?
@@ -34,8 +37,7 @@ module GIAS::Reconciliation
         school.present? &&
         school_being_merged_or_amalgamated? &&
         !school_merged_event_recorded? &&
-        has_one_open_successor? &&
-        successor.school.present?
+        has_one_open_successor?
     end
 
   private
@@ -78,6 +80,18 @@ module GIAS::Reconciliation
       successors.first
     end
 
-    delegate :school, :predecessors, :closed_on, :closed_status?, :open_status?, to: :gias_school
+    def no_predecessors?
+      !gias_school.predecessors.exists?
+    end
+
+    def not_a_successor?
+      !GIAS::SchoolLink.where(to_gias_school: gias_school, link_type: GIAS::SchoolLink::SUCCESSOR_LINK_TYPES).exists?
+    end
+
+    def not_a_predecessor?
+      !GIAS::SchoolLink.where(to_gias_school: gias_school, link_type: GIAS::SchoolLink::PREDECESSOR_LINK_TYPES).exists?
+    end
+
+    delegate :school, :closed_on, :closed_status?, :open_status?, to: :gias_school
   end
 end

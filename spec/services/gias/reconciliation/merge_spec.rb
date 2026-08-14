@@ -160,6 +160,31 @@ RSpec.describe GIAS::Reconciliation::Merge do
             author: an_instance_of(Events::SystemAuthor)
           )
       end
+
+      context "when the successor school does not have a school record" do
+        let(:successor_gias_school) { FactoryBot.create(:gias_school, :open) }
+
+        it "creates a school record for the successor GIAS school" do
+          expect { merge! }.to change(School, :count).by(1)
+
+          expect(successor_gias_school.reload.school).to be_present
+        end
+
+        it "records a school opened event for the successor GIAS school" do
+          allow(Events::Record).to receive(:record_school_opened_event!)
+
+          merge!
+
+          expect(Events::Record)
+            .to have_received(:record_school_opened_event!)
+            .with(
+              school: successor_gias_school.reload.school,
+              gias_school: successor_gias_school,
+              happened_at: gias_school.closed_on,
+              author: an_instance_of(Events::SystemAuthor)
+            )
+        end
+      end
     end
   end
 end
