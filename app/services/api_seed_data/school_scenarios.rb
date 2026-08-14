@@ -61,7 +61,7 @@ module APISeedData
 
     def schools_with_participants_with_lead_provider_as_expression_of_interest(count:)
       lead_providers.find_each do |lead_provider|
-        # Find a contract period that is not frozen and has an active lead provider (randomly chosen)
+        # Find a contract period that is not frozen and has a framework agreement (randomly chosen)
         framework_agreement = framework_agreements
           .where(lead_provider:)
           .where(contract_periods: { payments_frozen_at: nil })
@@ -115,7 +115,7 @@ module APISeedData
       contract_period_2025 = find_or_create_contract_period(2025)
 
       lead_providers.find_each do |lead_provider|
-        # Get or create active lead providers for both contract periods
+        # Get or create framework agreements for both contract periods
         framework_agreement_2024 = find_or_create_framework_agreement(lead_provider:, contract_period: contract_period_2024)
         framework_agreement_2025 = find_or_create_framework_agreement(lead_provider:, contract_period: contract_period_2025)
 

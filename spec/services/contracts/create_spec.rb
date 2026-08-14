@@ -46,7 +46,7 @@ describe Contracts::Create do
   before { allow(Events::Record).to receive(:record_contract_created_event!) }
 
   context "when successful" do
-    it "creates and returns a contract for the active lead provider, and records the created event" do
+    it "creates and returns a contract for the framework agreement, and records the created event" do
       contract = nil
       expect { contract = service.call }.to change(Contract, :count).by(1)
 
@@ -59,7 +59,7 @@ describe Contracts::Create do
     end
   end
 
-  context "when the active lead provider band is mismatched" do
+  context "when the framework agreement band is mismatched" do
     let(:alp_band) { FactoryBot.create(:framework_agreement_band) }
 
     it "does not create a contract or event" do

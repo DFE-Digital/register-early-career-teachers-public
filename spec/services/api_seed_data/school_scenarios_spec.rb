@@ -14,7 +14,7 @@ RSpec.describe APISeedData::SchoolScenarios do
     allow(Logger).to receive(:new).with($stdout) { logger }
     allow(Rails).to receive(:env) { environment.inquiry }
 
-    # Create lead providers with active lead providers for both contract periods
+    # Create lead providers with framework agreements for both contract periods
     FactoryBot.create_list(:lead_provider, 2).each do |lead_provider|
       FactoryBot.create(:framework_agreement, lead_provider:, contract_period: contract_period_2024)
       FactoryBot.create(:framework_agreement, lead_provider:, contract_period: contract_period_2025)

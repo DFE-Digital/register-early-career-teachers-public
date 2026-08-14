@@ -92,7 +92,7 @@ module Admin::Finance::FrameworkAgreements
       end
     end
 
-    # Restrict the contract to this active lead provider's own contracts, so a
+    # Restrict the contract to this framework agreement's own contracts, so a
     # forged contract_id is nilled out and rejected by the presence validation
     # rather than attaching the statement to a different provider.
     def statement_params

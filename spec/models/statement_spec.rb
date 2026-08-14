@@ -34,19 +34,19 @@ describe Statement do
       it { is_expected.not_to validate_comparison_of(:deadline_date) }
     end
 
-    describe "uniqueness of month and year for the same active lead provider" do
+    describe "uniqueness of month and year for the same framework agreement" do
       let(:framework_agreement) { contract.framework_agreement }
       let(:contract) { FactoryBot.create(:contract) }
 
       before { FactoryBot.create(:statement, framework_agreement:, month: 5, year: 2024) }
 
-      it "is not valid to create another statement with the same month and year for the same active lead provider" do
+      it "is not valid to create another statement with the same month and year for the same framework agreement" do
         statement = described_class.new(contract:, month: 5, year: 2024)
         expect(statement).not_to be_valid
         expect(statement.errors[:base]).to include("Statement with the same month and year already exists for this framework agreement")
       end
 
-      it "is valid to create another statement with the same month and year for a different active lead provider" do
+      it "is valid to create another statement with the same month and year for a different framework agreement" do
         other_framework_agreement = FactoryBot.create(:framework_agreement)
         other_contract = FactoryBot.create(:contract, framework_agreement: other_framework_agreement)
         statement = FactoryBot.build(:statement, contract: other_contract, month: 5, year: 2024, deadline_date: Date.new(2024, 5, 1).prev_day, payment_date: Date.new(2024, 5, 25))

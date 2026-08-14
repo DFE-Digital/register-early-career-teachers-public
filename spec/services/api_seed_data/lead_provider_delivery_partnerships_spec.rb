@@ -60,7 +60,7 @@ RSpec.describe APISeedData::LeadProviderDeliveryPartnerships do
       end
     end
 
-    context "when there are multiple active lead providers" do
+    context "when there are multiple framework agreements" do
       let!(:another_framework_agreement) { FactoryBot.create(:framework_agreement, contract_period:) }
 
       it "creates shared delivery partners between lead providers" do

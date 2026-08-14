@@ -50,7 +50,7 @@ module APISeedData
 
       framework_agreements.find_each do |framework_agreement|
         # Withdrawn training period at ongoing school period, with ongoing induction period
-        # Where the school has a partnership with another active lead provider in the same year
+        # Where the school has a partnership with another framework agreement in the same year
         year = framework_agreement.contract_period_year
         schools = school_partnerships(excluding_framework_agreement: framework_agreement, year:).map(&:school)
         school_partnership = school_partnerships(framework_agreement:, school: schools).sample

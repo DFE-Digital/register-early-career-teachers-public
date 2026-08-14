@@ -104,7 +104,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::Available
         )
       end
 
-      it "only returns contract periods with an equivalent active lead provider" do
+      it "only returns contract periods with an equivalent framework agreement" do
         expect(available_contract_periods.contract_periods).to contain_exactly(target_contract_period)
       end
     end

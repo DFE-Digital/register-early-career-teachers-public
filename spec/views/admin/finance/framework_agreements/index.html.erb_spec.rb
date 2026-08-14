@@ -72,7 +72,7 @@ RSpec.describe "admin/finance/framework_agreements/index.html.erb" do
     end
   end
 
-  context "when there are no active lead providers" do
+  context "when there are no framework agreements" do
     let(:framework_agreements) { [] }
 
     it "displays an empty state message" do

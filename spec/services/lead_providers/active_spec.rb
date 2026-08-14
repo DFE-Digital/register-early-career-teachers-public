@@ -15,7 +15,7 @@ describe LeadProviders::Active do
     let(:lead_provider) { FactoryBot.create(:lead_provider) }
     let(:contract_period) { FactoryBot.create(:contract_period) }
 
-    context "when an framework_agreement record exists for the contract period" do
+    context "when a framework_agreement record exists for the contract period" do
       let!(:framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:, contract_period:) }
 
       it { is_expected.to be(true) }
@@ -33,7 +33,7 @@ describe LeadProviders::Active do
     let(:contract_period) { FactoryBot.create(:contract_period) }
     let(:another_contract_period) { FactoryBot.create(:contract_period) }
 
-    context "when an framework_agreement record exists for the contract period" do
+    context "when a framework_agreement record exists for the contract period" do
       let!(:framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:, contract_period:) }
       let!(:framework_agreement_in_another_contact_period) { FactoryBot.create(:framework_agreement, lead_provider:, contract_period: another_contract_period) }
 

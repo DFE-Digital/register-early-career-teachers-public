@@ -10,7 +10,7 @@ RSpec.describe "Changing to provider-led training before the ECTs reported leavi
     and_there_is_an_ect_at_the_school
     and_the_ect_is_doing_school_led_training
     and_there_is_another_school
-    and_there_is_an_framework_agreement
+    and_there_is_a_framework_agreement
   end
 
   context "when changing to provider-led training " \
@@ -180,7 +180,7 @@ RSpec.describe "Changing to provider-led training before the ECTs reported leavi
 
 private
 
-  def and_there_is_an_framework_agreement
+  def and_there_is_a_framework_agreement
     @framework_agreement = FactoryBot.create(
       :framework_agreement,
       contract_period: @contract_period

@@ -1,4 +1,4 @@
-# Builds an active lead provider for a contract period and, once saved, seeds it
+# Builds a framework agreement for a contract period and, once saved, seeds it
 # from the previous contract period (see SeedFromPrevious). Returns the active
 # lead provider so callers can inspect validation errors when it isn't persisted;
 # SeedFromPrevious errors are allowed to propagate.

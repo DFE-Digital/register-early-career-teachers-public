@@ -168,7 +168,7 @@ RSpec.describe FrameworkAgreements::SeedFromPrevious do
     end
   end
 
-  context "when the active lead provider already has data" do
+  context "when the framework agreement already has data" do
     before do
       create_subordinate_records(teach_first_activation_current)
       FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement: teach_first_activation_next)

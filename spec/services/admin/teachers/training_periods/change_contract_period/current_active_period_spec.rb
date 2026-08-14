@@ -93,7 +93,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::CurrentAc
       )
     end
 
-    it "ends the current period and creates a replacement with the equivalent active lead provider" do
+    it "ends the current period and creates a replacement with the equivalent framework agreement" do
       replacement_training_period = nil
 
       expect {

@@ -130,18 +130,18 @@ describe FrameworkAgreement do
                           framework_agreement: partnered_alp)
       end
 
-      it "returns active lead providers without existing partnerships for the delivery partner and contract period" do
+      it "returns framework agreements without existing partnerships for the delivery partner and contract period" do
         result = described_class.without_existing_partnership_for(delivery_partner, contract_period)
         expect(result).to include(available_alp)
         expect(result).not_to include(partnered_alp)
       end
 
-      it "includes active lead providers from different contract periods even if they have partnerships" do
+      it "includes framework agreements from different contract periods even if they have partnerships" do
         result = described_class.without_existing_partnership_for(delivery_partner, contract_period)
         expect(result).to include(different_period_alp)
       end
 
-      it "includes active lead providers that have partnerships with other delivery partners" do
+      it "includes framework agreements that have partnerships with other delivery partners" do
         other_delivery_partner = FactoryBot.create(:delivery_partner)
         other_partnered_alp = FactoryBot.create(:framework_agreement, contract_period:)
         FactoryBot.create(:lead_provider_delivery_partnership,
@@ -158,7 +158,7 @@ describe FrameworkAgreement do
       let!(:alpha_alp) { FactoryBot.create(:framework_agreement, lead_provider: FactoryBot.create(:lead_provider, name: "Alpha Provider")) }
       let!(:beta_alp) { FactoryBot.create(:framework_agreement, lead_provider: FactoryBot.create(:lead_provider, name: "Beta Provider")) }
 
-      it "returns active lead providers ordered by lead provider name" do
+      it "returns framework agreements ordered by lead provider name" do
         result = described_class.with_lead_provider_ordered_by_name
         lead_provider_names = result.map { |alp| alp.lead_provider.name }
         expect(lead_provider_names).to eq(lead_provider_names.sort)

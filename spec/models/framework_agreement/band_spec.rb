@@ -288,7 +288,7 @@ RSpec.describe FrameworkAgreement::Band, type: :model do
     let!(:band_b) { FactoryBot.create(:framework_agreement_band, framework_agreement:) }
     let!(:band_c) { FactoryBot.create(:framework_agreement_band, framework_agreement:) }
 
-    context "when the active lead provider does not have any contracts" do
+    context "when the framework agreement does not have any contracts" do
       context "and the contract period has not started" do
         context "when the band is the last in the allocation order" do
           it "returns true" do
@@ -315,7 +315,7 @@ RSpec.describe FrameworkAgreement::Band, type: :model do
       end
     end
 
-    context "when the active lead provider has a contract" do
+    context "when the framework agreement has a contract" do
       before do
         FactoryBot.create(:contract, framework_agreement:)
       end

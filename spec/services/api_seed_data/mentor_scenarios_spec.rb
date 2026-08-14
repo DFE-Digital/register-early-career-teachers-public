@@ -42,10 +42,10 @@ RSpec.describe APISeedData::MentorScenarios do
     it "creates a mentor with 3 ECTs across 2 schools" do
       expect {
         instance.send(:mentor_with_three_ects_2025)
-      }.to change(Teacher, :count).by_at_least(4) # 1 mentor + 3 ECTs per active lead provider
+      }.to change(Teacher, :count).by_at_least(4) # 1 mentor + 3 ECTs per framework agreement
     end
 
-    it "creates 1 mentor per active lead provider for contract period 2025" do
+    it "creates 1 mentor per framework agreement for contract period 2025" do
       instance.send(:mentor_with_three_ects_2025)
 
       mentors_count = Teacher
@@ -57,7 +57,7 @@ RSpec.describe APISeedData::MentorScenarios do
       expect(mentors_count).to be >= 1
     end
 
-    it "creates 3 ECTs per active lead provider for contract period 2025" do
+    it "creates 3 ECTs per framework agreement for contract period 2025" do
       instance.send(:mentor_with_three_ects_2025)
 
       ects_count = Teacher
@@ -102,10 +102,10 @@ RSpec.describe APISeedData::MentorScenarios do
     it "creates a mentor with 2 ECTs across 2 schools" do
       expect {
         instance.send(:mentor_with_two_ects_2024)
-      }.to change(Teacher, :count).by_at_least(3) # 1 mentor + 2 ECTs per active lead provider
+      }.to change(Teacher, :count).by_at_least(3) # 1 mentor + 2 ECTs per framework agreement
     end
 
-    it "creates 1 mentor per active lead provider for contract period 2024" do
+    it "creates 1 mentor per framework agreement for contract period 2024" do
       instance.send(:mentor_with_two_ects_2024)
 
       mentors_count = Teacher
@@ -117,7 +117,7 @@ RSpec.describe APISeedData::MentorScenarios do
       expect(mentors_count).to be >= 1
     end
 
-    it "creates 2 ECTs per active lead provider for contract period 2024" do
+    it "creates 2 ECTs per framework agreement for contract period 2024" do
       instance.send(:mentor_with_two_ects_2024)
 
       ects_count = Teacher

@@ -45,7 +45,7 @@ RSpec.describe APISeedData::ECTScenarios do
     it "creates an ECT with a mentor" do
       expect {
         instance.ect_2025_with_2024_mentor
-      }.to change(Teacher, :count).by_at_least(2) # 1 mentor + 1 ECT per active lead provider
+      }.to change(Teacher, :count).by_at_least(2) # 1 mentor + 1 ECT per framework agreement
     end
 
     it "creates ECTs for contract period 2025" do
@@ -110,7 +110,7 @@ RSpec.describe APISeedData::ECTScenarios do
     it "creates an ECT with a mentor" do
       expect {
         instance.ect_2025_with_2023_mentor
-      }.to change(Teacher, :count).by_at_least(2) # 1 mentor + 1 ECT per active lead provider
+      }.to change(Teacher, :count).by_at_least(2) # 1 mentor + 1 ECT per framework agreement
     end
 
     it "creates ECTs for contract period 2025" do

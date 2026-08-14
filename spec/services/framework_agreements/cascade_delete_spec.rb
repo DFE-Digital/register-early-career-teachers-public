@@ -18,7 +18,7 @@ describe FrameworkAgreements::CascadeDelete do
 
   before { allow(Events::Record).to receive(:record_active_lead_provider_deleted_event!) }
 
-  it "destroys the active lead provider with its contracts, fee structures, bands, statements, adjustments and partnerships, leaving delivery partners intact, and records the deleted event" do
+  it "destroys the framework agreement with its contracts, fee structures, bands, statements, adjustments and partnerships, leaving delivery partners intact, and records the deleted event" do
     flat_rate_fee_structure_id = flat_rate_fee_structure.id
     banded_fee_structure_id = banded_fee_structure.id
     band_term_ids = banded_fee_structure.band_terms.pluck(:id)

@@ -139,13 +139,13 @@ describe Schools::ECTs::ChangeMentorWizard::LeadProviderStep do
       FactoryBot.create(:mentor_at_school_period, school:, started_on:)
     end
 
-    context "when there are no active lead providers in contract period containing the mentor's start date" do
+    context "when there are no framework agreements in contract period containing the mentor's start date" do
       let(:started_on) { current_contract_period.started_on.prev_day }
 
       it { is_expected.to be_empty }
     end
 
-    context "when there are active lead providers in contract period containing the mentor's start date" do
+    context "when there are framework agreements in contract period containing the mentor's start date" do
       let(:started_on) { current_contract_period.started_on.next_month }
 
       it { is_expected.to contain_exactly(framework_agreement.lead_provider, other_lead_provider.lead_provider) }

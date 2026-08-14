@@ -97,7 +97,7 @@ describe LeadProviderDeliveryPartnership do
                           framework_agreement: alp_other_contract_period)
       end
 
-      it "returns active lead provider IDs for the specified delivery partner and contract period" do
+      it "returns framework agreement IDs for the specified delivery partner and contract period" do
         result = LeadProviderDeliveryPartnership.framework_agreement_ids_for(delivery_partner, contract_period)
         expect(result.pluck(:active_lead_provider_id)).to contain_exactly(alp_with_partnership.id)
       end
@@ -112,7 +112,7 @@ describe LeadProviderDeliveryPartnership do
         expect(result.pluck(:active_lead_provider_id)).not_to include(alp_other_contract_period.id)
       end
 
-      it "excludes active lead providers with no partnerships" do
+      it "excludes framework agreements with no partnerships" do
         result = LeadProviderDeliveryPartnership.framework_agreement_ids_for(delivery_partner, contract_period)
         expect(result.pluck(:active_lead_provider_id)).not_to include(alp_no_partnership.id)
       end

@@ -15,7 +15,7 @@ RSpec.describe APISeedData::LeadProviders do
       all_registration_years.uniq.each { |year| FactoryBot.create(:contract_period, year:) }
     end
 
-    it "creates lead providers and active lead providers with correct attributes" do
+    it "creates lead providers and framework agreements with correct attributes" do
       instance.plant
 
       described_class::DATA.each do |name, attributes|

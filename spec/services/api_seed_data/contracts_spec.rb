@@ -16,7 +16,7 @@ RSpec.describe APISeedData::Contracts do
     let(:contract_period) { FactoryBot.create(:contract_period, year: 2024, mentor_funding_enabled: false) }
     let!(:framework_agreement) { FactoryBot.create(:framework_agreement, contract_period:) }
 
-    it "creates contracts for active lead providers with the correct attributes" do
+    it "creates contracts for framework agreements with the correct attributes" do
       expect { instance.plant }.to change(framework_agreement.contracts, :count).by_at_least(1)
         .and change(mentor_funding_framework_agreement.contracts, :count).by_at_least(1)
 

@@ -80,14 +80,14 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Che
         end
       end
 
-      context "when the training period has no equivalent active lead provider" do
+      context "when the training period has no equivalent framework agreement" do
         before do
           allow(change_service).to receive(:change_contract_period!).and_raise(
             service_class::FrameworkAgreementNotFoundError
           )
         end
 
-        it "adds an active lead provider error" do
+        it "adds a framework agreement error" do
           expect(step.save!).to be(false)
           expect(step.errors[:base]).to include("A lead provider framework agreement could not be found for the selected contract period")
         end

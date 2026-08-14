@@ -14,7 +14,7 @@ RSpec.describe APISeedData::Statements do
     let!(:framework_agreement) { FactoryBot.create(:framework_agreement, contract_period:) }
     let!(:contracts) { FactoryBot.create_list(:contract, 3, :for_ittecf_ectp, framework_agreement:) }
 
-    it "creates statements for active lead providers with the correct attributes" do
+    it "creates statements for framework agreements with the correct attributes" do
       instance.plant
 
       cohort_year = contract_period.year

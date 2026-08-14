@@ -78,7 +78,7 @@ RSpec.describe "admin/finance/contract_periods/show.html.erb" do
   end
 
   describe "lead providers task" do
-    context "when the contract period has not yet started and has no active lead providers" do
+    context "when the contract period has not yet started and has no framework agreements" do
       let(:contract_period) do
         FactoryBot.create(:contract_period, year: 2099, started_on: Date.new(2099, 6, 1), finished_on: Date.new(2100, 5, 31))
       end
@@ -93,7 +93,7 @@ RSpec.describe "admin/finance/contract_periods/show.html.erb" do
       end
     end
 
-    context "when the contract period has not yet started and has active lead providers" do
+    context "when the contract period has not yet started and has framework agreements" do
       let(:contract_period) do
         FactoryBot.create(:contract_period, year: 2099, started_on: Date.new(2099, 6, 1), finished_on: Date.new(2100, 5, 31))
       end
@@ -112,7 +112,7 @@ RSpec.describe "admin/finance/contract_periods/show.html.erb" do
       end
     end
 
-    context "when the contract period has started and has active lead providers" do
+    context "when the contract period has started and has framework agreements" do
       let(:contract_period) do
         FactoryBot.create(:contract_period, year: 2020, started_on: Date.new(2020, 6, 1), finished_on: Date.new(2021, 5, 31))
       end

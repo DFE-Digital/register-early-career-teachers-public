@@ -332,7 +332,7 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
         )
       end
 
-      it "redirects to check answers when there is one available current active lead provider and delivery partner partnership" do
+      it "redirects to check answers when there is one available current framework agreement and delivery partner partnership" do
         post(
           path_for_step("select-contract-period"),
           params: { select_contract_period: { contract_period_year: target_contract_period.year } }

@@ -1,8 +1,8 @@
 module FrameworkAgreements
   class CascadeDelete
-    # Active lead providers should only be deleted before their contract period
+    # Framework agreements should only be deleted before their contract period
     # has started, i.e. while still unused. If any usage data references this
-    # active lead provider we refuse to delete it and raise CascadeDeleteError for
+    # framework agreement we refuse to delete it and raise CascadeDeleteError for
     # the controller to handle. The destruction below can then safely assume there
     # is no usage data depending on the records it removes.
 

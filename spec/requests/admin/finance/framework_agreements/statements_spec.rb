@@ -1,4 +1,4 @@
-RSpec.describe "Admin finance active lead provider statements", type: :request do
+RSpec.describe "Admin finance framework agreement statements", type: :request do
   include ActiveJob::TestHelper
 
   let(:contract_period) { FactoryBot.create(:contract_period, :next) }
@@ -31,7 +31,7 @@ RSpec.describe "Admin finance active lead provider statements", type: :request d
     context "when signed in as a finance DfE user" do
       include_context "sign in as finance DfE user"
 
-      it "displays the active lead provider's statements" do
+      it "displays the framework agreement's statements" do
         get index_path
 
         expect(response.status).to eq(200)
@@ -117,7 +117,7 @@ RSpec.describe "Admin finance active lead provider statements", type: :request d
         end
       end
 
-      context "when the contract belongs to another active lead provider" do
+      context "when the contract belongs to another framework agreement" do
         let(:other_contract) { FactoryBot.create(:contract, :for_ittecf_ectp) }
         let(:params) { super().merge(contract_id: other_contract.id) }
 
@@ -238,7 +238,7 @@ RSpec.describe "Admin finance active lead provider statements", type: :request d
         end
       end
 
-      context "when the contract belongs to another active lead provider" do
+      context "when the contract belongs to another framework agreement" do
         let(:other_contract) { FactoryBot.create(:contract, :for_ittecf_ectp) }
 
         it "does not change the statement's contract" do
