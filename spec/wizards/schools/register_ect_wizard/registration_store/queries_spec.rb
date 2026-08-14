@@ -246,7 +246,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
         create_framework_agreement(contract_period:, lead_provider: another_lead_provider)
       end
 
-      it "returns the active lead providers for the contract period" do
+      it "returns the framework agreements for the contract period" do
         ids = queries.lead_providers_within_contract_period.map(&:id)
 
         expect(ids).to contain_exactly(lead_provider.id, another_lead_provider.id)

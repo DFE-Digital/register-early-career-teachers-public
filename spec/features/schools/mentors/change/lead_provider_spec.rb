@@ -5,13 +5,13 @@ describe "School user can change a mentor's lead provider" do
     and_there_is_a_mentor
     and_i_am_logged_in_as_a_school_user
 
-    and_there_is_an_framework_agreement
+    and_there_is_a_framework_agreement
     with_provider_led_training
     and_there_is_another_framework_agreement
   end
 
-  context "when an active lead provider is selected" do
-    it "changes the lead provider to an active lead provider" do
+  context "when a framework agreement is selected" do
+    it "changes the lead provider to a framework agreement" do
       with_a_partnership_with_the_school
 
       when_i_visit_the_mentor_page
@@ -86,7 +86,7 @@ private
     @contract_period = FactoryBot.create(:contract_period, :current)
   end
 
-  def and_there_is_an_framework_agreement
+  def and_there_is_a_framework_agreement
     lead_provider = FactoryBot.create(:lead_provider, name: "Testing Provider")
     @framework_agreement = FactoryBot.create(
       :framework_agreement,

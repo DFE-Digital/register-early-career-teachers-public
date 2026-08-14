@@ -1040,7 +1040,7 @@ module ECTAtSchoolPeriods
 
               before { travel_to contract_period.finished_on }
 
-              it "finds the active lead provider with the correct contract period" do
+              it "finds the framework agreement with the correct contract period" do
                 SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
 
                 new_training_period = mentor_at_school_period.reload.training_periods.last

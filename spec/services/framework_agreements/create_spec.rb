@@ -15,7 +15,7 @@ describe FrameworkAgreements::Create do
   context "with a valid lead provider" do
     let(:lead_provider_id) { lead_provider.id }
 
-    it "builds and saves the active lead provider, records the created event, then seeds it from the previous period" do
+    it "builds and saves the framework agreement, records the created event, then seeds it from the previous period" do
       result = nil
       expect { result = service.call }.to change(FrameworkAgreement, :count).by(1)
 

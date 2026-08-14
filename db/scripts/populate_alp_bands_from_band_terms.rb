@@ -1,4 +1,4 @@
-# Remodelling the banded fee structure for active lead providers
+# Remodelling the banded fee structure for framework agreements
 # Migrate existing values from Contract::BandedFeeStructure::BandTerm to FrameworkAgreement::Band
 #
 FrameworkAgreement::Band.transaction do

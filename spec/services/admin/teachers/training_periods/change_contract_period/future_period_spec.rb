@@ -179,7 +179,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::FuturePer
       )
     end
 
-    it "updates the future training period in place with the equivalent active lead provider" do
+    it "updates the future training period in place with the equivalent framework agreement" do
       expect {
         service_call
       }
@@ -204,10 +204,10 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::FuturePer
       expect(event.metadata["to_contract_period_id"]).to eq(target_contract_period.id)
     end
 
-    context "when there is no equivalent active lead provider in the selected contract period" do
+    context "when there is no equivalent framework agreement in the selected contract period" do
       let!(:target_framework_agreement) { nil }
 
-      it "raises an active lead provider not found error" do
+      it "raises a framework agreement not found error" do
         expect {
           service_call
         }.to raise_error(

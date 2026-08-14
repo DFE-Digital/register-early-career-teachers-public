@@ -28,7 +28,7 @@ describe "School user can change ECTs training programme" do
     and_there_is_an_ect
     with_a_mentor
     and_there_is_a_contract_period
-    and_there_is_an_framework_agreement
+    and_there_is_a_framework_agreement
     with_school_led_training
     and_i_am_logged_in_as_a_school_user
 
@@ -53,7 +53,7 @@ describe "School user can change ECTs training programme" do
     given_there_is_a_school
     and_there_is_an_ect
     and_there_is_a_contract_period
-    and_there_is_an_framework_agreement
+    and_there_is_a_framework_agreement
     with_school_led_training
     and_i_am_logged_in_as_a_school_user
 
@@ -111,7 +111,7 @@ private
     @contract_period = FactoryBot.create(:contract_period, :current, :with_schedules)
   end
 
-  def and_there_is_an_framework_agreement
+  def and_there_is_a_framework_agreement
     lead_provider = FactoryBot.create(:lead_provider, name: "Testing Provider")
     @framework_agreement = FactoryBot.create(
       :framework_agreement,

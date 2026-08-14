@@ -120,13 +120,13 @@ describe Schools::ECTs::ChangeLeadProviderWizard::EditStep do
     end
     let(:training_period_started_on) { ect_at_school_period.started_on }
 
-    context "when there are no other active lead providers in the current contract period" do
+    context "when there are no other framework agreements in the current contract period" do
       let(:started_on) { current_contract_period.started_on.next_month }
 
       it { is_expected.to be_empty }
     end
 
-    context "when there are active lead providers in the current contract period" do
+    context "when there are framework agreements in the current contract period" do
       let(:started_on) { current_contract_period.started_on.next_month }
       let!(:framework_agreement) do
         FactoryBot.create(:framework_agreement, contract_period: current_contract_period)

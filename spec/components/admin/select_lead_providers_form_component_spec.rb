@@ -32,14 +32,14 @@ RSpec.describe Admin::SelectLeadProvidersFormComponent, type: :component do
 
   describe "component logic and methods" do
     describe "#all_lead_providers_for_period" do
-      it "returns all active lead providers for the contract period" do
+      it "returns all framework agreements for the contract period" do
         providers = component.send(:all_lead_providers_for_period)
         expect(providers).to contain_exactly(framework_agreement_1, framework_agreement_2, framework_agreement_3)
       end
     end
 
     describe "#currently_selected_ids" do
-      it "returns string array of active lead provider IDs" do
+      it "returns string array of framework agreement IDs" do
         ids = component.send(:currently_selected_ids)
         expect(ids).to eq([framework_agreement_1.id.to_s])
       end

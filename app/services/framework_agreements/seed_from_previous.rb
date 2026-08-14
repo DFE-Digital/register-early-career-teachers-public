@@ -1,4 +1,4 @@
-# Seeds a newly-created active lead provider with a copy of its previous
+# Seeds a newly-created framework agreement with a copy of its previous
 # contract period's setup: delivery partnerships, plus a single new contract
 # (inc. fee structures, bands and statements) — based on the previous contract
 # that owned the latest statement, and carrying every previous statement

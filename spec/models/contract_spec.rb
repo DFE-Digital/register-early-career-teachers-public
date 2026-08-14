@@ -88,7 +88,7 @@ describe Contract do
     context "when creating a new contract" do
       let(:contract) { FactoryBot.build(:contract, framework_agreement:) }
 
-      it "assigns the active lead provider" do
+      it "assigns the framework agreement" do
         expect { contract.save! }.not_to raise_error
         expect(contract.framework_agreement).to eq(framework_agreement)
       end

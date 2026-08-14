@@ -56,7 +56,7 @@ RSpec.describe SchoolPartnerships::CreateFromPrevious do
       end
     end
 
-    context "when there is no active lead provider for the current year" do
+    context "when there is no framework agreement for the current year" do
       it "returns nil and records no reuse event" do
         result = service.call(
           previous_school_partnership_id: previous_partnership.id,
@@ -70,7 +70,7 @@ RSpec.describe SchoolPartnerships::CreateFromPrevious do
       end
     end
 
-    context "when there is an active lead provider for the current year but no matching LP/DP pairing" do
+    context "when there is a framework agreement for the current year but no matching LP/DP pairing" do
       let!(:active_lp_current_year) do
         FactoryBot.create(:framework_agreement, lead_provider:, contract_period: current_contract_period)
       end

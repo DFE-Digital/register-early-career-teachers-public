@@ -10,7 +10,7 @@ describe "Changing lead provider when the ECT started training in a closed contr
 
   it "creates an expression of interest when changing the lead provider to one the school has no existing partnership with" do
     and_there_is_another_lead_provider
-    and_there_is_an_framework_agreement_in_the_open_contract_period
+    and_there_is_a_framework_agreement_in_the_open_contract_period
     and_there_is_a_third_framework_agreement
     and_i_am_logged_in_as_a_school_user
 
@@ -112,7 +112,7 @@ private
     @lead_provider = FactoryBot.create(:lead_provider, name: "Other Lead Provider")
   end
 
-  def and_there_is_an_framework_agreement_in_the_open_contract_period
+  def and_there_is_a_framework_agreement_in_the_open_contract_period
     @other_framework_agreement = FactoryBot.create(
       :framework_agreement,
       :for_year,

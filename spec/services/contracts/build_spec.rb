@@ -6,7 +6,7 @@ describe Contracts::Build do
   describe "#call" do
     subject(:contract) { service.call }
 
-    it "returns an unpersisted contract for the active lead provider" do
+    it "returns an unpersisted contract for the framework agreement" do
       expect(contract).not_to be_persisted
       expect(contract.framework_agreement).to eq(framework_agreement)
     end
@@ -15,13 +15,13 @@ describe Contracts::Build do
       expect(contract.flat_rate_fee_structure).to be_present
     end
 
-    context "when the active lead provider has no bands" do
+    context "when the framework agreement has no bands" do
       it "builds no band terms" do
         expect(contract.banded_fee_structure.band_terms).to be_empty
       end
     end
 
-    context "when the active lead provider has bands" do
+    context "when the framework agreement has bands" do
       let!(:alp_band) do
         FactoryBot.create_list(:framework_agreement_band, 5,
                                framework_agreement:)
@@ -32,7 +32,7 @@ describe Contracts::Build do
       end
     end
 
-    context "when the active lead provider has bands and a previous contract" do
+    context "when the framework agreement has bands and a previous contract" do
       let!(:existing_contract) do
         FactoryBot.create(:contract, :for_ecf,
                           :with_bands_and_band_terms,

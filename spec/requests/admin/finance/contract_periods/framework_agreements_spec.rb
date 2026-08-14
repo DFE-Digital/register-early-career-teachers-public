@@ -1,4 +1,4 @@
-RSpec.describe "Admin active lead providers", type: :request do
+RSpec.describe "Admin framework agreements", type: :request do
   let(:contract_period) { FactoryBot.create(:contract_period, :next) }
   let(:index_path) { admin_contract_period_framework_agreements_path(contract_period) }
   let(:started_error) { "Lead provider framework agreements cannot be changed once the contract period has started" }
@@ -21,7 +21,7 @@ RSpec.describe "Admin active lead providers", type: :request do
     context "when signed in as a finance DfE user" do
       include_context "sign in as finance DfE user"
 
-      it "displays the active lead providers index page" do
+      it "displays the framework agreements index page" do
         get index_path
         expect(response).to have_http_status(:success)
       end
@@ -48,7 +48,7 @@ RSpec.describe "Admin active lead providers", type: :request do
     context "when signed in as a finance DfE user" do
       include_context "sign in as finance DfE user"
 
-      it "displays the new active lead provider page" do
+      it "displays the new framework agreement page" do
         get new_path
         expect(response).to have_http_status(:success)
       end
@@ -97,7 +97,7 @@ RSpec.describe "Admin active lead providers", type: :request do
         FactoryBot.create(:statement, :paid, framework_agreement: previous_activation, contract: previous_contract, month: 11, year: previous_contract_period.year)
       end
 
-      it "creates an active lead provider seeded from the previous period, and redirects to the index" do
+      it "creates a framework agreement seeded from the previous period, and redirects to the index" do
         expect { post index_path, params: }.to change(FrameworkAgreement, :count).by(1)
 
         framework_agreement = FrameworkAgreement.last
@@ -113,13 +113,13 @@ RSpec.describe "Admin active lead providers", type: :request do
       context "when the lead provider is missing" do
         let(:params) { { framework_agreement: { lead_provider_id: "" } } }
 
-        it "does not create an active lead provider and re-renders new" do
+        it "does not create a framework agreement and re-renders new" do
           expect { post index_path, params: }.not_to(change(FrameworkAgreement, :count))
           expect(response).to have_http_status(:unprocessable_content)
         end
       end
 
-      context "when the lead provider already has an active lead provider for the contract period" do
+      context "when the lead provider already has a framework agreement for the contract period" do
         before { FactoryBot.create(:framework_agreement, contract_period:, lead_provider:) }
 
         it "does not create a duplicate and re-renders new" do
@@ -131,7 +131,7 @@ RSpec.describe "Admin active lead providers", type: :request do
       context "when the contract period has started" do
         let(:contract_period) { FactoryBot.create(:contract_period, :current) }
 
-        it "does not create an active lead provider and redirects to the index with an alert" do
+        it "does not create a framework agreement and redirects to the index with an alert" do
           expect { post index_path, params: }.not_to(change(FrameworkAgreement, :count))
 
           expect(response).to redirect_to(index_path)
@@ -162,7 +162,7 @@ RSpec.describe "Admin active lead providers", type: :request do
     context "when signed in as a finance DfE user" do
       include_context "sign in as finance DfE user"
 
-      it "destroys the active lead provider and redirects to the index" do
+      it "destroys the framework agreement and redirects to the index" do
         expect { delete destroy_path }.to change(FrameworkAgreement, :count).by(-1)
 
         expect(response).to redirect_to(admin_contract_period_framework_agreements_path(contract_period))
@@ -171,7 +171,7 @@ RSpec.describe "Admin active lead providers", type: :request do
       context "when the contract period has started" do
         let(:contract_period) { FactoryBot.create(:contract_period, :current) }
 
-        it "does not destroy the active lead provider and redirects to the index with an alert" do
+        it "does not destroy the framework agreement and redirects to the index with an alert" do
           expect { delete destroy_path }.not_to(change(FrameworkAgreement, :count))
 
           expect(response).to redirect_to(index_path)
@@ -179,10 +179,10 @@ RSpec.describe "Admin active lead providers", type: :request do
         end
       end
 
-      context "when the active lead provider has data that cannot be deleted" do
+      context "when the framework agreement has data that cannot be deleted" do
         before { FactoryBot.create(:training_period, :with_framework_agreement, framework_agreement:) }
 
-        it "does not destroy the active lead provider and redirects to the index with an alert" do
+        it "does not destroy the framework agreement and redirects to the index with an alert" do
           expect { delete destroy_path }.not_to(change(FrameworkAgreement, :count))
 
           expect(response).to redirect_to(index_path)
