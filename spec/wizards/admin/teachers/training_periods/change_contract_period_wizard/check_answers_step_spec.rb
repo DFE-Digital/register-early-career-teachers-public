@@ -83,7 +83,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Che
       context "when the training period has no equivalent active lead provider" do
         before do
           allow(change_service).to receive(:change_contract_period!).and_raise(
-            service_class::ActiveLeadProviderNotFoundError
+            service_class::FrameworkAgreementNotFoundError
           )
         end
 

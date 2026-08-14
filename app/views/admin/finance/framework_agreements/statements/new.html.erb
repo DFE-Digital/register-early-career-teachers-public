@@ -1,0 +1,18 @@
+<%
+  page_data(
+    title: "Add statement",
+    error: @statement.errors.present?,
+    backlink_href: admin_contract_period_framework_agreement_statements_path(@framework_agreement.contract_period, @framework_agreement)
+  )
+%>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <%= form_with model: @statement,
+                   url: admin_contract_period_framework_agreement_statements_path(@framework_agreement.contract_period, @framework_agreement),
+                   method: :post do |f| %>
+      <%= render "fields", form: f, framework_agreement: @framework_agreement, contract_period: @framework_agreement.contract_period %>
+      <%= f.govuk_submit "Save" %>
+    <% end %>
+  </div>
+</div>

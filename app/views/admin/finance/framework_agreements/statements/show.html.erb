@@ -1,0 +1,23 @@
+<%
+  contract_period = @framework_agreement.contract_period
+  page_data(
+    title: "Statement #{Statements::Period.for(@statement)}",
+    caption: @framework_agreement.lead_provider_name,
+    backlink_href: admin_contract_period_framework_agreement_statements_path(contract_period, @framework_agreement)
+  )
+%>
+
+<%= render "statement", statement: @statement %>
+
+<% disabled = !@framework_agreement.editable? %>
+
+<div class="govuk-button-group">
+  <%= govuk_button_link_to("Edit statement",
+      edit_admin_contract_period_framework_agreement_statement_path(contract_period, @framework_agreement, @statement),
+      disabled:) %>
+
+  <%= govuk_button_link_to("Delete statement",
+      delete_admin_contract_period_framework_agreement_statement_path(contract_period, @framework_agreement, @statement),
+      warning: true,
+      disabled:) %>
+</div>

@@ -1,0 +1,141 @@
+# Seeds a newly-created active lead provider with a copy of its previous
+# contract period's setup: delivery partnerships, plus a single new contract
+# (inc. fee structures, bands and statements) — based on the previous contract
+# that owned the latest statement, and carrying every previous statement
+# rolled forward to the new period's year.
+#
+# It Errors if it cannot do this.
+class FrameworkAgreements::SeedFromPrevious
+  class PreviousFrameworkAgreementError < StandardError; end
+  class AlreadyPopulatedError < StandardError; end
+
+  attr_reader :framework_agreement
+
+  delegate :lead_provider, to: :framework_agreement
+  delegate :name, to: :lead_provider, prefix: true
+  delegate :contract_period, to: :framework_agreement, prefix: :current
+  delegate :lead_provider_delivery_partnerships, :contracts, :statements,
+           to: :previous_activation, prefix: :previous
+
+  def initialize(framework_agreement:)
+    raise ArgumentError, "framework_agreement is required" if framework_agreement.blank?
+
+    @framework_agreement = framework_agreement
+  end
+
+  def call
+    raise PreviousFrameworkAgreementError, "No previous activation found in #{previous_contract_period.year} for #{lead_provider_name}" if previous_activation.blank?
+    if previous_activation_empty?
+      raise PreviousFrameworkAgreementError,
+            "Key info for #{lead_provider_name} is missing previous delivery partnerships, contracts or statements."
+    end
+    raise AlreadyPopulatedError, "#{lead_provider_name} already has data for #{current_contract_period.year}" if framework_agreement_populated?
+
+    # This is a large graph, so let's make all or nothing...
+    ActiveRecord::Base.transaction do
+      create_new_bands
+      create_new_delivery_partnerships
+      create_new_contract
+    end
+  end
+
+private
+
+  def previous_activation
+    @previous_activation ||= previous_contract_period&.framework_agreements&.find_by(lead_provider:)
+  end
+
+  def previous_contract_period
+    return if current_contract_period.blank?
+
+    @previous_contract_period ||= ContractPeriod.find_by(year: current_contract_period.year - 1)
+  end
+
+  def previous_latest_contract
+    @previous_latest_contract ||= previous_statements.order(year: :desc, month: :desc).first.contract
+  end
+
+  def previous_activation_empty?
+    previous_lead_provider_delivery_partnerships.empty? ||
+      previous_contracts.empty? || previous_statements.empty?
+  end
+
+  def framework_agreement_populated?
+    framework_agreement.lead_provider_delivery_partnerships.any? ||
+      framework_agreement.contracts.any?
+  end
+
+  def create_new_delivery_partnerships
+    previous_lead_provider_delivery_partnerships.each do |previous_partnership|
+      framework_agreement.lead_provider_delivery_partnerships.create!(delivery_partner: previous_partnership.delivery_partner)
+    end
+  end
+
+  def create_new_bands
+    # Bands need to be added before contracts and before the contract period starts
+    if previous_activation
+      previous_activation.bands.each do |band|
+        framework_agreement.bands.create!(allocation_order: band.allocation_order, capacity: band.capacity)
+      end
+    end
+  end
+
+  def create_new_contract
+    # The banded fee structure cannot be attached after the contract is saved because
+    # Contract validates its presence at creation time, and the duped fee structure's
+    # old contract_id cannot simply be nulled as it violates a DB constraint.
+    #
+    # This ensures the contract_id is populated at save and avoids cross-ALP band references.
+    #
+    previous_contract = previous_latest_contract
+
+    framework_agreement.contracts.create!(
+      contract_type: previous_contract.contract_type,
+      banded_fee_structure: build_banded_fee_structure(previous_contract.banded_fee_structure),
+      flat_rate_fee_structure: build_flat_rate_fee_structure(previous_contract.flat_rate_fee_structure),
+      statements: build_new_statements,
+      vat_rate: previous_contract.vat_rate
+    )
+  end
+
+  def build_banded_fee_structure(previous_fee_structure)
+    return unless previous_fee_structure
+
+    new_fee_structure = previous_fee_structure.dup
+
+    previous_fee_structure.band_terms.each do |previous_term|
+      band = framework_agreement.bands.find_by!(allocation_order: previous_term.band.allocation_order)
+
+      new_fee_structure.band_terms.build(
+        band:,
+        fee_per_declaration: previous_term.fee_per_declaration,
+        output_fee_ratio: previous_term.output_fee_ratio,
+        service_fee_ratio: previous_term.service_fee_ratio
+      )
+    end
+
+    new_fee_structure
+  end
+
+  def build_flat_rate_fee_structure(previous_fee_structure)
+    return unless previous_fee_structure
+
+    previous_fee_structure.dup
+  end
+
+  def build_new_statements
+    year_offset = current_contract_period.year - previous_contract_period.year
+
+    previous_statements.map do |previous_statement|
+      new_year = previous_statement.year + year_offset
+      Statement.new(
+        month: previous_statement.month,
+        year: new_year,
+        deadline_date: previous_statement.deadline_date.years_since(year_offset),
+        payment_date: previous_statement.payment_date.years_since(year_offset),
+        fee_type: previous_statement.fee_type,
+        status: :open
+      )
+    end
+  end
+end

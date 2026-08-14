@@ -1,4 +1,4 @@
-class CreateActiveLeadProviders < ActiveRecord::Migration[8.0]
+class CreateFrameworkAgreements < ActiveRecord::Migration[8.0]
   def change
     create_table :active_lead_providers do |t|
       t.references :lead_provider, null: false, foreign_key: true
