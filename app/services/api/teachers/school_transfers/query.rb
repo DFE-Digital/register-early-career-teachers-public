@@ -2,17 +2,17 @@ module API::Teachers::SchoolTransfers
   class Query
     include Queries::FilterIgnorable
 
-    attr_reader :scope, :lead_provider_id, :updated_since, :sort
-
     def initialize(
       lead_provider_id:,
       updated_since: :ignore,
-      sort: { created_at: :asc }
+      sort: { created_at: :asc },
+      included_associations: []
     )
       @scope = Teacher.distinct
       @lead_provider_id = lead_provider_id
       @updated_since = updated_since
       @sort = sort
+      @included_associations = included_associations
 
       where_lead_provider
       where_updated_since
@@ -37,27 +37,12 @@ module API::Teachers::SchoolTransfers
 
   private
 
+    attr_reader :scope, :lead_provider_id, :updated_since, :sort, :included_associations
+
     def preload_associations(results)
       results
         .strict_loading
-        .includes(
-          lead_provider_metadata: [],
-          finished_induction_period: [],
-          ect_at_school_periods: [
-            :school,
-            {
-              earliest_training_period: :lead_provider,
-              latest_training_period: :lead_provider
-            }
-          ],
-          mentor_at_school_periods: [
-            :school,
-            {
-              earliest_training_period: :lead_provider,
-              latest_training_period: :lead_provider
-            }
-          ]
-        )
+        .tap { it.includes!(*included_associations) if included_associations.present? }
     end
 
     def set_sort_by

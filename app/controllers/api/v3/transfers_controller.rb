@@ -2,8 +2,8 @@ module API
   module V3
     class TransfersController < APIController
       def index
-        conditions = { updated_since:, sort: }
-        paginated_school_transfers = paginate(school_transfers_query(conditions:).school_transfers)
+        query_arguments = { updated_since:, sort: }
+        paginated_school_transfers = paginate(school_transfers_query(query_arguments:).school_transfers)
 
         render json: to_json(paginated_school_transfers)
       end
@@ -14,19 +14,20 @@ module API
 
     private
 
-      def school_transfers_query(conditions: {})
-        conditions = default_query_conditions.merge(conditions).compact
-        Teachers::SchoolTransfers::Query.new(**conditions)
+      def school_transfers_query(query_arguments: {})
+        query_arguments = base_query_arguments.merge(query_arguments).compact
+        Teachers::SchoolTransfers::Query.new(**query_arguments)
       end
 
-      def default_query_conditions
-        @default_query_conditions ||= {
-          lead_provider_id: current_lead_provider.id
+      def base_query_arguments
+        {
+          lead_provider_id: current_lead_provider.id,
+          included_associations: serializer.dependencies
         }
       end
 
       def serializer_options
-        @serializer_options ||= {
+        {
           lead_provider_id: current_lead_provider.id
         }
       end
@@ -48,11 +49,11 @@ module API
       end
 
       def to_json(obj)
-        API::Teachers::SchoolTransferSerializer.render(
-          obj,
-          root: "data",
-          **serializer_options
-        )
+        serializer.render(obj, root: "data", **serializer_options)
+      end
+
+      def serializer
+        API::Teachers::SchoolTransferSerializer
       end
     end
   end

@@ -1,4 +1,10 @@
 class API::Teachers::UnfundedMentorSerializer < Blueprinter::Base
+  def self.dependencies
+    [
+      { lead_provider_metadata_for_mentees: :ect_assigned_mentor_latest_school_period }
+    ]
+  end
+
   class AttributesSerializer < Blueprinter::Base
     exclude :id
 

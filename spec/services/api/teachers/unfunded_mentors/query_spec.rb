@@ -24,31 +24,36 @@ RSpec.describe API::Teachers::UnfundedMentors::Query, :with_metadata do
     )
   end
 
-  it_behaves_like "a query that avoids includes" do
-    let(:params) { { lead_provider_id: } }
-  end
+  describe "including associations" do
+    shared_examples "included associations" do
+      it { expect(result.association(association)).to be_loaded }
 
-  describe "preloading relationships" do
-    shared_examples "preloaded associations" do
-      it { expect(result.association(:lead_provider_metadata_for_mentees)).to be_loaded }
+      context "when no associations are included" do
+        let(:association) { nil }
+
+        it { expect(result).not_to have_any_loaded_associations }
+      end
     end
 
-    describe "#unfunded_mentors" do
-      subject(:result) { query.unfunded_mentors.first }
+    let(:association) { :lead_provider_metadata_for_mentees }
+    let(:instance) { described_class.new(lead_provider_id:, included_associations: [association]) }
 
-      include_context "preloaded associations"
+    describe "#unfunded_mentors" do
+      subject(:result) { instance.unfunded_mentors.first }
+
+      include_examples "included associations"
     end
 
     describe "#unfunded_mentor_by_api_id" do
-      subject(:result) { query.unfunded_mentor_by_api_id(unfunded_mentor.api_id) }
+      subject(:result) { instance.unfunded_mentor_by_api_id(unfunded_mentor.api_id) }
 
-      include_context "preloaded associations"
+      include_examples "included associations"
     end
 
     describe "#unfunded_mentor_by_id" do
-      subject(:result) { query.unfunded_mentor_by_id(unfunded_mentor.id) }
+      subject(:result) { instance.unfunded_mentor_by_id(unfunded_mentor.id) }
 
-      include_context "preloaded associations"
+      include_examples "included associations"
     end
   end
 

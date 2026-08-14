@@ -1,4 +1,10 @@
 class API::StatementSerializer < Blueprinter::Base
+  def self.dependencies
+    %i[
+      active_lead_provider
+    ]
+  end
+
   class AttributesSerializer < Blueprinter::Base
     exclude :id
 

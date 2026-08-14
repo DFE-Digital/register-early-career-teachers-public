@@ -4,10 +4,16 @@ module API::Statements
 
     include Queries::FilterIgnorable
 
-    attr_reader :scope
-
-    def initialize(lead_provider_id: :ignore, contract_period_years: :ignore, updated_since: :ignore, fee_type: "output", sort: { payment_date: :asc })
+    def initialize(
+      lead_provider_id: :ignore,
+      contract_period_years: :ignore,
+      updated_since: :ignore,
+      fee_type: "output",
+      sort: { payment_date: :asc },
+      included_associations: []
+    )
       @scope = Statement
+      @included_associations = included_associations
 
       where_lead_provider_is(lead_provider_id)
       where_contract_period_year_in(contract_period_years)
@@ -34,10 +40,12 @@ module API::Statements
 
   private
 
+    attr_reader :scope, :included_associations
+
     def preload_associations(results)
       results
         .strict_loading
-        .includes(:active_lead_provider)
+        .tap { it.includes!(*included_associations) if included_associations.present? }
     end
 
     def where_lead_provider_is(lead_provider_id)

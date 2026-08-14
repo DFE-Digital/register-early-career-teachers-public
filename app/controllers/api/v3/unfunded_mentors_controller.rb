@@ -2,8 +2,8 @@ module API
   module V3
     class UnfundedMentorsController < APIController
       def index
-        conditions = { updated_since:, sort: }
-        paginated_unfunded_mentors = paginate(unfunded_mentors_query(conditions:).unfunded_mentors)
+        query_arguments = { updated_since:, sort: }
+        paginated_unfunded_mentors = paginate(unfunded_mentors_query(query_arguments:).unfunded_mentors)
 
         render json: to_json(paginated_unfunded_mentors)
       end
@@ -14,13 +14,14 @@ module API
 
     private
 
-      def unfunded_mentors_query(conditions: {})
-        API::Teachers::UnfundedMentors::Query.new(**(default_query_conditions.merge(conditions).compact))
+      def unfunded_mentors_query(query_arguments: {})
+        API::Teachers::UnfundedMentors::Query.new(**(base_query_arguments.merge(query_arguments).compact))
       end
 
-      def default_query_conditions
-        @default_query_conditions ||= {
+      def base_query_arguments
+        {
           lead_provider_id: current_lead_provider.id,
+          included_associations: serializer.dependencies
         }
       end
 
@@ -41,7 +42,11 @@ module API
       end
 
       def to_json(obj)
-        API::Teachers::UnfundedMentorSerializer.render(obj, root: "data", **serializer_options)
+        serializer.render(obj, root: "data", **serializer_options)
+      end
+
+      def serializer
+        API::Teachers::UnfundedMentorSerializer
       end
 
       def updated_at_attribute

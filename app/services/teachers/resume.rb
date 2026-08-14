@@ -24,7 +24,7 @@ module Teachers
         record_resume_event!(new_training_period)
       end
 
-      API::Teachers::Query.new.teacher_by_id(teacher.id)
+      teacher
     end
 
   private

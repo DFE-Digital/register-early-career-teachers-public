@@ -2,13 +2,13 @@ module API
   module V3
     class PartnershipsController < APIController
       def index
-        conditions = {
+        query_arguments = {
           contract_period_years: extract_conditions(contract_period_years, type: :integer),
           updated_since:,
           delivery_partner_api_ids: extract_conditions(delivery_partner_api_ids),
           sort:
         }
-        paginated_school_partnerships = paginate(partnerships_query(conditions:).school_partnerships)
+        paginated_school_partnerships = paginate(partnerships_query(query_arguments:).school_partnerships)
 
         render json: to_json(paginated_school_partnerships)
       end
@@ -49,13 +49,14 @@ module API
         params.require(:data).expect({ attributes: %i[delivery_partner_id] })
       end
 
-      def partnerships_query(conditions: {})
-        API::SchoolPartnerships::Query.new(**(default_query_conditions.merge(conditions)).compact)
+      def partnerships_query(query_arguments: {})
+        API::SchoolPartnerships::Query.new(**(base_query_arguments.merge(query_arguments)).compact)
       end
 
-      def default_query_conditions
-        @default_query_conditions ||= {
+      def base_query_arguments
+        {
           lead_provider_id: current_lead_provider.id,
+          included_associations: serializer.dependencies
         }
       end
 
@@ -76,7 +77,11 @@ module API
       end
 
       def to_json(obj)
-        API::SchoolPartnershipSerializer.render(obj, root: "data")
+        serializer.render(obj, root: "data")
+      end
+
+      def serializer
+        API::SchoolPartnershipSerializer
       end
     end
   end

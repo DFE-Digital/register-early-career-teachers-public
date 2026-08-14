@@ -4,14 +4,14 @@ module API
       include API::TeacherType
 
       def index
-        conditions = {
+        query_arguments = {
           contract_period_years: extract_conditions(contract_period_years, type: :integer),
           updated_since:,
           training_status:,
           api_from_teacher_id:,
           sort:
         }
-        paginated_teachers = paginate(teachers_query(conditions:).teachers)
+        paginated_teachers = paginate(teachers_query(query_arguments:).teachers)
 
         render json: to_json(paginated_teachers)
       end
@@ -81,18 +81,19 @@ module API
       def validate_defer_participant_params! = defer_participant_params
       def validate_change_schedule_params! = change_schedule_params
 
-      def teachers_query(conditions: {})
-        API::Teachers::Query.new(**(default_query_conditions.merge(conditions)).compact)
+      def teachers_query(query_arguments: {})
+        API::Teachers::Query.new(**(base_query_arguments.merge(query_arguments)).compact)
       end
 
-      def default_query_conditions
-        @default_query_conditions ||= {
+      def base_query_arguments
+        {
           lead_provider_id: current_lead_provider.id,
+          included_associations: serializer.dependencies
         }
       end
 
       def serializer_options
-        @serializer_options ||= {
+        {
           lead_provider_id: current_lead_provider.id
         }
       end
@@ -138,7 +139,11 @@ module API
       end
 
       def to_json(obj)
-        API::TeacherSerializer.render(obj, root: "data", **serializer_options)
+        serializer.render(obj, root: "data", **serializer_options)
+      end
+
+      def serializer
+        API::TeacherSerializer
       end
     end
   end

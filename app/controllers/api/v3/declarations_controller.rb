@@ -4,13 +4,13 @@ module API
       include API::TeacherType
 
       def index
-        conditions = {
+        query_arguments = {
           contract_period_years: extract_conditions(contract_period_years, type: :integer),
           teacher_api_ids: extract_conditions(teacher_api_ids, type: :uuid),
           delivery_partner_api_ids: extract_conditions(delivery_partner_api_ids, type: :uuid),
           updated_since:,
         }
-        paginated_declarations = paginate(declarations_query(conditions:).declarations)
+        paginated_declarations = paginate(declarations_query(query_arguments:).declarations)
 
         render json: to_json(paginated_declarations)
       end
@@ -48,18 +48,19 @@ module API
         params.require(:data).expect({ attributes: %i[participant_id declaration_type declaration_date course_identifier evidence_held] })
       end
 
-      def declarations_query(conditions: {})
-        API::Declarations::Query.new(**(default_query_conditions.merge(conditions)).compact)
+      def declarations_query(query_arguments: {})
+        API::Declarations::Query.new(**(base_query_arguments.merge(query_arguments)).compact)
       end
 
-      def default_query_conditions
-        @default_query_conditions ||= {
+      def base_query_arguments
+        {
           lead_provider_id: current_lead_provider.id,
+          included_associations: serializer.dependencies
         }
       end
 
       def serializer_options
-        @serializer_options ||= {
+        {
           lead_provider_id: current_lead_provider.id
         }
       end
@@ -92,7 +93,11 @@ module API
       end
 
       def to_json(obj)
-        API::DeclarationSerializer.render(obj, root: "data", **serializer_options)
+        serializer.render(obj, root: "data", **serializer_options)
+      end
+
+      def serializer
+        API::DeclarationSerializer
       end
     end
   end

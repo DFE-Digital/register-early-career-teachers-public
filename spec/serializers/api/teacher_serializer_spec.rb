@@ -19,6 +19,17 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
     FactoryBot.create(:lead_provider)
   end
 
+  describe ".dependencies" do
+    it "includes all dependencies required by the serializer" do
+      teacher_with_dependencies = Teacher
+        .strict_loading
+        .includes(described_class.dependencies)
+        .find(teacher.id)
+
+      expect { described_class.render(teacher_with_dependencies, lead_provider_id: lead_provider.id) }.not_to raise_error
+    end
+  end
+
   describe "core attributes" do
     it "serializes correctly" do
       expect(response["id"]).to be_present
