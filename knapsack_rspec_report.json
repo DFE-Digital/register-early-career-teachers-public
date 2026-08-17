@@ -697,7 +697,7 @@
   "spec/services/api/release_note_spec.rb": 0.008862914000019373,
   "spec/views/admin/finance/active_lead_providers/lead_provider_delivery_partnerships/delete.html.erb_spec.rb": 0.05538250400013567,
   "spec/services/schools/access_blocker_spec.rb": 0.1945621630000005,
-  "spec/services/admin/data_fixes/processor_spec.rb": 0.533833980999816,
+  "spec/services/migration_fixes/processor_spec.rb": 0.533833980999816,
   "spec/features/schools/ects/register/edge_cases/appropriate_body_selection/independent_school_selects_istip_spec.rb": 1.191689737999923,
   "spec/views/errors/internal_server_error.html.erb_spec.rb": 0.007447897000020021,
   "spec/requests/api/v3/unfunded_mentors_spec.rb": 12.42776434300004,
