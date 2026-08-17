@@ -10,41 +10,31 @@ module GIAS::Reconciliation
     def merge!
       return false unless eligibility.can_be_merged?
 
-      teachers_to_refresh = affected_teachers
+      ActiveRecord::Base.transaction do
+        ensure_successor_school_exists!
 
-      DeclarativeUpdates.skip(:metadata) do
-        ActiveRecord::Base.transaction do
-          ensure_successor_school_exists!
-
-          mentor_teachers.each do |teacher|
-            overlapping_mentor_at_school_periods(teacher).each do |periods|
-              MentorAtSchoolPeriods::Merge.call(periods:, predecessor_school:, successor_school:)
-            end
+        mentor_teachers.each do |teacher|
+          overlapping_mentor_at_school_periods(teacher).each do |periods|
+            MentorAtSchoolPeriods::Merge.call(periods:, predecessor_school:, successor_school:)
           end
-
-          remaining_mentor_periods = predecessor_school.mentor_at_school_periods.reload
-
-          remaining_mentor_periods.each do |mentor_at_school_period|
-            MentorAtSchoolPeriods::Transfer.call(mentor_at_school_period:, predecessor_school:, successor_school:)
-          end
-
-          remaining_ect_periods = predecessor_school.ect_at_school_periods.reload
-
-          remaining_ect_periods.each do |ect_at_school_period|
-            ECTAtSchoolPeriods::Transfer.call(ect_at_school_period:, predecessor_school:, successor_school:)
-          end
-
-          destroy_predecessor_school_metadata!
-          predecessor_school.events.each(&:destroy!)
-          predecessor_school.school_partnerships.each(&:destroy!)
-          predecessor_school.destroy!
-
-          record_school_merged_event!
         end
-      end
 
-      refresh_school_metadata!
-      refresh_teacher_metadata!(teachers_to_refresh)
+        remaining_mentor_periods = predecessor_school.mentor_at_school_periods.reload
+
+        remaining_mentor_periods.each do |mentor_at_school_period|
+          MentorAtSchoolPeriods::Transfer.call(mentor_at_school_period:, predecessor_school:, successor_school:)
+        end
+
+        remaining_ect_periods = predecessor_school.ect_at_school_periods.reload
+
+        remaining_ect_periods.each do |ect_at_school_period|
+          ECTAtSchoolPeriods::Transfer.call(ect_at_school_period:, predecessor_school:, successor_school:)
+        end
+
+        predecessor_school.events.each(&:destroy!)
+        predecessor_school.school_partnerships.each(&:destroy!)
+        predecessor_school.destroy!
+      end
 
       true
     end
