@@ -348,6 +348,24 @@ RSpec.shared_examples "a declarative metadata model", :with_metadata do |when_ch
 
           expect(manager).to have_received(:refresh_metadata!).with(target)
         end
+
+        context "when the target is also destroyed in the same transaction" do
+          it "does not refresh the metadata" do
+            # In order for the target to be destroyed in the same transaction,
+            # we need to ensure that anything associated with the target that would prevent its destruction is also destroyed.
+            dependent_associations = %i[ect_at_school_periods mentor_at_school_periods school_partnerships]
+
+            ActiveRecord::Base.transaction do
+              instance.destroy!
+              dependent_associations.each do |association|
+                target.send(association).destroy_all if target.respond_to?(association)
+              end
+              target.destroy!
+            end
+
+            expect(manager).not_to have_received(:refresh_metadata!).with(target)
+          end
+        end
       end
 
       context "when wrapped in a skip(:metadata) block" do

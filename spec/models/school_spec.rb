@@ -81,8 +81,8 @@ RSpec.describe School do
     it { is_expected.to have_many(:mentor_at_school_periods).inverse_of(:school) }
     it { is_expected.to have_many(:mentor_teachers).through(:mentor_at_school_periods).source(:teacher) }
     it { is_expected.to have_many(:school_partnerships) }
-    it { is_expected.to have_many(:contract_period_metadata).class_name("Metadata::SchoolContractPeriod") }
-    it { is_expected.to have_many(:lead_provider_contract_period_metadata).class_name("Metadata::SchoolLeadProviderContractPeriod") }
+    it { is_expected.to have_many(:contract_period_metadata).class_name("Metadata::SchoolContractPeriod").dependent(:delete_all) }
+    it { is_expected.to have_many(:lead_provider_contract_period_metadata).class_name("Metadata::SchoolLeadProviderContractPeriod").dependent(:delete_all) }
     it { is_expected.to have_many(:training_periods).through(:school_partnerships) }
     it { is_expected.to have_many(:school_funding_eligibilities).through(:gias_school) }
   end

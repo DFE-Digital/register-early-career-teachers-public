@@ -23,8 +23,8 @@ class School < ApplicationRecord
   has_many :mentor_at_school_periods, inverse_of: :school
   has_many :mentor_teachers, -> { distinct }, through: :mentor_at_school_periods, source: :teacher
   has_many :school_partnerships
-  has_many :lead_provider_contract_period_metadata, class_name: "Metadata::SchoolLeadProviderContractPeriod"
-  has_many :contract_period_metadata, class_name: "Metadata::SchoolContractPeriod"
+  has_many :lead_provider_contract_period_metadata, class_name: "Metadata::SchoolLeadProviderContractPeriod", dependent: :delete_all
+  has_many :contract_period_metadata, class_name: "Metadata::SchoolContractPeriod", dependent: :delete_all
   has_many :training_periods, through: :school_partnerships
   has_many :school_funding_eligibilities, through: :gias_school
 
