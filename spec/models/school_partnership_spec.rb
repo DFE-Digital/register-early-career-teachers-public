@@ -34,6 +34,20 @@ describe SchoolPartnership do
       let!(:target) { FactoryBot.create(:school) }
 
       it_behaves_like "a declarative metadata model", on_event: %i[create destroy update]
+
+      context "when changing :school_id", :with_metadata do
+        let!(:manager) { instance_double(Metadata::Manager, refresh_metadata!: nil) }
+        let!(:new_school) { FactoryBot.create(:school) }
+
+        before do
+          allow(Metadata::Manager).to receive(:new).and_return(manager)
+        end
+
+        it "refreshes the metadata of the previous school" do
+          instance.update!(school: new_school)
+          expect(manager).to have_received(:refresh_metadata!).with(target)
+        end
+      end
     end
   end
 
