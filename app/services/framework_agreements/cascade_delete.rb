@@ -28,7 +28,7 @@ module FrameworkAgreements
         framework_agreement.destroy!
       end
 
-      Events::Record.record_active_lead_provider_deleted_event!(author:, lead_provider:, contract_period:)
+      Events::Record.record_framework_agreement_deleted_event!(author:, lead_provider:, contract_period:)
     end
 
   private

@@ -2188,20 +2188,20 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe ".record_active_lead_provider_created_event!" do
+  describe ".record_framework_agreement_created_event!" do
     let(:lead_provider) { FactoryBot.create(:lead_provider) }
     let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
     let(:framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:, contract_period:) }
 
     it "queues a RecordEventJob with the correct values" do
       freeze_time do
-        Events::Record.record_active_lead_provider_created_event!(author:, framework_agreement:)
+        Events::Record.record_framework_agreement_created_event!(author:, framework_agreement:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           framework_agreement:,
           lead_provider:,
           heading: "#{lead_provider.name} added for #{contract_period.year}",
-          event_type: :active_lead_provider_created,
+          event_type: :framework_agreement_created,
           happened_at: Time.zone.now,
           **author_params
         )
@@ -2209,18 +2209,18 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe ".record_active_lead_provider_deleted_event!" do
+  describe ".record_framework_agreement_deleted_event!" do
     let(:lead_provider) { FactoryBot.create(:lead_provider) }
     let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
 
     it "queues a RecordEventJob with the correct values" do
       freeze_time do
-        Events::Record.record_active_lead_provider_deleted_event!(author:, lead_provider:, contract_period:)
+        Events::Record.record_framework_agreement_deleted_event!(author:, lead_provider:, contract_period:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           lead_provider:,
           heading: "#{lead_provider.name} removed for #{contract_period.year}",
-          event_type: :active_lead_provider_deleted,
+          event_type: :framework_agreement_deleted,
           happened_at: Time.zone.now,
           **author_params
         )
