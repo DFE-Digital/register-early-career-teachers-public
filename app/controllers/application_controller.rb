@@ -24,7 +24,7 @@ class ApplicationController < ActionController::Base
     Sentry.set_user(
       email: current_user&.email,
       id: current_user.try(:id),
-      dfe_sign_in_user_fingerprint: current_user_dfe_sign_in_user_fingerprint
+      dfe_sign_in_user_fingerprint: current_user&.fingerprint
     )
   end
 
@@ -41,11 +41,6 @@ private
     super
     payload[:current_user_class] = current_user&.class&.name
     payload[:current_user_id] = current_user.try(:id)
-    payload[:current_user_dfe_sign_in_user_fingerprint] =
-      current_user_dfe_sign_in_user_fingerprint
-  end
-
-  def current_user_dfe_sign_in_user_fingerprint
-    current_user&.fingerprint
+    payload[:current_user_dfe_sign_in_user_fingerprint] = current_user&.fingerprint
   end
 end
