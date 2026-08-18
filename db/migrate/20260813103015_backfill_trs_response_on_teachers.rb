@@ -33,9 +33,11 @@ class BackfillTRSResponseOnTeachers < ActiveRecord::Migration[8.1]
                  substring(body from 'redirects to TRN (\\d+)') AS redirected_to
           FROM events
           WHERE event_type = 'teacher_trs_merged'
+            AND teacher_id BETWEEN #{first} AND #{last}
           ORDER BY teacher_id, created_at DESC
         ) AS merged
         WHERE merged.teacher_id = teachers.id
+          AND teachers.trs_response = 'permanent_redirect'
           AND merged.redirected_to IS NOT NULL
           AND teachers.trs_redirected_to IS NULL
           AND teachers.id BETWEEN #{first} AND #{last}
