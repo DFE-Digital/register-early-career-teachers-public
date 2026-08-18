@@ -772,8 +772,8 @@ RSpec.describe AppropriateBodies::Importers::InductionPeriodParser do
 
           it "both are discarded due to conflict and logged" do
             expect(parsed.values.flatten.length).to be(0)
-            expect(fake_logger).to have_received(:error).once.with(/two induction periods with different appropriate bodies where one contains the other/)
-            expect(fake_logger).to have_received(:error).once.with(/trn: .* dqt_id:/)
+            expect(fake_logger).to have_received(:error).twice.with(/two induction periods with different appropriate bodies where one contains the other/)
+            expect(fake_logger).to have_received(:error).twice.with(/trn: .* dqt_id:/)
           end
         end
 
@@ -788,8 +788,8 @@ RSpec.describe AppropriateBodies::Importers::InductionPeriodParser do
 
           it "both are discarded due to conflict and logged" do
             expect(parsed.values.flatten.length).to be(0)
-            expect(fake_logger).to have_received(:error).once.with(/two induction periods with different appropriate bodies that start on the same day found/)
-            expect(fake_logger).to have_received(:error).once.with(/trn: .* dqt_id:/)
+            expect(fake_logger).to have_received(:error).twice.with(/two induction periods with different appropriate bodies that start on the same day found/)
+            expect(fake_logger).to have_received(:error).twice.with(/trn: .* dqt_id:/)
           end
         end
 
@@ -963,10 +963,21 @@ RSpec.describe AppropriateBodies::Importers::InductionPeriodParser do
       <<~CSV
         appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
         #{ab_1.dqt_id},01/01/2023 00:00:00,01/01/2023 00:00:00,Core Induction Programme,3,#{ect_1.trn}
-        #{ab_1.dqt_id},02/02/2023 00:00:00,01/01/2023 00:00:00,Core Induction Programme,3,#{ect_2.trn}
+        #{ab_1.dqt_id},12/31/2023 00:00:00,12/01/2023 00:00:00,Core Induction Programme,3,#{ect_2.trn}
       CSV
     end
-    let(:output) { File.readlines(described_class::PARSER_ERROR_CSV) }
+
+    let(:output) do
+      CSV.read(described_class::PARSER_ERROR_CSV, headers: true)
+    end
+
+    def rejected_row(reason_fragment)
+      output.map(&:to_h).find { |row| row["reason"].include?(reason_fragment) }
+    end
+
+    def rejected_rows(reason_fragment)
+      output.map(&:to_h).select { |row| row["reason"].include?(reason_fragment) }
+    end
 
     before do
       FileUtils.rm_f(described_class::PARSER_ERROR_CSV)
@@ -974,15 +985,174 @@ RSpec.describe AppropriateBodies::Importers::InductionPeriodParser do
     end
 
     it "writes a header row" do
-      expect(output.first.chomp).to eq("reason,trn,dqt_id,dqt_id_other,started_on,started_on_other,finished_on,finished_on_other")
+      expect(output.headers).to eq(described_class::ERROR_CSV_HEADER)
     end
 
     it "writes one row per rejected record" do
-      expect(output.count).to eq(3)
+      expect(output.size).to eq(2)
     end
 
     it "includes the rejection reason" do
-      expect(output.join).to include("1 day or shorter").and(include("started_on is greater than finished_on"))
+      expect(rejected_row("1 day or shorter")).to eq(
+        "reason" => "cannot be imported because the induction period is 1 day or shorter",
+        "trn" => ect_1.trn,
+        "dqt_id_imported" => nil,
+        "started_on_imported" => nil,
+        "finished_on_imported" => nil,
+        "dqt_id_discarded" => ab_1.dqt_id,
+        "started_on_discarded" => "2023-01-01",
+        "finished_on_discarded" => "2023-01-01"
+      )
+
+      expect(rejected_row("started_on is greater than finished_on")).to eq(
+        "reason" => "cannot be imported because started_on is greater than finished_on",
+        "trn" => ect_2.trn,
+        "dqt_id_imported" => nil,
+        "started_on_imported" => nil,
+        "finished_on_imported" => nil,
+        "dqt_id_discarded" => ab_1.dqt_id,
+        "started_on_discarded" => "2023-12-31",
+        "finished_on_discarded" => "2023-12-01"
+      )
+    end
+
+    context "when a period with a different programme is fully contained within a retained period" do
+      let(:sample_csv_data) do
+        <<~CSV
+          appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
+          #{ab_1.dqt_id},01/01/2012 00:00:00,05/05/2012 00:00:00,Core Induction Programme,2,#{ect_1.trn}
+          #{ab_1.dqt_id},02/02/2012 00:00:00,03/03/2012 00:00:00,Full Induction Programme,1,#{ect_1.trn}
+        CSV
+      end
+
+      it "discards the contained period and logs it" do
+        expect(parsed.values.flatten.length).to eq(1)
+        expect(fake_logger).to have_received(:error).once.with(/different programme is fully contained/)
+      end
+    end
+
+    context "when some records are imported and some are discarded" do
+      let(:sample_csv_data) do
+        <<~CSV
+          appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
+          #{ab_1.dqt_id},01/01/2020 00:00:00,05/05/2020 00:00:00,Full Induction Programme,4,#{ect_1.trn}
+          #{ab_1.dqt_id},02/02/2020 00:00:00,03/03/2020 00:00:00,Full Induction Programme,2,#{ect_1.trn}
+          #{ab_2.dqt_id},06/06/2021 00:00:00,07/07/2021 00:00:00,Full Induction Programme,1,#{ect_2.trn}
+        CSV
+      end
+
+      it "every source row is imported or discarded exactly once (source = imported + discarded)" do
+        source = parser.rows.count
+        imported = parsed.values.flatten.length
+        discarded = output.size
+        expect(imported).to eq(2)
+        expect(discarded).to eq(1)
+        expect(source).to eq(imported + discarded)
+      end
+    end
+
+    context "when a retained period wholly contains the overlapping period being processed" do
+      let(:sample_csv_data) do
+        <<~CSV
+          appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
+          #{ab_1.dqt_id},06/30/2012 00:00:00,06/30/2013 00:00:00,Full Induction Programme,2,#{ect_1.trn}
+          #{ab_1.dqt_id},08/15/2012 00:00:00,03/15/2013 00:00:00,Full Induction Programme,3,#{ect_1.trn}
+        CSV
+      end
+
+      it "records the discarded period and what will be imported instead" do
+        expect(rejected_row("overlapping")).to eq(
+          "reason" => "an overlapping induction period was discarded as fully contained within the retained period",
+          "trn" => ect_1.trn,
+          "dqt_id_imported" => ab_1.dqt_id,
+          "started_on_imported" => "2012-06-30",
+          "finished_on_imported" => "2013-06-30",
+          "dqt_id_discarded" => ab_1.dqt_id,
+          "started_on_discarded" => "2012-08-15",
+          "finished_on_discarded" => "2013-03-15"
+        )
+      end
+    end
+
+    context "when the period being processed wholly contains a retained period" do
+      let(:sample_csv_data) do
+        <<~CSV
+          appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
+          #{ab_1.dqt_id},01/01/2012 00:00:00,03/03/2012 00:00:00,Full Induction Programme,1,#{ect_1.trn}
+          #{ab_1.dqt_id},01/01/2012 00:00:00,04/04/2012 00:00:00,Full Induction Programme,4,#{ect_1.trn}
+        CSV
+      end
+
+      it "records the discarded period and what will be imported instead" do
+        expect(rejected_row("overlapping")).to eq(
+          "reason" => "an overlapping induction period was discarded as fully contained within the retained period",
+          "trn" => ect_1.trn,
+          "dqt_id_imported" => ab_1.dqt_id,
+          "started_on_imported" => "2012-01-01",
+          "finished_on_imported" => "2012-04-04",
+          "dqt_id_discarded" => ab_1.dqt_id,
+          "started_on_discarded" => "2012-01-01",
+          "finished_on_discarded" => "2012-03-03"
+        )
+      end
+    end
+
+    context "when a retained period is extended to absorb an overlapping period" do
+      let(:sample_csv_data) do
+        <<~CSV
+          appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
+          #{ab_1.dqt_id},01/01/2012 00:00:00,04/04/2012 00:00:00,Full Induction Programme,2,#{ect_1.trn}
+          #{ab_1.dqt_id},03/03/2012 00:00:00,05/05/2012 00:00:00,Full Induction Programme,3,#{ect_1.trn}
+        CSV
+      end
+
+      it "records the discarded period and what will be imported instead" do
+        expect(rejected_row("absorbed")).to eq(
+          "reason" => "cannot be imported because the induction period is fully absorbed into the retained period which was extended to cover it",
+          "trn" => ect_1.trn,
+          "dqt_id_imported" => ab_1.dqt_id,
+          "started_on_imported" => "2012-01-01",
+          "finished_on_imported" => "2012-04-04",
+          "dqt_id_discarded" => ab_1.dqt_id,
+          "started_on_discarded" => "2012-03-03",
+          "finished_on_discarded" => "2012-05-05"
+        )
+      end
+    end
+
+    context "when two periods with different appropriate bodies and one contains the other" do
+      let(:sample_csv_data) do
+        <<~CSV
+          appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
+          #{ab_1.dqt_id},01/01/2022 00:00:00,05/05/2022 00:00:00,Full Induction Programme,2,#{ect_1.trn}
+          #{ab_2.dqt_id},02/02/2022 00:00:00,03/03/2022 00:00:00,Full Induction Programme,4,#{ect_1.trn}
+        CSV
+      end
+
+      it "records the discarded periods" do
+        expect(rejected_rows("one contains the other")).to eq([
+          {
+            "reason" => "two induction periods with different appropriate bodies where one contains the other (1 of 2)",
+            "trn" => ect_1.trn,
+            "dqt_id_imported" => nil,
+            "started_on_imported" => nil,
+            "finished_on_imported" => nil,
+            "dqt_id_discarded" => ab_2.dqt_id,
+            "started_on_discarded" => "2022-02-02",
+            "finished_on_discarded" => "2022-03-03"
+          },
+          {
+            "reason" => "two induction periods with different appropriate bodies where one contains the other (2 of 2)",
+            "trn" => ect_1.trn,
+            "dqt_id_imported" => nil,
+            "started_on_imported" => nil,
+            "finished_on_imported" => nil,
+            "dqt_id_discarded" => ab_1.dqt_id,
+            "started_on_discarded" => "2022-01-01",
+            "finished_on_discarded" => "2022-05-05"
+          }
+        ])
+      end
     end
   end
 end
