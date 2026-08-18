@@ -39,6 +39,10 @@ class FrameworkAgreement < ApplicationRecord
 
   def editable? = !contract_period.payments_frozen?
 
+  def payment_declarations_count
+    contracts.sum(&:payment_declarations_count)
+  end
+
   def bands_can_be_added_and_removed?
     contracts.none? && contract_period.started_on.future?
   end

@@ -59,4 +59,8 @@ class Contract < ApplicationRecord
 
     "#{first.month_year} - #{last.month_year}"
   end
+
+  def payment_declarations_count
+    statements.sum { it.payment_declarations.count }
+  end
 end
