@@ -115,7 +115,7 @@ private
     return if active_lead_provider.blank?
 
     minimum_capacity = active_lead_provider.payment_declarations_count - prior_capacity
-    minimum_capacity = 100 unless minimum_capacity.positive?
+    minimum_capacity = 1 unless minimum_capacity.positive?
 
     if capacity.present? && capacity < minimum_capacity
       errors.add(:capacity, "Band #{letter} capacity must be at least #{minimum_capacity} to cover the existing payment declarations")
