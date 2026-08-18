@@ -13,15 +13,15 @@ RSpec.describe Admin::Statements::ProviderTargetsComponent::BandedFeeComponent, 
                      setup_fee: 5000,
                      band_terms: [
                        FactoryBot.build(:contract_banded_fee_structure_band_term,
-                                        band: active_lead_provider_bands.first),
+                                        band: framework_agreement_bands.first),
                        FactoryBot.build(:contract_banded_fee_structure_band_term,
-                                        band: active_lead_provider_bands.second),
+                                        band: framework_agreement_bands.second),
                        FactoryBot.build(:contract_banded_fee_structure_band_term,
-                                        band: active_lead_provider_bands.third),
+                                        band: framework_agreement_bands.third),
                      ])
   end
 
-  let(:active_lead_provider_bands) do
+  let(:framework_agreement_bands) do
     FactoryBot.create_list(:framework_agreement_band, 3,
                            framework_agreement:,
                            capacity: 50)

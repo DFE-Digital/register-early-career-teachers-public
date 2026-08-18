@@ -1,7 +1,7 @@
 module APISeedData
   class SchoolPartnerships < Base
-    SCHOOL_PARTNERSHIPS_PER_ACTIVE_LEAD_PROVIDER = 15
-    SAME_SCHOOL_DIFFERENT_DELIVERY_PARTNER_PER_ACTIVE_LEAD_PROVIDER = 5
+    SCHOOL_PARTNERSHIPS_PER_FRAMEWORK_AGREEMENT = 15
+    SAME_SCHOOL_DIFFERENT_DELIVERY_PARTNER_PER_FRAMEWORK_AGREEMENT = 5
 
     def plant
       return unless plantable?
@@ -9,7 +9,7 @@ module APISeedData
       log_plant_info("school partnerships")
 
       framework_agreements.find_each do |framework_agreement|
-        SCHOOL_PARTNERSHIPS_PER_ACTIVE_LEAD_PROVIDER.times do
+        SCHOOL_PARTNERSHIPS_PER_FRAMEWORK_AGREEMENT.times do
           create_school_partnership(framework_agreement)
         end
 
@@ -57,7 +57,7 @@ module APISeedData
     def select_existing_schools(framework_agreement)
       school_partnerships(framework_agreement)
         .order("RANDOM()")
-        .first(SAME_SCHOOL_DIFFERENT_DELIVERY_PARTNER_PER_ACTIVE_LEAD_PROVIDER)
+        .first(SAME_SCHOOL_DIFFERENT_DELIVERY_PARTNER_PER_FRAMEWORK_AGREEMENT)
         .map(&:school)
     end
 

@@ -10,8 +10,8 @@ RSpec.describe APISeedData::SchoolPartnerships do
     allow(Logger).to receive(:new).with($stdout) { logger }
     allow(Rails).to receive(:env) { environment.inquiry }
 
-    stub_const("#{described_class}::SCHOOL_PARTNERSHIPS_PER_ACTIVE_LEAD_PROVIDER", 2)
-    stub_const("#{described_class}::SAME_SCHOOL_DIFFERENT_DELIVERY_PARTNER_PER_ACTIVE_LEAD_PROVIDER", 1)
+    stub_const("#{described_class}::SCHOOL_PARTNERSHIPS_PER_FRAMEWORK_AGREEMENT", 2)
+    stub_const("#{described_class}::SAME_SCHOOL_DIFFERENT_DELIVERY_PARTNER_PER_FRAMEWORK_AGREEMENT", 1)
 
     FactoryBot.create_list(:framework_agreement, 2, contract_period:)
     FrameworkAgreement.find_each do |framework_agreement|
