@@ -201,4 +201,22 @@ describe ActiveLeadProvider do
       end
     end
   end
+
+  describe "#payment_declarations_count" do
+    let(:contract_period) { FactoryBot.create(:contract_period, :next) }
+    let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
+
+    let!(:contract_1) { FactoryBot.create(:contract, active_lead_provider:) }
+    let!(:contract_2) { FactoryBot.create(:contract, active_lead_provider:) }
+
+    before do
+      allow(contract_1).to receive(:payment_declarations_count).and_return(100)
+      allow(contract_2).to receive(:payment_declarations_count).and_return(50)
+      allow(active_lead_provider).to receive(:contracts).and_return([contract_1, contract_2])
+    end
+
+    it "returns the total of payment declarations from all contracts and statements" do
+      expect(active_lead_provider.payment_declarations_count).to eq 150
+    end
+  end
 end
