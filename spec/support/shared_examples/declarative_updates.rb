@@ -350,17 +350,20 @@ RSpec.shared_examples "a declarative metadata model", :with_metadata do |when_ch
         end
 
         context "when the target is also destroyed in the same transaction" do
+          # If the target has multiple in-memory references during a transaction, one
+          # reference can delete the database row while another still appears persisted.
+          # Use a separate reference here to reproduce that state.
+          # Additionally, referential integrity is disabled because some metadata
+          # targets have dependent records that intentionally prevent deletion.
+
           it "does not refresh the metadata" do
-            # In order for the target to be destroyed in the same transaction,
-            # we need to ensure that anything associated with the target that would prevent its destruction is also destroyed.
-            dependent_associations = %i[ect_at_school_periods mentor_at_school_periods school_partnerships]
+            separate_target_reference = target.class.where(id: target.id)
 
             ActiveRecord::Base.transaction do
               instance.destroy!
-              dependent_associations.each do |association|
-                target.send(association).destroy_all if target.respond_to?(association)
+              ActiveRecord::Base.connection.disable_referential_integrity do
+                separate_target_reference.delete_all
               end
-              target.destroy!
             end
 
             expect(manager).not_to have_received(:refresh_metadata!).with(target)
