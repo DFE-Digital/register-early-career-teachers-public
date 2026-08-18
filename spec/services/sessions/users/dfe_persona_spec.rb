@@ -9,6 +9,10 @@ RSpec.describe Sessions::Users::DfEPersona do
     let(:user_props) { { email: } }
   end
 
+  it_behaves_like "a fingerprintable user" do
+    let(:user_props) { { email: } }
+  end
+
   context "when personas are disabled" do
     before { allow(Rails.application.config).to receive(:enable_personas).and_return(false) }
 
@@ -42,6 +46,14 @@ RSpec.describe Sessions::Users::DfEPersona do
     it { is_expected.to delegate_method(:finance?).to(:user) }
     it { is_expected.to delegate_method(:finance_access?).to(:user) }
     it { is_expected.to delegate_method(:can_manage_users?).to(:user) }
+  end
+
+  describe "#id" do
+    it { expect(dfe_persona.id).to eql(user.id) }
+  end
+
+  describe "#dfe_analytics_user_id" do
+    it { expect(dfe_persona.dfe_analytics_user_id).to eql(user.id) }
   end
 
   describe "#provider" do

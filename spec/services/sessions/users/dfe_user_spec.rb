@@ -9,6 +9,10 @@ RSpec.describe Sessions::Users::DfEUser do
     let(:user_props) { { email: } }
   end
 
+  it_behaves_like "a fingerprintable user" do
+    let(:user_props) { { email: } }
+  end
+
   context "when there is no user with the given email" do
     let(:email) { Faker::Internet.email }
 
@@ -34,6 +38,14 @@ RSpec.describe Sessions::Users::DfEUser do
     it { is_expected.to delegate_method(:finance?).to(:user) }
     it { is_expected.to delegate_method(:finance_access?).to(:user) }
     it { is_expected.to delegate_method(:can_manage_users?).to(:user) }
+  end
+
+  describe "#id" do
+    it { expect(dfe_user.id).to eql(user.id) }
+  end
+
+  describe "#dfe_analytics_user_id" do
+    it { expect(dfe_user.dfe_analytics_user_id).to eql(user.id) }
   end
 
   describe "#provider" do

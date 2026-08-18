@@ -13,6 +13,10 @@ RSpec.describe Sessions::Users::SchoolPersona do
     let(:user_props) { { email:, name:, school_urn: school.urn } }
   end
 
+  it_behaves_like "an unidentifiable user" do
+    let(:user_props) { { email:, name:, school_urn: school.urn } }
+  end
+
   context "when personas are disabled" do
     before { allow(Rails.application.config).to receive(:enable_personas).and_return(false) }
 
@@ -27,6 +31,10 @@ RSpec.describe Sessions::Users::SchoolPersona do
     it do
       expect { school_persona }.to raise_error(described_class::UnknownSchoolURN, school_urn)
     end
+  end
+
+  describe "#dfe_analytics_user_id" do
+    it { expect(school_persona.dfe_analytics_user_id).to be_nil }
   end
 
   describe "#provider" do
