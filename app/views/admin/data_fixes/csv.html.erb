@@ -1,0 +1,19 @@
+<% page_data(
+    title: "Enter data fixes in CSV format",
+    header: false,
+    error: @wizard.current_step.errors.present?,
+    backlink_href: admin_path,
+) %>
+
+<%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |form| %>
+  <%= content_for(:error_summary) { form.govuk_error_summary } %>
+
+  <%= form.govuk_text_area(
+        :csv_string,
+        label: { text: "Enter data fixes in CSV format", tag: "h1", size: "l" },
+        hint: { text: "Include a header row: #{Admin::DataFixes::InlineCSV::HEADER_ROW.join(',')}" },
+        rows: 10
+      ) %>
+
+  <%= form.govuk_submit "Continue" %>
+<% end %>

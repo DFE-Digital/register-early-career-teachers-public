@@ -27,7 +27,7 @@ describe "Real data check for teacher 117308" do
     ]
   end
 
-  let(:processor) { MigrationFixes::Processor.new }
+  let(:processor) { Admin::DataFixes::Processor.new }
 
   before do
     migration_fixes.each do |data_change|

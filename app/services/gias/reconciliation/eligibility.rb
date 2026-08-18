@@ -36,7 +36,6 @@ module GIAS::Reconciliation
         closed_on_or_before_today? &&
         school.present? &&
         school_being_merged_or_amalgamated? &&
-        !school_merged_event_recorded? &&
         has_one_open_successor?
     end
 
@@ -48,10 +47,6 @@ module GIAS::Reconciliation
       return false if closed_on.blank?
 
       closed_on <= Date.current
-    end
-
-    def school_merged_event_recorded?
-      Event.where(school:, event_type: :school_merged).exists?
     end
 
     def school_closed_event_recorded?

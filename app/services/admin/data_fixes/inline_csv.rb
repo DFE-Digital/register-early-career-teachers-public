@@ -1,25 +1,22 @@
 module Admin::DataFixes
   class InlineCSV
-    class InvalidHeaderError < ArgumentError; end
-
     include ActiveModel::Model
     include ActiveModel::Attributes
     include ActiveModel::Validations
 
     HEADER_ROW = %w[object_type object_id action attributes].freeze
-    Row = Data.define(*HEADER_ROW)
 
     attribute :csv_string, :string
 
-    validates :csv_string, presence: true
+    validates :csv_string, presence: { message: "CSV can’t be blank" }
     validate :expected_headers
 
     def parse
       return false unless valid?
 
-      parsed_csv.map { Row.new(**it) }
+      parsed_csv.map(&:to_hash)
     rescue CSV::MalformedCSVError => _e
-      errors.add(:csv_string, "is malformed")
+      errors.add(:csv_string, "CSV is malformed")
       false
     end
 
@@ -29,7 +26,7 @@ module Admin::DataFixes
 
     def expected_headers
       if parsed_csv.headers != HEADER_ROW
-        errors.add(:csv_string, "has invalid headers")
+        errors.add(:csv_string, "CSV has invalid headers")
       end
     end
   end

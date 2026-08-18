@@ -314,6 +314,8 @@ RSpec.describe Teachers::Manage do
   end
 
   describe "#mark_teacher_as_deactivated!" do
+    before { freeze_time }
+
     let(:trs_data_last_refreshed_at) { 2.minutes.ago }
 
     context "when the teacher is already flagged" do
@@ -327,19 +329,21 @@ RSpec.describe Teachers::Manage do
     end
 
     context "when the teacher is not yet flagged" do
-      it "sets the trs_deactivated flag to true" do
-        expect(teacher.trs_deactivated).to be(false)
+      it "records the TRS response as gone" do
+        expect(teacher.trs_response).to be_nil
 
         service.mark_teacher_as_deactivated!(trs_data_last_refreshed_at:)
         teacher.reload
 
-        expect(teacher.trs_data_last_refreshed_at).to be_within(0.001.seconds).of(trs_data_last_refreshed_at)
-        expect(teacher.trs_deactivated).to be(true)
+        expect(teacher.trs_data_last_refreshed_at).to eq(trs_data_last_refreshed_at)
+        expect(teacher).to be_trs_response_gone
       end
     end
   end
 
   describe "#mark_teacher_as_not_found!" do
+    before { freeze_time }
+
     let(:trs_data_last_refreshed_at) { 2.minutes.ago }
 
     context "when the teacher is already flagged" do
@@ -353,14 +357,14 @@ RSpec.describe Teachers::Manage do
     end
 
     context "when the teacher is not yet flagged" do
-      it "sets the trs_not_found flag to true" do
-        expect(teacher.trs_not_found).to be(false)
+      it "records the TRS response as not found" do
+        expect(teacher.trs_response).to be_nil
 
         service.mark_teacher_as_not_found!(trs_data_last_refreshed_at:)
         teacher.reload
 
-        expect(teacher.trs_data_last_refreshed_at).to be_within(0.001.seconds).of(trs_data_last_refreshed_at)
-        expect(teacher.trs_not_found).to be(true)
+        expect(teacher.trs_data_last_refreshed_at).to eq(trs_data_last_refreshed_at)
+        expect(teacher).to be_trs_response_not_found
       end
     end
 
@@ -388,6 +392,35 @@ RSpec.describe Teachers::Manage do
         it "overwrites the status" do
           expect(teacher.trs_induction_status).to eq("Passed")
         end
+      end
+    end
+  end
+
+  describe "#mark_teacher_as_merged!" do
+    subject(:mark_teacher_as_merged) do
+      service.mark_teacher_as_merged!(trs_data_last_refreshed_at:, redirected_to:, event_body: "merged")
+    end
+
+    before { freeze_time }
+
+    let(:trs_data_last_refreshed_at) { 2.minutes.ago }
+    let(:redirected_to) { "1234567" }
+
+    context "when the teacher is already flagged" do
+      let(:teacher) { FactoryBot.create(:teacher, :merged_in_trs) }
+
+      it { expect { mark_teacher_as_merged }.to raise_error(Teachers::Manage::AlreadyFlagged) }
+    end
+
+    context "when the teacher is not yet flagged" do
+      before { mark_teacher_as_merged }
+
+      it "records the TRN the teacher was merged into" do
+        teacher.reload
+
+        expect(teacher.trs_redirected_to).to eq(redirected_to)
+        expect(teacher).to be_trs_response_permanent_redirect
+        expect(teacher.trs_data_last_refreshed_at).to eq(trs_data_last_refreshed_at)
       end
     end
   end

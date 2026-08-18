@@ -1,8 +1,8 @@
 class GIASImportJob < ApplicationJob
   queue_as :default
 
-  # TODO: Enable automatic reconciliation
   def perform
-    GIAS::Importer.new.fetch
+    urns = GIAS::Importer.new.fetch
+    GIAS::Reconcile.new(urns).call
   end
 end

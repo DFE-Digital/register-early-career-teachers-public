@@ -141,7 +141,7 @@ describe "Real data check for teacher 210915 (missing training period and declar
     ]
   end
 
-  let(:processor) { MigrationFixes::Processor.new }
+  let(:processor) { Admin::DataFixes::Processor.new }
 
   before do
     migration_fixes.each do |data_change|

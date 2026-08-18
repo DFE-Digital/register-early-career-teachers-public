@@ -3,6 +3,8 @@ module Sessions
     class SchoolUser < User
       class UnknownOrganisationURN < Sessions::User::InvalidSession; end
 
+      include Fingerprint
+
       USER_TYPE = :school_user
       PROVIDER = :dfe_sign_in
 
@@ -75,6 +77,9 @@ module Sessions
 
       # @return [Array<String>]
       alias_method :roles, :dfe_sign_in_roles
+
+      # @return [String]
+      alias_method :dfe_analytics_user_id, :dfe_sign_in_user_id
 
     private
 

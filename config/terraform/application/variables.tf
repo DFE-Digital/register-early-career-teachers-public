@@ -102,6 +102,20 @@ variable "postgres_enable_high_availability" {
   default = false
 }
 
+variable "redis_managed_cache_sku_name" { default = "Balanced_B1" }
+
+variable "redis_managed_queue_sku_name" { default = "Balanced_B1" }
+
+variable "redis_mode" {
+  description = "Whether to use Cache for Redis or Managed Redis"
+  type        = string
+  default     = "legacy" # or "managed"
+  validation {
+    condition     = contains(["managed", "legacy"], var.redis_mode)
+    error_message = "redis_mode must be either 'legacy' (Cache for Redis) or 'managed' (Managed Redis)."
+  }
+}
+
 variable "enable_logit" { default = false }
 
 variable "gcp_table_deletion_protection" {
@@ -132,6 +146,16 @@ locals {
   bigquery_secrets = var.create_bigquery_dataset ? {
     GOOGLE_CLOUD_CREDENTIALS = module.dfe_analytics[0].google_cloud_credentials
   } : {}
+
+  redis = {
+    legacy = {
+      cache_url = module.redis-cache.url
+    }
+    # managed = {
+    #   cache_url = module.redis-managed-cache.url
+    # }
+  }
+  selected_redis = local.redis[var.redis_mode]
 }
 
 variable "commands" {

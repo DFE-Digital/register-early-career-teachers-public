@@ -1,6 +1,8 @@
 module Sessions
   module Users
     class AppropriateBodyUser < User
+      include Fingerprint
+
       class UnknownOrganisationId < Sessions::User::InvalidSession; end
 
       USER_TYPE = :appropriate_body_user
@@ -72,6 +74,9 @@ module Sessions
 
       # @return [Array<String>]
       alias_method :roles, :dfe_sign_in_roles
+
+      # @return [String]
+      alias_method :dfe_analytics_user_id, :dfe_sign_in_user_id
 
     private
 

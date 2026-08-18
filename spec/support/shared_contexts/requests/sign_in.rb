@@ -19,3 +19,11 @@ RSpec.shared_context "sign in as finance DfE user" do
     sign_in_as(:dfe_user, user:)
   end
 end
+
+RSpec.shared_context "sign in as product_team DfE user" do
+  let(:user) { FactoryBot.create(:user, :product_team) }
+
+  before do
+    sign_in_as(:dfe_user, user:)
+  end
+end

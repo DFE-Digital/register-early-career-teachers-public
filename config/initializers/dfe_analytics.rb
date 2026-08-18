@@ -51,7 +51,7 @@ DfE::Analytics.configure do |config|
   # return the identifier for the user. This is useful for systems with
   # users that don't use the id field.
   #
-  config.user_identifier = proc { |user| user&.id if user.respond_to?(:id) }
+  config.user_identifier = proc { |user| user&.fingerprint }
 
   # Whether to run entity table checksum job.
   #
