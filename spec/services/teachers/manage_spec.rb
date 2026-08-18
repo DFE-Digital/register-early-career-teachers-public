@@ -314,6 +314,8 @@ RSpec.describe Teachers::Manage do
   end
 
   describe "#mark_teacher_as_deactivated!" do
+    before { freeze_time }
+
     let(:trs_data_last_refreshed_at) { 2.minutes.ago }
 
     context "when the teacher is already flagged" do
@@ -333,13 +335,15 @@ RSpec.describe Teachers::Manage do
         service.mark_teacher_as_deactivated!(trs_data_last_refreshed_at:)
         teacher.reload
 
-        expect(teacher.trs_data_last_refreshed_at).to be_within(0.001.seconds).of(trs_data_last_refreshed_at)
+        expect(teacher.trs_data_last_refreshed_at).to eq(trs_data_last_refreshed_at)
         expect(teacher).to be_trs_response_gone
       end
     end
   end
 
   describe "#mark_teacher_as_not_found!" do
+    before { freeze_time }
+
     let(:trs_data_last_refreshed_at) { 2.minutes.ago }
 
     context "when the teacher is already flagged" do
@@ -359,7 +363,7 @@ RSpec.describe Teachers::Manage do
         service.mark_teacher_as_not_found!(trs_data_last_refreshed_at:)
         teacher.reload
 
-        expect(teacher.trs_data_last_refreshed_at).to be_within(0.001.seconds).of(trs_data_last_refreshed_at)
+        expect(teacher.trs_data_last_refreshed_at).to eq(trs_data_last_refreshed_at)
         expect(teacher).to be_trs_response_not_found
       end
     end
@@ -397,6 +401,8 @@ RSpec.describe Teachers::Manage do
       service.mark_teacher_as_merged!(trs_data_last_refreshed_at:, redirected_to:, event_body: "merged")
     end
 
+    before { freeze_time }
+
     let(:trs_data_last_refreshed_at) { 2.minutes.ago }
     let(:redirected_to) { "1234567" }
 
@@ -414,7 +420,7 @@ RSpec.describe Teachers::Manage do
 
         expect(teacher.trs_redirected_to).to eq(redirected_to)
         expect(teacher).to be_trs_response_permanent_redirect
-        expect(teacher.trs_data_last_refreshed_at).to be_within(0.001.seconds).of(trs_data_last_refreshed_at)
+        expect(teacher.trs_data_last_refreshed_at).to eq(trs_data_last_refreshed_at)
       end
     end
   end
