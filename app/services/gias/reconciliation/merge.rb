@@ -85,7 +85,7 @@ module GIAS::Reconciliation
     def successor_school = @successor_school ||= successor.school
 
     delegate :school, :closed_on, :successor, to: :gias_school
-    delegate :mentor_teachers, :ect_teachers, to: :school, prefix: false
+    delegate :mentor_teachers, to: :school, prefix: false
 
     def author = Events::SystemAuthor.new
   end
