@@ -1,4 +1,4 @@
-describe MigrationFixes::Processor::Result do
+describe Admin::DataFixes::Processor::Result do
   let(:data_change) { { action: "update" } }
 
   describe "#success?" do

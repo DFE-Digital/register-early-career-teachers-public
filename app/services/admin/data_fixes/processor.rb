@@ -1,4 +1,4 @@
-class MigrationFixes::Processor
+class Admin::DataFixes::Processor
   Result = Data.define(:data_change, :target_object, :error) do
     def success? = error.nil?
   end
