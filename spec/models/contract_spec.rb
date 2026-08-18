@@ -174,21 +174,16 @@ describe Contract do
 
   describe "#payment_declarations_count" do
     let(:contract_period) { FactoryBot.create(:contract_period, :next) }
-    let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
+    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
 
-    let!(:contract) { FactoryBot.create(:contract, active_lead_provider:) }
-
-    let!(:statement_1) { FactoryBot.create(:statement, active_lead_provider:, contract:) }
-    let!(:statement_2) { FactoryBot.create(:statement, active_lead_provider:, contract:) }
-
-    before do
-      allow(statement_1).to receive(:payment_declarations).and_return(Array.new(10, "a"))
-      allow(statement_2).to receive(:payment_declarations).and_return(Array.new(10, "b"))
-      allow(contract).to receive(:statements).and_return([statement_1, statement_2])
+    let(:statement) { FactoryBot.create(:statement, :payable, active_lead_provider:, contract_period:) }
+    let(:contract) { statement.contract }
+    let!(:declarations) do
+      FactoryBot.create_list(:declaration, 2, active_lead_provider:, payment_status: :payable, payment_statement: statement)
     end
 
     it "returns the number of payment declarations attached to this contract's statements" do
-      expect(contract.payment_declarations_count).to eq 20
+      expect(contract.payment_declarations_count).to eq declarations.count
     end
   end
 end
