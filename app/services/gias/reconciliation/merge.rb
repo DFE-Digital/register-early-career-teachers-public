@@ -1,10 +1,9 @@
 module GIAS::Reconciliation
   class Merge
-    def self.merge!(gias_school, refresh_metadata: true) = new(gias_school, refresh_metadata:).merge!
+    def self.merge!(gias_school) = new(gias_school).merge!
 
-    def initialize(gias_school, refresh_metadata: true)
+    def initialize(gias_school)
       @gias_school = gias_school
-      @refresh_metadata = refresh_metadata
     end
 
     def merge!
@@ -34,6 +33,8 @@ module GIAS::Reconciliation
         predecessor_school.events.each(&:destroy!)
         predecessor_school.school_partnerships.each(&:destroy!)
         predecessor_school.destroy!
+
+        record_school_merged_event!
       end
 
       true
@@ -41,7 +42,7 @@ module GIAS::Reconciliation
 
   private
 
-    attr_reader :gias_school, :refresh_metadata
+    attr_reader :gias_school
 
     def eligibility
       @eligibility ||= GIAS::Reconciliation::Eligibility.new(gias_school)
@@ -61,11 +62,6 @@ module GIAS::Reconciliation
       )
     end
 
-    def destroy_predecessor_school_metadata!
-      Metadata::SchoolContractPeriod.where(school_id: predecessor_school.id).delete_all
-      Metadata::SchoolLeadProviderContractPeriod.where(school_id: predecessor_school.id).delete_all
-    end
-
     def record_school_merged_event!
       Events::Record.record_school_merged_event!(
         school: successor_school,
@@ -83,26 +79,6 @@ module GIAS::Reconciliation
         happened_at: closed_on,
         author:
       )
-    end
-
-    def affected_teachers
-      return unless refresh_metadata
-
-      @affected_teachers ||= (mentor_teachers + ect_teachers).uniq
-    end
-
-    def refresh_school_metadata!
-      return unless refresh_metadata
-
-      Metadata::Handlers::School.new(successor_school).refresh_metadata!
-    end
-
-    def refresh_teacher_metadata!(teachers)
-      return unless refresh_metadata
-
-      teachers.each do |teacher|
-        Metadata::Handlers::Teacher.new(teacher).refresh_metadata!
-      end
     end
 
     def predecessor_school = school
