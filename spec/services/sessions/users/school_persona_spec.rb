@@ -13,7 +13,7 @@ RSpec.describe Sessions::Users::SchoolPersona do
     let(:user_props) { { email:, name:, school_urn: school.urn } }
   end
 
-  it_behaves_like "an unfingerprintable user" do
+  it_behaves_like "an unidentifiable user" do
     let(:user_props) { { email:, name:, school_urn: school.urn } }
   end
 

@@ -13,7 +13,7 @@ RSpec.describe Sessions::Users::AppropriateBodyPersona do
     let(:user_props) { { email:, name:, appropriate_body_period_id: } }
   end
 
-  it_behaves_like "an unfingerprintable user" do
+  it_behaves_like "an unidentifiable user" do
     let(:user_props) { { email:, name:, appropriate_body_period_id: } }
   end
 

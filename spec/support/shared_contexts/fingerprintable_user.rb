@@ -14,7 +14,7 @@ shared_examples "a fingerprintable user" do
   end
 end
 
-shared_examples "an unfingerprintable user" do
+shared_examples "an unidentifiable user" do
   subject(:session_user) { described_class.new(email:, **user_props) }
 
   describe "#fingerprint" do
