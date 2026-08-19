@@ -1,20 +1,29 @@
 RSpec.describe "admin/schools/teachers/show.html.erb", type: :view do
-  let(:school) { FactoryBot.create(:school) }
+  let(:school) { FactoryBot.create(:school, create_contract_period: false) }
   let(:ect_teacher) { FactoryBot.create(:teacher) }
   let(:mentor_teacher) { FactoryBot.create(:teacher) }
+  let!(:contract_period_2024) { FactoryBot.create(:contract_period, year: 2024) }
+  let!(:contract_period_2025) { FactoryBot.create(:contract_period, year: 2025) }
+  let(:teacher_rows) do
+    [
+      Admin::Teachers::Rows::Row.new(teacher: ect_teacher, role: "ect", contract_period: "2024"),
+      Admin::Teachers::Rows::Row.new(teacher: mentor_teacher, role: "mentor", contract_period: "2025")
+    ]
+  end
+  let(:has_current_teachers) { true }
+  let(:request_params) { { school_urn: school.urn } }
 
   before do
     assign(:school, school)
+    assign(:teacher_rows, teacher_rows)
+    assign(:has_current_teachers, has_current_teachers)
     assign(:breadcrumbs, { "Schools" => "/admin/schools", school.name => nil })
     assign(:navigation_items, [
       { text: "Overview", href: admin_school_overview_path(school.urn), current: false },
       { text: "Teachers", href: admin_school_teachers_path(school.urn), current: true },
       { text: "Partnerships", href: admin_school_partnerships_path(school.urn), current: false }
     ])
-    allow(view).to receive_messages(params: { urn: school.urn }, request: double(fullpath: "/admin/schools/#{school.urn}/teachers"))
-
-    FactoryBot.create(:ect_at_school_period, :unfinished, teacher: ect_teacher, school:)
-    FactoryBot.create(:mentor_at_school_period, :unfinished, teacher: mentor_teacher, school:)
+    allow(view).to receive(:params).and_return(request_params)
   end
 
   it "sets up breadcrumbs in page data" do
@@ -48,14 +57,39 @@ RSpec.describe "admin/schools/teachers/show.html.erb", type: :view do
     expect(rendered).to have_css("a", text: "Partnerships")
   end
 
-  it "renders the teachers table with teacher data" do
+  it "renders the teachers table" do
     render
 
     expect(rendered).to have_css("table.govuk-table")
-    expect(rendered).to have_css("th", text: "Name")
-    expect(rendered).to have_css("th", text: "TRN")
-    expect(rendered).to have_css("th", text: "Type")
-    expect(rendered).to have_css("th", text: "Contract period")
+  end
+
+  it "renders the search form" do
+    render
+
+    expect(rendered).to have_css("form[action='#{admin_school_teachers_path(school.urn)}'][method='get']")
+  end
+
+  context "when filters return no teacher rows" do
+    let(:teacher_rows) { [] }
+    let(:request_params) { { school_urn: school.urn, role: "mentor" } }
+
+    it "renders the filtered empty state" do
+      render
+
+      expect(rendered).to have_text("There are no teachers that match your search.")
+    end
+  end
+
+  context "when the school has no current teachers" do
+    let(:teacher_rows) { [] }
+    let(:has_current_teachers) { false }
+
+    it "does not render search controls" do
+      render
+
+      expect(rendered).to have_text("No teachers found at this school.")
+      expect(rendered).not_to have_field("Search for teacher")
+    end
   end
 
   it "marks teachers as current in navigation" do

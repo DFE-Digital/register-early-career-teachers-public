@@ -105,11 +105,13 @@ RSpec.describe "Admin::Schools", type: :request do
           FactoryBot.create(:ect_at_school_period, :unfinished, school:, teacher:)
         end
 
-        it "displays teachers in the teachers section" do
+        it "displays the teacher" do
           get admin_school_teachers_path(school.urn)
 
-          expect(response.body).to include("Teachers")
-          expect(response.body).to include("ECT")
+          expect(Capybara.string(response.body)).to have_link(
+            Teachers::Name.new(teacher).full_name,
+            href: admin_teacher_path(teacher)
+          )
         end
       end
     end

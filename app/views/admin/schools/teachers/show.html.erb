@@ -14,4 +14,20 @@
 
 <h2 class="govuk-heading-m">Teachers</h2>
 
-<%= render Admin::Schools::TeachersTableComponent.new(school: @school) %>
+<% if @has_current_teachers %>
+  <%= render Admin::Teachers::SearchComponent.new(
+    form_url: admin_school_teachers_path(@school.urn),
+    filter_params: params
+  ) %>
+
+  <% if @teacher_rows.any? %>
+    <%= render Admin::Teachers::TableComponent.new(
+      rows: @teacher_rows,
+      teacher_path: ->(teacher_row) { admin_teacher_path(teacher_row.teacher_id) }
+    ) %>
+  <% else %>
+    <p class="govuk-body">There are no teachers that match your search.</p>
+  <% end %>
+<% else %>
+  <p class="govuk-body">No teachers found at this school.</p>
+<% end %>
