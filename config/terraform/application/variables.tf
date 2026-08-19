@@ -151,9 +151,9 @@ locals {
     legacy = {
       cache_url = module.redis-cache.url
     }
-    managed = {
-      cache_url = module.redis-managed-cache.url
-    }
+    # managed = {
+    #   cache_url = module.redis-managed-cache.url
+    # }
   }
   selected_redis = local.redis[var.redis_mode]
 }
