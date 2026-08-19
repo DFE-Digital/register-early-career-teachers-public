@@ -25,7 +25,7 @@ module Teachers
     rescue TRS::Errors::TeacherNotFound
       update_not_found!
     rescue TRS::Errors::TeacherMerged => e
-      update_merged!(e.message)
+      update_merged!(e)
     rescue TRS::Errors::TeacherDeactivated
       deactivate!
     end
@@ -74,11 +74,11 @@ module Teachers
       end
     end
 
-    # @param error_message [String] API redirect
+    # @param error [TRS::Errors::TeacherMerged]
     # @return [Symbol]
-    def update_merged!(error_message)
+    def update_merged!(error)
       Teacher.transaction do
-        mark_teacher_as_merged!(event_body: error_message)
+        mark_teacher_as_merged!(redirected_to: error.redirected_to, event_body: error.message)
 
         :teacher_merged
       end

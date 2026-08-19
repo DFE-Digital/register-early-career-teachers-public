@@ -28,12 +28,21 @@ FactoryBot.define do
       corrected_name { [trs_first_name, Faker::Name.middle_name, trs_last_name].join(" ") }
     end
 
+    trait :found_in_trs do
+      trs_response { :ok }
+    end
+
     trait :deactivated_in_trs do
-      trs_deactivated { true }
+      trs_response { :gone }
     end
 
     trait :not_found_in_trs do
-      trs_not_found { true }
+      trs_response { :not_found }
+    end
+
+    trait :merged_in_trs do
+      trs_response { :permanent_redirect }
+      trs_redirected_to { APISeedData::Helpers::TRNGenerator.next }
     end
 
     trait :early_roll_out_mentor do
