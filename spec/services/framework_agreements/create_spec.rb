@@ -9,7 +9,7 @@ describe FrameworkAgreements::Create do
 
   before do
     allow(FrameworkAgreements::SeedFromPrevious).to receive(:new).and_return(seed)
-    allow(Events::Record).to receive(:record_active_lead_provider_created_event!)
+    allow(Events::Record).to receive(:record_framework_agreement_created_event!)
   end
 
   context "with a valid lead provider" do
@@ -21,7 +21,7 @@ describe FrameworkAgreements::Create do
 
       expect(result).to be_persisted
       expect(result).to have_attributes(contract_period_year: contract_period.year, lead_provider_id: lead_provider.id)
-      expect(Events::Record).to have_received(:record_active_lead_provider_created_event!).with(author:, framework_agreement: result)
+      expect(Events::Record).to have_received(:record_framework_agreement_created_event!).with(author:, framework_agreement: result)
       expect(FrameworkAgreements::SeedFromPrevious).to have_received(:new).with(framework_agreement: result)
       expect(seed).to have_received(:call)
     end
@@ -36,7 +36,7 @@ describe FrameworkAgreements::Create do
 
       expect(result).not_to be_persisted
       expect(result.errors[:lead_provider_id]).to include("Choose a lead provider")
-      expect(Events::Record).not_to have_received(:record_active_lead_provider_created_event!)
+      expect(Events::Record).not_to have_received(:record_framework_agreement_created_event!)
       expect(FrameworkAgreements::SeedFromPrevious).not_to have_received(:new)
     end
   end

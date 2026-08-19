@@ -15,7 +15,7 @@ class FrameworkAgreements::Create
     @framework_agreement = contract_period.framework_agreements.build(lead_provider_id:)
 
     if framework_agreement.save
-      Events::Record.record_active_lead_provider_created_event!(author:, framework_agreement:)
+      Events::Record.record_framework_agreement_created_event!(author:, framework_agreement:)
       FrameworkAgreements::SeedFromPrevious.new(framework_agreement:).call
     end
 

@@ -1084,10 +1084,10 @@ module Events
       ).record_event!
     end
 
-    # Active Lead Provider Events
+    # Framework Agreement Events
 
-    def self.record_active_lead_provider_created_event!(author:, framework_agreement:, happened_at: Time.zone.now)
-      event_type = :active_lead_provider_created
+    def self.record_framework_agreement_created_event!(author:, framework_agreement:, happened_at: Time.zone.now)
+      event_type = :framework_agreement_created
       lead_provider = framework_agreement.lead_provider
       contract_period = framework_agreement.contract_period
       heading = "#{lead_provider.name} added for #{contract_period.year}"
@@ -1095,10 +1095,10 @@ module Events
       new(event_type:, author:, heading:, framework_agreement:, lead_provider:, happened_at:).record_event!
     end
 
-    # The active lead provider is destroyed before this fires, so we record the
+    # The framework agreement is destroyed before this fires, so we record the
     # surviving lead provider rather than a relationship to the deleted record.
-    def self.record_active_lead_provider_deleted_event!(author:, lead_provider:, contract_period:, happened_at: Time.zone.now)
-      event_type = :active_lead_provider_deleted
+    def self.record_framework_agreement_deleted_event!(author:, lead_provider:, contract_period:, happened_at: Time.zone.now)
+      event_type = :framework_agreement_deleted
       heading = "#{lead_provider.name} removed for #{contract_period.year}"
 
       new(event_type:, author:, heading:, lead_provider:, happened_at:).record_event!
