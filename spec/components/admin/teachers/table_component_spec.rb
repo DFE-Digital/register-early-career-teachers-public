@@ -10,7 +10,7 @@ RSpec.describe Admin::Teachers::TableComponent, type: :component do
       Admin::Teachers::Rows::Row.new(
         teacher:,
         role: "mentor",
-        contract_period: Admin::Teachers::Rows::CONTRACT_PERIOD_NOT_APPLICABLE
+        contract_period: Admin::Teachers::Rows::CONTRACT_PERIOD_NOT_AVAILABLE
       )
     ]
   end

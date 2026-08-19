@@ -156,7 +156,7 @@ RSpec.describe Admin::Schools::TeacherSearch do
     end
 
     context "when filtering by the not available contract period option" do
-      let(:contract_period) { Admin::Teachers::Rows::CONTRACT_PERIOD_NOT_APPLICABLE }
+      let(:contract_period) { Admin::Teachers::Rows::CONTRACT_PERIOD_NOT_AVAILABLE }
       let!(:school_led_teacher) { FactoryBot.create(:teacher, trs_first_name: "Goku") }
       let!(:provider_led_teacher) { FactoryBot.create(:teacher, trs_first_name: "Vegeta") }
       let!(:untrained_mentor) { FactoryBot.create(:teacher, trs_first_name: "Piccolo") }

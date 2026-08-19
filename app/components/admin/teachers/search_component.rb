@@ -27,7 +27,7 @@ module Admin
 
         filter_options + [
           FilterOption.new(
-            value: Rows::CONTRACT_PERIOD_NOT_APPLICABLE,
+            value: Rows::CONTRACT_PERIOD_NOT_AVAILABLE,
             name: "Not available"
           )
         ]

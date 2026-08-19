@@ -76,10 +76,10 @@ module Admin
 
       def contract_period_for(period)
         training_period = period.latest_training_period
-        return ::Admin::Teachers::Rows::CONTRACT_PERIOD_NOT_APPLICABLE if training_period.blank? || training_period.school_led_training_programme?
+        return ::Admin::Teachers::Rows::CONTRACT_PERIOD_NOT_AVAILABLE if training_period.blank? || training_period.school_led_training_programme?
 
         training_period.schedule&.contract_period_year&.to_s ||
-          ::Admin::Teachers::Rows::CONTRACT_PERIOD_NOT_APPLICABLE
+          ::Admin::Teachers::Rows::CONTRACT_PERIOD_NOT_AVAILABLE
       end
     end
   end
