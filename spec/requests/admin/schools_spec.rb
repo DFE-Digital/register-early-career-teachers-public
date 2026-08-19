@@ -113,6 +113,15 @@ RSpec.describe "Admin::Schools", type: :request do
             href: admin_teacher_path(teacher)
           )
         end
+
+        it "keeps the teachers navigation item current when filtered" do
+          get admin_school_teachers_path(school.urn, role: "mentor")
+
+          expect(Capybara.string(response.body)).to have_css(
+            "a[aria-current='page']",
+            text: "Teachers"
+          )
+        end
       end
     end
   end

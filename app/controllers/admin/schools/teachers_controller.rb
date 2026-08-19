@@ -17,7 +17,7 @@ module Admin
           "Schools" => admin_schools_path(page: params[:page], q: params[:q]),
           @school.name => nil
         }
-        @navigation_items = helpers.admin_school_navigation_items(params[:school_urn], request.fullpath)
+        @navigation_items = helpers.admin_school_navigation_items(params[:school_urn], request.path)
       end
     end
   end
