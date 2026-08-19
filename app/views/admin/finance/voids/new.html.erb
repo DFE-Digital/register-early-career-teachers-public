@@ -1,5 +1,6 @@
 <% page_data(
   title: "Void declaration for #{teacher_full_name(@teacher)}",
+  error: @void_declaration_form.errors.any?,
   backlink_href: admin_teacher_declarations_path(@teacher)
 ) %>
 
