@@ -17,7 +17,7 @@ module AtSchoolPeriod
     refresh_metadata -> { school }, on_event: %i[create destroy update]
     refresh_metadata -> { teacher }, on_event: %i[create destroy update]
     # if the school_id changes, refresh the metadata for the previous school
-    refresh_metadata -> { School.find_by(id: school_id_was) }, on_event: %i[update], when_changing: %i[school_id]
+    refresh_metadata -> { School.find_by(id: school_id_before_last_save) }, on_event: %i[update], when_changing: %i[school_id]
 
     # Validations
     validates :email,

@@ -6,18 +6,12 @@ describe MentorAtSchoolPeriod do
 
       it_behaves_like "a declarative metadata model", on_event: %i[create destroy update]
 
-      context "when changing :school_id", :with_metadata do
-        let!(:manager) { instance_double(Metadata::Manager, refresh_metadata!: nil) }
-        let!(:new_school) { FactoryBot.create(:school) }
-
-        before do
-          allow(Metadata::Manager).to receive(:new).and_return(manager)
+      describe "previous school target" do
+        def will_change_attribute(attribute_to_change:, new_value:)
+          DeclarativeUpdates.skip(:metadata) { FactoryBot.create(:school, id: new_value) } if attribute_to_change == :school_id
         end
 
-        it "refreshes the metadata of the previous school" do
-          instance.update!(school: new_school)
-          expect(manager).to have_received(:refresh_metadata!).with(target)
-        end
+        it_behaves_like "a declarative metadata model", on_event: %i[update], when_changing: %i[school_id], target_optional: false
       end
     end
 
