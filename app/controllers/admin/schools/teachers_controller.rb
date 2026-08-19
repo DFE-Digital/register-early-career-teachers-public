@@ -14,7 +14,7 @@ module Admin
         @teacher_rows = teacher_search.rows
         @has_current_teachers = teacher_search.has_current_teachers?
         @breadcrumbs = {
-          "Schools" => admin_schools_path(page: params[:page], q: params[:q]),
+          "Schools" => admin_schools_path,
           @school.name => nil
         }
         @navigation_items = helpers.admin_school_navigation_items(params[:school_urn], request.path)

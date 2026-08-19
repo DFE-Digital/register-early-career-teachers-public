@@ -122,6 +122,14 @@ RSpec.describe "Admin::Schools", type: :request do
             text: "Teachers"
           )
         end
+
+        it "links to the unfiltered schools index when searching for a teacher" do
+          get admin_school_teachers_path(school.urn, q: teacher.trn)
+
+          breadcrumbs = Capybara.string(response.body).find(".govuk-breadcrumbs")
+
+          expect(breadcrumbs.find_link("Schools")[:href]).to eq(admin_schools_path)
+        end
       end
     end
   end
