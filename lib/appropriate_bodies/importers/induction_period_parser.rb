@@ -235,6 +235,7 @@ module AppropriateBodies::Importers
               started_on: [nil, row.started_on],
               finished_on: [nil, row.finished_on]
             )
+            true
           else
             false
           end
@@ -248,6 +249,7 @@ module AppropriateBodies::Importers
               started_on: [nil, row.started_on],
               finished_on: [nil, row.finished_on]
             )
+            true
           else
             false
           end
@@ -261,6 +263,7 @@ module AppropriateBodies::Importers
               started_on: [nil, row.started_on],
               finished_on: [nil, row.finished_on]
             )
+            true
           else
             false
           end
@@ -274,6 +277,7 @@ module AppropriateBodies::Importers
               started_on: [nil, row.started_on],
               finished_on: [nil, row.finished_on]
             )
+            true
           else
             false
           end
@@ -287,6 +291,7 @@ module AppropriateBodies::Importers
               started_on: [nil, row.started_on],
               finished_on: [nil, row.finished_on]
             )
+            true
           else
             false
           end
@@ -300,6 +305,7 @@ module AppropriateBodies::Importers
               started_on: [nil, row.started_on],
               finished_on: [nil, row.finished_on]
             )
+            true
           else
             false
           end
