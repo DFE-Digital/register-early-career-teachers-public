@@ -67,10 +67,10 @@ RSpec.describe Admin::Schools::TeacherSearch do
 
       it "returns one row per current role, sorted by teacher creation time" do
         expect(rows.map { |row| [row.teacher, row.role_name, row.contract_period_name] }).to eq([
-          [ect_teacher, "Early career teacher", "Not applicable"],
+          [ect_teacher, "Early career teacher", "Not available"],
           [both_roles_teacher, "Early career teacher", "2024"],
           [both_roles_teacher, "Mentor", "2025"],
-          [leaving_teacher, "Early career teacher", "Not applicable"]
+          [leaving_teacher, "Early career teacher", "Not available"]
         ])
       end
 
@@ -178,7 +178,7 @@ RSpec.describe Admin::Schools::TeacherSearch do
           untrained_ect
         )
         expect(rows.map(&:teacher)).not_to include(provider_led_teacher)
-        expect(rows.map(&:contract_period_name)).to all(eq("Not applicable"))
+        expect(rows.map(&:contract_period_name)).to all(eq("Not available"))
       end
 
       context "when also filtering by the mentor role" do

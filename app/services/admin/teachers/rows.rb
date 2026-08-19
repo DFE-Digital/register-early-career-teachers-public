@@ -25,7 +25,7 @@ module Admin
 
         def contract_period_name
           return if contract_period.blank?
-          return "Not applicable" if contract_period == Rows::CONTRACT_PERIOD_NOT_APPLICABLE
+          return "Not available" if contract_period == Rows::CONTRACT_PERIOD_NOT_APPLICABLE
 
           contract_period
         end
