@@ -11,7 +11,7 @@
 
 <h2 class="govuk-heading-m">Induction tutor details</h2>
 
-<%= govuk_summary_list do |sl|
+<%= govuk_summary_list(actions: false) do |sl|
   sl.with_row do |row|
     row.with_key(text: "Name")
     row.with_value(text: @school.induction_tutor_name)
