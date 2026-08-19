@@ -622,6 +622,23 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe ".record_teacher_trs_merged_event!" do
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        Events::Record.record_teacher_trs_merged_event!(author:, teacher:, body: "TRN 1234567 redirects to TRN 7654321")
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          teacher:,
+          heading: "Rhys Ifans was merged into another TRS record",
+          event_type: :teacher_trs_merged,
+          happened_at: Time.zone.now,
+          body: "TRS API returned 308 so the record was marked as merged. TRN 1234567 redirects to TRN 7654321",
+          **author_params
+        )
+      end
+    end
+  end
+
   describe "record_teacher_induction_status_reset_event!" do
     let(:event_type) { :teacher_induction_status_reset }
     let(:happened_at) { Time.zone.now }
