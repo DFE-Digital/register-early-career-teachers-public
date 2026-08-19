@@ -2,24 +2,24 @@ module API
   module V3
     class PartnershipsController < APIController
       def index
-        query_arguments = {
+        filters = {
           contract_period_years: extract_conditions(contract_period_years, type: :integer),
           updated_since:,
           delivery_partner_api_ids: extract_conditions(delivery_partner_api_ids),
           sort:
         }
-        paginated_school_partnerships = paginate(partnerships_query(query_arguments:).school_partnerships)
+        paginated_school_partnerships = paginate(lead_provider_partnerships_query(filters:).school_partnerships)
 
         render json: to_json(paginated_school_partnerships)
       end
 
       def show
-        render json: to_json(partnerships_query.school_partnership_by_api_id(api_id))
+        render json: to_json(lead_provider_partnerships_query.school_partnership_by_api_id(api_id))
       end
 
       def create
         service = API::SchoolPartnerships::Create.new({
-          lead_provider_id: current_lead_provider.id,
+          **lead_provider_filter,
           contract_period_year: create_partnership_params[:cohort],
           school_api_id: create_partnership_params[:school_id],
           delivery_partner_api_id: create_partnership_params[:delivery_partner_id],
@@ -29,7 +29,7 @@ module API
       end
 
       def update
-        school_partnership = partnerships_query.school_partnership_by_api_id(api_id)
+        school_partnership = lead_provider_partnerships_query.school_partnership_by_api_id(api_id)
 
         service = API::SchoolPartnerships::Update.new({
           school_partnership_id: school_partnership.id,
@@ -49,15 +49,15 @@ module API
         params.require(:data).expect({ attributes: %i[delivery_partner_id] })
       end
 
-      def partnerships_query(query_arguments: {})
-        API::SchoolPartnerships::Query.new(**(base_query_arguments.merge(query_arguments)).compact)
+      def lead_provider_filter
+        { lead_provider_id: current_lead_provider.id }
       end
 
-      def base_query_arguments
-        {
-          lead_provider_id: current_lead_provider.id,
-          included_associations: serializer.dependencies
-        }
+      def lead_provider_partnerships_query(filters: {})
+        partnership_filters = lead_provider_filter.merge(filters).compact
+        included_associations = { included_associations: serializer.dependencies }
+
+        API::SchoolPartnerships::Query.new(**partnership_filters.merge(included_associations))
       end
 
       def partnerships_params

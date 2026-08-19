@@ -4,24 +4,24 @@ module API
       include API::TeacherType
 
       def index
-        query_arguments = {
+        filters = {
           contract_period_years: extract_conditions(contract_period_years, type: :integer),
           teacher_api_ids: extract_conditions(teacher_api_ids, type: :uuid),
           delivery_partner_api_ids: extract_conditions(delivery_partner_api_ids, type: :uuid),
           updated_since:,
         }
-        paginated_declarations = paginate(declarations_query(query_arguments:).declarations)
+        paginated_declarations = paginate(lead_provider_declarations_query(filters:).declarations)
 
         render json: to_json(paginated_declarations)
       end
 
       def show
-        render json: to_json(declarations_query.declaration_by_api_id(api_id))
+        render json: to_json(lead_provider_declarations_query.declaration_by_api_id(api_id))
       end
 
       def create
         service = API::Declarations::Create.new({
-          lead_provider_id: current_lead_provider.id,
+          **lead_provider_filter,
           declaration_date: create_declaration_params[:declaration_date],
           declaration_type: create_declaration_params[:declaration_type],
           evidence_type: create_declaration_params[:evidence_held],
@@ -33,11 +33,13 @@ module API
       end
 
       def void
+        service_args = { **lead_provider_filter, declaration_api_id: declaration.api_id }
+
         if declaration.payment_status_paid?
-          service = API::Declarations::Clawback.new(**void_declaration_params)
+          service = API::Declarations::Clawback.new(**service_args)
           respond_with_service(service:, action: :clawback)
         else
-          service = API::Declarations::Void.new(**void_declaration_params)
+          service = API::Declarations::Void.new(**service_args)
           respond_with_service(service:, action: :void)
         end
       end
@@ -48,29 +50,19 @@ module API
         params.require(:data).expect({ attributes: %i[participant_id declaration_type declaration_date course_identifier evidence_held] })
       end
 
-      def declarations_query(query_arguments: {})
-        API::Declarations::Query.new(**(base_query_arguments.merge(query_arguments)).compact)
+      def lead_provider_declarations_query(filters: {})
+        declaration_filters = lead_provider_filter.merge(filters).compact
+        included_associations = { included_associations: serializer.dependencies }
+
+        API::Declarations::Query.new(**declaration_filters.merge(included_associations))
       end
 
-      def base_query_arguments
-        {
-          lead_provider_id: current_lead_provider.id,
-          included_associations: serializer.dependencies
-        }
-      end
-
-      def serializer_options
-        {
-          lead_provider_id: current_lead_provider.id
-        }
+      def lead_provider_filter
+        { lead_provider_id: current_lead_provider.id }
       end
 
       def declarations_params
         params.permit(:api_id, filter: %i[cohort participant_id delivery_partner_id updated_since])
-      end
-
-      def void_declaration_params
-        { lead_provider_id: current_lead_provider.id, declaration_api_id: declaration.api_id }
       end
 
       def declaration
@@ -93,7 +85,7 @@ module API
       end
 
       def to_json(obj)
-        serializer.render(obj, root: "data", **serializer_options)
+        serializer.render(obj, root: "data", **lead_provider_filter)
       end
 
       def serializer

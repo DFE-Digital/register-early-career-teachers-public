@@ -2,27 +2,27 @@ module API
   module V3
     class UnfundedMentorsController < APIController
       def index
-        query_arguments = { updated_since:, sort: }
-        paginated_unfunded_mentors = paginate(unfunded_mentors_query(query_arguments:).unfunded_mentors)
+        filters = { updated_since:, sort: }
+        paginated_unfunded_mentors = paginate(lead_provider_unfunded_mentors_query(filters:).unfunded_mentors)
 
         render json: to_json(paginated_unfunded_mentors)
       end
 
       def show
-        render json: to_json(unfunded_mentors_query.unfunded_mentor_by_api_id(api_id))
+        render json: to_json(lead_provider_unfunded_mentors_query.unfunded_mentor_by_api_id(api_id))
       end
 
     private
 
-      def unfunded_mentors_query(query_arguments: {})
-        API::Teachers::UnfundedMentors::Query.new(**(base_query_arguments.merge(query_arguments).compact))
+      def lead_provider_unfunded_mentors_query(filters: {})
+        unfunded_mentor_filters = lead_provider_filter.merge(filters).compact
+        included_associations = { included_associations: serializer.dependencies }
+
+        API::Teachers::UnfundedMentors::Query.new(**unfunded_mentor_filters.merge(included_associations))
       end
 
-      def base_query_arguments
-        {
-          lead_provider_id: current_lead_provider.id,
-          included_associations: serializer.dependencies
-        }
+      def lead_provider_filter
+        { lead_provider_id: current_lead_provider.id }
       end
 
       def unfunded_mentor_params
@@ -37,12 +37,8 @@ module API
         sort_order(sort: unfunded_mentor_params[:sort], model: Teacher, default: { created_at: :asc })
       end
 
-      def serializer_options
-        @serializer_options ||= { lead_provider_id: current_lead_provider.id }
-      end
-
       def to_json(obj)
-        serializer.render(obj, root: "data", **serializer_options)
+        serializer.render(obj, root: "data", **lead_provider_filter)
       end
 
       def serializer

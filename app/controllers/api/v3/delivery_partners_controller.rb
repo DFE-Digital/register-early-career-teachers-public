@@ -2,36 +2,30 @@ module API
   module V3
     class DeliveryPartnersController < APIController
       def index
-        query_arguments = {
+        filters = {
           contract_period_years: extract_conditions(contract_period_years, type: :integer),
           sort:,
         }
-        paginated_delivery_partners = paginate(delivery_partners_query(query_arguments:).delivery_partners)
+        paginated_delivery_partners = paginate(lead_provider_declarations_query(filters:).delivery_partners)
 
         render json: to_json(paginated_delivery_partners)
       end
 
       def show
-        render json: to_json(delivery_partners_query.delivery_partner_by_api_id(api_id))
+        render json: to_json(lead_provider_declarations_query.delivery_partner_by_api_id(api_id))
       end
 
     private
 
-      def delivery_partners_query(query_arguments: {})
-        API::DeliveryPartners::Query.new(**(base_query_arguments.merge(query_arguments)).compact)
+      def lead_provider_declarations_query(filters: {})
+        delivery_partner_filters = lead_provider_filter.merge(filters).compact
+        included_associations = { included_associations: serializer.dependencies }
+
+        API::DeliveryPartners::Query.new(**delivery_partner_filters.merge(included_associations))
       end
 
-      def base_query_arguments
-        {
-          lead_provider_id: current_lead_provider.id,
-          included_associations: serializer.dependencies,
-        }
-      end
-
-      def serializer_options
-        {
-          lead_provider_id: current_lead_provider.id
-        }
+      def lead_provider_filter
+        { lead_provider_id: current_lead_provider.id }
       end
 
       def delivery_partner_params
@@ -47,7 +41,7 @@ module API
       end
 
       def to_json(obj)
-        serializer.render(obj, root: "data", **serializer_options)
+        serializer.render(obj, root: "data", **lead_provider_filter)
       end
 
       def serializer
