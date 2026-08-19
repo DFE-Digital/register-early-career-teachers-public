@@ -100,7 +100,7 @@ module GIAS
 
     def import_school!
       @gias_school = GIAS::School.create_with(attributes).find_or_create_by!(urn:)
-      urns_for_reconciliation << urn if @gias_school.previously_new_record?
+      urns_for_reconciliation << urn if gias_school.previously_new_record?
     end
 
     def update_school!
@@ -115,12 +115,18 @@ module GIAS
       modifications = gias_school.changes
       eligible_change = modifications["eligible"]
 
+      urns_for_reconciliation << gias_school.urn if status_changed_to_open_or_closed?(gias_school)
+
       GIAS::School.transaction do
         gias_school.save!
         record_eligibility_change_event!(modifications) if eligible_change
       end
+    end
 
-      urns_for_reconciliation << gias_school.urn
+    def status_changed_to_open_or_closed?(gias_school)
+      return false unless gias_school.status_changed?
+
+      gias_school.open_status? || gias_school.closed_status?
     end
 
     def record_eligibility_change_event!(modifications)

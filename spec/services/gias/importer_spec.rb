@@ -29,7 +29,7 @@ RSpec.describe GIAS::Importer, type: :service do
       end
 
       it "imports eligible GIAS schools" do
-        expect { importer.fetch }.to change(GIAS::School, :count).by(3)
+        expect { importer.fetch }.to change(GIAS::School, :count).by(4)
       end
 
       it "imports GIAS school links for the imported schools" do
@@ -115,6 +115,8 @@ RSpec.describe GIAS::Importer, type: :service do
                           eligible: false)
       end
 
+      let!(:existing_link) { FactoryBot.create(:gias_school_link, urn: existing_school.urn, link_urn: 20_003, link_type: "Other") }
+
       it "calls `fetch_and_update`" do
         expect(importer).to receive(:fetch_and_update).and_call_original
 
@@ -122,11 +124,11 @@ RSpec.describe GIAS::Importer, type: :service do
       end
 
       it "imports eligible GIAS schools" do
-        expect { importer.fetch }.to change(GIAS::School, :count).by(2)
+        expect { importer.fetch }.to change(GIAS::School, :count).by(3)
       end
 
-      it "imports GIAS school links for the imported and existing GIAS schools" do
-        expect { importer.fetch }.to change(GIAS::SchoolLink, :count).by(2)
+      it "imports new GIAS school links" do
+        expect { importer.fetch }.to change(GIAS::SchoolLink, :count).by(1)
       end
 
       it "assigns correct attributes to the GIAS schools" do
@@ -160,35 +162,72 @@ RSpec.describe GIAS::Importer, type: :service do
         importer.fetch
       end
 
-      it "returns a list of URNs which includes schools that have been recently opened" do
+      it "returns a list of URNs which includes schools that have been added to the database" do
         urns = importer.fetch
 
         expect(urns).to include(open_school_urn)
       end
 
-      it "returns a list of URNs which includes schools that have been recently closed" do
+      it "returns a list of URNs which excludes existing schools that have not changed" do
         urns = importer.fetch
 
-        expect(urns).to include(closed_school_urn)
+        expect(urns).not_to include(existing_school.urn)
       end
 
-      context "when an existing school and its links have not changed" do
-        let!(:existing_link) { FactoryBot.create(:gias_school_link, urn: existing_school.urn, link_urn: 20_003, link_type: "Other") }
+      context "when an existing school has changes to attributes which don't affect reconciliation" do
+        let!(:existing_school) do
+          FactoryBot.create(:gias_school,
+                            status: "open",
+                            urn: independent_school_urn,
+                            primary_contact_email: "alpha.hub@example.org")
+        end
 
-        it "returns a list of URNs which excludes existing schools that have not changed" do
+        it "changes the attributes of the existing school" do
+          expect { importer.fetch }.to change { existing_school.reload.primary_contact_email }.from("alpha.hub@example.org").to("beta.hub@example.org")
+        end
+
+        it "is not included in the list of URNs returned by the importer" do
           urns = importer.fetch
 
           expect(urns).not_to include(existing_school.urn)
         end
       end
 
-      context "when an existing school has changes" do
-        let!(:existing_school) { FactoryBot.create(:gias_school, status: "proposed_to_open", urn: independent_school_urn) }
+      context "when an existing school has changed status" do
+        context "when the school is now closed" do
+          let!(:closed_school) { FactoryBot.create(:gias_school, status: "open", urn: closed_school_urn) }
+          let!(:closed_school_link) { FactoryBot.create(:gias_school_link, urn: closed_school.urn, link_urn: 20_004, link_type: "Other") }
 
-        it "returns a list of URNs which includes schools that have been recently changed" do
-          urns = importer.fetch
+          it "returns a list of URNs which includes schools that have changed status" do
+            urns = importer.fetch
 
-          expect(urns).to include(existing_school.urn)
+            expect(urns).to include(closed_school.urn)
+          end
+        end
+
+        context "when the school is now open" do
+          let!(:existing_school) { FactoryBot.create(:gias_school, status: :proposed_to_open, urn: independent_school_urn) }
+          let!(:existing_link) { FactoryBot.create(:gias_school_link, urn: independent_school_urn, link_urn: 20_003, link_type: "Other") }
+
+          it "returns a list of URNs including the school which is now open" do
+            urns = importer.fetch
+
+            expect(urns).to include(existing_school.urn)
+          end
+        end
+
+        context "when the school is proposed to close" do
+          let!(:proposed_to_close_school) { FactoryBot.create(:gias_school, status: :open, urn: 20_009) }
+
+          it "changes the status of the school to proposed_to_close" do
+            expect { importer.fetch }.to change { proposed_to_close_school.reload.status }.from("open").to("proposed_to_close")
+          end
+
+          it "returns a list of URNs which does not include the school which is proposed to close" do
+            urns = importer.fetch
+
+            expect(urns).not_to include(proposed_to_close_school.urn)
+          end
         end
       end
 
