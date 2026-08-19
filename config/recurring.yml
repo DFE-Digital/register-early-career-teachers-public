@@ -26,12 +26,12 @@ production:
   touch_school_partnership_for_participants_currently_training_job:
     class: TouchSchoolPartnershipForParticipantsCurrentlyTrainingJob
     queue: default
-    schedule: every day at 00:01
+    schedule: every day at 00:01 UTC
 
   mark_statements_as_payable:
     class: Statements::MarkAsPayableJob
     queue: default
-    schedule: every day at 12am
+    schedule: every day at 12am UTC
 
   gias_import:
     class: GIASImportJob
@@ -59,7 +59,7 @@ sandbox:
   touch_school_partnership_for_participants_currently_training_job:
     class: TouchSchoolPartnershipForParticipantsCurrentlyTrainingJob
     queue: default
-    schedule: every day at 00:01
+    schedule: every day at 00:01 UTC
 
 staging:
   purge_pending_induction_submissions:
@@ -79,7 +79,7 @@ staging:
   touch_school_partnership_for_participants_currently_training_job:
     class: TouchSchoolPartnershipForParticipantsCurrentlyTrainingJob
     queue: default
-    schedule: every day at 00:01
+    schedule: every day at 00:01 UTC
 
 review:
   purge_pending_induction_submissions:
@@ -95,4 +95,4 @@ review:
   touch_school_partnership_for_participants_currently_training_job:
     class: TouchSchoolPartnershipForParticipantsCurrentlyTrainingJob
     queue: default
-    schedule: every day at 00:01
+    schedule: every day at 00:01 UTC

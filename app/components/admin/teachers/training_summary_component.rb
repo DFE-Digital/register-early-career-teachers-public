@@ -12,7 +12,7 @@ module Admin
       def call
         summary_rows = rows
 
-        govuk_summary_card(title: card_title) do |card|
+        govuk_summary_card(title: card_title, heading_level: 4) do |card|
           if show_move_partnership_link?
             card.with_action { helpers.govuk_link_to("Move to a different partnership", move_partnership_path) }
           end

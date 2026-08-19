@@ -48,4 +48,11 @@ RSpec.shared_examples "a start date view" do |current_step:, back_path:, back_st
 
     expect(rendered).to have_content("For example, 17 9 #{Date.current.year}")
   end
+
+  it "does not render the start date legend as a heading" do
+    render
+
+    expect(rendered).to have_css("legend", text: "Start date")
+    expect(rendered).not_to have_css("legend h1, legend h2, legend h3, legend h4, legend h5, legend h6")
+  end
 end

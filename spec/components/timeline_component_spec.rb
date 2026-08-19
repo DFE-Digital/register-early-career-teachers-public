@@ -21,7 +21,7 @@ RSpec.describe TimelineComponent, type: :component do
 
   it "shows the title and byline in the header" do
     events.each do |event|
-      expect(rendered_content).to have_css(".app-timeline__header > .app-timeline__title", text: event.heading)
+      expect(rendered_content).to have_css(".app-timeline__header > h2.app-timeline__title", text: event.heading)
       expect(rendered_content).to have_css(".app-timeline__header > .app-timeline__byline", text: event.author_name)
     end
   end
@@ -66,6 +66,19 @@ RSpec.describe TimelineComponent, type: :component do
       it "renders no list" do
         expect(rendered_content).not_to have_css(".govuk-list")
       end
+    end
+  end
+
+  context "with a custom heading level" do
+    let(:component) { TimelineComponent.new(events, heading_level: 3) }
+    let(:one_day_ago) { FactoryBot.build(:event, :with_modifications, created_at: 1.day.ago) }
+
+    it "uses the specified level for event headings" do
+      expect(rendered_content).to have_css("h3.app-timeline__title", text: one_day_ago.heading)
+    end
+
+    it "uses the next level for changes headings" do
+      expect(rendered_content).to have_css("h4", text: "Changes")
     end
   end
 end

@@ -2,6 +2,7 @@ class GIASImportJob < ApplicationJob
   queue_as :default
 
   def perform
-    GIAS::Importer.new(auto_create_school: false).fetch
+    urns = GIAS::Importer.new.fetch
+    GIAS::Reconcile.new(urns).call
   end
 end

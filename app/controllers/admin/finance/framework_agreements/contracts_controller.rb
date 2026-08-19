@@ -4,8 +4,7 @@ module Admin::Finance::FrameworkAgreements
 
     before_action :set_framework_agreement
     before_action :set_contract, only: %i[show edit update delete destroy]
-    before_action :redirect_unless_editable, only: %i[edit update]
-    before_action :redirect_if_finished, only: %i[new create delete destroy]
+    before_action :redirect_unless_editable, only: %i[new create delete destroy edit update]
 
     def index
       @breadcrumbs = {
@@ -96,15 +95,8 @@ module Admin::Finance::FrameworkAgreements
     def redirect_unless_editable
       unless @framework_agreement.editable?
         redirect_to contracts_path,
-                    flash: { error: "Contracts cannot be changed once the contract period has started" }
+                    flash: { error: "Contracts cannot be changed once payments have been frozen for the contract period" }
       end
-    end
-
-    def redirect_if_finished
-      return unless @framework_agreement.finished_on_before_today?
-
-      redirect_to contracts_path,
-                  flash: { error: "Contracts cannot be changed once the contract period has finished" }
     end
 
     def contract_params
@@ -126,7 +118,6 @@ module Admin::Finance::FrameworkAgreements
                     band_id
                     fee_per_declaration
                     output_fee_percentage
-                    service_fee_percentage
                     _destroy
                   ]
                 ]

@@ -97,6 +97,9 @@ class TrainingPeriod < ApplicationRecord
     validates :deferral_reason, absence: true
   end
 
+  # Callbacks
+  before_destroy :abort_destruction_when_billable_declarations_exist
+
   # Scopes
   scope :for_ect, ->(ect_at_school_period_id) { where(ect_at_school_period_id:) }
   scope :for_mentor, ->(mentor_at_school_period_id) { where(mentor_at_school_period_id:) }
@@ -195,6 +198,13 @@ class TrainingPeriod < ApplicationRecord
   end
 
 private
+
+  def abort_destruction_when_billable_declarations_exist
+    return unless declarations.billable.exists?
+
+    errors.add(:base, "Cannot delete a training period with billable declarations")
+    throw(:abort)
+  end
 
   def only_one_at_school_period_present
     ids = [ect_at_school_period_id, mentor_at_school_period_id]

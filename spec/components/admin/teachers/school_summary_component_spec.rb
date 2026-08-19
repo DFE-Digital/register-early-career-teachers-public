@@ -19,7 +19,8 @@ RSpec.describe Admin::Teachers::SchoolSummaryComponent, type: :component do
     let(:school_period) { FactoryBot.create(:ect_at_school_period, **school_period_attributes) }
 
     context "card title" do
-      it "links to the admin school overview" do
+      it "renders the school link as a h4" do
+        expect(rendered).to have_css("h4.govuk-summary-card__title", text: school.name)
         expect(rendered).to have_link(school.name, href: admin_school_overview_path(school.urn))
       end
     end

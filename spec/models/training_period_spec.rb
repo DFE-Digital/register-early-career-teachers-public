@@ -881,6 +881,59 @@ describe TrainingPeriod do
     end
   end
 
+  describe "destroying" do
+    subject(:training_period) { declaration.training_period }
+
+    Declaration::BILLABLE_PAYMENT_STATUSES.each do |payment_status|
+      context "when there is a #{payment_status} declaration" do
+        let(:declaration) { FactoryBot.create(:declaration, payment_status.to_sym) }
+
+        it "refuses to destroy the training period" do
+          expect { training_period.destroy! }.to raise_error(ActiveRecord::RecordNotDestroyed)
+          expect(training_period.errors[:base]).to include("Cannot delete a training period with billable declarations")
+        end
+      end
+    end
+
+    context "when there is a clawed back declaration" do
+      let(:declaration) { FactoryBot.create(:declaration, :clawed_back) }
+
+      it "refuses to destroy the training period" do
+        expect { training_period.destroy! }.to raise_error(ActiveRecord::RecordNotDestroyed)
+        expect(training_period.errors[:base]).to include("Cannot delete a training period with billable declarations")
+      end
+    end
+
+    %i[no_payment voided].each do |payment_status|
+      context "when there is only a #{payment_status} declaration" do
+        let!(:declaration) { FactoryBot.create(:declaration, payment_status) }
+
+        it "destroys the training period" do
+          expect { training_period.destroy! }.to change(described_class, :count).by(-1)
+        end
+      end
+    end
+
+    context "when there are no declarations" do
+      subject!(:training_period) { FactoryBot.create(:training_period) }
+
+      it "destroys the training period" do
+        expect { training_period.destroy! }.to change(described_class, :count).by(-1)
+      end
+    end
+
+    context "when the trainee's at school period is destroyed" do
+      let(:declaration) { FactoryBot.create(:declaration, :paid) }
+
+      it "refuses to destroy the at school period" do
+        expect { training_period.ect_at_school_period.destroy! }.to raise_error(ActiveRecord::RecordNotDestroyed) { |error|
+          expect(error.record).to be_a(described_class)
+          expect(error.record.errors[:base]).to include("Cannot delete a training period with billable declarations")
+        }
+      end
+    end
+  end
+
   describe "check constraints" do
     subject { FactoryBot.build(:training_period, ect_at_school_period:, started_on: Date.current, finished_on: Date.yesterday) }
 

@@ -10,9 +10,10 @@
 
 <%= render 'admin/teachers/navigation', navigation_items: @navigation_items %>
 
-<% if admin_latest_induction_complete_with_outcome?(@teacher) %>
-  <%= govuk_button_link_to "Reopen induction", confirm_admin_teacher_reopen_induction_path(@teacher), warning: true %>
-<% end %>
+<% if @teacher.induction_periods.any? %>
+  <% if admin_latest_induction_complete_with_outcome?(@teacher) %>
+    <%= govuk_button_link_to "Reopen induction", confirm_admin_teacher_reopen_induction_path(@teacher), warning: true %>
+  <% end %>
 
 <%= render Teachers::DetailsComponent.new(mode: :admin, teacher: @teacher) do |component|
   component.with_induction_outcome_actions
@@ -20,12 +21,9 @@
   component.with_current_induction_period(enable_edit: true, enable_delete: true)
   component.with_past_induction_periods(enable_edit: true)
 end %>
+<% else %>
+  <p class="govuk-body">There is no induction history recorded for this teacher.</p>
 
-<p class="govuk-body">
-  <%= govuk_link_to('View change history', admin_teacher_timeline_path(@teacher)) %>
-</p>
-
-<% if @teacher.induction_periods.none? %>
   <p class="govuk-body">
     <%= govuk_link_to("Add an induction period", new_admin_teacher_induction_period_path(@teacher)) %>
   </p>

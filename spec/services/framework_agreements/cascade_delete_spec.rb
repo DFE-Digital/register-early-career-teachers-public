@@ -1,7 +1,8 @@
 describe FrameworkAgreements::CascadeDelete do
   subject(:service) { described_class.new(framework_agreement:, author:) }
 
-  let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
+  let(:contract_period) { FactoryBot.create(:contract_period, :next) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement, contract_period:) }
   let!(:contract) do
     FactoryBot.create(:contract, :for_ittecf_ectp, :with_bands_and_band_terms,
                       framework_agreement:)
@@ -72,6 +73,13 @@ describe FrameworkAgreements::CascadeDelete do
       FactoryBot.create(:training_period, :with_only_expression_of_interest, expression_of_interest: framework_agreement)
 
       expect { service.call }.to raise_error(described_class::CascadeDeleteError, "Expressions of interest are present")
+      expect(FrameworkAgreement).to exist(framework_agreement.id)
+    end
+
+    it "raises when the contract period has started, destroying nothing" do
+      contract_period.update!(started_on: 1.day.ago)
+
+      expect { service.call }.to raise_error(ActiveRecord::RecordNotDestroyed)
       expect(FrameworkAgreement).to exist(framework_agreement.id)
     end
   end

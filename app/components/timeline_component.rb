@@ -3,8 +3,8 @@ class TimelineComponent < ApplicationComponent
 
   attr_reader :events
 
-  def initialize(events)
-    events.each { |event| with_item(event) }
+  def initialize(events, heading_level: 2)
+    events.each { |event| with_item(event, heading_level:) }
   end
 
   def call
@@ -14,10 +14,11 @@ class TimelineComponent < ApplicationComponent
   end
 
   class ItemComponent < ApplicationComponent
-    attr_reader :event
+    attr_reader :event, :heading_level
 
-    def initialize(event)
+    def initialize(event, heading_level:)
       @event = event
+      @heading_level = heading_level
     end
 
     def call
@@ -35,7 +36,7 @@ class TimelineComponent < ApplicationComponent
     end
 
     def title
-      tag.h2(event.heading, class: "app-timeline__title")
+      content_tag(heading_tag, event.heading, class: "app-timeline__title")
     end
 
     def timestamp
@@ -77,7 +78,7 @@ class TimelineComponent < ApplicationComponent
 
       safe_join(
         [
-          tag.h3("Changes", class: "govuk-heading-s"),
+          content_tag(subheading_tag, "Changes", class: "govuk-heading-s"),
           govuk_list(event.modifications)
         ]
       )
@@ -87,6 +88,14 @@ class TimelineComponent < ApplicationComponent
       attribution = event.author_name || event.author&.name || event.author_type
 
       tag.p("by #{attribution}", class: "app-timeline__byline")
+    end
+
+    def heading_tag
+      "h#{heading_level}"
+    end
+
+    def subheading_tag
+      "h#{heading_level + 1}"
     end
   end
 end

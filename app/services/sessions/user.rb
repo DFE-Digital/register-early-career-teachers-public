@@ -31,6 +31,9 @@ module Sessions
       @last_active_at = last_active_at.is_a?(String) ? Time.zone.parse(last_active_at) : last_active_at
     end
 
+    def dfe_analytics_user_id = nil
+    def fingerprint = nil
+
     # User?
     def dfe_sign_in_authorisable? = false
     def appropriate_body_user? = false

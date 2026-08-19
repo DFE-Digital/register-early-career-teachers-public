@@ -13,7 +13,7 @@ private
 
   # `current_user` needed for DfE::Analytics
   def current_user
-    current_lead_provider
+    API::AnalyticsUser.new(current_lead_provider)
   end
 
   def append_info_to_payload(payload)

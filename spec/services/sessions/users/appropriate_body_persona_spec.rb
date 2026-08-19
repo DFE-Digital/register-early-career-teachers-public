@@ -13,6 +13,10 @@ RSpec.describe Sessions::Users::AppropriateBodyPersona do
     let(:user_props) { { email:, name:, appropriate_body_period_id: } }
   end
 
+  it_behaves_like "an unidentifiable user" do
+    let(:user_props) { { email:, name:, appropriate_body_period_id: } }
+  end
+
   context "when personas are disabled" do
     before { allow(Rails.application.config).to receive(:enable_personas).and_return(false) }
 
@@ -27,6 +31,10 @@ RSpec.describe Sessions::Users::AppropriateBodyPersona do
     it do
       expect { appropriate_body_persona }.to raise_error(described_class::UnknownAppropriateBodyPeriodId, appropriate_body_period_id)
     end
+  end
+
+  describe "#dfe_analytics_user_id" do
+    it { expect(appropriate_body_persona.dfe_analytics_user_id).to be_nil }
   end
 
   describe "#provider" do

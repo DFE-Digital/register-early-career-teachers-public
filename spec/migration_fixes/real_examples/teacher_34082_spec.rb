@@ -70,14 +70,15 @@ describe "Real data check for teacher 34082" do
   end
 
   before do
-    processor = MigrationFixes::Processor.new
+    processor = Admin::DataFixes::Processor.new
 
     migration_fixes.each do |data_change|
       # convert from easy to read hash to string version as per CSV
       attrs = data_change[:attributes].stringify_keys.to_a.flatten.join(",")
       data_change[:attributes] = attrs
 
-      processor.process!(data_change:)
+      result = processor.process!(data_change:)
+      raise result.error unless result.success?
     end
   end
 

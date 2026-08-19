@@ -1,4 +1,4 @@
-describe MigrationFixes::Processor do
+describe Admin::DataFixes::Processor do
   subject(:processor) { described_class.new }
 
   let!(:target_object) { FactoryBot.create(:training_period) }
@@ -21,10 +21,7 @@ describe MigrationFixes::Processor do
       let!(:school) { FactoryBot.create(:school) }
       let(:started_on) { 1.day.ago.to_date }
       let(:email) { "mungo@example.com" }
-
       let(:action) { "create" }
-      let(:attributes) {}
-
       let(:data_change) do
         {
           object_type: "ECTAtSchoolPeriod",
@@ -42,20 +39,24 @@ describe MigrationFixes::Processor do
 
       it "sets the correct attributes on the object" do
         result = processor.process!(data_change:)
+        target_object = result.target_object
 
-        expect(result.teacher_id).to eq(teacher.id)
-        expect(result.school_id).to eq(school.id)
-        expect(result.started_on).to eq(started_on)
-        expect(result.email).to eq(email)
+        expect(result.success?).to be(true)
+        expect(target_object.teacher_id).to eq(teacher.id)
+        expect(target_object.school_id).to eq(school.id)
+        expect(target_object.started_on).to eq(started_on)
+        expect(target_object.email).to eq(email)
       end
     end
 
     context "when the action is 'update'" do
       it "sets the correct attributes on the object" do
         result = processor.process!(data_change:)
+        target_object = result.target_object
 
-        expect(result.withdrawn_at).to eq(withdrawn_at)
-        expect(result.withdrawal_reason).to eq "moved_school"
+        expect(result.success?).to be(true)
+        expect(target_object.withdrawn_at).to eq(withdrawn_at)
+        expect(target_object.withdrawal_reason).to eq("moved_school")
       end
 
       context "when it attempts to update a attr_readonly attribute" do
@@ -64,10 +65,11 @@ describe MigrationFixes::Processor do
 
         let(:attributes) { "delivery_partner_when_created_id,#{delivery_partner.id}" }
 
-        it "raises an error" do
-          expect {
-            processor.process!(data_change:)
-          }.to raise_error ActiveRecord::ReadonlyAttributeError
+        it "returns the error in the result" do
+          result = processor.process!(data_change:)
+
+          expect(result.success?).to be(false)
+          expect(result.error).to be_a(ActiveRecord::ReadonlyAttributeError)
         end
 
         context "when update_readonly_attrs is set" do
@@ -76,7 +78,8 @@ describe MigrationFixes::Processor do
           it "updates the attribute correctly" do
             result = processor.process!(data_change:)
 
-            expect(result.delivery_partner_when_created_id).to eq(delivery_partner.id)
+            expect(result.success?).to be(true)
+            expect(result.target_object.delivery_partner_when_created_id).to eq(delivery_partner.id)
           end
         end
       end
@@ -90,6 +93,30 @@ describe MigrationFixes::Processor do
         expect {
           processor.process!(data_change:)
         }.to change(TrainingPeriod, :count).by(-1)
+      end
+    end
+
+    context "when the action is unknown" do
+      let(:action) { "unknown" }
+
+      it "returns the error in the result" do
+        result = processor.process!(data_change:)
+
+        expect(result.success?).to be(false)
+        expect(result.error).to be_a(ArgumentError)
+        expect(result.error.message).to eq("Unknown action 'unknown'")
+      end
+    end
+
+    context "when the data change is blank" do
+      it "returns a successful no-op result" do
+        result = processor.process!(data_change: {})
+
+        expect(result).to be_a(Admin::DataFixes::Processor::Result)
+        expect(result).to be_success
+        expect(result.data_change).to eq({})
+        expect(result.target_object).to be_nil
+        expect(result.error).to be_nil
       end
     end
   end

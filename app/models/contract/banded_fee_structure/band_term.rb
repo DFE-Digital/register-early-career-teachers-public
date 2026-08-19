@@ -15,18 +15,16 @@ class Contract::BandedFeeStructure::BandTerm < ApplicationRecord
               greater_than: 0,
               message: "Fee per declaration must be a number greater than zero"
             }
-  validates :output_fee_ratio,
-            presence: { message: "Output fee ratio is required" },
+  validates :output_fee_percentage,
+            presence: { message: "Output fee percentage is required" },
             numericality: {
-              in: 0..1,
-              message: "Output fee ratio must be between 0 and 1"
+              in: 0..100,
+              allow_nil: true,
+              message: "Output fee percentage must be between 0 and 100"
             }
   validates :service_fee_ratio,
             presence: { message: "Service fee ratio is required" },
-            numericality: {
-              in: 0..1,
-              message: "Service fee ratio must be between 0 and 1"
-            }
+            if: -> { output_fee_ratio.present? }
 
   validate :sum_of_ratios_equals_one,
            if: -> { output_fee_ratio? && service_fee_ratio? }
@@ -41,14 +39,11 @@ class Contract::BandedFeeStructure::BandTerm < ApplicationRecord
 
   def output_fee_percentage=(val)
     self.output_fee_ratio = val.present? ? val.to_d / 100 : nil
+    self.service_fee_ratio = output_fee_ratio.present? ? 1 - output_fee_ratio : nil
   end
 
   def service_fee_percentage
     (service_fee_ratio * 100).to_i if service_fee_ratio
-  end
-
-  def service_fee_percentage=(val)
-    self.service_fee_ratio = val.present? ? val.to_d / 100 : nil
   end
 
 private

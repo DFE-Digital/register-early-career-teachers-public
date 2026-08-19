@@ -1,4 +1,4 @@
-describe "Sessions::Users::DfEUserImpersonatingSchoolUser" do
+describe Sessions::Users::DfEUserImpersonatingSchoolUser do # rubocop:disable RSpec/SpecFilePathFormat
   subject(:dfe_user_impersonating_school_user) { Sessions::Users::DfEUserImpersonatingSchoolUser.new(email: user.email, school_urn:, original_type:) }
 
   let(:email) { "timothy.dalton@education.gov.uk" }
@@ -11,10 +11,22 @@ describe "Sessions::Users::DfEUserImpersonatingSchoolUser" do
     expect(Sessions::Users::DfEUserImpersonatingSchoolUser::USER_TYPE).to be(:dfe_user_impersonating_school_user)
   end
 
+  it_behaves_like "a fingerprintable user" do
+    let(:user_props) { { email: user.email, school_urn: school.urn, original_type: } }
+  end
+
   describe "initialization" do
     it { expect(dfe_user_impersonating_school_user.user).to eql(user) }
     it { expect(dfe_user_impersonating_school_user.school).to eql(school) }
     it { expect(dfe_user_impersonating_school_user.original_type).to eql(original_type) }
+  end
+
+  describe "#id" do
+    it { expect(dfe_user_impersonating_school_user.id).to eql(user.id) }
+  end
+
+  describe "#dfe_analytics_user_id" do
+    it { expect(dfe_user_impersonating_school_user.dfe_analytics_user_id).to eql(user.id) }
   end
 
   describe "#to_h" do

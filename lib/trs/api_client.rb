@@ -57,7 +57,7 @@ module TRS
       when "Gone"
         raise(TRS::Errors::TeacherDeactivated)
       when "Permanent Redirect"
-        raise(TRS::Errors::TeacherMerged, "TRN #{trn} redirects to TRN #{trs_redirected_trn(response)}")
+        raise(TRS::Errors::TeacherMerged.new(trn:, redirected_to: trs_redirected_trn(response)))
       else
         fail(TRS::Errors::APIRequestError, "#{response.status} #{response.body}")
       end

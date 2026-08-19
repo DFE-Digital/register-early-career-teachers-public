@@ -108,6 +108,14 @@ RSpec.describe TRS::APIClient do
         it do
           expect { client.find_teacher(trn: merged_trn) }.to raise_error(TRS::Errors::TeacherMerged)
         end
+
+        it "carries the TRN from the location header" do
+          expect { client.find_teacher(trn: merged_trn) }.to raise_error(TRS::Errors::TeacherMerged) { |error|
+            expect(error.trn).to eq(merged_trn)
+            expect(error.redirected_to).to eq("8888888")
+            expect(error.message).to eq("TRN #{merged_trn} redirects to TRN 8888888")
+          }
+        end
       end
     end
   end

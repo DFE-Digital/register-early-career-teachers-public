@@ -24,7 +24,6 @@ RSpec.describe Contracts::Update do
   end
 
   let(:output_fee_percentage) { 80 }
-  let(:service_fee_percentage) { 20 }
 
   let(:params) do
     {
@@ -38,7 +37,6 @@ RSpec.describe Contracts::Update do
             band_id: band_term.band_id,
             fee_per_declaration: 9_999,
             output_fee_percentage:,
-            service_fee_percentage:,
           },
         ],
       },
@@ -91,7 +89,6 @@ RSpec.describe Contracts::Update do
               band_id: band_term.band_id,
               fee_per_declaration: 100,
               output_fee_percentage: 70,
-              service_fee_percentage: 30,
             },
           ],
         },
@@ -126,12 +123,11 @@ RSpec.describe Contracts::Update do
     end
   end
 
-  context "when the fee percentages do not total 100%" do
-    let(:output_fee_percentage) { 99 }
-    let(:service_fee_percentage) { 2 }
+  context "when the output fee percentage is outside 0 to 100" do
+    let(:output_fee_percentage) { 150 }
 
     it "does not update the contract or create an event" do
-      expect { service.call }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Banded fee structure band terms Sum of ratios must equal 1")
+      expect { service.call }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Banded fee structure band terms output fee percentage Output fee percentage must be between 0 and 100")
       expect(Events::Record).not_to have_received(:record_contract_updated_event!)
     end
   end

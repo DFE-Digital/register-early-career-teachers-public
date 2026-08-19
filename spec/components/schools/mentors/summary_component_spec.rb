@@ -23,6 +23,10 @@ RSpec.describe Schools::Mentors::SummaryComponent, type: :component do
   let(:ect3_teacher) { FactoryBot.create(:teacher, trs_first_name: "Kakashi", trs_last_name: "Hatake") }
   let(:ect4_teacher) { FactoryBot.create(:teacher, :induction_completed, trs_first_name: "Jiraiya", trs_last_name: "Sannin") }
 
+  it "renders the mentor name as a h2" do
+    expect(subject).to have_css("h2.govuk-summary-card__title", text: "Naruto Uzumaki")
+  end
+
   describe "assigned ECTs" do
     context "with no ECTs" do
       it { is_expected.to have_summary_list_row("Assigned ECTs", value: "No ECTs assigned") }

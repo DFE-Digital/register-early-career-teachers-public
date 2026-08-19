@@ -218,6 +218,8 @@ erDiagram
     date trs_qts_awarded_on
     string trs_qts_status_description
     datetime updated_at
+    enum trs_response
+    string trs_redirected_to
   }
   PendingInductionSubmission {
     integer id
