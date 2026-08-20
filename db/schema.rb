@@ -425,6 +425,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_13_112837) do
     t.check_constraint "finished_on >= started_on", name: "finished_on_not_before_started_on"
   end
 
+  create_table "invalid_records", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "error_messages", null: false
+    t.bigint "record_id", null: false
+    t.string "table_name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["table_name", "record_id"], name: "index_invalid_records_on_table_name_and_record_id", unique: true
+  end
+
   create_table "lead_provider_delivery_partnerships", force: :cascade do |t|
     t.bigint "active_lead_provider_id", null: false
     t.datetime "created_at", null: false
