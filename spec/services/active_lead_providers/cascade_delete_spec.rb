@@ -1,7 +1,8 @@
 describe ActiveLeadProviders::CascadeDelete do
   subject(:service) { described_class.new(active_lead_provider:, author:) }
 
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+  let(:contract_period) { FactoryBot.create(:contract_period, :next) }
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
   let!(:contract) do
     FactoryBot.create(:contract, :for_ittecf_ectp, :with_bands_and_band_terms,
                       active_lead_provider:)
@@ -72,6 +73,13 @@ describe ActiveLeadProviders::CascadeDelete do
       FactoryBot.create(:training_period, :with_only_expression_of_interest, expression_of_interest: active_lead_provider)
 
       expect { service.call }.to raise_error(described_class::CascadeDeleteError, "Expressions of interest are present")
+      expect(ActiveLeadProvider).to exist(active_lead_provider.id)
+    end
+
+    it "raises when the contract period has started, destroying nothing" do
+      contract_period.update!(started_on: 1.day.ago)
+
+      expect { service.call }.to raise_error(ActiveRecord::RecordNotDestroyed)
       expect(ActiveLeadProvider).to exist(active_lead_provider.id)
     end
   end

@@ -13,6 +13,17 @@ describe API::DeclarationSerializer, type: :serializer do
   let(:clawback_statement) { declaration.clawback_statement }
   let(:mentor_teacher) { declaration.mentorship_period.mentor.teacher }
 
+  describe ".dependencies" do
+    it "includes all dependencies required by the serializer" do
+      declaration_with_dependencies = Declaration
+        .strict_loading
+        .includes(described_class.dependencies)
+        .find(declaration.id)
+
+      expect { described_class.render(declaration_with_dependencies) }.not_to raise_error
+    end
+  end
+
   describe "core attributes" do
     it "serializes correctly" do
       expect(response["id"]).to be_present

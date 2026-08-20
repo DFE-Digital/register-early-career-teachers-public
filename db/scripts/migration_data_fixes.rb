@@ -17,7 +17,7 @@ begin
   csv_file = Rails.root.join("db/scripts/migration_data_fixes.csv")
   csv_log = CSV.open(Rails.root.join("tmp/migration_data_fixes_log-#{Time.zone.now.to_fs(:iso8601)}.csv"), "w")
   csv_log << %w[object_type object_id action attributes errors]
-  processor = MigrationFixes::Processor.new(update_readonly_attrs:)
+  processor = Admin::DataFixes::Processor.new(update_readonly_attrs:)
 
   CSV.foreach(csv_file, headers: true, header_converters: :symbol) do |row|
     result = processor.process!(data_change: row.to_h)

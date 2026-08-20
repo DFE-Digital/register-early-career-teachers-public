@@ -1,4 +1,15 @@
 class API::SchoolPartnershipSerializer < Blueprinter::Base
+  def self.dependencies
+    [
+      :delivery_partner,
+      :active_lead_provider,
+      :ongoing_training_periods,
+      {
+        school: :gias_school
+      }
+    ]
+  end
+
   class AttributesSerializer < Blueprinter::Base
     exclude :id
 

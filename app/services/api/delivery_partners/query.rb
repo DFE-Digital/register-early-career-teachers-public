@@ -2,11 +2,10 @@ module API::DeliveryPartners
   class Query
     include Queries::FilterIgnorable
 
-    attr_reader :scope, :lead_provider_id
-
-    def initialize(lead_provider_id: :ignore, contract_period_years: :ignore, sort: { created_at: :asc })
+    def initialize(lead_provider_id: :ignore, contract_period_years: :ignore, sort: { created_at: :asc }, included_associations: [])
       @lead_provider_id = lead_provider_id
       @scope = DeliveryPartner.distinct
+      @included_associations = included_associations
 
       where_lead_provider_is(lead_provider_id)
       where_contract_period_year_in(contract_period_years)
@@ -31,10 +30,12 @@ module API::DeliveryPartners
 
   private
 
+    attr_reader :scope, :lead_provider_id, :included_associations
+
     def preload_associations(results)
       results
         .strict_loading
-        .includes(:active_lead_providers)
+        .tap { it.includes!(included_associations) if included_associations.present? }
     end
 
     def where_lead_provider_is(lead_provider_id)

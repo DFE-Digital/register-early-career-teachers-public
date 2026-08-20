@@ -3,6 +3,17 @@ module AppropriateBodies::Importers
     PARSER_ERROR_LOG = "tmp/dqt_induction_period_parser.log"
     PARSER_ERROR_CSV = "tmp/dqt_induction_period_parser_rejected.csv"
 
+    ERROR_CSV_HEADER = %w[
+      reason
+      trn
+      dqt_id_imported
+      dqt_id_discarded
+      started_on_imported
+      started_on_discarded
+      finished_on_imported
+      finished_on_discarded
+    ].freeze
+
     # Local Authorities (LAs) lost AB status
     CUTOFF_DATE = Date.new(2024, 8, 31).freeze
 
@@ -212,66 +223,89 @@ module AppropriateBodies::Importers
       @rows ||= csv_rows.map { |row| Row.new(**build(row)) }
     end
 
-    # Returns ANY importable finished rows, even finished rows from someone who had ongoing one from the first import
-    #
-    # 1. reject rows with gaps
-    # 2. reject rows with invalid dates
-    # 3. reject rows associated to ABs we are removing
-    # 4. reject rows for select teachers already imported
-    #
     # @return [Hash{String => Array<Struct>}] filtered rows
     def periods_by_trn
       rows
         .reject { |row|
           if row.trn.nil? || row.legacy_appropriate_body_id.nil?
-            log_error("cannot be imported because TRN or AB is missing",
-                      trn: row.trn,
-                      dqt_id: [row.legacy_appropriate_body_id, nil])
+            log_error(
+              "cannot be imported because TRN or AB is missing",
+              trn: row.trn,
+              dqt_id: [nil, row.legacy_appropriate_body_id],
+              started_on: [nil, row.started_on],
+              finished_on: [nil, row.finished_on]
+            )
+            true
           else
             false
           end
         }
         .reject { |row|
           if row.started_on.nil?
-            log_error("cannot be imported because started_on is nil",
-                      trn: row.trn,
-                      dqt_id: [row.legacy_appropriate_body_id, nil])
+            log_error(
+              "cannot be imported because started_on is nil",
+              trn: row.trn,
+              dqt_id: [nil, row.legacy_appropriate_body_id],
+              started_on: [nil, row.started_on],
+              finished_on: [nil, row.finished_on]
+            )
+            true
           else
             false
           end
         }
         .reject { |row|
           if row.finished_on.nil?
-            log_error("cannot be imported because finished_on is nil",
-                      trn: row.trn,
-                      dqt_id: [row.legacy_appropriate_body_id, nil])
+            log_error(
+              "cannot be imported because finished_on is nil",
+              trn: row.trn,
+              dqt_id: [nil, row.legacy_appropriate_body_id],
+              started_on: [nil, row.started_on],
+              finished_on: [nil, row.finished_on]
+            )
+            true
           else
             false
           end
         }
         .reject { |row|
           if row.started_on == Date.new(1, 1, 1)
-            log_error("cannot be imported because started_on is 0001-01-01",
-                      trn: row.trn,
-                      dqt_id: [row.legacy_appropriate_body_id, nil])
+            log_error(
+              "cannot be imported because started_on is 0001-01-01",
+              trn: row.trn,
+              dqt_id: [nil, row.legacy_appropriate_body_id],
+              started_on: [nil, row.started_on],
+              finished_on: [nil, row.finished_on]
+            )
+            true
           else
             false
           end
         }
         .reject { |row|
           if row.finished_on && row.started_on > row.finished_on
-            log_error("cannot be imported because started_on is greater than finished_on",
-                      trn: row.trn,
-                      dqt_id: [row.legacy_appropriate_body_id, nil])
+            log_error(
+              "cannot be imported because started_on is greater than finished_on",
+              trn: row.trn,
+              dqt_id: [nil, row.legacy_appropriate_body_id],
+              started_on: [nil, row.started_on],
+              finished_on: [nil, row.finished_on]
+            )
+            true
           else
             false
           end
         }
         .reject { |row|
           if row.legacy_appropriate_body_id.in?(offshore_dqt_uuids)
-            log_error("cannot be imported because AB is offshore",
-                      trn: row.trn,
-                      dqt_id: [row.legacy_appropriate_body_id, nil])
+            log_error(
+              "cannot be imported because AB is offshore",
+              trn: row.trn,
+              dqt_id: [nil, row.legacy_appropriate_body_id],
+              started_on: [nil, row.started_on],
+              finished_on: [nil, row.finished_on]
+            )
+            true
           else
             false
           end
@@ -348,6 +382,15 @@ module AppropriateBodies::Importers
                       body: "DQT held 2 overlapping induction periods for this teacher/appropriate body combination. 1 was discarded",
                       data: { originals: [original_sibling, original_current], combined: sibling.to_h }
                     }
+
+                    log_error(
+                      "an overlapping induction period was discarded as fully contained within the retained period",
+                      trn: current.trn,
+                      dqt_id: [sibling.legacy_appropriate_body_id, current.legacy_appropriate_body_id],
+                      started_on: [sibling.started_on, current.started_on],
+                      finished_on: [sibling.finished_on, current.finished_on]
+                    )
+
                     next
 
                   when current.range.cover?(sibling.range)
@@ -366,7 +409,24 @@ module AppropriateBodies::Importers
                     keep.delete(sibling)
                     keep << current
 
+                    log_error(
+                      "an overlapping induction period was discarded as fully contained within the retained period",
+                      trn: current.trn,
+                      dqt_id: [current.legacy_appropriate_body_id, sibling.legacy_appropriate_body_id],
+                      started_on: [current.started_on, sibling.started_on],
+                      finished_on: [current.finished_on, sibling.finished_on]
+                    )
+
                   when sibling.range.cover?(current.started_on) && !sibling.range.cover?(current.finished_on)
+
+                    log_error(
+                      "cannot be imported because the induction period is fully absorbed into the retained period which was extended to cover it",
+                      trn: current.trn,
+                      dqt_id: [sibling.legacy_appropriate_body_id, current.legacy_appropriate_body_id],
+                      started_on: [sibling.started_on, current.started_on],
+                      finished_on: [sibling.finished_on, current.finished_on]
+                    )
+
                     #                     ┌───────────────────────────────────────┐
                     #   CURRENT           │              DISCARD                  │
                     #                     └───────────────────────────────────────┘
@@ -383,6 +443,15 @@ module AppropriateBodies::Importers
                     }
 
                   when !sibling.range.cover?(current.started_on) && sibling.range.cover?(current.finished_on)
+
+                    log_error(
+                      "cannot be imported because the induction period is fully absorbed into the retained period which was extended to cover it",
+                      trn: current.trn,
+                      dqt_id: [sibling.legacy_appropriate_body_id, current.legacy_appropriate_body_id],
+                      started_on: [sibling.started_on, current.started_on],
+                      finished_on: [sibling.finished_on, current.finished_on]
+                    )
+
                     #               ┌──────────────────────────────────────┐
                     #   CURRENT     │              DISCARD                 │
                     #               └──────────────────────────────────────┘
@@ -402,7 +471,7 @@ module AppropriateBodies::Importers
                     log_error(
                       "cannot be imported because two overlapping induction periods with the same appropriate body and programme could not be resolved",
                       trn: current.trn,
-                      dqt_id: [current.legacy_appropriate_body_id, nil],
+                      dqt_id: [sibling.legacy_appropriate_body_id, current.legacy_appropriate_body_id],
                       started_on: [sibling.started_on, current.started_on],
                       finished_on: [sibling.finished_on, current.finished_on]
                     )
@@ -428,6 +497,15 @@ module AppropriateBodies::Importers
                       data: { originals: [original_sibling, original_current] }
                     }
                     keep << current
+                  else
+                    # discard current, keep sibling
+                    log_error(
+                      "cannot be imported because an overlapping induction period with a different programme is fully contained within the retained period",
+                      trn: current.trn,
+                      dqt_id: [sibling.legacy_appropriate_body_id, current.legacy_appropriate_body_id],
+                      started_on: [sibling.started_on, current.started_on],
+                      finished_on: [sibling.finished_on, current.finished_on]
+                    )
                   end
 
                 # different appropriate body
@@ -436,18 +514,38 @@ module AppropriateBodies::Importers
                   case
                   when sibling.started_on == current.started_on
                     keep.delete(sibling)
+
                     log_error(
-                      "two induction periods with different appropriate bodies that start on the same day found",
+                      "two induction periods with different appropriate bodies that start on the same day found (1 of 2)",
                       trn: current.trn,
-                      dqt_id: [current.legacy_appropriate_body_id, sibling.legacy_appropriate_body_id]
+                      dqt_id: [nil, current.legacy_appropriate_body_id],
+                      started_on: [nil, current.started_on],
+                      finished_on: [nil, current.finished_on]
+                    )
+                    log_error(
+                      "two induction periods with different appropriate bodies that start on the same day found (2 of 2)",
+                      trn: sibling.trn,
+                      dqt_id: [nil, sibling.legacy_appropriate_body_id],
+                      started_on: [nil, sibling.started_on],
+                      finished_on: [nil, sibling.finished_on]
                     )
 
                   when sibling.range.cover?(current.range) || current.range.cover?(sibling.range)
                     keep.delete(sibling)
+
                     log_error(
-                      "two induction periods with different appropriate bodies where one contains the other",
+                      "two induction periods with different appropriate bodies where one contains the other (1 of 2)",
                       trn: current.trn,
-                      dqt_id: [current.legacy_appropriate_body_id, sibling.legacy_appropriate_body_id]
+                      dqt_id: [nil, current.legacy_appropriate_body_id],
+                      started_on: [nil, current.started_on],
+                      finished_on: [nil, current.finished_on]
+                    )
+                    log_error(
+                      "two induction periods with different appropriate bodies where one contains the other (2 of 2)",
+                      trn: sibling.trn,
+                      dqt_id: [nil, sibling.legacy_appropriate_body_id],
+                      started_on: [nil, sibling.started_on],
+                      finished_on: [nil, sibling.finished_on]
                     )
 
                   when sibling.range.cover?(current.started_on) && !sibling.range.cover?(current.finished_on)
@@ -466,12 +564,13 @@ module AppropriateBodies::Importers
                     }
                     keep << current
                   else
+                    # keep current, discard sibling
                     log_error(
                       "cannot be imported because two overlapping induction periods with different appropriate bodies could not be deconflicted",
                       trn: current.trn,
                       dqt_id: [current.legacy_appropriate_body_id, sibling.legacy_appropriate_body_id],
-                      started_on: [sibling.started_on, current.started_on],
-                      finished_on: [sibling.finished_on, current.finished_on]
+                      started_on: [current.started_on, sibling.started_on],
+                      finished_on: [current.finished_on, sibling.finished_on]
                     )
                   end
 
@@ -482,14 +581,12 @@ module AppropriateBodies::Importers
           keep = keep.reject do |edited_period|
             next false if edited_period.length > 1
 
-            original = edited_period.notes.dig(0, :data, :originals)&.first.to_h
-
             log_error(
               "cannot be imported because the induction period is 1 day or shorter",
               trn: edited_period.trn,
-              dqt_id: [edited_period.legacy_appropriate_body_id, nil],
-              started_on: [original[:started_on], edited_period.started_on],
-              finished_on: [original[:finished_on], edited_period.finished_on]
+              dqt_id: [nil, edited_period.legacy_appropriate_body_id],
+              started_on: [nil, edited_period.started_on],
+              finished_on: [nil, edited_period.finished_on]
             )
             true
           end
@@ -537,8 +634,10 @@ module AppropriateBodies::Importers
     def log_error(message, trn:, dqt_id: [nil, nil], started_on: [nil, nil], finished_on: [nil, nil])
       log_error_csv(message, trn:, dqt_id:, started_on:, finished_on:)
 
-      uuids = dqt_id.join(", ")
-      logger.error("#{message} trn: #{trn} dqt_id: #{uuids}")
+      if Rails.env.development? || Rails.env.test?
+        uuids = dqt_id.join(", ")
+        logger.error("#{message} trn: #{trn} dqt_id: #{uuids}")
+      end
     end
 
     # @param datetime [String]
@@ -551,16 +650,7 @@ module AppropriateBodies::Importers
     end
 
     def error_csv_header
-      CSV.generate_line(%w[
-        reason
-        trn
-        dqt_id
-        dqt_id_other
-        started_on
-        started_on_other
-        finished_on
-        finished_on_other
-      ])
+      CSV.generate_line(ERROR_CSV_HEADER)
     end
 
     def log_error_csv(message, trn:, dqt_id:, started_on:, finished_on:)

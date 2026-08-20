@@ -4,33 +4,29 @@ module API
       filter_validation required_filters: %i[cohort]
 
       def index
-        conditions = { updated_since:, urn:, sort: }
-        paginated_schools = paginate(schools_query(conditions:).schools)
+        filters = { updated_since:, urn:, sort: }.compact
+        paginated_schools = paginate(lead_provider_schools_query(filters:).schools)
 
         render json: to_json(paginated_schools)
       end
 
       def show
-        render json: to_json(schools_query.school_by_api_id(api_id))
+        render json: to_json(lead_provider_schools_query.school_by_api_id(api_id))
       end
 
     private
 
-      def schools_query(conditions: {})
-        API::Schools::Query.new(**(default_query_conditions.merge(conditions.compact)))
+      def lead_provider_schools_query(filters: {})
+        school_filters = lead_provider_and_contract_period_filters.merge(filters)
+        included_associations = { included_associations: serializer.dependencies }
+
+        API::Schools::Query.new(**school_filters.merge(included_associations))
       end
 
-      def default_query_conditions
-        @default_query_conditions ||= {
-          contract_period_year: contract_period&.year,
-          lead_provider_id: current_lead_provider.id
-        }
-      end
-
-      def serializer_options
-        @serializer_options ||= {
-          contract_period_year: contract_period&.year,
-          lead_provider_id: current_lead_provider.id
+      def lead_provider_and_contract_period_filters
+        {
+          lead_provider_id: current_lead_provider.id,
+          contract_period_year: contract_period&.year
         }
       end
 
@@ -55,7 +51,11 @@ module API
       end
 
       def to_json(obj)
-        API::SchoolSerializer.render(obj, root: "data", **serializer_options)
+        serializer.render(obj, root: "data", **lead_provider_and_contract_period_filters)
+      end
+
+      def serializer
+        API::SchoolSerializer
       end
     end
   end

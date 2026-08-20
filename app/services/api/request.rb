@@ -8,8 +8,8 @@ module API
         response_data = response_data.with_indifferent_access
         request_headers = request_data.fetch(:headers, {})
 
-        lead_provider = fetch_lead_provider(request_headers.delete("HTTP_AUTHORIZATION"))
-        return unless lead_provider
+        analytics_user = fetch_lead_provider_analytics_user(request_headers.delete("HTTP_AUTHORIZATION"))
+        return unless analytics_user
 
         response_headers = response_data[:headers]
         response_body = response_data[:body]
@@ -22,8 +22,8 @@ module API
           response_headers:,
           response_body: response_hash(response_body, status_code),
           status_code:,
-          user_description: user_description(lead_provider),
-          lead_provider:,
+          user_description: user_description(analytics_user),
+          lead_provider: analytics_user.lead_provider,
           created_at:,
         }
 
@@ -32,7 +32,7 @@ module API
           .with_request_uuid(uuid)
           .with_entity_table_name(:api_requests)
           .with_data(data:)
-          .with_user(lead_provider)
+          .with_user(analytics_user)
 
         DfE::Analytics::SendEvents.do(Array.wrap(event.as_json))
       end
@@ -46,7 +46,7 @@ module API
         response = ActionDispatch::Response.new(429)
 
         user = fetch_user(request.session)
-        user ||= fetch_lead_provider(request.authorization)
+        user ||= fetch_lead_provider_analytics_user(request.authorization)
 
         rate_limit_event = DfE::Analytics::Event.new
           .with_type(:web_request)
@@ -89,11 +89,14 @@ module API
         Sessions::User.from_session(session["user_session"])
       end
 
-      def fetch_lead_provider(http_authorization)
+      def fetch_lead_provider_analytics_user(http_authorization)
         token = http_authorization.to_s.split("Bearer ").last
         return if token.blank?
 
-        ::API::TokenManager.find_lead_provider_api_token(token:)&.lead_provider
+        lead_provider = ::API::TokenManager.find_lead_provider_api_token(token:)&.lead_provider
+        return if lead_provider.blank?
+
+        ::API::AnalyticsUser.new(lead_provider)
       end
 
       def user_description(lead_provider)

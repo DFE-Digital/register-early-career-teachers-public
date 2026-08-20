@@ -38,7 +38,7 @@ class MigrationFixes::SpecGenerator
         end
 
         before do
-          result = MigrationFixes::Processor.new.process!(data_change: migration_fix)
+          result = Admin::DataFixes::Processor.new.process!(data_change: migration_fix)
           raise result.error unless result.success?
         end
 

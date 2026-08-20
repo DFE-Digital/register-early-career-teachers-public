@@ -283,7 +283,7 @@ module Events
       event_type = :teacher_trs_merged
       teacher_name = Teachers::Name.new(teacher).full_name
       heading = "#{teacher_name} was merged into another TRS record"
-      body = "TRS API returned 308 so the record was marked as not found. #{body}"
+      body = "TRS API returned 308 so the record was marked as merged. #{body}"
 
       new(event_type:, author:, teacher:, heading:, body:, happened_at:).record_event!
     end

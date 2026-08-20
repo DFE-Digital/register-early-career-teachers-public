@@ -29,34 +29,37 @@ RSpec.describe API::Declarations::Query, :with_metadata do
     )
   end
 
-  it_behaves_like "a query that avoids includes" do
-    before { FactoryBot.create(:declaration) }
-  end
+  describe "including associations" do
+    shared_examples "included associations" do
+      it { expect(result.association(association)).to be_loaded }
 
-  describe "preloading relationships" do
-    shared_examples "preloaded associations" do
-      it { expect(result.association(:training_period)).to be_loaded }
+      context "when no associations are included" do
+        let(:association) { nil }
+
+        it { expect(result).not_to have_any_loaded_associations }
+      end
     end
 
-    let(:instance) { described_class.new }
+    let(:association) { :payment_statement }
+    let(:instance) { described_class.new(included_associations: [association]) }
     let!(:declaration) { FactoryBot.create(:declaration) }
 
     describe "#declarations" do
       subject(:result) { instance.declarations.first }
 
-      include_context "preloaded associations"
+      include_examples "included associations"
     end
 
     describe "#declaration_by_api_id" do
       subject(:result) { instance.declaration_by_api_id(declaration.api_id) }
 
-      include_context "preloaded associations"
+      include_examples "included associations"
     end
 
     describe "#declaration_by_id" do
       subject(:result) { instance.declaration_by_id(declaration.id) }
 
-      include_context "preloaded associations"
+      include_examples "included associations"
     end
   end
 

@@ -1,6 +1,16 @@
-class MigrationFixes::Processor
+class Admin::DataFixes::Processor
   Result = Data.define(:data_change, :target_object, :error) do
     def success? = error.nil?
+
+    def saved_change
+      return if error.present?
+
+      {
+        record_identifier: "#{target_object.model_name}(##{target_object.id})",
+        action: data_change[:action],
+        changes: target_object.saved_changes
+      }
+    end
   end
 
   attr_reader :batch_refs, :update_readonly_attrs

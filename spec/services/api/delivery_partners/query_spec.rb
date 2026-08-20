@@ -1,33 +1,36 @@
 RSpec.describe API::DeliveryPartners::Query do
-  it_behaves_like "a query that avoids includes" do
-    before { FactoryBot.create(:delivery_partner) }
-  end
+  describe "including associations" do
+    shared_examples "included associations" do
+      it { expect(result.association(association)).to be_loaded }
 
-  describe "preloading relationships" do
-    shared_examples "preloaded associations" do
-      it { expect(result.association(:active_lead_providers)).to be_loaded }
+      context "when no associations are included" do
+        let(:association) { nil }
+
+        it { expect(result).not_to have_any_loaded_associations }
+      end
     end
 
-    let(:instance) { described_class.new }
+    let(:association) { :active_lead_providers }
+    let(:instance) { described_class.new(included_associations: [association]) }
     let!(:delivery_partner) { FactoryBot.create(:delivery_partner) }
     let(:lead_provider) { FactoryBot.create(:lead_provider) }
 
     describe "#delivery_partners" do
       subject(:result) { instance.delivery_partners.first }
 
-      include_context "preloaded associations"
+      include_examples "included associations"
     end
 
     describe "#delivery_partner_by_api_id" do
       subject(:result) { instance.delivery_partner_by_api_id(delivery_partner.api_id) }
 
-      include_context "preloaded associations"
+      include_examples "included associations"
     end
 
     describe "#delivery_partner_by_id" do
       subject(:result) { instance.delivery_partner_by_id(delivery_partner.id) }
 
-      include_context "preloaded associations"
+      include_examples "included associations"
     end
   end
 

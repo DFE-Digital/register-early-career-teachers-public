@@ -28,7 +28,7 @@ module "application_configuration" {
     {
       DATABASE_URL        = module.postgres.url
       BLAZER_DATABASE_URL = var.environment == "production" ? module.infrastructure_secrets.map[local.snapshot_db_kv_secret_name] : module.postgres.url
-      REDIS_CACHE_URL     = module.redis-cache.url
+      REDIS_CACHE_URL     = local.selected_redis.cache_url
     }
   )
 }

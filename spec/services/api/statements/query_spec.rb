@@ -1,33 +1,35 @@
 RSpec.describe API::Statements::Query do
-  it_behaves_like "a query that avoids includes" do
-    before { FactoryBot.create(:statement) }
-  end
+  describe "including associations" do
+    shared_examples "included associations" do
+      it { expect(result.association(association)).to be_loaded }
 
-  describe "preloading relationships" do
-    shared_examples "preloaded associations" do
-      it { expect(result.association(:active_lead_provider)).to be_loaded }
+      context "when no associations are included" do
+        let(:association) { nil }
+
+        it { expect(result).not_to have_any_loaded_associations }
+      end
     end
 
-    let(:instance) { described_class.new }
-
+    let(:association) { :active_lead_provider }
+    let(:instance) { described_class.new(included_associations: [association]) }
     let!(:statement) { FactoryBot.create(:statement) }
 
     describe "#statements" do
       subject(:result) { instance.statements.first }
 
-      include_context "preloaded associations"
+      include_examples "included associations"
     end
 
     describe "#statement_by_api_id" do
       subject(:result) { instance.statement_by_api_id(statement.api_id) }
 
-      include_context "preloaded associations"
+      include_examples "included associations"
     end
 
     describe "#statement_by_id" do
       subject(:result) { instance.statement_by_id(statement.id) }
 
-      include_context "preloaded associations"
+      include_examples "included associations"
     end
   end
 

@@ -1,36 +1,35 @@
 describe API::SchoolPartnerships::Query do
-  it_behaves_like "a query that avoids includes" do
-    before { FactoryBot.create(:school_partnership) }
-  end
+  describe "including associations" do
+    shared_examples "included associations" do
+      it { expect(result.association(association)).to be_loaded }
 
-  describe "preloading relationships" do
-    shared_examples "preloaded associations" do
-      it { expect(result.association(:delivery_partner)).to be_loaded }
-      it { expect(result.association(:active_lead_provider)).to be_loaded }
-      it { expect(result.association(:school)).to be_loaded }
-      it { expect(result.school.association(:gias_school)).to be_loaded }
+      context "when no associations are included" do
+        let(:association) { nil }
+
+        it { expect(result).not_to have_any_loaded_associations }
+      end
     end
 
-    let(:instance) { described_class.new }
-
+    let(:association) { :delivery_partner }
+    let(:instance) { described_class.new(included_associations: [association]) }
     let!(:school_partnership) { FactoryBot.create(:school_partnership) }
 
     describe "#school_partnerships" do
       subject(:result) { instance.school_partnerships.first }
 
-      include_context "preloaded associations"
+      include_examples "included associations"
     end
 
     describe "#school_partnership_by_api_id" do
       subject(:result) { instance.school_partnership_by_api_id(school_partnership.api_id) }
 
-      include_context "preloaded associations"
+      include_examples "included associations"
     end
 
     describe "#school_partnership_by_id" do
       subject(:result) { instance.school_partnership_by_id(school_partnership.id) }
 
-      include_context "preloaded associations"
+      include_examples "included associations"
     end
   end
 

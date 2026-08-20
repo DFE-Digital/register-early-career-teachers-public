@@ -4,12 +4,15 @@ module Sessions
       class DfEPersonaDisabledError < Sessions::User::InvalidSession; end
       class UnknownUserEmail < Sessions::User::InvalidSession; end
 
+      include Fingerprint
       include Sessions::ImpersonateSchoolUser
 
       USER_TYPE = :dfe_staff_user
       PROVIDER = :persona
 
       attr_reader :id, :name, :user
+
+      alias_method :dfe_analytics_user_id, :id
 
       def initialize(email:, **)
         fail DfEPersonaDisabledError unless Rails.application.config.enable_personas

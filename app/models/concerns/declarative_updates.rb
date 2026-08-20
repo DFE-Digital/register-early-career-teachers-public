@@ -11,11 +11,17 @@ module DeclarativeUpdates
       after_commit(on: on_event) do
         next if DeclarativeUpdates.skip?(:metadata)
 
+        evaluated_target = instance_exec(&target)
+        next unless evaluated_target
+        next unless evaluated_target.class.exists?(evaluated_target.id)
+
         should_touch = destroyed? || when_changing.blank? || when_changing.any? do |attr|
           saved_change_to_attribute?(attr)
         end
 
-        Metadata::Manager.new.refresh_metadata!(instance_exec(&target)) if should_touch
+        next unless should_touch
+
+        Metadata::Manager.new.refresh_metadata!(evaluated_target)
       end
     end
 

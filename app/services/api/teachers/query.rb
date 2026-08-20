@@ -2,18 +2,18 @@ module API::Teachers
   class Query
     include Queries::FilterIgnorable
 
-    attr_reader :scope, :lead_provider_id
-
     def initialize(
       lead_provider_id: :ignore,
       contract_period_years: :ignore,
       training_status: :ignore,
       api_from_teacher_id: :ignore,
       updated_since: :ignore,
-      sort: { created_at: :asc }
+      sort: { created_at: :asc },
+      included_associations: []
     )
       @lead_provider_id = lead_provider_id
       @scope = Teacher.distinct
+      @included_associations = included_associations
 
       where_lead_provider_is(lead_provider_id)
       where_contract_period_year_in(contract_period_years)
@@ -41,38 +41,12 @@ module API::Teachers
 
   private
 
+    attr_reader :scope, :lead_provider_id, :included_associations
+
     def preload_associations(results)
       results
         .strict_loading
-        .includes(
-          :teacher_id_changes,
-          :started_induction_period,
-          :finished_induction_period,
-          :earliest_ect_at_school_period,
-          :earliest_mentor_at_school_period,
-          :latest_ect_at_school_period,
-          lead_provider_metadata: {
-            latest_ect_training_period: {
-              school_partnership: [
-                { school: :school_funding_eligibilities },
-                { lead_provider_delivery_partnership: :delivery_partner }
-              ],
-              ect_at_school_period: [],
-              schedule: [],
-            },
-            latest_ect_contract_period: [],
-            latest_mentor_training_period: {
-              school_partnership: [
-                { school: :school_funding_eligibilities },
-                { lead_provider_delivery_partnership: :delivery_partner }
-              ],
-              mentor_at_school_period: [],
-              schedule: [],
-            },
-            latest_mentor_contract_period: [],
-            ect_assigned_mentor_latest_school_period: :teacher
-          }
-        )
+        .tap { it.includes!(*included_associations) if included_associations.present? }
     end
 
     def where_lead_provider_is(lead_provider_id)

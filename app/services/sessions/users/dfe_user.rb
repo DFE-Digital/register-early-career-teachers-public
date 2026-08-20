@@ -3,12 +3,15 @@ module Sessions
     class DfEUser < User
       class UnknownUserEmail < Sessions::User::InvalidSession; end
 
+      include Fingerprint
       include Sessions::ImpersonateSchoolUser
 
       USER_TYPE = :dfe_staff_user
       PROVIDER = :otp
 
       attr_reader :id, :name, :user
+
+      alias_method :dfe_analytics_user_id, :id
 
       def initialize(email:, **)
         @user = user_from(email)
