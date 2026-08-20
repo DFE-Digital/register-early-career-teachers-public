@@ -1,35 +1,43 @@
 describe Admin::DataFixes::Processor::Result do
+  subject(:result) { described_class.new(data_change:, target_object:, error:) }
+
   let(:data_change) { { action: "update" } }
+  let(:target_object) do
+    instance_double(
+      TrainingPeriod,
+      id: 1,
+      model_name: "TrainingPeriod",
+      saved_changes: "something"
+    )
+  end
 
   describe "#success?" do
-    it "returns true when there is no error" do
-      target_object = instance_double(TrainingPeriod)
+    context "when there is no error" do
+      let(:error) { nil }
 
-      result = described_class.new(
-        data_change:,
-        target_object:,
-        error: nil
-      )
-
-      expect(result).to be_success
-      expect(result.data_change).to eq(data_change)
-      expect(result.target_object).to eq(target_object)
-      expect(result.error).to be_nil
+      it { is_expected.to be_success }
     end
 
-    it "returns false when there is an error" do
-      error = ArgumentError.new("Invalid change")
+    context "when there is an error" do
+      let(:error) { ArgumentError.new("Invalid change") }
 
-      result = described_class.new(
-        data_change:,
-        target_object: nil,
-        error:
-      )
+      it { is_expected.not_to be_success }
+    end
+  end
 
-      expect(result).not_to be_success
-      expect(result.data_change).to eq(data_change)
-      expect(result.target_object).to be_nil
-      expect(result.error).to equal(error)
+  describe "#saved_change" do
+    subject(:saved_change) { result.saved_change }
+
+    context "when there is no error" do
+      let(:error) { nil }
+
+      it { is_expected.to eq({ record_identifier: "TrainingPeriod(#1)", action: "update", changes: "something" }) }
+    end
+
+    context "when there is an error" do
+      let(:error) { ArgumentError.new("Invalid change") }
+
+      it { is_expected.to be_nil }
     end
   end
 end
