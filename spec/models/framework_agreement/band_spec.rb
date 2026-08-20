@@ -220,8 +220,6 @@ RSpec.describe FrameworkAgreement::Band, type: :model do
       context "when there is a contract in place" do
         let!(:contract) { FactoryBot.create(:contract, framework_agreement:) }
 
-        before { active_lead_provider.reload }
-
         it "prevents removing a band" do
           expect {
             existing_band.destroy

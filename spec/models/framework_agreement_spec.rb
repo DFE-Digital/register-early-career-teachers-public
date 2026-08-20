@@ -205,10 +205,11 @@ describe FrameworkAgreement do
   describe "#payment_declarations_count" do
     let(:contract_period) { FactoryBot.create(:contract_period, :next) }
     let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
-    let!(:declarations) { FactoryBot.create_list(:declaration, 2, :payable, active_lead_provider:) }
+    let!(:payment_declarations) { FactoryBot.create_list(:declaration, 2, :payable, active_lead_provider:) }
+    let!(:clawback_declarations) { FactoryBot.create_list(:declaration, 2, :clawed_back, active_lead_provider:) }
 
     it "returns the total of payment declarations from all contracts and statements" do
-      expect(active_lead_provider.payment_declarations_count).to eq declarations.count
+      expect(active_lead_provider.payment_declarations_count).to eq payment_declarations.count
     end
   end
 end

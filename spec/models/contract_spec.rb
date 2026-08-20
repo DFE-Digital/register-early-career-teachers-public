@@ -17,6 +17,7 @@ describe Contract do
     it { is_expected.to have_one(:flat_rate_fee_structure).class_name("Contract::FlatRateFeeStructure").inverse_of(:contract) }
     it { is_expected.to have_one(:contract_period).through(:framework_agreement) }
     it { is_expected.to have_many(:statements).inverse_of(:contract) }
+    it { is_expected.to have_many(:payment_declarations).through(:statements) }
   end
 
   describe "scopes" do
@@ -169,21 +170,6 @@ describe Contract do
       end
 
       it { is_expected.to eq("ECF January 2025 - May 2026") }
-    end
-  end
-
-  describe "#payment_declarations_count" do
-    let(:contract_period) { FactoryBot.create(:contract_period, :next) }
-    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
-
-    let(:statement) { FactoryBot.create(:statement, :payable, active_lead_provider:, contract_period:) }
-    let(:contract) { statement.contract }
-    let!(:declarations) do
-      FactoryBot.create_list(:declaration, 2, active_lead_provider:, payment_status: :payable, payment_statement: statement)
-    end
-
-    it "returns the number of payment declarations attached to this contract's statements" do
-      expect(contract.payment_declarations_count).to eq declarations.count
     end
   end
 end

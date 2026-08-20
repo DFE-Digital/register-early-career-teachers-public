@@ -14,6 +14,7 @@ class Contract < ApplicationRecord
   has_one :flat_rate_fee_structure, class_name: "Contract::FlatRateFeeStructure", inverse_of: :contract, dependent: :destroy
   has_one :banded_fee_structure, class_name: "Contract::BandedFeeStructure", inverse_of: :contract, dependent: :destroy
   has_many :statements, inverse_of: :contract
+  has_many :payment_declarations, through: :statements
 
   # Scopes
   scope :most_recent_first, -> { order(created_at: :desc) }
@@ -58,9 +59,5 @@ class Contract < ApplicationRecord
     return first.month_year if first == last
 
     "#{first.month_year} - #{last.month_year}"
-  end
-
-  def payment_declarations_count
-    statements.sum { it.payment_declarations.count }
   end
 end
