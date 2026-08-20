@@ -19,5 +19,18 @@ module Admin::DataFixesWizard
     def inline_csv
       @inline_csv ||= Admin::DataFixes::InlineCSV.new(csv_string:)
     end
+
+    def pre_populate_attributes
+      self.csv_string = generate_csv_from(store.parsed_rows) if store.parsed_rows
+    end
+
+    def generate_csv_from(parsed_rows)
+      CSV.generate do |csv|
+        csv << parsed_rows.first.keys
+        parsed_rows.each do |row|
+          csv << row.values
+        end
+      end
+    end
   end
 end

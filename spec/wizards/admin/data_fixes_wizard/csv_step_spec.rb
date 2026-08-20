@@ -9,10 +9,13 @@ RSpec.describe Admin::DataFixesWizard::CSVStep do
       store:
     )
   end
-  let(:store) { FactoryBot.build(:session_repository) }
+  let(:store) { FactoryBot.build(:session_repository, parsed_rows:) }
   let(:author) { FactoryBot.build(:dfe_user, role: :product_team) }
   let(:params) { { csv_string: } }
   let(:csv_string) { "" }
+  let(:parsed_rows) { nil }
+
+  it { is_expected.to delegate_method(:errors).to(:inline_csv) }
 
   describe ".permitted_params" do
     subject(:permitted_params) { described_class.permitted_params }
@@ -35,66 +38,68 @@ RSpec.describe Admin::DataFixesWizard::CSVStep do
   describe "#save!" do
     subject(:save!) { current_step.save! }
 
+    before do
+      allow(Admin::DataFixes::InlineCSV)
+        .to receive(:new)
+        .and_return(fake_inline_csv)
+    end
+
     context "when the CSV is valid" do
-      let(:csv_string) do
-        <<~ROWS
-          object_type,object_id,action,attributes
-          something,1,create,"attribute1,value1,attribute2,value2"
-          another_thing,2,destroy,""
-        ROWS
+      let(:fake_inline_csv) do
+        instance_double(
+          Admin::DataFixes::InlineCSV,
+          parse: [{ test: "something" }, { test: "another_thing" }]
+        )
       end
 
       it { is_expected.to be_truthy }
 
-      it "persists rows in the store" do
+      it "persists parsed rows in the store" do
         expect { save! }
           .to change { current_step.store.parsed_rows }
           .from(nil)
-          .to(
-            [
-              {
-                "object_type" => "something",
-                "object_id" => "1",
-                "action" => "create",
-                "attributes" => "attribute1,value1,attribute2,value2"
-              },
-              {
-                "object_type" => "another_thing",
-                "object_id" => "2",
-                "action" => "destroy",
-                "attributes" => ""
-              }
-            ]
-          )
-      end
-
-      it "has no errors" do
-        save!
-
-        expect(current_step.errors).to be_empty
+          .to([{ test: "something" }, { test: "another_thing" }])
       end
     end
 
     context "when the CSV is invalid" do
-      let(:csv_string) do
-        <<~ROWS
-          object_type,object_id,attributes
-          something,1,create,"attribute1,value1,attribute2,value2"
-          another_thing,2,destroy,""
-        ROWS
+      let(:fake_inline_csv) do
+        instance_double(Admin::DataFixes::InlineCSV, parse: false)
       end
 
       it { is_expected.to be_falsey }
 
-      it "does not persist any rows in the store" do
+      it "does not persist parsed rows in the store" do
         expect { save! }.not_to(change { current_step.store.parsed_rows })
       end
+    end
+  end
 
-      it "propagates errors from `InlineCSV` parsing" do
-        save!
+  describe "pre-populating attributes" do
+    context "when there are parsed rows in the store" do
+      let(:params) { {} }
+      let(:parsed_rows) do
+        [
+          { "column1" => "value1", "column2" => "value2" },
+          { "column1" => "value3", "column2" => "value4" },
+        ]
+      end
 
-        expect(current_step.errors)
-          .to be_added(:csv_string, "CSV has invalid headers")
+      it "pre-populates the csv string" do
+        expect(current_step.csv_string).to eq <<~ROWS
+          column1,column2
+          value1,value2
+          value3,value4
+        ROWS
+      end
+    end
+
+    context "when there are not parsed rows in the store" do
+      let(:params) { {} }
+      let(:parsed_rows) { nil }
+
+      it "does not pre-populate the csv string" do
+        expect(current_step.csv_string).to be_nil
       end
     end
   end
