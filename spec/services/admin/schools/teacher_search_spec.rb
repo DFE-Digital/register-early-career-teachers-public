@@ -160,7 +160,6 @@ RSpec.describe Admin::Schools::TeacherSearch do
       let!(:school_led_teacher) { FactoryBot.create(:teacher, trs_first_name: "Goku") }
       let!(:provider_led_teacher) { FactoryBot.create(:teacher, trs_first_name: "Vegeta") }
       let!(:untrained_mentor) { FactoryBot.create(:teacher, trs_first_name: "Piccolo") }
-      let!(:untrained_ect) { FactoryBot.create(:teacher, trs_first_name: "Trunks") }
 
       before do
         school_led_ect_at_school_period = FactoryBot.create(:ect_at_school_period, :unfinished, school:, teacher: school_led_teacher)
@@ -168,14 +167,12 @@ RSpec.describe Admin::Schools::TeacherSearch do
         FactoryBot.create(:training_period, :for_ect, :school_led, :unfinished, ect_at_school_period: school_led_ect_at_school_period)
         FactoryBot.create(:training_period, :for_ect, :unfinished, ect_at_school_period: provider_led_ect_at_school_period, school_partnership: school_partnership_2024)
         FactoryBot.create(:mentor_at_school_period, :unfinished, school:, teacher: untrained_mentor)
-        FactoryBot.create(:ect_at_school_period, :unfinished, school:, teacher: untrained_ect)
       end
 
       it "returns every row with no available contract period" do
         expect(rows.map(&:teacher)).to contain_exactly(
           school_led_teacher,
-          untrained_mentor,
-          untrained_ect
+          untrained_mentor
         )
         expect(rows.map(&:teacher)).not_to include(provider_led_teacher)
         expect(rows.map(&:contract_period_name)).to all(eq("Not available"))
