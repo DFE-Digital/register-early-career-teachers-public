@@ -8,10 +8,6 @@ module Admin
         @teacher_path = teacher_path
       end
 
-      def teacher_path_for(teacher_row)
-        @teacher_path.call(teacher_row)
-      end
-
       def call
         govuk_table do |table|
           table.with_head do |head|
@@ -36,6 +32,12 @@ module Admin
             end
           end
         end
+      end
+
+    private
+
+      def teacher_path_for(teacher_row)
+        @teacher_path.call(teacher_row)
       end
     end
   end
