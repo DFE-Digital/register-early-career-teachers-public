@@ -1,5 +1,5 @@
 class Contract < ApplicationRecord
-  attr_readonly :active_lead_provider_id
+  attr_readonly :framework_agreement_id
 
   # Enums
   enum :contract_type,
@@ -8,7 +8,7 @@ class Contract < ApplicationRecord
        suffix: true
 
   # Associations
-  belongs_to :framework_agreement, foreign_key: :active_lead_provider_id
+  belongs_to :framework_agreement
   has_one :contract_period, through: :framework_agreement
   has_one :lead_provider, through: :framework_agreement
   has_one :flat_rate_fee_structure, class_name: "Contract::FlatRateFeeStructure", inverse_of: :contract, dependent: :destroy

@@ -16,7 +16,7 @@ module Admin
         def persist
           value = step_params["contract_period_year"] || contract_period_year
           store.contract_period_year = value
-          store.active_lead_provider_id = nil
+          store.framework_agreement_id = nil
           store.delivery_partner_id = nil
         end
 

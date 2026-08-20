@@ -63,7 +63,7 @@ module Seeds
         .joins(lead_provider_delivery_partnership: [{ framework_agreement: :contract_period }, :delivery_partner])
         .where(school:)
         .where(contract_periods: { year: contract_period_year })
-        .where(active_lead_providers: { lead_provider_id: lead_provider.id })
+        .where(framework_agreements: { lead_provider_id: lead_provider.id })
         .where(delivery_partners: { id: delivery_partner.id })
         .exists?
     end

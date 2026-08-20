@@ -1,12 +1,10 @@
 class FrameworkAgreement::Band < ApplicationRecord
-  self.table_name = "active_lead_provider_bands"
-
   attr_accessor :allow_creation_when_contracted_or_after_contract_period_start
 
   attr_readonly :allocation_order
 
   # Associations
-  belongs_to :framework_agreement, foreign_key: :active_lead_provider_id
+  belongs_to :framework_agreement
 
   has_many :band_terms,
            class_name: "Contract::BandedFeeStructure::BandTerm",

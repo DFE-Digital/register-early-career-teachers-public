@@ -65,7 +65,7 @@ module API::Declarations
 
       @training_period ||= training_periods
                              .includes(:lead_provider)
-                             .where(active_lead_providers: { lead_provider_id: })
+                             .where(framework_agreements: { lead_provider_id: })
                              .latest_first
                              .first
     end
@@ -167,7 +167,7 @@ module API::Declarations
       return false unless teacher
 
       [teacher.ect_training_periods, teacher.mentor_training_periods].any? do |periods|
-        periods.includes(:lead_provider).where(active_lead_providers: { lead_provider_id: }).exists?
+        periods.includes(:lead_provider).where(framework_agreements: { lead_provider_id: }).exists?
       end
     end
 

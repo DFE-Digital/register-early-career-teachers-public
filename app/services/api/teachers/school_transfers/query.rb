@@ -104,7 +104,7 @@ module API::Teachers::SchoolTransfers
       @boundary_training_periods_updated_since ||=
         TrainingPeriod
           .joins(school_partnership: { lead_provider_delivery_partnership: :framework_agreement })
-          .where(active_lead_providers: { lead_provider_id: })
+          .where(framework_agreements: { lead_provider_id: })
           .where(api_transfer_updated_at: updated_since..)
           .where(id: boundary_training_period_ids)
     end

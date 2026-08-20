@@ -47,7 +47,7 @@ module API::SchoolPartnerships
       @scope = scope
         .joins(:framework_agreement)
         .where(
-          lead_provider_delivery_partnership: { active_lead_providers: { lead_provider_id: } }
+          lead_provider_delivery_partnership: { framework_agreements: { lead_provider_id: } }
         )
     end
 
@@ -57,7 +57,7 @@ module API::SchoolPartnerships
       @scope = scope
         .joins(:framework_agreement)
         .where(
-          lead_provider_delivery_partnership: { active_lead_providers: { contract_period_year: contract_period_years } }
+          lead_provider_delivery_partnership: { framework_agreements: { contract_period_year: contract_period_years } }
         )
     end
 

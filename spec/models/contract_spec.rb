@@ -82,7 +82,7 @@ describe Contract do
     it { is_expected.to delegate_method(:editable?).to(:framework_agreement) }
   end
 
-  describe "immutable active_lead_provider_id" do
+  describe "immutable framework_agreement_id" do
     let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
 
     context "when creating a new contract" do

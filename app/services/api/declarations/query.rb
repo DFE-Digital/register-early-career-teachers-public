@@ -108,7 +108,7 @@ module API::Declarations
         #   * Declarations directly associated with the lead provider.
         #   * Billable declarations dated earlier than the latest ECT/mentor training period for the lead provider.
         .where(<<-SQL, payment_statuses: Declaration::BILLABLE_OR_CHANGEABLE_PAYMENT_STATUSES, lead_provider_id:)
-          active_lead_providers.lead_provider_id = :lead_provider_id
+          framework_agreements.lead_provider_id = :lead_provider_id
           OR (
             declarations.payment_status IN (:payment_statuses)
             AND declarations.clawback_status = 'no_clawback'
