@@ -6,7 +6,7 @@ module Admin
           {
             csv: CSVStep,
             preview: PreviewStep,
-            # confirmation: ConfirmationStep
+            verify: VerifyStep
           }
         ]
       end
