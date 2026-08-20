@@ -1,0 +1,6 @@
+<% page_data(
+    title: "Verify the proposed data fix",
+    backlink_href: @wizard.previous_step_path
+) %>
+
+<%= govuk_list(@wizard.current_step.processed_changes, type: :bullet) %>
