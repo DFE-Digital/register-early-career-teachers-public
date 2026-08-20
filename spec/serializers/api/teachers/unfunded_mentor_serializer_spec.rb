@@ -21,16 +21,30 @@ describe API::Teachers::UnfundedMentorSerializer, type: :serializer do
   end
 
   before do
+    mentor = Teacher.find(unfunded_mentor_teacher.id)
+
     create_mentorship_period_for(
       mentee_school_partnership: school_partnership_for_lead_provider,
-      mentor: unfunded_mentor_teacher,
+      mentor:,
       create_mentor_training_period: false,
       refresh_metadata: true
     )
-    unfunded_mentor_teacher
+
+    mentor
       .mentor_at_school_periods
       .find_by(school: school_partnership_for_lead_provider.school)
       .update!(email: "lead-provider-school@example.com")
+  end
+
+  describe ".dependencies" do
+    it "includes all dependencies required by the serializer" do
+      unfunded_mentor_with_dependencies = Teacher
+        .strict_loading
+        .includes(described_class.dependencies)
+        .find(unfunded_mentor_teacher.id)
+
+      expect { described_class.render(unfunded_mentor_with_dependencies, lead_provider_id: lead_provider.id) }.not_to raise_error
+    end
   end
 
   describe "core attributes" do

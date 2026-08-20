@@ -8,8 +8,7 @@ module Teachers
       teachers =
         Teacher
           .with_trn
-          .found_in_trs
-          .active_in_trs
+          .syncable_with_trs
           .ordered_by_trs_data_last_refreshed_at_nulls_first
           .limit(BATCH_SIZE)
 

@@ -189,8 +189,8 @@ describe Teacher do
       end
 
       context "when there are multiple ECT at school periods" do
-        let!(:latest_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 1.year.ago, teacher:) }
-        let!(:earliest_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 2.years.ago, teacher:) }
+        let!(:earliest_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 2.years.ago, finished_on: 1.year.ago, teacher:) }
+        let!(:latest_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: earliest_ect_at_school_period.finished_on.next_day, teacher:) }
 
         it { is_expected.to eq(earliest_ect_at_school_period) }
       end
@@ -535,14 +535,6 @@ describe Teacher do
       end
     end
 
-    describe ".deactivated_in_trs" do
-      it "only includes records where trs_deactivated = TRUE" do
-        expected_clause = %("teachers"."trs_deactivated" = TRUE)
-
-        expect(Teacher.deactivated_in_trs.to_sql).to end_with(expected_clause)
-      end
-    end
-
     describe ".without_trn" do
       let(:trnless_teacher) { FactoryBot.create(:teacher, :trnless) }
       let(:teacher) { FactoryBot.create(:teacher) }
@@ -563,27 +555,19 @@ describe Teacher do
       end
     end
 
-    describe ".active_in_trs" do
-      it "only includes records where trs_deactivated = FALSE" do
-        expected_clause = %("teachers"."trs_deactivated" = FALSE)
+    describe ".syncable_with_trs" do
+      let!(:never_synced_teacher) { FactoryBot.create(:teacher) }
+      let!(:found_teacher) { FactoryBot.create(:teacher, :found_in_trs) }
+      let!(:not_found_teacher) { FactoryBot.create(:teacher, :not_found_in_trs) }
+      let!(:deactivated_teacher) { FactoryBot.create(:teacher, :deactivated_in_trs) }
+      let!(:merged_teacher) { FactoryBot.create(:teacher, :merged_in_trs) }
 
-        expect(Teacher.active_in_trs.to_sql).to end_with(expected_clause)
+      it "includes teachers TRS has not answered for, or last answered OK for" do
+        expect(Teacher.syncable_with_trs).to contain_exactly(never_synced_teacher, found_teacher)
       end
-    end
 
-    describe ".not_found_in_trs" do
-      it "only includes records where trs_not_found = TRUE" do
-        expected_clause = %("teachers"."trs_not_found" = TRUE)
-
-        expect(Teacher.not_found_in_trs.to_sql).to end_with(expected_clause)
-      end
-    end
-
-    describe ".found_in_trs" do
-      it "only includes records where trs_not_found = FALSE" do
-        expected_clause = %("teachers"."trs_not_found" = FALSE)
-
-        expect(Teacher.found_in_trs.to_sql).to end_with(expected_clause)
+      it "excludes teachers TRS has stopped serving" do
+        expect(Teacher.syncable_with_trs).not_to include(not_found_teacher, deactivated_teacher, merged_teacher)
       end
     end
 
@@ -670,6 +654,40 @@ describe Teacher do
 
     it "removes leading and trailing spaces from the corrected name" do
       expect(subject.corrected_name).to eql("Tobias Menzies")
+    end
+  end
+
+  describe "#syncable_with_trs?" do
+    subject { FactoryBot.build(:teacher, trs_response:) }
+
+    context "when TRS has not answered for the teacher yet" do
+      let(:trs_response) { nil }
+
+      it { is_expected.to be_syncable_with_trs }
+    end
+
+    context "when TRS last returned the teacher" do
+      let(:trs_response) { :ok }
+
+      it { is_expected.to be_syncable_with_trs }
+    end
+
+    context "when the teacher was not found in TRS" do
+      let(:trs_response) { :not_found }
+
+      it { is_expected.not_to be_syncable_with_trs }
+    end
+
+    context "when the teacher was deactivated in TRS" do
+      let(:trs_response) { :gone }
+
+      it { is_expected.not_to be_syncable_with_trs }
+    end
+
+    context "when the teacher was merged in TRS" do
+      let(:trs_response) { :permanent_redirect }
+
+      it { is_expected.not_to be_syncable_with_trs }
     end
   end
 end

@@ -20,7 +20,7 @@ module Teachers
         record_deferred_event!
       end
 
-      API::Teachers::Query.new.teacher_by_id(teacher.id)
+      teacher
     end
 
   private

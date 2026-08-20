@@ -2,6 +2,8 @@ module TRS
   class TestAPIClient
     class TestAPIClientUsedInProduction < StandardError; end
 
+    MERGED_TRN_REDIRECTS_TO = "7000012"
+
     def initialize(
       raise_not_found: false,
       raise_deactivated: false,
@@ -27,7 +29,7 @@ module TRS
     def find_teacher(trn:, date_of_birth: "1977-02-03", national_insurance_number: nil)
       raise(TRS::Errors::TeacherNotFound, "Teacher with TRN #{trn} not found") if @raise_not_found
       raise(TRS::Errors::TeacherDeactivated, "Teacher with TRN #{trn} deactivated") if @raise_deactivated
-      raise(TRS::Errors::TeacherMerged, "Teacher with TRN #{trn} merged") if @raise_merged
+      raise(TRS::Errors::TeacherMerged.new(trn:, redirected_to: MERGED_TRN_REDIRECTS_TO)) if @raise_merged
 
       build_trs_teacher(trn:, date_of_birth:, national_insurance_number:)
     end

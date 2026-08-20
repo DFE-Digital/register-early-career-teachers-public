@@ -1,17 +1,17 @@
-<% 
+<%
   page_data(
-    title: "Induction tutor", 
-    error: false, 
-    caption: @school.name, 
+    title: "Induction tutor",
+    error: false,
+    caption: @school.name,
     caption_size: 'l'
-  ) 
+  )
 %>
 
 <p class="govuk-body">This person is your school’s main point of contact for early career training and induction. We share these details with your appropriate body and lead providers (if your school uses provider-led training programmes).</p>
 
 <h2 class="govuk-heading-m">Induction tutor details</h2>
 
-<%= govuk_summary_list do |sl|
+<%= govuk_summary_list(actions: false) do |sl|
   sl.with_row do |row|
     row.with_key(text: "Name")
     row.with_value(text: @school.induction_tutor_name)
@@ -24,5 +24,3 @@
 end %>
 
 <%= govuk_link_to "Change induction tutor details", schools_induction_tutor_update_induction_tutor_wizard_edit_path, class: "govuk-button" %>
-
-

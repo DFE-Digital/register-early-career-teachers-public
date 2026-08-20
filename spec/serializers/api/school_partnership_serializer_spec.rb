@@ -12,6 +12,17 @@ describe API::SchoolPartnershipSerializer, type: :serializer do
   let(:created_at) { Time.utc(2023, 7, 1, 12, 0, 0) }
   let(:api_updated_at) { Time.utc(2023, 7, 2, 12, 0, 0) }
 
+  describe ".dependencies" do
+    it "includes all dependencies required by the serializer" do
+      partnership_with_dependencies = SchoolPartnership
+        .strict_loading
+        .includes(described_class.dependencies)
+        .find(partnership.id)
+
+      expect { described_class.render(partnership_with_dependencies) }.not_to raise_error
+    end
+  end
+
   describe "core attributes" do
     it "serializes correctly" do
       expect(response["id"]).to eq(partnership.api_id)

@@ -126,9 +126,12 @@ RSpec.describe AppropriateBodies::Importers::TeacherInductionImporter do
     let(:appropriate_body_csv) { Rails.root.join("tmp/import/appropriatebody.csv") }
     let(:teachers_csv) { Rails.root.join("tmp/import/teachers.csv") }
     let(:induction_period_csv) { Rails.root.join("tmp/import/inductionperiods.csv") }
+    let(:rejected_csv) { AppropriateBodies::Importers::InductionPeriodParser::PARSER_ERROR_CSV }
 
     it "imports expected data", :aggregate_failures do
       skip "Skip acceptance test without CSVs" if Rails.root.join("tmp/import").existence.nil?
+
+      FileUtils.rm_f(rejected_csv)
 
       expect { ab_importer.import! }.not_to raise_error
 
@@ -194,6 +197,22 @@ RSpec.describe AppropriateBodies::Importers::TeacherInductionImporter do
       expect(Event.with_event_type(:teacher_passes_induction).count).to eq(InductionPeriod.passed.count)
 
       expect(Event.with_event_type(:induction_period_closed).count).to eq(InductionPeriod.count - teacher_induction_period_frequency.values.sum)
+
+      # Parity check -----------------------------------------------------------
+      source_rows = CSV.read(induction_period_csv, headers: true).size
+      discarded_periods = CSV.read(rejected_csv, headers: true).size
+      parsed_periods = induction_importer.teachers_with_inductions.values.flatten.length
+      imported_periods = InductionPeriod.count
+      unimported_periods = parsed_periods - imported_periods
+
+      expect(source_rows).to eq(829_189)          # all rows in inductionperiods.csv
+      expect(parsed_periods).to eq(671_497)       # periods surviving the parser (all teachers)
+      expect(discarded_periods).to eq(157_692)    # periods rejected and logged by the parser (all teachers)
+      expect(imported_periods).to eq(635_002)     # periods persisted for chosen teachers
+      expect(unimported_periods).to eq(36_495)    # parsed periods for rejected teachers (eg. active status)
+
+      # every source row is kept or discarded exactly once
+      expect(source_rows).to eq(parsed_periods + discarded_periods)
     end
   end
 end

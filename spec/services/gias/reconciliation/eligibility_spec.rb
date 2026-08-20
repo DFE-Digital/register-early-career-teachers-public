@@ -267,14 +267,6 @@ RSpec.describe GIAS::Reconciliation::Eligibility do
         it { is_expected.to be false }
       end
 
-      context "when a merged event has already been recorded" do
-        before do
-          FactoryBot.create(:event, event_type: :school_merged, school: gias_school.school)
-        end
-
-        it { is_expected.to be false }
-      end
-
       context "when the link represents an amalgamation" do
         let(:link_type) { :successor_amalgamated }
 

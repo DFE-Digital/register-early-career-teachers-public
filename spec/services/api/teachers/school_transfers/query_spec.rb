@@ -1,32 +1,21 @@
 RSpec.describe API::Teachers::SchoolTransfers::Query do
   include SchoolTransferHelpers
 
-  it_behaves_like "a query that avoids includes" do
-    let(:teacher) { FactoryBot.create(:teacher) }
-    let(:lead_provider) { FactoryBot.create(:lead_provider) }
-    let(:params) { { lead_provider_id: lead_provider.id } }
+  describe "including associations" do
+    shared_examples "included associations" do
+      it { expect(result.association(association)).to be_loaded }
 
-    before do
-      build_new_school_transfer(teacher:, lead_provider:)
-      Metadata::Handlers::Teacher.new(teacher).refresh_metadata!
-    end
-  end
+      context "when no associations are included" do
+        let(:association) { nil }
 
-  describe "preloading relationships" do
-    shared_examples "preloaded associations" do
-      it { expect(result.association(:lead_provider_metadata)).to be_loaded }
-      it { expect(result.association(:finished_induction_period)).to be_loaded }
-      it { expect(result.association(:ect_at_school_periods)).to be_loaded }
-      it { expect(result.association(:mentor_at_school_periods)).to be_loaded }
-      it { expect(result.ect_at_school_periods.last.association(:earliest_training_period)).to be_loaded }
-      it { expect(result.ect_at_school_periods.last.earliest_training_period.association(:lead_provider)).to be_loaded }
-      it { expect(result.ect_at_school_periods.last.association(:latest_training_period)).to be_loaded }
-      it { expect(result.ect_at_school_periods.last.latest_training_period.association(:lead_provider)).to be_loaded }
+        it { expect(result).not_to have_any_loaded_associations }
+      end
     end
 
+    let(:association) { :finished_induction_period }
+    let(:instance) { described_class.new(lead_provider_id: lead_provider.id, included_associations: [association]) }
     let(:teacher) { FactoryBot.create(:teacher) }
     let(:lead_provider) { FactoryBot.create(:lead_provider) }
-    let(:query) { described_class.new(lead_provider_id: lead_provider.id) }
 
     before do
       build_new_school_transfer(teacher:, lead_provider:)
@@ -34,9 +23,21 @@ RSpec.describe API::Teachers::SchoolTransfers::Query do
     end
 
     describe "#school_transfers" do
-      subject(:result) { query.school_transfers.first }
+      subject(:result) { instance.school_transfers.first }
 
-      include_context "preloaded associations"
+      include_examples "included associations"
+    end
+
+    describe "#school_transfers_by_api_id" do
+      subject(:result) { instance.school_transfers_by_api_id(teacher.api_id) }
+
+      include_examples "included associations"
+    end
+
+    describe "#school_transfers_by_id" do
+      subject(:result) { instance.school_transfers_by_id(teacher.id) }
+
+      include_examples "included associations"
     end
   end
 

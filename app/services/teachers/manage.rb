@@ -3,8 +3,7 @@
 # 1. teacher name changes
 # 2. induction status and date changes
 # 3. QTS and ITT changes
-# 4. teacher deactivated in TRS
-# 5. teacher not found in TRS
+# 4. the response TRS last gave for the teacher's TRN: deactivated, not found or merged
 #
 # @see Teachers::Manageable
 class Teachers::Manage
@@ -84,35 +83,35 @@ class Teachers::Manage
 
       record_teacher_trs_attribute_update(modifications: teacher.changes)
 
-      teacher.trs_data_last_refreshed_at = trs_data_last_refreshed_at
+      teacher.assign_attributes(trs_response: :ok, trs_redirected_to: nil, trs_data_last_refreshed_at:)
       teacher.save!
     end
   end
 
   def mark_teacher_as_deactivated!(trs_data_last_refreshed_at:)
-    fail(AlreadyFlagged) if teacher.trs_deactivated?
+    fail(AlreadyFlagged) if teacher.trs_response_gone?
 
     Teacher.transaction do
-      teacher.update!(trs_deactivated: true, trs_data_last_refreshed_at:)
+      teacher.update!(trs_response: :gone, trs_data_last_refreshed_at:)
       record_teacher_deactivated_event
     end
   end
 
   def mark_teacher_as_not_found!(trs_data_last_refreshed_at:)
-    fail(AlreadyFlagged) if teacher.trs_not_found?
+    fail(AlreadyFlagged) if teacher.trs_response_not_found?
 
     Teacher.transaction do
-      teacher.update!(trs_not_found: true, trs_data_last_refreshed_at:)
+      teacher.update!(trs_response: :not_found, trs_data_last_refreshed_at:)
       record_teacher_not_found_event
       update_induction_status_indicator
     end
   end
 
-  def mark_teacher_as_merged!(trs_data_last_refreshed_at:, event_body:)
-    fail(AlreadyFlagged) if teacher.trs_not_found?
+  def mark_teacher_as_merged!(trs_data_last_refreshed_at:, redirected_to:, event_body:)
+    fail(AlreadyFlagged) if teacher.trs_response_permanent_redirect?
 
     Teacher.transaction do
-      teacher.update!(trs_not_found: true, trs_data_last_refreshed_at:)
+      teacher.update!(trs_response: :permanent_redirect, trs_redirected_to: redirected_to, trs_data_last_refreshed_at:)
       record_teacher_merged_event(event_body)
       update_induction_status_indicator
     end
