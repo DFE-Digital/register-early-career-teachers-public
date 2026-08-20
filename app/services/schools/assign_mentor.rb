@@ -11,7 +11,7 @@ module Schools
 
     def assign!
       ActiveRecord::Base.transaction do
-        close_current_mentorship!
+        close_current_and_upcoming_mentorships!
         @mentorship_period = assign_new_mentor!
         record_events!
       end
@@ -19,29 +19,33 @@ module Schools
 
   private
 
-    def close_current_mentorship!
-      return unless current_ect_mentorship_period
-
-      if earliest_possible_start.after?(current_ect_mentorship_period.started_on)
-        finish_current_mentorship!
-      else
-        destroy_current_mentorship!
+    def close_current_and_upcoming_mentorships!
+      current_and_upcoming_mentorship_periods.each do |mentorship_period|
+        if started?(mentorship_period) && earliest_possible_start.after?(mentorship_period.started_on)
+          finish_mentorship!(mentorship_period)
+        else
+          destroy_mentorship!(mentorship_period)
+        end
       end
     end
 
-    def finish_current_mentorship!
+    def started?(mentorship_period) = !mentorship_period.started_on.future?
+
+    def finish_mentorship!(mentorship_period)
+      return if mentorship_period.finished_on&.before?(earliest_possible_start)
+
       # Since periods have inclusive range ends now, the "previous" period
       # must finish the day **before** the "new" period to avoid an overlap.
-      current_ect_mentorship_period.finish!(earliest_possible_start.yesterday)
+      mentorship_period.finish!(earliest_possible_start.yesterday)
     end
 
-    def destroy_current_mentorship!
-      Event.where(mentorship_period: current_ect_mentorship_period).delete_all
-      current_ect_mentorship_period.destroy!
+    def destroy_mentorship!(mentorship_period)
+      Event.where(mentorship_period:).delete_all
+      mentorship_period.destroy!
     end
 
-    def current_ect_mentorship_period
-      ect_at_school_period.current_or_next_mentorship_period
+    def current_and_upcoming_mentorship_periods
+      ect_at_school_period.mentorship_periods.current_or_future.earliest_first
     end
 
     def assign_new_mentor!
@@ -61,7 +65,7 @@ module Schools
       )
     end
 
-    def earliest_possible_start = dates_resolver.earliest_possible_start
+    def earliest_possible_start = @earliest_possible_start ||= dates_resolver.earliest_possible_start
     def latest_possible_finish = dates_resolver.latest_possible_finish
 
     def record_events!
