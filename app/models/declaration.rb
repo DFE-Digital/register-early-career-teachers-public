@@ -5,6 +5,7 @@ class Declaration < ApplicationRecord
   VOIDABLE_PAYMENT_STATUSES = %w[no_payment eligible payable].freeze
   BILLABLE_PAYMENT_STATUSES = %w[eligible payable paid].freeze
   REFUNDABLE_CLAWBACK_STATUSES = %w[awaiting_clawback clawed_back].freeze
+  DESTROYABLE_PAYMENT_STATUSES = %w[no_payment voided].freeze
 
   # Associations
   belongs_to :training_period
@@ -97,6 +98,7 @@ class Declaration < ApplicationRecord
   # Declaration can be both billable and refundable, paid in one month and clawed_back in another
   scope :billable, -> { where(payment_status: BILLABLE_PAYMENT_STATUSES) }
   scope :refundable, -> { where(clawback_status: REFUNDABLE_CLAWBACK_STATUSES) }
+  scope :destroyable, -> { where(payment_status: DESTROYABLE_PAYMENT_STATUSES) }
 
   touch -> { self },
         timestamp_attribute: :api_updated_at,

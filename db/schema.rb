@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_13_103015) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_14_092340) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -969,6 +969,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_13_103015) do
   add_foreign_key "declarations", "delivery_partners", column: "delivery_partner_when_created_id"
   add_foreign_key "declarations", "statements", column: "clawback_statement_id"
   add_foreign_key "declarations", "statements", column: "payment_statement_id"
+  add_foreign_key "declarations", "training_periods", on_delete: :restrict
   add_foreign_key "declarations", "users", column: "voided_by_user_id"
   add_foreign_key "ect_at_school_periods", "appropriate_body_periods", column: "school_reported_appropriate_body_id"
   add_foreign_key "ect_at_school_periods", "schools"

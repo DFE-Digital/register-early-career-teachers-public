@@ -932,6 +932,38 @@ describe TrainingPeriod do
         }
       end
     end
+
+    context "when there are both billable and non-billable declarations" do
+      subject(:training_period) { declaration.training_period }
+
+      let(:declaration) { FactoryBot.create(:declaration, :paid) }
+      let!(:non_billable_declaration) { FactoryBot.create(:declaration, :voided, training_period:) }
+
+      it "refuses to destroy the training period and leaves the non-billable declaration intact" do
+        expect { training_period.destroy! }.to raise_error(ActiveRecord::RecordNotDestroyed)
+
+        expect { training_period.reload }.not_to raise_error
+        expect { non_billable_declaration.reload }.not_to raise_error
+        expect { declaration.reload }.not_to raise_error
+      end
+    end
+
+    context "when a non-billable declaration fails to destroy" do
+      subject(:training_period) { declaration.training_period }
+
+      let(:declaration) { FactoryBot.create(:declaration, :no_payment) }
+
+      before do
+        allow_any_instance_of(Declaration).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, "cannot destroy") # rubocop:disable RSpec/AnyInstance
+      end
+
+      it "rolls back and leaves the training period and declaration intact" do
+        expect { training_period.destroy! }.to raise_error(ActiveRecord::RecordNotDestroyed)
+
+        expect { training_period.reload }.not_to raise_error
+        expect { declaration.reload }.not_to raise_error
+      end
+    end
   end
 
   describe "check constraints" do
