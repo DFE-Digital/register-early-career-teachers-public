@@ -220,8 +220,6 @@ RSpec.describe ActiveLeadProvider::Band, type: :model do
       context "when there is a contract in place" do
         let!(:contract) { FactoryBot.create(:contract, active_lead_provider:) }
 
-        before { active_lead_provider.reload }
-
         it "prevents removing a band" do
           expect {
             existing_band.destroy
@@ -326,7 +324,6 @@ RSpec.describe ActiveLeadProvider::Band, type: :model do
     context "when the active lead provider has a contract" do
       before do
         FactoryBot.create(:contract, active_lead_provider:)
-        active_lead_provider.reload
       end
 
       context "and the contract period has not started" do
