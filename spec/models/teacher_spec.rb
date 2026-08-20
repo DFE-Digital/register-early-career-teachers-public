@@ -189,8 +189,8 @@ describe Teacher do
       end
 
       context "when there are multiple ECT at school periods" do
-        let!(:latest_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 1.year.ago, teacher:) }
-        let!(:earliest_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 2.years.ago, teacher:) }
+        let!(:earliest_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 2.years.ago, finished_on: 1.year.ago, teacher:) }
+        let!(:latest_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: earliest_ect_at_school_period.finished_on.next_day, teacher:) }
 
         it { is_expected.to eq(earliest_ect_at_school_period) }
       end
