@@ -2,17 +2,17 @@ module API::Declarations
   class Query
     include Queries::FilterIgnorable
 
-    attr_reader :scope, :lead_provider_id
-
     def initialize(
       lead_provider_id: :ignore,
       contract_period_years: :ignore,
       teacher_api_ids: :ignore,
       delivery_partner_api_ids: :ignore,
-      updated_since: :ignore
+      updated_since: :ignore,
+      included_associations: []
     )
       @lead_provider_id = lead_provider_id
       @scope = join_school_period(Declaration.order(:created_at))
+      @included_associations = included_associations
 
       where_lead_provider_is(lead_provider_id)
       where_contract_period_year_in(contract_period_years)
@@ -39,20 +39,12 @@ module API::Declarations
 
   private
 
+    attr_reader :scope, :lead_provider_id, :included_associations
+
     def preload_associations(results)
       results
         .strict_loading
-        .includes(
-          :payment_statement,
-          :clawback_statement,
-          :delivery_partner_when_created,
-          mentorship_period: { mentor: :teacher },
-          training_period: [
-            { ect_at_school_period: :teacher },
-            { mentor_at_school_period: :teacher },
-            :lead_provider,
-          ]
-        )
+        .tap { it.includes!(included_associations) if included_associations.present? }
     end
 
     def where_lead_provider_is(lead_provider_id)

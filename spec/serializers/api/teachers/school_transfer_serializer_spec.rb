@@ -16,6 +16,19 @@ RSpec.describe API::Teachers::SchoolTransferSerializer, type: :serializer do
   let(:joining_training_period) { joining_school_period.earliest_training_period }
   let(:joining_school) { joining_school_period.school }
 
+  describe ".dependencies" do
+    it "includes all dependencies required by the serializer" do
+      build_new_provider_transfer(teacher:, leaving_lead_provider: lead_provider)
+
+      teacher_with_dependencies = Teacher
+        .strict_loading
+        .includes(described_class.dependencies)
+        .find(teacher.id)
+
+      expect { described_class.render(teacher_with_dependencies, lead_provider_id: lead_provider.id) }.not_to raise_error
+    end
+  end
+
   describe "core attributes" do
     before do
       build_new_provider_transfer(teacher:, leaving_lead_provider: lead_provider, joining_lead_provider: other_lead_provider)

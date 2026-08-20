@@ -2,12 +2,18 @@ module API::Schools
   class Query
     include Queries::FilterIgnorable
 
-    attr_reader :scope, :sort, :lead_provider_id, :contract_period_year
-
-    def initialize(contract_period_year:, lead_provider_id: :ignore, urn: :ignore, updated_since: :ignore, sort: { created_at: :asc })
+    def initialize(
+      contract_period_year:,
+      lead_provider_id: :ignore,
+      urn: :ignore,
+      updated_since: :ignore,
+      sort: { created_at: :asc },
+      included_associations: []
+    )
       @lead_provider_id = lead_provider_id
       @contract_period_year = contract_period_year
       @scope = School.eligible
+      @included_associations = included_associations
 
       or_where_school_partnership_exists(contract_period_year)
       where_contract_period_exists(contract_period_year)
@@ -36,24 +42,12 @@ module API::Schools
 
   private
 
+    attr_reader :scope, :sort, :lead_provider_id, :contract_period_year, :included_associations
+
     def preload_associations(results)
-      preloaded_results = results
+      results
         .strict_loading
-        .includes(:gias_school, :contract_period_metadata, :lead_provider_contract_period_metadata)
-
-      unless ignore?(filter: lead_provider_id)
-        preloaded_results = preloaded_results
-          .references(:metadata_schools_lead_providers_contract_periods)
-          .where(metadata_schools_lead_providers_contract_periods: { lead_provider_id: })
-      end
-
-      unless ignore?(filter: contract_period_year)
-        preloaded_results = preloaded_results
-          .references(:metadata_schools_contract_periods, :metadata_schools_lead_providers_contract_periods)
-          .where(metadata_schools_contract_periods: { contract_period_year: }, metadata_schools_lead_providers_contract_periods: { contract_period_year: })
-      end
-
-      preloaded_results
+        .tap { it.includes!(*included_associations) if included_associations.present? }
     end
 
     def where_contract_period_exists(contract_period_year)

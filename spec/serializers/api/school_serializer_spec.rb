@@ -29,6 +29,22 @@ describe API::SchoolSerializer, type: :serializer do
     FactoryBot.create(:school_lead_provider_contract_period_metadata, school:, contract_period: other_contract_period, lead_provider: other_lead_provider)
   end
 
+  describe ".dependencies" do
+    it "includes all dependencies required by the serializer" do
+      school_with_dependencies = School
+        .strict_loading
+        .includes(described_class.dependencies)
+        .find(school.id)
+
+      options = {
+        contract_period_year: contract_period.year,
+        lead_provider_id: lead_provider.id,
+      }
+
+      expect { described_class.render(school_with_dependencies, **options) }.not_to raise_error
+    end
+  end
+
   describe "core attributes" do
     it "serializes correctly" do
       expect(response["id"]).to eq(school.api_id)

@@ -1,4 +1,8 @@
 class API::DeliveryPartnerSerializer < Blueprinter::Base
+  def self.dependencies
+    %i[active_lead_providers]
+  end
+
   class AttributesSerializer < Blueprinter::Base
     exclude :id
 

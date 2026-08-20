@@ -1,4 +1,27 @@
 class API::Teachers::SchoolTransferSerializer < Blueprinter::Base
+  def self.dependencies
+    [
+      {
+        lead_provider_metadata: [],
+        finished_induction_period: [],
+        ect_at_school_periods: [
+          :school,
+          {
+            earliest_training_period: :lead_provider,
+            latest_training_period: :lead_provider
+          }
+        ],
+        mentor_at_school_periods: [
+          :school,
+          {
+            earliest_training_period: :lead_provider,
+            latest_training_period: :lead_provider
+          }
+        ]
+      }
+    ]
+  end
+
   class TrainingPeriodSerializer < Blueprinter::Base
     field(:school_urn) do |data|
       data[:school].urn.to_s

@@ -25,6 +25,17 @@ describe API::DeliveryPartnerSerializer, type: :serializer do
     FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: other_active_lead_provider, delivery_partner:)
   end
 
+  describe ".dependencies" do
+    it "includes all dependencies required by the serializer" do
+      delivery_partner_with_dependencies = DeliveryPartner
+        .strict_loading
+        .includes(described_class.dependencies)
+        .find(delivery_partner.id)
+
+      expect { described_class.render(delivery_partner_with_dependencies, lead_provider_id: lead_provider.id) }.not_to raise_error
+    end
+  end
+
   describe "core attributes" do
     it "serializes correctly" do
       expect(response["id"]).to eq(delivery_partner.api_id)

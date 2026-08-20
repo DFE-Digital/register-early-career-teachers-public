@@ -4,27 +4,27 @@ module API
       include API::TeacherType
 
       def index
-        conditions = {
+        filters = {
           contract_period_years: extract_conditions(contract_period_years, type: :integer),
           updated_since:,
           training_status:,
           api_from_teacher_id:,
           sort:
         }
-        paginated_teachers = paginate(teachers_query(conditions:).teachers)
+        paginated_teachers = paginate(lead_provider_teachers_query(filters:).teachers)
 
         render json: to_json(paginated_teachers)
       end
 
       def show
-        render json: to_json(teachers_query.teacher_by_api_id(api_id))
+        render json: to_json(lead_provider_teachers_query.teacher_by_api_id(api_id))
       end
 
       def change_schedule
         validate_change_schedule_params!
 
         service = Teachers::ChangeSchedule.new(
-          lead_provider_id: current_lead_provider.id,
+          **lead_provider_filter,
           teacher_api_id: teacher.api_id,
           teacher_type:,
           schedule_identifier: change_schedule_params[:schedule_identifier],
@@ -38,7 +38,7 @@ module API
         validate_defer_participant_params!
 
         service = API::Teachers::Defer.new(
-          lead_provider_id: current_lead_provider.id,
+          **lead_provider_filter,
           teacher_api_id: teacher.api_id,
           reason: defer_participant_params[:reason],
           teacher_type:
@@ -51,7 +51,7 @@ module API
         validate_resume_participant_params!
 
         service = API::Teachers::Resume.new(
-          lead_provider_id: current_lead_provider.id,
+          **lead_provider_filter,
           teacher_api_id: teacher.api_id,
           teacher_type:
         )
@@ -63,7 +63,7 @@ module API
         validate_withdraw_participant_params!
 
         service = API::Teachers::Withdraw.new(
-          lead_provider_id: current_lead_provider.id,
+          **lead_provider_filter,
           teacher_api_id: teacher.api_id,
           reason: withdraw_participant_params[:reason],
           teacher_type:
@@ -81,20 +81,15 @@ module API
       def validate_defer_participant_params! = defer_participant_params
       def validate_change_schedule_params! = change_schedule_params
 
-      def teachers_query(conditions: {})
-        API::Teachers::Query.new(**(default_query_conditions.merge(conditions)).compact)
+      def lead_provider_teachers_query(filters: {})
+        teacher_filters = lead_provider_filter.merge(filters).compact
+        included_associations = { included_associations: serializer.dependencies }
+
+        API::Teachers::Query.new(**teacher_filters.merge(included_associations))
       end
 
-      def default_query_conditions
-        @default_query_conditions ||= {
-          lead_provider_id: current_lead_provider.id,
-        }
-      end
-
-      def serializer_options
-        @serializer_options ||= {
-          lead_provider_id: current_lead_provider.id
-        }
+      def lead_provider_filter
+        { lead_provider_id: current_lead_provider.id }
       end
 
       def participants_params
@@ -126,7 +121,7 @@ module API
       end
 
       def teacher
-        teachers_query.teacher_by_api_id(api_id)
+        lead_provider_teachers_query.teacher_by_api_id(api_id)
       end
 
       def api_id
@@ -138,7 +133,11 @@ module API
       end
 
       def to_json(obj)
-        API::TeacherSerializer.render(obj, root: "data", **serializer_options)
+        serializer.render(obj, root: "data", **lead_provider_filter)
+      end
+
+      def serializer
+        API::TeacherSerializer
       end
     end
   end

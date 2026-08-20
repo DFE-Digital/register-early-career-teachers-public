@@ -1,4 +1,20 @@
 class API::DeclarationSerializer < Blueprinter::Base
+  def self.dependencies
+    [
+      :payment_statement,
+      :clawback_statement,
+      :delivery_partner_when_created,
+      {
+        mentorship_period: { mentor: :teacher },
+        training_period: [
+          { ect_at_school_period: :teacher },
+          { mentor_at_school_period: :teacher },
+          :lead_provider,
+        ]
+      }
+    ]
+  end
+
   class AttributesSerializer < Blueprinter::Base
     exclude :id
 

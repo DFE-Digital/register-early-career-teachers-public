@@ -1,4 +1,12 @@
 class API::SchoolSerializer < Blueprinter::Base
+  def self.dependencies
+    %i[
+      gias_school
+      contract_period_metadata
+      lead_provider_contract_period_metadata
+    ]
+  end
+
   class AttributesSerializer < Blueprinter::Base
     exclude :id
 

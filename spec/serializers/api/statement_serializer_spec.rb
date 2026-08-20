@@ -19,6 +19,17 @@ describe API::StatementSerializer, type: :serializer do
   let(:created_at) { Time.utc(2023, 7, 1, 12, 0, 0) }
   let(:api_updated_at) { Time.utc(2023, 7, 2, 12, 0, 0) }
 
+  describe ".dependencies" do
+    it "includes all dependencies required by the serializer" do
+      statement_with_dependencies = Statement
+        .strict_loading
+        .includes(described_class.dependencies)
+        .find(statement.id)
+
+      expect { described_class.render(statement_with_dependencies) }.not_to raise_error
+    end
+  end
+
   describe "core attributes" do
     it "serializes correctly" do
       expect(response["id"]).to eq("fe1a5280-1b13-4b09-b9c7-e2b01d37e851")
