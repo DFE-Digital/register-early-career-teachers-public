@@ -136,7 +136,7 @@ class MigrationFixes::SpecGenerator
     dependencies[:lead_provider_delivery_partnerships].map { |_key, value|
       model = value[:data]
       label = value[:label]
-      alp = dependencies[:framework_agreements][model.active_lead_provider_id.to_s][:label]
+      alp = dependencies[:framework_agreements][model.framework_agreement_id.to_s][:label]
       delivery_partner = dependencies[:delivery_partners][model.delivery_partner_id.to_s][:label]
 
       <<~LPDP.chomp

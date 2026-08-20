@@ -191,12 +191,12 @@ module APISeedData
         # Find ECT periods that have training with this lead provider
         ect_periods_with_lp = ECTAtSchoolPeriod
           .joins(training_periods: { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } })
-          .where(active_lead_providers: { lead_provider_id: lead_provider.id })
+          .where(framework_agreements: { lead_provider_id: lead_provider.id })
 
         # Find ECT periods that also have training with a different lead provider
         ect_periods_transferred = ECTAtSchoolPeriod
           .joins(training_periods: { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } })
-          .where(active_lead_providers: { lead_provider_id: other_lead_provider_ids })
+          .where(framework_agreements: { lead_provider_id: other_lead_provider_ids })
 
         # Schools where the SAME ECT has both
         existing_count = School
@@ -244,7 +244,7 @@ module APISeedData
       framework_agreements.find_each do |framework_agreement|
         existing_count = School
           .joins(school_partnerships: { lead_provider_delivery_partnership: :framework_agreement })
-          .where(active_lead_providers: { id: framework_agreement.id })
+          .where(framework_agreements: { id: framework_agreement.id })
           .left_joins(:ect_at_school_periods, :mentor_at_school_periods)
           .where(ect_at_school_periods: { id: nil }, mentor_at_school_periods: { id: nil })
           .distinct
@@ -282,7 +282,7 @@ module APISeedData
         existing_count = School
           .joins(ect_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } }] })
           .where(schedules: { contract_period_year: 2024 })
-          .where(active_lead_providers: { lead_provider_id: lead_provider.id })
+          .where(framework_agreements: { lead_provider_id: lead_provider.id })
           .distinct
           .count
 
@@ -389,14 +389,14 @@ module APISeedData
         ect_periods_with_original_lp = ECTAtSchoolPeriod
           .joins(training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } }])
           .where(schedules: { contract_period_year: 2025 })
-          .where(active_lead_providers: { lead_provider_id: lead_provider.id })
+          .where(framework_agreements: { lead_provider_id: lead_provider.id })
           .where.not(training_periods: { expression_of_interest_id: nil })
           .where(training_periods: { finished_on: ...Date.current })
 
         # Find ECT periods that also have training with a different LP
         ect_periods_also_with_other_lp = ECTAtSchoolPeriod
           .joins(training_periods: { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } })
-          .where(active_lead_providers: { lead_provider_id: other_lead_provider_ids })
+          .where(framework_agreements: { lead_provider_id: other_lead_provider_ids })
 
         # Schools where the SAME ECT has both
         existing_count = School
@@ -517,12 +517,12 @@ module APISeedData
         # but no partnerships with any other lead provider
         schools_with_other_lp = School
           .joins(school_partnerships: { lead_provider_delivery_partnership: :framework_agreement })
-          .where.not(active_lead_providers: { lead_provider_id: lead_provider.id })
+          .where.not(framework_agreements: { lead_provider_id: lead_provider.id })
           .select(:id)
 
         existing_count = School
           .joins(school_partnerships: { lead_provider_delivery_partnership: :framework_agreement })
-          .where(active_lead_providers: { lead_provider_id: lead_provider.id })
+          .where(framework_agreements: { lead_provider_id: lead_provider.id })
           .where.not(id: schools_with_other_lp)
           .group(:id)
           .having("COUNT(DISTINCT lead_provider_delivery_partnerships.delivery_partner_id) > 1")
@@ -561,14 +561,14 @@ module APISeedData
         # Count schools that have multiple partnerships with this lead_provider AND at least one with another LP
         schools_with_multiple_partnerships_for_lp = School
           .joins(school_partnerships: { lead_provider_delivery_partnership: :framework_agreement })
-          .where(active_lead_providers: { lead_provider_id: lead_provider.id })
+          .where(framework_agreements: { lead_provider_id: lead_provider.id })
           .group(:id)
           .having("COUNT(DISTINCT lead_provider_delivery_partnerships.delivery_partner_id) > 1")
           .select(:id)
 
         schools_also_with_other_lp = School
           .joins(school_partnerships: { lead_provider_delivery_partnership: :framework_agreement })
-          .where.not(active_lead_providers: { lead_provider_id: lead_provider.id })
+          .where.not(framework_agreements: { lead_provider_id: lead_provider.id })
           .select(:id)
 
         existing_count = School
@@ -661,7 +661,7 @@ module APISeedData
       Teacher
         .joins(ect_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } }] })
         .where(schedules: { contract_period_year: year })
-        .where(active_lead_providers: { lead_provider_id: lead_provider.id })
+        .where(framework_agreements: { lead_provider_id: lead_provider.id })
         .select(:id)
     end
 
@@ -679,7 +679,7 @@ module APISeedData
 
       School
         .joins(school_period_join => { training_periods: { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } } })
-        .where(active_lead_providers: { lead_provider_id: lead_provider.id })
+        .where(framework_agreements: { lead_provider_id: lead_provider.id })
         .where(training_periods: { training_programme: "provider_led" })
         .where(training_periods: { started_on: ..Time.zone.now })
         .where(training_periods: { finished_on: [nil, Time.zone.now..] })

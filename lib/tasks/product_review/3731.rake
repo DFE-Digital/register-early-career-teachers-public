@@ -7,7 +7,7 @@ namespace :product_review do
 
     statement = Statement
       .joins(:contract)
-      .where(contracts: { active_lead_provider_id: framework_agreement.id, contract_type: "ecf" })
+      .where(contracts: { framework_agreement_id: framework_agreement.id, contract_type: "ecf" })
       .find_by!(month: 10, year: 2024, fee_type: "output")
 
     refundable = Declaration

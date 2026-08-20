@@ -80,7 +80,7 @@ end
   },
   {
     name: "Active lead provider bands",
-    statement: "SELECT * FROM active_lead_provider_bands ORDER BY active_lead_provider_id, allocation_order",
+    statement: "SELECT * FROM framework_agreement_bands ORDER BY framework_agreement_id, allocation_order",
     description: "new data model"
   }
 ].each do |query|

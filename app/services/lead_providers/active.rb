@@ -17,7 +17,7 @@ module LeadProviders
     def self.in_contract_period(contract_period)
       LeadProvider
         .joins(:framework_agreements)
-        .where(active_lead_providers: { contract_period_year: contract_period.id })
+        .where(framework_agreements: { contract_period_year: contract_period.id })
     end
   end
 end

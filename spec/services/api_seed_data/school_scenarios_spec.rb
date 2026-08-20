@@ -94,13 +94,13 @@ RSpec.describe APISeedData::SchoolScenarios do
         teachers_with_2024 = Teacher
           .joins(ect_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } }] })
           .where(schedules: { contract_period_year: 2024 })
-          .where(active_lead_providers: { lead_provider_id: lead_provider.id })
+          .where(framework_agreements: { lead_provider_id: lead_provider.id })
           .select(:id)
 
         teachers_with_2025 = Teacher
           .joins(ect_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } }] })
           .where(schedules: { contract_period_year: 2025 })
-          .where(active_lead_providers: { lead_provider_id: lead_provider.id })
+          .where(framework_agreements: { lead_provider_id: lead_provider.id })
           .select(:id)
 
         schools_with_rolled_over_participants = School
@@ -266,7 +266,7 @@ RSpec.describe APISeedData::SchoolScenarios do
       School
         .joins(school_partnerships: { lead_provider_delivery_partnership: :framework_agreement })
         .group("schools.id")
-        .having("COUNT(DISTINCT active_lead_providers.lead_provider_id) > 1")
+        .having("COUNT(DISTINCT framework_agreements.lead_provider_id) > 1")
     end
 
     it "creates schools with partnerships from multiple lead providers" do

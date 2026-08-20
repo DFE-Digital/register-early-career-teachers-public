@@ -33,7 +33,7 @@ module Admin
     end
 
     def currently_selected_ids
-      @currently_selected_ids ||= current_partnerships.map(&:active_lead_provider_id).map(&:to_s)
+      @currently_selected_ids ||= current_partnerships.map(&:framework_agreement_id).map(&:to_s)
     end
 
     def legend_text

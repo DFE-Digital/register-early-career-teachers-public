@@ -29,7 +29,7 @@ RSpec.describe DeliveryPartners::AddLeadProviderPairings do
         expect { service.add! }.to change(LeadProviderDeliveryPartnership, :count).by(2)
 
         partnerships = delivery_partner.lead_provider_delivery_partnerships.reload
-        expect(partnerships.map(&:active_lead_provider_id)).to contain_exactly(framework_agreement_1.id, framework_agreement_2.id)
+        expect(partnerships.map(&:framework_agreement_id)).to contain_exactly(framework_agreement_1.id, framework_agreement_2.id)
       end
 
       it "records partnership added events" do
@@ -59,7 +59,7 @@ RSpec.describe DeliveryPartners::AddLeadProviderPairings do
           expect { service.add! }.to change(LeadProviderDeliveryPartnership, :count).by(2)
 
           partnerships = delivery_partner.lead_provider_delivery_partnerships.reload
-          expect(partnerships.map(&:active_lead_provider_id)).to contain_exactly(
+          expect(partnerships.map(&:framework_agreement_id)).to contain_exactly(
             framework_agreement_1.id, # existing - preserved
             framework_agreement_2.id, # new - added
             framework_agreement_3.id  # new - added
