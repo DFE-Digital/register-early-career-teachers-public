@@ -11,7 +11,7 @@ class Teacher < ApplicationRecord
 
   TRS_RESPONSES = %i[ok not_found gone permanent_redirect].index_with(&:to_s).freeze
 
-  self.ignored_columns = %i[search trs_deactivated trs_not_found]
+  self.ignored_columns = %i[search]
 
   # Enums
   enum :migration_mode, MIGRATION_MODES, validate: { message: "Must be latest_induction_records, all_induction_records or not_migrated" }, suffix: true

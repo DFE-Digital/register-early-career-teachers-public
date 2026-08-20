@@ -206,7 +206,6 @@ erDiagram
     string trn
     boolean trnless
     datetime trs_data_last_refreshed_at
-    boolean trs_deactivated
     string trs_first_name
     date trs_induction_completed_date
     date trs_induction_start_date
@@ -214,12 +213,11 @@ erDiagram
     date trs_initial_teacher_training_end_date
     string trs_initial_teacher_training_provider_name
     string trs_last_name
-    boolean trs_not_found
     date trs_qts_awarded_on
     string trs_qts_status_description
-    datetime updated_at
-    enum trs_response
     string trs_redirected_to
+    enum trs_response
+    datetime updated_at
   }
   PendingInductionSubmission {
     integer id

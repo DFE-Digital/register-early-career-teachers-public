@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_13_103015) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_13_112837) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -879,7 +879,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_13_103015) do
     t.string "trn"
     t.boolean "trnless", default: false, null: false
     t.datetime "trs_data_last_refreshed_at", precision: nil
-    t.boolean "trs_deactivated", default: false
     t.string "trs_first_name"
     t.date "trs_induction_completed_date"
     t.date "trs_induction_start_date"
@@ -887,7 +886,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_13_103015) do
     t.date "trs_initial_teacher_training_end_date"
     t.string "trs_initial_teacher_training_provider_name"
     t.string "trs_last_name"
-    t.boolean "trs_not_found", default: false
     t.date "trs_qts_awarded_on"
     t.string "trs_qts_status_description"
     t.string "trs_redirected_to"
