@@ -87,16 +87,16 @@ private
     @lead_provider_2 = FactoryBot.create(:lead_provider, name: "Lead Provider Two")
     @lead_provider_3 = FactoryBot.create(:lead_provider, name: "Lead Provider Three")
 
-    @active_lead_provider_1 = FactoryBot.create(:active_lead_provider, lead_provider: @lead_provider_1, contract_period: @contract_period)
-    @active_lead_provider_2 = FactoryBot.create(:active_lead_provider, lead_provider: @lead_provider_2, contract_period: @contract_period)
-    @active_lead_provider_3 = FactoryBot.create(:active_lead_provider, lead_provider: @lead_provider_3, contract_period: @contract_period)
+    @framework_agreement_1 = FactoryBot.create(:framework_agreement, lead_provider: @lead_provider_1, contract_period: @contract_period)
+    @framework_agreement_2 = FactoryBot.create(:framework_agreement, lead_provider: @lead_provider_2, contract_period: @contract_period)
+    @framework_agreement_3 = FactoryBot.create(:framework_agreement, lead_provider: @lead_provider_3, contract_period: @contract_period)
   end
 
   def and_an_existing_partnership_exists
     @existing_partnership = FactoryBot.create(
       :lead_provider_delivery_partnership,
       delivery_partner: @delivery_partner,
-      active_lead_provider: @active_lead_provider_1
+      framework_agreement: @framework_agreement_1
     )
   end
 

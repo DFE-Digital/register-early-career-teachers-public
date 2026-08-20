@@ -35,12 +35,12 @@ class TrainingPeriod < ApplicationRecord
   belongs_to :schedule
 
   has_one :lead_provider_delivery_partnership, through: :school_partnership
-  has_one :active_lead_provider, through: :lead_provider_delivery_partnership
-  has_one :lead_provider, through: :active_lead_provider
+  has_one :framework_agreement, through: :lead_provider_delivery_partnership
+  has_one :lead_provider, through: :framework_agreement
   has_one :delivery_partner, through: :lead_provider_delivery_partnership
-  has_one :contract_period, through: :active_lead_provider
+  has_one :contract_period, through: :framework_agreement
 
-  belongs_to :expression_of_interest, class_name: "ActiveLeadProvider"
+  belongs_to :expression_of_interest, class_name: "FrameworkAgreement"
   has_one :expression_of_interest_lead_provider, through: :expression_of_interest, source: :lead_provider
   has_one :expression_of_interest_contract_period, through: :expression_of_interest, source: :contract_period
 

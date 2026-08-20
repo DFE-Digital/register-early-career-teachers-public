@@ -1,5 +1,5 @@
 describe PaymentCalculator::Resolver do
-  let(:statement) { FactoryBot.create(:statement, :open, contract:, active_lead_provider: contract.active_lead_provider) }
+  let(:statement) { FactoryBot.create(:statement, :open, contract:, framework_agreement: contract.framework_agreement) }
 
   describe "#calculators" do
     context "when contract type is `ittecf_ectp`" do
@@ -26,8 +26,8 @@ describe PaymentCalculator::Resolver do
 
         describe "declaration_selector" do
           it "filters started/completed declarations to mentors only" do
-            active_lead_provider = contract.active_lead_provider
-            lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
+            framework_agreement = contract.framework_agreement
+            lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:)
             school_partnership = FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:)
 
             ect_training_period = FactoryBot.create(:training_period, :for_ect, school_partnership:)
@@ -56,8 +56,8 @@ describe PaymentCalculator::Resolver do
 
         describe "declaration_selector" do
           it "filters declarations to ECTs only" do
-            active_lead_provider = contract.active_lead_provider
-            lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
+            framework_agreement = contract.framework_agreement
+            lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:)
             school_partnership = FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:)
 
             ect_training_period = FactoryBot.create(:training_period, :for_ect, school_partnership:)
@@ -95,8 +95,8 @@ describe PaymentCalculator::Resolver do
 
         describe "declaration_selector" do
           it "includes all declarations" do
-            active_lead_provider = contract.active_lead_provider
-            lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
+            framework_agreement = contract.framework_agreement
+            lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:)
             school_partnership = FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:)
 
             ect_training_period = FactoryBot.create(:training_period, :for_ect, school_partnership:)

@@ -15,13 +15,13 @@ RSpec.describe SchoolPartnerships::CreateFromPrevious do
   let!(:current_contract_period)  { FactoryBot.create(:contract_period, year: current_year) }
 
   let!(:active_lp_previous_year) do
-    FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: previous_contract_period)
+    FactoryBot.create(:framework_agreement, lead_provider:, contract_period: previous_contract_period)
   end
 
   let!(:lpdp_previous_year) do
     FactoryBot.create(
       :lead_provider_delivery_partnership,
-      active_lead_provider: active_lp_previous_year,
+      framework_agreement: active_lp_previous_year,
       delivery_partner:
     )
   end
@@ -56,7 +56,7 @@ RSpec.describe SchoolPartnerships::CreateFromPrevious do
       end
     end
 
-    context "when there is no active lead provider for the current year" do
+    context "when there is no framework agreement for the current year" do
       it "returns nil and records no reuse event" do
         result = service.call(
           previous_school_partnership_id: previous_partnership.id,
@@ -70,9 +70,9 @@ RSpec.describe SchoolPartnerships::CreateFromPrevious do
       end
     end
 
-    context "when there is an active lead provider for the current year but no matching LP/DP pairing" do
+    context "when there is a framework agreement for the current year but no matching LP/DP pairing" do
       let!(:active_lp_current_year) do
-        FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: current_contract_period)
+        FactoryBot.create(:framework_agreement, lead_provider:, contract_period: current_contract_period)
       end
 
       it "returns nil and records no reuse event" do
@@ -90,13 +90,13 @@ RSpec.describe SchoolPartnerships::CreateFromPrevious do
 
     context "when a matching LP/DP pairing exists in the current year" do
       let!(:active_lp_current_year) do
-        FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: current_contract_period)
+        FactoryBot.create(:framework_agreement, lead_provider:, contract_period: current_contract_period)
       end
 
       let!(:lpdp_current_year) do
         FactoryBot.create(
           :lead_provider_delivery_partnership,
-          active_lead_provider: active_lp_current_year,
+          framework_agreement: active_lp_current_year,
           delivery_partner:
         )
       end

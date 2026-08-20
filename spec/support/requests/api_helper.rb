@@ -22,9 +22,9 @@ module APIHelper
   end
 
   def lead_provider_to_authenticate_with
-    return FactoryBot.create(:lead_provider) unless defined?(active_lead_provider)
+    return FactoryBot.create(:lead_provider) unless defined?(framework_agreement)
 
-    active_lead_provider.lead_provider
+    framework_agreement.lead_provider
   end
 
   def parsed_response

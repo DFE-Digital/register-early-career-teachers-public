@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory(:contract) do
-    association :active_lead_provider
+    association :framework_agreement
 
     for_ittecf_ectp
 
@@ -18,10 +18,10 @@ FactoryBot.define do
 
     trait :with_bands_and_band_terms do
       after(:create) do |contract, evaluator|
-        active_lead_provider = evaluator.active_lead_provider || contract.active_lead_provider
+        framework_agreement = evaluator.framework_agreement || contract.framework_agreement
 
-        FactoryBot.create_list(:active_lead_provider_band, 6,
-                               active_lead_provider:).each do |band|
+        FactoryBot.create_list(:framework_agreement_band, 6,
+                               framework_agreement:).each do |band|
           FactoryBot.create(:contract_banded_fee_structure_band_term,
                             banded_fee_structure: contract.banded_fee_structure,
                             band:)

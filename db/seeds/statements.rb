@@ -38,13 +38,13 @@ end
 
 ucl = LeadProvider.find_by!(name: "UCL Institute of Education")
 
-grouped_active_lead_providers = ActiveLeadProvider
+grouped_framework_agreements = FrameworkAgreement
   .where.not(lead_provider: ucl)
   .joins(:contract_period)
   .group_by(&:lead_provider)
 
-grouped_active_lead_providers.each do |lead_provider, active_lead_providers|
-  statements = active_lead_providers.flat_map do |alp|
+grouped_framework_agreements.each do |lead_provider, framework_agreements|
+  statements = framework_agreements.flat_map do |alp|
     registration_year = alp.contract_period.year
     months = (1..12).to_a
     years = [registration_year, registration_year + 1]
@@ -69,7 +69,7 @@ grouped_active_lead_providers.each do |lead_provider, active_lead_providers|
       FactoryBot.create(
         :statement,
         contract:,
-        active_lead_provider: alp,
+        framework_agreement: alp,
         month:,
         year:,
         deadline_date:,
@@ -85,8 +85,8 @@ end
 
 ambition = LeadProvider.find_by!(name: "Ambition Institute")
 contract_period = ContractPeriod.find_by!(year: 2023)
-active_lead_provider = ActiveLeadProvider.find_by!(lead_provider: ambition, contract_period:)
-audited_statement = active_lead_provider.statements.find_by!(year: 2024, month: 8)
+framework_agreement = FrameworkAgreement.find_by!(lead_provider: ambition, contract_period:)
+audited_statement = framework_agreement.statements.find_by!(year: 2024, month: 8)
 
 audit_notes = [
   { body: "Sample Note: x1 started declaration (955c45ff-32f3-4f58-8219-5804d7a5de4f) included for payment in ECF1 service but was unable to be represented in the RECT service", created_at: 2.months.ago },

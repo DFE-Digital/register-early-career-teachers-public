@@ -3,7 +3,7 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
   let!(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
   let(:contract) do
     FactoryBot.create(:contract, contract_trait,
-                      active_lead_provider:,
+                      framework_agreement:,
                       banded_fee_structure:)
   end
 
@@ -12,7 +12,7 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
   end
 
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Some LP") }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:) }
   let(:feb_statement_fee_type) { :output_fee }
 
   let!(:jan_statement) do
@@ -23,7 +23,7 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
       :output_fee,
       contract:,
       contract_period:,
-      active_lead_provider:,
+      framework_agreement:,
       deadline_date:,
       payment_date:,
       year: payment_date.year,
@@ -37,7 +37,7 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
       feb_statement_fee_type,
       contract:,
       contract_period:,
-      active_lead_provider:,
+      framework_agreement:,
       deadline_date:,
       payment_date:,
       year: payment_date.year,
@@ -49,8 +49,8 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
     FactoryBot.create(
       :training_period,
       :for_ect,
-      :with_active_lead_provider,
-      active_lead_provider:
+      :with_framework_agreement,
+      framework_agreement:
     )
   end
 
@@ -58,8 +58,8 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
     FactoryBot.create(
       :training_period,
       :for_mentor,
-      :with_active_lead_provider,
-      active_lead_provider:
+      :with_framework_agreement,
+      framework_agreement:
     )
   end
 
@@ -116,7 +116,7 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
         :payable,
         contract:,
         contract_period:,
-        active_lead_provider:,
+        framework_agreement:,
         deadline_date:,
         payment_date:,
         year: payment_date.year,

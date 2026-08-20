@@ -93,20 +93,20 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Wiz
     end
 
     context "when an EOI only period has a valid contract period selection" do
-      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period: current_contract_period) }
+      let(:framework_agreement) { FactoryBot.create(:framework_agreement, contract_period: current_contract_period) }
       let(:training_period) do
         FactoryBot.create(
           :training_period,
           :unfinished,
           :with_only_expression_of_interest,
           ect_at_school_period:,
-          expression_of_interest: active_lead_provider,
+          expression_of_interest: framework_agreement,
           schedule:
         )
       end
 
       before do
-        FactoryBot.create(:active_lead_provider, lead_provider: active_lead_provider.lead_provider, contract_period: target_contract_period)
+        FactoryBot.create(:framework_agreement, lead_provider: framework_agreement.lead_provider, contract_period: target_contract_period)
         store.contract_period_year = target_contract_period.year
       end
 

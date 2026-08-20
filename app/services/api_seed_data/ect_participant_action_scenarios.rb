@@ -28,9 +28,9 @@ module APISeedData
     def seed_resumable_participants
       training_periods = []
 
-      active_lead_providers.find_each do |active_lead_provider|
+      framework_agreements.find_each do |framework_agreement|
         # Withdrawn training period at ongoing school period, with ongoing induction period
-        school_partnership = school_partnerships(active_lead_provider:).sample
+        school_partnership = school_partnerships(framework_agreement:).sample
         school = school_partnership.school
         school_time_period = { started_on: Date.new(contract_period.year, 9, rand(1..30)), finished_on: nil }
         teacher = create_teacher(school_time_period:)
@@ -39,7 +39,7 @@ module APISeedData
         training_periods << create_training_period(ect_at_school_period:, school_partnership:, training_time_period:, traits: [:withdrawn])
         create_ongoing_induction_period(teacher:, school_time_period:)
 
-        log_seed_info("Created resumable participant for #{school_partnership.active_lead_provider.lead_provider.name}")
+        log_seed_info("Created resumable participant for #{school_partnership.framework_agreement.lead_provider.name}")
       end
 
       training_periods
@@ -48,13 +48,13 @@ module APISeedData
     def seed_participants_started_with_another_lead_provider
       training_periods = []
 
-      active_lead_providers.find_each do |active_lead_provider|
+      framework_agreements.find_each do |framework_agreement|
         # Withdrawn training period at ongoing school period, with ongoing induction period
-        # Where the school has a partnership with another active lead provider in the same year
-        year = active_lead_provider.contract_period_year
-        schools = school_partnerships(excluding_active_lead_provider: active_lead_provider, year:).map(&:school)
-        school_partnership = school_partnerships(active_lead_provider:, school: schools).sample
-        school_partnership = FactoryBot.create(:school_partnership, :for_year, year:, lead_provider: active_lead_provider.lead_provider, school: schools.sample) if school_partnership.nil?
+        # Where the school has a partnership with another framework agreement in the same year
+        year = framework_agreement.contract_period_year
+        schools = school_partnerships(excluding_framework_agreement: framework_agreement, year:).map(&:school)
+        school_partnership = school_partnerships(framework_agreement:, school: schools).sample
+        school_partnership = FactoryBot.create(:school_partnership, :for_year, year:, lead_provider: framework_agreement.lead_provider, school: schools.sample) if school_partnership.nil?
         school = school_partnership.school
         school_time_period = { started_on: Date.new(contract_period.year, 9, rand(1..30)), finished_on: nil }
         teacher = create_teacher(school_time_period:)
@@ -65,11 +65,11 @@ module APISeedData
         create_ongoing_induction_period(teacher:, school_time_period:)
 
         # Active training period at the same school but with a different lead provider
-        school_partnership = school_partnerships(excluding_active_lead_provider: active_lead_provider, year: contract_period.year, school:).sample
+        school_partnership = school_partnerships(excluding_framework_agreement: framework_agreement, year: contract_period.year, school:).sample
         training_time_period = { started_on: training_period_at_first_school.finished_on.next_day, finished_on: nil }
         create_training_period(ect_at_school_period:, school_partnership:, training_time_period:)
 
-        log_seed_info("Created participant started with another lead provider for #{school_partnership.active_lead_provider.lead_provider.name}")
+        log_seed_info("Created participant started with another lead provider for #{school_partnership.framework_agreement.lead_provider.name}")
       end
 
       training_periods
@@ -78,12 +78,12 @@ module APISeedData
     def seed_participant_with_billable_declaration_that_can_have_contract_period_and_schedule_changed
       training_periods = []
 
-      active_lead_providers.find_each do |active_lead_provider|
+      framework_agreements.find_each do |framework_agreement|
         # Ongoing training period/school period/induction period at a school where the lead provider
         # has a school partnership with the same school in a different contract period.
         other_years = ContractPeriod.where.not(year: contract_period.year).where(payments_frozen_at: nil).pluck(:year)
-        schools = school_partnerships(year: other_years).excluding { it.lead_provider == active_lead_provider.lead_provider }.map(&:school)
-        school_partnership = school_partnerships(active_lead_provider:, school: schools).sample
+        schools = school_partnerships(year: other_years).excluding { it.lead_provider == framework_agreement.lead_provider }.map(&:school)
+        school_partnership = school_partnerships(framework_agreement:, school: schools).sample
         school = school_partnership.school
         school_time_period = { started_on: Date.new(contract_period.year, 9, rand(1..30)), finished_on: nil }
         teacher = create_teacher(school_time_period:)
@@ -96,7 +96,7 @@ module APISeedData
         # Started, paid declaration for the training period.
         create_declaration(state: :paid, declaration_type: :started, training_period:)
 
-        log_seed_info("Created participant with declaration that can change contract period/schedule for #{school_partnership.active_lead_provider.lead_provider.name}")
+        log_seed_info("Created participant with declaration that can change contract period/schedule for #{school_partnership.framework_agreement.lead_provider.name}")
       end
 
       training_periods
@@ -106,8 +106,8 @@ module APISeedData
       @contract_period ||= ContractPeriod.find_by(year: 2024)
     end
 
-    def active_lead_providers
-      @active_lead_providers ||= super.where(contract_period:)
+    def framework_agreements
+      @framework_agreements ||= super.where(contract_period:)
     end
 
     def schedule
@@ -127,12 +127,12 @@ module APISeedData
       FactoryBot.create(:declaration, state, declaration_type:, training_period:, declaration_date:)
     end
 
-    def school_partnerships(active_lead_provider: nil, excluding_active_lead_provider: nil, year: nil, school: nil)
+    def school_partnerships(framework_agreement: nil, excluding_framework_agreement: nil, year: nil, school: nil)
       school_partnerships = SchoolPartnership
         .joins(:school, :lead_provider_delivery_partnership, :contract_period)
 
-      school_partnerships = school_partnerships.where(lead_provider_delivery_partnership: { active_lead_provider: }) if active_lead_provider
-      school_partnerships = school_partnerships.where.not(lead_provider_delivery_partnership: { active_lead_provider: excluding_active_lead_provider }) if excluding_active_lead_provider
+      school_partnerships = school_partnerships.where(lead_provider_delivery_partnership: { framework_agreement: }) if framework_agreement
+      school_partnerships = school_partnerships.where.not(lead_provider_delivery_partnership: { framework_agreement: excluding_framework_agreement }) if excluding_framework_agreement
       school_partnerships = school_partnerships.where(contract_periods: { year: }) if year
       school_partnerships = school_partnerships.where(school:) if school
 

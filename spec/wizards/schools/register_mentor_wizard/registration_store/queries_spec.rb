@@ -77,11 +77,11 @@ RSpec.describe Schools::RegisterMentorWizard::RegistrationStore::Queries do
       let!(:another_lead_provider) { FactoryBot.create(:lead_provider) }
 
       before do
-        FactoryBot.create(:active_lead_provider, contract_period:, lead_provider:)
-        FactoryBot.create(:active_lead_provider, contract_period:, lead_provider: another_lead_provider)
+        FactoryBot.create(:framework_agreement, contract_period:, lead_provider:)
+        FactoryBot.create(:framework_agreement, contract_period:, lead_provider: another_lead_provider)
       end
 
-      it "returns the active lead providers for that period" do
+      it "returns the framework agreements for that period" do
         ids = queries.lead_providers_within_contract_period.map(&:id)
 
         expect(ids).to contain_exactly(lead_provider.id, another_lead_provider.id)

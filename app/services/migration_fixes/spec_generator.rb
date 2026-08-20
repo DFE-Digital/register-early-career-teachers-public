@@ -21,7 +21,7 @@ class MigrationFixes::SpecGenerator
         #{contract_periods}
         #{schedules}
         #{schools}
-        #{active_lead_providers}
+        #{framework_agreements}
         #{lead_provider_delivery_partnerships}
         #{school_partnerships}
         #{ect_periods}
@@ -115,17 +115,17 @@ class MigrationFixes::SpecGenerator
     }.join("\n")
   end
 
-  def active_lead_providers
-    return if dependencies[:active_lead_providers].blank?
+  def framework_agreements
+    return if dependencies[:framework_agreements].blank?
 
-    dependencies[:active_lead_providers].map { |_key, value|
+    dependencies[:framework_agreements].map { |_key, value|
       model = value[:data]
       label = value[:label]
       lead_provider = dependencies[:lead_providers][model.lead_provider_id.to_s][:label]
       contract_period = dependencies[:contract_periods][model.contract_period_year.to_s][:label]
 
       <<~ALP.chomp
-        let!(:#{label}) { FactoryBot.create(:active_lead_provider, id: #{model.id}, lead_provider: #{lead_provider}, contract_period: #{contract_period}) }
+        let!(:#{label}) { FactoryBot.create(:framework_agreement, id: #{model.id}, lead_provider: #{lead_provider}, contract_period: #{contract_period}) }
       ALP
     }.join("\n")
   end
@@ -136,11 +136,11 @@ class MigrationFixes::SpecGenerator
     dependencies[:lead_provider_delivery_partnerships].map { |_key, value|
       model = value[:data]
       label = value[:label]
-      alp = dependencies[:active_lead_providers][model.active_lead_provider_id.to_s][:label]
+      alp = dependencies[:framework_agreements][model.active_lead_provider_id.to_s][:label]
       delivery_partner = dependencies[:delivery_partners][model.delivery_partner_id.to_s][:label]
 
       <<~LPDP.chomp
-        let!(:#{label}) { FactoryBot.create(:lead_provider_delivery_partnership, id: #{model.id}, active_lead_provider: #{alp}, delivery_partner: #{delivery_partner}) }
+        let!(:#{label}) { FactoryBot.create(:lead_provider_delivery_partnership, id: #{model.id}, framework_agreement: #{alp}, delivery_partner: #{delivery_partner}) }
       LPDP
     }.join("\n")
   end

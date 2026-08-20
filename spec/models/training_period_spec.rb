@@ -7,12 +7,12 @@ describe TrainingPeriod do
     def will_change_attribute(attribute_to_change:, new_value:)
       case attribute_to_change
       when :school_partnership_id
-        active_lead_provider = FactoryBot.create(:active_lead_provider, contract_period: instance.schedule.contract_period)
-        lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
+        framework_agreement = FactoryBot.create(:framework_agreement, contract_period: instance.schedule.contract_period)
+        lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:)
         school = instance.school
         FactoryBot.create(:school_partnership, id: new_value, school:, lead_provider_delivery_partnership:)
       when :expression_of_interest_id
-        FactoryBot.create(:active_lead_provider, contract_period: instance.schedule.contract_period, id: new_value)
+        FactoryBot.create(:framework_agreement, contract_period: instance.schedule.contract_period, id: new_value)
       when :withdrawn_at
         instance.withdrawal_reason = :other
         instance.finished_on = new_value
@@ -60,8 +60,8 @@ describe TrainingPeriod do
       def will_change_attribute(attribute_to_change:, new_value:)
         case attribute_to_change
         when :school_partnership_id
-          active_lead_provider = FactoryBot.create(:active_lead_provider, contract_period: instance.schedule.contract_period)
-          lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
+          framework_agreement = FactoryBot.create(:framework_agreement, contract_period: instance.schedule.contract_period)
+          lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:)
           school = instance.school
           FactoryBot.create(:school_partnership, id: new_value, lead_provider_delivery_partnership:, school:)
         when :schedule_id
@@ -139,11 +139,11 @@ describe TrainingPeriod do
     it { is_expected.to have_many(:declarations).inverse_of(:training_period) }
     it { is_expected.to have_many(:events) }
     it { is_expected.to have_one(:lead_provider_delivery_partnership).through(:school_partnership) }
-    it { is_expected.to have_one(:active_lead_provider).through(:lead_provider_delivery_partnership) }
-    it { is_expected.to have_one(:lead_provider).through(:active_lead_provider) }
+    it { is_expected.to have_one(:framework_agreement).through(:lead_provider_delivery_partnership) }
+    it { is_expected.to have_one(:lead_provider).through(:framework_agreement) }
     it { is_expected.to have_one(:delivery_partner).through(:lead_provider_delivery_partnership) }
-    it { is_expected.to have_one(:contract_period).through(:active_lead_provider) }
-    it { is_expected.to belong_to(:expression_of_interest).class_name("ActiveLeadProvider") }
+    it { is_expected.to have_one(:contract_period).through(:framework_agreement) }
+    it { is_expected.to belong_to(:expression_of_interest).class_name("FrameworkAgreement") }
     it { is_expected.to have_one(:expression_of_interest_lead_provider).through(:expression_of_interest).source(:lead_provider) }
     it { is_expected.to have_one(:expression_of_interest_contract_period).through(:expression_of_interest).source(:contract_period) }
     it { is_expected.to belong_to(:schedule) }
@@ -223,7 +223,7 @@ describe TrainingPeriod do
       let(:school) { ect_at_school_period.school }
       let(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
       let(:school_partnership) { make_partnership_for(school, contract_period) }
-      let(:expression_of_interest) { FactoryBot.create(:active_lead_provider, contract_period:) }
+      let(:expression_of_interest) { FactoryBot.create(:framework_agreement, contract_period:) }
 
       context "when provider-led" do
         subject { FactoryBot.build(:training_period, :provider_led, :with_no_school_partnership, ect_at_school_period:, expression_of_interest: nil, **dates) }
@@ -534,7 +534,7 @@ describe TrainingPeriod do
       let(:school) { ect_at_school_period.school }
       let(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
       let(:school_partnership) { make_partnership_for(school, contract_period) }
-      let(:expression_of_interest) { FactoryBot.create(:active_lead_provider, contract_period:) }
+      let(:expression_of_interest) { FactoryBot.create(:framework_agreement, contract_period:) }
 
       context "when school-led" do
         context "when both expression of interest and school partnership are absent" do
@@ -601,7 +601,7 @@ describe TrainingPeriod do
       let(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
       let(:schedule) { FactoryBot.create(:schedule, contract_period:) }
       let(:school_partnership) { make_partnership_for(school, contract_period) }
-      let(:expression_of_interest) { FactoryBot.create(:active_lead_provider, contract_period:) }
+      let(:expression_of_interest) { FactoryBot.create(:framework_agreement, contract_period:) }
 
       context "checking contract period matches with school partnership" do
         context "when contract periods match" do
@@ -656,7 +656,7 @@ describe TrainingPeriod do
             )
           end
 
-          let(:mismatched_expression_of_interest) { FactoryBot.create(:active_lead_provider, contract_period: FactoryBot.create(:contract_period, year: 2025)) }
+          let(:mismatched_expression_of_interest) { FactoryBot.create(:framework_agreement, contract_period: FactoryBot.create(:contract_period, year: 2025)) }
 
           it "adds an error to schedule" do
             expect(subject).to be_invalid
@@ -852,7 +852,7 @@ describe TrainingPeriod do
 
       context "when the school partnership is not set" do
         let!(:school_partnership) { nil }
-        let!(:expression_of_interest) { FactoryBot.create(:active_lead_provider) }
+        let!(:expression_of_interest) { FactoryBot.create(:framework_agreement) }
 
         it { expect(training_period).to be_valid }
       end
@@ -1139,7 +1139,7 @@ describe TrainingPeriod do
           :for_mentor,
           mentor_at_school_period: mentor_at_school_period_2,
           school_partnership: nil,
-          expression_of_interest: FactoryBot.create(:active_lead_provider, contract_period:),
+          expression_of_interest: FactoryBot.create(:framework_agreement, contract_period:),
           training_programme: "provider_led",
           started_on: mentor_at_school_period_2.started_on,
           finished_on: mentor_at_school_period_2.finished_on
@@ -1173,7 +1173,7 @@ describe TrainingPeriod do
       let(:school_partnership) { make_partnership_for(school, contract_period) }
 
       let(:other_ect_at_school_period) { FactoryBot.create(:ect_at_school_period) }
-      let(:expression_of_interest) { FactoryBot.create(:active_lead_provider, contract_period:) }
+      let(:expression_of_interest) { FactoryBot.create(:framework_agreement, contract_period:) }
 
       let!(:confirmed_training_period) do
         FactoryBot.create(

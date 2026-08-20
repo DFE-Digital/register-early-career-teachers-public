@@ -25,18 +25,18 @@ RSpec.describe SchoolPartnerships::FindReusablePartnership do
     ContractPeriod.find_by(year:) || FactoryBot.create(:contract_period, year:)
   end
 
-  def find_or_create_active_lead_provider!(lead_provider:, year:)
+  def find_or_create_framework_agreement!(lead_provider:, year:)
     contract_period = find_or_create_contract_period!(year:)
 
-    ActiveLeadProvider.find_or_create_by!(lead_provider:, contract_period:)
+    FrameworkAgreement.find_or_create_by!(lead_provider:, contract_period:)
   end
 
   def create_lead_provider_delivery_partnership!(lead_provider:, delivery_partner:, year:)
-    active_lead_provider = find_or_create_active_lead_provider!(lead_provider:, year:)
+    framework_agreement = find_or_create_framework_agreement!(lead_provider:, year:)
 
     FactoryBot.create(
       :lead_provider_delivery_partnership,
-      active_lead_provider:,
+      framework_agreement:,
       delivery_partner:
     )
   end
@@ -218,12 +218,12 @@ RSpec.describe SchoolPartnerships::FindReusablePartnership do
       end
 
       it "returns nil when the lead provider is active this year but has no delivery partner pairing" do
-        find_or_create_active_lead_provider!(lead_provider:, year: current_year)
+        find_or_create_framework_agreement!(lead_provider:, year: current_year)
         expect(call_service).to be_nil
       end
 
       it "returns nil when the delivery partner is not compatible with this year's pairings" do
-        find_or_create_active_lead_provider!(lead_provider:, year: current_year)
+        find_or_create_framework_agreement!(lead_provider:, year: current_year)
 
         create_lead_provider_delivery_partnership!(
           lead_provider:,

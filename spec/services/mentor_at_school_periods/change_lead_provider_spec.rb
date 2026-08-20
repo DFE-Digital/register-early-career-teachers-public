@@ -12,12 +12,12 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
 
   let!(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, :current) }
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
-  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, contract_period:) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:, contract_period:) }
+  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:, contract_period:) }
 
   let(:old_lead_provider) { FactoryBot.create(:lead_provider) }
-  let(:old_active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider: old_lead_provider, contract_period:) }
-  let(:old_lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: old_active_lead_provider, contract_period:) }
+  let(:old_framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider: old_lead_provider, contract_period:) }
+  let(:old_lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement: old_framework_agreement, contract_period:) }
   let(:old_school_partnership) { FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership: old_lead_provider_delivery_partnership) }
 
   let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :unfinished, mentor_at_school_period:, started_on:, school_partnership: old_school_partnership) }
@@ -37,11 +37,11 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
 
     context "when there is no school partnership with the new lead provider" do
       it "creates a new expression of interest for the current year and assigns it to the new training period with the previous schedule" do
-        expect { subject }.to change(ActiveLeadProvider, :count).by(1)
+        expect { subject }.to change(FrameworkAgreement, :count).by(1)
 
-        new_active_lead_provider = ActiveLeadProvider.last
-        expect(new_active_lead_provider.lead_provider).to eq(lead_provider)
-        expect(new_active_lead_provider.contract_period).to eq(contract_period)
+        new_framework_agreement = FrameworkAgreement.last
+        expect(new_framework_agreement.lead_provider).to eq(lead_provider)
+        expect(new_framework_agreement.contract_period).to eq(contract_period)
 
         new_training_period = mentor_at_school_period.training_periods.unfinished.first
         expect(new_training_period.school_partnership).to be_nil
@@ -56,7 +56,7 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
       let!(:school_partnership) { FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:) }
 
       it "uses the existing school partnership" do
-        expect { subject }.not_to change(ActiveLeadProvider, :count)
+        expect { subject }.not_to change(FrameworkAgreement, :count)
 
         new_training_period = mentor_at_school_period.training_periods.unfinished.first
         expect(new_training_period.school_partnership).to eq(school_partnership)
@@ -168,7 +168,7 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
 
     context "when there is no school partnership with the old lead provider" do
       let(:old_lead_provider) { FactoryBot.create(:lead_provider) }
-      let(:old_active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider: old_lead_provider, contract_period:) }
+      let(:old_framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider: old_lead_provider, contract_period:) }
       let(:old_school_partnership) { nil }
       let(:old_lead_provider_delivery_partnership) { nil }
 
@@ -178,7 +178,7 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
                           :for_mentor,
                           :unfinished,
                           :with_no_school_partnership,
-                          expression_of_interest: old_active_lead_provider,
+                          expression_of_interest: old_framework_agreement,
                           schedule:,
                           mentor_at_school_period:,
                           started_on:)

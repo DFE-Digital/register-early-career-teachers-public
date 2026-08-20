@@ -61,27 +61,27 @@ module APISeedData
 
     def schools_with_participants_with_lead_provider_as_expression_of_interest(count:)
       lead_providers.find_each do |lead_provider|
-        # Find a contract period that is not frozen and has an active lead provider (randomly chosen)
-        active_lead_provider = active_lead_providers
+        # Find a contract period that is not frozen and has a framework agreement (randomly chosen)
+        framework_agreement = framework_agreements
           .where(lead_provider:)
           .where(contract_periods: { payments_frozen_at: nil })
           .order("RANDOM()")
           .first
 
-        next unless active_lead_provider
+        next unless framework_agreement
 
         # Count schools with participants linked via expression_of_interest (not school_partnership)
-        # Check against ALL active_lead_providers for this lead_provider
-        active_lead_provider_ids = lead_provider.active_lead_providers.pluck(:id)
+        # Check against ALL framework_agreements for this lead_provider
+        framework_agreement_ids = lead_provider.framework_agreements.pluck(:id)
 
         schools_with_ects = School
           .joins(ect_at_school_periods: :training_periods)
-          .where(training_periods: { expression_of_interest_id: active_lead_provider_ids, school_partnership_id: nil })
+          .where(training_periods: { expression_of_interest_id: framework_agreement_ids, school_partnership_id: nil })
           .pluck(:id)
 
         schools_with_mentors = School
           .joins(mentor_at_school_periods: :training_periods)
-          .where(training_periods: { expression_of_interest_id: active_lead_provider_ids, school_partnership_id: nil })
+          .where(training_periods: { expression_of_interest_id: framework_agreement_ids, school_partnership_id: nil })
           .pluck(:id)
 
         existing_count = School.where(id: schools_with_ects + schools_with_mentors).count
@@ -102,7 +102,7 @@ module APISeedData
             started_on: start_date,
             "#{type}_at_school_period" => school_period,
             school_partnership: nil,
-            expression_of_interest: active_lead_provider
+            expression_of_interest: framework_agreement
           )
 
           log_seed_info("Created school with #{type} via expression of interest with #{lead_provider.name}", colour: Colourize::COLOURS.keys.sample)
@@ -115,9 +115,9 @@ module APISeedData
       contract_period_2025 = find_or_create_contract_period(2025)
 
       lead_providers.find_each do |lead_provider|
-        # Get or create active lead providers for both contract periods
-        active_lead_provider_2024 = find_or_create_active_lead_provider(lead_provider:, contract_period: contract_period_2024)
-        active_lead_provider_2025 = find_or_create_active_lead_provider(lead_provider:, contract_period: contract_period_2025)
+        # Get or create framework agreements for both contract periods
+        framework_agreement_2024 = find_or_create_framework_agreement(lead_provider:, contract_period: contract_period_2024)
+        framework_agreement_2025 = find_or_create_framework_agreement(lead_provider:, contract_period: contract_period_2025)
 
         # Find Teachers (participants) that have training in BOTH 2024 AND 2025 with this lead provider
         teachers_with_2024 = teachers_with_training_in_year(year: 2024, lead_provider:)
@@ -144,13 +144,13 @@ module APISeedData
           )
 
           # Create school partnerships for 2024 and 2025
-          delivery_partner = find_or_create_delivery_partner(active_lead_provider: active_lead_provider_2024)
+          delivery_partner = find_or_create_delivery_partner(framework_agreement: framework_agreement_2024)
 
-          lpdp_2024 = find_or_create_lead_provider_delivery_partnership(active_lead_provider: active_lead_provider_2024, delivery_partner:)
+          lpdp_2024 = find_or_create_lead_provider_delivery_partnership(framework_agreement: framework_agreement_2024, delivery_partner:)
           school_partnership_2024 = FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership: lpdp_2024)
           schedule_2024 = FactoryBot.create(:schedule, contract_period: contract_period_2024)
 
-          lpdp_2025 = find_or_create_lead_provider_delivery_partnership(active_lead_provider: active_lead_provider_2025, delivery_partner:)
+          lpdp_2025 = find_or_create_lead_provider_delivery_partnership(framework_agreement: framework_agreement_2025, delivery_partner:)
           school_partnership_2025 = FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership: lpdp_2025)
           schedule_2025 = FactoryBot.create(:schedule, contract_period: contract_period_2025)
 
@@ -190,12 +190,12 @@ module APISeedData
 
         # Find ECT periods that have training with this lead provider
         ect_periods_with_lp = ECTAtSchoolPeriod
-          .joins(training_periods: { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } })
+          .joins(training_periods: { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } })
           .where(active_lead_providers: { lead_provider_id: lead_provider.id })
 
         # Find ECT periods that also have training with a different lead provider
         ect_periods_transferred = ECTAtSchoolPeriod
-          .joins(training_periods: { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } })
+          .joins(training_periods: { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } })
           .where(active_lead_providers: { lead_provider_id: other_lead_provider_ids })
 
         # Schools where the SAME ECT has both
@@ -241,10 +241,10 @@ module APISeedData
     end
 
     def schools_without_participants_and_with_partnership(count:)
-      active_lead_providers.find_each do |active_lead_provider|
+      framework_agreements.find_each do |framework_agreement|
         existing_count = School
-          .joins(school_partnerships: { lead_provider_delivery_partnership: :active_lead_provider })
-          .where(active_lead_providers: { id: active_lead_provider.id })
+          .joins(school_partnerships: { lead_provider_delivery_partnership: :framework_agreement })
+          .where(active_lead_providers: { id: framework_agreement.id })
           .left_joins(:ect_at_school_periods, :mentor_at_school_periods)
           .where(ect_at_school_periods: { id: nil }, mentor_at_school_periods: { id: nil })
           .distinct
@@ -253,7 +253,7 @@ module APISeedData
         missing_count = [count - existing_count, 0].max
         missing_count.times do
           school = create_school
-          create_school_partnership(active_lead_provider:, school:)
+          create_school_partnership(framework_agreement:, school:)
         end
       end
     end
@@ -275,12 +275,12 @@ module APISeedData
       contract_period_2024 = find_or_create_contract_period(2024)
 
       lead_providers.find_each do |lead_provider|
-        active_lead_provider_2024 = find_or_create_active_lead_provider(lead_provider:, contract_period: contract_period_2024)
+        framework_agreement_2024 = find_or_create_framework_agreement(lead_provider:, contract_period: contract_period_2024)
 
         # Count schools with ECTs that have school_partnership
         # Having partnership makes EOI to be true for API
         existing_count = School
-          .joins(ect_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } }] })
+          .joins(ect_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } }] })
           .where(schedules: { contract_period_year: 2024 })
           .where(active_lead_providers: { lead_provider_id: lead_provider.id })
           .distinct
@@ -299,8 +299,8 @@ module APISeedData
           )
 
           # Create school partnership for 2024
-          delivery_partner = find_or_create_delivery_partner(active_lead_provider: active_lead_provider_2024)
-          lpdp_2024 = find_or_create_lead_provider_delivery_partnership(active_lead_provider: active_lead_provider_2024, delivery_partner:)
+          delivery_partner = find_or_create_delivery_partner(framework_agreement: framework_agreement_2024)
+          lpdp_2024 = find_or_create_lead_provider_delivery_partnership(framework_agreement: framework_agreement_2024, delivery_partner:)
           school_partnership_2024 = FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership: lpdp_2024)
           schedule_2024 = FactoryBot.create(:schedule, contract_period: contract_period_2024)
 
@@ -312,7 +312,7 @@ module APISeedData
             ect_at_school_period: school_period,
             school_partnership: school_partnership_2024,
             schedule: schedule_2024,
-            expression_of_interest: active_lead_provider_2024,
+            expression_of_interest: framework_agreement_2024,
             started_on: Date.new(2024, 9, 1),
             finished_on: nil
           )
@@ -375,7 +375,7 @@ module APISeedData
       contract_period_2025 = find_or_create_contract_period(2025)
 
       lead_providers.find_each do |lead_provider|
-        active_lead_provider_2025 = find_or_create_active_lead_provider(lead_provider:, contract_period: contract_period_2025)
+        framework_agreement_2025 = find_or_create_framework_agreement(lead_provider:, contract_period: contract_period_2025)
         other_lead_providers = lead_providers - [lead_provider]
 
         # Count schools with finished ECTs that have:
@@ -387,7 +387,7 @@ module APISeedData
 
         # Find ECT periods that trained with original LP in 2025 with EOI and finished
         ect_periods_with_original_lp = ECTAtSchoolPeriod
-          .joins(training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } }])
+          .joins(training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } }])
           .where(schedules: { contract_period_year: 2025 })
           .where(active_lead_providers: { lead_provider_id: lead_provider.id })
           .where.not(training_periods: { expression_of_interest_id: nil })
@@ -395,7 +395,7 @@ module APISeedData
 
         # Find ECT periods that also have training with a different LP
         ect_periods_also_with_other_lp = ECTAtSchoolPeriod
-          .joins(training_periods: { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } })
+          .joins(training_periods: { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } })
           .where(active_lead_providers: { lead_provider_id: other_lead_provider_ids })
 
         # Schools where the SAME ECT has both
@@ -410,7 +410,7 @@ module APISeedData
         missing_count.times do
           school = create_school
           other_lead_provider = other_lead_providers.sample
-          other_active_lead_provider_2025 = find_or_create_active_lead_provider(lead_provider: other_lead_provider, contract_period: contract_period_2025)
+          other_framework_agreement_2025 = find_or_create_framework_agreement(lead_provider: other_lead_provider, contract_period: contract_period_2025)
 
           # Use hard-coded dates in 2025 (in the past)
           start_date = Date.new(2025, 9, 1)
@@ -426,8 +426,8 @@ module APISeedData
           )
 
           # Create school partnership for original lead provider
-          delivery_partner = find_or_create_delivery_partner(active_lead_provider: active_lead_provider_2025)
-          lpdp_original = find_or_create_lead_provider_delivery_partnership(active_lead_provider: active_lead_provider_2025, delivery_partner:)
+          delivery_partner = find_or_create_delivery_partner(framework_agreement: framework_agreement_2025)
+          lpdp_original = find_or_create_lead_provider_delivery_partnership(framework_agreement: framework_agreement_2025, delivery_partner:)
           school_partnership_original = FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership: lpdp_original)
           schedule_2025 = FactoryBot.create(:schedule, contract_period: contract_period_2025)
 
@@ -439,14 +439,14 @@ module APISeedData
             ect_at_school_period: school_period,
             school_partnership: school_partnership_original,
             schedule: schedule_2025,
-            expression_of_interest: active_lead_provider_2025,
+            expression_of_interest: framework_agreement_2025,
             started_on: start_date,
             finished_on: first_training_end
           )
 
           # Create school partnership for other lead provider
-          other_delivery_partner = find_or_create_delivery_partner(active_lead_provider: other_active_lead_provider_2025)
-          lpdp_other = find_or_create_lead_provider_delivery_partnership(active_lead_provider: other_active_lead_provider_2025, delivery_partner: other_delivery_partner)
+          other_delivery_partner = find_or_create_delivery_partner(framework_agreement: other_framework_agreement_2025)
+          lpdp_other = find_or_create_lead_provider_delivery_partnership(framework_agreement: other_framework_agreement_2025, delivery_partner: other_delivery_partner)
           school_partnership_other = FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership: lpdp_other)
 
           # Training with new lead provider (also finished - the transfer)
@@ -468,16 +468,16 @@ module APISeedData
 
     def schools_with_ects_and_mentors_training_with_lead_provider(count:)
       lead_providers.find_each do |lead_provider|
-        # Randomly choose an available ActiveLeadProvider
-        active_lead_provider = active_lead_providers
+        # Randomly choose an available FrameworkAgreement
+        framework_agreement = framework_agreements
           .where(lead_provider:)
           .order("RANDOM()")
           .first
 
-        next unless active_lead_provider
+        next unless framework_agreement
 
         # Check by lead_provider_id since add_training_period creates partnerships based on date
-        # (which may use a different active_lead_provider than the one being iterated)
+        # (which may use a different framework_agreement than the one being iterated)
         schools_with_ects = schools_with_provider_led_ongoing_training(lead_provider:, type: :ect)
         schools_with_mentors = schools_with_provider_led_ongoing_training(lead_provider:, type: :mentor)
 
@@ -505,23 +505,23 @@ module APISeedData
 
     def schools_with_multiple_partnerships_with_lead_provider(count:)
       lead_providers.find_each do |lead_provider|
-        # Randomly choose an available ActiveLeadProvider
-        active_lead_provider = active_lead_providers
+        # Randomly choose an available FrameworkAgreement
+        framework_agreement = framework_agreements
           .where(lead_provider:)
           .order("RANDOM()")
           .first
 
-        next unless active_lead_provider
+        next unless framework_agreement
 
         # Count schools that have multiple partnerships with this lead_provider (different delivery partners)
         # but no partnerships with any other lead provider
         schools_with_other_lp = School
-          .joins(school_partnerships: { lead_provider_delivery_partnership: :active_lead_provider })
+          .joins(school_partnerships: { lead_provider_delivery_partnership: :framework_agreement })
           .where.not(active_lead_providers: { lead_provider_id: lead_provider.id })
           .select(:id)
 
         existing_count = School
-          .joins(school_partnerships: { lead_provider_delivery_partnership: :active_lead_provider })
+          .joins(school_partnerships: { lead_provider_delivery_partnership: :framework_agreement })
           .where(active_lead_providers: { lead_provider_id: lead_provider.id })
           .where.not(id: schools_with_other_lp)
           .group(:id)
@@ -536,8 +536,8 @@ module APISeedData
           # Create 2-3 partnerships with different delivery partners
           partnership_count = rand(2..3)
           partnership_count.times do
-            delivery_partner = find_or_create_delivery_partner(active_lead_provider:)
-            lead_provider_delivery_partnership = find_or_create_lead_provider_delivery_partnership(active_lead_provider:, delivery_partner:)
+            delivery_partner = find_or_create_delivery_partner(framework_agreement:)
+            lead_provider_delivery_partnership = find_or_create_lead_provider_delivery_partnership(framework_agreement:, delivery_partner:)
             FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:)
           end
 
@@ -548,26 +548,26 @@ module APISeedData
 
     def schools_with_multiple_partnerships_with_lead_provider_and_with_another_lead_provider(count:)
       lead_providers.find_each do |lead_provider|
-        # Randomly choose an available ActiveLeadProvider
-        active_lead_provider = active_lead_providers
+        # Randomly choose an available FrameworkAgreement
+        framework_agreement = framework_agreements
           .where(lead_provider:)
           .order("RANDOM()")
           .first
 
-        next unless active_lead_provider
+        next unless framework_agreement
 
         other_lead_providers = lead_providers.reject { |lp| lp.id == lead_provider.id }
 
         # Count schools that have multiple partnerships with this lead_provider AND at least one with another LP
         schools_with_multiple_partnerships_for_lp = School
-          .joins(school_partnerships: { lead_provider_delivery_partnership: :active_lead_provider })
+          .joins(school_partnerships: { lead_provider_delivery_partnership: :framework_agreement })
           .where(active_lead_providers: { lead_provider_id: lead_provider.id })
           .group(:id)
           .having("COUNT(DISTINCT lead_provider_delivery_partnerships.delivery_partner_id) > 1")
           .select(:id)
 
         schools_also_with_other_lp = School
-          .joins(school_partnerships: { lead_provider_delivery_partnership: :active_lead_provider })
+          .joins(school_partnerships: { lead_provider_delivery_partnership: :framework_agreement })
           .where.not(active_lead_providers: { lead_provider_id: lead_provider.id })
           .select(:id)
 
@@ -583,18 +583,18 @@ module APISeedData
           # Create 2-3 partnerships with different delivery partners for main LP
           partnership_count = rand(2..3)
           partnership_count.times do
-            delivery_partner = find_or_create_delivery_partner(active_lead_provider:)
-            lead_provider_delivery_partnership = find_or_create_lead_provider_delivery_partnership(active_lead_provider:, delivery_partner:)
+            delivery_partner = find_or_create_delivery_partner(framework_agreement:)
+            lead_provider_delivery_partnership = find_or_create_lead_provider_delivery_partnership(framework_agreement:, delivery_partner:)
             FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:)
           end
 
           # Create 1 partnership with another lead provider
           other_lead_provider = other_lead_providers.sample
-          other_active_lead_provider = ActiveLeadProvider.where(lead_provider: other_lead_provider).order("RANDOM()").first
-          next unless other_active_lead_provider
+          other_framework_agreement = FrameworkAgreement.where(lead_provider: other_lead_provider).order("RANDOM()").first
+          next unless other_framework_agreement
 
-          other_delivery_partner = find_or_create_delivery_partner(active_lead_provider: other_active_lead_provider)
-          other_lpdp = find_or_create_lead_provider_delivery_partnership(active_lead_provider: other_active_lead_provider, delivery_partner: other_delivery_partner)
+          other_delivery_partner = find_or_create_delivery_partner(framework_agreement: other_framework_agreement)
+          other_lpdp = find_or_create_lead_provider_delivery_partnership(framework_agreement: other_framework_agreement, delivery_partner: other_delivery_partner)
           FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership: other_lpdp)
 
           log_seed_info("Created school with multiple partnerships with #{lead_provider.name} and another LP", colour: Colourize::COLOURS.keys.sample)
@@ -612,9 +612,9 @@ module APISeedData
       school
     end
 
-    def create_school_partnership(active_lead_provider:, school:)
-      delivery_partner = find_or_create_delivery_partner(active_lead_provider:)
-      lead_provider_delivery_partnership = find_or_create_lead_provider_delivery_partnership(active_lead_provider:, delivery_partner:)
+    def create_school_partnership(framework_agreement:, school:)
+      delivery_partner = find_or_create_delivery_partner(framework_agreement:)
+      lead_provider_delivery_partnership = find_or_create_lead_provider_delivery_partnership(framework_agreement:, delivery_partner:)
       school_partnership = FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:)
 
       log_seed_info("#{school_partnership.school.name} -> #{school_partnership.lead_provider.name}", colour: Colourize::COLOURS.keys.sample)
@@ -622,16 +622,16 @@ module APISeedData
       school_partnership
     end
 
-    def find_or_create_delivery_partner(active_lead_provider:)
-      existing_delivery_partner_ids = active_lead_provider.lead_provider_delivery_partnerships.pluck(:delivery_partner_id)
+    def find_or_create_delivery_partner(framework_agreement:)
+      existing_delivery_partner_ids = framework_agreement.lead_provider_delivery_partnerships.pluck(:delivery_partner_id)
 
       DeliveryPartner.where.not(id: existing_delivery_partner_ids).order("RANDOM()").first ||
         create_delivery_partner
     end
 
-    def find_or_create_lead_provider_delivery_partnership(active_lead_provider:, delivery_partner:)
-      LeadProviderDeliveryPartnership.find_by(active_lead_provider:, delivery_partner:) ||
-        FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:)
+    def find_or_create_lead_provider_delivery_partnership(framework_agreement:, delivery_partner:)
+      LeadProviderDeliveryPartnership.find_by(framework_agreement:, delivery_partner:) ||
+        FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:, delivery_partner:)
     end
 
     def create_delivery_partner
@@ -652,14 +652,14 @@ module APISeedData
         FactoryBot.create(:contract_period, year:)
     end
 
-    def find_or_create_active_lead_provider(lead_provider:, contract_period:)
-      active_lead_providers.find_by(lead_provider:, contract_period:) ||
-        FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:)
+    def find_or_create_framework_agreement(lead_provider:, contract_period:)
+      framework_agreements.find_by(lead_provider:, contract_period:) ||
+        FactoryBot.create(:framework_agreement, lead_provider:, contract_period:)
     end
 
     def teachers_with_training_in_year(year:, lead_provider:)
       Teacher
-        .joins(ect_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } }] })
+        .joins(ect_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } }] })
         .where(schedules: { contract_period_year: year })
         .where(active_lead_providers: { lead_provider_id: lead_provider.id })
         .select(:id)
@@ -678,7 +678,7 @@ module APISeedData
       school_period_join = type == :ect ? :ect_at_school_periods : :mentor_at_school_periods
 
       School
-        .joins(school_period_join => { training_periods: { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } } })
+        .joins(school_period_join => { training_periods: { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } } })
         .where(active_lead_providers: { lead_provider_id: lead_provider.id })
         .where(training_periods: { training_programme: "provider_led" })
         .where(training_periods: { started_on: ..Time.zone.now })

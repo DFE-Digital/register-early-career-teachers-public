@@ -1,17 +1,17 @@
 module DeliveryPartners
   class AddLeadProviderPairings
-    attr_reader :delivery_partner, :contract_period, :active_lead_provider_ids, :author
+    attr_reader :delivery_partner, :contract_period, :framework_agreement_ids, :author
 
-    def initialize(delivery_partner:, contract_period:, active_lead_provider_ids:, author:)
+    def initialize(delivery_partner:, contract_period:, framework_agreement_ids:, author:)
       @delivery_partner = delivery_partner
       @contract_period = contract_period
-      @active_lead_provider_ids = active_lead_provider_ids
+      @framework_agreement_ids = framework_agreement_ids
       @author = author
     end
 
     def add!
       ActiveRecord::Base.transaction do
-        ids_to_add = active_lead_provider_ids_to_add
+        ids_to_add = framework_agreement_ids_to_add
         add_partnerships(ids_to_add)
         true
       end
@@ -28,20 +28,20 @@ module DeliveryPartners
         .for_contract_period(contract_period)
     end
 
-    def current_active_lead_provider_ids
-      @current_active_lead_provider_ids ||= current_partnerships.map(&:active_lead_provider_id)
+    def current_framework_agreement_ids
+      @current_framework_agreement_ids ||= current_partnerships.map(&:active_lead_provider_id)
     end
 
-    def active_lead_provider_ids_to_add
-      active_lead_provider_ids - current_active_lead_provider_ids
+    def framework_agreement_ids_to_add
+      framework_agreement_ids - current_framework_agreement_ids
     end
 
     def add_partnerships(ids_to_add)
       ids_to_add.each do |active_lead_provider_id|
-        active_lead_provider = ActiveLeadProvider.find(active_lead_provider_id)
+        framework_agreement = FrameworkAgreement.find(active_lead_provider_id)
         LeadProviderDeliveryPartnerships::Create.new(
           author:,
-          active_lead_provider:,
+          framework_agreement:,
           params: { delivery_partner_id: delivery_partner.id }
         ).call
       end

@@ -61,7 +61,7 @@ RSpec.describe MentorAtSchoolPeriods::LatestRegistrationChoices do
     end
 
     let(:lp_from_eoi) { FactoryBot.create(:lead_provider, name: "EOI LP") }
-    let(:expression_of_interest) { FactoryBot.create(:active_lead_provider, lead_provider: lp_from_eoi) }
+    let(:expression_of_interest) { FactoryBot.create(:framework_agreement, lead_provider: lp_from_eoi) }
 
     let!(:training_period) do
       FactoryBot.create(

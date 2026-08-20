@@ -13,8 +13,8 @@ describe "Changing training programme for ECTs who started provider-led training
   end
 
   it "changes the training programme from school-led to provider-led" do
-    and_there_is_an_active_lead_provider_in_the_open_contract_period
-    and_there_is_a_third_active_lead_provider
+    and_there_is_a_framework_agreement_in_the_open_contract_period
+    and_there_is_a_third_framework_agreement
 
     when_i_am_logged_in_as_a_school_user
     and_i_visit_the_ect_page
@@ -40,7 +40,7 @@ describe "Changing training programme for ECTs who started provider-led training
 
   it "changes the training programme from school-led to provider-led, with an existing school partnership" do
     and_there_is_a_school_partnership_in_the_open_contract_period
-    and_there_is_a_third_active_lead_provider
+    and_there_is_a_third_framework_agreement
 
     when_i_am_logged_in_as_a_school_user
     and_i_visit_the_ect_page
@@ -80,26 +80,26 @@ private
   end
 
   def and_there_was_a_school_partnership_in_the_closed_period
-    @school_partnership = FactoryBot.create(:school_partnership, :with_active_lead_provider, :for_year, year: 2021, school: @school)
+    @school_partnership = FactoryBot.create(:school_partnership, :with_framework_agreement, :for_year, year: 2021, school: @school)
   end
 
   def and_there_is_another_lead_provider
     @lead_provider = FactoryBot.create(:lead_provider, name: "Other Lead Provider")
   end
 
-  def and_there_is_an_active_lead_provider_in_the_open_contract_period
-    @other_active_lead_provider = FactoryBot.create(
-      :active_lead_provider,
+  def and_there_is_a_framework_agreement_in_the_open_contract_period
+    @other_framework_agreement = FactoryBot.create(
+      :framework_agreement,
       :for_year,
       year: 2024,
       lead_provider: @lead_provider
     )
   end
 
-  def and_there_is_a_third_active_lead_provider
+  def and_there_is_a_third_framework_agreement
     lead_provider = FactoryBot.create(:lead_provider, name: "A Third Testing Provider")
-    @third_active_lead_provider = FactoryBot.create(
-      :active_lead_provider,
+    @third_framework_agreement = FactoryBot.create(
+      :framework_agreement,
       :for_year,
       year: 2025,
       lead_provider:
@@ -108,10 +108,10 @@ private
 
   def and_there_is_a_school_partnership_in_the_open_contract_period
     @other_school_partnership = FactoryBot.create(:school_partnership,
-                                                  :with_active_lead_provider,
+                                                  :with_framework_agreement,
                                                   :for_year, year: 2024,
                                                              school: @school, lead_provider: @lead_provider)
-    @other_active_lead_provider = @other_school_partnership.active_lead_provider
+    @other_framework_agreement = @other_school_partnership.framework_agreement
   end
 
   def and_there_is_an_ect

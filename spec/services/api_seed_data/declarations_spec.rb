@@ -6,13 +6,13 @@ RSpec.describe APISeedData::Declarations do
 
   let(:contract_period) { FactoryBot.create(:contract_period, year: 2023) }
 
-  let(:ect_active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
-  let(:ect_lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: ect_active_lead_provider) }
+  let(:ect_framework_agreement) { FactoryBot.create(:framework_agreement, contract_period:) }
+  let(:ect_lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement: ect_framework_agreement) }
   let(:ect_school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: ect_lead_provider_delivery_partnership) }
   let!(:ect_training_period) { FactoryBot.create(:training_period, :for_ect, school_partnership: ect_school_partnership) }
 
-  let(:mentor_active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
-  let(:mentor_lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: mentor_active_lead_provider) }
+  let(:mentor_framework_agreement) { FactoryBot.create(:framework_agreement, contract_period:) }
+  let(:mentor_lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement: mentor_framework_agreement) }
   let(:mentor_school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: mentor_lead_provider_delivery_partnership) }
   let!(:mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, school_partnership: mentor_school_partnership) }
 
@@ -44,11 +44,11 @@ RSpec.describe APISeedData::Declarations do
     it "creates declarations for all lead providers" do
       plant
 
-      active_lead_providers = Declaration.all.map do |declaration|
-        declaration.training_period.school_partnership.active_lead_provider
+      framework_agreements = Declaration.all.map do |declaration|
+        declaration.training_period.school_partnership.framework_agreement
       end
 
-      expect(active_lead_providers.uniq.size).to be > 1
+      expect(framework_agreements.uniq.size).to be > 1
     end
 
     it "logs the creation of declaration records" do
@@ -59,8 +59,8 @@ RSpec.describe APISeedData::Declarations do
 
       expect(logger).to have_received(:info).with(/Planting declarations/).once
 
-      expect(logger).to have_received(:info).with(/#{ect_active_lead_provider.lead_provider.name} - ect/).once
-      expect(logger).to have_received(:info).with(/#{mentor_active_lead_provider.lead_provider.name} - mentor/).once
+      expect(logger).to have_received(:info).with(/#{ect_framework_agreement.lead_provider.name} - ect/).once
+      expect(logger).to have_received(:info).with(/#{mentor_framework_agreement.lead_provider.name} - mentor/).once
 
       types = Declaration.declaration_types.keys
       statuses = Declaration.payment_statuses.keys + Declaration.clawback_statuses.keys
@@ -75,7 +75,7 @@ RSpec.describe APISeedData::Declarations do
         plant
 
         expect(logger).to have_received(:info).with(/Planting declarations/)
-        expect(logger).not_to have_received(:info).with(/#{ect_active_lead_provider.lead_provider.name} - ect/)
+        expect(logger).not_to have_received(:info).with(/#{ect_framework_agreement.lead_provider.name} - ect/)
       end
     end
 

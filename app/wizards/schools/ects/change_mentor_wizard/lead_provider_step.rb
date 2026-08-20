@@ -20,7 +20,7 @@ module Schools
         end
 
         def lead_providers_for_select
-          active_lead_providers_in_contract_period
+          framework_agreements_in_contract_period
             .without(lead_provider_for_ect_at_school_period)
         end
 
@@ -37,10 +37,10 @@ module Schools
             .find(store.mentor_at_school_period_id)
         end
 
-        def active_lead_providers_in_contract_period
+        def framework_agreements_in_contract_period
           return [] unless contract_period
 
-          @active_lead_providers_in_contract_period ||= ::LeadProviders::Active
+          @framework_agreements_in_contract_period ||= ::LeadProviders::Active
             .in_contract_period(contract_period)
             .select(:id, :name)
         end

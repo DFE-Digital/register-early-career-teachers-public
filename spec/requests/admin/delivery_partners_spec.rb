@@ -91,12 +91,12 @@ RSpec.describe "Admin delivery partners", type: :request do
       end
 
       context "with partnerships" do
-        let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+        let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
         let!(:partnership) do
           FactoryBot.create(
             :lead_provider_delivery_partnership,
             delivery_partner:,
-            active_lead_provider:
+            framework_agreement:
           )
         end
 
@@ -119,25 +119,25 @@ RSpec.describe "Admin delivery partners", type: :request do
         let(:new_contract_period) { FactoryBot.create(:contract_period, year: 2023) }
         let(:old_lead_provider) { FactoryBot.create(:lead_provider) }
         let(:new_lead_provider) { FactoryBot.create(:lead_provider) }
-        let(:old_active_lead_provider) do
-          FactoryBot.create(:active_lead_provider, contract_period: old_contract_period, lead_provider: old_lead_provider)
+        let(:old_framework_agreement) do
+          FactoryBot.create(:framework_agreement, contract_period: old_contract_period, lead_provider: old_lead_provider)
         end
-        let(:new_active_lead_provider) do
-          FactoryBot.create(:active_lead_provider, contract_period: new_contract_period, lead_provider: new_lead_provider)
+        let(:new_framework_agreement) do
+          FactoryBot.create(:framework_agreement, contract_period: new_contract_period, lead_provider: new_lead_provider)
         end
 
         let!(:old_partnership) do
           FactoryBot.create(
             :lead_provider_delivery_partnership,
             delivery_partner:,
-            active_lead_provider: old_active_lead_provider
+            framework_agreement: old_framework_agreement
           )
         end
         let!(:new_partnership) do
           FactoryBot.create(
             :lead_provider_delivery_partnership,
             delivery_partner:,
-            active_lead_provider: new_active_lead_provider
+            framework_agreement: new_framework_agreement
           )
         end
 
@@ -176,8 +176,8 @@ RSpec.describe "Admin delivery partners", type: :request do
       context "with valid contract period" do
         let!(:lead_provider_1) { FactoryBot.create(:lead_provider, name: "Lead Provider 1") }
         let!(:lead_provider_2) { FactoryBot.create(:lead_provider, name: "Lead Provider 2") }
-        let!(:active_lead_provider_1) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_1, contract_period:) }
-        let!(:active_lead_provider_2) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_2, contract_period:) }
+        let!(:framework_agreement_1) { FactoryBot.create(:framework_agreement, lead_provider: lead_provider_1, contract_period:) }
+        let!(:framework_agreement_2) { FactoryBot.create(:framework_agreement, lead_provider: lead_provider_2, contract_period:) }
 
         it "returns http success" do
           get new_path
@@ -200,7 +200,7 @@ RSpec.describe "Admin delivery partners", type: :request do
             FactoryBot.create(
               :lead_provider_delivery_partnership,
               delivery_partner:,
-              active_lead_provider: active_lead_provider_1
+              framework_agreement: framework_agreement_1
             )
           end
 
@@ -212,8 +212,8 @@ RSpec.describe "Admin delivery partners", type: :request do
 
           it "excludes already assigned lead providers from checkboxes" do
             get new_path
-            expect(response.body).not_to include(%(value="#{active_lead_provider_1.id}"))
-            expect(response.body).to include(%(value="#{active_lead_provider_2.id}"))
+            expect(response.body).not_to include(%(value="#{framework_agreement_1.id}"))
+            expect(response.body).to include(%(value="#{framework_agreement_2.id}"))
           end
         end
       end
@@ -237,11 +237,11 @@ RSpec.describe "Admin delivery partners", type: :request do
     let(:create_path) { admin_delivery_partner_delivery_partnership_path(delivery_partner, contract_period.year) }
     let!(:lead_provider_1) { FactoryBot.create(:lead_provider, name: "Lead Provider 1") }
     let!(:lead_provider_2) { FactoryBot.create(:lead_provider, name: "Lead Provider 2") }
-    let!(:active_lead_provider_1) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_1, contract_period:) }
-    let!(:active_lead_provider_2) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_2, contract_period:) }
+    let!(:framework_agreement_1) { FactoryBot.create(:framework_agreement, lead_provider: lead_provider_1, contract_period:) }
+    let!(:framework_agreement_2) { FactoryBot.create(:framework_agreement, lead_provider: lead_provider_2, contract_period:) }
 
     it "redirects to sign in path" do
-      post create_path, params: { lead_provider_ids: [active_lead_provider_1.id] }
+      post create_path, params: { lead_provider_ids: [framework_agreement_1.id] }
       expect(response).to redirect_to(sign_in_path)
     end
 
@@ -249,7 +249,7 @@ RSpec.describe "Admin delivery partners", type: :request do
       include_context "sign in as non-DfE user"
 
       it "requires authorisation" do
-        post create_path, params: { lead_provider_ids: [active_lead_provider_1.id] }
+        post create_path, params: { lead_provider_ids: [framework_agreement_1.id] }
         expect(response.status).to eq(401)
       end
     end
@@ -258,7 +258,7 @@ RSpec.describe "Admin delivery partners", type: :request do
       include_context "sign in as DfE user"
 
       context "with valid parameters" do
-        let(:lead_provider_ids) { [active_lead_provider_1.id, active_lead_provider_2.id] }
+        let(:lead_provider_ids) { [framework_agreement_1.id, framework_agreement_2.id] }
 
         it "updates lead provider partnerships" do
           expect {
@@ -287,7 +287,7 @@ RSpec.describe "Admin delivery partners", type: :request do
           FactoryBot.create(
             :lead_provider_delivery_partnership,
             delivery_partner:,
-            active_lead_provider: active_lead_provider_1
+            framework_agreement: framework_agreement_1
           )
         end
 
@@ -295,12 +295,12 @@ RSpec.describe "Admin delivery partners", type: :request do
           FactoryBot.create(
             :lead_provider_delivery_partnership,
             delivery_partner:,
-            active_lead_provider: active_lead_provider_2
+            framework_agreement: framework_agreement_2
           )
         end
 
         context "when unchecking some partnerships" do
-          let(:lead_provider_ids) { [active_lead_provider_1.id] }
+          let(:lead_provider_ids) { [framework_agreement_1.id] }
 
           it "removes unchecked partnerships" do
             expect {
@@ -308,7 +308,7 @@ RSpec.describe "Admin delivery partners", type: :request do
             }.to change(LeadProviderDeliveryPartnership, :count).by(-1)
 
             remaining_partnerships = delivery_partner.lead_provider_delivery_partnerships.reload
-            expect(remaining_partnerships.map(&:active_lead_provider_id)).to contain_exactly(active_lead_provider_1.id)
+            expect(remaining_partnerships.map(&:active_lead_provider_id)).to contain_exactly(framework_agreement_1.id)
           end
 
           it "redirects with success message" do
@@ -321,8 +321,8 @@ RSpec.describe "Admin delivery partners", type: :request do
 
         context "when adding new partnerships while keeping existing ones" do
           let!(:lead_provider_3) { FactoryBot.create(:lead_provider, name: "Lead Provider 3") }
-          let!(:active_lead_provider_3) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_3, contract_period:) }
-          let(:lead_provider_ids) { [active_lead_provider_1.id, active_lead_provider_2.id, active_lead_provider_3.id] }
+          let!(:framework_agreement_3) { FactoryBot.create(:framework_agreement, lead_provider: lead_provider_3, contract_period:) }
+          let(:lead_provider_ids) { [framework_agreement_1.id, framework_agreement_2.id, framework_agreement_3.id] }
 
           it "keeps existing partnerships and adds new ones" do
             expect {
@@ -331,9 +331,9 @@ RSpec.describe "Admin delivery partners", type: :request do
 
             partnerships = delivery_partner.lead_provider_delivery_partnerships.reload
             expect(partnerships.map(&:active_lead_provider_id)).to contain_exactly(
-              active_lead_provider_1.id,
-              active_lead_provider_2.id,
-              active_lead_provider_3.id
+              framework_agreement_1.id,
+              framework_agreement_2.id,
+              framework_agreement_3.id
             )
           end
         end
@@ -348,19 +348,19 @@ RSpec.describe "Admin delivery partners", type: :request do
 
             # Check that existing partnerships are shown as checked
             expect(response.body).to include("checked")
-            expect(response.body).to include(%(value="#{active_lead_provider_1.id}"))
-            expect(response.body).to include(%(value="#{active_lead_provider_2.id}"))
+            expect(response.body).to include(%(value="#{framework_agreement_1.id}"))
+            expect(response.body).to include(%(value="#{framework_agreement_2.id}"))
           end
 
           it "persists checkbox state after form submission and reopening" do
             # Submit form with only one provider selected (removing the second one)
-            post create_path, params: { lead_provider_ids: [active_lead_provider_1.id] }
+            post create_path, params: { lead_provider_ids: [framework_agreement_1.id] }
             expect(response).to redirect_to(admin_delivery_partner_path(delivery_partner))
 
             # Verify the partnerships were updated correctly
             remaining_partnerships = delivery_partner.lead_provider_delivery_partnerships.for_contract_period(contract_period)
             expect(remaining_partnerships.count).to eq(1)
-            expect(remaining_partnerships.first.active_lead_provider_id).to eq(active_lead_provider_1.id)
+            expect(remaining_partnerships.first.active_lead_provider_id).to eq(framework_agreement_1.id)
 
             # Reopen form and verify only the selected provider is checked
             get new_path
@@ -368,8 +368,8 @@ RSpec.describe "Admin delivery partners", type: :request do
 
             # Parse the response to check checkbox states
             doc = Nokogiri::HTML(response.body)
-            checkbox_1 = doc.at_css("input[value='#{active_lead_provider_1.id}']")
-            checkbox_2 = doc.at_css("input[value='#{active_lead_provider_2.id}']")
+            checkbox_1 = doc.at_css("input[value='#{framework_agreement_1.id}']")
+            checkbox_2 = doc.at_css("input[value='#{framework_agreement_2.id}']")
 
             # Verify checkbox states
 
@@ -396,12 +396,12 @@ RSpec.describe "Admin delivery partners", type: :request do
             FactoryBot.create(
               :lead_provider_delivery_partnership,
               delivery_partner:,
-              active_lead_provider: active_lead_provider_1
+              framework_agreement: framework_agreement_1
             )
             FactoryBot.create(
               :lead_provider_delivery_partnership,
               delivery_partner:,
-              active_lead_provider: active_lead_provider_2
+              framework_agreement: framework_agreement_2
             )
 
             expect {
@@ -432,7 +432,7 @@ RSpec.describe "Admin delivery partners", type: :request do
         let(:invalid_create_path) { admin_delivery_partner_delivery_partnership_path(delivery_partner, 9999) }
 
         it "redirects with error message" do
-          post invalid_create_path, params: { lead_provider_ids: [active_lead_provider_1.id] }
+          post invalid_create_path, params: { lead_provider_ids: [framework_agreement_1.id] }
           expect(response).to redirect_to(admin_delivery_partner_path(delivery_partner))
           follow_redirect!
           expect(response.body).to include("Contract period for year 9999 not found")
@@ -440,7 +440,7 @@ RSpec.describe "Admin delivery partners", type: :request do
       end
 
       context "when service fails" do
-        let(:lead_provider_ids) { [active_lead_provider_1.id] }
+        let(:lead_provider_ids) { [framework_agreement_1.id] }
 
         before do
           service_double = instance_double(DeliveryPartners::UpdateLeadProviderPairings)

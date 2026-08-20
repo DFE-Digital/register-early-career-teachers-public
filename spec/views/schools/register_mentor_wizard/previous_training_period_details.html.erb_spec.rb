@@ -35,9 +35,9 @@ RSpec.describe "schools/register_mentor_wizard/previous_training_period_details.
     let(:confirmed_lead_provider) { FactoryBot.create(:lead_provider, name: "Ambition Institute") }
     let(:confirmed_delivery_partner) { FactoryBot.create(:delivery_partner, name: "Rise Teaching School Hub") }
 
-    let!(:active_lead_provider) do
+    let!(:framework_agreement) do
       FactoryBot.create(
-        :active_lead_provider,
+        :framework_agreement,
         contract_period: current_contract_period,
         lead_provider: confirmed_lead_provider
       )
@@ -46,7 +46,7 @@ RSpec.describe "schools/register_mentor_wizard/previous_training_period_details.
     let!(:lead_provider_delivery_partnership) do
       FactoryBot.create(
         :lead_provider_delivery_partnership,
-        active_lead_provider:,
+        framework_agreement:,
         delivery_partner: confirmed_delivery_partner
       )
     end
@@ -115,7 +115,7 @@ RSpec.describe "schools/register_mentor_wizard/previous_training_period_details.
     end
 
     let(:lead_provider_from_eoi) { FactoryBot.create(:lead_provider, name: "EOI LP") }
-    let(:expression_of_interest) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_from_eoi) }
+    let(:expression_of_interest) { FactoryBot.create(:framework_agreement, lead_provider: lead_provider_from_eoi) }
 
     let!(:eoi_training_period) do
       FactoryBot.create(

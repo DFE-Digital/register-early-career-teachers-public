@@ -112,9 +112,9 @@ RSpec.describe ContractPeriods::ForECTRegistration do
     context "when the previous provider-led training period used an EOI" do
       let(:started_on) { Date.new(2026, 5, 1) }
 
-      let(:active_lead_provider) do
+      let(:framework_agreement) do
         instance_double(
-          ActiveLeadProvider,
+          FrameworkAgreement,
           contract_period: contract_2024
         )
       end
@@ -123,7 +123,7 @@ RSpec.describe ContractPeriods::ForECTRegistration do
         instance_double(
           TrainingPeriod,
           contract_period: nil,
-          expression_of_interest: active_lead_provider,
+          expression_of_interest: framework_agreement,
           school_partnership: nil,
           schedule: nil,
           provider_led_training_programme?: true

@@ -76,7 +76,7 @@ module API::Teachers
     end
 
     def find_school_partnership
-      return unless existing_school_partnership && active_lead_provider
+      return unless existing_school_partnership && framework_agreement
       return existing_school_partnership unless contract_period_changing?
 
       school_partnership_with_same_delivery_partner || available_school_partnerships.first
@@ -92,15 +92,15 @@ module API::Teachers
     end
 
     def available_school_partnerships
-      active_lead_provider
+      framework_agreement
         .school_partnerships
         .joins(:delivery_partner)
         .where(school: existing_school_partnership.school)
         .order(created_at: :desc)
     end
 
-    def active_lead_provider
-      @active_lead_provider ||= lead_provider.active_lead_providers.find_by(contract_period_year: contract_period.year)
+    def framework_agreement
+      @framework_agreement ||= lead_provider.framework_agreements.find_by(contract_period_year: contract_period.year)
     end
 
     def participant_status

@@ -432,7 +432,7 @@ RSpec.describe GIAS::Reconciliation::MentorAtSchoolPeriods::Merge do
         end
 
         context "when the mentee's training period only has an expression of interest" do
-          let(:expression_of_interest) { FactoryBot.create(:active_lead_provider, :for_year, year: 2025) }
+          let(:expression_of_interest) { FactoryBot.create(:framework_agreement, :for_year, year: 2025) }
           let!(:training_period) { FactoryBot.create(:training_period, :with_no_school_partnership, :for_ect, expression_of_interest:, ect_at_school_period: mentee, started_on:, finished_on: Date.new(2025, 6, 30)) }
 
           it "changes the mentorship period to point to the successor period" do

@@ -11,22 +11,22 @@ describe Contract do
   end
 
   describe "associations" do
-    it { is_expected.to belong_to(:active_lead_provider) }
-    it { is_expected.to have_one(:lead_provider).through(:active_lead_provider) }
+    it { is_expected.to belong_to(:framework_agreement) }
+    it { is_expected.to have_one(:lead_provider).through(:framework_agreement) }
     it { is_expected.to have_one(:banded_fee_structure).class_name("Contract::BandedFeeStructure").inverse_of(:contract) }
     it { is_expected.to have_one(:flat_rate_fee_structure).class_name("Contract::FlatRateFeeStructure").inverse_of(:contract) }
-    it { is_expected.to have_one(:contract_period).through(:active_lead_provider) }
+    it { is_expected.to have_one(:contract_period).through(:framework_agreement) }
     it { is_expected.to have_many(:statements).inverse_of(:contract) }
   end
 
   describe "scopes" do
     describe ".most_recent_first" do
-      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
-      let(:other_active_lead_provider) { FactoryBot.create(:active_lead_provider) }
-      let!(:contract_1) { FactoryBot.create(:contract, active_lead_provider:, created_at: 4.days.ago) }
-      let!(:contract_2) { FactoryBot.create(:contract, active_lead_provider:, created_at: 3.days.ago) }
-      let!(:contract_3) { FactoryBot.create(:contract, active_lead_provider:, created_at: 2.days.ago) }
-      let!(:contract_4) { FactoryBot.create(:contract, active_lead_provider: other_active_lead_provider, created_at: 1.day.ago) }
+      let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
+      let(:other_framework_agreement) { FactoryBot.create(:framework_agreement) }
+      let!(:contract_1) { FactoryBot.create(:contract, framework_agreement:, created_at: 4.days.ago) }
+      let!(:contract_2) { FactoryBot.create(:contract, framework_agreement:, created_at: 3.days.ago) }
+      let!(:contract_3) { FactoryBot.create(:contract, framework_agreement:, created_at: 2.days.ago) }
+      let!(:contract_4) { FactoryBot.create(:contract, framework_agreement: other_framework_agreement, created_at: 1.day.ago) }
 
       let(:result) { described_class.most_recent_first }
 
@@ -49,12 +49,12 @@ describe Contract do
     it { is_expected.to validate_presence_of(:vat_rate).with_message("VAT rate is required") }
     it { is_expected.to validate_numericality_of(:vat_rate).is_in(0..1).with_message("VAT rate must be between 0 and 1") }
 
-    context "when active_lead_provider is nil" do
-      subject(:contract) { FactoryBot.build(:contract, active_lead_provider: nil) }
+    context "when framework_agreement is nil" do
+      subject(:contract) { FactoryBot.build(:contract, framework_agreement: nil) }
 
       it "is not valid" do
         expect(contract).not_to be_valid
-        expect(contract.errors[:active_lead_provider]).to include("An active lead provider must be set")
+        expect(contract.errors[:framework_agreement]).to include("A lead provider framework agreement must be set")
       end
     end
 
@@ -79,29 +79,29 @@ describe Contract do
   end
 
   describe "delegations" do
-    it { is_expected.to delegate_method(:editable?).to(:active_lead_provider) }
+    it { is_expected.to delegate_method(:editable?).to(:framework_agreement) }
   end
 
   describe "immutable active_lead_provider_id" do
-    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+    let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
 
     context "when creating a new contract" do
-      let(:contract) { FactoryBot.build(:contract, active_lead_provider:) }
+      let(:contract) { FactoryBot.build(:contract, framework_agreement:) }
 
-      it "assigns the active lead provider" do
+      it "assigns the framework agreement" do
         expect { contract.save! }.not_to raise_error
-        expect(contract.active_lead_provider).to eq(active_lead_provider)
+        expect(contract.framework_agreement).to eq(framework_agreement)
       end
     end
 
     context "when updating an existing contract" do
-      let(:other_active_lead_provider) { FactoryBot.create(:active_lead_provider) }
-      let(:contract) { FactoryBot.create(:contract, active_lead_provider:) }
+      let(:other_framework_agreement) { FactoryBot.create(:framework_agreement) }
+      let(:contract) { FactoryBot.create(:contract, framework_agreement:) }
 
       it "raises an error" do
-        expect { contract.update!(active_lead_provider: other_active_lead_provider) }
+        expect { contract.update!(framework_agreement: other_framework_agreement) }
           .to raise_error(ActiveRecord::ReadonlyAttributeError)
-        expect(contract.active_lead_provider).to eq(active_lead_provider)
+        expect(contract.framework_agreement).to eq(framework_agreement)
       end
     end
   end
@@ -110,8 +110,8 @@ describe Contract do
     subject(:applicable_vat_rate) { contract.applicable_vat_rate }
 
     let(:lead_provider) { FactoryBot.create(:lead_provider, vat_registered:) }
-    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
-    let(:contract) { FactoryBot.create(:contract, active_lead_provider:, vat_rate: 0.2) }
+    let(:framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:) }
+    let(:contract) { FactoryBot.create(:contract, framework_agreement:, vat_rate: 0.2) }
 
     context "when the lead provider is VAT registered" do
       let(:vat_registered) { true }

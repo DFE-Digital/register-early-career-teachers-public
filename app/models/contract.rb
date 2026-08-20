@@ -8,9 +8,9 @@ class Contract < ApplicationRecord
        suffix: true
 
   # Associations
-  belongs_to :active_lead_provider
-  has_one :contract_period, through: :active_lead_provider
-  has_one :lead_provider, through: :active_lead_provider
+  belongs_to :framework_agreement, foreign_key: :active_lead_provider_id
+  has_one :contract_period, through: :framework_agreement
+  has_one :lead_provider, through: :framework_agreement
   has_one :flat_rate_fee_structure, class_name: "Contract::FlatRateFeeStructure", inverse_of: :contract, dependent: :destroy
   has_one :banded_fee_structure, class_name: "Contract::BandedFeeStructure", inverse_of: :contract, dependent: :destroy
   has_many :statements, inverse_of: :contract
@@ -19,7 +19,7 @@ class Contract < ApplicationRecord
   scope :most_recent_first, -> { order(created_at: :desc) }
 
   # Validations
-  validates :active_lead_provider, presence: { message: "An active lead provider must be set" }
+  validates :framework_agreement, presence: { message: "A lead provider framework agreement must be set" }
   validates :contract_type,
             presence: { message: "Enter a contract type" },
             inclusion: { in: Contract.contract_types.keys, message: "Choose a valid contract type" }
@@ -40,7 +40,7 @@ class Contract < ApplicationRecord
   accepts_nested_attributes_for :banded_fee_structure
   accepts_nested_attributes_for :flat_rate_fee_structure, reject_if: :all_blank
 
-  delegate :editable?, to: :active_lead_provider
+  delegate :editable?, to: :framework_agreement
 
   def applicable_vat_rate
     return 0 unless lead_provider.vat_registered

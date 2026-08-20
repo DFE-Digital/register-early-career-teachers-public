@@ -34,14 +34,14 @@ module API::DeliveryPartners
     def preload_associations(results)
       results
         .strict_loading
-        .includes(:active_lead_providers)
+        .includes(:framework_agreements)
     end
 
     def where_lead_provider_is(lead_provider_id)
       return if ignore?(filter: lead_provider_id)
 
       delivery_partners_with_lead_provider = DeliveryPartner
-        .joins(:active_lead_providers)
+        .joins(:framework_agreements)
         .where(active_lead_providers: { lead_provider_id: })
 
       scope.merge!(delivery_partners_with_lead_provider)
@@ -51,8 +51,8 @@ module API::DeliveryPartners
       return if ignore?(filter: contract_period_years, ignore_empty_array: false)
 
       delivery_partners_with_contract_periods = DeliveryPartner
-        .joins(lead_provider_delivery_partnerships: { active_lead_provider: :contract_period })
-        .where(active_lead_provider: { contract_period_year: contract_period_years })
+        .joins(lead_provider_delivery_partnerships: { framework_agreement: :contract_period })
+        .where(framework_agreement: { contract_period_year: contract_period_years })
 
       scope.merge!(delivery_partners_with_contract_periods)
     end

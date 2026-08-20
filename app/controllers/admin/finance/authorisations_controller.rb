@@ -21,7 +21,7 @@ module Admin::Finance
   private
 
     def set_statement
-      statement = Statement.includes(active_lead_provider: :lead_provider).find(params[:finance_statement_id])
+      statement = Statement.includes(framework_agreement: :lead_provider).find(params[:finance_statement_id])
       @statement = Admin::StatementPresenter.new(statement)
     end
 

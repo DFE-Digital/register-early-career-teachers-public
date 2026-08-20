@@ -4,7 +4,7 @@ module PaymentCalculator
                 :previous_billable_count, :previous_refundable_count,
                 :billable_count, :refundable_count
 
-    # @param band [ActiveLeadProvider::Band]
+    # @param band [FrameworkAgreement::Band]
     # @param declaration_type [String]
     def initialize(band:, declaration_type:)
       @band = band

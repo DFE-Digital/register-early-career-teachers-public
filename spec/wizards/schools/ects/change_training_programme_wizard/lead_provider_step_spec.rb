@@ -106,34 +106,34 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::LeadProviderStep do
     let(:upcoming_contract_period) do
       FactoryBot.create(:contract_period, :next)
     end
-    let!(:active_lead_provider) do
-      FactoryBot.create(:active_lead_provider, contract_period: current_contract_period)
+    let!(:framework_agreement) do
+      FactoryBot.create(:framework_agreement, contract_period: current_contract_period)
     end
     let!(:other_lead_provider) do
-      FactoryBot.create(:active_lead_provider, contract_period: current_contract_period)
+      FactoryBot.create(:framework_agreement, contract_period: current_contract_period)
     end
     let!(:future_lead_provider) do
-      FactoryBot.create(:active_lead_provider, contract_period: upcoming_contract_period)
+      FactoryBot.create(:framework_agreement, contract_period: upcoming_contract_period)
     end
     let(:ect_at_school_period) do
       FactoryBot.create(:ect_at_school_period, :unfinished, school:, started_on:)
     end
 
-    context "when there are no active lead providers in contract period containing the ect's start date" do
+    context "when there are no framework agreements in contract period containing the ect's start date" do
       let(:started_on) { current_contract_period.started_on.prev_day }
 
       it { is_expected.to be_empty }
     end
 
-    context "when there are active lead providers in contract period containing the ect's start date" do
+    context "when there are framework agreements in contract period containing the ect's start date" do
       let(:started_on) { current_contract_period.started_on.next_month }
 
-      it { is_expected.to contain_exactly(active_lead_provider.lead_provider, other_lead_provider.lead_provider) }
+      it { is_expected.to contain_exactly(framework_agreement.lead_provider, other_lead_provider.lead_provider) }
 
       context "when the ect starts on the last day of the contract period" do
         let(:started_on) { current_contract_period.finished_on }
 
-        it { is_expected.to contain_exactly(active_lead_provider.lead_provider, other_lead_provider.lead_provider) }
+        it { is_expected.to contain_exactly(framework_agreement.lead_provider, other_lead_provider.lead_provider) }
       end
     end
 
@@ -161,11 +161,11 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::LeadProviderStep do
         )
       end
 
-      let!(:replacement_active_lead_provider) do
-        FactoryBot.create(:active_lead_provider, :for_year, year: 2024)
+      let!(:replacement_framework_agreement) do
+        FactoryBot.create(:framework_agreement, :for_year, year: 2024)
       end
 
-      it { is_expected.to contain_exactly(replacement_active_lead_provider.lead_provider) }
+      it { is_expected.to contain_exactly(replacement_framework_agreement.lead_provider) }
     end
   end
 end

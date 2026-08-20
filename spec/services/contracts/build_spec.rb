@@ -1,30 +1,30 @@
 describe Contracts::Build do
-  subject(:service) { described_class.new(active_lead_provider:) }
+  subject(:service) { described_class.new(framework_agreement:) }
 
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
 
   describe "#call" do
     subject(:contract) { service.call }
 
-    it "returns an unpersisted contract for the active lead provider" do
+    it "returns an unpersisted contract for the framework agreement" do
       expect(contract).not_to be_persisted
-      expect(contract.active_lead_provider).to eq(active_lead_provider)
+      expect(contract.framework_agreement).to eq(framework_agreement)
     end
 
     it "builds a flat_rate_fee_structure" do
       expect(contract.flat_rate_fee_structure).to be_present
     end
 
-    context "when the active lead provider has no bands" do
+    context "when the framework agreement has no bands" do
       it "builds no band terms" do
         expect(contract.banded_fee_structure.band_terms).to be_empty
       end
     end
 
-    context "when the active lead provider has bands" do
+    context "when the framework agreement has bands" do
       let!(:alp_band) do
-        FactoryBot.create_list(:active_lead_provider_band, 5,
-                               active_lead_provider:)
+        FactoryBot.create_list(:framework_agreement_band, 5,
+                               framework_agreement:)
       end
 
       it "builds one band term per ALP band" do
@@ -32,11 +32,11 @@ describe Contracts::Build do
       end
     end
 
-    context "when the active lead provider has bands and a previous contract" do
+    context "when the framework agreement has bands and a previous contract" do
       let!(:existing_contract) do
         FactoryBot.create(:contract, :for_ecf,
                           :with_bands_and_band_terms,
-                          active_lead_provider:)
+                          framework_agreement:)
       end
 
       it "seeds band terms from the existing contract's band structure" do

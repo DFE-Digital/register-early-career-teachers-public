@@ -72,7 +72,7 @@ module Seeds
     end
 
     def ensure_target_year_availability_for_reusable_lead_provider!
-      ActiveLeadProvider.find_or_create_by!(
+      FrameworkAgreement.find_or_create_by!(
         lead_provider: reusable_lead_provider,
         contract_period: target_contract_period
       )
@@ -179,7 +179,7 @@ module Seeds
           year: contract_period_year
         )
       else
-        ActiveLeadProvider.find_or_create_by!(
+        FrameworkAgreement.find_or_create_by!(
           lead_provider: reusable_lead_provider,
           contract_period: target_contract_period
         )
@@ -224,12 +224,12 @@ module Seeds
       )
 
       if type == :partnership
-        ActiveLeadProvider.find_or_create_by!(
+        FrameworkAgreement.find_or_create_by!(
           lead_provider: reusable_lead_provider,
           contract_period: target_contract_period
         )
       else
-        ActiveLeadProvider.find_by(
+        FrameworkAgreement.find_by(
           lead_provider: lead_provider_not_available_in_target_year,
           contract_period: target_contract_period
         )&.destroy!
@@ -285,8 +285,8 @@ module Seeds
 
       induction_period.update!(appropriate_body_period: abp) if induction_period.appropriate_body_period_id != abp.id
 
-      active_lead_provider =
-        ActiveLeadProvider.find_or_create_by!(
+      framework_agreement =
+        FrameworkAgreement.find_or_create_by!(
           lead_provider:,
           contract_period: previous_contract_period
         )
@@ -294,7 +294,7 @@ module Seeds
       if school.has_attribute?(:last_chosen_training_programme)
         school.last_chosen_training_programme = "provider_led"
       end
-      school.last_chosen_lead_provider = active_lead_provider.lead_provider
+      school.last_chosen_lead_provider = framework_agreement.lead_provider
       set_last_chosen_appropriate_body!(school, chosen: true)
       school.save!
 
@@ -328,7 +328,7 @@ module Seeds
           tp.training_programme = "provider_led"
           tp.schedule = previous_schedule
           tp.school_partnership = nil
-          tp.expression_of_interest = active_lead_provider
+          tp.expression_of_interest = framework_agreement
           tp.finished_on = ect_period.finished_on
           tp.finished_on = tp.started_on + 1.day if tp.finished_on.present? && tp.finished_on <= tp.started_on
         end
@@ -380,15 +380,15 @@ module Seeds
     def ensure_school_partnership!(school:, lead_provider:, delivery_partner:, year:)
       contract_period = ContractPeriod.find_by!(year:)
 
-      active_lead_provider =
-        ActiveLeadProvider.find_or_create_by!(
+      framework_agreement =
+        FrameworkAgreement.find_or_create_by!(
           lead_provider:,
           contract_period:
         )
 
       lead_provider_delivery_partnership =
         LeadProviderDeliveryPartnership.find_or_create_by!(
-          active_lead_provider:,
+          framework_agreement:,
           delivery_partner:
         )
 

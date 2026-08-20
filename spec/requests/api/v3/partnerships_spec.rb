@@ -3,11 +3,11 @@ RSpec.describe "Partnerships API", :with_touches, type: :request do
   let(:serializer_options) { { lead_provider: } }
   let(:query) { API::SchoolPartnerships::Query }
   let(:contract_period) { FactoryBot.create(:contract_period, :current) }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
-  let(:lead_provider) { active_lead_provider.lead_provider }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement, contract_period:) }
+  let(:lead_provider) { framework_agreement.lead_provider }
 
-  def create_resource(active_lead_provider:)
-    lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
+  def create_resource(framework_agreement:)
+    lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:)
     FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:)
   end
 
@@ -29,7 +29,7 @@ RSpec.describe "Partnerships API", :with_touches, type: :request do
   end
 
   describe "#show" do
-    let(:resource) { create_resource(active_lead_provider:) }
+    let(:resource) { create_resource(framework_agreement:) }
     let(:path_id) { resource.api_id }
     let(:path) { api_v3_partnership_path(path_id) }
 
@@ -45,12 +45,12 @@ RSpec.describe "Partnerships API", :with_touches, type: :request do
     let(:path) { api_v3_partnerships_path }
     let(:service) { API::SchoolPartnerships::Create }
     let(:resource_type) { SchoolPartnership }
-    let(:delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+    let(:delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:) }
     let(:school) { FactoryBot.create(:school, :eligible) }
     let(:service_args) do
       {
-        lead_provider_id: active_lead_provider.lead_provider_id,
-        contract_period_year: active_lead_provider.contract_period_year.to_s,
+        lead_provider_id: framework_agreement.lead_provider_id,
+        contract_period_year: framework_agreement.contract_period_year.to_s,
         school_api_id: school.api_id,
         delivery_partner_api_id: delivery_partnership.delivery_partner.api_id,
       }
@@ -62,7 +62,7 @@ RSpec.describe "Partnerships API", :with_touches, type: :request do
           attributes: {
             school_id: school.api_id,
             delivery_partner_id: delivery_partnership.delivery_partner.api_id,
-            cohort: active_lead_provider.contract_period_year,
+            cohort: framework_agreement.contract_period_year,
           }
         }
       }
@@ -79,9 +79,9 @@ RSpec.describe "Partnerships API", :with_touches, type: :request do
     let(:service) { API::SchoolPartnerships::Update }
     let(:resource_type) { SchoolPartnership }
     let(:resource) { travel_to(3.days.ago) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) } }
-    let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+    let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:) }
     let(:other_delivery_partner) do
-      other_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
+      other_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:)
       other_delivery_partnership.delivery_partner
     end
     let(:service_args) do

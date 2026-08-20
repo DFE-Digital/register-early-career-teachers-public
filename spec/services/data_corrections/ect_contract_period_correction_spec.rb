@@ -27,17 +27,17 @@ RSpec.describe DataCorrections::ECTContractPeriodCorrection do
     FactoryBot.create(:contract_period, year: 2025)
   end
 
-  let(:current_active_lead_provider) do
+  let(:current_framework_agreement) do
     FactoryBot.create(
-      :active_lead_provider,
+      :framework_agreement,
       lead_provider:,
       contract_period: current_contract_period
     )
   end
 
-  let!(:replacement_active_lead_provider) do
+  let!(:replacement_framework_agreement) do
     FactoryBot.create(
-      :active_lead_provider,
+      :framework_agreement,
       lead_provider:,
       contract_period: replacement_contract_period
     )
@@ -71,7 +71,7 @@ RSpec.describe DataCorrections::ECTContractPeriodCorrection do
     FactoryBot.create(
       :school_partnership,
       school:,
-      active_lead_provider: current_active_lead_provider
+      framework_agreement: current_framework_agreement
     )
   end
 
@@ -79,7 +79,7 @@ RSpec.describe DataCorrections::ECTContractPeriodCorrection do
     FactoryBot.create(
       :school_partnership,
       school:,
-      active_lead_provider: replacement_active_lead_provider
+      framework_agreement: replacement_framework_agreement
     )
   end
 
@@ -142,7 +142,7 @@ RSpec.describe DataCorrections::ECTContractPeriodCorrection do
           :with_no_school_partnership,
           ect_at_school_period:,
           schedule: current_schedule,
-          expression_of_interest: current_active_lead_provider
+          expression_of_interest: current_framework_agreement
         )
       end
 
@@ -152,14 +152,14 @@ RSpec.describe DataCorrections::ECTContractPeriodCorrection do
         expect(corrected_training_period).to have_attributes(
           schedule: replacement_schedule,
           school_partnership: nil,
-          expression_of_interest: replacement_active_lead_provider
+          expression_of_interest: replacement_framework_agreement
         )
       end
     end
 
     context "when the period has both associations" do
       let(:current_expression_of_interest) do
-        current_active_lead_provider
+        current_framework_agreement
       end
 
       it "updates both associations" do
@@ -168,7 +168,7 @@ RSpec.describe DataCorrections::ECTContractPeriodCorrection do
         expect(corrected_training_period).to have_attributes(
           schedule: replacement_schedule,
           school_partnership: replacement_school_partnership,
-          expression_of_interest: replacement_active_lead_provider
+          expression_of_interest: replacement_framework_agreement
         )
       end
     end
@@ -404,7 +404,7 @@ RSpec.describe DataCorrections::ECTContractPeriodCorrection do
         FactoryBot.create(
           :school_partnership,
           school: FactoryBot.create(:school),
-          active_lead_provider: replacement_active_lead_provider
+          framework_agreement: replacement_framework_agreement
         )
       end
 
@@ -418,9 +418,9 @@ RSpec.describe DataCorrections::ECTContractPeriodCorrection do
     end
 
     context "when a supplied partnership changes the lead provider" do
-      let(:other_active_lead_provider) do
+      let(:other_framework_agreement) do
         FactoryBot.create(
-          :active_lead_provider,
+          :framework_agreement,
           contract_period: replacement_contract_period
         )
       end
@@ -429,7 +429,7 @@ RSpec.describe DataCorrections::ECTContractPeriodCorrection do
         FactoryBot.create(
           :school_partnership,
           school:,
-          active_lead_provider: other_active_lead_provider
+          framework_agreement: other_framework_agreement
         )
       end
 
@@ -447,9 +447,9 @@ RSpec.describe DataCorrections::ECTContractPeriodCorrection do
         FactoryBot.create(:contract_period, year: 2024)
       end
 
-      let(:other_active_lead_provider) do
+      let(:other_framework_agreement) do
         FactoryBot.create(
-          :active_lead_provider,
+          :framework_agreement,
           lead_provider:,
           contract_period: other_contract_period
         )
@@ -459,7 +459,7 @@ RSpec.describe DataCorrections::ECTContractPeriodCorrection do
         FactoryBot.create(
           :school_partnership,
           school:,
-          active_lead_provider: other_active_lead_provider
+          framework_agreement: other_framework_agreement
         )
       end
 
@@ -482,13 +482,13 @@ RSpec.describe DataCorrections::ECTContractPeriodCorrection do
           :with_no_school_partnership,
           ect_at_school_period:,
           schedule: current_schedule,
-          expression_of_interest: current_active_lead_provider
+          expression_of_interest: current_framework_agreement
         )
       end
 
       let(:supplied_replacement_expression_of_interest) do
         FactoryBot.create(
-          :active_lead_provider,
+          :framework_agreement,
           contract_period: replacement_contract_period
         )
       end
@@ -512,7 +512,7 @@ RSpec.describe DataCorrections::ECTContractPeriodCorrection do
           :with_no_school_partnership,
           ect_at_school_period:,
           schedule: current_schedule,
-          expression_of_interest: current_active_lead_provider
+          expression_of_interest: current_framework_agreement
         )
       end
 
@@ -522,7 +522,7 @@ RSpec.describe DataCorrections::ECTContractPeriodCorrection do
 
       let(:supplied_replacement_expression_of_interest) do
         FactoryBot.create(
-          :active_lead_provider,
+          :framework_agreement,
           lead_provider:,
           contract_period: other_contract_period
         )

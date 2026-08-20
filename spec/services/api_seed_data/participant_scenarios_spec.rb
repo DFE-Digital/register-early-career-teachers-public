@@ -72,14 +72,14 @@ RSpec.describe APISeedData::ParticipantScenarios do
       LeadProvider.find_each do |lead_provider|
         ContractPeriod.where(year: [2024, 2025]).find_each do |contract_period|
           ects_in_period = Teacher
-            .joins(ect_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } }] })
+            .joins(ect_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } }] })
             .where(schedules: { contract_period_year: contract_period.year })
             .where(active_lead_providers: { lead_provider_id: lead_provider.id })
             .distinct
             .count
 
           mentors_in_period = Teacher
-            .joins(mentor_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } }] })
+            .joins(mentor_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } }] })
             .where(schedules: { contract_period_year: contract_period.year })
             .where(active_lead_providers: { lead_provider_id: lead_provider.id })
             .distinct
@@ -100,18 +100,18 @@ RSpec.describe APISeedData::ParticipantScenarios do
     it "creates participants with EOI but no school partnership" do
       LeadProvider.find_each do |lead_provider|
         [2024, 2025].each do |year|
-          active_lead_provider_ids = lead_provider.active_lead_providers.where(contract_period: ContractPeriod.find_by(year:)).pluck(:id)
+          framework_agreement_ids = lead_provider.framework_agreements.where(contract_period: ContractPeriod.find_by(year:)).pluck(:id)
 
           ects_with_eoi = Teacher
             .joins(ect_at_school_periods: { training_periods: :schedule })
-            .where(training_periods: { expression_of_interest_id: active_lead_provider_ids, school_partnership_id: nil })
+            .where(training_periods: { expression_of_interest_id: framework_agreement_ids, school_partnership_id: nil })
             .where(schedules: { contract_period_year: year })
             .distinct
             .count
 
           mentors_with_eoi = Teacher
             .joins(mentor_at_school_periods: { training_periods: :schedule })
-            .where(training_periods: { expression_of_interest_id: active_lead_provider_ids, school_partnership_id: nil })
+            .where(training_periods: { expression_of_interest_id: framework_agreement_ids, school_partnership_id: nil })
             .where(schedules: { contract_period_year: year })
             .distinct
             .count
@@ -168,7 +168,7 @@ RSpec.describe APISeedData::ParticipantScenarios do
       [2024, 2025].each do |year|
         LeadProvider.find_each do |lead_provider|
           ects_with_billable = Teacher
-            .joins(ect_at_school_periods: { training_periods: [:declarations, :schedule, { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } }] })
+            .joins(ect_at_school_periods: { training_periods: [:declarations, :schedule, { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } }] })
             .where(declarations: { payment_status: billable_statuses })
             .where(schedules: { contract_period_year: year })
             .where(active_lead_providers: { lead_provider_id: lead_provider.id })
@@ -176,7 +176,7 @@ RSpec.describe APISeedData::ParticipantScenarios do
             .count
 
           mentors_with_billable = Teacher
-            .joins(mentor_at_school_periods: { training_periods: [:declarations, :schedule, { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } }] })
+            .joins(mentor_at_school_periods: { training_periods: [:declarations, :schedule, { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } }] })
             .where(declarations: { payment_status: billable_statuses })
             .where(schedules: { contract_period_year: year })
             .where(active_lead_providers: { lead_provider_id: lead_provider.id })
@@ -213,14 +213,14 @@ RSpec.describe APISeedData::ParticipantScenarios do
       [2024, 2025].each do |year|
         LeadProvider.find_each do |lead_provider|
           ects_leaving = Teacher
-            .joins(ect_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } }] })
+            .joins(ect_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } }] })
             .where(training_periods: { finished_on: Time.zone.tomorrow.. })
             .where(schedules: { contract_period_year: year })
             .where(active_lead_providers: { lead_provider_id: lead_provider.id })
             .distinct
 
           mentors_leaving = Teacher
-            .joins(mentor_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } }] })
+            .joins(mentor_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } }] })
             .where(training_periods: { finished_on: Time.zone.tomorrow.. })
             .where(schedules: { contract_period_year: year })
             .where(active_lead_providers: { lead_provider_id: lead_provider.id })
@@ -250,14 +250,14 @@ RSpec.describe APISeedData::ParticipantScenarios do
       [2024, 2025].each do |year|
         LeadProvider.find_each do |lead_provider|
           ects_joining = Teacher
-            .joins(ect_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } }] })
+            .joins(ect_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } }] })
             .where(training_periods: { started_on: Time.zone.tomorrow.. })
             .where(schedules: { contract_period_year: year })
             .where(active_lead_providers: { lead_provider_id: lead_provider.id })
             .distinct
 
           mentors_joining = Teacher
-            .joins(mentor_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } }] })
+            .joins(mentor_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } }] })
             .where(training_periods: { started_on: Time.zone.tomorrow.. })
             .where(schedules: { contract_period_year: year })
             .where(active_lead_providers: { lead_provider_id: lead_provider.id })
@@ -299,14 +299,14 @@ RSpec.describe APISeedData::ParticipantScenarios do
       [2024, 2025].each do |year|
         LeadProvider.find_each do |lead_provider|
           ects_leaving = Teacher
-            .joins(ect_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } }] })
+            .joins(ect_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } }] })
             .where(training_periods: { finished_on: 4.months.from_now.. })
             .where(schedules: { contract_period_year: year })
             .where(active_lead_providers: { lead_provider_id: lead_provider.id })
             .distinct
 
           mentors_leaving = Teacher
-            .joins(mentor_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } }] })
+            .joins(mentor_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } }] })
             .where(training_periods: { finished_on: 4.months.from_now.. })
             .where(schedules: { contract_period_year: year })
             .where(active_lead_providers: { lead_provider_id: lead_provider.id })
@@ -348,7 +348,7 @@ RSpec.describe APISeedData::ParticipantScenarios do
       [2024, 2025].each do |year|
         LeadProvider.find_each do |lead_provider|
           withdrawn_ects_left = Teacher
-            .joins(ect_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } }] })
+            .joins(ect_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } }] })
             .where(training_periods: { started_on: ..Date.current, finished_on: ..Date.current })
             .where.not(training_periods: { withdrawn_at: nil })
             .where(schedules: { contract_period_year: year })
@@ -356,7 +356,7 @@ RSpec.describe APISeedData::ParticipantScenarios do
             .distinct
 
           withdrawn_mentors_left = Teacher
-            .joins(mentor_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } }] })
+            .joins(mentor_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } }] })
             .where(training_periods: { started_on: ..Date.current, finished_on: ..Date.current })
             .where.not(training_periods: { withdrawn_at: nil })
             .where(schedules: { contract_period_year: year })
@@ -399,7 +399,7 @@ RSpec.describe APISeedData::ParticipantScenarios do
       [2024, 2025].each do |year|
         LeadProvider.find_each do |lead_provider|
           active_ects_left = Teacher
-            .joins(ect_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } }] })
+            .joins(ect_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } }] })
             .where(training_periods: { started_on: ..Date.current, finished_on: ..Date.current })
             .where(training_periods: { withdrawn_at: nil, deferred_at: nil })
             .where(schedules: { contract_period_year: year })
@@ -407,7 +407,7 @@ RSpec.describe APISeedData::ParticipantScenarios do
             .distinct
 
           active_mentors_left = Teacher
-            .joins(mentor_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } }] })
+            .joins(mentor_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } }] })
             .where(training_periods: { started_on: ..Date.current, finished_on: ..Date.current })
             .where(training_periods: { withdrawn_at: nil, deferred_at: nil })
             .where(schedules: { contract_period_year: year })

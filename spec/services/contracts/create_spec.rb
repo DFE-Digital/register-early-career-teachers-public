@@ -1,8 +1,8 @@
 describe Contracts::Create do
-  subject(:service) { described_class.new(author:, active_lead_provider:, params:) }
+  subject(:service) { described_class.new(author:, framework_agreement:, params:) }
 
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
-  let(:alp_band) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
+  let(:alp_band) { FactoryBot.create(:framework_agreement_band, framework_agreement:) }
   let(:user) { FactoryBot.create(:user, :admin) }
   let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
 
@@ -46,12 +46,12 @@ describe Contracts::Create do
   before { allow(Events::Record).to receive(:record_contract_created_event!) }
 
   context "when successful" do
-    it "creates and returns a contract for the active lead provider, and records the created event" do
+    it "creates and returns a contract for the framework agreement, and records the created event" do
       contract = nil
       expect { contract = service.call }.to change(Contract, :count).by(1)
 
       expect(contract).to be_persisted
-      expect(contract.active_lead_provider).to eq(active_lead_provider)
+      expect(contract.framework_agreement).to eq(framework_agreement)
       expect(contract.banded_fee_structure).to have_attributes(banded_fee_structure_attributes)
       expect(contract.banded_fee_structure.bands.size).to eq(1)
       expect(contract.flat_rate_fee_structure).to have_attributes(flat_rate_fee_structure_attributes)
@@ -59,11 +59,11 @@ describe Contracts::Create do
     end
   end
 
-  context "when the active lead provider band is mismatched" do
-    let(:alp_band) { FactoryBot.create(:active_lead_provider_band) }
+  context "when the framework agreement band is mismatched" do
+    let(:alp_band) { FactoryBot.create(:framework_agreement_band) }
 
     it "does not create a contract or event" do
-      expect { service.call }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Banded fee structure band terms band must belong to the contract's active lead provider")
+      expect { service.call }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Banded fee structure band terms band must belong to the contract's lead provider framework agreement")
       expect(Events::Record).not_to have_received(:record_contract_created_event!)
     end
   end

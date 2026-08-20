@@ -29,10 +29,10 @@ module APISeedData
 
       log_plant_info("api teachers with histories")
 
-      groups_of_active_lead_providers.each_value do |grouped_active_lead_providers|
-        grouped_active_lead_providers.each do |active_lead_provider|
-          (NUMBER_OF_RECORDS / grouped_active_lead_providers.size).times do
-            create_api_teachers_records_for(active_lead_provider)
+      groups_of_framework_agreements.each_value do |grouped_framework_agreements|
+        grouped_framework_agreements.each do |framework_agreement|
+          (NUMBER_OF_RECORDS / grouped_framework_agreements.size).times do
+            create_api_teachers_records_for(framework_agreement)
           end
         end
       end
@@ -60,13 +60,13 @@ module APISeedData
       teacher
     end
 
-    def groups_of_active_lead_providers
-      active_lead_providers.group_by(&:lead_provider_id)
+    def groups_of_framework_agreements
+      framework_agreements.group_by(&:lead_provider_id)
     end
 
-    def create_api_teachers_records_for(active_lead_provider)
-      contract_period = active_lead_provider.contract_period
-      school_partnership = find_school_partnership(active_lead_provider)
+    def create_api_teachers_records_for(framework_agreement)
+      contract_period = framework_agreement.contract_period
+      school_partnership = find_school_partnership(framework_agreement)
       return if school_partnership.blank?
 
       school = school_partnership.school
@@ -110,10 +110,10 @@ module APISeedData
       end
     end
 
-    def find_school_partnership(active_lead_provider)
+    def find_school_partnership(framework_agreement)
       SchoolPartnership
         .joins(:lead_provider_delivery_partnership)
-        .where(lead_provider_delivery_partnership: { active_lead_provider: })
+        .where(lead_provider_delivery_partnership: { framework_agreement: })
         .order(Arel.sql("RANDOM()"))
         .first
     end
@@ -410,7 +410,7 @@ module APISeedData
 
       delivery_partnership = training_period.school_partnership.lead_provider_delivery_partnership
 
-      lead_provider_name = delivery_partnership.active_lead_provider.lead_provider.name
+      lead_provider_name = delivery_partnership.framework_agreement.lead_provider.name
       delivery_partner_name = delivery_partnership.delivery_partner.name
 
       log_seed_info(

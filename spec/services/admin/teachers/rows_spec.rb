@@ -21,8 +21,8 @@ RSpec.describe Admin::Teachers::Rows do
         ect_contract_period = FactoryBot.create(:contract_period, year: 2024)
         ect_school_partnership = FactoryBot.create(
           :school_partnership,
-          :with_active_lead_provider,
-          active_lead_provider: FactoryBot.create(:active_lead_provider, contract_period: ect_contract_period),
+          :with_framework_agreement,
+          framework_agreement: FactoryBot.create(:framework_agreement, contract_period: ect_contract_period),
           school: ect_at_school_period.school
         )
 
@@ -37,8 +37,8 @@ RSpec.describe Admin::Teachers::Rows do
         mentor_contract_period = FactoryBot.create(:contract_period, year: 2025)
         mentor_school_partnership = FactoryBot.create(
           :school_partnership,
-          :with_active_lead_provider,
-          active_lead_provider: FactoryBot.create(:active_lead_provider, contract_period: mentor_contract_period),
+          :with_framework_agreement,
+          framework_agreement: FactoryBot.create(:framework_agreement, contract_period: mentor_contract_period),
           school: mentor_at_school_period.school
         )
 
@@ -82,8 +82,8 @@ RSpec.describe Admin::Teachers::Rows do
           role_contract_period = FactoryBot.create(:contract_period, year: 2024)
           school_partnership = FactoryBot.create(
             :school_partnership,
-            :with_active_lead_provider,
-            active_lead_provider: FactoryBot.create(:active_lead_provider, contract_period: role_contract_period),
+            :with_framework_agreement,
+            framework_agreement: FactoryBot.create(:framework_agreement, contract_period: role_contract_period),
             school: ect_at_school_period.school
           )
 
@@ -113,15 +113,15 @@ RSpec.describe Admin::Teachers::Rows do
 
         older_school_partnership = FactoryBot.create(
           :school_partnership,
-          :with_active_lead_provider,
-          active_lead_provider: FactoryBot.create(:active_lead_provider, contract_period: contract_period_2024),
+          :with_framework_agreement,
+          framework_agreement: FactoryBot.create(:framework_agreement, contract_period: contract_period_2024),
           school: older_ect_at_school_period.school
         )
 
         latest_school_partnership = FactoryBot.create(
           :school_partnership,
-          :with_active_lead_provider,
-          active_lead_provider: FactoryBot.create(:active_lead_provider, contract_period: contract_period_2025),
+          :with_framework_agreement,
+          framework_agreement: FactoryBot.create(:framework_agreement, contract_period: contract_period_2025),
           school: latest_ect_at_school_period.school
         )
 
@@ -161,15 +161,15 @@ RSpec.describe Admin::Teachers::Rows do
 
         older_school_partnership = FactoryBot.create(
           :school_partnership,
-          :with_active_lead_provider,
-          active_lead_provider: FactoryBot.create(:active_lead_provider, contract_period: contract_period_2024),
+          :with_framework_agreement,
+          framework_agreement: FactoryBot.create(:framework_agreement, contract_period: contract_period_2024),
           school: older_mentor_at_school_period.school
         )
 
         latest_school_partnership = FactoryBot.create(
           :school_partnership,
-          :with_active_lead_provider,
-          active_lead_provider: FactoryBot.create(:active_lead_provider, contract_period: contract_period_2025),
+          :with_framework_agreement,
+          framework_agreement: FactoryBot.create(:framework_agreement, contract_period: contract_period_2025),
           school: latest_mentor_at_school_period.school
         )
 
@@ -208,8 +208,8 @@ RSpec.describe Admin::Teachers::Rows do
         ect_contract_period = FactoryBot.create(:contract_period, year: 2024)
         ect_school_partnership = FactoryBot.create(
           :school_partnership,
-          :with_active_lead_provider,
-          active_lead_provider: FactoryBot.create(:active_lead_provider, contract_period: ect_contract_period),
+          :with_framework_agreement,
+          framework_agreement: FactoryBot.create(:framework_agreement, contract_period: ect_contract_period),
           school: ect_at_school_period.school
         )
 
@@ -224,8 +224,8 @@ RSpec.describe Admin::Teachers::Rows do
         mentor_contract_period = FactoryBot.create(:contract_period, year: 2025)
         mentor_school_partnership = FactoryBot.create(
           :school_partnership,
-          :with_active_lead_provider,
-          active_lead_provider: FactoryBot.create(:active_lead_provider, contract_period: mentor_contract_period),
+          :with_framework_agreement,
+          framework_agreement: FactoryBot.create(:framework_agreement, contract_period: mentor_contract_period),
           school: mentor_at_school_period.school
         )
 
@@ -264,8 +264,8 @@ RSpec.describe Admin::Teachers::Rows do
         role_contract_period = FactoryBot.create(:contract_period, year: 2024)
         school_partnership = FactoryBot.create(
           :school_partnership,
-          :with_active_lead_provider,
-          active_lead_provider: FactoryBot.create(:active_lead_provider, contract_period: role_contract_period),
+          :with_framework_agreement,
+          framework_agreement: FactoryBot.create(:framework_agreement, contract_period: role_contract_period),
           school: provider_led_ect_at_school_period.school
         )
 

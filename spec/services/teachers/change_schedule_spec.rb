@@ -1,8 +1,8 @@
 RSpec.describe Teachers::ChangeSchedule do
   let(:lead_provider) { training_period.lead_provider }
   let(:teacher) { training_period.teacher }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: new_contract_period) }
-  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:, contract_period: new_contract_period) }
+  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:) }
   let(:new_contract_period) { FactoryBot.create(:contract_period) }
   let!(:new_school_partnership) { FactoryBot.create(:school_partnership, school: at_school_period.school, lead_provider_delivery_partnership:) }
   let(:new_schedule) { FactoryBot.create(:schedule, identifier: "ecf-standard-april", contract_period: new_contract_period) }
@@ -191,7 +191,7 @@ RSpec.describe Teachers::ChangeSchedule do
             expect(training_period.schedule).to eq(new_schedule)
             expect(training_period.school_partnership).to eq(new_school_partnership)
             expect(training_period.contract_period).to eq(new_contract_period)
-            expect(training_period.expression_of_interest).to eq(new_school_partnership.active_lead_provider)
+            expect(training_period.expression_of_interest).to eq(new_school_partnership.framework_agreement)
           end
         end
       end

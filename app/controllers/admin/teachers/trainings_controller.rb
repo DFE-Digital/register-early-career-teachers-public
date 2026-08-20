@@ -9,10 +9,10 @@ module Admin
         @breadcrumbs = teacher_breadcrumbs
         @ect_at_school_periods = @teacher.ect_at_school_periods
         @ect_training_periods = @teacher.ect_training_periods
-          .includes(:active_lead_provider, :expression_of_interest, ect_at_school_period: :teacher)
+          .includes(:framework_agreement, :expression_of_interest, ect_at_school_period: :teacher)
           .latest_first
         @mentor_training_periods = @teacher.mentor_training_periods
-          .includes(:active_lead_provider, :expression_of_interest, mentor_at_school_period: :teacher)
+          .includes(:framework_agreement, :expression_of_interest, mentor_at_school_period: :teacher)
           .latest_first
         @latest_training_period_ids_with_api_response = latest_training_period_ids_with_api_response
       end
@@ -29,7 +29,7 @@ module Admin
       end
 
       def lead_provider_id_for(training_period)
-        training_period.active_lead_provider&.lead_provider_id ||
+        training_period.framework_agreement&.lead_provider_id ||
           training_period.expression_of_interest&.lead_provider_id
       end
 

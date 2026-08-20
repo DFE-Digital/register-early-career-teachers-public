@@ -60,7 +60,7 @@ module Seeds
 
     def target_year_partnership_exists?(school:, contract_period_year:, lead_provider:, delivery_partner:)
       SchoolPartnership
-        .joins(lead_provider_delivery_partnership: [{ active_lead_provider: :contract_period }, :delivery_partner])
+        .joins(lead_provider_delivery_partnership: [{ framework_agreement: :contract_period }, :delivery_partner])
         .where(school:)
         .where(contract_periods: { year: contract_period_year })
         .where(active_lead_providers: { lead_provider_id: lead_provider.id })
@@ -68,8 +68,8 @@ module Seeds
         .exists?
     end
 
-    def target_year_active_lead_provider_exists?(contract_period_year:, lead_provider:)
-      ActiveLeadProvider
+    def target_year_framework_agreement_exists?(contract_period_year:, lead_provider:)
+      FrameworkAgreement
         .joins(:contract_period)
         .where(lead_provider:)
         .where(contract_periods: { year: contract_period_year })

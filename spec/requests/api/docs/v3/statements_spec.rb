@@ -3,7 +3,7 @@ require "swagger_helper"
 RSpec.describe "Statements endpoint", openapi_spec: "v3/swagger.yaml", type: :request do
   include_context "with authorization for api doc request"
 
-  let(:statement) { FactoryBot.create(:statement, active_lead_provider:) }
+  let(:statement) { FactoryBot.create(:statement, framework_agreement:) }
 
   it_behaves_like "an API index endpoint documentation",
                   {

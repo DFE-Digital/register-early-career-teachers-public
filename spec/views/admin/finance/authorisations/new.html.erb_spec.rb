@@ -6,15 +6,15 @@ RSpec.describe "admin/finance/authorisations/new.html.erb" do
     FactoryBot.create(
       :contract,
       contract_trait,
-      active_lead_provider:
+      framework_agreement:
     )
   end
   let(:contract_trait) { :for_ecf }
 
   let(:payment_statement) { FactoryBot.create(:statement, :payable, deadline_date: Date.yesterday, contract:) }
   let(:year) { 2024 }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
-  let(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, year:, active_lead_provider:) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement, contract_period:) }
+  let(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, year:, framework_agreement:) }
   let(:statement) { Admin::StatementPresenter.new(payment_statement) }
   let(:form) { Admin::Finance::AuthorisePaymentForm.new }
   let!(:declaration) do

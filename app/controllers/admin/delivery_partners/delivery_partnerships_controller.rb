@@ -23,7 +23,7 @@ module Admin
           .lead_provider_delivery_partnerships
           .for_contract_period(@contract_period)
 
-        @available_lead_providers = ActiveLeadProvider
+        @available_lead_providers = FrameworkAgreement
           .available_for_delivery_partner(@delivery_partner, @contract_period)
       end
 

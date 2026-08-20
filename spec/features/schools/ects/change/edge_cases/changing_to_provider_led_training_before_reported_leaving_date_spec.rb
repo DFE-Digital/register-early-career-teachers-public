@@ -10,7 +10,7 @@ RSpec.describe "Changing to provider-led training before the ECTs reported leavi
     and_there_is_an_ect_at_the_school
     and_the_ect_is_doing_school_led_training
     and_there_is_another_school
-    and_there_is_an_active_lead_provider
+    and_there_is_a_framework_agreement
   end
 
   context "when changing to provider-led training " \
@@ -180,12 +180,12 @@ RSpec.describe "Changing to provider-led training before the ECTs reported leavi
 
 private
 
-  def and_there_is_an_active_lead_provider
-    @active_lead_provider = FactoryBot.create(
-      :active_lead_provider,
+  def and_there_is_a_framework_agreement
+    @framework_agreement = FactoryBot.create(
+      :framework_agreement,
       contract_period: @contract_period
     )
-    @lead_provider = @active_lead_provider.lead_provider
+    @lead_provider = @framework_agreement.lead_provider
   end
 
   def and_the_ect_is_doing_school_led_training
@@ -219,7 +219,7 @@ private
   alias_method :and_i_am_asked_to_choose_a_lead_provider, :then_i_am_asked_to_choose_a_lead_provider
 
   def when_i_choose_a_lead_provider
-    page.get_by_label(@active_lead_provider.lead_provider.name).check
+    page.get_by_label(@framework_agreement.lead_provider.name).check
   end
 
   def then_i_see_the_provider_led_confirmation_message

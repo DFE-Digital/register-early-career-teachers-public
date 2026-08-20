@@ -10,20 +10,20 @@ RSpec.describe Statements::DeclarationsCSV do
   let(:declaration_timestamp) { Time.zone.local(2024, 10, 15, 10, 0, 0) }
   let(:created_timestamp) { Time.zone.local(2024, 10, 16, 11, 30, 0) }
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Ambition Institute") }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:, contract_period:) }
   let(:banded_fee_structure) do
     FactoryBot.build(:contract_banded_fee_structure).tap do |structure|
       FactoryBot.build(:contract_banded_fee_structure_band_term,
                        banded_fee_structure: structure)
     end
   end
-  let(:contract) { FactoryBot.create(:contract, :for_ecf, active_lead_provider:, banded_fee_structure:) }
+  let(:contract) { FactoryBot.create(:contract, :for_ecf, framework_agreement:, banded_fee_structure:) }
   let(:statement) do
     FactoryBot.create(
       :statement,
       :paid,
       contract:,
-      active_lead_provider:,
+      framework_agreement:,
       month: statement_month,
       year: statement_year,
       api_id: "df66db14-0f96-4b31-be92-1c1f1c6e4efe"
@@ -31,7 +31,7 @@ RSpec.describe Statements::DeclarationsCSV do
   end
   let(:delivery_partner) { FactoryBot.create(:delivery_partner, name: "Best Delivery Partner") }
   let(:lead_provider_delivery_partnership) do
-    FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:)
+    FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:, delivery_partner:)
   end
   let(:school) { FactoryBot.create(:school, urn: 123_456) }
   let(:school_partnership) { FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:) }

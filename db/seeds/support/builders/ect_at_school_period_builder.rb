@@ -148,7 +148,7 @@ module TeacherHistories
         { school_partnership: }
       when (school_partnership = SchoolPartnerships::Search.new(school: ect_at_school_period.school, lead_provider:, contract_period:).school_partnerships.first)
         { school_partnership: }
-      when (expression_of_interest = LeadProviders::Active.new(lead_provider).active_lead_providers(ContractPeriod.find(contract_period)).first)
+      when (expression_of_interest = LeadProviders::Active.new(lead_provider).framework_agreements(ContractPeriod.find(contract_period)).first)
         { expression_of_interest: }
       else
         fail "No school partnership or expression of interest found"

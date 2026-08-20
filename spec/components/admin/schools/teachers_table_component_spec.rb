@@ -42,7 +42,7 @@ RSpec.describe Admin::Schools::TeachersTableComponent, type: :component do
 
     let!(:ect_eoi) do
       ect_at_school_period = FactoryBot.create(:ect_at_school_period, school:, started_on: Date.new(2026, 7, 1))
-      expression_of_interest = FactoryBot.create(:active_lead_provider, :for_year, year: 2026)
+      expression_of_interest = FactoryBot.create(:framework_agreement, :for_year, year: 2026)
       FactoryBot.create(:training_period, :provider_led, :with_only_expression_of_interest, ect_at_school_period:, expression_of_interest:)
       ect_at_school_period.teacher
     end

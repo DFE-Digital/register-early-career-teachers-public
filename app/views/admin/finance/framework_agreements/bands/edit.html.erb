@@ -1,0 +1,18 @@
+<%
+  page_data(title: "Change capacity of #{band_label(band: @band)}",
+            breadcrumbs: @breadcrumbs,
+            error: @band.errors.present?,
+            backlink_href: admin_contract_period_framework_agreement_bands_path(@framework_agreement.contract_period, @framework_agreement))
+%>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <%= form_with model: @band,
+                   url: admin_contract_period_framework_agreement_band_path(@framework_agreement.contract_period, @framework_agreement, @band),
+                   method: :put do |f| %>
+      <%= content_for(:error_summary) { f.govuk_error_summary } %>
+      <%= f.govuk_number_field(:capacity, width: "one-quarter") %>
+      <%= f.govuk_submit "Save" %>
+    <% end %>
+  </div>
+</div>

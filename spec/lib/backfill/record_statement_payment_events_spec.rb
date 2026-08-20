@@ -1,8 +1,8 @@
 RSpec.describe Backfill::RecordStatementPaymentEvents do
   subject { described_class.new(statement).process }
 
-  let(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, year:, active_lead_provider:) }
-  let(:active_lead_provider) { statement.active_lead_provider }
+  let(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, year:, framework_agreement:) }
+  let(:framework_agreement) { statement.framework_agreement }
   let(:contract) { statement.contract }
   let(:year) { statement.contract_period.year }
 
@@ -16,7 +16,7 @@ RSpec.describe Backfill::RecordStatementPaymentEvents do
   before do
     allow($stdout).to receive(:puts)
 
-    previous_statement = FactoryBot.create(:statement, :paid, active_lead_provider:, contract:)
+    previous_statement = FactoryBot.create(:statement, :paid, framework_agreement:, contract:)
 
     milestones.each do |declaration_type|
       paid_declarations << FactoryBot.create_list(:declaration, 2, :with_ect,
@@ -117,14 +117,14 @@ RSpec.describe Backfill::RecordStatementPaymentEvents do
       )
 
       expect(event.happened_at).to eq(statement.payment_date.in_time_zone)
-      expect(event.lead_provider).to eq(active_lead_provider.lead_provider)
-      expect(event.active_lead_provider).to eq(active_lead_provider)
+      expect(event.lead_provider).to eq(framework_agreement.lead_provider)
+      expect(event.framework_agreement).to eq(framework_agreement)
       expect(event.author_name).to eq("System")
       expect(event.author_type).to eq("system")
 
       expect(event.metadata)
         .to include(
-          "contract_period_year" => active_lead_provider.contract_period_year
+          "contract_period_year" => framework_agreement.contract_period_year
         )
     end
 

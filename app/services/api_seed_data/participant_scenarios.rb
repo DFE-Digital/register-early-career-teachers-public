@@ -51,17 +51,17 @@ module APISeedData
 
         next unless contract_period
 
-        active_lead_providers.for_contract_period(contract_period.year).find_each do |active_lead_provider|
+        framework_agreements.for_contract_period(contract_period.year).find_each do |framework_agreement|
           # Count existing participants (ECTs and mentors) in this contract period with this lead provider
           existing_ects = Teacher
-            .joins(ect_at_school_periods: { training_periods: :active_lead_provider })
-            .where(active_lead_providers: { id: active_lead_provider })
+            .joins(ect_at_school_periods: { training_periods: :framework_agreement })
+            .where(active_lead_providers: { id: framework_agreement })
             .distinct
             .count
 
           existing_mentors = Teacher
-            .joins(mentor_at_school_periods: { training_periods: :active_lead_provider })
-            .where(active_lead_providers: { id: active_lead_provider })
+            .joins(mentor_at_school_periods: { training_periods: :framework_agreement })
+            .where(active_lead_providers: { id: framework_agreement })
             .distinct
             .count
 
@@ -69,7 +69,7 @@ module APISeedData
 
           missing_count = [count - existing_count, 0].max
           missing_count.times do
-            school_partnership = school_partnership(active_lead_provider)
+            school_partnership = school_partnership(framework_agreement)
             school = school_partnership.school
             type = %i[ect mentor].sample
             start_date = Date.new(contract_period.year, 9, 1)
@@ -94,7 +94,7 @@ module APISeedData
               started_on: start_date
             )
 
-            log_seed_info("Created #{type} in contract period #{contract_period.year} with #{active_lead_provider.lead_provider.name}", colour: Colourize::COLOURS.keys.sample)
+            log_seed_info("Created #{type} in contract period #{contract_period.year} with #{framework_agreement.lead_provider.name}", colour: Colourize::COLOURS.keys.sample)
           end
         end
       end
@@ -106,19 +106,19 @@ module APISeedData
 
         next unless contract_period
 
-        active_lead_providers.for_contract_period(contract_period.year).find_each do |active_lead_provider|
+        framework_agreements.for_contract_period(contract_period.year).find_each do |framework_agreement|
           # Count existing participants (ECTs and mentors) with EOI but no partnership in this contract period
-          active_lead_provider_ids = active_lead_provider.lead_provider.active_lead_providers.where(contract_period:).pluck(:id)
+          framework_agreement_ids = framework_agreement.lead_provider.framework_agreements.where(contract_period:).pluck(:id)
 
           existing_ects = Teacher
             .joins(ect_at_school_periods: :training_periods)
-            .where(training_periods: { expression_of_interest_id: active_lead_provider_ids, school_partnership_id: nil })
+            .where(training_periods: { expression_of_interest_id: framework_agreement_ids, school_partnership_id: nil })
             .distinct
             .count
 
           existing_mentors = Teacher
             .joins(mentor_at_school_periods: :training_periods)
-            .where(training_periods: { expression_of_interest_id: active_lead_provider_ids, school_partnership_id: nil })
+            .where(training_periods: { expression_of_interest_id: framework_agreement_ids, school_partnership_id: nil })
             .distinct
             .count
 
@@ -126,7 +126,7 @@ module APISeedData
 
           missing_count = [count - existing_count, 0].max
           missing_count.times do
-            school_partnership = school_partnership(active_lead_provider)
+            school_partnership = school_partnership(framework_agreement)
             school = school_partnership.school
             type = %i[ect mentor].sample
             start_date = Date.new(contract_period_year, 9, 1)
@@ -147,12 +147,12 @@ module APISeedData
               :unfinished,
               "#{type}_at_school_period" => school_period,
               school_partnership: nil,
-              expression_of_interest: active_lead_provider,
+              expression_of_interest: framework_agreement,
               schedule:,
               started_on: start_date
             )
 
-            log_seed_info("Created #{type} with EOI (no partnership) in contract period #{contract_period_year} with #{active_lead_provider.lead_provider.name}", colour: Colourize::COLOURS.keys.sample)
+            log_seed_info("Created #{type} with EOI (no partnership) in contract period #{contract_period_year} with #{framework_agreement.lead_provider.name}", colour: Colourize::COLOURS.keys.sample)
           end
         end
       end
@@ -164,17 +164,17 @@ module APISeedData
 
         next unless contract_period
 
-        active_lead_providers.for_contract_period(contract_period.year).find_each do |active_lead_provider|
+        framework_agreements.for_contract_period(contract_period.year).find_each do |framework_agreement|
           existing_count = Teacher
-            .joins(:induction_periods, ect_at_school_periods: { training_periods: :active_lead_provider })
+            .joins(:induction_periods, ect_at_school_periods: { training_periods: :framework_agreement })
             .where.not(induction_periods: { started_on: nil })
-            .where(active_lead_providers: { id: active_lead_provider })
+            .where(active_lead_providers: { id: framework_agreement })
             .distinct
             .count
 
           missing_count = [count - existing_count, 0].max
           missing_count.times do
-            school_partnership = school_partnership(active_lead_provider)
+            school_partnership = school_partnership(framework_agreement)
             school = school_partnership.school
             start_date = Date.new(contract_period_year, 9, 1)
 
@@ -205,7 +205,7 @@ module APISeedData
               appropriate_body_period: random_or_create_appropriate_body
             )
 
-            log_seed_info("Created ECT with induction start date #{start_date} in contract period #{contract_period_year} with #{active_lead_provider.lead_provider.name}", colour: Colourize::COLOURS.keys.sample)
+            log_seed_info("Created ECT with induction start date #{start_date} in contract period #{contract_period_year} with #{framework_agreement.lead_provider.name}", colour: Colourize::COLOURS.keys.sample)
           end
         end
       end
@@ -217,17 +217,17 @@ module APISeedData
 
         next unless contract_period
 
-        active_lead_providers.for_contract_period(contract_period.year).find_each do |active_lead_provider|
+        framework_agreements.for_contract_period(contract_period.year).find_each do |framework_agreement|
           existing_count = Teacher
-            .joins(ect_at_school_periods: { training_periods: :active_lead_provider })
+            .joins(ect_at_school_periods: { training_periods: :framework_agreement })
             .where.missing(:induction_periods)
-            .where(active_lead_providers: { id: active_lead_provider })
+            .where(active_lead_providers: { id: framework_agreement })
             .distinct
             .count
 
           missing_count = [count - existing_count, 0].max
           missing_count.times do
-            school_partnership = school_partnership(active_lead_provider)
+            school_partnership = school_partnership(framework_agreement)
             school = school_partnership.school
             start_date = Date.new(contract_period_year, 9, 1)
 
@@ -251,7 +251,7 @@ module APISeedData
               started_on: start_date
             )
 
-            log_seed_info("Created ECT without induction start date in contract period #{contract_period_year} with #{active_lead_provider.lead_provider.name}", colour: Colourize::COLOURS.keys.sample)
+            log_seed_info("Created ECT without induction start date in contract period #{contract_period_year} with #{framework_agreement.lead_provider.name}", colour: Colourize::COLOURS.keys.sample)
           end
         end
       end
@@ -281,18 +281,18 @@ module APISeedData
 
         next unless contract_period
 
-        active_lead_providers.for_contract_period(contract_period.year).find_each do |active_lead_provider|
+        framework_agreements.for_contract_period(contract_period.year).find_each do |framework_agreement|
           existing_ects = Teacher
-            .joins(ect_at_school_periods: { training_periods: %i[declarations active_lead_provider] })
+            .joins(ect_at_school_periods: { training_periods: %i[declarations framework_agreement] })
             .where(declarations: { payment_status: billable_statuses })
-            .where(active_lead_providers: { id: active_lead_provider })
+            .where(active_lead_providers: { id: framework_agreement })
             .distinct
             .count
 
           existing_mentors = Teacher
-            .joins(mentor_at_school_periods: { training_periods: %i[declarations active_lead_provider] })
+            .joins(mentor_at_school_periods: { training_periods: %i[declarations framework_agreement] })
             .where(declarations: { payment_status: billable_statuses })
-            .where(active_lead_providers: { id: active_lead_provider })
+            .where(active_lead_providers: { id: framework_agreement })
             .distinct
             .count
 
@@ -301,7 +301,7 @@ module APISeedData
             next if missing_count.zero?
 
             missing_count.times do
-              school_partnership = school_partnership(active_lead_provider)
+              school_partnership = school_partnership(framework_agreement)
               school = school_partnership.school
               start_date = Date.new(contract_period_year, 9, 1)
               school_period = FactoryBot.create(:"#{type}_at_school_period", :unfinished, school:, started_on: start_date)
@@ -331,7 +331,7 @@ module APISeedData
                 declaration_type = plan[:declaration_type]
 
                 payment_statement = if %i[eligible payable paid].include?(payment_status)
-                                      find_random_statement(active_lead_provider)
+                                      find_random_statement(framework_agreement)
                                     end
 
                 declaration_date = declaration_date(schedule, declaration_type)
@@ -351,7 +351,7 @@ module APISeedData
                 declaration.save!
               end
 
-              log_seed_info("Created #{type} with billable declarations in contract period #{contract_period_year} with #{active_lead_provider.lead_provider.name}", colour: Colourize::COLOURS.keys.sample)
+              log_seed_info("Created #{type} with billable declarations in contract period #{contract_period_year} with #{framework_agreement.lead_provider.name}", colour: Colourize::COLOURS.keys.sample)
             end
           end
         end
@@ -364,19 +364,19 @@ module APISeedData
 
         next unless contract_period
 
-        active_lead_providers.for_contract_period(contract_period.year).find_each do |active_lead_provider|
+        framework_agreements.for_contract_period(contract_period.year).find_each do |framework_agreement|
           # Count existing participants with "leaving" training periods (to be finished in the future)
           existing_ects = Teacher
-            .joins(ect_at_school_periods: { training_periods: :active_lead_provider })
+            .joins(ect_at_school_periods: { training_periods: :framework_agreement })
             .where(training_periods: { finished_on: Time.zone.tomorrow.. })
-            .where(active_lead_providers: { id: active_lead_provider })
+            .where(active_lead_providers: { id: framework_agreement })
             .distinct
             .count
 
           existing_mentors = Teacher
-            .joins(mentor_at_school_periods: { training_periods: :active_lead_provider })
+            .joins(mentor_at_school_periods: { training_periods: :framework_agreement })
             .where(training_periods: { finished_on: Time.zone.tomorrow.. })
-            .where(active_lead_providers: { id: active_lead_provider })
+            .where(active_lead_providers: { id: framework_agreement })
             .distinct
             .count
 
@@ -385,7 +385,7 @@ module APISeedData
             next if missing_count.zero?
 
             missing_count.times do
-              school_partnership = school_partnership(active_lead_provider)
+              school_partnership = school_partnership(framework_agreement)
               next unless school_partnership
 
               school = school_partnership.school
@@ -412,7 +412,7 @@ module APISeedData
                 participant_status: "leaving",
                 training_status: "active",
                 contract_period_year:,
-                lead_provider_name: active_lead_provider.lead_provider.name
+                lead_provider_name: framework_agreement.lead_provider.name
               )
             end
           end
@@ -426,19 +426,19 @@ module APISeedData
 
         next unless contract_period
 
-        active_lead_providers.for_contract_period(contract_period.year).find_each do |active_lead_provider|
+        framework_agreements.for_contract_period(contract_period.year).find_each do |framework_agreement|
           # Count existing participants with "joining" training periods (to be started in the future)
           existing_ects = Teacher
-            .joins(ect_at_school_periods: { training_periods: :active_lead_provider })
+            .joins(ect_at_school_periods: { training_periods: :framework_agreement })
             .where(training_periods: { started_on: Time.zone.tomorrow.. })
-            .where(active_lead_providers: { id: active_lead_provider })
+            .where(active_lead_providers: { id: framework_agreement })
             .distinct
             .count
 
           existing_mentors = Teacher
-            .joins(mentor_at_school_periods: { training_periods: :active_lead_provider })
+            .joins(mentor_at_school_periods: { training_periods: :framework_agreement })
             .where(training_periods: { started_on: Time.zone.tomorrow.. })
-            .where(active_lead_providers: { id: active_lead_provider })
+            .where(active_lead_providers: { id: framework_agreement })
             .distinct
             .count
 
@@ -447,7 +447,7 @@ module APISeedData
             next if missing_count.zero?
 
             missing_count.times do
-              school_partnership = school_partnership(active_lead_provider)
+              school_partnership = school_partnership(framework_agreement)
               next unless school_partnership
 
               school = school_partnership.school
@@ -479,7 +479,7 @@ module APISeedData
                 participant_status: "joining",
                 training_status: "active",
                 contract_period_year:,
-                lead_provider_name: active_lead_provider.lead_provider.name
+                lead_provider_name: framework_agreement.lead_provider.name
               )
             end
           end
@@ -493,19 +493,19 @@ module APISeedData
 
         next unless contract_period
 
-        active_lead_providers.for_contract_period(contract_period.year).find_each do |active_lead_provider|
+        framework_agreements.for_contract_period(contract_period.year).find_each do |framework_agreement|
           # Count existing participants with "leaving" training periods (to be finished in the future)
           existing_ects = Teacher
-            .joins(ect_at_school_periods: { training_periods: :active_lead_provider })
+            .joins(ect_at_school_periods: { training_periods: :framework_agreement })
             .where(training_periods: { finished_on: 4.months.from_now.. })
-            .where(active_lead_providers: { id: active_lead_provider })
+            .where(active_lead_providers: { id: framework_agreement })
             .distinct
             .count
 
           existing_mentors = Teacher
-            .joins(mentor_at_school_periods: { training_periods: :active_lead_provider })
+            .joins(mentor_at_school_periods: { training_periods: :framework_agreement })
             .where(training_periods: { finished_on: 4.months.from_now.. })
-            .where(active_lead_providers: { id: active_lead_provider })
+            .where(active_lead_providers: { id: framework_agreement })
             .distinct
             .count
 
@@ -514,7 +514,7 @@ module APISeedData
             next if missing_count.zero?
 
             missing_count.times do
-              school_partnership = school_partnership(active_lead_provider)
+              school_partnership = school_partnership(framework_agreement)
               next unless school_partnership
 
               school = school_partnership.school
@@ -547,7 +547,7 @@ module APISeedData
                 participant_status: "leaving",
                 training_status: "active",
                 contract_period_year:,
-                lead_provider_name: active_lead_provider.lead_provider.name
+                lead_provider_name: framework_agreement.lead_provider.name
               )
             end
           end
@@ -561,21 +561,21 @@ module APISeedData
 
         next unless contract_period
 
-        active_lead_providers.for_contract_period(contract_period.year).find_each do |active_lead_provider|
+        framework_agreements.for_contract_period(contract_period.year).find_each do |framework_agreement|
           # Count existing participants with "leaving" training periods (to be finished in the future)
           existing_ects = Teacher
-            .joins(ect_at_school_periods: { training_periods: :active_lead_provider })
+            .joins(ect_at_school_periods: { training_periods: :framework_agreement })
             .where(training_periods: { started_on: ..Date.current, finished_on: ..Date.current })
             .where.not(training_periods: { withdrawn_at: nil })
-            .where(active_lead_providers: { id: active_lead_provider })
+            .where(active_lead_providers: { id: framework_agreement })
             .distinct
             .count
 
           existing_mentors = Teacher
-            .joins(mentor_at_school_periods: { training_periods: :active_lead_provider })
+            .joins(mentor_at_school_periods: { training_periods: :framework_agreement })
             .where(training_periods: { started_on: ..Date.current, finished_on: ..Date.current })
             .where.not(training_periods: { withdrawn_at: nil })
-            .where(active_lead_providers: { id: active_lead_provider })
+            .where(active_lead_providers: { id: framework_agreement })
             .distinct
             .count
 
@@ -584,7 +584,7 @@ module APISeedData
             next if missing_count.zero?
 
             missing_count.times do
-              school_partnership = school_partnership(active_lead_provider)
+              school_partnership = school_partnership(framework_agreement)
               next unless school_partnership
 
               school = school_partnership.school
@@ -617,7 +617,7 @@ module APISeedData
                 participant_status: "left",
                 training_status: "withdrawn",
                 contract_period_year:,
-                lead_provider_name: active_lead_provider.lead_provider.name
+                lead_provider_name: framework_agreement.lead_provider.name
               )
             end
           end
@@ -631,21 +631,21 @@ module APISeedData
 
         next unless contract_period
 
-        active_lead_providers.for_contract_period(contract_period.year).find_each do |active_lead_provider|
+        framework_agreements.for_contract_period(contract_period.year).find_each do |framework_agreement|
           # Count existing participants with "leaving" training periods (to be finished in the future)
           existing_ects = Teacher
-            .joins(ect_at_school_periods: { training_periods: :active_lead_provider })
+            .joins(ect_at_school_periods: { training_periods: :framework_agreement })
             .where(training_periods: { started_on: ..Date.current, finished_on: ..Date.current })
             .where(training_periods: { withdrawn_at: nil, deferred_at: nil })
-            .where(active_lead_providers: { id: active_lead_provider })
+            .where(active_lead_providers: { id: framework_agreement })
             .distinct
             .count
 
           existing_mentors = Teacher
-            .joins(mentor_at_school_periods: { training_periods: :active_lead_provider })
+            .joins(mentor_at_school_periods: { training_periods: :framework_agreement })
             .where(training_periods: { started_on: ..Date.current, finished_on: ..Date.current })
             .where(training_periods: { withdrawn_at: nil, deferred_at: nil })
-            .where(active_lead_providers: { id: active_lead_provider })
+            .where(active_lead_providers: { id: framework_agreement })
             .distinct
             .count
 
@@ -654,7 +654,7 @@ module APISeedData
             next if missing_count.zero?
 
             missing_count.times do
-              school_partnership = school_partnership(active_lead_provider)
+              school_partnership = school_partnership(framework_agreement)
               next unless school_partnership
 
               school = school_partnership.school
@@ -687,7 +687,7 @@ module APISeedData
                 participant_status: "left",
                 training_status: "active",
                 contract_period_year:,
-                lead_provider_name: active_lead_provider.lead_provider.name
+                lead_provider_name: framework_agreement.lead_provider.name
               )
             end
           end
@@ -695,10 +695,10 @@ module APISeedData
       end
     end
 
-    def school_partnership(active_lead_provider)
+    def school_partnership(framework_agreement)
       SchoolPartnership
         .includes(:lead_provider_delivery_partnership)
-        .where(lead_provider_delivery_partnership: { active_lead_provider: })
+        .where(lead_provider_delivery_partnership: { framework_agreement: })
         .order("RANDOM()")
         .first
     end
@@ -735,10 +735,10 @@ module APISeedData
         FactoryBot.create(:appropriate_body_period)
     end
 
-    def find_random_statement(active_lead_provider)
+    def find_random_statement(framework_agreement)
       ::Statements::Search.new(
-        lead_provider_id: active_lead_provider.lead_provider.id,
-        contract_period_years: active_lead_provider.contract_period_year,
+        lead_provider_id: framework_agreement.lead_provider.id,
+        contract_period_years: framework_agreement.contract_period_year,
         fee_type: "output"
       )
       .statements

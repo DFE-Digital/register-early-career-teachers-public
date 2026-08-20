@@ -2,17 +2,17 @@ RSpec.shared_examples "a filter by multiple cohorts (contract_period year) endpo
   let(:options) { defined?(serializer_options) ? serializer_options : {} }
 
   it "returns only resources for the specified cohorts" do
-    previous_contract_period = FactoryBot.create(:contract_period, year: active_lead_provider.contract_period.year - 1)
-    next_contract_period = FactoryBot.create(:contract_period, year: active_lead_provider.contract_period.year + 1)
+    previous_contract_period = FactoryBot.create(:contract_period, year: framework_agreement.contract_period.year - 1)
+    next_contract_period = FactoryBot.create(:contract_period, year: framework_agreement.contract_period.year + 1)
 
-    previous_active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: previous_contract_period)
-    next_active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: next_contract_period)
+    previous_framework_agreement = FactoryBot.create(:framework_agreement, lead_provider:, contract_period: previous_contract_period)
+    next_framework_agreement = FactoryBot.create(:framework_agreement, lead_provider:, contract_period: next_contract_period)
 
-    previous_contract_period_resource = create_resource(active_lead_provider: previous_active_lead_provider)
-    next_contract_period_resource = create_resource(active_lead_provider: next_active_lead_provider)
+    previous_contract_period_resource = create_resource(framework_agreement: previous_framework_agreement)
+    next_contract_period_resource = create_resource(framework_agreement: next_framework_agreement)
 
     # Resource for the current contract_period should not be included.
-    create_resource(active_lead_provider:)
+    create_resource(framework_agreement:)
 
     authenticated_api_get(path, params: { filter: { cohort: "#{previous_contract_period.year},#{next_contract_period.year}" } })
 
@@ -22,14 +22,14 @@ RSpec.shared_examples "a filter by multiple cohorts (contract_period year) endpo
   end
 
   it "ignores invalid cohorts" do
-    resource = create_resource(active_lead_provider:)
+    resource = create_resource(framework_agreement:)
 
     # Resource for the next contract_period should not be included.
-    next_contract_period = FactoryBot.create(:contract_period, year: active_lead_provider.contract_period.year + 1)
-    next_active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: next_contract_period)
-    create_resource(active_lead_provider: next_active_lead_provider)
+    next_contract_period = FactoryBot.create(:contract_period, year: framework_agreement.contract_period.year + 1)
+    next_framework_agreement = FactoryBot.create(:framework_agreement, lead_provider:, contract_period: next_contract_period)
+    create_resource(framework_agreement: next_framework_agreement)
 
-    authenticated_api_get(path, params: { filter: { cohort: "#{active_lead_provider.contract_period.year},invalid,cohort,,20A1,nil,null, ,1099,#{SecureRandom.uuid}" } })
+    authenticated_api_get(path, params: { filter: { cohort: "#{framework_agreement.contract_period.year},invalid,cohort,,20A1,nil,null, ,1099,#{SecureRandom.uuid}" } })
 
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to eql("application/json; charset=utf-8")
@@ -37,7 +37,7 @@ RSpec.shared_examples "a filter by multiple cohorts (contract_period year) endpo
   end
 
   it "returns all resources when cohort is blank" do
-    resource = create_resource(active_lead_provider:)
+    resource = create_resource(framework_agreement:)
 
     authenticated_api_get(path, params: { filter: { cohort: "" } })
 
@@ -47,7 +47,7 @@ RSpec.shared_examples "a filter by multiple cohorts (contract_period year) endpo
   end
 
   it "returns no resources when cohort contains no valid contract period years" do
-    create_resource(active_lead_provider:)
+    create_resource(framework_agreement:)
 
     authenticated_api_get(path, params: { filter: { cohort: "invalid" } })
 
@@ -59,12 +59,12 @@ end
 
 RSpec.shared_examples "a filter by updated_since endpoint" do
   let(:options) { defined?(serializer_options) ? serializer_options : {} }
-  let!(:resource_updated_one_week_ago) { create_resource(active_lead_provider:).tap { set_updated_at(resource: it, value: 1.week.ago) } }
-  let!(:resource_updated_one_month_ago) { create_resource(active_lead_provider:).tap { set_updated_at(resource: it, value: 1.month.ago) } }
+  let!(:resource_updated_one_week_ago) { create_resource(framework_agreement:).tap { set_updated_at(resource: it, value: 1.week.ago) } }
+  let!(:resource_updated_one_month_ago) { create_resource(framework_agreement:).tap { set_updated_at(resource: it, value: 1.month.ago) } }
 
   before do
     # Resource updated more than two months ago should not be included.
-    set_updated_at(resource: create_resource(active_lead_provider:), value: 3.months.ago)
+    set_updated_at(resource: create_resource(framework_agreement:), value: 3.months.ago)
   end
 
   def set_updated_at(resource:, value:)
@@ -104,14 +104,14 @@ end
 
 RSpec.shared_examples "a filter by a single cohort (contract_period year) endpoint" do
   it "returns only resources for the specified cohort" do
-    resource = create_resource(active_lead_provider:)
+    resource = create_resource(framework_agreement:)
 
     # Resource for the next contract_period should not be included.
-    next_contract_period = FactoryBot.create(:contract_period, year: active_lead_provider.contract_period.year + 1)
-    next_active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: next_contract_period)
-    create_resource(active_lead_provider: next_active_lead_provider)
+    next_contract_period = FactoryBot.create(:contract_period, year: framework_agreement.contract_period.year + 1)
+    next_framework_agreement = FactoryBot.create(:framework_agreement, lead_provider:, contract_period: next_contract_period)
+    create_resource(framework_agreement: next_framework_agreement)
 
-    authenticated_api_get(path, params: { filter: { cohort: active_lead_provider.contract_period.year.to_s } })
+    authenticated_api_get(path, params: { filter: { cohort: framework_agreement.contract_period.year.to_s } })
 
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to eql("application/json; charset=utf-8")
@@ -119,12 +119,12 @@ RSpec.shared_examples "a filter by a single cohort (contract_period year) endpoi
   end
 
   it "returns no resources if the specified cohort is invalid" do
-    create_resource(active_lead_provider:)
+    create_resource(framework_agreement:)
 
     # Resource for the next contract_period should not be included.
-    next_contract_period = FactoryBot.create(:contract_period, year: active_lead_provider.contract_period.year + 1)
-    next_active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: next_contract_period)
-    create_resource(active_lead_provider: next_active_lead_provider)
+    next_contract_period = FactoryBot.create(:contract_period, year: framework_agreement.contract_period.year + 1)
+    next_framework_agreement = FactoryBot.create(:framework_agreement, lead_provider:, contract_period: next_contract_period)
+    create_resource(framework_agreement: next_framework_agreement)
 
     authenticated_api_get(path, params: { filter: { cohort: "invalid" } })
 
@@ -134,12 +134,12 @@ RSpec.shared_examples "a filter by a single cohort (contract_period year) endpoi
   end
 
   it "returns no resources if the specified cohort is not found" do
-    create_resource(active_lead_provider:)
+    create_resource(framework_agreement:)
 
     # Resource for the next contract_period should not be included.
-    next_contract_period = FactoryBot.create(:contract_period, year: active_lead_provider.contract_period.year + 1)
-    next_active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: next_contract_period)
-    create_resource(active_lead_provider: next_active_lead_provider)
+    next_contract_period = FactoryBot.create(:contract_period, year: framework_agreement.contract_period.year + 1)
+    next_framework_agreement = FactoryBot.create(:framework_agreement, lead_provider:, contract_period: next_contract_period)
+    create_resource(framework_agreement: next_framework_agreement)
 
     authenticated_api_get(path, params: { filter: { cohort: "1999" } })
 
@@ -151,10 +151,10 @@ end
 
 RSpec.shared_examples "a filter by urn endpoint" do
   it "returns only resources for the specified urn" do
-    resource = create_resource(active_lead_provider:)
+    resource = create_resource(framework_agreement:)
 
     # Resource with another urn should not be included.
-    create_resource(active_lead_provider:)
+    create_resource(framework_agreement:)
 
     params = { filter: { urn: resource.urn } }
     authenticated_api_get(path, params:)
@@ -165,10 +165,10 @@ RSpec.shared_examples "a filter by urn endpoint" do
   end
 
   it "ignores invalid urns" do
-    resource = create_resource(active_lead_provider:)
+    resource = create_resource(framework_agreement:)
 
     # Resource with another urn should not be included.
-    create_resource(active_lead_provider:)
+    create_resource(framework_agreement:)
 
     params = { filter: { urn: "#{resource.urn},invalid" } }
     authenticated_api_get(path, params:)
@@ -182,11 +182,11 @@ end
 RSpec.shared_examples "a filter by from_participant_id endpoint" do
   it "returns only resources that have the specified from_participant_id" do
     teacher = FactoryBot.create(:teacher)
-    resource = create_resource(active_lead_provider:, from_participant_id: teacher.api_id)
+    resource = create_resource(framework_agreement:, from_participant_id: teacher.api_id)
 
     # Resource with another from_participant_id should not be included.
     other_teacher = FactoryBot.create(:teacher)
-    create_resource(active_lead_provider:, from_participant_id: other_teacher.api_id)
+    create_resource(framework_agreement:, from_participant_id: other_teacher.api_id)
 
     params = { filter: { from_participant_id: teacher.api_id } }
     authenticated_api_get(path, params:)
@@ -198,7 +198,7 @@ RSpec.shared_examples "a filter by from_participant_id endpoint" do
 
   it "returns no resources if the from_participant_id is not found" do
     teacher = FactoryBot.create(:teacher)
-    create_resource(active_lead_provider:, from_participant_id: teacher.api_id)
+    create_resource(framework_agreement:, from_participant_id: teacher.api_id)
 
     params = { filter: { from_participant_id: SecureRandom.uuid } }
     authenticated_api_get(path, params:)
@@ -212,10 +212,10 @@ end
 RSpec.shared_examples "a filter by participant_id endpoint" do
   it "returns only resources for the specified participant_id" do
     teacher = FactoryBot.create(:teacher)
-    resource = create_resource(active_lead_provider:, teacher:)
+    resource = create_resource(framework_agreement:, teacher:)
 
     # Resource for another teacher should not be included.
-    create_resource(active_lead_provider:)
+    create_resource(framework_agreement:)
 
     params = { filter: { participant_id: teacher.api_id } }
     authenticated_api_get(path, params:)
@@ -226,7 +226,7 @@ RSpec.shared_examples "a filter by participant_id endpoint" do
   end
 
   it "returns no resources if the participant_id is not found" do
-    create_resource(active_lead_provider:)
+    create_resource(framework_agreement:)
 
     params = { filter: { participant_id: SecureRandom.uuid } }
     authenticated_api_get(path, params:)
@@ -239,10 +239,10 @@ end
 
 RSpec.shared_examples "a filter by training_status endpoint" do
   it "returns only resources that have the specified training_status" do
-    deferred_resource = create_resource(active_lead_provider:, training_status: :deferred)
+    deferred_resource = create_resource(framework_agreement:, training_status: :deferred)
 
     # Resource with another training_status should not be included.
-    create_resource(active_lead_provider:, training_status: :withdrawn)
+    create_resource(framework_agreement:, training_status: :withdrawn)
 
     params = { filter: { training_status: :deferred } }
     authenticated_api_get(path, params:)
@@ -253,8 +253,8 @@ RSpec.shared_examples "a filter by training_status endpoint" do
   end
 
   it "returns no resources if the training_status is not found" do
-    create_resource(active_lead_provider:, training_status: :deferred)
-    create_resource(active_lead_provider:, training_status: :withdrawn)
+    create_resource(framework_agreement:, training_status: :deferred)
+    create_resource(framework_agreement:, training_status: :withdrawn)
 
     params = { filter: { training_status: "invalid" } }
     authenticated_api_get(path, params:)
@@ -267,7 +267,7 @@ end
 
 RSpec.shared_examples "a does not filter by cohort endpoint" do
   it "returns the resources, ignoring the `cohort`" do
-    different_contract_period = FactoryBot.create(:contract_period, year: active_lead_provider.contract_period.year + 1)
+    different_contract_period = FactoryBot.create(:contract_period, year: framework_agreement.contract_period.year + 1)
     authenticated_api_get(path, params: { filter: { cohort: different_contract_period.year.to_s } })
 
     expect(response).to have_http_status(:ok)
@@ -295,10 +295,10 @@ end
 
 RSpec.shared_examples "a filter by delivery_partner_id endpoint" do |delivery_partner_association|
   it "returns only resources for the specified delivery_partner_id" do
-    resource = create_resource(active_lead_provider:)
+    resource = create_resource(framework_agreement:)
 
     # Resource with another delivery_partner_id should not be included.
-    create_resource(active_lead_provider:)
+    create_resource(framework_agreement:)
 
     params = { filter: { delivery_partner_id: resource.public_send(delivery_partner_association).api_id } }
     authenticated_api_get(path, params:)
@@ -309,10 +309,10 @@ RSpec.shared_examples "a filter by delivery_partner_id endpoint" do |delivery_pa
   end
 
   it "ignores invalid delivery partner ids" do
-    resource = create_resource(active_lead_provider:)
+    resource = create_resource(framework_agreement:)
 
     # Resource with another delivery_partner_id should not be included.
-    create_resource(active_lead_provider:)
+    create_resource(framework_agreement:)
 
     params = { filter: { delivery_partner_id: "#{resource.public_send(delivery_partner_association).api_id},invalid" } }
     authenticated_api_get(path, params:)
@@ -328,7 +328,7 @@ RSpec.shared_examples "a does not filter by delivery_partner_id endpoint" do |de
 
   it "returns the resources, ignoring the `delivery_partner_id`" do
     # Use of a filter with a different delivery_partner_id should not change the resource returned.
-    different_resource = create_resource(active_lead_provider:)
+    different_resource = create_resource(framework_agreement:)
 
     params = { filter: { delivery_partner_id: different_resource.public_send(delivery_partner_association).api_id } }
     authenticated_api_get(path, params:)
@@ -345,7 +345,7 @@ RSpec.shared_examples "a does not filter by participant_id endpoint" do
   it "returns the resources, ignoring the `participant_id`" do
     # Use of a filter with a different participant_id should not change the resource returned.
     different_teacher = FactoryBot.create(:teacher)
-    create_resource(active_lead_provider:, teacher: different_teacher)
+    create_resource(framework_agreement:, teacher: different_teacher)
 
     params = { filter: { participant_id: different_teacher.api_id } }
     authenticated_api_get(path, params:)

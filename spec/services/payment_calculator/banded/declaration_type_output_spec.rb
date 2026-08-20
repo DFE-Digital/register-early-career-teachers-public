@@ -6,7 +6,7 @@ RSpec.describe PaymentCalculator::Banded::DeclarationTypeOutput do
   end
 
   let(:band) do
-    FactoryBot.create(:active_lead_provider_band)
+    FactoryBot.create(:framework_agreement_band)
   end
 
   let(:band_term) do
@@ -20,7 +20,7 @@ RSpec.describe PaymentCalculator::Banded::DeclarationTypeOutput do
 
   let(:contract) do
     FactoryBot.create(:contract,
-                      active_lead_provider: band.active_lead_provider)
+                      framework_agreement: band.framework_agreement)
   end
 
   let(:declaration_type) { "started" }

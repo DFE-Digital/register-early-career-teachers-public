@@ -32,7 +32,7 @@ module Admin
           return if delivery_partner_id.blank?
 
           partnership = LeadProviderDeliveryPartnership.find_by(
-            active_lead_provider: wizard.selected_active_lead_provider,
+            framework_agreement: wizard.selected_framework_agreement,
             delivery_partner_id:
           )
           return if partnership.blank?

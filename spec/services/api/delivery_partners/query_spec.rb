@@ -5,7 +5,7 @@ RSpec.describe API::DeliveryPartners::Query do
 
   describe "preloading relationships" do
     shared_examples "preloaded associations" do
-      it { expect(result.association(:active_lead_providers)).to be_loaded }
+      it { expect(result.association(:framework_agreements)).to be_loaded }
     end
 
     let(:instance) { described_class.new }
@@ -63,7 +63,7 @@ RSpec.describe API::DeliveryPartners::Query do
         end
 
         it "filters by `lead_provider`" do
-          lead_provider_id = lead_provider_delivery_partnership1.active_lead_provider.lead_provider.id
+          lead_provider_id = lead_provider_delivery_partnership1.framework_agreement.lead_provider.id
           query = described_class.new(lead_provider_id:)
 
           expect(query.delivery_partners).to contain_exactly(delivery_partner1)
@@ -86,32 +86,32 @@ RSpec.describe API::DeliveryPartners::Query do
         let!(:contract_period1) { FactoryBot.create(:contract_period) }
         let!(:contract_period2) { FactoryBot.create(:contract_period) }
         let!(:contract_period3) { FactoryBot.create(:contract_period) }
-        let!(:active_lead_provider1) { FactoryBot.create(:active_lead_provider, contract_period: contract_period1) }
-        let!(:active_lead_provider2) { FactoryBot.create(:active_lead_provider, contract_period: contract_period2) }
-        let!(:active_lead_provider3) { FactoryBot.create(:active_lead_provider, contract_period: contract_period3) }
+        let!(:framework_agreement1) { FactoryBot.create(:framework_agreement, contract_period: contract_period1) }
+        let!(:framework_agreement2) { FactoryBot.create(:framework_agreement, contract_period: contract_period2) }
+        let!(:framework_agreement3) { FactoryBot.create(:framework_agreement, contract_period: contract_period3) }
 
         context "when `contract_period_years` param is omitted" do
           it "returns all delivery partners" do
-            delivery_partner1 = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider1).delivery_partner
-            delivery_partner2 = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider2).delivery_partner
-            delivery_partner3 = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider3).delivery_partner
+            delivery_partner1 = FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement: framework_agreement1).delivery_partner
+            delivery_partner2 = FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement: framework_agreement2).delivery_partner
+            delivery_partner3 = FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement: framework_agreement3).delivery_partner
 
             expect(described_class.new.delivery_partners).to contain_exactly(delivery_partner1, delivery_partner2, delivery_partner3)
           end
         end
 
         it "filters by `contract_period_years`" do
-          FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider1)
-          delivery_partner2 = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider2).delivery_partner
+          FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement: framework_agreement1)
+          delivery_partner2 = FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement: framework_agreement2).delivery_partner
           query = described_class.new(contract_period_years: contract_period2.year.to_s)
 
           expect(query.delivery_partners).to eq([delivery_partner2])
         end
 
         it "filters by multiple `contract_period_years`" do
-          delivery_partner1 = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider1).delivery_partner
-          delivery_partner2 = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider2).delivery_partner
-          delivery_partner3 = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider3).delivery_partner
+          delivery_partner1 = FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement: framework_agreement1).delivery_partner
+          delivery_partner2 = FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement: framework_agreement2).delivery_partner
+          delivery_partner3 = FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement: framework_agreement3).delivery_partner
 
           query1 = described_class.new(contract_period_years: [contract_period1.year, contract_period2.year])
           expect(query1.delivery_partners).to contain_exactly(delivery_partner1, delivery_partner2)
@@ -121,7 +121,7 @@ RSpec.describe API::DeliveryPartners::Query do
         end
 
         it "returns no delivery partners if no `contract_period_years` are found" do
-          FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider1).delivery_partner
+          FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement: framework_agreement1).delivery_partner
 
           query = described_class.new(contract_period_years: "0000")
 
@@ -129,7 +129,7 @@ RSpec.describe API::DeliveryPartners::Query do
         end
 
         it "returns no delivery partners if `contract_period_years` is an empty array" do
-          FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider1).delivery_partner
+          FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement: framework_agreement1).delivery_partner
 
           query = described_class.new(contract_period_years: [])
 
@@ -137,8 +137,8 @@ RSpec.describe API::DeliveryPartners::Query do
         end
 
         it "returns all delivery partners if `contract_period_years` is an empty string" do
-          delivery_partner1 = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider1).delivery_partner
-          delivery_partner2 = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider2).delivery_partner
+          delivery_partner1 = FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement: framework_agreement1).delivery_partner
+          delivery_partner2 = FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement: framework_agreement2).delivery_partner
 
           query = described_class.new(contract_period_years: "")
 
@@ -146,7 +146,7 @@ RSpec.describe API::DeliveryPartners::Query do
         end
 
         it "ignores invalid `contract_period_years`" do
-          delivery_partner1 = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider1).delivery_partner
+          delivery_partner1 = FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement: framework_agreement1).delivery_partner
 
           query = described_class.new(contract_period_years: [contract_period1.year, 1099])
 
@@ -154,8 +154,8 @@ RSpec.describe API::DeliveryPartners::Query do
         end
 
         it "does not filter by `contract_period_years` if blank" do
-          delivery_partner1 = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider1).delivery_partner
-          delivery_partner2 = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider2).delivery_partner
+          delivery_partner1 = FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement: framework_agreement1).delivery_partner
+          delivery_partner2 = FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement: framework_agreement2).delivery_partner
 
           query = described_class.new(contract_period_years: " ")
 
@@ -218,7 +218,7 @@ RSpec.describe API::DeliveryPartners::Query do
       lead_provider_delivery_partnership1 = FactoryBot.create(:lead_provider_delivery_partnership)
       lead_provider_delivery_partnership2 = FactoryBot.create(:lead_provider_delivery_partnership)
 
-      query = described_class.new(lead_provider_id: lead_provider_delivery_partnership1.active_lead_provider.lead_provider.id)
+      query = described_class.new(lead_provider_id: lead_provider_delivery_partnership1.framework_agreement.lead_provider.id)
 
       expect { query.delivery_partner_by_api_id(lead_provider_delivery_partnership2.delivery_partner.api_id) }.to raise_error(ActiveRecord::RecordNotFound)
     end
@@ -246,7 +246,7 @@ RSpec.describe API::DeliveryPartners::Query do
       lead_provider_delivery_partnership1 = FactoryBot.create(:lead_provider_delivery_partnership)
       lead_provider_delivery_partnership2 = FactoryBot.create(:lead_provider_delivery_partnership)
 
-      query = described_class.new(lead_provider_id: lead_provider_delivery_partnership1.active_lead_provider.lead_provider.id)
+      query = described_class.new(lead_provider_id: lead_provider_delivery_partnership1.framework_agreement.lead_provider.id)
 
       expect { query.delivery_partner_by_id(lead_provider_delivery_partnership2.delivery_partner.id) }.to raise_error(ActiveRecord::RecordNotFound)
     end

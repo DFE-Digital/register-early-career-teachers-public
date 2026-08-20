@@ -5,7 +5,7 @@ module Admin
         class FuturePeriod
           class UnsupportedTrainingPeriodError < StandardError; end
           class ScheduleNotFoundError < StandardError; end
-          class ActiveLeadProviderNotFoundError < StandardError; end
+          class FrameworkAgreementNotFoundError < StandardError; end
 
           attr_reader :training_period, :contract_period, :school_partnership, :author
 
@@ -27,9 +27,9 @@ module Admin
                     "No equivalent schedule found for #{training_period.schedule.identifier} in contract period #{contract_period.year}"
             end
 
-            if training_period.only_expression_of_interest? && equivalent_active_lead_provider.blank?
-              raise ActiveLeadProviderNotFoundError,
-                    "No active lead provider found for #{training_period.expression_of_interest_lead_provider.name} in contract period #{contract_period.year}"
+            if training_period.only_expression_of_interest? && equivalent_framework_agreement.blank?
+              raise FrameworkAgreementNotFoundError,
+                    "No lead provider framework agreement found for #{training_period.expression_of_interest_lead_provider.name} in contract period #{contract_period.year}"
             end
 
             ActiveRecord::Base.transaction do
@@ -73,13 +73,13 @@ module Admin
           def replacement_expression_of_interest
             return unless training_period.only_expression_of_interest?
 
-            equivalent_active_lead_provider
+            equivalent_framework_agreement
           end
 
-          def equivalent_active_lead_provider
+          def equivalent_framework_agreement
             return unless training_period.only_expression_of_interest?
 
-            @equivalent_active_lead_provider ||= ActiveLeadProvider.find_by(
+            @equivalent_framework_agreement ||= FrameworkAgreement.find_by(
               lead_provider: training_period.expression_of_interest_lead_provider,
               contract_period:
             )

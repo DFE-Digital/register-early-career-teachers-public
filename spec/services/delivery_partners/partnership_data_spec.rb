@@ -13,23 +13,23 @@ describe DeliveryPartners::PartnershipData do
   let(:delivery_partner_3) { FactoryBot.create(:delivery_partner) }
 
   before do
-    active_lead_provider_1 = FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_1, contract_period: contract_period_2025)
-    active_lead_provider_2 = FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_1, contract_period: contract_period_2026)
-    active_lead_provider_3 = FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_2, contract_period: contract_period_2025)
-    active_lead_provider_4 = FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_2, contract_period: contract_period_2026)
+    framework_agreement_1 = FactoryBot.create(:framework_agreement, lead_provider: lead_provider_1, contract_period: contract_period_2025)
+    framework_agreement_2 = FactoryBot.create(:framework_agreement, lead_provider: lead_provider_1, contract_period: contract_period_2026)
+    framework_agreement_3 = FactoryBot.create(:framework_agreement, lead_provider: lead_provider_2, contract_period: contract_period_2025)
+    framework_agreement_4 = FactoryBot.create(:framework_agreement, lead_provider: lead_provider_2, contract_period: contract_period_2026)
 
     # not included
-    FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner: delivery_partner_2, active_lead_provider: active_lead_provider_4)
-    FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner: delivery_partner_2, active_lead_provider: active_lead_provider_2)
+    FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner: delivery_partner_2, framework_agreement: framework_agreement_4)
+    FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner: delivery_partner_2, framework_agreement: framework_agreement_2)
 
     # 2025, lead_provider_1
-    FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner: delivery_partner_1, active_lead_provider: active_lead_provider_1)
+    FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner: delivery_partner_1, framework_agreement: framework_agreement_1)
 
     # 2025, lead_provider_2
-    FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner: delivery_partner_1, active_lead_provider: active_lead_provider_3)
+    FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner: delivery_partner_1, framework_agreement: framework_agreement_3)
 
     # 2026, lead_provider 2
-    FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner: delivery_partner_1, active_lead_provider: active_lead_provider_4)
+    FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner: delivery_partner_1, framework_agreement: framework_agreement_4)
   end
 
   describe "#partners_by_contract_period" do

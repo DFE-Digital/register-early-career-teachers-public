@@ -12,9 +12,9 @@ RSpec.describe APISeedData::ECTDeclarationScenarios do
 
     # API::Declarations::Create validates that an open output fee statement with a
     # future deadline exists for the lead provider's contract period
-    active_lead_provider = school_partnership.active_lead_provider
+    framework_agreement = school_partnership.framework_agreement
     FactoryBot.create(:statement, :open, :output_fee,
-                      active_lead_provider:,
+                      framework_agreement:,
                       month: 1.month.from_now.month,
                       year: 1.month.from_now.year,
                       deadline_date: 1.month.from_now.to_date,

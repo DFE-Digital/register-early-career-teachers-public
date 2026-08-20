@@ -4,7 +4,7 @@ RSpec.describe "admin/finance/contract_periods/show.html.erb" do
   before do
     assign(:contract_period, contract_period)
     assign(:editable, !contract_period.started_on_or_before_today?)
-    assign(:has_lead_providers, contract_period.active_lead_providers.any?)
+    assign(:has_lead_providers, contract_period.framework_agreements.any?)
     assign(:has_schedules, contract_period.schedules.any?)
     assign(:breadcrumbs, {
       "Finance" => admin_finance_path,
@@ -78,7 +78,7 @@ RSpec.describe "admin/finance/contract_periods/show.html.erb" do
   end
 
   describe "lead providers task" do
-    context "when the contract period has not yet started and has no active lead providers" do
+    context "when the contract period has not yet started and has no framework agreements" do
       let(:contract_period) do
         FactoryBot.create(:contract_period, year: 2099, started_on: Date.new(2099, 6, 1), finished_on: Date.new(2100, 5, 31))
       end
@@ -93,13 +93,13 @@ RSpec.describe "admin/finance/contract_periods/show.html.erb" do
       end
     end
 
-    context "when the contract period has not yet started and has active lead providers" do
+    context "when the contract period has not yet started and has framework agreements" do
       let(:contract_period) do
         FactoryBot.create(:contract_period, year: 2099, started_on: Date.new(2099, 6, 1), finished_on: Date.new(2100, 5, 31))
       end
 
       before do
-        FactoryBot.create(:active_lead_provider, contract_period:)
+        FactoryBot.create(:framework_agreement, contract_period:)
       end
 
       it "shows the task as completed and selectable" do
@@ -112,13 +112,13 @@ RSpec.describe "admin/finance/contract_periods/show.html.erb" do
       end
     end
 
-    context "when the contract period has started and has active lead providers" do
+    context "when the contract period has started and has framework agreements" do
       let(:contract_period) do
         FactoryBot.create(:contract_period, year: 2020, started_on: Date.new(2020, 6, 1), finished_on: Date.new(2021, 5, 31))
       end
 
       before do
-        FactoryBot.create(:active_lead_provider, contract_period:)
+        FactoryBot.create(:framework_agreement, contract_period:)
       end
 
       it "shows the task as completed and selectable" do

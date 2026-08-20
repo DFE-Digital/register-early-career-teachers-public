@@ -10,7 +10,7 @@ module Admin
       end
 
       def lead_provider_id
-        @statement.active_lead_provider.lead_provider_id
+        @statement.framework_agreement.lead_provider_id
       end
 
       def contract_periods
@@ -18,7 +18,7 @@ module Admin
       end
 
       def contract_period_year
-        @statement.active_lead_provider.contract_period_year
+        @statement.framework_agreement.contract_period_year
       end
 
       def statement_dates

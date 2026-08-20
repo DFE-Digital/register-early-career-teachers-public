@@ -7,8 +7,8 @@ describe API::DeliveryPartnerSerializer, type: :serializer do
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
   let(:contract_period) { FactoryBot.create(:contract_period, :current) }
   let(:previous_contract_period) { FactoryBot.create(:contract_period, :previous) }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
-  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:, contract_period:) }
+  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:) }
   let(:delivery_partner) do
     lead_provider_delivery_partnership.delivery_partner.tap do |dp|
       dp.created_at = created_at
@@ -21,8 +21,8 @@ describe API::DeliveryPartnerSerializer, type: :serializer do
   before do
     # Ensure a delivery partnership exists with a different lead provider
     # and contract period, to ensure it is not included in the `cohort` attribute.
-    other_active_lead_provider = FactoryBot.create(:active_lead_provider, contract_period: previous_contract_period)
-    FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: other_active_lead_provider, delivery_partner:)
+    other_framework_agreement = FactoryBot.create(:framework_agreement, contract_period: previous_contract_period)
+    FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement: other_framework_agreement, delivery_partner:)
   end
 
   describe "core attributes" do
@@ -43,10 +43,10 @@ describe API::DeliveryPartnerSerializer, type: :serializer do
     end
 
     context "when there are multiple delivery partnerships for the same lead provider" do
-      let(:other_active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: previous_contract_period) }
+      let(:other_framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:, contract_period: previous_contract_period) }
 
       before do
-        FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: other_active_lead_provider, delivery_partner:)
+        FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement: other_framework_agreement, delivery_partner:)
       end
 
       it "includes the contract period year only once in the cohort attribute" do

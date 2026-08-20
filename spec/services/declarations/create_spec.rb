@@ -9,9 +9,9 @@ RSpec.describe Declarations::Create do
   let(:declaration_datetime) { Faker::Time.between(from: milestone.start_date, to: milestone.milestone_date) }
   let(:declaration_date) { declaration_datetime.iso8601 }
   let(:contract_period) { training_period.contract_period }
-  let(:active_lead_provider) { training_period.active_lead_provider }
+  let(:framework_agreement) { training_period.framework_agreement }
   let(:delivery_partner) { training_period.delivery_partner }
-  let(:payment_statement) { FactoryBot.create(:statement, :open, active_lead_provider:) }
+  let(:payment_statement) { FactoryBot.create(:statement, :open, framework_agreement:) }
 
   let(:service) do
     described_class.new(

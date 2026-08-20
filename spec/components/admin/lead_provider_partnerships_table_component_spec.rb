@@ -7,20 +7,20 @@ RSpec.describe Admin::LeadProviderPartnershipsTableComponent, type: :component d
   let(:lead_provider_2) { FactoryBot.create(:lead_provider, name: "Lead Provider Two") }
   let(:lead_provider_3) { FactoryBot.create(:lead_provider, name: "Lead Provider Three") }
 
-  let(:active_lead_provider_1) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_1, contract_period: contract_period_2024) }
-  let(:active_lead_provider_2) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_2, contract_period: contract_period_2024) }
-  let(:active_lead_provider_3) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_3, contract_period: contract_period_2025) }
+  let(:framework_agreement_1) { FactoryBot.create(:framework_agreement, lead_provider: lead_provider_1, contract_period: contract_period_2024) }
+  let(:framework_agreement_2) { FactoryBot.create(:framework_agreement, lead_provider: lead_provider_2, contract_period: contract_period_2024) }
+  let(:framework_agreement_3) { FactoryBot.create(:framework_agreement, lead_provider: lead_provider_3, contract_period: contract_period_2025) }
 
   let(:partnerships_2024) do
     [
-      FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner:, active_lead_provider: active_lead_provider_1),
-      FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner:, active_lead_provider: active_lead_provider_2)
+      FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner:, framework_agreement: framework_agreement_1),
+      FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner:, framework_agreement: framework_agreement_2)
     ]
   end
 
   let(:partnerships_2025) do
     [
-      FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner:, active_lead_provider: active_lead_provider_3)
+      FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner:, framework_agreement: framework_agreement_3)
     ]
   end
 

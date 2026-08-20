@@ -40,7 +40,7 @@ RSpec.shared_examples "an API update endpoint" do |example_options|
   end
 
   context "when the resource has a different lead provider" do
-    let(:resource) { create_resource(active_lead_provider: FactoryBot.create(:active_lead_provider)) }
+    let(:resource) { create_resource(framework_agreement: FactoryBot.create(:framework_agreement)) }
 
     it "returns a 404 response" do
       authenticated_api_put(path, params:)

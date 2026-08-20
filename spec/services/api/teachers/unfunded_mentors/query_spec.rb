@@ -19,7 +19,7 @@ RSpec.describe API::Teachers::UnfundedMentors::Query, :with_metadata do
     FactoryBot.create(
       :school_partnership,
       :for_year,
-      year: school_partnership.lead_provider_delivery_partnership.active_lead_provider.contract_period_year,
+      year: school_partnership.lead_provider_delivery_partnership.framework_agreement.contract_period_year,
       school: school_partnership.school
     )
   end

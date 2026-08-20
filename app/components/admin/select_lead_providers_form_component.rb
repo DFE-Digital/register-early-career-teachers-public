@@ -25,7 +25,7 @@ module Admin
     end
 
     def all_lead_providers_for_period
-      @all_lead_providers_for_period ||= ActiveLeadProvider
+      @all_lead_providers_for_period ||= FrameworkAgreement
         .joins(:lead_provider)
         .where(contract_period:)
         .includes(:lead_provider)
