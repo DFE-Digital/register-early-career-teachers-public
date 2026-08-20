@@ -14,7 +14,7 @@ erDiagram
   Contract_BandedFeeStructure_BandTerm }o--|| FrameworkAgreement_Band : belongs_to
   FrameworkAgreement_Band {
     integer id
-    integer active_lead_provider_id
+    integer framework_agreement_id
     integer allocation_order
     integer capacity
     datetime created_at
@@ -206,7 +206,6 @@ erDiagram
     string trn
     boolean trnless
     datetime trs_data_last_refreshed_at
-    boolean trs_deactivated
     string trs_first_name
     date trs_induction_completed_date
     date trs_induction_start_date
@@ -214,7 +213,6 @@ erDiagram
     date trs_initial_teacher_training_end_date
     string trs_initial_teacher_training_provider_name
     string trs_last_name
-    boolean trs_not_found
     date trs_qts_awarded_on
     string trs_qts_status_description
     datetime updated_at
@@ -308,7 +306,7 @@ erDiagram
   LegacyAppropriateBody }o--|| AppropriateBodyPeriod : belongs_to
   LeadProviderDeliveryPartnership {
     integer id
-    integer active_lead_provider_id
+    integer framework_agreement_id
     datetime created_at
     integer delivery_partner_id
     uuid ecf_id
@@ -443,7 +441,7 @@ erDiagram
   }
   Contract {
     integer id
-    integer active_lead_provider_id
+    integer framework_agreement_id
     enum contract_type
     datetime created_at
     datetime updated_at

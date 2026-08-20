@@ -11,9 +11,9 @@ describe LeadProviderDeliveryPartnership do
   describe "validation" do
     subject { FactoryBot.create(:lead_provider_delivery_partnership) }
 
-    it { is_expected.to validate_presence_of(:active_lead_provider_id).with_message("Select a lead provider framework agreement") }
+    it { is_expected.to validate_presence_of(:framework_agreement_id).with_message("Select a lead provider framework agreement") }
     it { is_expected.to validate_presence_of(:delivery_partner_id).with_message("Select a delivery partner") }
-    it { is_expected.to validate_uniqueness_of(:delivery_partner_id).scoped_to(:active_lead_provider_id).with_message("Delivery partner and lead provider framework agreement pairing must be unique") }
+    it { is_expected.to validate_uniqueness_of(:delivery_partner_id).scoped_to(:framework_agreement_id).with_message("Delivery partner and lead provider framework agreement pairing must be unique") }
   end
 
   describe "scopes" do
@@ -99,28 +99,28 @@ describe LeadProviderDeliveryPartnership do
 
       it "returns framework agreement IDs for the specified delivery partner and contract period" do
         result = LeadProviderDeliveryPartnership.framework_agreement_ids_for(delivery_partner, contract_period)
-        expect(result.pluck(:active_lead_provider_id)).to contain_exactly(alp_with_partnership.id)
+        expect(result.pluck(:framework_agreement_id)).to contain_exactly(alp_with_partnership.id)
       end
 
       it "excludes partnerships with other delivery partners" do
         result = LeadProviderDeliveryPartnership.framework_agreement_ids_for(delivery_partner, contract_period)
-        expect(result.pluck(:active_lead_provider_id)).not_to include(alp_other_delivery_partner.id)
+        expect(result.pluck(:framework_agreement_id)).not_to include(alp_other_delivery_partner.id)
       end
 
       it "excludes partnerships from other contract periods" do
         result = LeadProviderDeliveryPartnership.framework_agreement_ids_for(delivery_partner, contract_period)
-        expect(result.pluck(:active_lead_provider_id)).not_to include(alp_other_contract_period.id)
+        expect(result.pluck(:framework_agreement_id)).not_to include(alp_other_contract_period.id)
       end
 
       it "excludes framework agreements with no partnerships" do
         result = LeadProviderDeliveryPartnership.framework_agreement_ids_for(delivery_partner, contract_period)
-        expect(result.pluck(:active_lead_provider_id)).not_to include(alp_no_partnership.id)
+        expect(result.pluck(:framework_agreement_id)).not_to include(alp_no_partnership.id)
       end
 
       it "returns a select query that can be used in subqueries" do
         result = LeadProviderDeliveryPartnership.framework_agreement_ids_for(delivery_partner, contract_period)
         expect(result.to_sql).to include("SELECT")
-        expect(result.to_sql).to include("active_lead_provider_id")
+        expect(result.to_sql).to include("framework_agreement_id")
       end
     end
   end

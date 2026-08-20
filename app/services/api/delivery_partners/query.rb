@@ -42,7 +42,7 @@ module API::DeliveryPartners
 
       delivery_partners_with_lead_provider = DeliveryPartner
         .joins(:framework_agreements)
-        .where(active_lead_providers: { lead_provider_id: })
+        .where(framework_agreements: { lead_provider_id: })
 
       scope.merge!(delivery_partners_with_lead_provider)
     end

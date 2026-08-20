@@ -60,7 +60,7 @@ RSpec.describe "Admin::Schools::AddPartnershipWizardController", type: :request 
 
       post(
         path_for_step("select-lead-provider"),
-        params: { select_lead_provider: { active_lead_provider_id: framework_agreement.id } }
+        params: { select_lead_provider: { framework_agreement_id: framework_agreement.id } }
       )
 
       expect(response).to redirect_to(path_for_step("select-delivery-partner"))
@@ -116,7 +116,7 @@ RSpec.describe "Admin::Schools::AddPartnershipWizardController", type: :request 
 
       post(
         path_for_step("select-lead-provider"),
-        params: { select_lead_provider: { active_lead_provider_id: "" } }
+        params: { select_lead_provider: { framework_agreement_id: "" } }
       )
       expect(response.body).to include("Select a lead provider")
     end
@@ -130,7 +130,7 @@ RSpec.describe "Admin::Schools::AddPartnershipWizardController", type: :request 
 
       post(
         path_for_step("select-lead-provider"),
-        params: { select_lead_provider: { active_lead_provider_id: framework_agreement.id } }
+        params: { select_lead_provider: { framework_agreement_id: framework_agreement.id } }
       )
       follow_redirect!
 
@@ -156,7 +156,7 @@ RSpec.describe "Admin::Schools::AddPartnershipWizardController", type: :request 
 
       post(
         path_for_step("select-lead-provider"),
-        params: { select_lead_provider: { active_lead_provider_id: framework_agreement.id } }
+        params: { select_lead_provider: { framework_agreement_id: framework_agreement.id } }
       )
       follow_redirect!
 

@@ -207,7 +207,7 @@ module DataCorrections
             .joins(lead_provider_delivery_partnership: :framework_agreement)
             .where(
               school:,
-              active_lead_providers: {
+              framework_agreements: {
                 id: replacement_framework_agreement.id
               }
             ),

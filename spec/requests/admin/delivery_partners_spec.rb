@@ -308,7 +308,7 @@ RSpec.describe "Admin delivery partners", type: :request do
             }.to change(LeadProviderDeliveryPartnership, :count).by(-1)
 
             remaining_partnerships = delivery_partner.lead_provider_delivery_partnerships.reload
-            expect(remaining_partnerships.map(&:active_lead_provider_id)).to contain_exactly(framework_agreement_1.id)
+            expect(remaining_partnerships.map(&:framework_agreement_id)).to contain_exactly(framework_agreement_1.id)
           end
 
           it "redirects with success message" do
@@ -330,7 +330,7 @@ RSpec.describe "Admin delivery partners", type: :request do
             }.to change(LeadProviderDeliveryPartnership, :count).by(1)
 
             partnerships = delivery_partner.lead_provider_delivery_partnerships.reload
-            expect(partnerships.map(&:active_lead_provider_id)).to contain_exactly(
+            expect(partnerships.map(&:framework_agreement_id)).to contain_exactly(
               framework_agreement_1.id,
               framework_agreement_2.id,
               framework_agreement_3.id
@@ -360,7 +360,7 @@ RSpec.describe "Admin delivery partners", type: :request do
             # Verify the partnerships were updated correctly
             remaining_partnerships = delivery_partner.lead_provider_delivery_partnerships.for_contract_period(contract_period)
             expect(remaining_partnerships.count).to eq(1)
-            expect(remaining_partnerships.first.active_lead_provider_id).to eq(framework_agreement_1.id)
+            expect(remaining_partnerships.first.framework_agreement_id).to eq(framework_agreement_1.id)
 
             # Reopen form and verify only the selected provider is checked
             get new_path

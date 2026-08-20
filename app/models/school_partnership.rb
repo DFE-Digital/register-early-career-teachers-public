@@ -32,15 +32,15 @@ class SchoolPartnership < ApplicationRecord
   scope :for_contract_period, ->(year) { joins(:contract_period).where(contract_periods: { year: }) }
   scope :for_contract_period_year, ->(year) {
     joins(lead_provider_delivery_partnership: :framework_agreement)
-      .where(active_lead_providers: { contract_period_year: year })
+      .where(framework_agreements: { contract_period_year: year })
   }
   scope :excluding_contract_period_year, ->(year) {
     joins(lead_provider_delivery_partnership: :framework_agreement)
-      .where.not(active_lead_providers: { contract_period_year: year })
+      .where.not(framework_agreements: { contract_period_year: year })
   }
   scope :latest_by_contract_year, -> {
     joins(lead_provider_delivery_partnership: :framework_agreement)
-      .order("active_lead_providers.contract_period_year DESC, school_partnerships.created_at DESC")
+      .order("framework_agreements.contract_period_year DESC, school_partnerships.created_at DESC")
   }
 
   def teachers

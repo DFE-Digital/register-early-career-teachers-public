@@ -29,7 +29,7 @@ module DeliveryPartners
     end
 
     def current_framework_agreement_ids
-      @current_framework_agreement_ids ||= current_partnerships.map(&:active_lead_provider_id)
+      @current_framework_agreement_ids ||= current_partnerships.map(&:framework_agreement_id)
     end
 
     def framework_agreement_ids_to_add
@@ -37,8 +37,8 @@ module DeliveryPartners
     end
 
     def add_partnerships(ids_to_add)
-      ids_to_add.each do |active_lead_provider_id|
-        framework_agreement = FrameworkAgreement.find(active_lead_provider_id)
+      ids_to_add.each do |framework_agreement_id|
+        framework_agreement = FrameworkAgreement.find(framework_agreement_id)
         LeadProviderDeliveryPartnerships::Create.new(
           author:,
           framework_agreement:,

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_13_103015) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_19_155844) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -49,26 +49,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_13_103015) do
   create_enum "trs_responses", ["ok", "not_found", "gone", "permanent_redirect"]
   create_enum "withdrawal_reasons", ["left_teaching_profession", "moved_school", "mentor_no_longer_being_mentor", "switched_to_school_led", "other", "changed_lead_provider"]
   create_enum "working_pattern", ["part_time", "full_time"]
-
-  create_table "active_lead_provider_bands", force: :cascade do |t|
-    t.bigint "active_lead_provider_id", null: false
-    t.integer "allocation_order", null: false
-    t.integer "capacity", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["active_lead_provider_id", "allocation_order"], name: "idx_on_active_lead_provider_id_allocation_order_3a1b864c94", unique: true
-    t.index ["active_lead_provider_id"], name: "index_active_lead_provider_bands_on_active_lead_provider_id"
-  end
-
-  create_table "active_lead_providers", force: :cascade do |t|
-    t.bigint "contract_period_year", null: false
-    t.datetime "created_at", null: false
-    t.bigint "lead_provider_id", null: false
-    t.datetime "updated_at", null: false
-    t.index ["contract_period_year"], name: "index_active_lead_providers_on_contract_period_year"
-    t.index ["lead_provider_id", "contract_period_year"], name: "idx_on_lead_provider_id_contract_period_year_e442ca2260", unique: true
-    t.index ["lead_provider_id"], name: "index_active_lead_providers_on_lead_provider_id"
-  end
 
   create_table "api_tokens", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -209,12 +189,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_13_103015) do
   end
 
   create_table "contracts", force: :cascade do |t|
-    t.bigint "active_lead_provider_id", null: false
     t.enum "contract_type", null: false, enum_type: "contract_types"
     t.datetime "created_at", null: false
+    t.bigint "framework_agreement_id", null: false
     t.datetime "updated_at", null: false
     t.decimal "vat_rate", precision: 3, scale: 2, default: "0.2", null: false
-    t.index ["active_lead_provider_id"], name: "index_contracts_on_active_lead_provider_id"
+    t.index ["framework_agreement_id"], name: "index_contracts_on_framework_agreement_id"
   end
 
   create_table "declarations", force: :cascade do |t|
@@ -300,7 +280,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_13_103015) do
   end
 
   create_table "events", force: :cascade do |t|
-    t.bigint "active_lead_provider_id"
     t.integer "appropriate_body_period_id"
     t.citext "author_email"
     t.integer "author_id"
@@ -313,6 +292,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_13_103015) do
     t.integer "delivery_partner_id"
     t.integer "ect_at_school_period_id"
     t.text "event_type"
+    t.bigint "framework_agreement_id"
     t.datetime "happened_at", default: -> { "CURRENT_TIMESTAMP" }
     t.text "heading"
     t.integer "induction_extension_id"
@@ -334,7 +314,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_13_103015) do
     t.datetime "updated_at", null: false
     t.integer "user_id"
     t.integer "zendesk_ticket_id"
-    t.index ["active_lead_provider_id"], name: "index_events_on_active_lead_provider_id"
     t.index ["appropriate_body_period_id"], name: "index_events_on_appropriate_body_period_id"
     t.index ["author_email"], name: "index_events_on_author_email"
     t.index ["author_id"], name: "index_events_on_author_id"
@@ -342,6 +321,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_13_103015) do
     t.index ["declaration_id"], name: "index_events_on_declaration_id"
     t.index ["delivery_partner_id"], name: "index_events_on_delivery_partner_id"
     t.index ["ect_at_school_period_id"], name: "index_events_on_ect_at_school_period_id"
+    t.index ["framework_agreement_id"], name: "index_events_on_framework_agreement_id"
     t.index ["induction_extension_id"], name: "index_events_on_induction_extension_id"
     t.index ["induction_period_id"], name: "index_events_on_induction_period_id"
     t.index ["lead_provider_delivery_partnership_id"], name: "index_events_on_lead_provider_delivery_partnership_id"
@@ -356,6 +336,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_13_103015) do
     t.index ["teacher_id"], name: "index_events_on_teacher_id"
     t.index ["training_period_id"], name: "index_events_on_training_period_id"
     t.index ["user_id"], name: "index_events_on_user_id"
+  end
+
+  create_table "framework_agreement_bands", force: :cascade do |t|
+    t.integer "allocation_order", null: false
+    t.integer "capacity", null: false
+    t.datetime "created_at", null: false
+    t.bigint "framework_agreement_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["framework_agreement_id", "allocation_order"], name: "idx_on_framework_agreement_id_allocation_order_2df1ec5b5b", unique: true
+    t.index ["framework_agreement_id"], name: "index_framework_agreement_bands_on_framework_agreement_id"
+  end
+
+  create_table "framework_agreements", force: :cascade do |t|
+    t.bigint "contract_period_year", null: false
+    t.datetime "created_at", null: false
+    t.bigint "lead_provider_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["contract_period_year"], name: "index_framework_agreements_on_contract_period_year"
+    t.index ["lead_provider_id", "contract_period_year"], name: "idx_on_lead_provider_id_contract_period_year_4809d6983e", unique: true
+    t.index ["lead_provider_id"], name: "index_framework_agreements_on_lead_provider_id"
   end
 
   create_table "gias_school_links", force: :cascade do |t|
@@ -426,16 +426,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_13_103015) do
   end
 
   create_table "lead_provider_delivery_partnerships", force: :cascade do |t|
-    t.bigint "active_lead_provider_id", null: false
     t.datetime "created_at", null: false
     t.bigint "delivery_partner_id", null: false
     t.uuid "ecf_id"
+    t.bigint "framework_agreement_id", null: false
     t.datetime "updated_at", null: false
-    t.index ["active_lead_provider_id", "delivery_partner_id"], name: "idx_on_active_lead_provider_id_delivery_partner_id_3c66d9e812", unique: true
-    t.index ["active_lead_provider_id"], name: "idx_lpdps_active_lead_provider"
-    t.index ["active_lead_provider_id"], name: "idx_on_active_lead_provider_id_2f96b67fbb"
     t.index ["delivery_partner_id"], name: "idx_on_delivery_partner_id_fcb95e8215"
     t.index ["ecf_id"], name: "index_lead_provider_delivery_partnerships_on_ecf_id", unique: true
+    t.index ["framework_agreement_id", "delivery_partner_id"], name: "idx_on_framework_agreement_id_delivery_partner_id_9fd91dcb3d", unique: true
+    t.index ["framework_agreement_id"], name: "idx_lpdps_framework_agreement"
+    t.index ["framework_agreement_id"], name: "idx_on_framework_agreement_id_f85a3e1a68"
   end
 
   create_table "lead_providers", force: :cascade do |t|
@@ -956,16 +956,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_13_103015) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
-  add_foreign_key "active_lead_provider_bands", "active_lead_providers"
-  add_foreign_key "active_lead_providers", "contract_periods", column: "contract_period_year", primary_key: "year"
-  add_foreign_key "active_lead_providers", "lead_providers"
   add_foreign_key "appropriate_bodies", "dfe_sign_in_organisations"
   add_foreign_key "appropriate_body_periods", "appropriate_bodies"
-  add_foreign_key "contract_banded_fee_structure_band_terms", "active_lead_provider_bands", column: "band_id"
   add_foreign_key "contract_banded_fee_structure_band_terms", "contract_banded_fee_structures", column: "banded_fee_structure_id", on_delete: :cascade
+  add_foreign_key "contract_banded_fee_structure_band_terms", "framework_agreement_bands", column: "band_id"
   add_foreign_key "contract_banded_fee_structures", "contracts"
   add_foreign_key "contract_flat_rate_fee_structures", "contracts"
-  add_foreign_key "contracts", "active_lead_providers"
+  add_foreign_key "contracts", "framework_agreements"
   add_foreign_key "declarations", "delivery_partners", column: "delivery_partner_when_created_id"
   add_foreign_key "declarations", "statements", column: "clawback_statement_id"
   add_foreign_key "declarations", "statements", column: "payment_statement_id"
@@ -974,12 +971,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_13_103015) do
   add_foreign_key "ect_at_school_periods", "schools"
   add_foreign_key "ect_at_school_periods", "schools", column: "reported_leaving_by_school_id"
   add_foreign_key "ect_at_school_periods", "teachers"
-  add_foreign_key "events", "active_lead_providers", on_delete: :nullify
   add_foreign_key "events", "appropriate_body_periods", on_delete: :nullify
   add_foreign_key "events", "contract_periods", primary_key: "year", on_delete: :nullify
   add_foreign_key "events", "declarations", on_delete: :nullify
   add_foreign_key "events", "delivery_partners", on_delete: :nullify
   add_foreign_key "events", "ect_at_school_periods", on_delete: :nullify
+  add_foreign_key "events", "framework_agreements", on_delete: :nullify
   add_foreign_key "events", "induction_extensions", on_delete: :nullify
   add_foreign_key "events", "induction_periods", on_delete: :nullify
   add_foreign_key "events", "lead_provider_delivery_partnerships", on_delete: :nullify
@@ -995,6 +992,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_13_103015) do
   add_foreign_key "events", "training_periods", on_delete: :nullify
   add_foreign_key "events", "users", column: "author_id", on_delete: :nullify
   add_foreign_key "events", "users", on_delete: :nullify
+  add_foreign_key "framework_agreement_bands", "framework_agreements"
+  add_foreign_key "framework_agreements", "contract_periods", column: "contract_period_year", primary_key: "year"
+  add_foreign_key "framework_agreements", "lead_providers"
   add_foreign_key "gias_school_links", "gias_schools", column: "urn", primary_key: "urn"
   add_foreign_key "induction_extensions", "teachers"
   add_foreign_key "induction_periods", "appropriate_body_periods"
@@ -1043,8 +1043,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_13_103015) do
   add_foreign_key "teacher_id_changes", "teachers", column: "api_to_teacher_id", primary_key: "api_id"
   add_foreign_key "teachers", "contract_periods", column: "ect_payments_frozen_year", primary_key: "year"
   add_foreign_key "teachers", "contract_periods", column: "mentor_payments_frozen_year", primary_key: "year"
-  add_foreign_key "training_periods", "active_lead_providers", column: "expression_of_interest_id"
   add_foreign_key "training_periods", "ect_at_school_periods"
+  add_foreign_key "training_periods", "framework_agreements", column: "expression_of_interest_id"
   add_foreign_key "training_periods", "mentor_at_school_periods"
   add_foreign_key "training_periods", "schedules"
   add_foreign_key "training_periods", "school_partnerships"

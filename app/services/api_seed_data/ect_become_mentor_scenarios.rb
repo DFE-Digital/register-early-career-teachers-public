@@ -131,13 +131,13 @@ module APISeedData
     def teachers_with_ect_and_mentor_training(lead_provider:, ect_year:, mentor_year:)
       teachers_with_ect = Teacher
         .joins(ect_at_school_periods: { training_periods: { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } } })
-        .where(active_lead_providers: { lead_provider_id: lead_provider.id })
+        .where(framework_agreements: { lead_provider_id: lead_provider.id })
         .where(training_periods: { started_on: Date.new(ect_year, 1, 1)..Date.new(ect_year, 12, 31) })
         .select(:id)
 
       Teacher
         .joins(mentor_at_school_periods: { training_periods: { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } } })
-        .where(active_lead_providers: { lead_provider_id: lead_provider.id })
+        .where(framework_agreements: { lead_provider_id: lead_provider.id })
         .where(training_periods: { started_on: Date.new(mentor_year, 1, 1)..Date.new(mentor_year, 12, 31) })
         .where(id: teachers_with_ect)
         .distinct

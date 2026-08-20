@@ -33,7 +33,7 @@ module APISeedData
         lead_providers.find_each do |lead_provider|
           school_partnership = SchoolPartnership
             .joins(:school, lead_provider_delivery_partnership: :framework_agreement)
-            .where(active_lead_providers: { lead_provider_id: lead_provider.id, contract_period_year: sit_year })
+            .where(framework_agreements: { lead_provider_id: lead_provider.id, contract_period_year: sit_year })
             .where.not(schools: { induction_tutor_name: nil })
             .order("RANDOM()")
             .first
@@ -49,7 +49,7 @@ module APISeedData
 
           mentor_period = MentorAtSchoolPeriod
             .with_partnerships_for_contract_period(mentor_year)
-            .where(active_lead_providers: { lead_provider_id: lead_provider.id })
+            .where(framework_agreements: { lead_provider_id: lead_provider.id })
             .includes(:teacher, :school)
             .order("RANDOM()")
             .first
