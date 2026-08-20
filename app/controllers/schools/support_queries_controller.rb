@@ -11,7 +11,7 @@ module Schools
         @support_query.send_to_zendesk_later
         render
       else
-        render :new, status: :unprocessable_content
+        render :new
       end
     end
 
