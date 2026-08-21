@@ -1,0 +1,29 @@
+<%= form_with url: form_url, method: :get, data: { turbo: false }, html: { class: "app-teachers-filters" } do |f| %>
+  <%= f.govuk_text_field(
+        :q,
+        value: filter_params[:q],
+        label: { text: "Search for teacher", size: "s" },
+        hint: { text: "Name, TRN, API participant or training record ID" },
+        form_group: { class: "app-teachers-filters__search" }
+      ) %>
+
+  <%= f.govuk_collection_select(
+        :role,
+        role_filter_options,
+        :value,
+        :name,
+        label: { text: "Role", size: "s" },
+        options: { selected: filter_params[:role], include_blank: "All" }
+      ) %>
+
+  <%= f.govuk_collection_select(
+        :contract_period,
+        contract_period_filter_options,
+        :value,
+        :name,
+        label: { text: "Contract period", size: "s" },
+        options: { selected: filter_params[:contract_period], include_blank: "All" }
+      ) %>
+
+  <%= f.govuk_submit "Search", secondary: true %>
+<% end %>
