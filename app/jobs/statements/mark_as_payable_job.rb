@@ -1,5 +1,5 @@
 module Statements
-  class MarkAsPayableJob < ApplicationJob
+  class MarkAsPayableJob < RecurringJob
     def perform
       Statements::MarkAsPayable.mark_all_eligible!
     end

@@ -1,4 +1,8 @@
 class ApplicationJob < ActiveJob::Base
+  # Will retry with an polynomial backoff for approximately 24 hours before failing.
+  # See https://api.rubyonrails.org/v8.0/classes/ActiveJob/Exceptions/ClassMethods.html#method-i-retry_on
+  retry_on Exception, wait: :polynomially_longer, attempts: 14
+
   # Automatically retry jobs that encountered a deadlock
   # retry_on ActiveRecord::Deadlocked
 

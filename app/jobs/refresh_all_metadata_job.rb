@@ -1,4 +1,4 @@
-class RefreshAllMetadataJob < ApplicationJob
+class RefreshAllMetadataJob < RecurringJob
   queue_as :metadata
 
   def perform
