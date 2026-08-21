@@ -56,7 +56,6 @@ RSpec.describe "admin/finance/active_lead_providers/bands/index.html.erb" do
   context "when the provider has a contract" do
     before do
       FactoryBot.create(:contract, active_lead_provider:)
-      active_lead_provider.reload
     end
 
     it "does not show delete or add band links" do

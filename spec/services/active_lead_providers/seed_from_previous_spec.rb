@@ -43,7 +43,7 @@ RSpec.describe ActiveLeadProviders::SeedFromPrevious do
         let(:new_statements) { new_contract.statements }
 
         it "builds open statements for the new contract period, mirroring the previous ones" do
-          expect(new_statements.size).to eq previous_statements.reload.size
+          expect(new_statements.size).to eq previous_statements.size
           expect(new_statements.map(&:status).uniq).to eq %w[open]
           expect(new_statements.map { |s| [s.month, s.year] })
             .to match_array(previous_statements.map { |s| [s.month, s.year + 1] })
