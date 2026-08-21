@@ -1,8 +1,7 @@
 class BeginECTInductionJob < ApplicationJob
-  include TRS::RetryableClient
-
   def perform(trn:, start_date:, pending_induction_submission_id: nil)
     ActiveRecord::Base.transaction do
+      api_client = TRS::APIClient.build
       api_client.begin_induction!(trn:, start_date:)
 
       if pending_induction_submission_id.present?
