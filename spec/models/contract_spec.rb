@@ -17,6 +17,7 @@ describe Contract do
     it { is_expected.to have_one(:flat_rate_fee_structure).class_name("Contract::FlatRateFeeStructure").inverse_of(:contract) }
     it { is_expected.to have_one(:contract_period).through(:active_lead_provider) }
     it { is_expected.to have_many(:statements).inverse_of(:contract) }
+    it { is_expected.to have_many(:payment_declarations).through(:statements) }
   end
 
   describe "scopes" do

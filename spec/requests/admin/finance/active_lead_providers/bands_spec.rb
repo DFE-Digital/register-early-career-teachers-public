@@ -177,7 +177,7 @@ RSpec.describe "Admin finance active lead provider bands", type: :request do
 
       context "when the params are invalid" do
         it "re-renders with an error status" do
-          patch band_path, params: { active_lead_provider_band: { capacity: 75 } }
+          patch band_path, params: { active_lead_provider_band: { capacity: "banana" } }
 
           expect(response).to have_http_status(:unprocessable_content)
         end

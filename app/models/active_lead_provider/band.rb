@@ -30,7 +30,7 @@ class ActiveLeadProvider::Band < ApplicationRecord
               message: "Capacity must be a number greater than zero"
             }
 
-  validate :capacity_can_only_increase
+  validate :capacity_cannot_be_less_than_total_payment_declarations
 
   validate :bands_can_be_added_and_removed, on: :create, unless: :allow_creation_when_contracted_or_after_contract_period_start
 
@@ -111,11 +111,14 @@ private
     end
   end
 
-  def capacity_can_only_increase
-    old_capacity, new_capacity = capacity_change_to_be_saved
+  def capacity_cannot_be_less_than_total_payment_declarations
+    return if active_lead_provider.blank?
 
-    if old_capacity.present? && new_capacity.present? && new_capacity < old_capacity
-      errors.add(:capacity, "can only be increased")
+    minimum_capacity = active_lead_provider.payment_declarations.count - prior_capacity
+    minimum_capacity = 1 unless minimum_capacity.positive?
+
+    if capacity.present? && capacity < minimum_capacity
+      errors.add(:capacity, "Band #{letter} capacity must be at least #{minimum_capacity} to cover the existing payment declarations")
     end
   end
 
