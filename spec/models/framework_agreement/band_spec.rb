@@ -16,20 +16,18 @@ RSpec.describe FrameworkAgreement::Band, type: :model do
     it { is_expected.to validate_numericality_of(:capacity).is_greater_than(0).only_integer.with_message("Capacity must be a number greater than zero") }
 
     context "changing capacity" do
-      let!(:band_a) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:, capacity: 500) }
-      let!(:band_b) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:, capacity: 500) }
-      let!(:band_c) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:, capacity: 500) }
+      let!(:band_a) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:, capacity: 2) }
+      let!(:band_b) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:, capacity: 2) }
+      let!(:band_c) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:, capacity: 5) }
 
-      before do
-        allow(active_lead_provider).to receive(:payment_declarations_count).and_return(1400)
-      end
+      let!(:declarations) { FactoryBot.create_list(:declaration, 8, :paid, active_lead_provider:) }
 
       it "validates that the combined capacity cannot be less than the number of payment declarations" do
-        band_c.capacity = 100
-        expect(band_c).not_to be_valid
-        expect(band_c.errors[:capacity]).to include("Band C capacity must be at least 400 to cover the existing payment declarations")
+        band_c.capacity = 2
+        expect(band_c).to be_invalid
+        expect(band_c.errors[:capacity]).to include("Band C capacity must be at least 4 to cover the existing payment declarations")
 
-        band_c.capacity = 400
+        band_c.capacity = 4
         expect(band_c).to be_valid
       end
     end
