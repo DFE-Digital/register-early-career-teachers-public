@@ -65,9 +65,9 @@ If a mentor has had fewer than 2 years access to funded training before they wer
 
 #### Mentors in the 2021 or 2022 cohorts with no declarations 
 
-These mentors are eligible to restart training under the early career teacher training programme ECTPM contract from 2025 onwards.  
+If these mentors have had less than 2 years access to training materials, they’re eligible to restart training under the ECTPM contract from 2025 onwards. 
 
-Completion dates for these mentors will need to be removed by DfE Digital Engagement leads and declarations will need to be made with over the API. 
+If lead providers can confirm this criteria, they can use the API to transfer the mentor into the current cohort and declare against them.
 
 #### Mentors in the 2021 or 2022 cohorts with one declaration
 
