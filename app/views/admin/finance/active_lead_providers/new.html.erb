@@ -1,5 +1,6 @@
 <% page_data(
      title: "Add a lead provider for #{@contract_period.year}",
+     error: @active_lead_provider.errors.any?,
      backlink_href: admin_contract_period_active_lead_providers_path(@contract_period),
    ) %>
 
