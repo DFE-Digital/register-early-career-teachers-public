@@ -101,6 +101,94 @@ RSpec.describe Schools::AssignMentor do
       end
     end
 
+    describe "closing upcoming mentorships" do
+      let(:current_mentor) do
+        FactoryBot.create(
+          :mentor_at_school_period,
+          :unfinished,
+          started_on: 6.months.ago,
+          school: mentee.school
+        )
+      end
+      let(:upcoming_mentor) do
+        FactoryBot.create(
+          :mentor_at_school_period,
+          :unfinished,
+          started_on: 6.months.ago,
+          school: mentee.school
+        )
+      end
+      let!(:current_mentorship_period) do
+        FactoryBot.create(
+          :mentorship_period,
+          mentee:,
+          mentor: current_mentor,
+          started_on: 6.months.ago,
+          finished_on: 1.month.from_now
+        )
+      end
+      let!(:upcoming_mentorship_period) do
+        FactoryBot.create(
+          :mentorship_period,
+          :unfinished,
+          mentee:,
+          mentor: upcoming_mentor,
+          started_on: 1.month.from_now.next_day
+        )
+      end
+
+      it "destroys the upcoming mentorship period" do
+        assign!
+
+        expect { upcoming_mentorship_period.reload }
+          .to raise_error(ActiveRecord::RecordNotFound)
+      end
+
+      it "destroys the events recorded against the upcoming mentorship period" do
+        FactoryBot.create(:event, mentorship_period: upcoming_mentorship_period)
+
+        expect { assign! }
+          .to change { Event.where(mentorship_period: upcoming_mentorship_period).count }
+          .from(1).to(0)
+      end
+
+      it "finishes the current mentorship period the day before the new one starts" do
+        expect { assign! }
+          .to change { current_mentorship_period.reload.finished_on }
+          .to(Date.yesterday)
+      end
+
+      it "leaves the new mentor as the only current or upcoming mentor" do
+        assign!
+
+        expect(mentee.reload.mentorship_periods.current_or_future.map(&:mentor))
+          .to contain_exactly(new_mentor)
+      end
+
+      context "when the new mentor starts in the future" do
+        let(:new_mentor_started_on) { 2.months.from_now }
+
+        it "destroys the upcoming mentorship period" do
+          assign!
+
+          expect { upcoming_mentorship_period.reload }
+            .to raise_error(ActiveRecord::RecordNotFound)
+        end
+
+        it "does not extend the current mentorship period" do
+          expect { assign! }
+            .not_to(change { current_mentorship_period.reload.finished_on })
+        end
+
+        it "starts the new mentorship when the new mentor starts" do
+          assign!
+
+          expect(mentee.reload.mentorship_periods.last)
+            .to have_attributes(mentor: new_mentor, started_on: new_mentor_started_on.to_date)
+        end
+      end
+    end
+
     describe "assigning the new mentor" do
       before do
         allow(Schools::MentorAssignment::MentorshipPeriods::DatesResolver)
