@@ -9,6 +9,7 @@ class ActiveLeadProvider < ApplicationRecord
   has_many :events
   has_many :contracts
   has_many :statements, through: :contracts
+  has_many :payment_declarations, through: :statements
   has_many :bands, -> { order(allocation_order: :asc) }, class_name: "ActiveLeadProvider::Band"
 
   # Validations
@@ -38,10 +39,6 @@ class ActiveLeadProvider < ApplicationRecord
   delegate :finished_on_before_today?, to: :contract_period
 
   def editable? = !contract_period.payments_frozen?
-
-  def payment_declarations_count
-    contracts.joins(:payment_declarations).where(payment_declarations: { clawback_status: :no_clawback }).count
-  end
 
   def bands_can_be_added_and_removed?
     contracts.none? && contract_period.started_on.future?

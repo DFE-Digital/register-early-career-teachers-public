@@ -3,6 +3,7 @@ describe ActiveLeadProvider do
     it { is_expected.to belong_to(:contract_period).with_foreign_key(:contract_period_year) }
     it { is_expected.to belong_to(:lead_provider) }
     it { is_expected.to have_many(:statements).through(:contracts) }
+    it { is_expected.to have_many(:payment_declarations).through(:statements) }
     it { is_expected.to have_many(:lead_provider_delivery_partnerships) }
     it { is_expected.to have_many(:school_partnerships).through(:lead_provider_delivery_partnerships) }
     it { is_expected.to have_many(:delivery_partners).through(:lead_provider_delivery_partnerships) }
@@ -199,17 +200,6 @@ describe ActiveLeadProvider do
       context "and the contract period has started" do
         it { travel_to(contract_period.started_on) { is_expected.to be false } }
       end
-    end
-  end
-
-  describe "#payment_declarations_count" do
-    let(:contract_period) { FactoryBot.create(:contract_period, :next) }
-    let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
-    let!(:payment_declarations) { FactoryBot.create_list(:declaration, 2, :payable, active_lead_provider:) }
-    let!(:clawback_declarations) { FactoryBot.create_list(:declaration, 2, :clawed_back, active_lead_provider:) }
-
-    it "returns the total of payment declarations from all contracts and statements" do
-      expect(active_lead_provider.payment_declarations_count).to eq payment_declarations.count
     end
   end
 end

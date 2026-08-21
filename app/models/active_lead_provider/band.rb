@@ -114,7 +114,7 @@ private
   def capacity_cannot_be_less_than_total_payment_declarations
     return if active_lead_provider.blank?
 
-    minimum_capacity = active_lead_provider.payment_declarations_count - prior_capacity
+    minimum_capacity = active_lead_provider.payment_declarations.count - prior_capacity
     minimum_capacity = 1 unless minimum_capacity.positive?
 
     if capacity.present? && capacity < minimum_capacity
