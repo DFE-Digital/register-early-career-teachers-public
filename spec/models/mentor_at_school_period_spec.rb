@@ -5,6 +5,14 @@ describe MentorAtSchoolPeriod do
       let!(:target) { FactoryBot.create(:school) }
 
       it_behaves_like "a declarative metadata model", on_event: %i[create destroy update]
+
+      describe "previous school target" do
+        def will_change_attribute(attribute_to_change:, new_value:)
+          DeclarativeUpdates.skip(:metadata) { FactoryBot.create(:school, id: new_value) } if attribute_to_change == :school_id
+        end
+
+        it_behaves_like "a declarative metadata model", on_event: %i[update], when_changing: %i[school_id], target_optional: false
+      end
     end
 
     describe "teacher target" do
