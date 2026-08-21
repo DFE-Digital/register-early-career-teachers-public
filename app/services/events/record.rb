@@ -525,6 +525,25 @@ module Events
       new(event_type:, author:, heading:, ect_at_school_period:, school:, teacher:, happened_at:).record_event!
     end
 
+    def self.record_teacher_school_start_date_updated_event!(old_start_date:, new_start_date:, author:, ect_at_school_period:, school:, teacher:, happened_at:)
+      event_type = :teacher_school_start_date_updated
+      heading = TransitionDescription.for(
+        "school start date",
+        from: old_start_date.to_fs(:govuk),
+        to: new_start_date.to_fs(:govuk)
+      )
+
+      new(
+        event_type:,
+        author:,
+        heading:,
+        ect_at_school_period:,
+        school:,
+        teacher:,
+        happened_at:
+      ).record_event!
+    end
+
     def self.record_teacher_training_programme_updated_event!(old_training_programme:, new_training_programme:, author:, ect_at_school_period:, school:, teacher:, happened_at:)
       event_type = :teacher_training_programme_updated
       heading = TransitionDescription.for(
