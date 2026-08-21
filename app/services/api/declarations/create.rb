@@ -1,6 +1,7 @@
 module API::Declarations
   class Create
-    include API::Concerns::Declarations::SharedAction
+    include API::Concerns::Declarationable
+    include API::Concerns::LeadProviderable
 
     TEACHER_TYPES = %i[ect mentor].freeze
 

@@ -1,5 +1,7 @@
 module API::Teachers
   class Defer
+    include API::Concerns::LeadProviderable
+    include API::Concerns::TeacherValidatable
     include API::Concerns::Teachers::SharedAction
 
     DEFERRAL_REASONS = TrainingPeriod.deferral_reasons.values.map(&:dasherize).freeze
