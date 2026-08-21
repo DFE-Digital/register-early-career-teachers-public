@@ -1373,6 +1373,46 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe ".record_teacher_school_start_date_updated_event!" do
+    let(:teacher) { FactoryBot.create(:teacher) }
+
+    let(:ect_at_school_period) do
+      FactoryBot.create(
+        :ect_at_school_period,
+        teacher:,
+        started_on: old_start_date
+      )
+    end
+
+    let(:old_start_date) { Date.new(2026, 9, 1) }
+    let(:new_start_date) { Date.new(2026, 10, 1) }
+
+    it "enqueues a RecordEventJob with the correct values" do
+      freeze_time
+
+      Events::Record
+        .record_teacher_school_start_date_updated_event!(
+          old_start_date:,
+          new_start_date:,
+          author:,
+          ect_at_school_period:,
+          school: ect_at_school_period.school,
+          teacher:,
+          happened_at: 20.seconds.ago
+        )
+
+      expect(RecordEventJob).to have_received(:perform_later).with(
+        teacher:,
+        school: ect_at_school_period.school,
+        ect_at_school_period:,
+        heading: "School start date changed from '1 September 2026' to '1 October 2026'",
+        event_type: :teacher_school_start_date_updated,
+        happened_at: 20.seconds.ago,
+        **author_params
+      )
+    end
+  end
+
   describe ".record_teacher_training_programme_updated_event!" do
     let(:teacher) { FactoryBot.create(:teacher) }
     let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
