@@ -1,7 +1,7 @@
 class API::StatementSerializer < Blueprinter::Base
   def self.dependencies
     %i[
-      active_lead_provider
+      framework_agreement
     ]
   end
 

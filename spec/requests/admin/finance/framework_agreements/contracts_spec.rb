@@ -181,7 +181,7 @@ RSpec.describe "Admin finance framework agreement contracts", type: :request do
           expect { post contracts_path, params: contract_params }.to change(Contract, :count).by(1)
 
           created_contract = Contract.last
-          expect(response).to redirect_to(admin_contract_period_active_lead_provider_contract_path(contract_period, active_lead_provider, created_contract))
+          expect(response).to redirect_to(admin_contract_period_framework_agreement_contract_path(contract_period, framework_agreement, created_contract))
         end
       end
 

@@ -1,6 +1,6 @@
 class API::DeliveryPartnerSerializer < Blueprinter::Base
   def self.dependencies
-    %i[active_lead_providers]
+    %i[framework_agreements]
   end
 
   class AttributesSerializer < Blueprinter::Base

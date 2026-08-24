@@ -2,7 +2,7 @@ class API::SchoolPartnershipSerializer < Blueprinter::Base
   def self.dependencies
     [
       :delivery_partner,
-      :active_lead_provider,
+      :framework_agreement,
       :ongoing_training_periods,
       {
         school: :gias_school
