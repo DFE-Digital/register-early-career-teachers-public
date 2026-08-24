@@ -155,5 +155,68 @@ RSpec.describe Admin::Teachers::Search do
         expect(teacher_scope).to contain_exactly(matching_teacher)
       end
     end
+
+    context "when filtering by the not available contract period option" do
+      let(:contract_period) { Admin::Teachers::Rows::CONTRACT_PERIOD_NOT_AVAILABLE }
+      let!(:school_led_teacher) { FactoryBot.create(:teacher) }
+      let!(:ect_without_training) { FactoryBot.create(:teacher) }
+      let!(:mentor_without_training) { FactoryBot.create(:teacher) }
+      let!(:induction_only_teacher) { FactoryBot.create(:teacher) }
+      let!(:no_role_teacher) { FactoryBot.create(:teacher) }
+      let!(:provider_led_teacher) { FactoryBot.create(:teacher) }
+
+      before do
+        school_led_period = FactoryBot.create(:ect_at_school_period, :unfinished, teacher: school_led_teacher)
+        FactoryBot.create(
+          :training_period,
+          :for_ect,
+          :school_led,
+          :unfinished,
+          ect_at_school_period: school_led_period
+        )
+
+        FactoryBot.create(:ect_at_school_period, :unfinished, teacher: ect_without_training)
+        FactoryBot.create(:mentor_at_school_period, :unfinished, teacher: mentor_without_training)
+        FactoryBot.create(:induction_period, teacher: induction_only_teacher)
+
+        provider_led_period = FactoryBot.create(:ect_at_school_period, :unfinished, teacher: provider_led_teacher)
+        FactoryBot.create(
+          :training_period,
+          :for_ect,
+          :unfinished,
+          ect_at_school_period: provider_led_period
+        )
+      end
+
+      it "matches every teacher row without a contract period" do
+        expect(teacher_scope).to contain_exactly(
+          school_led_teacher,
+          ect_without_training,
+          mentor_without_training,
+          induction_only_teacher,
+          no_role_teacher
+        )
+      end
+
+      context "when filtering by the ECT role" do
+        let(:role) { "ect" }
+
+        it "matches only unavailable ECT rows" do
+          expect(teacher_scope).to contain_exactly(
+            school_led_teacher,
+            ect_without_training,
+            induction_only_teacher
+          )
+        end
+      end
+
+      context "when filtering by the mentor role" do
+        let(:role) { "mentor" }
+
+        it "matches only unavailable mentor rows" do
+          expect(teacher_scope).to contain_exactly(mentor_without_training)
+        end
+      end
+    end
   end
 end

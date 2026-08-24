@@ -80,10 +80,9 @@ module Admin
 
       def contract_period_for(role_period)
         training_period = training_period_for(role_period)
-        return if training_period.blank?
-        return CONTRACT_PERIOD_NOT_AVAILABLE if training_period.for_ect? && training_period.school_led_training_programme?
+        return CONTRACT_PERIOD_NOT_AVAILABLE if training_period.blank?
 
-        training_period.schedule&.contract_period_year&.to_s
+        training_period.schedule&.contract_period_year&.to_s || CONTRACT_PERIOD_NOT_AVAILABLE
       end
 
       def training_period_for(role_period)

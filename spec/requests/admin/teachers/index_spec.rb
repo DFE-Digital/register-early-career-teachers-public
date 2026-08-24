@@ -39,13 +39,14 @@ RSpec.describe "Admin teachers index", type: :request do
       context "when a teacher has no role history" do
         let!(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Naruto", trs_last_name: "Uzumaki", trn: "1234567") }
 
-        it "renders no role assigned" do
+        it "renders no role assigned with an unavailable contract period" do
           get "/admin/teachers"
 
           expect(response.status).to eq(200)
           expect(response.body).to include("Naruto Uzumaki")
           expect(response.body).to include("1234567")
           expect(response.body).to include("No role assigned")
+          expect(Capybara.string(response.body).find("tbody tr", text: "Naruto Uzumaki")).to have_text("Not available")
         end
       end
 

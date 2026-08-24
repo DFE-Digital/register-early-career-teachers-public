@@ -46,15 +46,15 @@ module Admin
 
       def filter_teachers_by_contract_period(scope)
         return scope if contract_period.blank?
-        return scope.none if mentor_not_available_filter?
 
         clauses = contract_period_filter_clauses
+        sql = clauses.map { |clause| "(#{clause})" }.join(" OR ")
 
-        scope.where(
-          clauses.map { |clause| "(#{clause})" }.join(" OR "),
-          contract_period:,
-          contract_period_not_available: Rows::CONTRACT_PERIOD_NOT_AVAILABLE
-        )
+        if contract_period_not_available_filter?
+          scope.where(sql)
+        else
+          scope.where(sql, contract_period:)
+        end
       end
 
       def teacher_ids_for_role(role)
@@ -77,10 +77,6 @@ module Admin
           .distinct
       end
 
-      def mentor_not_available_filter?
-        role == "mentor" && contract_period == Rows::CONTRACT_PERIOD_NOT_AVAILABLE
-      end
-
       def contract_period_filter_clauses
         case role
         when "ect"
@@ -88,38 +84,43 @@ module Admin
         when "mentor"
           [latest_mentor_contract_period_matches_sql]
         else
-          [latest_ect_contract_period_matches_sql, latest_mentor_contract_period_matches_sql]
+          clauses = [latest_ect_contract_period_matches_sql, latest_mentor_contract_period_matches_sql]
+          clauses << no_role_assigned_sql if contract_period_not_available_filter?
+          clauses
         end
       end
 
       def latest_ect_contract_period_matches_sql
         latest_ect_role_period_id_sql = latest_role_period_id_sql("ect_at_school_periods")
 
-        chosen_training_programme_sql = latest_training_attribute_sql(
-          foreign_key: "ect_at_school_period_id",
-          latest_role_period_id_sql: latest_ect_role_period_id_sql,
-          attribute: "training_programme"
-        )
         chosen_schedule_id_sql = latest_training_attribute_sql(
           foreign_key: "ect_at_school_period_id",
           latest_role_period_id_sql: latest_ect_role_period_id_sql,
           attribute: "schedule_id"
         )
 
-        <<~SQL.squish
-          (
-            #{chosen_training_programme_sql} = 'school_led'
-            AND :contract_period = :contract_period_not_available
-          ) OR (
-            #{chosen_training_programme_sql} != 'school_led'
-            AND EXISTS (
+        if contract_period_not_available_filter?
+          <<~SQL.squish
+            (
+              #{latest_ect_role_period_id_sql} IS NOT NULL
+              OR EXISTS (
+                SELECT 1
+                FROM induction_periods
+                WHERE induction_periods.teacher_id = teachers.id
+              )
+            )
+            AND #{chosen_schedule_id_sql} IS NULL
+          SQL
+        else
+          <<~SQL.squish
+            EXISTS (
               SELECT 1
               FROM schedules
               WHERE schedules.id = #{chosen_schedule_id_sql}
                 AND schedules.contract_period_year::text = :contract_period
             )
-          )
-        SQL
+          SQL
+        end
       end
 
       def latest_mentor_contract_period_matches_sql
@@ -131,14 +132,45 @@ module Admin
           attribute: "schedule_id"
         )
 
+        if contract_period_not_available_filter?
+          <<~SQL.squish
+            #{latest_mentor_role_period_id_sql} IS NOT NULL
+            AND #{chosen_schedule_id_sql} IS NULL
+          SQL
+        else
+          <<~SQL.squish
+            EXISTS (
+              SELECT 1
+              FROM schedules
+              WHERE schedules.id = #{chosen_schedule_id_sql}
+                AND schedules.contract_period_year::text = :contract_period
+            )
+          SQL
+        end
+      end
+
+      def no_role_assigned_sql
         <<~SQL.squish
-          EXISTS (
+          NOT EXISTS (
             SELECT 1
-            FROM schedules
-            WHERE schedules.id = #{chosen_schedule_id_sql}
-              AND schedules.contract_period_year::text = :contract_period
+            FROM ect_at_school_periods
+            WHERE ect_at_school_periods.teacher_id = teachers.id
+          )
+          AND NOT EXISTS (
+            SELECT 1
+            FROM induction_periods
+            WHERE induction_periods.teacher_id = teachers.id
+          )
+          AND NOT EXISTS (
+            SELECT 1
+            FROM mentor_at_school_periods
+            WHERE mentor_at_school_periods.teacher_id = teachers.id
           )
         SQL
+      end
+
+      def contract_period_not_available_filter?
+        contract_period == Rows::CONTRACT_PERIOD_NOT_AVAILABLE
       end
 
       def latest_role_period_id_sql(table_name)
