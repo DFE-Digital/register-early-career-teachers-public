@@ -1,4 +1,4 @@
-module API::Concerns::LeadProviderable
+module API::Concerns::LeadProviderValidatable
   extend ActiveSupport::Concern
 
   included do
@@ -11,7 +11,7 @@ module API::Concerns::LeadProviderable
     validate :lead_provider_exists
   end
 
-  private
+private
 
   def lead_provider
     @lead_provider ||= LeadProvider.find_by(id: lead_provider_id) if lead_provider_id

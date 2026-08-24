@@ -1,6 +1,6 @@
 module API::Teachers
   class Withdraw
-    include API::Concerns::Teachers::SharedAction
+    include API::Concerns::TrainingValidatable
 
     WITHDRAWAL_REASONS = TrainingPeriod.withdrawal_reasons.values.map(&:dasherize).freeze
     MENTOR_ONLY_WITHDRAWAL_REASONS = TrainingPeriod::MENTOR_ONLY_WITHDRAWAL_REASONS.map(&:dasherize).freeze

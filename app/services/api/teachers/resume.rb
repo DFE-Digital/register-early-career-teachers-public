@@ -1,6 +1,6 @@
 module API::Teachers
   class Resume
-    include API::Concerns::Teachers::SharedAction
+    include API::Concerns::TrainingValidatable
 
     validate :not_already_active
     validate :no_ongoing_today_training_period

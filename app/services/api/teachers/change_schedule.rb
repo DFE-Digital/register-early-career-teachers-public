@@ -1,6 +1,6 @@
 module API::Teachers
   class ChangeSchedule
-    include API::Concerns::Teachers::SharedAction
+    include API::Concerns::TrainingValidatable
 
     attribute :contract_period_year
     attribute :schedule_identifier

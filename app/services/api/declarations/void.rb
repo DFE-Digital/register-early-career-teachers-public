@@ -1,7 +1,6 @@
 module API::Declarations
   class Void
-    include API::Concerns::Declarationable
-    include API::Concerns::LeadProviderable
+    include API::Concerns::DeclarationValidatable
 
     validate :not_already_voided
     validate :voidable_payment

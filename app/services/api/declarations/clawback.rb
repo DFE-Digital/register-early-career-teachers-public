@@ -1,7 +1,6 @@
 module API::Declarations
   class Clawback
-    include API::Concerns::Declarationable
-    include API::Concerns::LeadProviderable
+    include API::Concerns::DeclarationValidatable
 
     validate :paid
     validate :not_already_refunded

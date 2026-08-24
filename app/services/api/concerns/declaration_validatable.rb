@@ -1,12 +1,10 @@
-module API::Concerns::Declarationable
+module API::Concerns::DeclarationValidatable
   extend ActiveSupport::Concern
 
   included do
-    include ActiveModel::Model
-    include ActiveModel::Attributes
+    include API::Concerns::LeadProviderValidatable
 
     attribute :declaration_api_id
-
   end
 
 private
