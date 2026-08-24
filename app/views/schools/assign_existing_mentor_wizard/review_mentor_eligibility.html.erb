@@ -9,11 +9,13 @@
 
 <p class="govuk-body">We’ll pass on their details to <%= @wizard.context.ect_lead_provider&.name %> who will contact them to arrange the training.</p>
 
+<p class="govuk-body">
+  You can <%= govuk_link_to(
+    "tell us if a different provider will be training #{@wizard.context.mentor_teacher_full_name}",
+    schools_assign_existing_mentor_wizard_lead_provider_path
+  ) %>.
+</p>
+
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
   <%= f.govuk_submit "Continue" %>
 <% end %>
-
-<p class="govuk-body">
-  <%= govuk_link_to "#{@wizard.context.ect_lead_provider&.name} will not be providing mentor training to #{@wizard.context.mentor_teacher_full_name}",
-  schools_assign_existing_mentor_wizard_lead_provider_path %>
-</p>
