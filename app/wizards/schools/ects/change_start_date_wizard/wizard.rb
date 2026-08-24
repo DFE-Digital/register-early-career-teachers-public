@@ -5,6 +5,7 @@ module Schools
         steps do
           [{
             edit: EditStep,
+            cannot_use_date: CannotUseDateStep,
             check_answers: CheckAnswersStep,
             confirmation: ConfirmationStep
           }]
