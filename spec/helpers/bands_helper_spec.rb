@@ -1,9 +1,9 @@
 describe BandsHelper, type: :helper do
   let(:contract_period) { FactoryBot.create(:contract_period, :next) }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement, contract_period:) }
 
-  let!(:band_1) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:) }
-  let!(:band_2) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:) }
+  let!(:band_1) { FactoryBot.create(:framework_agreement_band, framework_agreement:) }
+  let!(:band_2) { FactoryBot.create(:framework_agreement_band, framework_agreement:) }
 
   describe "#band_label" do
     it "returns a label for the band using its letter" do

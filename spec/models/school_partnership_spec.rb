@@ -50,10 +50,10 @@ describe SchoolPartnership do
     it { is_expected.to belong_to(:school) }
     it { is_expected.to have_many(:events) }
     it { is_expected.to have_many(:ongoing_training_periods).class_name("TrainingPeriod") }
-    it { is_expected.to have_one(:active_lead_provider).through(:lead_provider_delivery_partnership) }
+    it { is_expected.to have_one(:framework_agreement).through(:lead_provider_delivery_partnership) }
     it { is_expected.to have_one(:delivery_partner).through(:lead_provider_delivery_partnership) }
-    it { is_expected.to have_one(:contract_period).through(:active_lead_provider) }
-    it { is_expected.to have_one(:lead_provider).through(:active_lead_provider) }
+    it { is_expected.to have_one(:contract_period).through(:framework_agreement) }
+    it { is_expected.to have_one(:lead_provider).through(:framework_agreement) }
     it { is_expected.to have_many(:training_periods) }
     it { is_expected.to have_many(:declarations).through(:training_periods) }
 
@@ -133,11 +133,11 @@ describe SchoolPartnership do
       let(:contract_period_1) { FactoryBot.create(:contract_period) }
       let(:contract_period_2) { FactoryBot.create(:contract_period) }
 
-      let(:active_lead_provider_1) { FactoryBot.create(:active_lead_provider, contract_period: contract_period_1) }
-      let(:active_lead_provider_2) { FactoryBot.create(:active_lead_provider, contract_period: contract_period_2) }
+      let(:framework_agreement_1) { FactoryBot.create(:framework_agreement, contract_period: contract_period_1) }
+      let(:framework_agreement_2) { FactoryBot.create(:framework_agreement, contract_period: contract_period_2) }
 
-      let(:lead_provider_delivery_partnership_1) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider_1) }
-      let(:lead_provider_delivery_partnership_2) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider_2) }
+      let(:lead_provider_delivery_partnership_1) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement: framework_agreement_1) }
+      let(:lead_provider_delivery_partnership_2) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement: framework_agreement_2) }
 
       let!(:school_partnership_1) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: lead_provider_delivery_partnership_1) }
       let!(:school_partnership_2) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: lead_provider_delivery_partnership_2) }

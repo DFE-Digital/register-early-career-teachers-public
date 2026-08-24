@@ -308,9 +308,9 @@ RSpec.describe School do
 
     let(:school) { FactoryBot.create(:school) }
     let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership) }
-    let(:active_lead_provider) { lead_provider_delivery_partnership.active_lead_provider }
-    let(:lead_provider) { active_lead_provider.lead_provider }
-    let(:contract_period) { active_lead_provider.contract_period }
+    let(:framework_agreement) { lead_provider_delivery_partnership.framework_agreement }
+    let(:lead_provider) { framework_agreement.lead_provider }
+    let(:contract_period) { framework_agreement.contract_period }
 
     it { is_expected.to be_empty }
 
@@ -321,7 +321,7 @@ RSpec.describe School do
           :for_ect,
           :with_no_school_partnership,
           ect_at_school_period:,
-          expression_of_interest: active_lead_provider,
+          expression_of_interest: framework_agreement,
           started_on: ect_at_school_period.started_on + 1.week
         )
       end
@@ -337,7 +337,7 @@ RSpec.describe School do
           :for_mentor,
           :with_no_school_partnership,
           mentor_at_school_period:,
-          expression_of_interest: active_lead_provider,
+          expression_of_interest: framework_agreement,
           started_on: mentor_at_school_period.started_on + 1.week
         )
       end
@@ -390,7 +390,7 @@ RSpec.describe School do
           :for_mentor,
           :with_no_school_partnership,
           mentor_at_school_period:,
-          expression_of_interest: active_lead_provider,
+          expression_of_interest: framework_agreement,
           started_on: mentor_at_school_period.started_on + 1.week
         )
       end

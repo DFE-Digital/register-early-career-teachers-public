@@ -24,9 +24,9 @@ lead_providers_data.each do |data|
 
   data[:years].each do |year|
     contract_period = ContractPeriod.find_by!(year:)
-    active_lead_provider = ActiveLeadProvider.find_or_create_by!(lead_provider:, contract_period:)
-    FactoryBot.create_list(:active_lead_provider_band, 3,
-                           active_lead_provider:,
+    framework_agreement = FrameworkAgreement.find_or_create_by!(lead_provider:, contract_period:)
+    FactoryBot.create_list(:framework_agreement_band, 3,
+                           framework_agreement:,
                            capacity: 81)
   end
 

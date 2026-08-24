@@ -3,7 +3,7 @@ RSpec.describe PaymentCalculator::FlatRate do
     described_class.new(statement:, flat_rate_fee_structure:, declaration_selector:, fee_proportions:)
   end
 
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:) }
   let(:lead_provider) { FactoryBot.create(:lead_provider, vat_registered:) }
   let(:vat_registered) { true }
 
@@ -11,8 +11,8 @@ RSpec.describe PaymentCalculator::FlatRate do
     FactoryBot.create(
       :training_period,
       :for_mentor,
-      :with_active_lead_provider,
-      active_lead_provider:
+      :with_framework_agreement,
+      framework_agreement:
     )
   end
   let!(:mentor_billable_declaration) do
@@ -46,8 +46,8 @@ RSpec.describe PaymentCalculator::FlatRate do
     FactoryBot.create(
       :training_period,
       :for_ect,
-      :with_active_lead_provider,
-      active_lead_provider:
+      :with_framework_agreement,
+      framework_agreement:
     )
   end
   let!(:ect_declaration) do
@@ -60,11 +60,11 @@ RSpec.describe PaymentCalculator::FlatRate do
   end
 
   let(:statement) do
-    FactoryBot.create(:statement, active_lead_provider:)
+    FactoryBot.create(:statement, framework_agreement:)
   end
 
   let!(:contract) do
-    FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider:, vat_rate: 0.20, flat_rate_fee_structure:)
+    FactoryBot.create(:contract, :for_ittecf_ectp, framework_agreement:, vat_rate: 0.20, flat_rate_fee_structure:)
   end
 
   let(:flat_rate_fee_structure) do

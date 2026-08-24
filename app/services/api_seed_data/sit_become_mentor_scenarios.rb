@@ -32,7 +32,7 @@ module APISeedData
       count.times do
         lead_providers.find_each do |lead_provider|
           school_partnership = SchoolPartnership
-            .joins(:school, lead_provider_delivery_partnership: :active_lead_provider)
+            .joins(:school, lead_provider_delivery_partnership: :framework_agreement)
             .where(active_lead_providers: { lead_provider_id: lead_provider.id, contract_period_year: sit_year })
             .where.not(schools: { induction_tutor_name: nil })
             .order("RANDOM()")

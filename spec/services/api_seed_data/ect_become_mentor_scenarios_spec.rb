@@ -55,7 +55,7 @@ RSpec.describe APISeedData::ECTBecomeMentorScenarios do
       lead_providers.each do |lead_provider|
         [2022, 2023].each do |ect_year|
           teachers_for_lp_and_year = new_teachers
-            .joins(ect_at_school_periods: { training_periods: { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } } })
+            .joins(ect_at_school_periods: { training_periods: { school_partnership: { lead_provider_delivery_partnership: :framework_agreement } } })
             .where(active_lead_providers: { lead_provider_id: lead_provider.id })
             .where(training_periods: { started_on: Date.new(ect_year, 9, 1) })
             .distinct

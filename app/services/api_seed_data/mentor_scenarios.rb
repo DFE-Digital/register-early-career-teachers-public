@@ -15,8 +15,8 @@ module APISeedData
       contract_period = find_contract_period(2025)
       return unless contract_period
 
-      active_lead_providers.for_contract_period(contract_period.year).each do |active_lead_provider|
-        school_partnerships = find_school_partnerships(active_lead_provider)
+      framework_agreements.for_contract_period(contract_period.year).each do |framework_agreement|
+        school_partnerships = find_school_partnerships(framework_agreement)
         next if school_partnerships.count < 2
 
         school_a_partnership = school_partnerships.first
@@ -47,8 +47,8 @@ module APISeedData
       contract_period = find_contract_period(2024)
       return unless contract_period
 
-      active_lead_providers.for_contract_period(contract_period.year).each do |active_lead_provider|
-        school_partnerships = find_school_partnerships(active_lead_provider)
+      framework_agreements.for_contract_period(contract_period.year).each do |framework_agreement|
+        school_partnerships = find_school_partnerships(framework_agreement)
         next if school_partnerships.count < 2
 
         school_a_partnership = school_partnerships.first
@@ -123,10 +123,10 @@ module APISeedData
       ContractPeriod.find_by(year:)
     end
 
-    def find_school_partnerships(active_lead_provider)
+    def find_school_partnerships(framework_agreement)
       SchoolPartnership
         .includes(:lead_provider_delivery_partnership)
-        .where(lead_provider_delivery_partnership: { active_lead_provider: })
+        .where(lead_provider_delivery_partnership: { framework_agreement: })
         .to_a
         .uniq(&:school_id)
         .sample(2)

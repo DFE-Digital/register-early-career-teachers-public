@@ -1,6 +1,6 @@
 class API::DeliveryPartnerSerializer < Blueprinter::Base
   def self.dependencies
-    %i[active_lead_providers]
+    %i[framework_agreements]
   end
 
   class AttributesSerializer < Blueprinter::Base
@@ -11,7 +11,7 @@ class API::DeliveryPartnerSerializer < Blueprinter::Base
     field(:api_updated_at, name: :updated_at)
     field(:cohort) do |delivery_partner, options|
       delivery_partner
-        .active_lead_providers
+        .framework_agreements
         .select { it.lead_provider_id == options[:lead_provider_id] }
         .map { it.contract_period_year.to_s }
     end

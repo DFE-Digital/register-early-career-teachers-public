@@ -40,24 +40,24 @@ describe ECTAtSchoolPeriods::CurrentTraining do
     end
 
     context "when there is only a lead provider via expression of interest" do
-      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+      let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
 
-      before { FactoryBot.create(:training_period, :unfinished, :with_no_school_partnership, ect_at_school_period:, expression_of_interest: active_lead_provider) }
+      before { FactoryBot.create(:training_period, :unfinished, :with_no_school_partnership, ect_at_school_period:, expression_of_interest: framework_agreement) }
 
       it "returns the lead provider connected via expression of interest" do
-        expect(subject).to eql(active_lead_provider.lead_provider)
+        expect(subject).to eql(framework_agreement.lead_provider)
       end
     end
 
     context "when there are both lead provider via school partnership and expression of interest" do
       let(:school_partnership) { FactoryBot.create(:school_partnership, school: ect_at_school_period.school) }
-      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period: school_partnership.contract_period) }
+      let(:framework_agreement) { FactoryBot.create(:framework_agreement, contract_period: school_partnership.contract_period) }
 
-      before { FactoryBot.create(:training_period, :unfinished, expression_of_interest: active_lead_provider, school_partnership:, ect_at_school_period:) }
+      before { FactoryBot.create(:training_period, :unfinished, expression_of_interest: framework_agreement, school_partnership:, ect_at_school_period:) }
 
       it "returns the lead provider connected via school partnership" do
         expect(subject).to eql(school_partnership.lead_provider)
-        expect(subject).not_to eql(active_lead_provider.lead_provider)
+        expect(subject).not_to eql(framework_agreement.lead_provider)
       end
     end
   end
@@ -133,7 +133,7 @@ describe ECTAtSchoolPeriods::CurrentTraining do
       let!(:old_training) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:) }
       let!(:ongoing_training) { FactoryBot.create(:training_period, :unfinished, :for_ect, ect_at_school_period:, period_start_date: old_training.finished_on + 1.day) }
 
-      it { is_expected.to eq(ongoing_training.school_partnership.lead_provider_delivery_partnership.active_lead_provider.lead_provider) }
+      it { is_expected.to eq(ongoing_training.school_partnership.lead_provider_delivery_partnership.framework_agreement.lead_provider) }
     end
   end
 
@@ -158,7 +158,7 @@ describe ECTAtSchoolPeriods::CurrentTraining do
       let!(:old_training) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:) }
       let!(:ongoing_training) { FactoryBot.create(:training_period, :unfinished, :for_ect, period_start_date: old_training.finished_on + 1.day, ect_at_school_period:) }
 
-      it { is_expected.to eq(ongoing_training.school_partnership.lead_provider_delivery_partnership.active_lead_provider.lead_provider.name) }
+      it { is_expected.to eq(ongoing_training.school_partnership.lead_provider_delivery_partnership.framework_agreement.lead_provider.name) }
     end
   end
 

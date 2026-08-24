@@ -22,7 +22,7 @@ RSpec.describe API::Declarations::Create, type: :model do
   let(:schedule) { training_period.schedule }
   let(:declaration_datetime) { Faker::Time.between(from: milestone.start_date, to: milestone.milestone_date) }
   let(:declaration_date) { declaration_datetime.rfc3339 }
-  let(:active_lead_provider) { training_period.active_lead_provider }
+  let(:framework_agreement) { training_period.framework_agreement }
 
   let!(:milestone) do
     FactoryBot.create(:milestone,
@@ -197,7 +197,7 @@ RSpec.describe API::Declarations::Create, type: :model do
           end
 
           context "when payment statement exists" do
-            let!(:payment_statement) { FactoryBot.create(:statement, :open, active_lead_provider:) }
+            let!(:payment_statement) { FactoryBot.create(:statement, :open, framework_agreement:) }
 
             it { is_expected.to be_valid }
           end
@@ -214,7 +214,7 @@ RSpec.describe API::Declarations::Create, type: :model do
           end
 
           context "when payment statement is not open" do
-            let!(:payment_statement) { FactoryBot.create(:statement, :payable, active_lead_provider:) }
+            let!(:payment_statement) { FactoryBot.create(:statement, :payable, framework_agreement:) }
 
             before do
               teacher.update!("#{trainee_type}_first_became_eligible_for_training_at": 3.years.ago)
@@ -226,7 +226,7 @@ RSpec.describe API::Declarations::Create, type: :model do
         end
 
         describe "frozen contract period validations" do
-          let!(:payment_statement) { FactoryBot.create(:statement, :open, active_lead_provider:, deadline_date: 1.month.from_now, payment_date: 2.months.from_now) }
+          let!(:payment_statement) { FactoryBot.create(:statement, :open, framework_agreement:, deadline_date: 1.month.from_now, payment_date: 2.months.from_now) }
           let(:eligible_at_field) { "#{trainee_type}_first_became_eligible_for_training_at" }
 
           context "when teacher's latest ongoing training period is in a frozen contract period and participant is eligible for funding" do
@@ -270,10 +270,10 @@ RSpec.describe API::Declarations::Create, type: :model do
             end
 
             let(:frozen_contract_period) { FactoryBot.create(:contract_period, :with_payments_frozen) }
-            let(:frozen_active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: frozen_contract_period) }
+            let(:frozen_framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:, contract_period: frozen_contract_period) }
             let(:frozen_school_partnership) do
               FactoryBot.create(:school_partnership,
-                                active_lead_provider: frozen_active_lead_provider,
+                                framework_agreement: frozen_framework_agreement,
                                 school: at_school_period.school)
             end
             let!(:frozen_training_period) do
@@ -649,7 +649,7 @@ RSpec.describe API::Declarations::Create, type: :model do
           end
 
           let(:service) { instance_double(Declarations::Create) }
-          let!(:payment_statement) { FactoryBot.create(:statement, :open, active_lead_provider:, deadline_date: 1.month.from_now, payment_date: 2.months.from_now) }
+          let!(:payment_statement) { FactoryBot.create(:statement, :open, framework_agreement:, deadline_date: 1.month.from_now, payment_date: 2.months.from_now) }
           let!(:mentorship_period) do
             if trainee_type == :ect
               mentor = FactoryBot.create(

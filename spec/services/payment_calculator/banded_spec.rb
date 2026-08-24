@@ -3,12 +3,12 @@ RSpec.describe PaymentCalculator::Banded do
     described_class.new(statement: statement_july, banded_fee_structure:, declaration_selector:)
   end
 
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:) }
   let(:lead_provider) { FactoryBot.create(:lead_provider, vat_registered:) }
   let(:vat_registered) { true }
 
   let(:contract) do
-    FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider:, vat_rate: 0.20, banded_fee_structure:)
+    FactoryBot.create(:contract, :for_ittecf_ectp, framework_agreement:, vat_rate: 0.20, banded_fee_structure:)
   end
 
   # Previous statements
@@ -62,13 +62,13 @@ RSpec.describe PaymentCalculator::Banded do
   end
 
   let(:ect_training_period) do
-    FactoryBot.create(:training_period, :for_ect, :with_active_lead_provider,
-                      active_lead_provider:)
+    FactoryBot.create(:training_period, :for_ect, :with_framework_agreement,
+                      framework_agreement:)
   end
   let(:mentor_training_period) do
     FactoryBot.create(:training_period, :for_mentor,
-                      :with_active_lead_provider,
-                      active_lead_provider:)
+                      :with_framework_agreement,
+                      framework_agreement:)
   end
   let!(:billable_declaration) do
     FactoryBot.create(:declaration, :payable,
@@ -99,8 +99,8 @@ RSpec.describe PaymentCalculator::Banded do
 
   describe "#outputs" do
     let(:previous_training_period) do
-      FactoryBot.create(:training_period, :for_ect, :with_active_lead_provider,
-                        active_lead_provider:)
+      FactoryBot.create(:training_period, :for_ect, :with_framework_agreement,
+                        framework_agreement:)
     end
 
     let!(:previous_billable_declaration) do

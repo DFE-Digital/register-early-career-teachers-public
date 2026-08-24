@@ -60,7 +60,7 @@ RSpec.describe Admin::Finance::VoidDeclarationForm, type: :model do
         FactoryBot.create(:statement,
                           :open,
                           :output_fee,
-                          active_lead_provider: declaration.training_period.active_lead_provider,
+                          framework_agreement: declaration.training_period.framework_agreement,
                           deadline_date: 1.month.from_now)
       end
 

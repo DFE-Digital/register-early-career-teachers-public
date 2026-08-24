@@ -2,7 +2,7 @@ RSpec.describe Admin::Statements::PaymentOverview::ECFComponent, type: :componen
   let(:component) { described_class.new statement: }
 
   let(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, :for_year, year: 2024, lead_provider:) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement, :for_year, year: 2024, lead_provider:) }
   let(:lead_provider) { FactoryBot.create(:lead_provider, vat_registered:) }
   let(:vat_registered) { true }
 
@@ -47,7 +47,7 @@ RSpec.describe Admin::Statements::PaymentOverview::ECFComponent, type: :componen
   let(:total_refundable_uplifts_amount) { 0 }
 
   let(:contract) do
-    FactoryBot.create(:contract, :for_ecf, active_lead_provider:, vat_rate: 0.20, banded_fee_structure:)
+    FactoryBot.create(:contract, :for_ecf, framework_agreement:, vat_rate: 0.20, banded_fee_structure:)
   end
 
   describe "calculations" do

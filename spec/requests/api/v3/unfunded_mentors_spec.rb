@@ -4,21 +4,21 @@ RSpec.describe "Unfunded mentors API", type: :request do
   let(:serializer) { API::Teachers::UnfundedMentorSerializer }
   let(:serializer_options) { { lead_provider_id: lead_provider.id } }
   let(:query) { API::Teachers::UnfundedMentors::Query }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
-  let(:lead_provider) { active_lead_provider.lead_provider }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
+  let(:lead_provider) { framework_agreement.lead_provider }
 
-  def create_resource(active_lead_provider:)
-    lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
+  def create_resource(framework_agreement:)
+    lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:)
     school_partnership = FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:)
 
-    other_active_lead_provider = FactoryBot.create(
-      :active_lead_provider,
+    other_framework_agreement = FactoryBot.create(
+      :framework_agreement,
       lead_provider: FactoryBot.create(:lead_provider),
-      contract_period_year: active_lead_provider.contract_period_year
+      contract_period_year: framework_agreement.contract_period_year
     )
     other_lead_provider_delivery_partnership = FactoryBot.create(
       :lead_provider_delivery_partnership,
-      active_lead_provider: other_active_lead_provider
+      framework_agreement: other_framework_agreement
     )
 
     mentor_school_partnership = SchoolPartnership.find_or_create_by!(
@@ -66,7 +66,7 @@ RSpec.describe "Unfunded mentors API", type: :request do
   end
 
   describe "#show" do
-    let(:resource) { create_resource(active_lead_provider:) }
+    let(:resource) { create_resource(framework_agreement:) }
     let(:path_id) { resource.api_id }
     let(:path) { api_v3_unfunded_mentor_path(path_id) }
 

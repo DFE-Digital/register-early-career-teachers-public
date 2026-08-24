@@ -5,10 +5,10 @@ namespace :product_review do
     contract_period = ContractPeriod.find_by!(year: 2025)
 
     lead_provider = LeadProvider.find_by!(name: "Ambition Institute")
-    active_lead_provider = ActiveLeadProvider.find_by!(contract_period:, lead_provider:)
+    framework_agreement = FrameworkAgreement.find_by!(contract_period:, lead_provider:)
     delivery_partner = DeliveryPartner.find_by!(name: "Artisan Education Group")
 
-    lpdp = LeadProviderDeliveryPartnership.find_or_create_by!(active_lead_provider:, delivery_partner:)
+    lpdp = LeadProviderDeliveryPartnership.find_or_create_by!(framework_agreement:, delivery_partner:)
     partnership = SchoolPartnership.find_or_create_by!(school:, lead_provider_delivery_partnership: lpdp)
     schedule = Schedule.find_by!(contract_period:, identifier: "ecf-standard-september")
 

@@ -6,12 +6,12 @@ RSpec.describe "Admin::Schools::AddPartnershipWizardController", type: :request 
   let(:other_contract_period) { FactoryBot.create(:contract_period) }
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
   let(:other_lead_provider) { FactoryBot.create(:lead_provider) }
-  let(:active_lead_provider) do
-    FactoryBot.create(:active_lead_provider, contract_period:, lead_provider:)
+  let(:framework_agreement) do
+    FactoryBot.create(:framework_agreement, contract_period:, lead_provider:)
   end
-  let(:other_active_lead_provider) do
+  let(:other_framework_agreement) do
     FactoryBot.create(
-      :active_lead_provider,
+      :framework_agreement,
       contract_period: other_contract_period,
       lead_provider: other_lead_provider
     )
@@ -19,12 +19,12 @@ RSpec.describe "Admin::Schools::AddPartnershipWizardController", type: :request 
   let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
   let(:other_delivery_partner) { FactoryBot.create(:delivery_partner) }
   let!(:lead_provider_delivery_partnership) do
-    FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:)
+    FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:, delivery_partner:)
   end
   let!(:other_lead_provider_delivery_partnership) do
     FactoryBot.create(
       :lead_provider_delivery_partnership,
-      active_lead_provider: other_active_lead_provider,
+      framework_agreement: other_framework_agreement,
       delivery_partner: other_delivery_partner
     )
   end
@@ -35,7 +35,7 @@ RSpec.describe "Admin::Schools::AddPartnershipWizardController", type: :request 
       :training_period,
       :with_only_expression_of_interest,
       ect_at_school_period:,
-      expression_of_interest: active_lead_provider,
+      expression_of_interest: framework_agreement,
       schedule: FactoryBot.create(:schedule, contract_period:)
     )
   end
@@ -60,7 +60,7 @@ RSpec.describe "Admin::Schools::AddPartnershipWizardController", type: :request 
 
       post(
         path_for_step("select-lead-provider"),
-        params: { select_lead_provider: { active_lead_provider_id: active_lead_provider.id } }
+        params: { select_lead_provider: { active_lead_provider_id: framework_agreement.id } }
       )
 
       expect(response).to redirect_to(path_for_step("select-delivery-partner"))
@@ -130,7 +130,7 @@ RSpec.describe "Admin::Schools::AddPartnershipWizardController", type: :request 
 
       post(
         path_for_step("select-lead-provider"),
-        params: { select_lead_provider: { active_lead_provider_id: active_lead_provider.id } }
+        params: { select_lead_provider: { active_lead_provider_id: framework_agreement.id } }
       )
       follow_redirect!
 
@@ -156,7 +156,7 @@ RSpec.describe "Admin::Schools::AddPartnershipWizardController", type: :request 
 
       post(
         path_for_step("select-lead-provider"),
-        params: { select_lead_provider: { active_lead_provider_id: active_lead_provider.id } }
+        params: { select_lead_provider: { active_lead_provider_id: framework_agreement.id } }
       )
       follow_redirect!
 

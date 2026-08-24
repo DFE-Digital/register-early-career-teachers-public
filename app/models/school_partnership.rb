@@ -8,10 +8,10 @@ class SchoolPartnership < ApplicationRecord
   has_many :ongoing_training_periods, -> { contains_today }, class_name: "TrainingPeriod"
   has_many :training_periods
   has_many :declarations, through: :training_periods
-  has_one :active_lead_provider, through: :lead_provider_delivery_partnership
+  has_one :framework_agreement, through: :lead_provider_delivery_partnership
   has_one :delivery_partner, through: :lead_provider_delivery_partnership
-  has_one :contract_period, through: :active_lead_provider
-  has_one :lead_provider, through: :active_lead_provider
+  has_one :contract_period, through: :framework_agreement
+  has_one :lead_provider, through: :framework_agreement
 
   touch -> { self }, when_changing: %i[lead_provider_delivery_partnership_id], timestamp_attribute: :api_updated_at
   touch -> { declarations }, when_changing: %i[lead_provider_delivery_partnership_id], timestamp_attribute: :api_updated_at
@@ -33,15 +33,15 @@ class SchoolPartnership < ApplicationRecord
   scope :earliest_first, -> { order(created_at: :asc) }
   scope :for_contract_period, ->(year) { joins(:contract_period).where(contract_periods: { year: }) }
   scope :for_contract_period_year, ->(year) {
-    joins(lead_provider_delivery_partnership: :active_lead_provider)
+    joins(lead_provider_delivery_partnership: :framework_agreement)
       .where(active_lead_providers: { contract_period_year: year })
   }
   scope :excluding_contract_period_year, ->(year) {
-    joins(lead_provider_delivery_partnership: :active_lead_provider)
+    joins(lead_provider_delivery_partnership: :framework_agreement)
       .where.not(active_lead_providers: { contract_period_year: year })
   }
   scope :latest_by_contract_year, -> {
-    joins(lead_provider_delivery_partnership: :active_lead_provider)
+    joins(lead_provider_delivery_partnership: :framework_agreement)
       .order("active_lead_providers.contract_period_year DESC, school_partnerships.created_at DESC")
   }
 

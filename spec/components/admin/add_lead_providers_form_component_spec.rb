@@ -9,17 +9,17 @@ RSpec.describe Admin::AddLeadProvidersFormComponent, type: :component do
   let(:lead_provider_3) { FactoryBot.create(:lead_provider, name: "Lead Provider Three") }
 
   let(:contract_period) { FactoryBot.create(:contract_period, year:, started_on: 1.month.ago, finished_on: 1.month.from_now) }
-  let(:active_lead_provider_1) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_1, contract_period:) }
-  let(:active_lead_provider_2) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_2, contract_period:) }
-  let(:active_lead_provider_3) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_3, contract_period:) }
+  let(:framework_agreement_1) { FactoryBot.create(:framework_agreement, lead_provider: lead_provider_1, contract_period:) }
+  let(:framework_agreement_2) { FactoryBot.create(:framework_agreement, lead_provider: lead_provider_2, contract_period:) }
+  let(:framework_agreement_3) { FactoryBot.create(:framework_agreement, lead_provider: lead_provider_3, contract_period:) }
 
   let(:current_partnerships) do
     [
-      FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner:, active_lead_provider: active_lead_provider_1)
+      FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner:, framework_agreement: framework_agreement_1)
     ]
   end
 
-  let(:available_lead_providers) { [active_lead_provider_2, active_lead_provider_3] }
+  let(:available_lead_providers) { [framework_agreement_2, framework_agreement_3] }
 
   let(:component) do
     described_class.new(
@@ -121,8 +121,8 @@ RSpec.describe Admin::AddLeadProvidersFormComponent, type: :component do
       result = render_inline(component)
 
       # Check for checkbox inputs with the correct values
-      checkbox_2 = result.css('input[type="checkbox"][value="' + active_lead_provider_2.id.to_s + '"]').first
-      checkbox_3 = result.css('input[type="checkbox"][value="' + active_lead_provider_3.id.to_s + '"]').first
+      checkbox_2 = result.css('input[type="checkbox"][value="' + framework_agreement_2.id.to_s + '"]').first
+      checkbox_3 = result.css('input[type="checkbox"][value="' + framework_agreement_3.id.to_s + '"]').first
 
       expect(checkbox_2).to be_present
       expect(checkbox_3).to be_present
@@ -136,7 +136,7 @@ RSpec.describe Admin::AddLeadProvidersFormComponent, type: :component do
       result = render_inline(component)
 
       # Lead Provider One should not be a checkbox since it's already a partnership
-      checkbox_1 = result.css('input[type="checkbox"][value="' + active_lead_provider_1.id.to_s + '"]')
+      checkbox_1 = result.css('input[type="checkbox"][value="' + framework_agreement_1.id.to_s + '"]')
       expect(checkbox_1).to be_empty
     end
 

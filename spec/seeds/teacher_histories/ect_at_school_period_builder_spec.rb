@@ -7,9 +7,9 @@ describe TeacherHistories::ECTAtSchoolPeriodBuilder do
   let(:school) { FactoryBot.create(:school) }
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Lead provider one") }
   let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:, contract_period:) }
   let(:delivery_partner) { FactoryBot.create(:delivery_partner, name: "Delivery partner one") }
-  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
+  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:, delivery_partner:) }
   let!(:school_partnership) { FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:) }
 
   let(:random_uuid) { SecureRandom.uuid }

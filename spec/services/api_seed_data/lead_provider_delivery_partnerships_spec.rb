@@ -14,7 +14,7 @@ RSpec.describe APISeedData::LeadProviderDeliveryPartnerships do
   describe "#plant" do
     let(:year) { described_class::APPLICABLE_CONTRACT_PERIOD_YEARS.sample }
     let(:contract_period) { FactoryBot.create(:contract_period, year:) }
-    let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
+    let!(:framework_agreement) { FactoryBot.create(:framework_agreement, contract_period:) }
 
     it "creates the correct number of lead provider delivery partnerships" do
       minimum_records = described_class::DELIVERY_PARTNERS_PER_LEAD_PROVIDER
@@ -27,7 +27,7 @@ RSpec.describe APISeedData::LeadProviderDeliveryPartnerships do
 
       LeadProviderDeliveryPartnership.find_each do |partnership|
         expect(partnership).to have_attributes(
-          active_lead_provider:,
+          framework_agreement:,
           delivery_partner: be_present
         )
       end
@@ -60,14 +60,14 @@ RSpec.describe APISeedData::LeadProviderDeliveryPartnerships do
       end
     end
 
-    context "when there are multiple active lead providers" do
-      let!(:another_active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
+    context "when there are multiple framework agreements" do
+      let!(:another_framework_agreement) { FactoryBot.create(:framework_agreement, contract_period:) }
 
       it "creates shared delivery partners between lead providers" do
         instance.plant
 
-        delivery_partner_ids_1 = active_lead_provider.lead_provider_delivery_partnerships.pluck(:delivery_partner_id)
-        delivery_partner_ids_2 = another_active_lead_provider.lead_provider_delivery_partnerships.pluck(:delivery_partner_id)
+        delivery_partner_ids_1 = framework_agreement.lead_provider_delivery_partnerships.pluck(:delivery_partner_id)
+        delivery_partner_ids_2 = another_framework_agreement.lead_provider_delivery_partnerships.pluck(:delivery_partner_id)
 
         overlapping_ids = delivery_partner_ids_1 & delivery_partner_ids_2
         expect(overlapping_ids.size).to be >= described_class::SHARED_DELIVERY_PARTNERS_PER_LEAD_PROVIDER

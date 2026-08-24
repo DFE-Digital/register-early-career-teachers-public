@@ -1,16 +1,16 @@
 module Contracts
   class Create
-    attr_reader :author, :active_lead_provider, :params
+    attr_reader :author, :framework_agreement, :params
 
-    def initialize(author:, active_lead_provider:, params:)
+    def initialize(author:, framework_agreement:, params:)
       @author = author
-      @active_lead_provider = active_lead_provider
+      @framework_agreement = framework_agreement
       @params = params
     end
 
     def call
       ActiveRecord::Base.transaction do
-        contract = active_lead_provider.contracts.build(params)
+        contract = framework_agreement.contracts.build(params)
         contract.save!
         Events::Record.record_contract_created_event!(author:, contract:)
         contract

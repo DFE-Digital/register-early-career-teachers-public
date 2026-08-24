@@ -6,7 +6,7 @@ class Contract::BandedFeeStructure::BandTerm < ApplicationRecord
              class_name: "Contract::BandedFeeStructure"
 
   belongs_to :band,
-             class_name: "ActiveLeadProvider::Band"
+             class_name: "FrameworkAgreement::Band"
 
   # Validations
   validates :fee_per_declaration,
@@ -29,7 +29,7 @@ class Contract::BandedFeeStructure::BandTerm < ApplicationRecord
   validate :sum_of_ratios_equals_one,
            if: -> { output_fee_ratio? && service_fee_ratio? }
 
-  validate :band_belongs_to_contracts_active_lead_provider
+  validate :band_belongs_to_contracts_framework_agreement
 
   delegate :capacity, :min_declarations, :max_declarations, :letter, to: :band
 
@@ -48,11 +48,11 @@ class Contract::BandedFeeStructure::BandTerm < ApplicationRecord
 
 private
 
-  def band_belongs_to_contracts_active_lead_provider
+  def band_belongs_to_contracts_framework_agreement
     return unless band && banded_fee_structure&.contract
-    return if band.active_lead_provider == banded_fee_structure.contract.active_lead_provider
+    return if band.framework_agreement == banded_fee_structure.contract.framework_agreement
 
-    errors.add(:band, "must belong to the contract's active lead provider")
+    errors.add(:band, "must belong to the contract's lead provider framework agreement")
   end
 
   def sum_of_ratios_equals_one

@@ -113,7 +113,7 @@ class Event < ApplicationRecord
   belongs_to :appropriate_body_period
 
   # providers
-  belongs_to :active_lead_provider
+  belongs_to :framework_agreement, foreign_key: :active_lead_provider_id
   belongs_to :lead_provider
   belongs_to :delivery_partner
   belongs_to :lead_provider_delivery_partnership

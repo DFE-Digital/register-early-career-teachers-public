@@ -1,6 +1,6 @@
 shared_examples "a paginated endpoint" do
   before do
-    8.times { create_resource(active_lead_provider:) }
+    8.times { create_resource(framework_agreement:) }
   end
 
   it "returns 5 resources on page 1" do

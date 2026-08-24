@@ -36,14 +36,14 @@ module API::SchoolPartnerships
       @lead_provider ||= school_partnership&.lead_provider
     end
 
-    def active_lead_provider
-      @active_lead_provider ||= school_partnership&.active_lead_provider
+    def framework_agreement
+      @framework_agreement ||= school_partnership&.framework_agreement
     end
 
     def lead_provider_delivery_partnership
-      return unless active_lead_provider && delivery_partner
+      return unless framework_agreement && delivery_partner
 
-      @lead_provider_delivery_partnership ||= delivery_partner.lead_provider_delivery_partnerships.find_by(active_lead_provider:, delivery_partner:)
+      @lead_provider_delivery_partnership ||= delivery_partner.lead_provider_delivery_partnerships.find_by(framework_agreement:, delivery_partner:)
     end
 
     def delivery_partner_exists
@@ -59,7 +59,7 @@ module API::SchoolPartnerships
     end
 
     def lead_provider_delivery_partnership_exists
-      return unless active_lead_provider && delivery_partner
+      return unless framework_agreement && delivery_partner
 
       errors.add(:delivery_partner_api_id, "The entered delivery partner is not recognised to be working in partnership with you for the given contract period. Contact the DfE for more information.") unless lead_provider_delivery_partnership
     end

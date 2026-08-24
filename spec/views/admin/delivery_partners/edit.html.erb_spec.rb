@@ -3,8 +3,8 @@ RSpec.describe "admin/delivery_partners/delivery_partnerships/new.html.erb" do
   let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
   let(:lead_provider_1) { FactoryBot.create(:lead_provider, name: "Lead Provider 1") }
   let(:lead_provider_2) { FactoryBot.create(:lead_provider, name: "Lead Provider 2") }
-  let(:active_lead_provider_1) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_1, contract_period:) }
-  let(:active_lead_provider_2) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_2, contract_period:) }
+  let(:framework_agreement_1) { FactoryBot.create(:framework_agreement, lead_provider: lead_provider_1, contract_period:) }
+  let(:framework_agreement_2) { FactoryBot.create(:framework_agreement, lead_provider: lead_provider_2, contract_period:) }
 
   before do
     assign(:delivery_partner, delivery_partner)
@@ -13,7 +13,7 @@ RSpec.describe "admin/delivery_partners/delivery_partnerships/new.html.erb" do
     assign(:page, "2")
     assign(:q, "search term")
     assign(:current_partnerships, [])
-    assign(:available_lead_providers, [active_lead_provider_1, active_lead_provider_2])
+    assign(:available_lead_providers, [framework_agreement_1, framework_agreement_2])
   end
 
   it "sets the page title" do
@@ -48,8 +48,8 @@ RSpec.describe "admin/delivery_partners/delivery_partnerships/new.html.erb" do
   it "renders checkboxes for available lead providers" do
     render
 
-    expect(rendered).to have_css("input[type='checkbox'][value='#{active_lead_provider_1.id}']")
-    expect(rendered).to have_css("input[type='checkbox'][value='#{active_lead_provider_2.id}']")
+    expect(rendered).to have_css("input[type='checkbox'][value='#{framework_agreement_1.id}']")
+    expect(rendered).to have_css("input[type='checkbox'][value='#{framework_agreement_2.id}']")
     expect(rendered).to have_css("label", text: "Lead Provider 1")
     expect(rendered).to have_css("label", text: "Lead Provider 2")
   end
@@ -65,14 +65,14 @@ RSpec.describe "admin/delivery_partners/delivery_partnerships/new.html.erb" do
       FactoryBot.create(
         :lead_provider_delivery_partnership,
         delivery_partner:,
-        active_lead_provider: active_lead_provider_1
+        framework_agreement: framework_agreement_1
       )
     end
 
     before do
       assign(:current_partnerships, [current_partnership])
       # Only show lead provider 2 as available since lead provider 1 is already assigned
-      assign(:available_lead_providers, [active_lead_provider_2])
+      assign(:available_lead_providers, [framework_agreement_2])
     end
 
     it "displays currently working lead providers" do
@@ -86,8 +86,8 @@ RSpec.describe "admin/delivery_partners/delivery_partnerships/new.html.erb" do
     it "only shows unassigned lead providers as checkboxes" do
       render
 
-      expect(rendered).not_to have_css("input[type='checkbox'][value='#{active_lead_provider_1.id}']")
-      expect(rendered).to have_css("input[type='checkbox'][value='#{active_lead_provider_2.id}']")
+      expect(rendered).not_to have_css("input[type='checkbox'][value='#{framework_agreement_1.id}']")
+      expect(rendered).to have_css("input[type='checkbox'][value='#{framework_agreement_2.id}']")
     end
   end
 

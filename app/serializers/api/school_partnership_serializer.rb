@@ -2,7 +2,7 @@ class API::SchoolPartnershipSerializer < Blueprinter::Base
   def self.dependencies
     [
       :delivery_partner,
-      :active_lead_provider,
+      :framework_agreement,
       :ongoing_training_periods,
       {
         school: :gias_school
@@ -14,7 +14,7 @@ class API::SchoolPartnershipSerializer < Blueprinter::Base
     exclude :id
 
     field :cohort do |partnership, _options|
-      partnership.active_lead_provider.contract_period_year.to_s
+      partnership.framework_agreement.contract_period_year.to_s
     end
 
     field :urn do |partnership, _options|

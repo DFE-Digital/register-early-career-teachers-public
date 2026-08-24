@@ -30,7 +30,7 @@ namespace :data_corrections do
 
     replacement_expression_of_interest =
       if args[:replacement_expression_of_interest_id].present?
-        ActiveLeadProvider.find(
+        FrameworkAgreement.find(
           args[:replacement_expression_of_interest_id]
         )
       end

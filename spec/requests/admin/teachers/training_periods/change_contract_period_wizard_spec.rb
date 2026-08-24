@@ -37,15 +37,15 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
   let(:schedule) { FactoryBot.create(:schedule, contract_period: current_contract_period) }
   let(:target_schedule) { FactoryBot.create(:schedule, contract_period: target_contract_period, identifier: schedule.identifier) }
   let(:eoi_lead_provider) { FactoryBot.create(:lead_provider) }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider: eoi_lead_provider, contract_period: current_contract_period) }
-  let!(:target_active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider: eoi_lead_provider, contract_period: target_contract_period) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider: eoi_lead_provider, contract_period: current_contract_period) }
+  let!(:target_framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider: eoi_lead_provider, contract_period: target_contract_period) }
   let(:eoi_only_training_period) do
     FactoryBot.create(
       :training_period,
       :unfinished,
       :with_only_expression_of_interest,
       ect_at_school_period:,
-      expression_of_interest: active_lead_provider,
+      expression_of_interest: framework_agreement,
       schedule:,
       started_on: today.prev_month
     )
@@ -56,7 +56,7 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
       :unfinished,
       :with_only_expression_of_interest,
       ect_at_school_period:,
-      expression_of_interest: active_lead_provider,
+      expression_of_interest: framework_agreement,
       schedule:,
       started_on: today.next_month,
       finished_on: nil
@@ -332,7 +332,7 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
         )
       end
 
-      it "redirects to check answers when there is one available current active lead provider and delivery partner partnership" do
+      it "redirects to check answers when there is one available current framework agreement and delivery partner partnership" do
         post(
           path_for_step("select-contract-period"),
           params: { select_contract_period: { contract_period_year: target_contract_period.year } }
@@ -512,7 +512,7 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
         expect(response).to redirect_to(admin_teacher_training_path(teacher))
         expect(training_period.reload.finished_on).to eq(today.yesterday)
         expect(replacement_training_period.school_partnership).to be_nil
-        expect(replacement_training_period.expression_of_interest).to eq(target_active_lead_provider)
+        expect(replacement_training_period.expression_of_interest).to eq(target_framework_agreement)
         expect(replacement_training_period.expression_of_interest_contract_period).to eq(target_contract_period)
         expect(replacement_training_period.schedule).to eq(target_schedule)
       end
@@ -595,7 +595,7 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
             :unfinished,
             :with_only_expression_of_interest,
             ect_at_school_period: future_ect_at_school_period,
-            expression_of_interest: active_lead_provider,
+            expression_of_interest: framework_agreement,
             schedule:,
             started_on: future_started_on,
             finished_on: nil
@@ -618,7 +618,7 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
           training_period.reload
 
           expect(training_period.school_partnership).to be_nil
-          expect(training_period.expression_of_interest).to eq(target_active_lead_provider)
+          expect(training_period.expression_of_interest).to eq(target_framework_agreement)
         end
       end
     end

@@ -4,7 +4,7 @@ RSpec.describe Statements::MarkAsPayable do
       statement = FactoryBot.create(:statement, :open, deadline_date: 1.day.ago, payment_date: Time.zone.now)
       eligible_declaration = FactoryBot.create(
         :declaration, :eligible,
-        active_lead_provider: statement.contract.active_lead_provider,
+        framework_agreement: statement.contract.framework_agreement,
         payment_statement: statement
       )
 
@@ -46,9 +46,9 @@ RSpec.describe Statements::MarkAsPayable do
   describe "#mark!" do
     subject { described_class.new(statement) }
 
-    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+    let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
     let(:statement) do
-      FactoryBot.create(:statement, :open, deadline_date: 1.day.ago, payment_date: Time.zone.now, active_lead_provider:)
+      FactoryBot.create(:statement, :open, deadline_date: 1.day.ago, payment_date: Time.zone.now, framework_agreement:)
     end
 
     %i[payable paid].each do |status|
@@ -58,7 +58,7 @@ RSpec.describe Statements::MarkAsPayable do
           status,
           deadline_date: 1.day.ago,
           payment_date: Time.zone.now,
-          active_lead_provider:
+          framework_agreement:
         )
 
         expect { described_class.new(statement).mark! }.to raise_error(
@@ -77,7 +77,7 @@ RSpec.describe Statements::MarkAsPayable do
     it "transitions eligible declarations to payable" do
       declaration = FactoryBot.create(
         :declaration, :eligible,
-        active_lead_provider:,
+        framework_agreement:,
         payment_statement: statement
       )
 
@@ -89,7 +89,7 @@ RSpec.describe Statements::MarkAsPayable do
     it "does not affect declarations in other payment states" do
       voided_declaration = FactoryBot.create(
         :declaration, :voided,
-        active_lead_provider:,
+        framework_agreement:,
         payment_statement: statement
       )
       no_payment_declaration = FactoryBot.create(:declaration, :no_payment)
@@ -103,7 +103,7 @@ RSpec.describe Statements::MarkAsPayable do
     it "records a declaration marked payable event for each eligible declaration" do
       declaration = FactoryBot.create(
         :declaration, :eligible,
-        active_lead_provider:,
+        framework_agreement:,
         payment_statement: statement
       )
 
@@ -129,7 +129,7 @@ RSpec.describe Statements::MarkAsPayable do
     it "rolls back all changes if an error occurs" do
       declaration = FactoryBot.create(
         :declaration, :eligible,
-        active_lead_provider:,
+        framework_agreement:,
         payment_statement: statement
       )
 

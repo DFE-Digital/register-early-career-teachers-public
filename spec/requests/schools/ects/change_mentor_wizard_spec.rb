@@ -232,7 +232,7 @@ describe "Schools::ECTs::ChangeMentorWizardController" do
         end
 
         before do
-          ect_training_period.active_lead_provider.update!(contract_period:)
+          ect_training_period.framework_agreement.update!(contract_period:)
         end
 
         context "when the mentor has a provider-led training period" do
@@ -378,7 +378,7 @@ describe "Schools::ECTs::ChangeMentorWizardController" do
 
           context "when the mentor has a different lead provider" do
             let(:other_lead_provider) do
-              FactoryBot.create(:active_lead_provider, contract_period:)
+              FactoryBot.create(:framework_agreement, contract_period:)
                 .lead_provider
             end
 

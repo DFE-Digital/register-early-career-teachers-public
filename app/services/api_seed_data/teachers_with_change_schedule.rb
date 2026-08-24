@@ -19,11 +19,11 @@ module APISeedData
 
       log_plant_info("api teachers with change schedule")
 
-      active_lead_providers.find_each do |active_lead_provider|
+      framework_agreements.find_each do |framework_agreement|
         %i[ect mentor].each do |trainee_type|
           CHANGE_VARIATIONS.each do |variation|
             NUMBER_OF_RECORDS.times do
-              create_teacher_with_change_schedule(active_lead_provider:, trainee_type:, variation:)
+              create_teacher_with_change_schedule(framework_agreement:, trainee_type:, variation:)
             end
           end
         end
@@ -36,11 +36,11 @@ module APISeedData
       @contract_period ||= ContractPeriod.find_by(year: CHANGE_FROM_CONTRACT_PERIOD_YEAR)
     end
 
-    def active_lead_providers
+    def framework_agreements
       super.where(contract_period:)
     end
 
-    def create_teacher_with_change_schedule(active_lead_provider:, trainee_type:, variation:)
+    def create_teacher_with_change_schedule(framework_agreement:, trainee_type:, variation:)
       teacher = create_teacher
       log_seed_info("#{::Teachers::Name.new(teacher).full_name} (#{trainee_type.upcase}) - #{variation.keep_if { |_k, v| v }.keys.join(', ')}", indent: 2, colour: TRAINEE_COLOURS[trainee_type])
 
@@ -52,7 +52,7 @@ module APISeedData
         finished_on: nil
       )
 
-      school_partnership = random_school_partnership(active_lead_provider:)
+      school_partnership = random_school_partnership(framework_agreement:)
       schedule = random_schedule(contract_period:, trainee_type:)
       finished_on = at_school_period.started_on + rand(1..100).days
 
@@ -74,7 +74,7 @@ module APISeedData
           .joins(:lead_provider)
           .where(
             school: school_partnership.school,
-            lead_providers: { id: active_lead_provider.lead_provider.id }
+            lead_providers: { id: framework_agreement.lead_provider.id }
           )
           .excluding_contract_period_year(original_year)
           .order("RANDOM()")
@@ -131,10 +131,10 @@ module APISeedData
       ).tap { |training_period| log_training_period(training_period:) }
     end
 
-    def random_school_partnership(active_lead_provider:, excluding_school: nil)
+    def random_school_partnership(framework_agreement:, excluding_school: nil)
       SchoolPartnership
-        .includes(lead_provider_delivery_partnership: :active_lead_provider)
-        .where(lead_provider_delivery_partnership: { active_lead_provider: })
+        .includes(lead_provider_delivery_partnership: :framework_agreement)
+        .where(lead_provider_delivery_partnership: { framework_agreement: })
         .where.not(school: excluding_school)
         .order("RANDOM()")
         .first!
@@ -168,7 +168,7 @@ module APISeedData
 
       delivery_partnership = training_period.school_partnership.lead_provider_delivery_partnership
 
-      lead_provider_name = delivery_partnership.active_lead_provider.lead_provider.name
+      lead_provider_name = delivery_partnership.framework_agreement.lead_provider.name
       delivery_partner_name = delivery_partnership.delivery_partner.name
 
       log_seed_info(

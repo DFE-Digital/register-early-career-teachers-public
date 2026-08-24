@@ -28,7 +28,7 @@ RSpec.describe Schools::Shared::MentorAssignmentContext do
       let(:started_on) { 2.days.ago.to_date }
       let(:finished_on) { 2.days.from_now.to_date }
 
-      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
+      let(:framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:) }
 
       let(:ect_at_school_period) do
         FactoryBot.create(:ect_at_school_period, started_on:, finished_on:, school:, teacher: ect_teacher)
@@ -43,7 +43,7 @@ RSpec.describe Schools::Shared::MentorAssignmentContext do
           started_on:,
           finished_on:,
           school_partnership: nil,
-          expression_of_interest: active_lead_provider
+          expression_of_interest: framework_agreement
         )
       end
 
@@ -82,8 +82,8 @@ RSpec.describe Schools::Shared::MentorAssignmentContext do
     let(:finished_on) { 2.days.from_now.to_date }
 
     let(:school_partnership) do
-      active_lp = FactoryBot.create(:active_lead_provider, lead_provider:)
-      lpdp = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lp)
+      active_lp = FactoryBot.create(:framework_agreement, lead_provider:)
+      lpdp = FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement: active_lp)
       FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership: lpdp)
     end
 
@@ -122,9 +122,9 @@ RSpec.describe Schools::Shared::MentorAssignmentContext do
     let!(:excluded_provider) { FactoryBot.create(:lead_provider) }
 
     before do
-      FactoryBot.create(:active_lead_provider, contract_period: in_contract_period, lead_provider: lead_provider_1)
-      FactoryBot.create(:active_lead_provider, contract_period: in_contract_period, lead_provider: lead_provider_2)
-      FactoryBot.create(:active_lead_provider, contract_period: out_of_contract_period, lead_provider: excluded_provider)
+      FactoryBot.create(:framework_agreement, contract_period: in_contract_period, lead_provider: lead_provider_1)
+      FactoryBot.create(:framework_agreement, contract_period: in_contract_period, lead_provider: lead_provider_2)
+      FactoryBot.create(:framework_agreement, contract_period: out_of_contract_period, lead_provider: excluded_provider)
     end
 
     it "returns only lead providers within the ECTs contract period" do

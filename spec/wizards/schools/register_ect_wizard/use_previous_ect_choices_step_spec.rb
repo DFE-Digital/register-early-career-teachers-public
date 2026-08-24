@@ -101,12 +101,12 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
       end
 
       context "and a reusable partnership exists for the registration contract period" do
-        let(:active_lead_provider) do
-          FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: current_contract_period)
+        let(:framework_agreement) do
+          FactoryBot.create(:framework_agreement, lead_provider:, contract_period: current_contract_period)
         end
 
         let(:lpdp) do
-          FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
+          FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:)
         end
 
         let!(:reusable_partnership) do
@@ -120,12 +120,12 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
         context "with a start date on the last day of the next contract period, when today is the end of the current period" do
           let(:upcoming_contract_period) { FactoryBot.create(:contract_period, :next) }
 
-          let(:upcoming_active_lead_provider) do
-            FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: upcoming_contract_period)
+          let(:upcoming_framework_agreement) do
+            FactoryBot.create(:framework_agreement, lead_provider:, contract_period: upcoming_contract_period)
           end
 
           let(:upcoming_lpdp) do
-            FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: upcoming_active_lead_provider)
+            FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement: upcoming_framework_agreement)
           end
 
           let!(:reusable_partnership) do
@@ -185,12 +185,12 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
         end
 
         context "and a reusable partnership exists in the reassigned contract period" do
-          let(:active_lead_provider_2024) do
-            FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: reassigned_contract_period)
+          let(:framework_agreement_2024) do
+            FactoryBot.create(:framework_agreement, lead_provider:, contract_period: reassigned_contract_period)
           end
 
           let(:lpdp_2024) do
-            FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider_2024)
+            FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement: framework_agreement_2024)
           end
 
           let!(:reusable_partnership) do
@@ -228,14 +228,14 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
             )
           end
 
-          let!(:active_lead_provider_2024) do
-            FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: reassigned_contract_period)
+          let!(:framework_agreement_2024) do
+            FactoryBot.create(:framework_agreement, lead_provider:, contract_period: reassigned_contract_period)
           end
 
           let!(:lpdp_2024) do
             FactoryBot.create(
               :lead_provider_delivery_partnership,
-              active_lead_provider: active_lead_provider_2024,
+              framework_agreement: framework_agreement_2024,
               delivery_partner: delivery_partner_alpha
             )
           end
@@ -267,14 +267,14 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
             )
           end
 
-          let!(:active_lead_provider_2024) do
-            FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: reassigned_contract_period)
+          let!(:framework_agreement_2024) do
+            FactoryBot.create(:framework_agreement, lead_provider:, contract_period: reassigned_contract_period)
           end
 
           let!(:lpdp_2024) do
             FactoryBot.create(
               :lead_provider_delivery_partnership,
-              active_lead_provider: active_lead_provider_2024,
+              framework_agreement: framework_agreement_2024,
               delivery_partner: delivery_partner_alpha
             )
           end
@@ -311,16 +311,16 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
             reassignable_provider_led_training_period(
               step,
               contract_period: frozen_contract_period,
-              expression_of_interest_id: previous_year_active_lead_provider.id
+              expression_of_interest_id: previous_year_framework_agreement.id
             )
           end
 
-          let!(:previous_year_active_lead_provider) do
-            FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: frozen_contract_period)
+          let!(:previous_year_framework_agreement) do
+            FactoryBot.create(:framework_agreement, lead_provider:, contract_period: frozen_contract_period)
           end
 
-          let!(:active_lead_provider_2024) do
-            FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: reassigned_contract_period)
+          let!(:framework_agreement_2024) do
+            FactoryBot.create(:framework_agreement, lead_provider:, contract_period: reassigned_contract_period)
           end
 
           it "is allowed via EOI fallback" do
@@ -337,8 +337,8 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
         end
 
         context "and the previous training period used a confirmed partnership and the school has a recent EOI in the reassigned contract period" do
-          let!(:active_lead_provider_2024) do
-            FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: reassigned_contract_period)
+          let!(:framework_agreement_2024) do
+            FactoryBot.create(:framework_agreement, lead_provider:, contract_period: reassigned_contract_period)
           end
 
           let!(:ect_at_school_period) do
@@ -358,7 +358,7 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
               :training_period,
               ect_at_school_period:,
               training_programme: "provider_led",
-              expression_of_interest: active_lead_provider_2024,
+              expression_of_interest: framework_agreement_2024,
               school_partnership: nil,
               started_on: Date.new(2024, 9, 1),
               finished_on: nil
@@ -381,8 +381,8 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
         end
 
         context "and the previous training period used a confirmed partnership and the school has a recent EOI in the reassigned contract period with a start date outside the contract period range" do
-          let!(:active_lead_provider_2024) do
-            FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: reassigned_contract_period)
+          let!(:framework_agreement_2024) do
+            FactoryBot.create(:framework_agreement, lead_provider:, contract_period: reassigned_contract_period)
           end
 
           let!(:ect_at_school_period) do
@@ -402,7 +402,7 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
               :training_period,
               ect_at_school_period:,
               training_programme: "provider_led",
-              expression_of_interest: active_lead_provider_2024,
+              expression_of_interest: framework_agreement_2024,
               school_partnership: nil,
               started_on: Date.new(2025, 9, 1),
               finished_on: nil
@@ -427,7 +427,7 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
         context "and the school has a recent EOI for a different LP than the last chosen LP" do
           let!(:different_lead_provider) { FactoryBot.create(:lead_provider) }
           let!(:active_different_lp_2024) do
-            FactoryBot.create(:active_lead_provider, lead_provider: different_lead_provider, contract_period: reassigned_contract_period)
+            FactoryBot.create(:framework_agreement, lead_provider: different_lead_provider, contract_period: reassigned_contract_period)
           end
 
           let!(:ect_at_school_period) do
@@ -469,12 +469,12 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
       context "and no partnership is reusable but a previous EOI exists and the LP is available in the registration contract period" do
         let!(:previous_contract_period) { FactoryBot.create(:contract_period, :previous) }
 
-        let!(:previous_year_active_lead_provider) do
-          FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: previous_contract_period)
+        let!(:previous_year_framework_agreement) do
+          FactoryBot.create(:framework_agreement, lead_provider:, contract_period: previous_contract_period)
         end
 
-        let!(:active_lead_provider) do
-          FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: current_contract_period)
+        let!(:framework_agreement) do
+          FactoryBot.create(:framework_agreement, lead_provider:, contract_period: current_contract_period)
         end
 
         let!(:ect_at_school_period) do
@@ -491,7 +491,7 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
             :training_period,
             ect_at_school_period:,
             training_programme: "provider_led",
-            expression_of_interest: previous_year_active_lead_provider,
+            expression_of_interest: previous_year_framework_agreement,
             school_partnership: nil,
             started_on: ect_at_school_period.started_on,
             finished_on: nil
@@ -521,18 +521,18 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
             )
           end
 
-          let!(:upcoming_active_lead_provider) do
-            FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: upcoming_contract_period)
+          let!(:upcoming_framework_agreement) do
+            FactoryBot.create(:framework_agreement, lead_provider:, contract_period: upcoming_contract_period)
           end
 
           before { travel_to current_contract_period.finished_on }
 
           it "is allowed" do
-            expect(ActiveLeadProvider)
+            expect(FrameworkAgreement)
               .to receive(:exists?)
               .with(
                 contract_period_year: previous_contract_period.year,
-                lead_provider_id: previous_year_active_lead_provider.lead_provider_id
+                lead_provider_id: previous_year_framework_agreement.lead_provider_id
               )
               .and_call_original
 
@@ -615,8 +615,8 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
     context "and the ECT has no previous training period but the school has a recent provider-led EOI training period for the LP" do
       let!(:lead_provider) { FactoryBot.create(:lead_provider) }
 
-      let!(:active_lead_provider_2025) do
-        FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: current_contract_period)
+      let!(:framework_agreement_2025) do
+        FactoryBot.create(:framework_agreement, lead_provider:, contract_period: current_contract_period)
       end
 
       let!(:ect_at_school_period) do
@@ -635,7 +635,7 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
           :training_period,
           ect_at_school_period:,
           training_programme: "provider_led",
-          expression_of_interest: active_lead_provider_2025,
+          expression_of_interest: framework_agreement_2025,
           school_partnership: nil,
           started_on: Date.new(2025, 9, 1),
           finished_on: nil
@@ -807,14 +807,14 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
       let!(:lead_provider) { FactoryBot.create(:lead_provider) }
       let!(:delivery_partner) { FactoryBot.create(:delivery_partner) }
 
-      let!(:active_lead_provider) do
-        FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: current_contract_period)
+      let!(:framework_agreement) do
+        FactoryBot.create(:framework_agreement, lead_provider:, contract_period: current_contract_period)
       end
 
       let!(:lpdp) do
         FactoryBot.create(
           :lead_provider_delivery_partnership,
-          active_lead_provider:,
+          framework_agreement:,
           delivery_partner:
         )
       end

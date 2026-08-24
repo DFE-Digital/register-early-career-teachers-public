@@ -6,7 +6,7 @@ describe "Participants endpoint", :with_metadata, openapi_spec: "v3/swagger.yaml
   let(:lead_provider_delivery_partnership) do
     FactoryBot.create(
       :lead_provider_delivery_partnership,
-      active_lead_provider:
+      framework_agreement:
     )
   end
   let(:school_partnership) do
@@ -236,7 +236,7 @@ describe "Participants endpoint", :with_metadata, openapi_spec: "v3/swagger.yaml
                           attributes: {
                             schedule_identifier: new_schedule.identifier,
                             course_identifier: "ecf-induction",
-                            cohort: active_lead_provider.contract_period_year
+                            cohort: framework_agreement.contract_period_year
                           }
                         }
                       }
@@ -249,7 +249,7 @@ describe "Participants endpoint", :with_metadata, openapi_spec: "v3/swagger.yaml
                           attributes: {
                             schedule_identifier: new_schedule.identifier,
                             course_identifier: "invalid-course",
-                            cohort: active_lead_provider.contract_period_year
+                            cohort: framework_agreement.contract_period_year
                           }
                         }
                       }

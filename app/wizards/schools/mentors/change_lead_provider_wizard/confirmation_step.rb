@@ -9,7 +9,7 @@ module Schools
       private
 
         def new_lead_provider
-          @new_lead_provider ||= current_training_period&.active_lead_provider&.lead_provider || current_training_period&.expression_of_interest&.lead_provider
+          @new_lead_provider ||= current_training_period&.framework_agreement&.lead_provider || current_training_period&.expression_of_interest&.lead_provider
         end
 
         def current_training_period

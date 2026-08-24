@@ -74,11 +74,11 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::CurrentAc
 
   context "when the current training period only has an expression of interest" do
     let(:target_school_partnership) { nil }
-    let(:current_active_lead_provider) do
-      FactoryBot.create(:active_lead_provider, contract_period: current_contract_period)
+    let(:current_framework_agreement) do
+      FactoryBot.create(:framework_agreement, contract_period: current_contract_period)
     end
-    let!(:target_active_lead_provider) do
-      FactoryBot.create(:active_lead_provider, lead_provider: current_active_lead_provider.lead_provider, contract_period: target_contract_period)
+    let!(:target_framework_agreement) do
+      FactoryBot.create(:framework_agreement, lead_provider: current_framework_agreement.lead_provider, contract_period: target_contract_period)
     end
     let!(:training_period) do
       FactoryBot.create(
@@ -86,14 +86,14 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::CurrentAc
         :unfinished,
         :with_only_expression_of_interest,
         ect_at_school_period:,
-        expression_of_interest: current_active_lead_provider,
+        expression_of_interest: current_framework_agreement,
         schedule:,
         started_on:,
         finished_on:
       )
     end
 
-    it "ends the current period and creates a replacement with the equivalent active lead provider" do
+    it "ends the current period and creates a replacement with the equivalent framework agreement" do
       replacement_training_period = nil
 
       expect {
@@ -108,8 +108,8 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::CurrentAc
       expect(replacement_training_period.started_on).to eq(today)
       expect(replacement_training_period.finished_on).to be_nil
       expect(replacement_training_period.school_partnership).to be_nil
-      expect(replacement_training_period.expression_of_interest).to eq(target_active_lead_provider)
-      expect(replacement_training_period.expression_of_interest.lead_provider).to eq(current_active_lead_provider.lead_provider)
+      expect(replacement_training_period.expression_of_interest).to eq(target_framework_agreement)
+      expect(replacement_training_period.expression_of_interest.lead_provider).to eq(current_framework_agreement.lead_provider)
       expect(replacement_training_period.expression_of_interest_contract_period).to eq(target_contract_period)
       expect(replacement_training_period.schedule).to eq(target_schedule)
       expect(event.metadata["new_training_period_id"]).to eq(replacement_training_period.id)

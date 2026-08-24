@@ -41,7 +41,7 @@ module APISeedData
 
         attributes[:contract_period_years].each do |year|
           contract_period = ContractPeriod.find_by!(year:)
-          FactoryBot.create(:active_lead_provider, contract_period:, lead_provider:)
+          FactoryBot.create(:framework_agreement, contract_period:, lead_provider:)
         end
 
         log_seed_info("#{Colourize.text(name, colour(index))} (#{attributes[:contract_period_years].to_a.join(', ')})")

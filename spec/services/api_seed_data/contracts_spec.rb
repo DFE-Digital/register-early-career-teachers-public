@@ -11,17 +11,17 @@ RSpec.describe APISeedData::Contracts do
 
   describe "#plant" do
     let(:mentor_funding_contract_period) { FactoryBot.create(:contract_period, year: 2025, mentor_funding_enabled: true) }
-    let!(:mentor_funding_active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period: mentor_funding_contract_period) }
+    let!(:mentor_funding_framework_agreement) { FactoryBot.create(:framework_agreement, contract_period: mentor_funding_contract_period) }
 
     let(:contract_period) { FactoryBot.create(:contract_period, year: 2024, mentor_funding_enabled: false) }
-    let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
+    let!(:framework_agreement) { FactoryBot.create(:framework_agreement, contract_period:) }
 
-    it "creates contracts for active lead providers with the correct attributes" do
-      expect { instance.plant }.to change(active_lead_provider.contracts, :count).by_at_least(1)
-        .and change(mentor_funding_active_lead_provider.contracts, :count).by_at_least(1)
+    it "creates contracts for framework agreements with the correct attributes" do
+      expect { instance.plant }.to change(framework_agreement.contracts, :count).by_at_least(1)
+        .and change(mentor_funding_framework_agreement.contracts, :count).by_at_least(1)
 
-      expect(active_lead_provider.contracts).to all have_attributes(contract_type: "ecf")
-      expect(mentor_funding_active_lead_provider.contracts).to all have_attributes(contract_type: "ittecf_ectp")
+      expect(framework_agreement.contracts).to all have_attributes(contract_type: "ecf")
+      expect(mentor_funding_framework_agreement.contracts).to all have_attributes(contract_type: "ittecf_ectp")
     end
 
     it "logs the creation of contracts" do
@@ -32,11 +32,11 @@ RSpec.describe APISeedData::Contracts do
 
       expect(logger).to have_received(:info).with(/Planting contracts/).once
 
-      expect(logger).to have_received(:info).with(/#{active_lead_provider.lead_provider.name} contracts/).once
-      expect(logger).to have_received(:info).with(/Contracts for #{active_lead_provider.contract_period.year}: \d+ ECF/).once
+      expect(logger).to have_received(:info).with(/#{framework_agreement.lead_provider.name} contracts/).once
+      expect(logger).to have_received(:info).with(/Contracts for #{framework_agreement.contract_period.year}: \d+ ECF/).once
 
-      expect(logger).to have_received(:info).with(/#{mentor_funding_active_lead_provider.lead_provider.name} contracts/).once
-      expect(logger).to have_received(:info).with(/Contracts for #{mentor_funding_active_lead_provider.contract_period.year}: \d+ ITTECF ECTP/).once
+      expect(logger).to have_received(:info).with(/#{mentor_funding_framework_agreement.lead_provider.name} contracts/).once
+      expect(logger).to have_received(:info).with(/Contracts for #{mentor_funding_framework_agreement.contract_period.year}: \d+ ITTECF ECTP/).once
     end
 
     context "when verbose logging is false" do
@@ -46,8 +46,8 @@ RSpec.describe APISeedData::Contracts do
         instance.plant
 
         expect(logger).to have_received(:info).with(/Planting contracts/).once
-        expect(logger).not_to have_received(:info).with(/#{active_lead_provider.lead_provider.name}/)
-        expect(logger).not_to have_received(:info).with(/#{mentor_funding_active_lead_provider.lead_provider.name}/)
+        expect(logger).not_to have_received(:info).with(/#{framework_agreement.lead_provider.name}/)
+        expect(logger).not_to have_received(:info).with(/#{mentor_funding_framework_agreement.lead_provider.name}/)
       end
     end
 

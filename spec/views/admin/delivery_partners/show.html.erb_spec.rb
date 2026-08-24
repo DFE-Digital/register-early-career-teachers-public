@@ -1,11 +1,11 @@
 RSpec.describe "admin/delivery_partners/show.html.erb" do
   let(:delivery_partner) { FactoryBot.create(:delivery_partner, name: "Test Delivery Partner") }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
   let(:partnership) do
     FactoryBot.create(
       :lead_provider_delivery_partnership,
       delivery_partner:,
-      active_lead_provider:
+      framework_agreement:
     )
   end
 
@@ -13,7 +13,7 @@ RSpec.describe "admin/delivery_partners/show.html.erb" do
     assign(:delivery_partner, delivery_partner)
     assign(:page, "2")
     assign(:q, "search term")
-    assign(:partnership_data, { partnership.contract_period.year => [active_lead_provider.lead_provider.name] })
+    assign(:partnership_data, { partnership.contract_period.year => [framework_agreement.lead_provider.name] })
   end
 
   it %(sets the page title to the delivery partner name) do
@@ -76,20 +76,20 @@ RSpec.describe "admin/delivery_partners/show.html.erb" do
   end
 
   context "when there are multiple partnerships for different years" do
-    let(:old_active_lead_provider) { FactoryBot.create(:active_lead_provider) }
-    let(:new_active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+    let(:old_framework_agreement) { FactoryBot.create(:framework_agreement) }
+    let(:new_framework_agreement) { FactoryBot.create(:framework_agreement) }
     let(:old_partnership) do
       FactoryBot.create(
         :lead_provider_delivery_partnership,
         delivery_partner:,
-        active_lead_provider: old_active_lead_provider
+        framework_agreement: old_framework_agreement
       )
     end
     let(:new_partnership) do
       FactoryBot.create(
         :lead_provider_delivery_partnership,
         delivery_partner:,
-        active_lead_provider: new_active_lead_provider
+        framework_agreement: new_framework_agreement
       )
     end
 
@@ -97,8 +97,8 @@ RSpec.describe "admin/delivery_partners/show.html.erb" do
       # Ensure different years for ordering test
       old_contract_period = FactoryBot.create(:contract_period, year: 2021)
       new_contract_period = FactoryBot.create(:contract_period, year: 2023)
-      old_active_lead_provider.update!(contract_period: old_contract_period)
-      new_active_lead_provider.update!(contract_period: new_contract_period)
+      old_framework_agreement.update!(contract_period: old_contract_period)
+      new_framework_agreement.update!(contract_period: new_contract_period)
 
       assign(:contract_period_partnerships, [
         { contract_period: new_contract_period, partnerships: [new_partnership] },
@@ -126,21 +126,21 @@ RSpec.describe "admin/delivery_partners/show.html.erb" do
     let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
     let(:lead_provider_1) { FactoryBot.create(:lead_provider, name: "Lead Provider 1") }
     let(:lead_provider_2) { FactoryBot.create(:lead_provider, name: "Lead Provider 2") }
-    let(:active_lead_provider_1) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_1, contract_period:) }
-    let(:active_lead_provider_2) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_2, contract_period:) }
+    let(:framework_agreement_1) { FactoryBot.create(:framework_agreement, lead_provider: lead_provider_1, contract_period:) }
+    let(:framework_agreement_2) { FactoryBot.create(:framework_agreement, lead_provider: lead_provider_2, contract_period:) }
 
     let(:partnership_1) do
       FactoryBot.create(
         :lead_provider_delivery_partnership,
         delivery_partner:,
-        active_lead_provider: active_lead_provider_1
+        framework_agreement: framework_agreement_1
       )
     end
     let(:partnership_2) do
       FactoryBot.create(
         :lead_provider_delivery_partnership,
         delivery_partner:,
-        active_lead_provider: active_lead_provider_2
+        framework_agreement: framework_agreement_2
       )
     end
 

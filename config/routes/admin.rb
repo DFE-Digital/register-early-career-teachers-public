@@ -128,15 +128,18 @@ namespace :admin do
             resources :milestones, only: %i[new create destroy]
           end
 
-          resources :active_lead_providers, only: %i[index new create destroy], path: "active-lead-providers" do
-            resources :statements, only: %i[index show new create edit update destroy], controller: "active_lead_providers/statements" do
+          get "active-lead-providers", to: redirect("/admin/finance/contract-periods/%{contract_period_id}/framework-agreements")
+          get "active-lead-providers/*rest", to: redirect { |params, _req| "/admin/finance/contract-periods/#{params[:contract_period_id]}/framework-agreements/#{params[:rest]}" }
+
+          resources :framework_agreements, only: %i[index new create destroy], path: "framework-agreements" do
+            resources :statements, only: %i[index show new create edit update destroy], controller: "framework_agreements/statements" do
               member { get :delete }
             end
-            resources :contracts, only: %i[index show new create edit update destroy], controller: "active_lead_providers/contracts" do
+            resources :contracts, only: %i[index show new create edit update destroy], controller: "framework_agreements/contracts" do
               member { get :delete }
             end
-            resources :bands, except: %i[show], controller: "active_lead_providers/bands"
-            resources :lead_provider_delivery_partnerships, only: %i[index new create destroy], controller: "active_lead_providers/lead_provider_delivery_partnerships" do
+            resources :bands, except: %i[show], controller: "framework_agreements/bands"
+            resources :lead_provider_delivery_partnerships, only: %i[index new create destroy], controller: "framework_agreements/lead_provider_delivery_partnerships" do
               member { get :delete }
             end
           end

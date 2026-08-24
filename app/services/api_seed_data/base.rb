@@ -37,8 +37,8 @@ module APISeedData
       end
     end
 
-    def active_lead_providers
-      ActiveLeadProvider
+    def framework_agreements
+      FrameworkAgreement
         .includes(:lead_provider, :contract_period)
         .joins(:lead_provider, :contract_period)
         .merge(lead_providers)

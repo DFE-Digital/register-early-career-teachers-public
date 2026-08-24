@@ -127,7 +127,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::FuturePer
       FactoryBot.create(
         :training_period,
         ect_at_school_period: future_ect_at_school_period,
-        expression_of_interest: school_partnership.active_lead_provider,
+        expression_of_interest: school_partnership.framework_agreement,
         school_partnership:,
         schedule:,
         started_on: future_started_on,
@@ -139,7 +139,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::FuturePer
       expect {
         service_call
       }.to change { training_period.reload.expression_of_interest_id }
-        .from(school_partnership.active_lead_provider.id)
+        .from(school_partnership.framework_agreement.id)
         .to(nil)
 
       expect(training_period.school_partnership).to eq(target_school_partnership)
@@ -150,18 +150,18 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::FuturePer
 
   context "when the future training period only has an expression of interest" do
     let(:target_school_partnership) { nil }
-    let(:current_active_lead_provider) do
-      FactoryBot.create(:active_lead_provider, contract_period: current_contract_period)
+    let(:current_framework_agreement) do
+      FactoryBot.create(:framework_agreement, contract_period: current_contract_period)
     end
-    let!(:target_active_lead_provider) do
-      FactoryBot.create(:active_lead_provider, lead_provider: current_active_lead_provider.lead_provider, contract_period: target_contract_period)
+    let!(:target_framework_agreement) do
+      FactoryBot.create(:framework_agreement, lead_provider: current_framework_agreement.lead_provider, contract_period: target_contract_period)
     end
     let!(:current_training_period) do
       FactoryBot.create(
         :training_period,
         :with_only_expression_of_interest,
         ect_at_school_period: current_ect_at_school_period,
-        expression_of_interest: current_active_lead_provider,
+        expression_of_interest: current_framework_agreement,
         schedule:,
         started_on: today.prev_month,
         finished_on: future_started_on.yesterday
@@ -172,14 +172,14 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::FuturePer
         :training_period,
         :with_only_expression_of_interest,
         ect_at_school_period: future_ect_at_school_period,
-        expression_of_interest: current_active_lead_provider,
+        expression_of_interest: current_framework_agreement,
         schedule:,
         started_on: future_started_on,
         finished_on: future_finished_on
       )
     end
 
-    it "updates the future training period in place with the equivalent active lead provider" do
+    it "updates the future training period in place with the equivalent framework agreement" do
       expect {
         service_call
       }
@@ -196,7 +196,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::FuturePer
         finished_on: future_finished_on
       )
       expect(training_period.school_partnership).to be_nil
-      expect(training_period.expression_of_interest).to eq(target_active_lead_provider)
+      expect(training_period.expression_of_interest).to eq(target_framework_agreement)
       expect(training_period.expression_of_interest_contract_period).to eq(target_contract_period)
       expect(training_period.schedule).to eq(target_schedule)
       expect(event.contract_period).to eq(current_contract_period)
@@ -204,15 +204,15 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::FuturePer
       expect(event.metadata["to_contract_period_id"]).to eq(target_contract_period.id)
     end
 
-    context "when there is no equivalent active lead provider in the selected contract period" do
-      let!(:target_active_lead_provider) { nil }
+    context "when there is no equivalent framework agreement in the selected contract period" do
+      let!(:target_framework_agreement) { nil }
 
-      it "raises an active lead provider not found error" do
+      it "raises a framework agreement not found error" do
         expect {
           service_call
         }.to raise_error(
-          described_class::ActiveLeadProviderNotFoundError,
-          "No active lead provider found for #{current_active_lead_provider.lead_provider.name} in contract period #{target_contract_period.year}"
+          described_class::FrameworkAgreementNotFoundError,
+          "No lead provider framework agreement found for #{current_framework_agreement.lead_provider.name} in contract period #{target_contract_period.year}"
         )
       end
     end

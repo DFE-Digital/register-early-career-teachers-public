@@ -11,10 +11,10 @@ RSpec.describe APISeedData::Statements do
 
   describe "#plant" do
     let(:contract_period) { FactoryBot.create(:contract_period, year: Time.zone.now.year - 1) }
-    let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
-    let!(:contracts) { FactoryBot.create_list(:contract, 3, :for_ittecf_ectp, active_lead_provider:) }
+    let!(:framework_agreement) { FactoryBot.create(:framework_agreement, contract_period:) }
+    let!(:contracts) { FactoryBot.create_list(:contract, 3, :for_ittecf_ectp, framework_agreement:) }
 
-    it "creates statements for active lead providers with the correct attributes" do
+    it "creates statements for framework agreements with the correct attributes" do
       instance.plant
 
       cohort_year = contract_period.year
@@ -28,7 +28,7 @@ RSpec.describe APISeedData::Statements do
         expected_contract = contracts[(index * contracts.size) / year_month_pairs.size]
 
         expect(statement).to have_attributes(
-          active_lead_provider:,
+          framework_agreement:,
           deadline_date: expected_deadline_date,
           payment_date: expected_payment_date,
           status: be_in(%w[open payable paid]),
@@ -52,7 +52,7 @@ RSpec.describe APISeedData::Statements do
 
       expect(logger).to have_received(:info).with(/Planting statements/).once
 
-      expect(logger).to have_received(:info).with(/#{active_lead_provider.lead_provider.name}/).once
+      expect(logger).to have_received(:info).with(/#{framework_agreement.lead_provider.name}/).once
 
       expect(logger).to have_received(:info).with(/#{contract_period.year}/).once
       expect(logger).to have_received(:info).with(/#{contract_period.year + 3}/).once
@@ -73,7 +73,7 @@ RSpec.describe APISeedData::Statements do
         instance.plant
 
         expect(logger).to have_received(:info).with(/Planting statements/).once
-        expect(logger).not_to have_received(:info).with(/#{active_lead_provider.lead_provider.name}/)
+        expect(logger).not_to have_received(:info).with(/#{framework_agreement.lead_provider.name}/)
       end
     end
 

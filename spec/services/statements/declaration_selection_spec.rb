@@ -3,7 +3,7 @@ RSpec.describe Statements::DeclarationSelection do
 
   let(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:, contract_period:) }
 
   let(:band_max) { 10 }
   let(:banded_fee_structure) do
@@ -14,23 +14,23 @@ RSpec.describe Statements::DeclarationSelection do
                      setup_fee: 0,
                      band_terms: [
                        FactoryBot.build(:contract_banded_fee_structure_band_term,
-                                        band: active_lead_provider_band)
+                                        band: framework_agreement_band)
                      ])
   end
 
-  let(:active_lead_provider_band) do
-    FactoryBot.create(:active_lead_provider_band,
-                      active_lead_provider:,
+  let(:framework_agreement_band) do
+    FactoryBot.create(:framework_agreement_band,
+                      framework_agreement:,
                       capacity: band_max)
   end
 
   let(:contract) do
-    FactoryBot.create(:contract, :for_ecf, active_lead_provider:, banded_fee_structure:)
+    FactoryBot.create(:contract, :for_ecf, framework_agreement:, banded_fee_structure:)
   end
   let(:statement) do
     FactoryBot.create(:statement,
                       contract:,
-                      active_lead_provider:,
+                      framework_agreement:,
                       month: 11,
                       year: 2024,
                       payment_date: Date.new(2024, 11, 25),
@@ -41,7 +41,7 @@ RSpec.describe Statements::DeclarationSelection do
     FactoryBot.create(:school_partnership,
                       lead_provider_delivery_partnership: FactoryBot.create(
                         :lead_provider_delivery_partnership,
-                        active_lead_provider:
+                        framework_agreement:
                       ))
   end
   let(:started_on) { Date.new(2024, 10, 1) }
@@ -214,7 +214,7 @@ RSpec.describe Statements::DeclarationSelection do
         :statement,
         :paid,
         contract:,
-        active_lead_provider:,
+        framework_agreement:,
         month: 10,
         year: 2024,
         payment_date: Date.new(2024, 10, 25),
@@ -281,7 +281,7 @@ RSpec.describe Statements::DeclarationSelection do
         :statement,
         :paid,
         contract:,
-        active_lead_provider:,
+        framework_agreement:,
         month: 10,
         year: 2024,
         payment_date: Date.new(2024, 10, 25),
@@ -427,7 +427,7 @@ RSpec.describe Statements::DeclarationSelection do
         :statement,
         :paid,
         contract:,
-        active_lead_provider:,
+        framework_agreement:,
         month: 10,
         year: 2024,
         payment_date: Date.new(2024, 10, 25),
@@ -494,7 +494,7 @@ RSpec.describe Statements::DeclarationSelection do
         :statement,
         :paid,
         contract:,
-        active_lead_provider:,
+        framework_agreement:,
         month: 10,
         year: 2024,
         payment_date: Date.new(2024, 10, 25),
@@ -506,7 +506,7 @@ RSpec.describe Statements::DeclarationSelection do
         :statement,
         :paid,
         contract:,
-        active_lead_provider:,
+        framework_agreement:,
         month: 12,
         year: 2024,
         payment_date: statement.payment_date,
@@ -563,25 +563,25 @@ RSpec.describe Statements::DeclarationSelection do
     let(:qualifying_previous_statement) do
       FactoryBot.create(:statement, :paid,
                         contract:,
-                        active_lead_provider:,
+                        framework_agreement:,
                         month: 10,
                         year: 2024,
                         payment_date: Date.new(2024, 10, 25),
                         deadline_date: Date.new(2024, 9, 30))
     end
     let(:other_lead_provider) { FactoryBot.create(:lead_provider) }
-    let(:other_active_lead_provider) do
-      FactoryBot.create(:active_lead_provider,
+    let(:other_framework_agreement) do
+      FactoryBot.create(:framework_agreement,
                         lead_provider: other_lead_provider,
                         contract_period:)
     end
-    let(:other_contract) { FactoryBot.create(:contract, :for_ecf, active_lead_provider: other_active_lead_provider) }
+    let(:other_contract) { FactoryBot.create(:contract, :for_ecf, framework_agreement: other_framework_agreement) }
     let(:other_previous_statement) do
       FactoryBot.create(
         :statement,
         :paid,
         contract: other_contract,
-        active_lead_provider: other_active_lead_provider,
+        framework_agreement: other_framework_agreement,
         month: 10,
         year: 2024,
         payment_date: Date.new(2024, 10, 20),
@@ -594,7 +594,7 @@ RSpec.describe Statements::DeclarationSelection do
         :school_partnership,
         lead_provider_delivery_partnership: FactoryBot.create(
           :lead_provider_delivery_partnership,
-          active_lead_provider: other_active_lead_provider
+          framework_agreement: other_framework_agreement
         )
       )
     end

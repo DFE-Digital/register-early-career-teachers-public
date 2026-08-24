@@ -2,7 +2,7 @@ RSpec.describe PaymentCalculator::Banded::BandAllocation do
   subject(:allocation) { described_class.new(band:, declaration_type: "started") }
 
   let(:band) do
-    FactoryBot.build(:active_lead_provider_band)
+    FactoryBot.build(:framework_agreement_band)
   end
 
   describe "#capacity" do

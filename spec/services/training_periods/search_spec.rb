@@ -49,8 +49,8 @@ describe TrainingPeriods::Search do
         school:,
         lead_provider_delivery_partnership: FactoryBot.create(
           :lead_provider_delivery_partnership,
-          active_lead_provider: FactoryBot.create(
-            :active_lead_provider,
+          framework_agreement: FactoryBot.create(
+            :framework_agreement,
             lead_provider:,
             contract_period_year: previous_contract_period.year
           )
@@ -67,7 +67,7 @@ describe TrainingPeriods::Search do
 
     let(:matching_expression_of_interest) do
       FactoryBot.create(
-        :active_lead_provider,
+        :framework_agreement,
         lead_provider:,
         contract_period_year: contract_period.year
       )
@@ -96,7 +96,7 @@ describe TrainingPeriods::Search do
       FactoryBot.create(:training_period,
                         :with_only_expression_of_interest,
                         ect_at_school_period:,
-                        expression_of_interest: FactoryBot.create(:active_lead_provider,
+                        expression_of_interest: FactoryBot.create(:framework_agreement,
                                                                   lead_provider: FactoryBot.create(:lead_provider), # different provider
                                                                   contract_period_year: contract_period.year),
                         started_on: Date.new(2025, 5, 1),
@@ -109,7 +109,7 @@ describe TrainingPeriods::Search do
       FactoryBot.create(:training_period,
                         :with_only_expression_of_interest,
                         ect_at_school_period:,
-                        expression_of_interest: FactoryBot.create(:active_lead_provider,
+                        expression_of_interest: FactoryBot.create(:framework_agreement,
                                                                   lead_provider:,
                                                                   contract_period_year: wrong_contract_period.year),
                         started_on: Date.new(2025, 6, 1),

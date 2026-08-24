@@ -204,25 +204,25 @@ module DataCorrections
       @replacement_school_partnership ||=
         find_single!(
           SchoolPartnership
-            .joins(lead_provider_delivery_partnership: :active_lead_provider)
+            .joins(lead_provider_delivery_partnership: :framework_agreement)
             .where(
               school:,
               active_lead_providers: {
-                id: replacement_active_lead_provider.id
+                id: replacement_framework_agreement.id
               }
             ),
           "replacement school partnership"
         )
     end
 
-    def replacement_active_lead_provider
-      @replacement_active_lead_provider ||=
+    def replacement_framework_agreement
+      @replacement_framework_agreement ||=
         find_single!(
-          ActiveLeadProvider.where(
+          FrameworkAgreement.where(
             lead_provider:,
             contract_period: replacement_contract_period
           ),
-          "replacement active lead provider"
+          "replacement lead provider framework agreement"
         )
     end
 
@@ -231,7 +231,7 @@ module DataCorrections
 
       @replacement_expression_of_interest ||=
         find_single!(
-          ActiveLeadProvider.where(
+          FrameworkAgreement.where(
             lead_provider:,
             contract_period: replacement_contract_period
           ),

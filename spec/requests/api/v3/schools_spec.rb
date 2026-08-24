@@ -1,14 +1,14 @@
 RSpec.describe "Schools API", :with_metadata, type: :request do
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
-  let(:lead_provider) { active_lead_provider.lead_provider }
-  let(:contract_period) { active_lead_provider.contract_period }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
+  let(:lead_provider) { framework_agreement.lead_provider }
+  let(:contract_period) { framework_agreement.contract_period }
   let(:serializer) { API::SchoolSerializer }
   let(:serializer_options) { { contract_period_year: contract_period.id, lead_provider_id: lead_provider.id } }
 
-  def create_resource(active_lead_provider:)
-    # Set up a school with a provider-led training programme linked to the given active lead provider
+  def create_resource(framework_agreement:)
+    # Set up a school with a provider-led training programme linked to the given framework agreement
     # And a training period within an ongoing ECT at school period so all fields are populated
-    lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
+    lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:)
     school = FactoryBot.create(:school, :ineligible, :with_induction_tutor)
     school_partnership = FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school:)
     ect_at_school_period = FactoryBot.create(:ect_at_school_period, :unfinished, school:)
@@ -49,7 +49,7 @@ RSpec.describe "Schools API", :with_metadata, type: :request do
   end
 
   describe "#show" do
-    let(:resource) { create_resource(active_lead_provider:) }
+    let(:resource) { create_resource(framework_agreement:) }
     let(:path_id) { resource.api_id }
     let(:path) { api_v3_school_path(path_id, filter: { cohort: contract_period.id }) }
 

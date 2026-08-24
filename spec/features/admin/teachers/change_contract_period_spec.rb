@@ -116,13 +116,13 @@ private
 
   def and_there_is_a_future_starting_eoi_only_training_period
     lead_provider = FactoryBot.create(:lead_provider, name: "EOI Lead Provider")
-    current_active_lead_provider = FactoryBot.create(
-      :active_lead_provider,
+    current_framework_agreement = FactoryBot.create(
+      :framework_agreement,
       lead_provider:,
       contract_period: @current_contract_period
     )
-    @target_active_lead_provider = FactoryBot.create(
-      :active_lead_provider,
+    @target_framework_agreement = FactoryBot.create(
+      :framework_agreement,
       lead_provider:,
       contract_period: @target_contract_period
     )
@@ -130,7 +130,7 @@ private
       :training_period,
       :with_only_expression_of_interest,
       ect_at_school_period: @ect_at_school_period,
-      expression_of_interest: current_active_lead_provider,
+      expression_of_interest: current_framework_agreement,
       schedule: @current_schedule,
       started_on: Date.current.next_month,
       finished_on: nil
@@ -219,7 +219,7 @@ private
 
   def and_the_future_training_period_remains_eoi_only
     expect(@training_period.school_partnership).to be_nil
-    expect(@training_period.expression_of_interest).to eq(@target_active_lead_provider)
+    expect(@training_period.expression_of_interest).to eq(@target_framework_agreement)
     expect(@training_period.expression_of_interest_contract_period).to eq(@target_contract_period)
   end
 end

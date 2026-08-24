@@ -2,11 +2,11 @@ RSpec.describe "Declarations API", :with_metadata, :with_touches, type: :request
   let(:serializer) { API::DeclarationSerializer }
   let(:serializer_options) { { lead_provider_id: lead_provider.id } }
   let(:query) { API::Declarations::Query }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
-  let(:lead_provider) { active_lead_provider.lead_provider }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
+  let(:lead_provider) { framework_agreement.lead_provider }
 
-  def create_resource(active_lead_provider:, teacher: nil, declaration_trait: :no_payment)
-    lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
+  def create_resource(framework_agreement:, teacher: nil, declaration_trait: :no_payment)
+    lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:)
     school_partnership = FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:)
     teacher ||= FactoryBot.create(:teacher)
 
@@ -15,7 +15,7 @@ RSpec.describe "Declarations API", :with_metadata, :with_touches, type: :request
 
     FactoryBot.create(:declaration, declaration_trait, training_period:).tap do |declaration|
       # Using update_all bypasses the readonly check on that attribute.
-      active_lead_provider_id = active_lead_provider.id
+      active_lead_provider_id = framework_agreement.id
       Contract.where(id: declaration.payment_statement&.contract).update_all(active_lead_provider_id:)
     end
   end
@@ -38,7 +38,7 @@ RSpec.describe "Declarations API", :with_metadata, :with_touches, type: :request
   end
 
   describe "#show" do
-    let(:resource) { create_resource(active_lead_provider:) }
+    let(:resource) { create_resource(framework_agreement:) }
     let(:path_id) { resource.api_id }
     let(:path) { api_v3_declaration_path(path_id) }
 
@@ -55,8 +55,8 @@ RSpec.describe "Declarations API", :with_metadata, :with_touches, type: :request
     let(:path) { api_v3_declarations_path }
     let(:service) { API::Declarations::Create }
     let(:resource_type) { Declaration }
-    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, :for_year, year: 2024) }
-    let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+    let(:framework_agreement) { FactoryBot.create(:framework_agreement, :for_year, year: 2024) }
+    let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:) }
     let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
     let(:teacher) { FactoryBot.create(:teacher) }
     let(:schedule) { FactoryBot.create(:schedule, contract_period: school_partnership.contract_period) }
@@ -146,7 +146,7 @@ RSpec.describe "Declarations API", :with_metadata, :with_touches, type: :request
 
     Declaration::VOIDABLE_PAYMENT_STATUSES.each do |status|
       context "when the declaration is in a `voidable` status: #{status}" do
-        let(:resource) { travel_to(3.days.from_now) { create_resource(active_lead_provider:, declaration_trait: status.to_sym) } }
+        let(:resource) { travel_to(3.days.from_now) { create_resource(framework_agreement:, declaration_trait: status.to_sym) } }
         let(:service) { API::Declarations::Void }
 
         it_behaves_like "a token authenticated endpoint", :put
@@ -157,7 +157,7 @@ RSpec.describe "Declarations API", :with_metadata, :with_touches, type: :request
     end
 
     context "when the declaration is in `paid` status" do
-      let(:resource) { travel_to(3.days.from_now) { create_resource(active_lead_provider:, declaration_trait: :paid) } }
+      let(:resource) { travel_to(3.days.from_now) { create_resource(framework_agreement:, declaration_trait: :paid) } }
       let(:service) { API::Declarations::Clawback }
 
       it_behaves_like "a token authenticated endpoint", :put
@@ -167,7 +167,7 @@ RSpec.describe "Declarations API", :with_metadata, :with_touches, type: :request
     end
 
     context "when the declaration is in `voided` status" do
-      let(:resource) { travel_to(3.days.from_now) { create_resource(active_lead_provider:, declaration_trait: :voided) } }
+      let(:resource) { travel_to(3.days.from_now) { create_resource(framework_agreement:, declaration_trait: :voided) } }
 
       it "returns a 422 response" do
         authenticated_api_put(path, params:)
@@ -179,7 +179,7 @@ RSpec.describe "Declarations API", :with_metadata, :with_touches, type: :request
     end
 
     context "when the declaration is a previous declaration for a different lead provider" do
-      let(:resource) { travel_to(3.days.from_now) { create_resource(active_lead_provider: FactoryBot.create(:active_lead_provider)) } }
+      let(:resource) { travel_to(3.days.from_now) { create_resource(framework_agreement: FactoryBot.create(:framework_agreement)) } }
 
       before do
         # Close training periods for other lead providers.

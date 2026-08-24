@@ -133,7 +133,7 @@ namespace :product_review do
 end
 
 def find_or_create_partnership!(school:, lead_provider:, delivery_partner:, contract_period:)
-  active_lead_provider = ActiveLeadProvider.find_or_create_by!(lead_provider:, contract_period_year: contract_period.year)
-  lpdp = LeadProviderDeliveryPartnership.find_or_create_by!(active_lead_provider:, delivery_partner:)
+  framework_agreement = FrameworkAgreement.find_or_create_by!(lead_provider:, contract_period_year: contract_period.year)
+  lpdp = LeadProviderDeliveryPartnership.find_or_create_by!(framework_agreement:, delivery_partner:)
   SchoolPartnership.find_or_create_by!(school:, lead_provider_delivery_partnership: lpdp)
 end

@@ -7,9 +7,9 @@ name = "Education Development Trust"
 contract_period_year = 2025
 
 lead_provider = LeadProvider.find_by!(name:)
-active_lead_provider = ActiveLeadProvider.find_by!(lead_provider:, contract_period_year:)
+framework_agreement = FrameworkAgreement.find_by!(lead_provider:, contract_period_year:)
 
-contract = Contract.where(active_lead_provider:).sole
+contract = Contract.where(framework_agreement:).sole
 
 band = contract.banded_fee_structure.bands.last
 

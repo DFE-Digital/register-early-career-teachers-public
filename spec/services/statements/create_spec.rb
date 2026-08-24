@@ -6,8 +6,8 @@ describe Statements::Create do
   let(:user) { FactoryBot.create(:user, name: "Christopher Biggins", email: "christopher.biggins@education.gov.uk") }
   let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
   let(:contract_period) { FactoryBot.create(:contract_period, :current) }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
-  let(:contract) { FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider:) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement, contract_period:) }
+  let(:contract) { FactoryBot.create(:contract, :for_ittecf_ectp, framework_agreement:) }
 
   let(:params) do
     {

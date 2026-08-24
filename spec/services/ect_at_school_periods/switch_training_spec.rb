@@ -226,9 +226,9 @@ module ECTAtSchoolPeriods
     describe ".to_provider_led" do
       let!(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, :current) }
       let(:lead_provider) { FactoryBot.create(:lead_provider) }
-      let!(:active_lead_provider) do
+      let!(:framework_agreement) do
         FactoryBot.create(
-          :active_lead_provider,
+          :framework_agreement,
           lead_provider:,
           contract_period:
         )
@@ -250,7 +250,7 @@ module ECTAtSchoolPeriods
           let!(:lead_provider_delivery_partnership) do
             FactoryBot.create(
               :lead_provider_delivery_partnership,
-              active_lead_provider:
+              framework_agreement:
             )
           end
           let!(:school_partnership) do
@@ -307,17 +307,17 @@ module ECTAtSchoolPeriods
             expect(ect_at_school_period.reload).to be_provider_led_training_programme
             new_training_period = ect_at_school_period.training_periods.last
             expect(new_training_period.school_partnership).to be_nil
-            expect(new_training_period.expression_of_interest).to eq(active_lead_provider)
+            expect(new_training_period.expression_of_interest).to eq(framework_agreement)
           end
 
           context "when the switch happens on the last day of the contract period" do
             before { travel_to contract_period.finished_on }
 
-            it "finds the active_lead_provider with the correct contract period" do
+            it "finds the framework_agreement with the correct contract period" do
               SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
 
               new_training_period = ect_at_school_period.training_periods.last
-              expect(new_training_period.expression_of_interest).to eq(active_lead_provider)
+              expect(new_training_period.expression_of_interest).to eq(framework_agreement)
             end
           end
         end
@@ -348,7 +348,7 @@ module ECTAtSchoolPeriods
             expect(ect_at_school_period.reload).to be_provider_led_training_programme
             new_training_period = ect_at_school_period.training_periods.last
             expect(new_training_period.school_partnership).to be_nil
-            expect(new_training_period.expression_of_interest).to eq(active_lead_provider)
+            expect(new_training_period.expression_of_interest).to eq(framework_agreement)
           end
         end
 
@@ -408,9 +408,9 @@ module ECTAtSchoolPeriods
               )
             end
 
-            let!(:future_active_lead_provider) do
+            let!(:future_framework_agreement) do
               FactoryBot.create(
-                :active_lead_provider,
+                :framework_agreement,
                 lead_provider:,
                 contract_period: upcoming_contract_period
               )
@@ -422,7 +422,7 @@ module ECTAtSchoolPeriods
               expect(ect_at_school_period.reload).to be_provider_led_training_programme
               new_training_period = TrainingPeriod.last
               expect(new_training_period.started_on).to eq(ect_at_school_period.started_on)
-              expect(new_training_period.expression_of_interest).to eq(future_active_lead_provider)
+              expect(new_training_period.expression_of_interest).to eq(future_framework_agreement)
             end
           end
         end
@@ -523,7 +523,7 @@ module ECTAtSchoolPeriods
               let(:contract_period) { contract_period_2021 }
 
               before do
-                FactoryBot.create(:active_lead_provider, :for_year, year: 2024, lead_provider:)
+                FactoryBot.create(:framework_agreement, :for_year, year: 2024, lead_provider:)
               end
 
               it "finishes the existing training period" do
@@ -619,9 +619,9 @@ module ECTAtSchoolPeriods
 
           let(:previous_school) { ect_at_school_period.school }
 
-          let!(:previous_active_lead_provider) do
+          let!(:previous_framework_agreement) do
             FactoryBot.create(
-              :active_lead_provider,
+              :framework_agreement,
               lead_provider:,
               contract_period: previous_contract_period
             )
@@ -644,7 +644,7 @@ module ECTAtSchoolPeriods
               :provider_led,
               :with_only_expression_of_interest,
               ect_at_school_period: previous_ect_at_school_period,
-              expression_of_interest: previous_active_lead_provider,
+              expression_of_interest: previous_framework_agreement,
               started_on: previous_ect_at_school_period.started_on,
               finished_on: previous_ect_at_school_period.finished_on
             )
@@ -705,9 +705,9 @@ module ECTAtSchoolPeriods
               FactoryBot.create(:contract_period, :with_schedules, year: 2024)
             end
 
-            let(:older_active_lead_provider) do
+            let(:older_framework_agreement) do
               FactoryBot.create(
-                :active_lead_provider,
+                :framework_agreement,
                 lead_provider:,
                 contract_period: older_contract_period
               )
@@ -732,7 +732,7 @@ module ECTAtSchoolPeriods
                 :provider_led,
                 :with_only_expression_of_interest,
                 ect_at_school_period: older_ect_at_school_period,
-                expression_of_interest: older_active_lead_provider,
+                expression_of_interest: older_framework_agreement,
                 started_on: older_ect_at_school_period.started_on,
                 finished_on: older_ect_at_school_period.finished_on
               )
@@ -766,7 +766,7 @@ module ECTAtSchoolPeriods
               :provider_led,
               :with_only_expression_of_interest,
               ect_at_school_period:,
-              expression_of_interest: active_lead_provider,
+              expression_of_interest: framework_agreement,
               started_on:,
               finished_on: previous_training_period_finished_on
             )
@@ -818,7 +818,7 @@ module ECTAtSchoolPeriods
               let(:contract_period) { contract_period_2021 }
 
               before do
-                FactoryBot.create(:active_lead_provider, :for_year, year: 2024, lead_provider:)
+                FactoryBot.create(:framework_agreement, :for_year, year: 2024, lead_provider:)
               end
 
               it "finishes the existing training period" do
@@ -851,7 +851,7 @@ module ECTAtSchoolPeriods
             let(:previous_training_period_finished_on) { Date.new(2024, 9, 1) }
             let(:second_training_period_finished_on) { 1.month.ago }
             let(:contract_period) { contract_period_2021 }
-            let(:expression_of_interest) { FactoryBot.create(:active_lead_provider, :for_year, year: 2024, lead_provider:) }
+            let(:expression_of_interest) { FactoryBot.create(:framework_agreement, :for_year, year: 2024, lead_provider:) }
 
             let!(:second_training_period) do
               FactoryBot.create(
@@ -918,7 +918,7 @@ module ECTAtSchoolPeriods
 
           new_ect_training_period = ect_at_school_period_from_database.training_periods.last
           expect(new_ect_training_period.school_partnership).to be_nil
-          expect(new_ect_training_period.expression_of_interest).to eq(active_lead_provider)
+          expect(new_ect_training_period.expression_of_interest).to eq(framework_agreement)
         end
       end
 
@@ -998,7 +998,7 @@ module ECTAtSchoolPeriods
               expect(mentor_at_school_period.reload).to be_provider_led_training_programme
               new_training_period = mentor_at_school_period.training_periods.last
               expect(new_training_period.school_partnership).to be_nil
-              expect(new_training_period.expression_of_interest).to eq(active_lead_provider)
+              expect(new_training_period.expression_of_interest).to eq(framework_agreement)
               expect(new_training_period.started_on).to eq(Date.current)
               expect(new_training_period.schedule.contract_period.year).to eq(contract_period.year)
             end
@@ -1040,11 +1040,11 @@ module ECTAtSchoolPeriods
 
               before { travel_to contract_period.finished_on }
 
-              it "finds the active lead provider with the correct contract period" do
+              it "finds the framework agreement with the correct contract period" do
                 SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
 
                 new_training_period = mentor_at_school_period.reload.training_periods.last
-                expect(new_training_period.expression_of_interest).to eq(active_lead_provider)
+                expect(new_training_period.expression_of_interest).to eq(framework_agreement)
               end
             end
           end
@@ -1053,7 +1053,7 @@ module ECTAtSchoolPeriods
             let!(:lead_provider_delivery_partnership) do
               FactoryBot.create(
                 :lead_provider_delivery_partnership,
-                active_lead_provider:
+                framework_agreement:
               )
             end
             let!(:school_partnership) do

@@ -18,7 +18,7 @@ describe Statements::Destroy do
       expect(Statement.exists?(statement.id)).to be(false)
       expect(Statement::Adjustment.exists?(adjustment.id)).to be(false)
       expect(Events::Record).to have_received(:record_statement_deleted_event!).with(
-        hash_including(author:, active_lead_provider: an_instance_of(ActiveLeadProvider))
+        hash_including(author:, framework_agreement: an_instance_of(FrameworkAgreement))
       )
     end
   end

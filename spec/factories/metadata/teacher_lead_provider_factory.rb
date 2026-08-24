@@ -22,14 +22,14 @@ FactoryBot.define do
       lead_provider = metadata.lead_provider
 
       contract_period = FactoryBot.create(:contract_period, :current)
-      active_lead_provider = FactoryBot.create(:active_lead_provider, contract_period:, lead_provider:)
+      framework_agreement = FactoryBot.create(:framework_agreement, contract_period:, lead_provider:)
 
       if evaluator.with_eoi_only
         school = FactoryBot.create(:school)
         school_partnership = nil
-        expression_of_interest = active_lead_provider
+        expression_of_interest = framework_agreement
       else
-        lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
+        lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:)
         school_partnership = FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:)
         school = school_partnership.school
         expression_of_interest = nil

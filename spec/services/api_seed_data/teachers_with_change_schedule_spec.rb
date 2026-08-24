@@ -6,19 +6,19 @@ RSpec.describe APISeedData::TeachersWithChangeSchedule do
 
   let(:contract_period) { FactoryBot.create :contract_period, year: described_class::CHANGE_FROM_CONTRACT_PERIOD_YEAR }
   let(:next_contract_period) { FactoryBot.create :contract_period, year: contract_period.year + 1 }
-  let(:active_lead_providers) { FactoryBot.create_list(:active_lead_provider, 2, contract_period:) }
+  let(:framework_agreements) { FactoryBot.create_list(:framework_agreement, 2, contract_period:) }
 
   before do
     allow(Logger).to receive(:new).with($stdout) { logger }
     allow(Rails).to receive(:env) { environment.inquiry }
     stub_const("#{described_class}::NUMBER_OF_RECORDS", 1)
 
-    active_lead_providers.each do |active_lead_provider|
+    framework_agreements.each do |framework_agreement|
       # Create school partnerships for contract period
-      FactoryBot.create_list(:school_partnership, 2, :for_year, lead_provider: active_lead_provider.lead_provider, year: contract_period.year)
+      FactoryBot.create_list(:school_partnership, 2, :for_year, lead_provider: framework_agreement.lead_provider, year: contract_period.year)
       # Create school partnerships for next contract period with same school
       SchoolPartnership.find_each do |school_partnership|
-        FactoryBot.create_list(:school_partnership, 2, :for_year, school: school_partnership.school, lead_provider: active_lead_provider.lead_provider, year: next_contract_period.year)
+        FactoryBot.create_list(:school_partnership, 2, :for_year, school: school_partnership.school, lead_provider: framework_agreement.lead_provider, year: next_contract_period.year)
 
         # Ensure schedules exist for contract periods and school partnerships
         Schedule.identifiers.each_value do |identifier|
@@ -54,7 +54,7 @@ RSpec.describe APISeedData::TeachersWithChangeSchedule do
       # 2x teachers (ect + mentor)
       # 3x variations
       # 1x number of records
-      teachers_count = active_lead_providers.count * 2 * described_class::CHANGE_VARIATIONS.count * described_class::NUMBER_OF_RECORDS
+      teachers_count = framework_agreements.count * 2 * described_class::CHANGE_VARIATIONS.count * described_class::NUMBER_OF_RECORDS
 
       expect(Teacher.count).to eq(teachers_count)
     end
@@ -86,7 +86,7 @@ RSpec.describe APISeedData::TeachersWithChangeSchedule do
       training_period = TrainingPeriod.all.sample
       training_status = ::API::TrainingPeriods::TrainingStatus.new(training_period:).status
       expect(logger).to have_received(:info).with(/(training period - provider-led - #{training_status})/).at_least(:once)
-      expect(logger).to have_received(:info).with(/trained by #{training_period.school_partnership.active_lead_provider.lead_provider.name} \(LP\)/).at_least(:once)
+      expect(logger).to have_received(:info).with(/trained by #{training_period.school_partnership.framework_agreement.lead_provider.name} \(LP\)/).at_least(:once)
       expect(logger).to have_received(:info).with(/and #{training_period.school_partnership.delivery_partner.name} \(DP\)/).at_least(:once)
     end
 

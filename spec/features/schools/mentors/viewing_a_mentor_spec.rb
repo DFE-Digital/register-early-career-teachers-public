@@ -147,10 +147,10 @@ RSpec.describe "Viewing a mentor" do
 
   def lp_dp_and_partnership
     @lead_provider = FactoryBot.create(:lead_provider, name: "Hidden leaf village")
-    @active_lp     = FactoryBot.create(:active_lead_provider, lead_provider: @lead_provider)
+    @active_lp     = FactoryBot.create(:framework_agreement, lead_provider: @lead_provider)
     @dp            = FactoryBot.create(:delivery_partner, name: "Artisan Education Group")
     @lpdp          = FactoryBot.create(:lead_provider_delivery_partnership,
-                                       active_lead_provider: @active_lp,
+                                       framework_agreement: @active_lp,
                                        delivery_partner: @dp)
     @school_partnership = FactoryBot.create(:school_partnership,
                                             lead_provider_delivery_partnership: @lpdp,

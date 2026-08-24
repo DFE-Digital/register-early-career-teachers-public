@@ -119,7 +119,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::PreviousRegistrati
                         provider_led_training_programme?: true,
                         expression_of_interest:)
       end
-      let(:expression_of_interest) { instance_double(ActiveLeadProvider, lead_provider:) }
+      let(:expression_of_interest) { instance_double(FrameworkAgreement, lead_provider:) }
       let(:lead_provider) { instance_double(LeadProvider, name: "Scarlet Federation") }
 
       it "returns the expression of interest lead provider name" do

@@ -37,7 +37,7 @@ RSpec.describe Schools::RegisterECT do
       let(:lead_provider) { FactoryBot.create(:lead_provider) }
       let(:training_programme) { "provider_led" }
 
-      before { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
+      before { FactoryBot.create(:framework_agreement, lead_provider:, contract_period:) }
 
       it "creates a new Teacher record" do
         expect { service.register! }.to change(Teacher, :count).by(1)
@@ -62,15 +62,15 @@ RSpec.describe Schools::RegisterECT do
       let(:training_programme) { "provider_led" }
       let(:lead_provider) { FactoryBot.create(:lead_provider) }
 
-      context "when no ActiveLeadProvider exists for the contract_period" do
+      context "when no FrameworkAgreement exists for the contract_period" do
         it "raises an error" do
           expect { service.register! }.to raise_error(ActiveRecord::RecordNotFound)
         end
       end
 
-      context "when an ActiveLeadProvider exists for the contract_period" do
-        let!(:active_lead_provider) do
-          FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:)
+      context "when an FrameworkAgreement exists for the contract_period" do
+        let!(:framework_agreement) do
+          FactoryBot.create(:framework_agreement, lead_provider:, contract_period:)
         end
         let!(:teacher) { FactoryBot.create(:teacher, trn:, trs_first_name:, trs_last_name:) }
 
@@ -291,7 +291,7 @@ RSpec.describe Schools::RegisterECT do
         end
 
         context "when no SchoolPartnerships exist" do
-          it "creates a TrainingPeriod linked to the ECTAtSchoolPeriod and with an expression of interest for the ActiveLeadProvider" do
+          it "creates a TrainingPeriod linked to the ECTAtSchoolPeriod and with an expression of interest for the FrameworkAgreement" do
             expect { service.register! }.to change(TrainingPeriod, :count).by(1)
 
             training_period = TrainingPeriod.find_by!(started_on:)
@@ -299,7 +299,7 @@ RSpec.describe Schools::RegisterECT do
             expect(training_period.ect_at_school_period.teacher).to eq(teacher)
             expect(training_period.ect_at_school_period).to eq(ect_at_school_period)
             expect(training_period.started_on).to eq(started_on)
-            expect(training_period.expression_of_interest).to eq(active_lead_provider)
+            expect(training_period.expression_of_interest).to eq(framework_agreement)
             expect(training_period.school_partnership).to be_nil
             expect(training_period.training_programme).to eq(training_programme)
           end
@@ -322,7 +322,7 @@ RSpec.describe Schools::RegisterECT do
 
         context "when a SchoolPartnership exists" do
           let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
-          let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
+          let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:, delivery_partner:) }
           let!(:school_partnership) { FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:) }
 
           it "creates a TrainingPeriod with a school_partnership and no expression_of_interest" do
@@ -370,7 +370,7 @@ RSpec.describe Schools::RegisterECT do
         let(:started_on) { Date.new(2024, 1, 1) }
         let!(:frozen_cp) { FactoryBot.create(:contract_period, :with_payments_frozen, year: 2022) }
         let!(:successor_cp) { FactoryBot.create(:contract_period, :with_schedules, :with_extended_schedule, year: 2024) }
-        let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: successor_cp) }
+        let!(:framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:, contract_period: successor_cp) }
         let!(:teacher) { FactoryBot.create(:teacher, trn:) }
 
         let(:previous_school) { FactoryBot.create(:school) }
@@ -412,12 +412,12 @@ RSpec.describe Schools::RegisterECT do
         let(:previous_contract_period) { FactoryBot.create(:contract_period, :with_schedules, year: 2024) }
         let(:started_on) { Date.new(2025, 9, 1) }
 
-        let!(:previous_active_lead_provider) do
-          FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: previous_contract_period)
+        let!(:previous_framework_agreement) do
+          FactoryBot.create(:framework_agreement, lead_provider:, contract_period: previous_contract_period)
         end
 
         let(:previous_lead_provider_delivery_partnership) do
-          FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: previous_active_lead_provider)
+          FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement: previous_framework_agreement)
         end
 
         let(:previous_school_partnership) do
@@ -492,7 +492,7 @@ RSpec.describe Schools::RegisterECT do
               school:,
               lead_provider_delivery_partnership: FactoryBot.create(
                 :lead_provider_delivery_partnership,
-                active_lead_provider: previous_active_lead_provider
+                framework_agreement: previous_framework_agreement
               )
             )
           end
@@ -505,7 +505,7 @@ RSpec.describe Schools::RegisterECT do
             expect(new_training_period.school_partnership).to eq(new_school_partnership)
             expect(new_training_period.expression_of_interest).to be_nil
 
-            expect(new_training_period.school_partnership.active_lead_provider.contract_period)
+            expect(new_training_period.school_partnership.framework_agreement.contract_period)
               .to eq(previous_contract_period)
 
             expect(new_training_period.schedule.contract_period)
@@ -517,9 +517,9 @@ RSpec.describe Schools::RegisterECT do
         end
 
         context "when the new school has a partnership but in a different contract period" do
-          let!(:different_active_lead_provider) do
+          let!(:different_framework_agreement) do
             FactoryBot.create(
-              :active_lead_provider,
+              :framework_agreement,
               lead_provider:,
               contract_period:
             )
@@ -531,7 +531,7 @@ RSpec.describe Schools::RegisterECT do
               school:,
               lead_provider_delivery_partnership: FactoryBot.create(
                 :lead_provider_delivery_partnership,
-                active_lead_provider: different_active_lead_provider
+                framework_agreement: different_framework_agreement
               )
             )
           end

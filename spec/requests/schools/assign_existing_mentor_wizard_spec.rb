@@ -9,7 +9,7 @@ RSpec.describe "Assign existing mentor wizard" do
 
   before do
     school_partnership = FactoryBot.create(:school_partnership, school:)
-    school_partnership.lead_provider_delivery_partnership.active_lead_provider.update!(contract_period:)
+    school_partnership.lead_provider_delivery_partnership.framework_agreement.update!(contract_period:)
 
     FactoryBot.create(:training_period,
                       :unfinished,

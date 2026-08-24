@@ -18,7 +18,7 @@ RSpec.describe "Reuse choices scenarios seed" do
 
     it "ensures the reusable lead provider is available in the target year" do
       expect(
-        target_year_active_lead_provider_exists?(
+        target_year_framework_agreement_exists?(
           contract_period_year: target_contract_period_year,
           lead_provider: reuse_reference_lead_provider
         )
@@ -107,7 +107,7 @@ RSpec.describe "Reuse choices scenarios seed" do
           expect(training_period.expression_of_interest).to be_present
 
           expect(
-            target_year_active_lead_provider_exists?(
+            target_year_framework_agreement_exists?(
               contract_period_year: target_contract_period_year,
               lead_provider: reuse_reference_lead_provider
             )
@@ -151,7 +151,7 @@ RSpec.describe "Reuse choices scenarios seed" do
           expect(training_period.school_partnership).to be_present
 
           expect(
-            target_year_active_lead_provider_exists?(
+            target_year_framework_agreement_exists?(
               contract_period_year: target_contract_period_year,
               lead_provider: reuse_reference_lead_provider
             )
@@ -170,7 +170,7 @@ RSpec.describe "Reuse choices scenarios seed" do
           expect(training_period.expression_of_interest).to be_present
 
           expect(
-            target_year_active_lead_provider_exists?(
+            target_year_framework_agreement_exists?(
               contract_period_year: target_contract_period_year,
               lead_provider: reuse_reference_lead_provider_not_available
             )

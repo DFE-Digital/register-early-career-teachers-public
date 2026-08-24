@@ -8,7 +8,7 @@ RSpec.describe API::SchoolPartnerships::Update, type: :model do
 
   let!(:school_partnership) { FactoryBot.create(:school_partnership) }
   let(:school_partnership_id) { school_partnership.id }
-  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: school_partnership.active_lead_provider) }
+  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement: school_partnership.framework_agreement) }
   let(:delivery_partner_api_id) { lead_provider_delivery_partnership.delivery_partner.api_id }
 
   describe "validations" do

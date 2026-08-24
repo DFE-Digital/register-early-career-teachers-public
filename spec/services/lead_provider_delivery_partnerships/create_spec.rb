@@ -1,9 +1,9 @@
 describe LeadProviderDeliveryPartnerships::Create do
-  subject(:service) { described_class.new(author:, active_lead_provider:, params:) }
+  subject(:service) { described_class.new(author:, framework_agreement:, params:) }
 
   let(:user) { FactoryBot.create(:user, :admin) }
   let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
   let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
   let(:params) { { delivery_partner_id: delivery_partner.id } }
 
@@ -17,12 +17,12 @@ describe LeadProviderDeliveryPartnerships::Create do
       expect { result = service.call }.to change(LeadProviderDeliveryPartnership, :count).by(1)
 
       expect(result).to be_persisted
-      expect(result).to have_attributes(active_lead_provider:, delivery_partner:)
+      expect(result).to have_attributes(framework_agreement:, delivery_partner:)
       expect(Events::Record).to have_received(:record_lead_provider_delivery_partnership_added_event!).with(
         author:,
         delivery_partner:,
-        lead_provider: active_lead_provider.lead_provider,
-        contract_period: active_lead_provider.contract_period,
+        lead_provider: framework_agreement.lead_provider,
+        contract_period: framework_agreement.contract_period,
         lead_provider_delivery_partnership: result
       )
     end

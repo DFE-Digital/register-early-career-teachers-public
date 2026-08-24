@@ -19,7 +19,7 @@ module Schools
           return [] unless contract_period
 
           LeadProvider
-            .where(id: ActiveLeadProvider.where(contract_period_year: contract_period.year).select(:lead_provider_id))
+            .where(id: FrameworkAgreement.where(contract_period_year: contract_period.year).select(:lead_provider_id))
             .select(:id, :name)
             .order(:name)
         end

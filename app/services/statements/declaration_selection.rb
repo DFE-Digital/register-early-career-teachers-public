@@ -97,7 +97,7 @@ module Statements
 
     def previous_statements
       @previous_statements ||= Statement.joins(:contract)
-        .where(contracts: { active_lead_provider_id: statement.active_lead_provider.id })
+        .where(contracts: { active_lead_provider_id: statement.framework_agreement.id })
         .where(payment_date: ...statement.payment_date)
     end
 

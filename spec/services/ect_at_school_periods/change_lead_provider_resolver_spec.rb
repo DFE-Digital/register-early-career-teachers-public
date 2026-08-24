@@ -16,9 +16,9 @@ RSpec.describe ECTAtSchoolPeriods::ChangeLeadProviderResolver do
 
     let(:lead_provider) { FactoryBot.create(:lead_provider) }
 
-    let(:active_lead_provider) do
+    let(:framework_agreement) do
       FactoryBot.create(
-        :active_lead_provider,
+        :framework_agreement,
         lead_provider:,
         contract_period:
       )
@@ -32,7 +32,7 @@ RSpec.describe ECTAtSchoolPeriods::ChangeLeadProviderResolver do
         :with_only_expression_of_interest,
         ect_at_school_period:,
         started_on: ect_at_school_period.started_on,
-        expression_of_interest: active_lead_provider
+        expression_of_interest: framework_agreement
       )
     end
 
@@ -103,7 +103,7 @@ RSpec.describe ECTAtSchoolPeriods::ChangeLeadProviderResolver do
 
       context "and the latest TP is confirmed by a school partnership rather than an EOI" do
         let(:lead_provider_delivery_partnership) do
-          FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, contract_period:)
+          FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:, contract_period:)
         end
         let(:school_partnership) do
           FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:)

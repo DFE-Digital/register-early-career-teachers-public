@@ -1,11 +1,11 @@
 RSpec.describe "Statements API", type: :request do
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
-  let(:lead_provider) { active_lead_provider.lead_provider }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
+  let(:lead_provider) { framework_agreement.lead_provider }
   let(:serializer) { API::StatementSerializer }
   let(:serializer_options) { {} }
 
-  def create_resource(active_lead_provider:)
-    FactoryBot.create(:statement, active_lead_provider:)
+  def create_resource(framework_agreement:)
+    FactoryBot.create(:statement, framework_agreement:)
   end
 
   describe "#index" do
@@ -24,7 +24,7 @@ RSpec.describe "Statements API", type: :request do
   end
 
   describe "#show" do
-    let(:resource) { create_resource(active_lead_provider:) }
+    let(:resource) { create_resource(framework_agreement:) }
     let(:path_id) { resource.api_id }
     let(:path) { api_v3_statement_path(path_id) }
 

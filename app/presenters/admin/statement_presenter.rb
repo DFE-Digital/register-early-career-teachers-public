@@ -21,11 +21,11 @@ module Admin
     end
 
     def contract_period_year
-      statement.active_lead_provider.contract_period.year.to_s
+      statement.framework_agreement.contract_period.year.to_s
     end
 
     def lead_provider_name
-      statement.active_lead_provider.lead_provider.name
+      statement.framework_agreement.lead_provider.name
     end
 
     def formatted_deadline_date

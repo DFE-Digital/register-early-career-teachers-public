@@ -37,27 +37,27 @@ module ReusablePartnershipHelpers
       name: "Jaskolski College Delivery Partner 1"
     )
 
-    previous_year_active_lead_provider = FactoryBot.create(
-      :active_lead_provider,
+    previous_year_framework_agreement = FactoryBot.create(
+      :framework_agreement,
       lead_provider:,
       contract_period: previous_contract_period
     )
 
-    current_year_active_lead_provider = FactoryBot.create(
-      :active_lead_provider,
+    current_year_framework_agreement = FactoryBot.create(
+      :framework_agreement,
       lead_provider:,
       contract_period: current_contract_period
     )
 
     previous_year_delivery_partnership = FactoryBot.create(
       :lead_provider_delivery_partnership,
-      active_lead_provider: previous_year_active_lead_provider,
+      framework_agreement: previous_year_framework_agreement,
       delivery_partner:
     )
 
     current_year_delivery_partnership = FactoryBot.create(
       :lead_provider_delivery_partnership,
-      active_lead_provider: current_year_active_lead_provider,
+      framework_agreement: current_year_framework_agreement,
       delivery_partner:
     )
 

@@ -1,0 +1,47 @@
+class FrameworkAgreement < ApplicationRecord
+  self.table_name = "active_lead_providers"
+
+  # Associations
+  belongs_to :contract_period, inverse_of: :framework_agreements, foreign_key: :contract_period_year
+  belongs_to :lead_provider, inverse_of: :framework_agreements
+  has_many :lead_provider_delivery_partnerships, foreign_key: :active_lead_provider_id
+  has_many :school_partnerships, through: :lead_provider_delivery_partnerships
+  has_many :delivery_partners, through: :lead_provider_delivery_partnerships
+  has_many :expressions_of_interest, class_name: "TrainingPeriod", foreign_key: "expression_of_interest_id", inverse_of: :expression_of_interest
+  has_many :events, foreign_key: :active_lead_provider_id
+  has_many :contracts, foreign_key: :active_lead_provider_id
+  has_many :statements, through: :contracts
+  has_many :bands, -> { order(allocation_order: :asc) }, class_name: "FrameworkAgreement::Band", foreign_key: :active_lead_provider_id
+
+  # Validations
+  validates :contract_period_year,
+            presence: { message: "Choose a contract period" },
+            uniqueness: { scope: :lead_provider_id, message: "Contract period and lead provider must be unique" }
+  validates :lead_provider_id, presence: { message: "Choose a lead provider" }
+
+  # Scopes
+  scope :for_contract_period, ->(year) { where(contract_period_year: year) } # FIXME: duplicate scope "for_contract_period"
+  scope :for_contract_period_year, ->(contract_period_year) { where(contract_period_year:) }
+  scope :excluding_contract_period_year, ->(year) { where.not(contract_period_year: year) }
+  scope :for_lead_provider, ->(lead_provider_id) { where(lead_provider_id:) }
+  scope :without_existing_partnership_for, ->(delivery_partner, contract_period) {
+    where.not(
+      id: LeadProviderDeliveryPartnership.framework_agreement_ids_for(delivery_partner, contract_period)
+    )
+  }
+  scope :with_lead_provider_ordered_by_name, -> { includes(:lead_provider).order("lead_providers.name") }
+  scope :available_for_delivery_partner, ->(delivery_partner, contract_period) {
+    for_contract_period_year(contract_period.year)
+      .without_existing_partnership_for(delivery_partner, contract_period)
+      .with_lead_provider_ordered_by_name
+  }
+
+  delegate :name, to: :lead_provider, prefix: true
+  delegate :finished_on_before_today?, to: :contract_period
+
+  def editable? = !contract_period.payments_frozen?
+
+  def bands_can_be_added_and_removed?
+    contracts.none? && contract_period.started_on.future?
+  end
+end

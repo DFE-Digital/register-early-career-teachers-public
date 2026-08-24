@@ -43,8 +43,8 @@ RSpec.describe Schedules::Find do
 
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
   let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: previous_contract_period) }
-  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:, contract_period: previous_contract_period) }
+  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:, delivery_partner:) }
   let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school:) }
 
   describe "#call" do
@@ -449,15 +449,15 @@ RSpec.describe Schedules::Find do
       context "when the ECT started training in the 2021 contract period" do
         let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, :with_training_period, teacher:, school:, started_on: Date.new(2021, 7, 1)) }
         let(:contract_period_2021) { FactoryBot.create(:contract_period, :with_schedules, :with_payments_frozen, year: 2021) }
-        let(:old_active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period: contract_period_2021) }
+        let(:old_framework_agreement) { FactoryBot.create(:framework_agreement, contract_period: contract_period_2021) }
         let!(:old_training_period) do
           FactoryBot.create(:training_period,
                             :provider_led,
                             :unfinished,
-                            :with_active_lead_provider,
+                            :with_framework_agreement,
                             started_on: Date.new(2021, 7, 1),
                             ect_at_school_period:,
-                            active_lead_provider: old_active_lead_provider)
+                            framework_agreement: old_framework_agreement)
         end
 
         it_behaves_like "extended schedule assigned"

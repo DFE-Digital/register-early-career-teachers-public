@@ -133,15 +133,15 @@ RSpec.describe "Admin finance statements index", type: :request do
       let(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
       let(:lead_provider) { FactoryBot.create(:lead_provider) }
 
-      let(:active_lead_provider) do
-        FactoryBot.create(:active_lead_provider,
+      let(:framework_agreement) do
+        FactoryBot.create(:framework_agreement,
                           lead_provider:,
                           contract_period:)
       end
 
       let(:band) do
-        FactoryBot.create(:active_lead_provider_band,
-                          active_lead_provider:)
+        FactoryBot.create(:framework_agreement_band,
+                          framework_agreement:)
       end
 
       let(:band_term) do
@@ -156,13 +156,13 @@ RSpec.describe "Admin finance statements index", type: :request do
 
       let(:contract) do
         FactoryBot.create(:contract, :for_ecf,
-                          active_lead_provider:,
+                          framework_agreement:,
                           banded_fee_structure:)
       end
       let!(:statement) do
         FactoryBot.create(:statement, :paid,
                           contract:,
-                          active_lead_provider:,
+                          framework_agreement:,
                           month: 11,
                           year: 2024)
       end
@@ -170,7 +170,7 @@ RSpec.describe "Admin finance statements index", type: :request do
       let(:school_partnership) do
         FactoryBot.create(:school_partnership,
                           lead_provider_delivery_partnership: FactoryBot.create(:lead_provider_delivery_partnership,
-                                                                                active_lead_provider:,
+                                                                                framework_agreement:,
                                                                                 delivery_partner:))
       end
       let(:training_period) do
@@ -201,7 +201,7 @@ RSpec.describe "Admin finance statements index", type: :request do
         let!(:statement) do
           FactoryBot.create(:statement, :paid, :service_fee,
                             contract:,
-                            active_lead_provider:,
+                            framework_agreement:,
                             month: 11,
                             year: 2024)
         end

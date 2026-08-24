@@ -9,8 +9,8 @@ namespace :product_review do
     abbey_grove = School.find_by!(urn: 1_759_427)
     contract_period = ContractPeriod.find_by!(year: 2023)
     ambition = LeadProvider.find_by!(name: "Ambition Institute")
-    active_lead_provider = ActiveLeadProvider.find_by!(lead_provider: ambition, contract_period:)
-    school_partnership = SchoolPartnership.find_by!(school: abbey_grove, lead_provider_delivery_partnership: LeadProviderDeliveryPartnership.find_by!(active_lead_provider:))
+    framework_agreement = FrameworkAgreement.find_by!(lead_provider: ambition, contract_period:)
+    school_partnership = SchoolPartnership.find_by!(school: abbey_grove, lead_provider_delivery_partnership: LeadProviderDeliveryPartnership.find_by!(framework_agreement:))
     schedule = Schedule.find_by!(contract_period_year: 2023, identifier: "ecf-standard-september")
 
     ApplicationRecord.transaction do

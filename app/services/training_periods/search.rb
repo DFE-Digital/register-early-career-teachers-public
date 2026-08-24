@@ -17,7 +17,7 @@ module TrainingPeriods
         .where(school_partnership_id: nil)
         .at_school(school)
         .joins(:expression_of_interest)
-        .where(active_lead_providers: { lead_provider:, contract_period: })
+        .merge(FrameworkAgreement.where(lead_provider:, contract_period:))
     end
 
   private

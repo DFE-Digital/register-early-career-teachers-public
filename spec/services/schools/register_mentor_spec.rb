@@ -38,14 +38,14 @@ RSpec.describe Schools::RegisterMentor do
       end
     end
 
-    context "when no ActiveLeadProvider exists for the registration period" do
+    context "when no FrameworkAgreement exists for the registration period" do
       it "raises an error" do
         expect { service.register! }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
 
     context "when provider-led" do
-      let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
+      let!(:framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:, contract_period:) }
 
       context "when a Teacher record with the same trn doesn't exist" do
         it "creates a new Teacher record" do
@@ -106,7 +106,7 @@ RSpec.describe Schools::RegisterMentor do
               :with_only_expression_of_interest,
               mentor_at_school_period: existing_mentor_at_school_period,
               started_on: existing_mentor_at_school_period.started_on,
-              expression_of_interest: active_lead_provider
+              expression_of_interest: framework_agreement
             )
           end
           let(:mentor_at_school_period) { teacher.mentor_at_school_periods.excluding(existing_mentor_at_school_period).first }
@@ -180,7 +180,7 @@ RSpec.describe Schools::RegisterMentor do
       end
 
       context "when no SchoolPartnerships exist" do
-        it "creates a TrainingPeriod linked to the MentorAtSchoolPeriod and with an expression of interest for the ActiveLeadProvider" do
+        it "creates a TrainingPeriod linked to the MentorAtSchoolPeriod and with an expression of interest for the FrameworkAgreement" do
           expect { service.register! }.to change(TrainingPeriod, :count).by(1)
 
           training_period = TrainingPeriod.find_by!(started_on:)
@@ -188,7 +188,7 @@ RSpec.describe Schools::RegisterMentor do
           expect(training_period.mentor_at_school_period.teacher).to eq(teacher)
           expect(training_period.mentor_at_school_period).to eq(mentor_at_school_period)
           expect(training_period.started_on).to eq(started_on)
-          expect(training_period.expression_of_interest).to eq(active_lead_provider)
+          expect(training_period.expression_of_interest).to eq(framework_agreement)
           expect(training_period.school_partnership).to be_nil
           expect(training_period.training_programme).to eql("provider_led")
         end
@@ -219,7 +219,7 @@ RSpec.describe Schools::RegisterMentor do
 
       context "when a SchoolPartnership exists" do
         let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
-        let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
+        let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:, delivery_partner:) }
         let!(:school_partnership) { FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:) }
 
         it "creates a TrainingPeriod with a school_partnership and no expression_of_interest" do

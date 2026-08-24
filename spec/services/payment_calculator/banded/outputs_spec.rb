@@ -11,30 +11,30 @@ RSpec.describe PaymentCalculator::Banded::Outputs do
   let(:previous_refundable_declarations) { Declaration.none }
   let(:billable_declarations) { Declaration.billable.where.not(id: previous_billable_declarations.pluck(:id)) }
   let(:refundable_declarations) { Declaration.refundable }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+  let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
   let!(:contract) do
     FactoryBot.create(:contract, :for_ecf,
                       banded_fee_structure:,
-                      active_lead_provider:)
+                      framework_agreement:)
   end
   let(:fee_per_declaration) { 100.0 }
   let(:banded_fee_structure) do
     FactoryBot.build(:contract_banded_fee_structure, band_terms: [
       FactoryBot.build(:contract_banded_fee_structure_band_term,
-                       band: active_lead_provider_bands.first,
+                       band: framework_agreement_bands.first,
                        fee_per_declaration:),
       FactoryBot.build(:contract_banded_fee_structure_band_term,
-                       band: active_lead_provider_bands.second,
+                       band: framework_agreement_bands.second,
                        fee_per_declaration:),
       FactoryBot.build(:contract_banded_fee_structure_band_term,
-                       band: active_lead_provider_bands.third,
+                       band: framework_agreement_bands.third,
                        fee_per_declaration:)
     ])
   end
 
-  let(:active_lead_provider_bands) do
-    FactoryBot.create_list(:active_lead_provider_band, 3,
-                           active_lead_provider:,
+  let(:framework_agreement_bands) do
+    FactoryBot.create_list(:framework_agreement_band, 3,
+                           framework_agreement:,
                            capacity: 2)
   end
 

@@ -19,7 +19,7 @@ RSpec.describe GIAS::Reconciliation::SchoolPartnerships::Transfer do
   let!(:predecessor_school_partnership) do
     FactoryBot.create(
       :school_partnership,
-      :with_active_lead_provider,
+      :with_framework_agreement,
       school: predecessor_school,
       lead_provider_delivery_partnership:
     )
