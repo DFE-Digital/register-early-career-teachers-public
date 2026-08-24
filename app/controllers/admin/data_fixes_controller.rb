@@ -14,6 +14,10 @@ module Admin
                   unless: -> { wizard_class.step?(@previous_step) },
                   only: :new
 
+    around_action :wrap_in_transaction,
+                  if: -> { @current_step == :preview },
+                  only: :create
+
     def new
       render @current_step
     end
@@ -49,5 +53,12 @@ module Admin
     end
 
     def wizard_class = DataFixesWizard::Wizard
+
+    def wrap_in_transaction
+      ActiveRecord::Base.transaction do
+        yield
+        raise ActiveRecord::Rollback
+      end
+    end
   end
 end
