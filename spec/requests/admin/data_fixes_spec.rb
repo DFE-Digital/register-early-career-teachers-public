@@ -122,6 +122,25 @@ RSpec.describe "Admin::DataFixesController" do
 
             expect(response).to redirect_to(path_for_step("verify"))
           end
+
+          context "but there is an unexpected error" do
+            before do
+              allow(Admin::DataFixes::Processor)
+                .to receive(:new)
+                .and_raise(StandardError, "oops")
+            end
+
+            it "redirects to preview step, then raises the unexpected error " \
+               "without persisting any changes" do
+              expect(subject).to redirect_to(path_for_step("preview"))
+
+              follow_redirect!
+
+              expect { post path_for_step("preview") }
+                .to raise_error(StandardError, "oops")
+              expect(teacher.reload.trn).not_to eq("345678")
+            end
+          end
         end
 
         context "when the CSV is valid but the changes cannot be processed" do

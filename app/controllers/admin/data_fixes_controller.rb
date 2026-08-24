@@ -57,7 +57,6 @@ module Admin
     def wrap_in_transaction
       ActiveRecord::Base.transaction do
         yield
-      ensure
         raise ActiveRecord::Rollback
       end
     end
