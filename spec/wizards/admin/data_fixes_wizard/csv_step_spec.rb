@@ -72,6 +72,19 @@ RSpec.describe Admin::DataFixesWizard::CSVStep do
       it "does not persist parsed rows in the store" do
         expect { save! }.not_to(change { current_step.store.parsed_rows })
       end
+
+      context "but there were parsed rows already in the store" do
+        let(:parsed_rows) { [{ "column1" => "value1", "column2" => "value2" }] }
+
+        it { is_expected.to be_falsey }
+
+        it "clears the existing processed changes from the store" do
+          expect { save! }
+            .to change { current_step.store.parsed_rows }
+            .from([{ "column1" => "value1", "column2" => "value2" }])
+            .to(nil)
+        end
+      end
     end
   end
 

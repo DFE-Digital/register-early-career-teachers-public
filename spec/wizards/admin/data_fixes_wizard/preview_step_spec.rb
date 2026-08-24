@@ -76,6 +76,22 @@ RSpec.describe Admin::DataFixesWizard::PreviewStep do
       it "does not persist processed changes in the store" do
         expect { save! }.not_to(change { current_step.store.processed_changes })
       end
+
+      context "but there were processed changes already in the store" do
+        let(:store) { FactoryBot.build(:session_repository, processed_changes:) }
+        let(:processed_changes) do
+          [{ record_identifier: "Teacher(#1)", action: "destroy" }]
+        end
+
+        it { is_expected.to be_falsey }
+
+        it "clears the existing processed changes from the store" do
+          expect { save! }
+            .to change { current_step.store.processed_changes }
+            .from([{ record_identifier: "Teacher(#1)", action: "destroy" }])
+            .to(nil)
+        end
+      end
     end
   end
 end

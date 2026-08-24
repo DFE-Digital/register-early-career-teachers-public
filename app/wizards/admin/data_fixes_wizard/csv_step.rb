@@ -9,7 +9,7 @@ module Admin::DataFixesWizard
 
     def save!
       parsed_rows = inline_csv.parse
-      store.parsed_rows = parsed_rows if parsed_rows
+      store.parsed_rows = parsed_rows.presence || nil
     end
 
     delegate :errors, to: :inline_csv

@@ -5,7 +5,7 @@ module Admin::DataFixesWizard
 
     def save!
       processed_changes = changes.process
-      store.processed_changes = processed_changes if processed_changes
+      store.processed_changes = processed_changes.presence || nil
     end
 
     delegate :errors, to: :changes
