@@ -217,6 +217,19 @@ describe Teacher do
       end
     end
 
+    describe ".latest_mentor_at_school_period" do
+      subject { teacher.latest_mentor_at_school_period }
+
+      let(:teacher) { FactoryBot.create(:teacher) }
+      let(:started_on) { 1.year.ago.to_date }
+      let!(:first_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, started_on:) }
+      let!(:last_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, started_on:) }
+
+      it "uses the ID to choose between periods with the same start date" do
+        expect(subject).to eq(last_mentor_at_school_period)
+      end
+    end
+
     describe ".current_or_next_ect_at_school_period" do
       let(:teacher) { FactoryBot.create(:teacher) }
 
