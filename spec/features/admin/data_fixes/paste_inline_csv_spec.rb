@@ -41,6 +41,10 @@ RSpec.describe "Product team users can paste inline CSV to fix data" do
     given_i_preview_the_changes
     then_i_am_taken_to_the_verify_step
     then_the_proposed_processed_changes_are_displayed
+
+    given_i_verify_the_changes
+    then_i_am_taken_to_the_confirmation_step
+    and_the_confirmed_changes_are_displayed
   end
 
 private
@@ -186,4 +190,14 @@ private
     row2 = page.locator("li", hasText: proposed_row2)
     expect(row2).to be_visible
   end
+
+  def given_i_verify_the_changes
+    page.get_by_role("button", name: "Confirm changes", exact: true).click
+  end
+
+  def then_i_am_taken_to_the_confirmation_step
+    expect(page).to have_path("/admin/data_fixes/confirmation")
+  end
+
+  alias_method :and_the_confirmed_changes_are_displayed, :then_the_proposed_processed_changes_are_displayed
 end

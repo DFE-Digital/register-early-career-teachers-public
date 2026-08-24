@@ -1,6 +1,12 @@
 <% page_data(
-    title: "Verify the proposed data fix",
+    title: "Confirm the proposed data fix",
     backlink_href: @wizard.previous_step_path
 ) %>
 
-<%= govuk_list(@wizard.current_step.processed_changes, type: :bullet) %>
+<%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |form| %>
+  <%= content_for(:error_summary) { form.govuk_error_summary(presenter: @wizard.error_presenter) } %>
+
+  <%= govuk_list(@wizard.current_step.processed_changes, type: :bullet) %>
+
+  <%= form.govuk_submit "Confirm changes" %>
+<% end %>
