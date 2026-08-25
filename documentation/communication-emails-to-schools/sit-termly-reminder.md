@@ -22,14 +22,16 @@ Hello ((sit_name)),
 
 We’re sending you this email as our records show that you’re the induction tutor for ((school_name)).
 
-This is a reminder to tell us about ECT and mentor changes this term.
+This is a reminder to tell us about early career teacher (ECT) and mentor changes this term.
 
 <p>You need to tell us about changes so that:</p>
 
 - your school gets the correct funding   
-- early career teachers (ECTs) and mentors can get access to training and materials
+- ECTs and mentors can get access to training and materials
 
-Tell us about changes with [register early career teachers](https://staging.register-early-career-teachers.education.gov.uk). 
+Use the [Register early career teacher](https://register-early-career-teachers.education.gov.uk/) service to tell us about changes.
+
+You need a DfE Sign-in account and approved access to use the service. If you do not have an account, [you can create one](https://services.signin.education.gov.uk/).  You can request access to the 'Register early career teacher' service from your DfE Sign-in account.
 
 ## What you need to tell us
 
@@ -58,6 +60,9 @@ Tell us if ECTs or mentors change their:
  - name    
  - email
  - working pattern
+
+^ If your school does not currently have ECTs or mentors and you do not expect new ECTs or mentors this term, you can stop reminder emails from the DfE. 
+[Stop reminder emails for this term](https://#)
 
 Regards,
 
