@@ -243,3 +243,12 @@ _matthew_goode = teacher(next_trn, "Matthew Goode") do
     training_period(teach_first, 2025, "2025-09-01")
   end
 end
+
+_jodie_comer = teacher(next_trn, "Jodie Comer") do
+  description("ECT eligible to change their school start date")
+
+  ect_at_school_period(abbey_grove_school, "2026-09-01") do
+    school_led_training_period("2026-09-01")
+    mentorship_period(hugh_grant, "2026-09-01")
+  end
+end
