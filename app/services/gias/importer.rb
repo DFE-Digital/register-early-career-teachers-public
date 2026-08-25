@@ -110,17 +110,25 @@ module GIAS
 
     def sync_changes!
       gias_school.assign_attributes(attributes)
+      urns_for_reconciliation << gias_school.urn if gias_school.closed_on == Date.current
+
       return unless gias_school.changed?
 
       modifications = gias_school.changes
       eligible_change = modifications["eligible"]
 
+      urns_for_reconciliation << gias_school.urn if status_changed_to_open_or_closed?(gias_school)
+
       GIAS::School.transaction do
         gias_school.save!
         record_eligibility_change_event!(modifications) if eligible_change
       end
+    end
 
-      urns_for_reconciliation << gias_school.urn
+    def status_changed_to_open_or_closed?(gias_school)
+      return false unless gias_school.status_changed?
+
+      gias_school.open_status? || gias_school.closed_status?
     end
 
     def record_eligibility_change_event!(modifications)
