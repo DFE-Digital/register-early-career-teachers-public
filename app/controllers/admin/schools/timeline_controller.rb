@@ -10,7 +10,7 @@ module Admin
           @school.name => nil
         }
         @navigation_items = helpers.admin_school_navigation_items(params[:school_urn], request.fullpath)
-        @events = Events::List.new.for_school(@school)
+        @events = Events::List.new.for_school(@school).events
       end
     end
   end
