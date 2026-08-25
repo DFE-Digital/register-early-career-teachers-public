@@ -12,7 +12,7 @@ RSpec.describe API::Teachers::Defer, type: :model do
 
   it_behaves_like "an API teacher shared action" do
     describe "validations" do
-      described_class::TEACHER_TYPES.each do |trainee_type|
+      API::Concerns::TeacherValidatable::TEACHER_TYPES.each do |trainee_type|
         context "for #{trainee_type}" do
           let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :unfinished, started_on: 2.months.ago) }
           let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :unfinished, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on) }
@@ -89,7 +89,7 @@ RSpec.describe API::Teachers::Defer, type: :model do
     end
 
     describe "#defer" do
-      described_class::TEACHER_TYPES.each do |trainee_type|
+      API::Concerns::TeacherValidatable::TEACHER_TYPES.each do |trainee_type|
         context "for #{trainee_type}" do
           let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: 6.months.ago, finished_on: nil) }
           let(:teacher_type) { trainee_type }
