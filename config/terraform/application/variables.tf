@@ -133,6 +133,11 @@ variable "run_as_non_root" {
   description = "Whether to enforce that containers must run as non-root user"
 }
 
+variable "create_managed_cache" {
+  type    = bool
+  default = false
+}
+
 locals {
   postgres_ssl_mode = var.enable_postgres_ssl ? "require" : "disable"
 
@@ -152,7 +157,7 @@ locals {
       cache_url = module.redis-cache.url
     }
     # managed = {
-    #   cache_url = module.redis-managed-cache.url
+    #   cache_url = module.redis-managed-cache[0].url
     # }
   }
   selected_redis = local.redis[var.redis_mode]
