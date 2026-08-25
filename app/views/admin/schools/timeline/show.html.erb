@@ -1,0 +1,19 @@
+<% page_data(
+  title: @school.name,
+  caption: "URN: #{@school.urn}",
+  caption_size: "xl",
+  header_size: "xl",
+  breadcrumbs: @breadcrumbs
+) %>
+
+<%= render 'admin/schools/impersonate_button' %>
+
+<%= render Navigation::SecondaryNavigationComponent.new(
+  items: @navigation_items
+) %>
+
+<% if @events.any? %>
+  <%= render(TimelineComponent.new(@events)) %>
+<% else %>
+  <p class="govuk-body">No timeline of events for this school.</p>
+<% end %>

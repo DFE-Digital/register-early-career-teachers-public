@@ -1,5 +1,5 @@
 RSpec.describe "admin/schools/overviews/show.html.erb", type: :view do
-  let(:school) { FactoryBot.create(:school) }
+  let(:school) { FactoryBot.build(:school) }
 
   before do
     assign(:school, school)
@@ -7,7 +7,8 @@ RSpec.describe "admin/schools/overviews/show.html.erb", type: :view do
     assign(:navigation_items, [
       { text: "Overview", href: admin_school_overview_path(school.urn), current: true },
       { text: "Teachers", href: admin_school_teachers_path(school.urn), current: false },
-      { text: "Partnerships", href: admin_school_partnerships_path(school.urn), current: false }
+      { text: "Partnerships", href: admin_school_partnerships_path(school.urn), current: false },
+      { text: "Timeline", href: admin_school_timeline_path(school.urn), current: false }
     ])
     allow(view).to receive_messages(params: { urn: school.urn }, request: double(fullpath: "/admin/schools/#{school.urn}/overview"))
   end

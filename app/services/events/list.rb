@@ -13,6 +13,12 @@ module Events
       scope.where(teacher:)
     end
 
+    # @param school [School]
+    # @return [ActiveRecord::Relation<Event>]
+    def for_school(school)
+      scope.where(school:)
+    end
+
     # @param appropriate_body_period [AppropriateBodyPeriod]
     # @return [ActiveRecord::Relation<Event>]
     def for_appropriate_body_period(appropriate_body_period)

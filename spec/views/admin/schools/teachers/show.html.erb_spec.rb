@@ -1,9 +1,9 @@
 RSpec.describe "admin/schools/teachers/show.html.erb", type: :view do
-  let(:school) { FactoryBot.create(:school, create_contract_period: false) }
-  let(:ect_teacher) { FactoryBot.create(:teacher) }
-  let(:mentor_teacher) { FactoryBot.create(:teacher) }
-  let!(:contract_period_2024) { FactoryBot.create(:contract_period, year: 2024) }
-  let!(:contract_period_2025) { FactoryBot.create(:contract_period, year: 2025) }
+  let(:school) { FactoryBot.build(:school, create_contract_period: false) }
+  let(:ect_teacher) { FactoryBot.build(:teacher, id: 1) }
+  let(:mentor_teacher) { FactoryBot.build(:teacher, id: 2) }
+  let!(:contract_period_2024) { FactoryBot.build(:contract_period, year: 2024) }
+  let!(:contract_period_2025) { FactoryBot.build(:contract_period, year: 2025) }
   let(:teacher_rows) do
     [
       Admin::Teachers::Rows::Row.new(teacher: ect_teacher, role: "ect", contract_period: "2024"),
@@ -21,7 +21,8 @@ RSpec.describe "admin/schools/teachers/show.html.erb", type: :view do
     assign(:navigation_items, [
       { text: "Overview", href: admin_school_overview_path(school.urn), current: false },
       { text: "Teachers", href: admin_school_teachers_path(school.urn), current: true },
-      { text: "Partnerships", href: admin_school_partnerships_path(school.urn), current: false }
+      { text: "Partnerships", href: admin_school_partnerships_path(school.urn), current: false },
+      { text: "Timeline", href: admin_school_timeline_path(school.urn), current: false }
     ])
     allow(view).to receive(:params).and_return(request_params)
   end

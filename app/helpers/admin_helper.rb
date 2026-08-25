@@ -24,6 +24,11 @@ module AdminHelper
         text: "Partnerships",
         href: admin_school_partnerships_path(school_urn),
         current: current_path == admin_school_partnerships_path(school_urn)
+      },
+      {
+        text: "Timeline",
+        href: admin_school_timeline_path(school_urn),
+        current: current_path == admin_school_timeline_path(school_urn)
       }
     ]
   end
