@@ -44,13 +44,9 @@ RSpec.describe Schools::ECTs::ChangeStartDateWizard::EditStep do
   end
 
   describe ".permitted_params" do
-    it "permits the start-date fields" do
-      expect(described_class.permitted_params).to contain_exactly(
-        :start_date,
-        :"start_date(1i)",
-        :"start_date(2i)",
-        :"start_date(3i)"
-      )
+    it "permits the start date" do
+      expect(described_class.permitted_params)
+        .to contain_exactly(:start_date)
     end
   end
 
@@ -135,6 +131,157 @@ RSpec.describe Schools::ECTs::ChangeStartDateWizard::EditStep do
         expect(current_step).to be_valid
       end
     end
+
+    context "when the date clashes with a previous ECT at-school period" do
+      let(:start_date) do
+        {
+          1 => 2023,
+          2 => 8,
+          3 => 1
+        }
+      end
+
+      let(:previous_school) do
+        FactoryBot.create(:school)
+      end
+
+      let!(:previous_period) do
+        FactoryBot.create(
+          :ect_at_school_period,
+          teacher: ect_at_school_period.teacher,
+          school: previous_school,
+          started_on: Date.new(2023, 9, 1),
+          finished_on: Date.new(2023, 12, 31)
+        )
+      end
+
+      let(:validator) do
+        instance_double(
+          Schools::Validation::PeriodBoundary
+        )
+      end
+
+      let(:teacher_name) do
+        Teachers::Name
+          .new(ect_at_school_period.teacher)
+          .full_name
+      end
+
+      before do
+        allow(wizard)
+          .to receive(:name_for)
+          .and_return(teacher_name)
+
+        allow(Schools::Validation::PeriodBoundary)
+          .to receive(:new)
+          .with(
+            input_period: previous_period,
+            input_date: Date.new(2023, 8, 1)
+          )
+          .and_return(validator)
+
+        allow(validator).to receive_messages(
+          valid?: false,
+          type: "teaching",
+          started_on_formatted: "1 September 2023",
+          earliest_valid_input_date_formatted: "2 September 2023"
+        )
+      end
+
+      it "is invalid" do
+        expect(current_step).not_to be_valid
+
+        expect(current_step.errors[:start_date]).to include(
+          "Our records show that #{teacher_name} started teaching " \
+          "at #{previous_school.name} on 1 September 2023. " \
+          "Enter a start date after 2 September 2023."
+        )
+      end
+    end
+
+    context "when the start date is more than four months ahead" do
+      around do |example|
+        travel_to(Date.new(2025, 1, 1)) do
+          example.run
+        end
+      end
+
+      let(:contract_period) do
+        FactoryBot.build_stubbed(
+          :contract_period,
+          enabled: true
+        )
+      end
+
+      before do
+        allow(ContractPeriod)
+          .to receive(:containing_date)
+          .and_return(contract_period)
+      end
+
+      context "when the date is exactly four months ahead" do
+        let(:start_date) do
+          {
+            1 => 2025,
+            2 => 5,
+            3 => 1
+          }
+        end
+
+        it "is valid" do
+          expect(current_step).to be_valid
+        end
+      end
+
+      context "when the date is more than four months ahead" do
+        let(:start_date) do
+          {
+            1 => 2025,
+            2 => 5,
+            3 => 2
+          }
+        end
+
+        it "is invalid" do
+          expect(current_step).not_to be_valid
+
+          expect(current_step.errors[:start_date]).to include(
+            "Start date must be before 2 May 2025. " \
+            "You cannot register the ECT this far in advance."
+          )
+        end
+      end
+    end
+
+    context "when the date is more than four months ahead in an unopened contract period" do
+      around do |example|
+        travel_to(Date.new(2025, 1, 1)) do
+          example.run
+        end
+      end
+
+      let(:start_date) do
+        {
+          1 => 2025,
+          2 => 9,
+          3 => 1
+        }
+      end
+
+      before do
+        FactoryBot.create(
+          :contract_period,
+          year: 2025,
+          enabled: false,
+          started_on: Date.new(2025, 6, 1),
+          finished_on: Date.new(2026, 5, 31)
+        )
+      end
+
+      it "does not add the four-month error" do
+        expect(current_step).to be_valid
+      end
+    end
   end
 
   describe "#save!" do
@@ -196,7 +343,8 @@ RSpec.describe Schools::ECTs::ChangeStartDateWizard::EditStep do
       end
 
       it "returns check answers" do
-        expect(current_step.next_step).to eq(:check_answers)
+        expect(current_step.next_step)
+          .to eq(:check_answers)
       end
     end
 
@@ -220,7 +368,8 @@ RSpec.describe Schools::ECTs::ChangeStartDateWizard::EditStep do
       end
 
       it "returns check answers" do
-        expect(current_step.next_step).to eq(:check_answers)
+        expect(current_step.next_step)
+          .to eq(:check_answers)
       end
     end
 
@@ -244,7 +393,8 @@ RSpec.describe Schools::ECTs::ChangeStartDateWizard::EditStep do
       end
 
       it "returns cannot use date" do
-        expect(current_step.next_step).to eq(:cannot_use_date)
+        expect(current_step.next_step)
+          .to eq(:cannot_use_date)
       end
     end
 
@@ -258,7 +408,8 @@ RSpec.describe Schools::ECTs::ChangeStartDateWizard::EditStep do
       end
 
       it "returns cannot use date" do
-        expect(current_step.next_step).to eq(:cannot_use_date)
+        expect(current_step.next_step)
+          .to eq(:cannot_use_date)
       end
     end
   end
