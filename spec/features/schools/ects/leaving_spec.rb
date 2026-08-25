@@ -52,7 +52,7 @@ private
 
   def then_i_can_start_the_ect_leaving_flow
     page.get_by_role("link", name: "Tell us if Batman is leaving permanently").click
-    expect(page.locator("h1", hasText: "Tell us if Batman has left or is leaving your school permanently")).to be_visible
+    expect(page.locator("h1", hasText: "When did or when will Batman be leaving your school permanently?")).to be_visible
   end
 
   def when_i_enter_a_future_leaving_date

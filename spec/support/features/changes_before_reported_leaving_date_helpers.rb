@@ -53,7 +53,7 @@ private
     when_i_visit_the_ect_page
     leaving_cta = page.get_by_role("link", name: "Tell us if Mr Teacher is leaving permanently")
     leaving_cta.click
-    leaving_date_question = "When did or when will Mr Teacher be leaving your school?"
+    leaving_date_question = "When did or when will Mr Teacher be leaving your school permanently?"
     leaving_date_fieldset = page.locator("fieldset", hasText: leaving_date_question)
     leaving_date_fieldset.get_by_label("Day").fill(on.day.to_s)
     leaving_date_fieldset.get_by_label("Month").fill(on.month.to_s)
