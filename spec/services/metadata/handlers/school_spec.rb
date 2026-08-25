@@ -43,7 +43,6 @@ RSpec.describe Metadata::Handlers::School do
         expect(created_metadata).to have_attributes(
           school:,
           contract_period:,
-          in_partnership: true,
           induction_programme_choice: "not_yet_known"
         )
       end
@@ -55,16 +54,10 @@ RSpec.describe Metadata::Handlers::School do
       end
 
       context "when metadata already exists for a school and contract period" do
-        let!(:metadata) { FactoryBot.create(:school_contract_period_metadata, school:, contract_period:, in_partnership: true, induction_programme_choice: "not_yet_known") }
+        let!(:metadata) { FactoryBot.create(:school_contract_period_metadata, school:, contract_period:, induction_programme_choice: "not_yet_known") }
 
         it "does not create metadata" do
           expect { refresh_metadata }.not_to change(Metadata::SchoolContractPeriod, :count)
-        end
-
-        it "updates the metadata when the partnership changes" do
-          Metadata::SchoolContractPeriod.bypass_update_restrictions { metadata.update!(in_partnership: false) }
-
-          expect { refresh_metadata }.to change { metadata.reload.in_partnership }.from(false).to(true)
         end
 
         it "updates the metadata when the induction programme choice changes" do

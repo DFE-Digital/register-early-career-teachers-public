@@ -59,7 +59,7 @@ describe API::SchoolSerializer, type: :serializer do
       expect(attributes["name"]).to eq(school.name)
       expect(attributes["urn"]).to eq(school.urn.to_s)
       expect(attributes["cohort"]).to eq(contract_period.year.to_s)
-      expect(attributes["in_partnership"]).to eq(contract_period_metadata.in_partnership)
+      expect(attributes["in_partnership"]).to eq(school.school_partnerships.any? { |sp| sp.lead_provider_delivery_partnership.active_lead_provider.contract_period_year == contract_period.year })
       expect(attributes["induction_programme_choice"]).to eq(contract_period_metadata.induction_programme_choice)
       expect(attributes["expression_of_interest"]).to eq(lead_provider_contract_period_metadata.expression_of_interest_or_school_partnership)
       expect(attributes["induction_tutor_name"]).not_to be_nil

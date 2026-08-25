@@ -27,7 +27,6 @@ module Metadata::Handlers
         latest_attributes = {
           school_id: school.id,
           contract_period_year:,
-          in_partnership: contract_period_year.in?(school_partnership_contract_period_years),
           induction_programme_choice: school.training_programme_for(contract_period_year)
         }
 
