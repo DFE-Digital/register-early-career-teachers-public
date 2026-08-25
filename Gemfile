@@ -25,12 +25,16 @@ gem "govuk_design_system_formbuilder", "6.4.0"
 gem "govuk_markdown"
 
 gem "mail-notify"
-gem "rails_semantic_logger"
 
-gem "sentry-rails"
-gem "sentry-ruby"
 gem "stackprof"
 gem "state_machines-activerecord"
+
+# Logging and metrics
+gem "rails_semantic_logger"
+gem "sentry-rails"
+gem "sentry-ruby"
+gem "yabeda-prometheus"
+gem "yabeda-rails"
 
 # Background jobs
 gem "mission_control-jobs"
