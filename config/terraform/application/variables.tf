@@ -83,6 +83,12 @@ variable "enable_monitoring" {
   description = "Enable monitoring and alerting"
 }
 
+variable "enable_prometheus_monitoring" {
+  type        = bool
+  default     = false
+  description = "Enable Prometheus metrics for Grafana"
+}
+
 variable "webapp_memory_max" {
   type    = string
   default = "1Gi"

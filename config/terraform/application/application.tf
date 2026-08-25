@@ -56,11 +56,12 @@ module "web_application" {
 
   is_web = true
 
-  name         = "web"
-  web_port     = 8080
-  namespace    = var.namespace
-  environment  = var.environment
-  service_name = var.service_name
+  name                         = "web"
+  web_port                     = 8080
+  namespace                    = var.namespace
+  environment                  = var.environment
+  service_name                 = var.service_name
+  enable_prometheus_monitoring = var.enable_prometheus_monitoring
 
   cluster_configuration_map  = module.cluster_data.configuration_map
   kubernetes_config_map_name = module.application_configuration.kubernetes_config_map_name
