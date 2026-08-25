@@ -13,13 +13,14 @@ describe "Admin::Schools::TimelineController" do
       expect(response.body).to match("<title>#{school_name} #{title_suffix}</title>")
     end
 
-    it "uses Events::List to retrieve events in chronological order" do
-      events_list = double(Events::List, for_school: [])
+    it "uses Events::List to retrieve events for a school, where the type starts with 'school', in chronological order" do
+      events_list = double(Events::List).as_null_object
       allow(Events::List).to receive(:new).and_return(events_list)
 
       get "/admin/schools/#{school.urn}/timeline"
 
       expect(events_list).to have_received(:for_school).with(school).once
+      expect(events_list).to have_received(:type_starts_with).with("school").once
     end
   end
 end

@@ -26,6 +26,14 @@ module Events
       self
     end
 
+    # @param match_prefix [String]
+    # @return [Events::List]
+    def type_starts_with(match_prefix)
+      scope.merge!(scope.event_type_starts_with(match_prefix))
+
+      self
+    end
+
     # @param appropriate_body_period [AppropriateBodyPeriod]
     # @return [Events::List]
     def for_appropriate_body_period(appropriate_body_period)
