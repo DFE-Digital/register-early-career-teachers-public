@@ -9,7 +9,8 @@ module ECTAtSchoolPeriods
 
       def eligible?
         latest_ect_at_school_period? &&
-          exactly_one_training_period?
+          exactly_one_training_period? &&
+          no_more_than_one_mentorship_period?
       end
 
     private
@@ -21,6 +22,10 @@ module ECTAtSchoolPeriods
 
       def exactly_one_training_period?
         ect_at_school_period.training_periods.one?
+      end
+
+      def no_more_than_one_mentorship_period?
+        !ect_at_school_period.mentorship_periods.many?
       end
     end
   end

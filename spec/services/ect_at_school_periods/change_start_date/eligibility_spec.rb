@@ -30,8 +30,77 @@ RSpec.describe ECTAtSchoolPeriods::ChangeStartDate::Eligibility do
           )
         end
 
-        it "is eligible" do
-          expect(eligibility).to be_eligible
+        context "without a mentorship period" do
+          it "is eligible" do
+            expect(eligibility).to be_eligible
+          end
+        end
+
+        context "with one mentorship period" do
+          let(:mentor_at_school_period) do
+            FactoryBot.create(
+              :mentor_at_school_period,
+              :unfinished,
+              school:,
+              started_on: Date.new(2026, 9, 1)
+            )
+          end
+
+          before do
+            FactoryBot.create(
+              :mentorship_period,
+              :unfinished,
+              mentee: ect_at_school_period,
+              mentor: mentor_at_school_period,
+              started_on: Date.new(2026, 9, 1)
+            )
+          end
+
+          it "is eligible" do
+            expect(eligibility).to be_eligible
+          end
+        end
+
+        context "with multiple mentorship periods" do
+          let(:first_mentor_at_school_period) do
+            FactoryBot.create(
+              :mentor_at_school_period,
+              :unfinished,
+              school:,
+              started_on: Date.new(2026, 9, 1)
+            )
+          end
+
+          let(:second_mentor_at_school_period) do
+            FactoryBot.create(
+              :mentor_at_school_period,
+              :unfinished,
+              school:,
+              started_on: Date.new(2026, 9, 1)
+            )
+          end
+
+          before do
+            FactoryBot.create(
+              :mentorship_period,
+              mentee: ect_at_school_period,
+              mentor: first_mentor_at_school_period,
+              started_on: Date.new(2026, 9, 1),
+              finished_on: Date.new(2026, 9, 30)
+            )
+
+            FactoryBot.create(
+              :mentorship_period,
+              :unfinished,
+              mentee: ect_at_school_period,
+              mentor: second_mentor_at_school_period,
+              started_on: Date.new(2026, 10, 1)
+            )
+          end
+
+          it "is not eligible" do
+            expect(eligibility).not_to be_eligible
+          end
         end
       end
 
