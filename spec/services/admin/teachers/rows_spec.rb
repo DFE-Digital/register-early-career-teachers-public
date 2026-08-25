@@ -62,11 +62,11 @@ RSpec.describe Admin::Teachers::Rows do
     context "when a teacher has no role history" do
       let!(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Naruto", trs_last_name: "Uzumaki") }
 
-      it "returns a no role assigned row" do
+      it "returns a no role assigned row with an unavailable contract period" do
         matching_rows = rows_builder.rows(teachers).select { |row| row.teacher == teacher }
 
         expect(matching_rows.map(&:role_name)).to eq(["No role assigned"])
-        expect(matching_rows.map(&:contract_period_name)).to eq([nil])
+        expect(matching_rows.map(&:contract_period_name)).to eq(["Not available"])
       end
     end
 
@@ -248,10 +248,16 @@ RSpec.describe Admin::Teachers::Rows do
       let(:contract_period) { "not_available" }
       let!(:school_led_teacher) { FactoryBot.create(:teacher, trs_first_name: "Naruto", trs_last_name: "Uzumaki") }
       let!(:provider_led_teacher) { FactoryBot.create(:teacher, trs_first_name: "Sasuke", trs_last_name: "Uchiha") }
+      let!(:ect_without_training) { FactoryBot.create(:teacher, trs_first_name: "Sakura", trs_last_name: "Haruno") }
+      let!(:mentor_without_training) { FactoryBot.create(:teacher, trs_first_name: "Kakashi", trs_last_name: "Hatake") }
+      let!(:no_role_teacher) { FactoryBot.create(:teacher, trs_first_name: "Iruka", trs_last_name: "Umino") }
       let!(:school_led_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher: school_led_teacher) }
       let!(:provider_led_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher: provider_led_teacher) }
 
       before do
+        FactoryBot.create(:ect_at_school_period, :unfinished, teacher: ect_without_training)
+        FactoryBot.create(:mentor_at_school_period, :unfinished, teacher: mentor_without_training)
+
         FactoryBot.create(
           :training_period,
           :for_ect,
@@ -279,8 +285,13 @@ RSpec.describe Admin::Teachers::Rows do
       end
 
       it "returns only not available rows" do
-        expect(rows_builder.rows(teachers).map(&:teacher)).to eq([school_led_teacher])
-        expect(rows_builder.rows(teachers).map(&:contract_period_name)).to eq(["Not available"])
+        expect(rows_builder.rows(teachers).map(&:teacher)).to contain_exactly(
+          school_led_teacher,
+          ect_without_training,
+          mentor_without_training,
+          no_role_teacher
+        )
+        expect(rows_builder.rows(teachers).map(&:contract_period_name)).to all(eq("Not available"))
       end
     end
   end
