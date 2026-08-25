@@ -1,0 +1,28 @@
+<% page_data(
+  title: "You cannot use this date",
+  error: false
+) %>
+
+<p class="govuk-body">
+  Registration for the
+  <%= formatted_year_range_for_registration_date(
+        @wizard.current_step.start_date
+      ) %>
+  academic year is not open.
+</p>
+
+<p class="govuk-body">
+  If you need to use this start date,
+  <%= govuk_link_to(
+        "contact support",
+        new_schools_support_query_path
+      ) %>.
+</p>
+
+<p class="govuk-body">
+  <%= govuk_link_to(
+        "Go back",
+        @wizard.previous_step_path,
+        no_visited_state: true
+      ) %>
+</p>

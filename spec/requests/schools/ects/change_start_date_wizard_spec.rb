@@ -191,7 +191,7 @@ RSpec.describe "Schools::ECTs::ChangeStartDateWizardController" do
 
     it "does not change the school start date before confirmation" do
       expect { post_edit }
-        .not_to change { ect_at_school_period.reload.started_on }
+        .not_to(change { ect_at_school_period.reload.started_on })
     end
 
     context "when the start date is invalid" do
@@ -214,7 +214,7 @@ RSpec.describe "Schools::ECTs::ChangeStartDateWizardController" do
 
       it "does not change the school start date" do
         expect { post_edit }
-          .not_to change { ect_at_school_period.reload.started_on }
+          .not_to(change { ect_at_school_period.reload.started_on })
       end
     end
 
@@ -237,87 +237,103 @@ RSpec.describe "Schools::ECTs::ChangeStartDateWizardController" do
 
       it "does not change the school start date" do
         expect { post_edit }
-          .not_to change { ect_at_school_period.reload.started_on }
+          .not_to(change { ect_at_school_period.reload.started_on })
+      end
+
+      it "shows support and go-back links" do
+        post_edit
+        follow_redirect!
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("You cannot use this date")
+        expect(response.body).to include("contact support")
+        expect(response.body).to include(
+          new_schools_support_query_path
+        )
+        expect(response.body).to include("Go back")
+        expect(response.body).to include(
+          path_for_step("edit")
+        )
       end
     end
   end
 
   describe "POST check answers" do
-  subject(:post_check_answers) do
-    post path_for_step("check-answers")
-  end
+    subject(:post_check_answers) do
+      post path_for_step("check-answers")
+    end
 
-  let(:new_start_date) { Date.current - 1.day }
+    let(:new_start_date) { Date.current - 1.day }
 
-  let(:edit_params) do
-    {
-      edit: {
-        "start_date(1i)" => new_start_date.year.to_s,
-        "start_date(2i)" => new_start_date.month.to_s,
-        "start_date(3i)" => new_start_date.day.to_s
+    let(:edit_params) do
+      {
+        edit: {
+          "start_date(1i)" => new_start_date.year.to_s,
+          "start_date(2i)" => new_start_date.month.to_s,
+          "start_date(3i)" => new_start_date.day.to_s
+        }
       }
-    }
-  end
+    end
 
-  let(:contract_period) do
-    FactoryBot.build_stubbed(
-      :contract_period,
-      enabled: true
-    )
-  end
-
-  before do
-    sign_in_as(:school_user, school:)
-
-    allow(ContractPeriod)
-      .to receive(:containing_date)
-      .and_call_original
-
-    allow(ContractPeriod)
-      .to receive(:containing_date)
-      .with(new_start_date)
-      .and_return(contract_period)
-
-    allow(Events::Record)
-      .to receive(
-        :record_teacher_school_start_date_updated_event!
+    let(:contract_period) do
+      FactoryBot.build_stubbed(
+        :contract_period,
+        enabled: true
       )
+    end
 
-    post path_for_step("edit"), params: edit_params
+    before do
+      sign_in_as(:school_user, school:)
+
+      allow(ContractPeriod)
+        .to receive(:containing_date)
+        .and_call_original
+
+      allow(ContractPeriod)
+        .to receive(:containing_date)
+        .with(new_start_date)
+        .and_return(contract_period)
+
+      allow(Events::Record)
+        .to receive(
+          :record_teacher_school_start_date_updated_event!
+        )
+
+      post path_for_step("edit"), params: edit_params
+    end
+
+    it "updates the school and training period start dates" do
+      expect { post_check_answers }
+        .to change { ect_at_school_period.reload.started_on }
+        .from(Date.new(2025, 9, 1))
+        .to(new_start_date)
+        .and change { training_period.reload.started_on }
+        .from(Date.new(2025, 9, 1))
+        .to(new_start_date)
+    end
+
+    it "records the event only after confirmation" do
+      expect(Events::Record)
+        .not_to have_received(
+          :record_teacher_school_start_date_updated_event!
+        )
+
+      post_check_answers
+
+      expect(Events::Record)
+        .to have_received(
+          :record_teacher_school_start_date_updated_event!
+        )
+        .once
+    end
+
+    it "redirects to the confirmation page" do
+      post_check_answers
+
+      expect(response)
+        .to redirect_to(path_for_step("confirmation"))
+    end
   end
-
-  it "updates the school and training period start dates" do
-    expect { post_check_answers }
-      .to change { ect_at_school_period.reload.started_on }
-      .from(Date.new(2025, 9, 1))
-      .to(new_start_date)
-      .and change { training_period.reload.started_on }
-      .from(Date.new(2025, 9, 1))
-      .to(new_start_date)
-  end
-
-  it "records the event only after confirmation" do
-    expect(Events::Record)
-      .not_to have_received(
-        :record_teacher_school_start_date_updated_event!
-      )
-
-    post_check_answers
-
-    expect(Events::Record)
-      .to have_received(
-        :record_teacher_school_start_date_updated_event!
-      )
-      .once
-end
-
-  it "redirects to the confirmation page" do
-    post_check_answers
-
-    expect(response)
-      .to redirect_to(path_for_step("confirmation"))
-  end
-end
 
 private
 
