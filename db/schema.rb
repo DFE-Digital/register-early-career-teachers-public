@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_19_155844) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_25_085249) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -953,6 +953,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_19_155844) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  add_foreign_key "api_tokens", "lead_providers"
   add_foreign_key "appropriate_bodies", "dfe_sign_in_organisations"
   add_foreign_key "appropriate_body_periods", "appropriate_bodies"
   add_foreign_key "contract_banded_fee_structure_band_terms", "contract_banded_fee_structures", column: "banded_fee_structure_id", on_delete: :cascade
@@ -961,6 +962,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_19_155844) do
   add_foreign_key "contract_flat_rate_fee_structures", "contracts"
   add_foreign_key "contracts", "framework_agreements"
   add_foreign_key "declarations", "delivery_partners", column: "delivery_partner_when_created_id"
+  add_foreign_key "declarations", "mentorship_periods"
   add_foreign_key "declarations", "statements", column: "clawback_statement_id"
   add_foreign_key "declarations", "statements", column: "payment_statement_id"
   add_foreign_key "declarations", "users", column: "voided_by_user_id"
@@ -996,6 +998,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_19_155844) do
   add_foreign_key "induction_extensions", "teachers"
   add_foreign_key "induction_periods", "appropriate_body_periods"
   add_foreign_key "induction_periods", "teachers"
+  add_foreign_key "lead_provider_delivery_partnerships", "delivery_partners"
+  add_foreign_key "lead_provider_delivery_partnerships", "framework_agreements"
   add_foreign_key "legacy_appropriate_bodies", "appropriate_body_periods"
   add_foreign_key "mentor_at_school_periods", "schools"
   add_foreign_key "mentor_at_school_periods", "schools", column: "reported_leaving_by_school_id"
@@ -1010,6 +1014,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_19_155844) do
   add_foreign_key "metadata_teachers_lead_providers", "contract_periods", column: "latest_ect_contract_period_year", primary_key: "year"
   add_foreign_key "metadata_teachers_lead_providers", "contract_periods", column: "latest_mentor_contract_period_year", primary_key: "year"
   add_foreign_key "metadata_teachers_lead_providers", "lead_providers"
+  add_foreign_key "metadata_teachers_lead_providers", "mentor_at_school_periods", column: "ect_assigned_mentor_latest_school_period_id"
   add_foreign_key "metadata_teachers_lead_providers", "teachers"
   add_foreign_key "metadata_teachers_lead_providers", "training_periods", column: "latest_ect_training_period_id", on_delete: :nullify
   add_foreign_key "metadata_teachers_lead_providers", "training_periods", column: "latest_mentor_training_period_id", on_delete: :nullify
@@ -1021,6 +1026,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_19_155844) do
   add_foreign_key "schedules", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "school_funding_eligibilities", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "school_funding_eligibilities", "gias_schools", column: "gias_school_urn", primary_key: "urn"
+  add_foreign_key "school_partnerships", "lead_provider_delivery_partnerships"
   add_foreign_key "school_partnerships", "schools"
   add_foreign_key "schools", "appropriate_body_periods", column: "last_chosen_appropriate_body_id"
   add_foreign_key "schools", "contract_periods", column: "induction_tutor_last_nominated_in", primary_key: "year"
