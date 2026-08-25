@@ -58,21 +58,24 @@ RSpec.describe "Schools::ECTs::ChangeStartDateWizardController" do
           expect(response).to have_http_status(:ok)
         end
 
-        it "shows the start-date form and navigation links" do
+        it "shows the change start date page" do
           get_edit
 
+          page = Capybara.string(response.body)
           teacher_full_name = Teachers::Name.new(teacher).full_name
 
-          expect(response.body).to include(
+          expect(page).to have_text(
             "Change school start date for #{teacher_full_name}"
           )
-          expect(response.body).to include("School start date")
-          expect(response.body).to include("Continue")
-          expect(response.body).to include(
-            "Cancel and go back to #{teacher_full_name}"
+          expect(page).to have_text(
+            "For example, 27 9 2024"
           )
-          expect(response.body).to include(
-            schools_ect_path(ect_at_school_period)
+          expect(page).to have_text(
+            /previously started as a teaching\s+assistant/
+          )
+          expect(page).to have_link(
+            "Cancel and go back to #{teacher_full_name}’s details",
+            href: schools_ect_path(ect_at_school_period)
           )
         end
       end

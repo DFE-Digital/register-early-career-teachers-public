@@ -12,15 +12,22 @@
     <%= form.govuk_error_summary %>
   <% end %>
 
+  <p class="govuk-hint">
+    For example, 27 9 2024
+  </p>
+
+  <p class="govuk-body">
+    This is the date <%= @wizard.teacher_full_name %> started as an ECT at your
+    school. Not, for example, if they previously started as a teaching
+    assistant. This can be a future date.
+  </p>
+
   <%= form.govuk_date_field(
         :start_date,
         width: "two-thirds",
         legend: {
           text: "School start date",
-          size: "m"
-        },
-        hint: {
-          text: "For example, 17 9 #{Date.current.year}"
+          hidden: true
         }
       ) %>
 
