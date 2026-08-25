@@ -48,6 +48,54 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
     end
   end
 
+  describe "school start date change link" do
+    let(:school_start_date_row) do
+      page.find(
+        ".govuk-summary-list__row",
+        text: "School start date"
+      )
+    end
+
+    let(:eligibility) do
+      instance_double(
+        ECTAtSchoolPeriods::ChangeStartDate::Eligibility,
+        eligible?: eligible
+      )
+    end
+
+    before do
+      allow(
+        ECTAtSchoolPeriods::ChangeStartDate::Eligibility
+      )
+        .to receive(:new)
+        .with(ect_at_school_period: mentee)
+        .and_return(eligibility)
+
+      render_inline(component)
+    end
+
+    context "when changing the start date is eligible" do
+      let(:eligible) { true }
+
+      it "shows the change link" do
+        expect(school_start_date_row).to have_link(
+          "Change",
+          href:
+            schools_ects_change_start_date_wizard_edit_path(mentee)
+        )
+      end
+    end
+
+    context "when changing the start date is not eligible" do
+      let(:eligible) { false }
+
+      it "does not show the change link" do
+        expect(school_start_date_row)
+          .not_to have_link("Change")
+      end
+    end
+  end
+
   context "when the supplied training period is deferred" do
     before do
       training_period = FactoryBot.create(
