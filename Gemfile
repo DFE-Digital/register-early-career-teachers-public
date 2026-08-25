@@ -33,6 +33,8 @@ gem "state_machines-activerecord"
 gem "rails_semantic_logger"
 gem "sentry-rails"
 gem "sentry-ruby"
+gem "yabeda-prometheus"
+gem "yabeda-rails"
 
 # Background jobs
 gem "mission_control-jobs"
