@@ -1,10 +1,10 @@
 class API::SchoolSerializer < Blueprinter::Base
   def self.dependencies
-    %i[
-      gias_school
-      contract_period_metadata
-      lead_provider_contract_period_metadata
-      school_partnerships: %i[lead_provider_delivery_partnership: :active_lead_provider]
+    [
+      :gias_school,
+      :contract_period_metadata,
+      :lead_provider_contract_period_metadata,
+      { school_partnerships: { lead_provider_delivery_partnership: :framework_agreement } },
     ]
   end
 
@@ -22,7 +22,7 @@ class API::SchoolSerializer < Blueprinter::Base
     end
     field(:in_partnership) do |data, options|
       data[:school].school_partnerships.any? do |school_partnership|
-        school_partnership.lead_provider_delivery_partnership&.active_lead_provider&.contract_period_year == options[:contract_period_year]
+        school_partnership.lead_provider_delivery_partnership&.framework_agreement&.contract_period_year == options[:contract_period_year]
       end
     end
     field(:induction_programme_choice) do |data, options|
