@@ -50,6 +50,7 @@ namespace :admin do
       resource :overview, only: :show
       resource :teachers, only: :show
       resource :partnerships, only: :show
+      resource :timeline, only: :show, controller: "timeline"
     end
   end
 

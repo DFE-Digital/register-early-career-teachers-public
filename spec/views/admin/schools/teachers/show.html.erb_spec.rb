@@ -21,7 +21,8 @@ RSpec.describe "admin/schools/teachers/show.html.erb", type: :view do
     assign(:navigation_items, [
       { text: "Overview", href: admin_school_overview_path(school.urn), current: false },
       { text: "Teachers", href: admin_school_teachers_path(school.urn), current: true },
-      { text: "Partnerships", href: admin_school_partnerships_path(school.urn), current: false }
+      { text: "Partnerships", href: admin_school_partnerships_path(school.urn), current: false },
+      { text: "Timeline", href: admin_school_timeline_path(school.urn), current: false }
     ])
     allow(view).to receive(:params).and_return(request_params)
   end
