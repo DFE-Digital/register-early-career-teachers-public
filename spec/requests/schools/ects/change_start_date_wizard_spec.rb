@@ -189,6 +189,53 @@ RSpec.describe "Schools::ECTs::ChangeStartDateWizardController" do
         .to redirect_to(path_for_step("check-answers"))
     end
 
+    it "shows the confirmation page" do
+      post_edit
+      post path_for_step("check-answers")
+      follow_redirect!
+
+      teacher_full_name = Teachers::Name.new(teacher).full_name
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include(
+        "School start date updated for #{teacher_full_name}"
+      )
+      expect(response.body).to include("school start date")
+      expect(response.body).to include(
+        new_start_date.to_fs(:govuk)
+      )
+      expect(response.body).to include(
+        "Back to #{teacher_full_name}"
+      )
+      expect(response.body).to include(
+        schools_ect_path(ect_at_school_period)
+      )
+    end
+
+    it "shows the check-answers page" do
+      post_edit
+      follow_redirect!
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Check and confirm change")
+      expect(response.body).to include("Early career teacher")
+      expect(response.body).to include(
+        Teachers::Name.new(teacher).full_name
+      )
+      expect(response.body).to include("Current school start date")
+      expect(response.body).to include(
+        ect_at_school_period.started_on.to_fs(:govuk)
+      )
+      expect(response.body).to include("New school start date")
+      expect(response.body).to include(
+        new_start_date.to_fs(:govuk)
+      )
+      expect(response.body).to include("Confirm change")
+      expect(response.body).to include(
+        schools_ect_path(ect_at_school_period)
+      )
+    end
+
     it "does not change the school start date before confirmation" do
       expect { post_edit }
         .not_to(change { ect_at_school_period.reload.started_on })
