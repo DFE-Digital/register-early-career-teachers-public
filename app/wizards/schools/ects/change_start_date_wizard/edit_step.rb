@@ -5,6 +5,7 @@ module Schools
         attr_accessor :start_date
 
         validates :start_date, ect_start_date: true
+        validate :start_date_must_be_different
         validate :start_date_after_previous_school_or_training_period_start
         validate :start_date_within_4_months
 
@@ -46,6 +47,16 @@ module Schools
           errors.add(
             :start_date,
             invalid_period_error_message
+          )
+        end
+
+        def start_date_must_be_different
+          return if skip_additional_start_date_validations?
+          return unless start_date_as_date == ect_at_school_period.started_on
+
+          errors.add(
+            :start_date,
+            "The school start date must be different from the current school start date"
           )
         end
 

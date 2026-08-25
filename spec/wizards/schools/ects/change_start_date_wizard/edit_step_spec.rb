@@ -132,6 +132,24 @@ RSpec.describe Schools::ECTs::ChangeStartDateWizard::EditStep do
       end
     end
 
+    context "when the start date is unchanged" do
+      let(:start_date) do
+        {
+          1 => 2024,
+          2 => 1,
+          3 => 1
+        }
+      end
+
+      it "is invalid" do
+        expect(current_step).not_to be_valid
+
+        expect(current_step.errors[:start_date]).to include(
+          "The school start date must be different from the current school start date"
+        )
+      end
+    end
+
     context "when the date clashes with a previous ECT at-school period" do
       let(:start_date) do
         {
