@@ -1,5 +1,5 @@
 RSpec.describe "admin/schools/partnerships/show.html.erb", type: :view do
-  let(:school) { FactoryBot.create(:school) }
+  let(:school) { FactoryBot.build(:school) }
 
   before do
     assign(:school, school)
