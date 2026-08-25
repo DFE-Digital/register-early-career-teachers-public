@@ -57,6 +57,24 @@ RSpec.describe "Schools::ECTs::ChangeStartDateWizardController" do
 
           expect(response).to have_http_status(:ok)
         end
+
+        it "shows the start-date form and navigation links" do
+          get_edit
+
+          teacher_full_name = Teachers::Name.new(teacher).full_name
+
+          expect(response.body).to include(
+            "Change school start date for #{teacher_full_name}"
+          )
+          expect(response.body).to include("School start date")
+          expect(response.body).to include("Continue")
+          expect(response.body).to include(
+            "Cancel and go back to #{teacher_full_name}"
+          )
+          expect(response.body).to include(
+            schools_ect_path(ect_at_school_period)
+          )
+        end
       end
 
       context "when the ECT has multiple training periods" do
