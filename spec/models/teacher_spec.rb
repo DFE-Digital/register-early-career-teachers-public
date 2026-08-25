@@ -222,10 +222,12 @@ describe Teacher do
 
       let(:teacher) { FactoryBot.create(:teacher) }
       let(:started_on) { 1.year.ago.to_date }
-      let!(:first_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, started_on:) }
-      let!(:last_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, started_on:) }
+      let(:first_school) { FactoryBot.create(:school) }
+      let(:last_school) { FactoryBot.create(:school) }
+      let!(:first_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school: first_school, started_on:) }
+      let!(:last_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school: last_school, started_on:) }
 
-      it "uses the ID to choose between periods with the same start date" do
+      it "uses the ID to choose between periods at different schools with the same start date" do
         expect(subject).to eq(last_mentor_at_school_period)
       end
     end

@@ -36,6 +36,59 @@ RSpec.describe "Admin teachers index", type: :request do
         end
       end
 
+      context "when a mentor has periods at different schools with the same start date" do
+        let!(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Rock", trs_last_name: "Lee") }
+        let(:started_on) { 1.year.ago.to_date }
+        let(:first_school) { FactoryBot.create(:school) }
+        let(:last_school) { FactoryBot.create(:school) }
+        let!(:first_mentor_at_school_period) do
+          FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:, school: first_school, started_on:)
+        end
+        let!(:last_mentor_at_school_period) do
+          FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:, school: last_school, started_on:)
+        end
+        let(:mentor_at_school_period_with_schedule) { first_mentor_at_school_period }
+
+        before do
+          school_partnership = FactoryBot.create(
+            :school_partnership,
+            :for_year,
+            school: mentor_at_school_period_with_schedule.school,
+            year: 2025
+          )
+          schedule = FactoryBot.create(:schedule, contract_period: school_partnership.contract_period)
+
+          FactoryBot.create(
+            :training_period,
+            :for_mentor,
+            :unfinished,
+            mentor_at_school_period: mentor_at_school_period_with_schedule,
+            school_partnership:,
+            schedule:
+          )
+        end
+
+        it "matches when the higher ID period has no schedule" do
+          get "/admin/teachers", params: { role: "mentor", contract_period: "not_available" }
+
+          expect(response.status).to eq(200)
+          teacher_row = Capybara.string(response.body).find("tbody tr", text: "Rock Lee")
+          expect(teacher_row).to have_text("Mentor")
+          expect(teacher_row).to have_text("Not available")
+        end
+
+        context "when the higher ID period has a schedule" do
+          let(:mentor_at_school_period_with_schedule) { last_mentor_at_school_period }
+
+          it "does not match the unavailable contract period" do
+            get "/admin/teachers", params: { role: "mentor", contract_period: "not_available" }
+
+            expect(response.status).to eq(200)
+            expect(response.body).not_to include("Rock Lee")
+          end
+        end
+      end
+
       context "when a teacher has no role history" do
         let!(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Naruto", trs_last_name: "Uzumaki", trn: "1234567") }
 
