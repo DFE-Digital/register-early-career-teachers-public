@@ -142,6 +142,25 @@ describe "School user can change early career teachers mentor" do
     end
   end
 
+  context "when the mentee has an upcoming mentor" do
+    it "replaces the upcoming mentorship with the newly reported mentor" do
+      and_the_mentee_is_on_school_led_training
+      and_the_mentee_has_an_assigned_mentor
+      and_the_mentee_has_an_upcoming_mentor
+      and_there_is_another_registered_mentor
+
+      when_i_visit_the_early_career_teacher_show_page
+      then_i_see_the_upcoming_mentor
+
+      when_i_change_the_mentor_to_another_registered_mentor_and_confirm
+      then_i_see_the_confirmation_message
+
+      when_i_visit_the_early_career_teacher_show_page
+      then_the_mentor_is_the_newly_reported_mentor
+      and_i_no_longer_see_the_upcoming_mentor
+    end
+  end
+
   context "when no mentor is selected" do
     it "re-renders the form with an error prefix in the page title" do
       and_the_mentee_is_on_school_led_training
@@ -229,12 +248,36 @@ private
       school: @school,
       started_on: @ect_at_school_period.started_on - 2.months
     )
-    FactoryBot.create(
+    @current_mentorship_period = FactoryBot.create(
       :mentorship_period,
       :unfinished,
       mentee: @ect_at_school_period,
       mentor: mentor_at_school_period,
       started_on: @ect_at_school_period.started_on
+    )
+  end
+
+  def and_the_mentee_has_an_upcoming_mentor
+    teacher = FactoryBot.create(
+      :teacher,
+      trs_first_name: "Sally",
+      trs_last_name: "Successor"
+    )
+    mentor_at_school_period = FactoryBot.create(
+      :mentor_at_school_period,
+      :unfinished,
+      teacher:,
+      school: @school,
+      started_on: @ect_at_school_period.started_on - 2.months
+    )
+    @current_mentorship_period.update!(finished_on: 1.month.from_now)
+    @upcoming_mentorship_start_date = 1.month.from_now.next_day.to_date
+    FactoryBot.create(
+      :mentorship_period,
+      :unfinished,
+      mentee: @ect_at_school_period,
+      mentor: mentor_at_school_period,
+      started_on: @upcoming_mentorship_start_date
     )
   end
 
@@ -349,6 +392,32 @@ private
   def then_i_am_taken_back_to_the_early_career_teacher_show_page
     heading = page.locator("h1")
     expect(heading).to have_text("John Doe")
+  end
+
+  def then_i_see_the_upcoming_mentor
+    row = page.locator(".govuk-summary-list__row", hasText: "Mentor")
+    expect(row).to have_text(
+      "Sally Successor (from #{@upcoming_mentorship_start_date.to_fs(:govuk)})"
+    )
+  end
+
+  def when_i_change_the_mentor_to_another_registered_mentor_and_confirm
+    then_i_can_change_the_assigned_mentor
+    and_i_see_the_change_mentor_form
+    when_i_change_the_mentor_to_another_registered_mentor
+    and_i_click_continue
+    then_i_am_asked_to_check_and_confirm_the_change
+    and_i_confirm_the_change
+  end
+
+  def then_the_mentor_is_the_newly_reported_mentor
+    row = page.locator(".govuk-summary-list__row", hasText: "Mentor")
+    expect(row).to have_text("Jane Smith")
+  end
+
+  def and_i_no_longer_see_the_upcoming_mentor
+    row = page.locator(".govuk-summary-list__row", hasText: "Mentor")
+    expect(row).not_to have_text("Sally Successor")
   end
 
   def when_i_continue_without_selecting_a_mentor
