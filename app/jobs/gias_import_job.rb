@@ -1,4 +1,4 @@
-class GIASImportJob < ApplicationJob
+class GIASImportJob < RecurringJob
   queue_as :default
 
   def perform

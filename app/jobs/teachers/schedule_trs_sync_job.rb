@@ -1,5 +1,5 @@
 module Teachers
-  class ScheduleTRSSyncJob < ApplicationJob
+  class ScheduleTRSSyncJob < RecurringJob
     queue_as :default
 
     BATCH_SIZE = 50

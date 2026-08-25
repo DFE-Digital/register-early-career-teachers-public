@@ -8,8 +8,6 @@ module AppropriateBodies
 
     queue_as :process_batch
 
-    retry_on ::RuntimeError, wait: ->(executions) { 2**executions }, attempts: 15
-
     # @param pending_induction_submission_batch [PendingInductionSubmissionBatch]
     # @param author_email [String]
     # @param author_name [String]

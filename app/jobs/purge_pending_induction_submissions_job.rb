@@ -1,4 +1,4 @@
-class PurgePendingInductionSubmissionsJob < ApplicationJob
+class PurgePendingInductionSubmissionsJob < RecurringJob
   queue_as :default
 
   def perform
