@@ -49,6 +49,12 @@ describe Event do
         expect(Event.with_event_type(:school_user_signs_in).count).to eq(0)
       end
     end
+
+    describe ".event_type_starts_with" do
+      it "adds a like condition so only records with the matching prefix are returned" do
+        expect(Event.event_type_starts_with("foo").to_sql).to include(%(WHERE "events"."event_type" ILIKE 'foo%'))
+      end
+    end
   end
 
   describe "validations" do

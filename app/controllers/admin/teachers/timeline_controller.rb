@@ -6,7 +6,7 @@ module Admin
       def show
         teacher = Teacher.find(params[:teacher_id])
         @teacher = TeacherPresenter.new(teacher)
-        @events = Events::List.new.for_teacher(@teacher)
+        @events = Events::List.new.for_teacher(@teacher).events
         @navigation_items = helpers.admin_teacher_navigation_items(@teacher, :timeline)
         @breadcrumbs = teacher_breadcrumbs
       end

@@ -7,22 +7,39 @@ module Events
       @scope = Event.latest_first
     end
 
-    # @param teacher [Teacher]
     # @return [ActiveRecord::Relation<Event>]
+    def events = scope
+
+    # @param teacher [Teacher]
+    # @return [Events::List]
     def for_teacher(teacher)
-      scope.where(teacher:)
+      scope.merge!(scope.where(teacher:))
+
+      self
     end
 
     # @param school [School]
-    # @return [ActiveRecord::Relation<Event>]
+    # @return [Events::List]
     def for_school(school)
-      scope.where(school:)
+      scope.merge!(scope.where(school:))
+
+      self
+    end
+
+    # @param match_prefix [String]
+    # @return [Events::List]
+    def type_starts_with(match_prefix)
+      scope.merge!(scope.event_type_starts_with(match_prefix))
+
+      self
     end
 
     # @param appropriate_body_period [AppropriateBodyPeriod]
-    # @return [ActiveRecord::Relation<Event>]
+    # @return [Events::List]
     def for_appropriate_body_period(appropriate_body_period)
-      scope.where(appropriate_body_period:)
+      scope.merge!(scope.where(appropriate_body_period:))
+
+      self
     end
   end
 end
