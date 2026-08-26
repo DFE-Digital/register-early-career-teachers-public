@@ -84,7 +84,6 @@ module ECTAtSchoolPeriods
 
     def destroy_unstarted_training_periods!
       unstarted_training_periods.find_each do |training_period|
-        Event.where(training_period:).delete_all
         training_period.destroy!
       end
     end

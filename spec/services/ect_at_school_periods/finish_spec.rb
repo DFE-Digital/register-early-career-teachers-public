@@ -267,6 +267,20 @@ describe ECTAtSchoolPeriods::Finish do
             hash_including(author:, ect_at_school_period:, school:, teacher:, training_period: nil, happened_at: finished_on)
           )
         end
+
+        it "retains events associated with the training period" do
+          event_one = FactoryBot.create(:event, training_period:)
+          event_two = FactoryBot.create(:event, training_period:)
+
+          subject.finish!
+
+          # The events are retained by the on_delete: :nullify FK, which clears
+          # their reference to the destroyed training period.
+          expect(event_one.reload.training_period_id).to be_nil
+          expect(event_two.reload.training_period_id).to be_nil
+          expect(Event.exists?(event_one.id)).to be true
+          expect(Event.exists?(event_two.id)).to be true
+        end
       end
     end
   end
