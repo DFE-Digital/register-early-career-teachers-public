@@ -16,11 +16,11 @@ RSpec.describe FrameworkAgreement::Band, type: :model do
     it { is_expected.to validate_numericality_of(:capacity).is_greater_than(0).only_integer.with_message("Capacity must be a number greater than zero") }
 
     context "changing capacity" do
-      let!(:band_a) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:, capacity: 2) }
-      let!(:band_b) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:, capacity: 2) }
-      let!(:band_c) { FactoryBot.create(:active_lead_provider_band, active_lead_provider:, capacity: 5) }
+      let!(:band_a) { FactoryBot.create(:framework_agreement_band, framework_agreement:, capacity: 2) }
+      let!(:band_b) { FactoryBot.create(:framework_agreement_band, framework_agreement:, capacity: 2) }
+      let!(:band_c) { FactoryBot.create(:framework_agreement_band, framework_agreement:, capacity: 5) }
 
-      let!(:declarations) { FactoryBot.create_list(:declaration, 8, :paid, active_lead_provider:) }
+      let!(:declarations) { FactoryBot.create_list(:declaration, 8, :paid, framework_agreement:) }
 
       it "validates that the combined capacity cannot be less than the number of payment declarations" do
         band_c.capacity = 2
