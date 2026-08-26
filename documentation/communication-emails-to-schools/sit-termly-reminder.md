@@ -61,7 +61,9 @@ Tell us if ECTs or mentors change their:
  - email
  - working pattern
 
-^ If your school does not currently have ECTs or mentors and you do not expect new ECTs or mentors this term, you can stop reminder emails from the DfE. 
+<div class="govuk-inset-text">
+  If your school does not currently have ECTs or mentors and you do not expect new ECTs or mentors this term, you can stop reminder emails from the DfE.
+</div>
 [Stop reminder emails for this term](#)
 
 Regards,
