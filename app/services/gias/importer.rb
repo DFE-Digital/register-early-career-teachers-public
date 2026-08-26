@@ -85,7 +85,7 @@ module GIAS
     end
 
     def needs_reconciliation?(link, imported_link_type)
-      link.link_type != imported_link_type || link.previously_new_record? || link.link_date == Date.current
+      link.link_type != imported_link_type || link.previously_new_record? || link.link_date.today?
     end
 
     def parse_school_row(row)
@@ -110,7 +110,10 @@ module GIAS
 
     def sync_changes!
       gias_school.assign_attributes(attributes)
-      urns_for_reconciliation << gias_school.urn if gias_school.closed_on == Date.current
+
+      # Ensure that we trigger reconciliation on the day a school closes
+      # in case it was scheduled to close in the future
+      urns_for_reconciliation << gias_school.urn if gias_school.closed_on&.today?
 
       return unless gias_school.changed?
 
