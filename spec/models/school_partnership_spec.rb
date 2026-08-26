@@ -1,7 +1,7 @@
 describe SchoolPartnership do
   describe "declarative updates" do
     def will_change_attribute(attribute_to_change:, new_value:)
-      FactoryBot.create(:lead_provider_delivery_partnership, id: new_value) if attribute_to_change == :lead_provider_delivery_partnership
+      FactoryBot.create(:lead_provider_delivery_partnership, id: new_value) if attribute_to_change == :lead_provider_delivery_partnership_id
     end
 
     describe "declarative touch target self" do

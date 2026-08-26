@@ -55,6 +55,10 @@ describe Metadata::TeacherLeadProvider do
     let(:instance) { FactoryBot.create(:teacher_lead_provider_metadata, teacher:) }
     let(:target) { teacher }
 
+    def will_change_attribute(attribute_to_change:, new_value:)
+      FactoryBot.create(:mentor_at_school_period, id: new_value) if attribute_to_change == :ect_assigned_mentor_latest_school_period_id
+    end
+
     around do |example|
       Metadata::TeacherLeadProvider.bypass_update_restrictions { example.run }
     end
