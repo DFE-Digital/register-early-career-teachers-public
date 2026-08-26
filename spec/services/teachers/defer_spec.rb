@@ -15,7 +15,7 @@ RSpec.describe Teachers::Defer do
   end
 
   describe "#defer" do
-    API::Concerns::TeacherValidatable::TEACHER_TYPES.each do |trainee_type|
+    %i[ect mentor].each do |trainee_type|
       context "for #{trainee_type}" do
         let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: 6.months.ago, finished_on: nil) }
         let(:teacher_type) { trainee_type }

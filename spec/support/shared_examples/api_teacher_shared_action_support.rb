@@ -7,7 +7,7 @@ RSpec.shared_examples "an API teacher shared action", :with_metadata do
   describe "validations" do
     subject { instance }
 
-    API::Concerns::TeacherValidatable::TEACHER_TYPES.each do |trainee_type|
+    %i[ect mentor].each do |trainee_type|
       context "for #{trainee_type}" do
         let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :unfinished, started_on: 2.months.ago) }
         let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :unfinished, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on) }
