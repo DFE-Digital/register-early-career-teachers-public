@@ -38,6 +38,7 @@ RSpecRails/HttpStatusNameConsistency:
 RSpec/SpecFilePathFormat:
   CustomTransform:
     ECTs: ects
+    OAuth: oauth
 
 Style/StringLiterals:
   EnforcedStyle: double_quotes

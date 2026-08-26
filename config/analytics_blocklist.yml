@@ -265,6 +265,30 @@
   - zendesk_ticket_id
   - declaration_id
   - contract_period_id
+  :api_oauth_authorizations:
+  - id
+  - client_id
+  - appropriate_body_period_id
+  - redirect_uri
+  - code_digest
+  - code_challenge
+  - code_challenge_method
+  - code_expires_at
+  - code_exchanged_at
+  - token_digest
+  - token_expires_at
+  - revoked_at
+  - created_at
+  - updated_at
+  :api_oauth_clients:
+  - id
+  - name
+  - client_id
+  - client_secret_digest
+  - redirect_uris
+  - grant_types
+  - created_at
+  - updated_at
   :api_tokens:
   - id
   - lead_provider_id

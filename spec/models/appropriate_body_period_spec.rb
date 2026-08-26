@@ -18,6 +18,7 @@ describe AppropriateBodyPeriod do
     it { is_expected.to have_many(:induction_periods) }
     it { is_expected.to have_many(:pending_induction_submissions) }
     it { is_expected.to have_many(:events) }
+    it { is_expected.to have_many(:oauth_authorizations).class_name("API::OAuth::Authorization").dependent(:destroy) }
     it { is_expected.to have_many(:unclaimed_ect_at_school_periods).class_name("ECTAtSchoolPeriod").with_foreign_key(:school_reported_appropriate_body_id) }
   end
 

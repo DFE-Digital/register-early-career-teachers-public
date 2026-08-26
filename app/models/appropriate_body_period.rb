@@ -23,6 +23,7 @@ class AppropriateBodyPeriod < ApplicationRecord
   has_many :pending_induction_submissions
   has_many :induction_periods, inverse_of: :appropriate_body_period
   has_many :events
+  has_many :oauth_authorizations, class_name: "API::OAuth::Authorization", dependent: :destroy
   has_many :unclaimed_ect_at_school_periods,
            -> { unclaimed_by_school_reported_appropriate_body },
            class_name: "ECTAtSchoolPeriod",

@@ -24,6 +24,7 @@ ActiveSupport::Inflector.inflections(:en) do |inflect|
   inflect.acronym "GIAS" # Get Information About Schools
   inflect.acronym "HAR" # HTTP Archive
   inflect.acronym "ITT" # Initial teacher training
+  inflect.acronym "OAuth" # Open Authorization
   inflect.acronym "OmniAuth"
   inflect.acronym "OpenID"
   inflect.acronym "OTP" # One-time Password

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_27_073016) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_27_150441) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -38,6 +38,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_27_073016) do
   create_enum "induction_programme", ["cip", "fip", "diy", "unknown", "pre_september_2021"]
   create_enum "induction_programme_choice", ["not_yet_known", "provider_led", "school_led"]
   create_enum "mentor_became_ineligible_for_funding_reason", ["completed_declaration_received", "completed_during_early_roll_out", "started_not_completed"]
+  create_enum "oauth_code_challenge_methods", ["S256"]
+  create_enum "oauth_grant_types", ["authorization_code"]
   create_enum "parity_check_request_states", ["pending", "queued", "in_progress", "completed", "failed"]
   create_enum "parity_check_run_modes", ["concurrent", "sequential"]
   create_enum "parity_check_run_states", ["pending", "in_progress", "completed", "failed"]
@@ -49,6 +51,58 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_27_073016) do
   create_enum "trs_responses", ["ok", "not_found", "gone", "permanent_redirect"]
   create_enum "withdrawal_reasons", ["left_teaching_profession", "moved_school", "mentor_no_longer_being_mentor", "switched_to_school_led", "other", "changed_lead_provider"]
   create_enum "working_pattern", ["part_time", "full_time"]
+
+  create_table "active_lead_provider_bands", force: :cascade do |t|
+    t.bigint "active_lead_provider_id", null: false
+    t.integer "allocation_order", null: false
+    t.integer "capacity", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["active_lead_provider_id", "allocation_order"], name: "idx_on_active_lead_provider_id_allocation_order_3a1b864c94", unique: true
+    t.index ["active_lead_provider_id"], name: "index_active_lead_provider_bands_on_active_lead_provider_id"
+  end
+
+  create_table "active_lead_providers", force: :cascade do |t|
+    t.bigint "contract_period_year", null: false
+    t.datetime "created_at", null: false
+    t.bigint "lead_provider_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["contract_period_year"], name: "index_active_lead_providers_on_contract_period_year"
+    t.index ["lead_provider_id", "contract_period_year"], name: "idx_on_lead_provider_id_contract_period_year_e442ca2260", unique: true
+    t.index ["lead_provider_id"], name: "index_active_lead_providers_on_lead_provider_id"
+  end
+
+  create_table "api_oauth_authorizations", force: :cascade do |t|
+    t.bigint "appropriate_body_period_id", null: false
+    t.bigint "client_id", null: false
+    t.string "code_challenge", null: false
+    t.enum "code_challenge_method", null: false, enum_type: "oauth_code_challenge_methods"
+    t.string "code_digest", null: false
+    t.datetime "code_exchanged_at"
+    t.datetime "code_expires_at", null: false
+    t.datetime "created_at", null: false
+    t.string "redirect_uri", null: false
+    t.datetime "revoked_at"
+    t.string "token_digest"
+    t.datetime "token_expires_at"
+    t.datetime "updated_at", null: false
+    t.index ["appropriate_body_period_id"], name: "index_api_oauth_authorizations_on_appropriate_body_period_id"
+    t.index ["client_id"], name: "index_api_oauth_authorizations_on_client_id"
+    t.index ["code_digest"], name: "index_api_oauth_authorizations_on_code_digest", unique: true
+    t.index ["token_digest"], name: "index_api_oauth_authorizations_on_token_digest", unique: true
+  end
+
+  create_table "api_oauth_clients", force: :cascade do |t|
+    t.string "client_id", null: false
+    t.string "client_secret_digest", null: false
+    t.datetime "created_at", null: false
+    t.enum "grant_types", default: [], null: false, array: true, enum_type: "oauth_grant_types"
+    t.string "name", null: false
+    t.string "redirect_uris", default: [], null: false, array: true
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_api_oauth_clients_on_client_id", unique: true
+    t.index ["name"], name: "index_api_oauth_clients_on_name", unique: true
+  end
 
   create_table "api_tokens", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -953,6 +1007,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_27_073016) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  add_foreign_key "active_lead_provider_bands", "active_lead_providers"
+  add_foreign_key "api_oauth_authorizations", "api_oauth_clients", column: "client_id"
   add_foreign_key "api_tokens", "lead_providers"
   add_foreign_key "appropriate_bodies", "dfe_sign_in_organisations"
   add_foreign_key "appropriate_body_periods", "appropriate_bodies"
