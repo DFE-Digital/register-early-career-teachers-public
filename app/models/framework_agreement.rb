@@ -10,6 +10,7 @@ class FrameworkAgreement < ApplicationRecord
   has_many :contracts
   has_many :statements, through: :contracts
   has_many :bands, -> { order(allocation_order: :asc) }, class_name: "FrameworkAgreement::Band"
+  has_many :payment_declarations, through: :statements
 
   # Validations
   validates :contract_period_year,

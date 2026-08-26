@@ -3,6 +3,7 @@ describe FrameworkAgreement do
     it { is_expected.to belong_to(:contract_period).with_foreign_key(:contract_period_year) }
     it { is_expected.to belong_to(:lead_provider) }
     it { is_expected.to have_many(:statements).through(:contracts) }
+    it { is_expected.to have_many(:payment_declarations).through(:statements) }
     it { is_expected.to have_many(:lead_provider_delivery_partnerships) }
     it { is_expected.to have_many(:school_partnerships).through(:lead_provider_delivery_partnerships) }
     it { is_expected.to have_many(:delivery_partners).through(:lead_provider_delivery_partnerships) }
