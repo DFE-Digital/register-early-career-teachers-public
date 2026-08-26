@@ -1,4 +1,4 @@
-RSpec.describe HeadingHierarchy::HarPageVisitRecorder do
+RSpec.describe HeadingHierarchy::HARPageVisitRecorder do
   let(:tracing) { instance_double(Playwright::Tracing) }
   let(:context) { instance_double(Playwright::BrowserContext, tracing:) }
   let(:page) { instance_double(Playwright::Page, context:) }

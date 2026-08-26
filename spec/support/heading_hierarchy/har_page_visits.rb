@@ -4,7 +4,7 @@ require "tempfile"
 module HeadingHierarchy
   PageVisit = Struct.new(:url, :content, keyword_init: true)
 
-  class HarPageVisitReader
+  class HARPageVisitReader
     def initialize(path)
       @path = path
     end
@@ -36,7 +36,7 @@ module HeadingHierarchy
     end
   end
 
-  class HarPageVisitRecorder
+  class HARPageVisitRecorder
     def initialize(page, base_url:)
       @page = page
       @base_url = base_url
@@ -58,7 +58,7 @@ module HeadingHierarchy
 
     def stop
       @page.context.tracing.stop_har
-      HarPageVisitReader.new(@har_file.path).page_visits
+      HARPageVisitReader.new(@har_file.path).page_visits
     ensure
       @har_file.unlink
     end

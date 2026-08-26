@@ -25,7 +25,7 @@ RSpec.configure do |config|
                                              javaScriptEnabled: Capybara.current_driver == :js_enabled)
     config.playwright_page.set_default_timeout(RSpecPlaywright::DEFAULT_TIMEOUT)
     config.playwright_page.set_default_navigation_timeout(RSpecPlaywright::DEFAULT_NAVIGATION_TIMEOUT)
-    config.playwright_heading_hierarchy_recorder = HeadingHierarchy::HarPageVisitRecorder.new(
+    config.playwright_heading_hierarchy_recorder = HeadingHierarchy::HARPageVisitRecorder.new(
       config.playwright_page,
       base_url:
     )

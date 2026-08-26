@@ -1,4 +1,4 @@
-RSpec.describe HeadingHierarchy::HarPageVisitReader do
+RSpec.describe HeadingHierarchy::HARPageVisitReader do
   it "returns HTML documents" do
     page_visits = page_visits_from(
       har_entry(url: "http://example.test/ects", content: "<h1>ECTs</h1>")
