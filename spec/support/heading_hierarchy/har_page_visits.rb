@@ -10,7 +10,7 @@ module HeadingHierarchy
     end
 
     def page_visits
-      har_entries.filter_map { |entry| page_visit(entry) }
+      har_entries.filter_map { |entry| page_visit(entry) }.uniq
     end
 
   private

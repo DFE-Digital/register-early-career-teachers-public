@@ -9,6 +9,19 @@ RSpec.describe HeadingHierarchy::HARPageVisitReader do
     )
   end
 
+  it "returns identical documents once while preserving different responses for the same URL" do
+    page_visits = page_visits_from(
+      har_entry(content: "<h1>ECTs</h1>"),
+      har_entry(content: "<h1>ECTs</h1>"),
+      har_entry(content: "<h1>ECTs</h1><h2>Errors</h2>")
+    )
+
+    expect(page_visits).to contain_exactly(
+      HeadingHierarchy::PageVisit.new(url: "http://example.test/ects", content: "<h1>ECTs</h1>"),
+      HeadingHierarchy::PageVisit.new(url: "http://example.test/ects", content: "<h1>ECTs</h1><h2>Errors</h2>")
+    )
+  end
+
   it "does not return HTML responses that are not documents" do
     page_visits = page_visits_from(har_entry(resource_type: "xhr"))
 
