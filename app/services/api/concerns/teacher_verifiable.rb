@@ -1,12 +1,9 @@
-module API::Concerns::TeacherValidatable
+module API::Concerns::TeacherVerifiable
   extend ActiveSupport::Concern
 
   TEACHER_TYPES = %i[ect mentor].freeze
 
   included do
-    include ActiveModel::Model
-    include ActiveModel::Attributes
-
     attribute :teacher_api_id
     attribute :teacher_type
 

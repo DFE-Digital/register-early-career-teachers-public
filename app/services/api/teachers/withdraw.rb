@@ -1,6 +1,10 @@
 module API::Teachers
   class Withdraw
-    include API::Concerns::TrainingValidatable
+    include API::Concerns::ModelBehaviour
+    include API::Concerns::LeadProviderVerifiable
+    include API::Concerns::LeadProviderAuthorable
+    include API::Concerns::TeacherVerifiable
+    include API::Concerns::LatestTrainingPeriod
 
     WITHDRAWAL_REASONS = TrainingPeriod.withdrawal_reasons.values.map(&:dasherize).freeze
     MENTOR_ONLY_WITHDRAWAL_REASONS = TrainingPeriod::MENTOR_ONLY_WITHDRAWAL_REASONS.map(&:dasherize).freeze
@@ -21,7 +25,7 @@ module API::Teachers
       return false unless valid?
 
       Teachers::Withdraw.new(
-        author: Events::LeadProviderAPIAuthor.new(lead_provider:),
+        author:,
         lead_provider:,
         reason:,
         teacher:,

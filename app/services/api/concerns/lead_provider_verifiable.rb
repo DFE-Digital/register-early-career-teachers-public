@@ -1,10 +1,7 @@
-module API::Concerns::LeadProviderValidatable
+module API::Concerns::LeadProviderVerifiable
   extend ActiveSupport::Concern
 
   included do
-    include ActiveModel::Model
-    include ActiveModel::Attributes
-
     attribute :lead_provider_id
 
     validates :lead_provider_id, presence: { message: "Enter a '#/lead_provider_id'." }
@@ -22,9 +19,5 @@ private
     return if lead_provider
 
     errors.add(:lead_provider_id, "The '#/lead_provider_id' you have entered is invalid.")
-  end
-
-  def author
-    @author ||= Events::LeadProviderAPIAuthor.new(lead_provider:)
   end
 end

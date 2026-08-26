@@ -1,6 +1,10 @@
 module API::Teachers
   class Defer
-    include API::Concerns::TrainingValidatable
+    include API::Concerns::ModelBehaviour
+    include API::Concerns::LeadProviderVerifiable
+    include API::Concerns::LeadProviderAuthorable
+    include API::Concerns::TeacherVerifiable
+    include API::Concerns::LatestTrainingPeriod
 
     DEFERRAL_REASONS = TrainingPeriod.deferral_reasons.values.map(&:dasherize).freeze
 
@@ -21,7 +25,7 @@ module API::Teachers
       return false if invalid?
 
       Teachers::Defer.new(
-        author: Events::LeadProviderAPIAuthor.new(lead_provider:),
+        author:,
         lead_provider:,
         reason:,
         teacher:,

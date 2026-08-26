@@ -1,6 +1,9 @@
 module API::Declarations
   class Create
-    include API::Concerns::DeclarationValidatable
+    include API::Concerns::ModelBehaviour
+    include API::Concerns::DeclarationIdentifiable
+    include API::Concerns::LeadProviderVerifiable
+    include API::Concerns::LeadProviderAuthorable
 
     TEACHER_TYPES = %i[ect mentor].freeze
 

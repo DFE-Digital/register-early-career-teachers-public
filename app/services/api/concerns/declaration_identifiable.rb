@@ -1,9 +1,7 @@
-module API::Concerns::DeclarationValidatable
+module API::Concerns::DeclarationIdentifiable
   extend ActiveSupport::Concern
 
   included do
-    include API::Concerns::LeadProviderValidatable
-
     attribute :declaration_api_id
   end
 

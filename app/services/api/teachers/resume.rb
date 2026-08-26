@@ -1,6 +1,10 @@
 module API::Teachers
   class Resume
-    include API::Concerns::TrainingValidatable
+    include API::Concerns::ModelBehaviour
+    include API::Concerns::LeadProviderVerifiable
+    include API::Concerns::LeadProviderAuthorable
+    include API::Concerns::TeacherVerifiable
+    include API::Concerns::LatestTrainingPeriod
 
     validate :not_already_active
     validate :no_ongoing_today_training_period
@@ -11,7 +15,7 @@ module API::Teachers
       return false unless valid?
 
       Teachers::Resume.new(
-        author: Events::LeadProviderAPIAuthor.new(lead_provider:),
+        author:,
         lead_provider:,
         teacher:,
         training_period:

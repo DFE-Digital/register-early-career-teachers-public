@@ -1,10 +1,5 @@
-module API::Concerns::TrainingValidatable
+module API::Concerns::LatestTrainingPeriod
   extend ActiveSupport::Concern
-
-  included do
-    include API::Concerns::LeadProviderValidatable
-    include API::Concerns::TeacherValidatable
-  end
 
   def training_period
     @training_period ||= latest_provider_training_period
