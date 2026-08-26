@@ -31,7 +31,7 @@ This is a reminder to tell us about early career teacher (ECT) and mentor change
 
 Use the [Register early career teacher](https://register-early-career-teachers.education.gov.uk/) service to tell us about changes.
 
-You need a DfE Sign-in account and approved access to use the service. If you do not have an account, [you can create one](https://services.signin.education.gov.uk/).  You can request access to the 'Register early career teacher' service from your DfE Sign-in account.
+You need a DfE Sign-in account and approved access to use the service. If you do not have an account, [you can create one](https://services.signin.education.gov.uk/). You can request access to the 'Register early career teacher' service from your DfE Sign-in account.
 
 ## What you need to tell us
 
