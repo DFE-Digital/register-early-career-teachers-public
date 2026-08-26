@@ -59,10 +59,7 @@ private
   end
 
   def destroy_unstarted_mentorship_periods!(period)
-    period.mentorship_periods.started_on_or_after(finished_on).find_each do |mentorship_period|
-      Event.where(mentorship_period:).delete_all
-      mentorship_period.destroy!
-    end
+    period.mentorship_periods.started_on_or_after(finished_on).find_each(&:destroy!)
   end
 
   def destroy_unstarted_training_periods!(period)

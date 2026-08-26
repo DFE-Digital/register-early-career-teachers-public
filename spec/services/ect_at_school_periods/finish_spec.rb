@@ -94,17 +94,16 @@ describe ECTAtSchoolPeriods::Finish do
           expect { subject.finish! }.to change(MentorshipPeriod, :count).by(-1)
         end
 
-        it "deletes any events associated with the mentorship period" do
-          FactoryBot.create(:event, mentorship_period:)
-          FactoryBot.create(:event, mentorship_period:)
-          other_event = FactoryBot.create(:event)
-
-          expect(Event.where(mentorship_period:).count).to eq(2)
+        it "retains events associated with the mentorship period" do
+          event_one = FactoryBot.create(:event, mentorship_period:)
+          event_two = FactoryBot.create(:event, mentorship_period:)
 
           subject.finish!
 
-          expect(Event.where(mentorship_period:)).to be_empty
-          expect(Event.exists?(other_event.id)).to be true
+          expect(event_one.reload.mentorship_period_id).to be_nil
+          expect(event_two.reload.mentorship_period_id).to be_nil
+          expect(Event.exists?(event_one.id)).to be true
+          expect(Event.exists?(event_two.id)).to be true
         end
       end
 
@@ -274,8 +273,6 @@ describe ECTAtSchoolPeriods::Finish do
 
           subject.finish!
 
-          # The events are retained by the on_delete: :nullify FK, which clears
-          # their reference to the destroyed training period.
           expect(event_one.reload.training_period_id).to be_nil
           expect(event_two.reload.training_period_id).to be_nil
           expect(Event.exists?(event_one.id)).to be true
