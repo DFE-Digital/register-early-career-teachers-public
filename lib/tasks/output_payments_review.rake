@@ -36,26 +36,26 @@ module ProductReview
       end
 
       def find_or_create_output_statement!(contract)
-        alp = contract.framework_agreement
+        framework_agreement = contract.framework_agreement
 
         existing = Statement.where(contract:, fee_type: "output", status: :paid).first
         return existing if existing
 
         reassignable = Statement
           .joins(:contract)
-          .where(contracts: { framework_agreement: alp }, fee_type: "output", status: :paid)
+          .where(contracts: { framework_agreement: }, fee_type: "output", status: :paid)
           .first
         if reassignable
           reassignable.update!(contract:)
           return reassignable
         end
 
-        FactoryBot.create(:statement, :paid, :output_fee, contract:, framework_agreement: alp)
+        FactoryBot.create(:statement, :paid, :output_fee, contract:, framework_agreement:)
       end
 
       def create_declarations!(statement:, declaration_counts:, participant_type:)
-        alp = statement.contract.framework_agreement
-        schedule = Schedule.find_by!(contract_period: alp.contract_period, identifier: "ecf-standard-september")
+        framework_agreement = statement.contract.framework_agreement
+        schedule = Schedule.find_by!(contract_period: framework_agreement.contract_period, identifier: "ecf-standard-september")
 
         declaration_counts.each do |declaration_type, count|
           milestone = schedule.milestones.find_by(declaration_type:)
@@ -69,7 +69,7 @@ module ProductReview
               :training_period,
               participant_type == :ect ? :for_ect : :for_mentor,
               :with_framework_agreement,
-              framework_agreement: alp,
+              framework_agreement:,
               schedule:
             )
 

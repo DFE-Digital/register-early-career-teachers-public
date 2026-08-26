@@ -32,19 +32,19 @@ RSpec.describe "admin/finance/framework_agreements/index.html.erb" do
     expect(rendered).to have_css(".govuk-table__head th", text: "Delivery partners")
 
     expect(rendered).to have_css(".govuk-table__body > tr", count: 3)
-    framework_agreements.each do |alp|
-      expect(rendered).to have_css("tr", text: alp.lead_provider.name)
-      expect(rendered).to have_link("0 contracts", href: admin_contract_period_framework_agreement_contracts_path(contract_period, alp))
-      expect(rendered).to have_link("0 statements", href: admin_contract_period_framework_agreement_statements_path(contract_period, alp))
-      expect(rendered).to have_link("0 delivery partners", href: admin_contract_period_framework_agreement_lead_provider_delivery_partnerships_path(contract_period, alp))
+    framework_agreements.each do |framework_agreement|
+      expect(rendered).to have_css("tr", text: framework_agreement.lead_provider.name)
+      expect(rendered).to have_link("0 contracts", href: admin_contract_period_framework_agreement_contracts_path(contract_period, framework_agreement))
+      expect(rendered).to have_link("0 statements", href: admin_contract_period_framework_agreement_statements_path(contract_period, framework_agreement))
+      expect(rendered).to have_link("0 delivery partners", href: admin_contract_period_framework_agreement_lead_provider_delivery_partnerships_path(contract_period, framework_agreement))
     end
 
     expect(rendered).to have_css(".govuk-button--secondary", count: 3, text: "Remove")
-    framework_agreements.each do |alp|
+    framework_agreements.each do |framework_agreement|
       expect(rendered).to have_css(
-        "form[action='#{admin_contract_period_framework_agreement_path(contract_period, alp)}']"
+        "form[action='#{admin_contract_period_framework_agreement_path(contract_period, framework_agreement)}']"
       )
-      expect(rendered).to have_button("Remove #{alp.lead_provider.name}")
+      expect(rendered).to have_button("Remove #{framework_agreement.lead_provider.name}")
     end
 
     expect(rendered).to have_link(add_button_text, href: new_admin_contract_period_framework_agreement_path(contract_period))
@@ -63,11 +63,11 @@ RSpec.describe "admin/finance/framework_agreements/index.html.erb" do
       expect(rendered).not_to have_css(".govuk-button--secondary", text: "Remove")
       expect(rendered).not_to have_link(add_button_text)
 
-      framework_agreements.each do |alp|
-        name = alp.lead_provider.name
-        expect(rendered).to have_link("0 contracts for #{name}", href: admin_contract_period_framework_agreement_contracts_path(contract_period, alp))
-        expect(rendered).to have_link("0 statements for #{name}", href: admin_contract_period_framework_agreement_statements_path(contract_period, alp))
-        expect(rendered).to have_link("0 delivery partners for #{name}", href: admin_contract_period_framework_agreement_lead_provider_delivery_partnerships_path(contract_period, alp))
+      framework_agreements.each do |framework_agreement|
+        name = framework_agreement.lead_provider.name
+        expect(rendered).to have_link("0 contracts for #{name}", href: admin_contract_period_framework_agreement_contracts_path(contract_period, framework_agreement))
+        expect(rendered).to have_link("0 statements for #{name}", href: admin_contract_period_framework_agreement_statements_path(contract_period, framework_agreement))
+        expect(rendered).to have_link("0 delivery partners for #{name}", href: admin_contract_period_framework_agreement_lead_provider_delivery_partnerships_path(contract_period, framework_agreement))
       end
     end
   end

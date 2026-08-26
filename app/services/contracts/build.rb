@@ -12,11 +12,11 @@ module Contracts
 
       previous_terms_by_band_id = previous_band_terms.index_by(&:band_id)
 
-      framework_agreement.bands.each do |alp_band|
-        previous_term = previous_terms_by_band_id[alp_band.id]
+      framework_agreement.bands.each do |band|
+        previous_term = previous_terms_by_band_id[band.id]
 
         banded_fee_structure.band_terms.build(
-          band: alp_band,
+          band:,
           fee_per_declaration: previous_term&.fee_per_declaration,
           output_fee_ratio: previous_term&.output_fee_ratio,
           service_fee_ratio: previous_term&.service_fee_ratio

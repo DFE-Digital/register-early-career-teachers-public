@@ -44,8 +44,8 @@ grouped_framework_agreements = FrameworkAgreement
   .group_by(&:lead_provider)
 
 grouped_framework_agreements.each do |lead_provider, framework_agreements|
-  statements = framework_agreements.flat_map do |alp|
-    registration_year = alp.contract_period.year
+  statements = framework_agreements.flat_map do |framework_agreement|
+    registration_year = framework_agreement.contract_period.year
     months = (1..12).to_a
     years = [registration_year, registration_year + 1]
 
@@ -53,8 +53,8 @@ grouped_framework_agreements.each do |lead_provider, framework_agreements|
       # Distribute contracts across statements evenly and in order, so if there are
       # 3 contracts, the first 1/3rd of statements get the first, the next 1/3rd get the
       # second, and the final 1/3rd get the third.
-      contract_index = (index * alp.contracts.size) / (years.size * months.size)
-      contract = alp.contracts[contract_index]
+      contract_index = (index * framework_agreement.contracts.size) / (years.size * months.size)
+      contract = framework_agreement.contracts[contract_index]
       deadline_date = Date.new(year, month, 1).prev_day
       payment_date = Date.new(year, month, 25)
       fee_type = month.in?(OUTPUT_FEE_MONTHS) ? "output" : "service"
@@ -69,7 +69,7 @@ grouped_framework_agreements.each do |lead_provider, framework_agreements|
       FactoryBot.create(
         :statement,
         contract:,
-        framework_agreement: alp,
+        framework_agreement:,
         month:,
         year:,
         deadline_date:,

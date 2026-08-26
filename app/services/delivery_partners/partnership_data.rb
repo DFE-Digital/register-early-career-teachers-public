@@ -17,7 +17,7 @@ module DeliveryPartners
         .references(:lead_provider_delivery_partnerships)
         .merge(LeadProviderDeliveryPartnership.where(delivery_partner:))
         .each_with_object({}) do |cp, h|
-          h[cp.year] = cp.framework_agreements.map { |alp| alp.lead_provider.name }.sort
+          h[cp.year] = cp.framework_agreements.map { |framework_agreement| framework_agreement.lead_provider.name }.sort
         end
 
       { **all_contract_periods, **present }
