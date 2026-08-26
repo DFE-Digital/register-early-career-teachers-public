@@ -1,6 +1,16 @@
 module API
   module V3
-    class StatementsController < APIController
+    class StatementsController < ActionController::API
+      include API::TokenAuthenticatable
+      include API::Paginatable
+      include API::ErrorRescuable
+      include API::DateFilterable
+      include API::ContractPeriodFilterable
+      include API::FilterValidatable
+      include API::Orderable
+      include API::ConditionExtractable
+      include API::Analyticable
+
       def index
         filters = {
           contract_period_years: extract_conditions(contract_period_years, type: :integer),

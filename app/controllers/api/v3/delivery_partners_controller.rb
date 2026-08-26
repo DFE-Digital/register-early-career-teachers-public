@@ -1,6 +1,14 @@
 module API
   module V3
-    class DeliveryPartnersController < APIController
+    class DeliveryPartnersController < ActionController::API
+      include API::TokenAuthenticatable
+      include API::Paginatable
+      include API::ErrorRescuable
+      include API::ContractPeriodFilterable
+      include API::Orderable
+      include API::ConditionExtractable
+      include API::Analyticable
+
       def index
         filters = {
           contract_period_years: extract_conditions(contract_period_years, type: :integer),

@@ -1,6 +1,13 @@
 module API
   module V3
-    class TransfersController < APIController
+    class TransfersController < ActionController::API
+      include API::TokenAuthenticatable
+      include API::Paginatable
+      include API::ErrorRescuable
+      include API::DateFilterable
+      include API::Orderable
+      include API::Analyticable
+
       def index
         filters = { updated_since:, sort: }
         paginated_school_transfers = paginate(lead_provider_school_transfers_query(filters:).school_transfers)

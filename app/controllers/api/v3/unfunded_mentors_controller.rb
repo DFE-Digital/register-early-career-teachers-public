@@ -1,6 +1,16 @@
 module API
   module V3
-    class UnfundedMentorsController < APIController
+    class UnfundedMentorsController < ActionController::API
+      include API::TokenAuthenticatable
+      include API::Paginatable
+      include API::ErrorRescuable
+      include API::DateFilterable
+      # include API::ContractPeriodFilterable
+      # include API::FilterValidatable
+      include API::Orderable
+      # include API::ConditionExtractable
+      include API::Analyticable
+
       def index
         filters = { updated_since:, sort: }
         paginated_unfunded_mentors = paginate(lead_provider_unfunded_mentors_query(filters:).unfunded_mentors)
