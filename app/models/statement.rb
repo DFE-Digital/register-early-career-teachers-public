@@ -111,7 +111,7 @@ private
     return unless framework_agreement
 
     existing = Statement.joins(:contract)
-                        .where(contracts: { active_lead_provider_id: framework_agreement.id })
+                        .where(contracts: { framework_agreement_id: framework_agreement.id })
                         .where(month:, year:)
                         .where.not(id:)
                         .exists?

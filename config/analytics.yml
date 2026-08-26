@@ -235,7 +235,7 @@ shared:
     - mentor_funding_enabled
     - detailed_evidence_types_enabled
     - uplift_fees_enabled
-  :active_lead_providers:
+  :framework_agreements:
     - id
     - lead_provider_id
     - contract_period_year
@@ -270,7 +270,7 @@ shared:
     - contract_id
   :lead_provider_delivery_partnerships:
     - id
-    - active_lead_provider_id
+    - framework_agreement_id
     - delivery_partner_id
     - created_at
     - updated_at
@@ -291,4 +291,4 @@ shared:
   :contracts:
     - id
     - contract_type
-    - active_lead_provider_id
+    - framework_agreement_id

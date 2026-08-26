@@ -54,7 +54,7 @@ module SchoolPartnerships
 
     def current_year_partnership
       base_scope
-        .where(active_lead_providers: { contract_period_year: })
+        .where(framework_agreements: { contract_period_year: })
         .order(created_at: :desc, id: :desc)
         .first
     end
@@ -62,7 +62,7 @@ module SchoolPartnerships
     def most_recent_compatible_partnership
       base_scope
         .reorder(
-          "active_lead_providers.contract_period_year DESC",
+          "framework_agreements.contract_period_year DESC",
           created_at: :desc,
           id: :desc
         )

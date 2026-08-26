@@ -20,7 +20,7 @@ RSpec.describe Admin::Schools::AddPartnershipWizard::Wizard do
     context "when lead provider is set" do
       before do
         store.contract_period_year = 2026
-        store.active_lead_provider_id = 123
+        store.framework_agreement_id = 123
       end
 
       it { is_expected.to include(:select_delivery_partner) }
@@ -29,7 +29,7 @@ RSpec.describe Admin::Schools::AddPartnershipWizard::Wizard do
     context "when delivery partner is set" do
       before do
         store.contract_period_year = 2026
-        store.active_lead_provider_id = 123
+        store.framework_agreement_id = 123
         store.delivery_partner_id = 456
       end
 

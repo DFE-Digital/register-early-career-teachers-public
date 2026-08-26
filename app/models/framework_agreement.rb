@@ -1,17 +1,15 @@
 class FrameworkAgreement < ApplicationRecord
-  self.table_name = "active_lead_providers"
-
   # Associations
   belongs_to :contract_period, inverse_of: :framework_agreements, foreign_key: :contract_period_year
   belongs_to :lead_provider, inverse_of: :framework_agreements
-  has_many :lead_provider_delivery_partnerships, foreign_key: :active_lead_provider_id
+  has_many :lead_provider_delivery_partnerships
   has_many :school_partnerships, through: :lead_provider_delivery_partnerships
   has_many :delivery_partners, through: :lead_provider_delivery_partnerships
   has_many :expressions_of_interest, class_name: "TrainingPeriod", foreign_key: "expression_of_interest_id", inverse_of: :expression_of_interest
-  has_many :events, foreign_key: :active_lead_provider_id
-  has_many :contracts, foreign_key: :active_lead_provider_id
+  has_many :events
+  has_many :contracts
   has_many :statements, through: :contracts
-  has_many :bands, -> { order(allocation_order: :asc) }, class_name: "FrameworkAgreement::Band", foreign_key: :active_lead_provider_id
+  has_many :bands, -> { order(allocation_order: :asc) }, class_name: "FrameworkAgreement::Band"
 
   # Validations
   validates :contract_period_year,

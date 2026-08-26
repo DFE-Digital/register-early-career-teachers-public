@@ -15,12 +15,12 @@
       <%= content_for(:error_summary) { f.govuk_error_summary } %>
 
       <%= f.govuk_radio_buttons_fieldset(
-        :active_lead_provider_id,
+        :framework_agreement_id,
         legend: { text: title, size: "l", tag: "h1" }
       ) do %>
         <% @wizard.framework_agreements.each_with_index do |framework_agreement, index| %>
           <%= f.govuk_radio_button(
-            :active_lead_provider_id,
+            :framework_agreement_id,
             framework_agreement.id,
             label: { text: framework_agreement.lead_provider.name },
             link_errors: index.zero?

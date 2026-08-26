@@ -55,13 +55,13 @@ module APISeedData
           # Count existing participants (ECTs and mentors) in this contract period with this lead provider
           existing_ects = Teacher
             .joins(ect_at_school_periods: { training_periods: :framework_agreement })
-            .where(active_lead_providers: { id: framework_agreement })
+            .where(framework_agreements: { id: framework_agreement })
             .distinct
             .count
 
           existing_mentors = Teacher
             .joins(mentor_at_school_periods: { training_periods: :framework_agreement })
-            .where(active_lead_providers: { id: framework_agreement })
+            .where(framework_agreements: { id: framework_agreement })
             .distinct
             .count
 
@@ -168,7 +168,7 @@ module APISeedData
           existing_count = Teacher
             .joins(:induction_periods, ect_at_school_periods: { training_periods: :framework_agreement })
             .where.not(induction_periods: { started_on: nil })
-            .where(active_lead_providers: { id: framework_agreement })
+            .where(framework_agreements: { id: framework_agreement })
             .distinct
             .count
 
@@ -221,7 +221,7 @@ module APISeedData
           existing_count = Teacher
             .joins(ect_at_school_periods: { training_periods: :framework_agreement })
             .where.missing(:induction_periods)
-            .where(active_lead_providers: { id: framework_agreement })
+            .where(framework_agreements: { id: framework_agreement })
             .distinct
             .count
 
@@ -285,14 +285,14 @@ module APISeedData
           existing_ects = Teacher
             .joins(ect_at_school_periods: { training_periods: %i[declarations framework_agreement] })
             .where(declarations: { payment_status: billable_statuses })
-            .where(active_lead_providers: { id: framework_agreement })
+            .where(framework_agreements: { id: framework_agreement })
             .distinct
             .count
 
           existing_mentors = Teacher
             .joins(mentor_at_school_periods: { training_periods: %i[declarations framework_agreement] })
             .where(declarations: { payment_status: billable_statuses })
-            .where(active_lead_providers: { id: framework_agreement })
+            .where(framework_agreements: { id: framework_agreement })
             .distinct
             .count
 
@@ -369,14 +369,14 @@ module APISeedData
           existing_ects = Teacher
             .joins(ect_at_school_periods: { training_periods: :framework_agreement })
             .where(training_periods: { finished_on: Time.zone.tomorrow.. })
-            .where(active_lead_providers: { id: framework_agreement })
+            .where(framework_agreements: { id: framework_agreement })
             .distinct
             .count
 
           existing_mentors = Teacher
             .joins(mentor_at_school_periods: { training_periods: :framework_agreement })
             .where(training_periods: { finished_on: Time.zone.tomorrow.. })
-            .where(active_lead_providers: { id: framework_agreement })
+            .where(framework_agreements: { id: framework_agreement })
             .distinct
             .count
 
@@ -431,14 +431,14 @@ module APISeedData
           existing_ects = Teacher
             .joins(ect_at_school_periods: { training_periods: :framework_agreement })
             .where(training_periods: { started_on: Time.zone.tomorrow.. })
-            .where(active_lead_providers: { id: framework_agreement })
+            .where(framework_agreements: { id: framework_agreement })
             .distinct
             .count
 
           existing_mentors = Teacher
             .joins(mentor_at_school_periods: { training_periods: :framework_agreement })
             .where(training_periods: { started_on: Time.zone.tomorrow.. })
-            .where(active_lead_providers: { id: framework_agreement })
+            .where(framework_agreements: { id: framework_agreement })
             .distinct
             .count
 
@@ -498,14 +498,14 @@ module APISeedData
           existing_ects = Teacher
             .joins(ect_at_school_periods: { training_periods: :framework_agreement })
             .where(training_periods: { finished_on: 4.months.from_now.. })
-            .where(active_lead_providers: { id: framework_agreement })
+            .where(framework_agreements: { id: framework_agreement })
             .distinct
             .count
 
           existing_mentors = Teacher
             .joins(mentor_at_school_periods: { training_periods: :framework_agreement })
             .where(training_periods: { finished_on: 4.months.from_now.. })
-            .where(active_lead_providers: { id: framework_agreement })
+            .where(framework_agreements: { id: framework_agreement })
             .distinct
             .count
 
@@ -567,7 +567,7 @@ module APISeedData
             .joins(ect_at_school_periods: { training_periods: :framework_agreement })
             .where(training_periods: { started_on: ..Date.current, finished_on: ..Date.current })
             .where.not(training_periods: { withdrawn_at: nil })
-            .where(active_lead_providers: { id: framework_agreement })
+            .where(framework_agreements: { id: framework_agreement })
             .distinct
             .count
 
@@ -575,7 +575,7 @@ module APISeedData
             .joins(mentor_at_school_periods: { training_periods: :framework_agreement })
             .where(training_periods: { started_on: ..Date.current, finished_on: ..Date.current })
             .where.not(training_periods: { withdrawn_at: nil })
-            .where(active_lead_providers: { id: framework_agreement })
+            .where(framework_agreements: { id: framework_agreement })
             .distinct
             .count
 
@@ -637,7 +637,7 @@ module APISeedData
             .joins(ect_at_school_periods: { training_periods: :framework_agreement })
             .where(training_periods: { started_on: ..Date.current, finished_on: ..Date.current })
             .where(training_periods: { withdrawn_at: nil, deferred_at: nil })
-            .where(active_lead_providers: { id: framework_agreement })
+            .where(framework_agreements: { id: framework_agreement })
             .distinct
             .count
 
@@ -645,7 +645,7 @@ module APISeedData
             .joins(mentor_at_school_periods: { training_periods: :framework_agreement })
             .where(training_periods: { started_on: ..Date.current, finished_on: ..Date.current })
             .where(training_periods: { withdrawn_at: nil, deferred_at: nil })
-            .where(active_lead_providers: { id: framework_agreement })
+            .where(framework_agreements: { id: framework_agreement })
             .distinct
             .count
 

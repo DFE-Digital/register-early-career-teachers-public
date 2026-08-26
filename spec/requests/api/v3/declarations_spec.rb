@@ -15,8 +15,8 @@ RSpec.describe "Declarations API", :with_metadata, :with_touches, type: :request
 
     FactoryBot.create(:declaration, declaration_trait, training_period:).tap do |declaration|
       # Using update_all bypasses the readonly check on that attribute.
-      active_lead_provider_id = framework_agreement.id
-      Contract.where(id: declaration.payment_statement&.contract).update_all(active_lead_provider_id:)
+      framework_agreement_id = framework_agreement.id
+      Contract.where(id: declaration.payment_statement&.contract).update_all(framework_agreement_id:)
     end
   end
 

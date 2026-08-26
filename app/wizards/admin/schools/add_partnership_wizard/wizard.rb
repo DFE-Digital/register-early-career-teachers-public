@@ -20,7 +20,7 @@ module Admin
           return steps if store.contract_period_year.blank?
 
           steps << :select_lead_provider
-          return steps if store.active_lead_provider_id.blank?
+          return steps if store.framework_agreement_id.blank?
 
           steps << :select_delivery_partner
           return steps if store.delivery_partner_id.blank?
@@ -59,9 +59,9 @@ module Admin
         end
 
         def selected_framework_agreement
-          return if store.active_lead_provider_id.blank?
+          return if store.framework_agreement_id.blank?
 
-          @selected_framework_agreement ||= FrameworkAgreement.includes(:lead_provider).find_by(id: store.active_lead_provider_id)
+          @selected_framework_agreement ||= FrameworkAgreement.includes(:lead_provider).find_by(id: store.framework_agreement_id)
         end
 
         def selected_lead_provider

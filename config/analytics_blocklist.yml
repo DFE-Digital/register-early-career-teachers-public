@@ -247,7 +247,7 @@
   - school_partnership_id
   - lead_provider_id
   - delivery_partner_id
-  - active_lead_provider_id
+  - framework_agreement_id
   - lead_provider_delivery_partnership_id
   - pending_induction_submission_batch_id
   - schedule_id
@@ -334,9 +334,9 @@
   - service_fee_ratio
   - created_at
   - updated_at
-  :active_lead_provider_bands:
+  :framework_agreement_bands:
   - id
-  - active_lead_provider_id
+  - framework_agreement_id
   - allocation_order
   - capacity
   - created_at
