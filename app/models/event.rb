@@ -6,6 +6,8 @@ class Event < ApplicationRecord
     bulk_upload_started
     delivery_partner_created
     delivery_partner_name_changed
+    framework_agreement_created
+    framework_agreement_deleted
     import_from_dqt
     induction_extension_created
     induction_extension_updated
