@@ -66,9 +66,7 @@ private
   end
 
   def destroy_unstarted_training_periods!(period)
-    period.training_periods.started_on_or_after(finished_on).find_each do |training_period|
-      training_period.destroy!
-    end
+    period.training_periods.started_on_or_after(finished_on).find_each(&:destroy!)
   end
 
   def finish_training_periods!(period)
