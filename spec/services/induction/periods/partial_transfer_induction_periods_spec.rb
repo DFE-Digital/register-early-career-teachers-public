@@ -1,4 +1,4 @@
-RSpec.describe InductionPeriods::PartialTransferInductionPeriods, :aggregate_failures do
+describe Induction::Periods::PartialTransferInductionPeriods, :aggregate_failures do
   include_context "it transfers an induction"
 
   describe "transfer part of induction periods and create new events" do

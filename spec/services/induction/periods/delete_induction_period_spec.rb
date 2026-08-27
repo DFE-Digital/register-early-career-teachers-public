@@ -1,4 +1,4 @@
-RSpec.describe InductionPeriods::DeleteInductionPeriod do
+describe Induction::Periods::DeleteInductionPeriod do
   include ActiveJob::TestHelper
 
   subject(:service) do

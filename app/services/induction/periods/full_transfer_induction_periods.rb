@@ -3,7 +3,7 @@
 # 2. amend induction event history
 # 3. output useful summary of alterations
 #
-module InductionPeriods
+module Induction::Periods
   class FullTransferInductionPeriods < TransferInductionPeriods
     TRANSFER_TYPE = :full
 

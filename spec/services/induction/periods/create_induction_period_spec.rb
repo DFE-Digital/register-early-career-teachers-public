@@ -1,4 +1,4 @@
-describe InductionPeriods::CreateInductionPeriod do
+describe Induction::Periods::CreateInductionPeriod do
   include ActiveJob::TestHelper
 
   subject { described_class.new(author:, teacher:, params:) }
