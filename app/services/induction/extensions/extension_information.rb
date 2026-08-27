@@ -1,4 +1,4 @@
-class Teachers::InductionExtensions
+class Induction::Extensions::ExtensionInformation
   attr_reader :teacher
 
   def initialize(teacher)

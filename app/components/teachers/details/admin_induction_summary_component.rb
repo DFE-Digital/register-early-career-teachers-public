@@ -19,7 +19,7 @@ module Teachers::Details
   private
 
     def induction_extensions
-      @induction_extensions ||= Teachers::InductionExtensions.new(teacher)
+      @induction_extensions ||= Induction::Extensions::ExtensionInformation.new(teacher)
     end
 
     def status_tag

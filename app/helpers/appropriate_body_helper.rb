@@ -55,7 +55,7 @@ module AppropriateBodyHelper
   def induction_extensions(teacher)
     return if teacher.blank?
 
-    @induction_extensions ||= Teachers::InductionExtensions.new(teacher)
+    @induction_extensions ||= Induction::Extensions::ExtensionInformation.new(teacher)
   end
 
   def show_extensions_row?(teacher)
