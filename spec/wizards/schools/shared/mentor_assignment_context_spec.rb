@@ -108,6 +108,52 @@ RSpec.describe Schools::Shared::MentorAssignmentContext do
     end
   end
 
+  describe "#ect_lead_provider_available?" do
+    let(:ect_at_school_period) do
+      FactoryBot.create(:ect_at_school_period, :unfinished, school:, teacher: ect_teacher, started_on: 2.days.ago.to_date)
+    end
+
+    let!(:current_contract_period) { FactoryBot.create(:contract_period, :current) }
+    let(:ect_lead_provider_contract_period) { current_contract_period }
+
+    let(:school_partnership) do
+      framework_agreement = FactoryBot.create(:framework_agreement, lead_provider:, contract_period: ect_lead_provider_contract_period)
+
+      FactoryBot.create(
+        :school_partnership,
+        school:,
+        lead_provider_delivery_partnership: FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:)
+      )
+    end
+
+    let!(:ect_training_period) do
+      FactoryBot.create(
+        :training_period,
+        :provider_led,
+        :unfinished,
+        ect_at_school_period:,
+        started_on: ect_at_school_period.started_on,
+        school_partnership:
+      )
+    end
+
+    context "when the ECTs lead provider has a framework agreement for the current contract period" do
+      it { is_expected.to be_ect_lead_provider_available }
+    end
+
+    context "when the ECTs lead provider has no framework agreement for the current contract period" do
+      let(:ect_lead_provider_contract_period) { FactoryBot.create(:contract_period, :previous) }
+
+      it { is_expected.not_to be_ect_lead_provider_available }
+    end
+
+    context "when the ECT has no training period" do
+      let!(:ect_training_period) { nil }
+
+      it { is_expected.not_to be_ect_lead_provider_available }
+    end
+  end
+
   describe "#lead_providers_within_contract_period" do
     let!(:in_contract_period) do
       FactoryBot.create(:contract_period, started_on: Date.new(2025, 1, 1), finished_on: Date.new(2025, 12, 31))

@@ -15,6 +15,16 @@ module ECTAtSchoolPeriods
       lead_provider || expression_of_interest_lead_provider
     end
 
+    def lead_provider_available_for_training?
+      contract_period = ContractPeriod.current
+      return false if contract_period.blank?
+
+      current_lead_provider = lead_provider_via_school_partnership_or_eoi
+      return false if current_lead_provider.blank?
+
+      LeadProviders::Active.new(current_lead_provider).active_in_contract_period?(contract_period)
+    end
+
     def school_partnership?
       school_partnership.present?
     end

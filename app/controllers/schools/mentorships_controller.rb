@@ -17,7 +17,7 @@ module Schools
 
       if MentorAtSchoolPeriods::Assignment::Eligibility.for_first_provider_led_training?(mentor_at_school_period:, ect_at_school_period:)
         kickoff_assign_existing_wizard!(ect_id: ect_at_school_period.id, mentor_period_id: mentor_at_school_period.id)
-        return redirect_to schools_assign_existing_mentor_wizard_review_mentor_eligibility_path
+        return redirect_to assign_existing_mentor_wizard_start_path
       end
 
       if @mentor_form.save(author: current_user)
@@ -68,6 +68,16 @@ module Schools
 
     def kickoff_assign_existing_wizard!(ect_id:, mentor_period_id:)
       store.update!(ect_id:, mentor_period_id:)
+    end
+
+    def assign_existing_mentor_wizard_start_path
+      current_training = ECTAtSchoolPeriods::CurrentTraining.new(ect_at_school_period)
+
+      if current_training.lead_provider_available_for_training?
+        schools_assign_existing_mentor_wizard_review_mentor_eligibility_path
+      else
+        schools_assign_existing_mentor_wizard_lead_provider_path
+      end
     end
   end
 end

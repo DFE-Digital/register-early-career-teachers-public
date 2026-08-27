@@ -38,8 +38,31 @@ describe Schools::ECTs::ChangeMentorWizard::LeadProviderStep do
   end
 
   describe "#previous_step" do
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school:) }
+    let!(:current_contract_period) { FactoryBot.create(:contract_period, :current) }
+    let(:ect_lead_provider_contract_period) { current_contract_period }
+
+    before do
+      framework_agreement = FactoryBot.create(:framework_agreement, contract_period: ect_lead_provider_contract_period)
+      school_partnership = FactoryBot.create(
+        :school_partnership,
+        school:,
+        lead_provider_delivery_partnership: FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:)
+      )
+
+      FactoryBot.create(:training_period, :unfinished, :provider_led, ect_at_school_period:, school_partnership:)
+    end
+
     it "returns the review_mentor_eligibility step" do
       expect(current_step.previous_step).to eq(:review_mentor_eligibility)
+    end
+
+    context "when the ECT's lead provider is not active in the current contract period" do
+      let(:ect_lead_provider_contract_period) { FactoryBot.create(:contract_period, :previous) }
+
+      it "returns the edit step" do
+        expect(current_step.previous_step).to eq(:edit)
+      end
     end
   end
 
