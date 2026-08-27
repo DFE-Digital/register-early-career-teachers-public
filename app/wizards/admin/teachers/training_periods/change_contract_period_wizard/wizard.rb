@@ -138,6 +138,7 @@ module Admin
                 delivery_partner:
               )
               .school_partnerships
+              .includes(:lead_provider, :delivery_partner)
           end
 
           def same_partnership_as_current_active_period?

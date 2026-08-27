@@ -46,7 +46,7 @@ module Schools
       end
 
       def latest_training_period
-        @latest_training_period ||= mentor_period_for_school&.latest_training_period
+        @latest_training_period ||= mentor_period_for_school&.training_periods&.max_by(&:started_on)
       end
 
       def current_training_period
@@ -112,7 +112,10 @@ module Schools
       end
 
       def mentor_period_for_school
-        @mentor.mentor_at_school_periods.where(school: @school).latest_first.first
+        @mentor_period_for_school ||= @mentor
+          .mentor_at_school_periods
+          .select { it.school_id == @school.id }
+          .max_by(&:started_on)
       end
 
       def assigned_ects

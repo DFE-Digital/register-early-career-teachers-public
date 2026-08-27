@@ -12,8 +12,9 @@ module Schools
 
     def index
       @number_of_mentors = Teachers::Search.new(mentor_at_school: school).count
-      search                   = Teachers::Search.new(mentor_at_school: school, query_string: params[:q])
-      @pagy, @filtered_mentors = pagy_array(search.search, limit: 20)
+      search = Teachers::Search.new(mentor_at_school: school, query_string: params[:q])
+      mentors = search.search.includes(mentor_at_school_periods: :training_periods)
+      @pagy, @filtered_mentors = pagy_array(mentors, limit: 20)
     end
 
     def show

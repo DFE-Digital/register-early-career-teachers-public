@@ -1,9 +1,10 @@
 module LeadProviderDeliveryPartnerships
   class Create
-    attr_reader :lead_provider_delivery_partnership, :author
+    attr_reader :lead_provider_delivery_partnership, :author, :framework_agreement
 
     def initialize(author:, framework_agreement:, params:)
       @author = author
+      @framework_agreement = framework_agreement
       @lead_provider_delivery_partnership = LeadProviderDeliveryPartnership.new(
         params.merge(framework_agreement:)
       )
@@ -15,8 +16,8 @@ module LeadProviderDeliveryPartnerships
         Events::Record.record_lead_provider_delivery_partnership_added_event!(
           author:,
           delivery_partner: lead_provider_delivery_partnership.delivery_partner,
-          lead_provider: lead_provider_delivery_partnership.lead_provider,
-          contract_period: lead_provider_delivery_partnership.contract_period,
+          lead_provider: framework_agreement.lead_provider,
+          contract_period: framework_agreement.contract_period,
           lead_provider_delivery_partnership:
         )
       end
