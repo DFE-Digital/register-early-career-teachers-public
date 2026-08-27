@@ -1,4 +1,4 @@
-RSpec.describe InductionExtensions::Manage do
+describe Induction::Extensions::Manage do
   subject(:service) do
     described_class.new(author:, teacher:, appropriate_body_period:)
   end

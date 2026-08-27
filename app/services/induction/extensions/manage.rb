@@ -1,6 +1,6 @@
 # Perform InductionExtension edits on behalf of an author and track change events:
 #
-class InductionExtensions::Manage
+class Induction::Extensions::Manage
   attr_reader :author,
               :teacher,
               :appropriate_body_period,
