@@ -48,6 +48,19 @@ describe Declaration do
     it { is_expected.to have_many(:events) }
   end
 
+  describe "mentorship_period_id foreign key on_delete" do
+    subject(:declaration) do
+      training_period = FactoryBot.create(:training_period)
+      mentee = training_period.ect_at_school_period
+      mentorship_period = FactoryBot.create(:mentorship_period, mentee:)
+      FactoryBot.create(:declaration, training_period:, mentorship_period:)
+    end
+
+    it "destroys the mentorship period without error" do
+      expect { declaration.mentorship_period.destroy! }.not_to raise_error
+    end
+  end
+
   describe "delegations" do
     it { is_expected.to delegate_method(:for_ect?).to(:training_period).allow_nil }
     it { is_expected.to delegate_method(:for_mentor?).to(:training_period).allow_nil }
