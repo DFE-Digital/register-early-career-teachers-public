@@ -1,6 +1,6 @@
 # Utility base class to select and amend inductions associated to the wrong appropriate body
 #
-module InductionPeriods
+module Induction::Periods
   class TransferInductionPeriods
     # @return [Array<String>]
     INDUCTION_TABLE_HEADERS = %w[

@@ -5,7 +5,7 @@
 # 4. generate missing events for the transfer
 # 5. output useful summary of alterations
 #
-module InductionPeriods
+module Induction::Periods
   class PartialTransferInductionPeriods < TransferInductionPeriods
     TRANSFER_TYPE = :partial
 

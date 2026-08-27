@@ -6,7 +6,7 @@ RSpec.describe "admin/induction_periods/confirm_delete.html.erb" do
   before do
     assign(:teacher, teacher)
     assign(:induction_period, induction_period)
-    assign(:delete_induction, InductionPeriods::DeleteInductionPeriod.new(induction_period:))
+    assign(:delete_induction, Induction::Periods::DeleteInductionPeriod.new(induction_period:))
   end
 
   it "renders a warning" do

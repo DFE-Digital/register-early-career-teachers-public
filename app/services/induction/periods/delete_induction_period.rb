@@ -1,4 +1,4 @@
-module InductionPeriods
+module Induction::Periods
   class DeleteInductionPeriod
     include Auditable
 
