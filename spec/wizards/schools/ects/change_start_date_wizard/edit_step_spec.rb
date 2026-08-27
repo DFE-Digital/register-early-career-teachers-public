@@ -132,6 +132,64 @@ RSpec.describe Schools::ECTs::ChangeStartDateWizard::EditStep do
       end
     end
 
+    context "when the ECT has a leaving date" do
+      let(:leaving_date) { Date.new(2024, 9, 30) }
+
+      let(:ect_at_school_period) do
+        FactoryBot.create(
+          :ect_at_school_period,
+          started_on: Date.new(2024, 1, 1),
+          finished_on: leaving_date
+        )
+      end
+
+      context "when the new start date is before the leaving date" do
+        let(:start_date) do
+          {
+            1 => 2024,
+            2 => 9,
+            3 => 29
+          }
+        end
+
+        it "is valid" do
+          expect(current_step).to be_valid
+        end
+      end
+
+      context "when the new start date equals the leaving date" do
+        let(:start_date) do
+          {
+            1 => 2024,
+            2 => 9,
+            3 => 30
+          }
+        end
+
+        it "is valid" do
+          expect(current_step).to be_valid
+        end
+      end
+
+      context "when the new start date is after the leaving date" do
+        let(:start_date) do
+          {
+            1 => 2024,
+            2 => 10,
+            3 => 1
+          }
+        end
+
+        it "is invalid" do
+          expect(current_step).not_to be_valid
+
+          expect(current_step.errors[:start_date]).to include(
+            "Enter a start date on or before 30 September 2024"
+          )
+        end
+      end
+    end
+
     context "when the start date is unchanged" do
       let(:start_date) do
         {
