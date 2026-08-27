@@ -221,9 +221,12 @@ RSpec.describe "Schools::ECTs::ChangeStartDateWizardController" do
       expect(response.body).to include(
         "School start date updated for #{teacher_full_name}"
       )
-      expect(response.body).to include("school start date")
       expect(response.body).to include(
-        new_start_date.to_fs(:govuk)
+        "You’ve changed #{teacher_full_name}’s school start date to #{new_start_date.to_fs(:govuk)}"
+      )
+      expect(response.body).to include("What happens next")
+      expect(response.body).to include(
+        "We’ve updated #{teacher_full_name}’s school start date."
       )
       expect(response.body).to include(
         "Back to #{teacher_full_name}"
@@ -308,17 +311,22 @@ RSpec.describe "Schools::ECTs::ChangeStartDateWizardController" do
           .not_to(change { ect_at_school_period.reload.started_on })
       end
 
-      it "shows support and go-back links" do
+      it "shows support and go back links" do
         post_edit
         follow_redirect!
 
+        teacher_full_name = Teachers::Name.new(teacher).full_name
+
         expect(response).to have_http_status(:ok)
-        expect(response.body).to include("You cannot use this date")
+        expect(response.body).to include(
+          "You cannot change #{teacher_full_name}’s school start date " \
+          "to #{new_start_date.to_fs(:govuk)}"
+        )
         expect(response.body).to include("contact support")
         expect(response.body).to include(
           new_schools_support_query_path
         )
-        expect(response.body).to include("Go back")
+        expect(response.body).to include("go back")
         expect(response.body).to include(
           path_for_step("edit")
         )
@@ -400,6 +408,51 @@ RSpec.describe "Schools::ECTs::ChangeStartDateWizardController" do
 
       expect(response)
         .to redirect_to(path_for_step("confirmation"))
+    end
+
+    context "when the new start date is after a finished mentorship period" do
+      let(:mentorship_finished_on) { Date.current - 2.days }
+
+      let(:new_start_date) do
+        mentorship_period.finished_on + 1.day
+      end
+
+      let(:mentor_at_school_period) do
+        FactoryBot.create(
+          :mentor_at_school_period,
+          :unfinished,
+          school:,
+          started_on: Date.new(2025, 9, 1)
+        )
+      end
+
+      let!(:mentorship_period) do
+        FactoryBot.create(
+          :mentorship_period,
+          mentee: ect_at_school_period,
+          mentor: mentor_at_school_period,
+          started_on: Date.new(2025, 9, 1),
+          finished_on: mentorship_finished_on
+        )
+      end
+
+      it "updates the dates, removes the mentorship period and redirects to confirmation" do
+        expect { post_check_answers }
+          .to change { ect_at_school_period.reload.started_on }
+          .from(Date.new(2025, 9, 1))
+          .to(new_start_date)
+          .and change { training_period.reload.started_on }
+          .from(Date.new(2025, 9, 1))
+          .to(new_start_date)
+          .and change {
+            MentorshipPeriod.exists?(mentorship_period.id)
+          }
+          .from(true)
+          .to(false)
+
+        expect(response)
+          .to redirect_to(path_for_step("confirmation"))
+      end
     end
   end
 

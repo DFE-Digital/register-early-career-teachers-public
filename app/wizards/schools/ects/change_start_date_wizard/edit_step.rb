@@ -8,6 +8,7 @@ module Schools
         validate :start_date_must_be_different
         validate :start_date_after_previous_school_or_training_period_start
         validate :start_date_within_4_months
+        validate :start_date_on_or_before_leaving_date
 
         def self.permitted_params
           %i[start_date]
@@ -79,6 +80,18 @@ module Schools
             "Start date must be before " \
               "#{earliest_invalid_start_date.to_fs(:govuk)}. " \
               "You cannot register the ECT this far in advance."
+          )
+        end
+
+        def start_date_on_or_before_leaving_date
+          return if skip_additional_start_date_validations?
+          return unless ect_at_school_period.finished_on
+          return if start_date_as_date <= ect_at_school_period.finished_on
+
+          errors.add(
+            :start_date,
+            "Enter a start date on or before " \
+              "#{ect_at_school_period.finished_on.to_fs(:govuk)}"
           )
         end
 

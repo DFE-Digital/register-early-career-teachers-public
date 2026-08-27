@@ -131,7 +131,7 @@ RSpec.describe ECTAtSchoolPeriods::ChangeStartDate do
           .to eq(new_started_on)
       end
 
-      context "when the ECT has a mentorship period" do
+      context "when the ECT has an unfinished mentorship period" do
         let(:mentor_at_school_period) do
           FactoryBot.create(
             :mentor_at_school_period,
@@ -156,6 +156,66 @@ RSpec.describe ECTAtSchoolPeriods::ChangeStartDate do
             .to change { mentorship_period.reload.started_on }
             .from(current_started_on)
             .to(new_started_on)
+        end
+      end
+
+      context "when the ECT has a finished mentorship period" do
+        let(:mentor_at_school_period) do
+          FactoryBot.create(
+            :mentor_at_school_period,
+            :unfinished,
+            school:,
+            started_on: Date.new(2026, 8, 1)
+          )
+        end
+
+        let!(:mentorship_period) do
+          FactoryBot.create(
+            :mentorship_period,
+            mentee: ect_at_school_period,
+            mentor: mentor_at_school_period,
+            started_on: current_started_on,
+            finished_on: mentorship_finished_on
+          )
+        end
+
+        context "when the new start date is before the mentorship end date" do
+          let(:mentorship_finished_on) { Date.new(2026, 10, 2) }
+
+          it "moves the mentorship period start date" do
+            expect { change_start_date }
+              .to change { mentorship_period.reload.started_on }
+              .from(current_started_on)
+              .to(new_started_on)
+
+            expect(mentorship_period).to be_persisted
+          end
+        end
+
+        context "when the new start date equals the mentorship end date" do
+          let(:mentorship_finished_on) { new_started_on }
+
+          it "removes the mentorship period" do
+            expect { change_start_date }
+              .to change(MentorshipPeriod, :count)
+              .by(-1)
+
+            expect(MentorshipPeriod.exists?(mentorship_period.id))
+              .to be(false)
+          end
+        end
+
+        context "when the new start date is after the mentorship end date" do
+          let(:mentorship_finished_on) { Date.new(2026, 9, 30) }
+
+          it "removes the mentorship period" do
+            expect { change_start_date }
+              .to change(MentorshipPeriod, :count)
+              .by(-1)
+
+            expect(MentorshipPeriod.exists?(mentorship_period.id))
+              .to be(false)
+          end
         end
       end
     end
@@ -306,6 +366,15 @@ RSpec.describe ECTAtSchoolPeriods::ChangeStartDate do
         )
       end
 
+      before do
+        allow(ect_at_school_period)
+          .to receive(:update!)
+          .with(started_on: new_started_on)
+          .and_raise(
+            ActiveRecord::RecordInvalid.new(ect_at_school_period)
+          )
+      end
+
       it "rolls back all changes" do
         expect { change_start_date }
           .to raise_error(ActiveRecord::RecordInvalid)
@@ -316,23 +385,24 @@ RSpec.describe ECTAtSchoolPeriods::ChangeStartDate do
         expect(training_period.reload.started_on)
           .to eq(current_started_on)
 
-        expect(mentorship_period.reload.started_on)
+        restored_mentorship_period =
+          MentorshipPeriod.find(mentorship_period.id)
+
+        expect(restored_mentorship_period.started_on)
           .to eq(current_started_on)
+
+        expect(restored_mentorship_period.finished_on)
+          .to eq(Date.new(2026, 9, 30))
       end
 
       it "does not record an event" do
-        allow(Events::Record)
-          .to receive(
+        expect(Events::Record)
+          .not_to receive(
             :record_teacher_school_start_date_updated_event!
           )
 
         expect { change_start_date }
           .to raise_error(ActiveRecord::RecordInvalid)
-
-        expect(Events::Record)
-          .not_to have_received(
-            :record_teacher_school_start_date_updated_event!
-          )
       end
     end
   end
