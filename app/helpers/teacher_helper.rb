@@ -24,16 +24,16 @@ module TeacherHelper
 
   # @param teacher [Teacher]
   def teacher_induction_start_date(teacher)
-    Teachers::InductionPeriod.new(teacher).formatted_induction_start_date
+    Induction::TeacherInformation.new(teacher).formatted_induction_start_date
   end
 
   # @param teacher [Teacher]
   def teacher_induction_programme(teacher)
-    Teachers::InductionPeriod.new(teacher).induction_programme
+    Induction::TeacherInformation.new(teacher).induction_programme
   end
 
   # @param teacher [Teacher]
   def teacher_induction_ab_name(teacher)
-    Teachers::InductionPeriod.new(teacher).appropriate_body_name
+    Induction::TeacherInformation.new(teacher).appropriate_body_name
   end
 end
