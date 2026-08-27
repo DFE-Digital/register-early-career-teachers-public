@@ -1,5 +1,5 @@
-module Teachers
-  class Induction
+module Induction
+  class TeacherInformation
     attr_reader :teacher, :induction_periods
 
     def initialize(teacher)
