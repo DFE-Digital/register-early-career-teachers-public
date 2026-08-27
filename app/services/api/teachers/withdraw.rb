@@ -1,13 +1,20 @@
 module API::Teachers
   class Withdraw
-    include API::Concerns::ModelBehaviour
-    include API::Concerns::LeadProviderVerifiable
-    include API::Concerns::LeadProviderAuthorable
-    include API::Concerns::TeacherVerifiable
-    include API::Concerns::LatestTrainingPeriod
+    include ActiveModel::Model
+    include ActiveModel::Attributes
+
+    include API::FindLeadProvider
+    include API::LeadProviderAuthor
+    include API::FindTeacher
+    include API::FindLatestTrainingPeriod
 
     WITHDRAWAL_REASONS = TrainingPeriod.withdrawal_reasons.values.map(&:dasherize).freeze
     MENTOR_ONLY_WITHDRAWAL_REASONS = TrainingPeriod::MENTOR_ONLY_WITHDRAWAL_REASONS.map(&:dasherize).freeze
+
+    attribute :lead_provider_id
+
+    attribute :teacher_api_id
+    attribute :teacher_type
 
     attribute :reason
 

@@ -1,4 +1,4 @@
-module API::Concerns::LatestTrainingPeriod
+module API::FindLatestTrainingPeriod
   extend ActiveSupport::Concern
 
   def training_period

@@ -1,12 +1,19 @@
 module API::Teachers
   class Defer
-    include API::Concerns::ModelBehaviour
-    include API::Concerns::LeadProviderVerifiable
-    include API::Concerns::LeadProviderAuthorable
-    include API::Concerns::TeacherVerifiable
-    include API::Concerns::LatestTrainingPeriod
+    include ActiveModel::Model
+    include ActiveModel::Attributes
+
+    include API::FindLeadProvider
+    include API::LeadProviderAuthor
+    include API::FindTeacher
+    include API::FindLatestTrainingPeriod
 
     DEFERRAL_REASONS = TrainingPeriod.deferral_reasons.values.map(&:dasherize).freeze
+
+    attribute :lead_provider_id
+
+    attribute :teacher_api_id
+    attribute :teacher_type
 
     attribute :reason
 

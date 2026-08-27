@@ -1,10 +1,17 @@
 module API::Teachers
   class ChangeSchedule
-    include API::Concerns::ModelBehaviour
-    include API::Concerns::LeadProviderVerifiable
-    include API::Concerns::LeadProviderAuthorable
-    include API::Concerns::TeacherVerifiable
-    include API::Concerns::LatestTrainingPeriod
+    include ActiveModel::Model
+    include ActiveModel::Attributes
+
+    include API::FindLeadProvider
+    include API::LeadProviderAuthor
+    include API::FindTeacher
+    include API::FindLatestTrainingPeriod
+
+    attribute :lead_provider_id
+
+    attribute :teacher_api_id
+    attribute :teacher_type
 
     attribute :contract_period_year
     attribute :schedule_identifier

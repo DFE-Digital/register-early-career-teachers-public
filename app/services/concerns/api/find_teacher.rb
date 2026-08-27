@@ -1,12 +1,9 @@
-module API::Concerns::TeacherVerifiable
+module API::FindTeacher
   extend ActiveSupport::Concern
 
   TEACHER_TYPES = %i[ect mentor].freeze
 
   included do
-    attribute :teacher_api_id
-    attribute :teacher_type
-
     validates :teacher_api_id, presence: { message: "Enter a '#/teacher_api_id'." }
     validate :teacher_exists
     validates :teacher_type, presence: { message: "Enter a '#/teacher_type'." }

@@ -1,9 +1,7 @@
-module API::Concerns::LeadProviderVerifiable
+module API::FindLeadProvider
   extend ActiveSupport::Concern
 
   included do
-    attribute :lead_provider_id
-
     validates :lead_provider_id, presence: { message: "Enter a '#/lead_provider_id'." }
     validate :lead_provider_exists
   end
@@ -15,7 +13,7 @@ private
   end
 
   def lead_provider_exists
-    return if errors[:lead_provider_id].any?
+    return if errors.any?
     return if lead_provider
 
     errors.add(:lead_provider_id, "The '#/lead_provider_id' you have entered is invalid.")

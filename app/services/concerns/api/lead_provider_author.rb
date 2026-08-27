@@ -1,4 +1,4 @@
-module API::Concerns::LeadProviderAuthorable
+module API::LeadProviderAuthor
   extend ActiveSupport::Concern
 
   def author

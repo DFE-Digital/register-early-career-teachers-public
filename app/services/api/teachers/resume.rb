@@ -1,10 +1,17 @@
 module API::Teachers
   class Resume
-    include API::Concerns::ModelBehaviour
-    include API::Concerns::LeadProviderVerifiable
-    include API::Concerns::LeadProviderAuthorable
-    include API::Concerns::TeacherVerifiable
-    include API::Concerns::LatestTrainingPeriod
+    include ActiveModel::Model
+    include ActiveModel::Attributes
+
+    include API::FindLeadProvider
+    include API::LeadProviderAuthor
+    include API::FindTeacher
+    include API::FindLatestTrainingPeriod
+
+    attribute :lead_provider_id
+
+    attribute :teacher_api_id
+    attribute :teacher_type
 
     validate :not_already_active
     validate :no_ongoing_today_training_period
