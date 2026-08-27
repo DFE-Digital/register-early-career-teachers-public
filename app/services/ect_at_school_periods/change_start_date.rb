@@ -60,7 +60,7 @@ module ECTAtSchoolPeriods
     def update_mentorship_period!
       return unless mentorship_period
 
-      if new_start_date_invalidates_mentorship_period?
+      if new_start_date_on_or_after_mentorship_end?
         mentorship_period.destroy!
       else
         mentorship_period.update!(
@@ -69,7 +69,7 @@ module ECTAtSchoolPeriods
       end
     end
 
-    def new_start_date_invalidates_mentorship_period?
+    def new_start_date_on_or_after_mentorship_end?
       mentorship_period.finished_on.present? &&
         started_on >= mentorship_period.finished_on
     end
