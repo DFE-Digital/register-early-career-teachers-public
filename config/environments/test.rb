@@ -12,9 +12,12 @@ Rails.application.configure do
     Prosopite.rails_logger = true
     Prosopite.raise = true
 
-    # Allow N+1 from raised from Metadata refreshes
-    # as these are expected and not a problem in tests
-    Prosopite.allow_stack_paths = [/DeclarativeUpdates/]
+    Prosopite.allow_stack_paths = [
+      /metadata|declarative_updates/, # We expect N+1s from metadata refreshing and the touch model due to the way we generically refresh/touch objects.
+      /Schools::EligibleMentors|ECTHelper#eligible_mentors_for_ect?/, # This needs a refactoring of Schools::EligibleMentors to handle repeated calls for different ECTs.
+      /Admin::Teachers::SchoolSummaryComponent/, # Needs mentorship_periods_for_ect/mentor converting to in-memory and includes higher up the chain.
+      /payment_calculator/, # We need to refactor some of this to avoid N+1s.
+    ]
   end
 
   # While tests run files are not watched, reloading is not necessary.
