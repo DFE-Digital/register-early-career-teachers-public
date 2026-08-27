@@ -92,7 +92,7 @@ module AppropriateBodies
 
       # @return [Boolean]
       def overlapping_with_induction_period?
-        ::Teachers::InductionPeriod.new(teacher).overlapping_with?(row.started_on)
+        Induction::TeacherInformation.new(teacher).overlapping_with?(row.started_on)
       end
 
       # @return [Boolean]

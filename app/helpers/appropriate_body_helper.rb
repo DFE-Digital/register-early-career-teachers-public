@@ -30,7 +30,7 @@ module AppropriateBodyHelper
           { key: { text: "TRN" }, value: { text: teacher.trn } },
           {
             key: { text: "Induction start date" },
-            value: { text: Teachers::InductionPeriod.new(teacher).formatted_induction_start_date },
+            value: { text: Induction::TeacherInformation.new(teacher).formatted_induction_start_date },
           },
           {
             key: { text: "Status" },
