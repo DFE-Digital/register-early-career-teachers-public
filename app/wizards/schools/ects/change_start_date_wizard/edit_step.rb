@@ -4,7 +4,9 @@ module Schools
       class EditStep < ECTs::Step
         attr_accessor :start_date
 
-        validates :start_date, ect_start_date: true
+        validate :start_date_must_be_present
+        validate :start_date_must_be_valid
+        validate :start_date_on_or_after_registration_period_start
         validate :start_date_must_be_different
         validate :start_date_after_previous_school_or_training_period_start
         validate :start_date_within_4_months
@@ -61,6 +63,63 @@ module Schools
           )
         end
 
+        def start_date_must_be_present
+          return unless start_date_input_error ==
+            Schools::Validation::ECTStartDate::DATE_MISSING_MESSAGE
+
+          errors.add(
+            :start_date,
+            "Enter #{name_for(ect_at_school_period.teacher)}'s ECT start date"
+          )
+        end
+
+        def start_date_must_be_valid
+          return if errors[:start_date].any?
+          return unless start_date_input_error ==
+            Schools::Validation::ECTStartDate::INVALID_FORMAT_MESSAGE
+
+          errors.add(
+            :start_date,
+            "ECT Start date must be a valid date"
+          )
+        end
+
+        def start_date_on_or_after_registration_period_start
+          return if skip_additional_start_date_validations?
+          return unless earliest_permitted_start_date
+          return if start_date_as_date >= earliest_permitted_start_date
+
+          errors.add(
+            :start_date,
+            "#{name_for(ect_at_school_period.teacher)}'s ECT start date " \
+              "must be on or after the start of the registration period, " \
+              "#{earliest_permitted_start_date.to_fs(:govuk)}."
+          )
+        end
+
+        def start_date_input_error
+          start_date_input.valid?
+          start_date_input.error_message
+        end
+
+        def earliest_permitted_start_date
+          @earliest_permitted_start_date ||=
+            ContractPeriod.earliest_permitted_start_date
+        end
+
+        def start_date_error_message
+          case start_date_input.error_message
+          when Schools::Validation::ECTStartDate::DATE_MISSING_MESSAGE
+            "Enter #{name_for(ect_at_school_period.teacher)}'s ECT start date"
+          when Schools::Validation::ECTStartDate::INVALID_FORMAT_MESSAGE
+            "ECT Start date must be a valid date"
+          else
+            "#{name_for(ect_at_school_period.teacher)}'s ECT start date " \
+              "must be on or after the start of the registration period, " \
+              "#{ContractPeriod.earliest_permitted_start_date.to_fs(:govuk)}."
+          end
+        end
+
         def invalid_period_error_message
           "Our records show that " \
             "#{name_for(ect_at_school_period.teacher)} started " \
@@ -77,9 +136,9 @@ module Schools
 
           errors.add(
             :start_date,
-            "Start date must be before " \
-              "#{earliest_invalid_start_date.to_fs(:govuk)}. " \
-              "You cannot register the ECT this far in advance."
+            "#{name_for(ect_at_school_period.teacher)}'s ECT start date " \
+              "must not be more than 4 months from today, " \
+              "#{earliest_invalid_start_date.prev_day.to_fs(:govuk)}"
           )
         end
 
@@ -90,7 +149,8 @@ module Schools
 
           errors.add(
             :start_date,
-            "Enter a start date on or before " \
+            "#{name_for(ect_at_school_period.teacher)}'s ECT start date " \
+              "must be on or before their leaving date, " \
               "#{ect_at_school_period.finished_on.to_fs(:govuk)}"
           )
         end

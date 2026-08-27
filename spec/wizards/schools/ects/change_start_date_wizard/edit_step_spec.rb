@@ -41,6 +41,10 @@ RSpec.describe Schools::ECTs::ChangeStartDateWizard::EditStep do
     allow(wizard).to receive(:valid_step?) do
       current_step.valid?
     end
+
+    allow(wizard).to receive(:name_for) do |teacher|
+      Teachers::Name.new(teacher).full_name
+    end
   end
 
   describe ".permitted_params" do
@@ -95,13 +99,19 @@ RSpec.describe Schools::ECTs::ChangeStartDateWizard::EditStep do
     context "when the start date is missing" do
       let(:start_date) { nil }
 
+      let(:teacher_name) do
+        Teachers::Name
+          .new(ect_at_school_period.teacher)
+          .full_name
+      end
+
       it "is invalid" do
         expect(current_step).not_to be_valid
 
         expect(
           current_step.errors.messages_for(:start_date)
         ).to contain_exactly(
-          "Enter the date the ECT started or will start teaching at your school"
+          "Enter #{teacher_name}'s ECT start date"
         )
       end
     end
@@ -121,8 +131,59 @@ RSpec.describe Schools::ECTs::ChangeStartDateWizard::EditStep do
         expect(
           current_step.errors.messages_for(:start_date)
         ).to contain_exactly(
-          "Enter the start date using the correct format, for example, 17 09 1999"
+          "ECT Start date must be a valid date"
         )
+      end
+    end
+
+    context "when there is an earliest permitted registration date" do
+      let(:earliest_permitted_start_date) do
+        Date.new(2024, 6, 1)
+      end
+
+      let(:teacher_name) do
+        Teachers::Name
+          .new(ect_at_school_period.teacher)
+          .full_name
+      end
+
+      before do
+        allow(ContractPeriod)
+          .to receive(:earliest_permitted_start_date)
+          .and_return(earliest_permitted_start_date)
+      end
+
+      context "when the start date is before the earliest permitted date" do
+        let(:start_date) do
+          {
+            1 => 2024,
+            2 => 5,
+            3 => 31
+          }
+        end
+
+        it "is invalid" do
+          expect(current_step).not_to be_valid
+
+          expect(current_step.errors[:start_date]).to include(
+            "#{teacher_name}'s ECT start date must be on or after " \
+            "the start of the registration period, 1 June 2024."
+          )
+        end
+      end
+
+      context "when the start date equals the earliest permitted date" do
+        let(:start_date) do
+          {
+            1 => 2024,
+            2 => 6,
+            3 => 1
+          }
+        end
+
+        it "is valid" do
+          expect(current_step).to be_valid
+        end
       end
     end
 
@@ -141,6 +202,12 @@ RSpec.describe Schools::ECTs::ChangeStartDateWizard::EditStep do
           started_on: Date.new(2024, 1, 1),
           finished_on: leaving_date
         )
+      end
+
+      let(:teacher_name) do
+        Teachers::Name
+          .new(ect_at_school_period.teacher)
+          .full_name
       end
 
       context "when the new start date is before the leaving date" do
@@ -184,7 +251,8 @@ RSpec.describe Schools::ECTs::ChangeStartDateWizard::EditStep do
           expect(current_step).not_to be_valid
 
           expect(current_step.errors[:start_date]).to include(
-            "Enter a start date on or before 30 September 2024"
+            "#{teacher_name}'s ECT start date must be on or before " \
+            "their leaving date, 30 September 2024"
           )
         end
       end
@@ -289,6 +357,12 @@ RSpec.describe Schools::ECTs::ChangeStartDateWizard::EditStep do
         )
       end
 
+      let(:teacher_name) do
+        Teachers::Name
+          .new(ect_at_school_period.teacher)
+          .full_name
+      end
+
       before do
         allow(ContractPeriod)
           .to receive(:containing_date)
@@ -322,8 +396,8 @@ RSpec.describe Schools::ECTs::ChangeStartDateWizard::EditStep do
           expect(current_step).not_to be_valid
 
           expect(current_step.errors[:start_date]).to include(
-            "Start date must be before 2 May 2025. " \
-            "You cannot register the ECT this far in advance."
+            "#{teacher_name}'s ECT start date must not be more than " \
+            "4 months from today, 1 May 2025"
           )
         end
       end
