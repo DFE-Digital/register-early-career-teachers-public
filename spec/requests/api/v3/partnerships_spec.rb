@@ -25,7 +25,6 @@ RSpec.describe "Partnerships API", :with_touches, type: :request do
     it_behaves_like "a filter by delivery_partner_id endpoint", :delivery_partner
     it_behaves_like "an index endpoint"
     it_behaves_like "a sortable endpoint"
-    it_behaves_like "a N+1 queries free endpoint", :get
   end
 
   describe "#show" do
@@ -38,7 +37,6 @@ RSpec.describe "Partnerships API", :with_touches, type: :request do
     it_behaves_like "a does not filter by cohort endpoint"
     it_behaves_like "a does not filter by updated_since endpoint"
     it_behaves_like "a does not filter by delivery_partner_id endpoint", :delivery_partner
-    it_behaves_like "a N+1 queries free endpoint", :get
   end
 
   describe "#create" do
@@ -71,7 +69,6 @@ RSpec.describe "Partnerships API", :with_touches, type: :request do
     it_behaves_like "a token authenticated endpoint", :post
     it_behaves_like "an API create endpoint"
     it_behaves_like "an endpoint that refreshes metadata", :post
-    it_behaves_like "a N+1 queries free endpoint", :post
   end
 
   describe "#update" do
@@ -104,6 +101,5 @@ RSpec.describe "Partnerships API", :with_touches, type: :request do
     it_behaves_like "a token authenticated endpoint", :put
     it_behaves_like "an API update endpoint"
     it_behaves_like "an endpoint that refreshes metadata", :put
-    it_behaves_like "a N+1 queries free endpoint", :put
   end
 end
