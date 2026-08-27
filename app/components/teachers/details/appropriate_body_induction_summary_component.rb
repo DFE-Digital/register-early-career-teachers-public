@@ -23,7 +23,7 @@ module Teachers::Details
     end
 
     def status_tag
-      helpers.govuk_tag(**Teachers::InductionStatus.new(trs_induction_status:, teacher:).status_tag_kwargs)
+      helpers.govuk_tag(**Induction::Status.new(trs_induction_status:, teacher:).status_tag_kwargs)
     end
 
     def trs_induction_status

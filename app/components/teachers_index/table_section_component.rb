@@ -28,7 +28,7 @@ module TeachersIndex
     end
 
     def teacher_status_tag_kwargs(teacher)
-      Teachers::InductionStatus.new(
+      Induction::Status.new(
         trs_induction_status: teacher.trs_induction_status,
         teacher:
       ).status_tag_kwargs

@@ -36,7 +36,7 @@ module AppropriateBodyHelper
             key: { text: "Status" },
             value: {
               text: govuk_tag(
-                **Teachers::InductionStatus.new(
+                **Induction::Status.new(
                   trs_induction_status: teacher.trs_induction_status,
                   teacher:
                 ).status_tag_kwargs
