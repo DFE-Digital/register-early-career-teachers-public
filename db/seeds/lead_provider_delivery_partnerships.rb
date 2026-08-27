@@ -23,7 +23,7 @@ capita = LeadProvider.find_by!(name: "Capita")
 
 framework_agreements = FrameworkAgreement
   .eager_load(:contract_period, :lead_provider)
-  .index_by { |alp| [alp.lead_provider, alp.contract_period.year] }
+  .index_by { |framework_agreement| [framework_agreement.lead_provider, framework_agreement.contract_period.year] }
 
 ambition_institute_2021 = framework_agreements.fetch([ambition_institute, 2021])
 ambition_institute_2022 = framework_agreements.fetch([ambition_institute, 2022])

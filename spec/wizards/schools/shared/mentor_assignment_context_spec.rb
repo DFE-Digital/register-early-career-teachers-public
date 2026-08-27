@@ -82,8 +82,8 @@ RSpec.describe Schools::Shared::MentorAssignmentContext do
     let(:finished_on) { 2.days.from_now.to_date }
 
     let(:school_partnership) do
-      active_lp = FactoryBot.create(:framework_agreement, lead_provider:)
-      lpdp = FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement: active_lp)
+      framework_agreement = FactoryBot.create(:framework_agreement, lead_provider:)
+      lpdp = FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:)
       FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership: lpdp)
     end
 

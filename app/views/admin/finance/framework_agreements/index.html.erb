@@ -24,28 +24,28 @@
       <% end %>
     <% end %>
     <% table.with_body do |body| %>
-      <% @framework_agreements.each do |alp| %>
+      <% @framework_agreements.each do |framework_agreement| %>
         <% body.with_row do |row| %>
-          <% row.with_cell(text: alp.lead_provider.name) %>
+          <% row.with_cell(text: framework_agreement.lead_provider.name) %>
           <% row.with_cell do %>
-            <%= govuk_link_to(pluralize(alp.contracts.size, "contract"), admin_contract_period_framework_agreement_contracts_path(@contract_period, alp), visually_hidden_suffix: "for #{alp.lead_provider.name}") %>
+            <%= govuk_link_to(pluralize(framework_agreement.contracts.size, "contract"), admin_contract_period_framework_agreement_contracts_path(@contract_period, framework_agreement), visually_hidden_suffix: "for #{framework_agreement.lead_provider.name}") %>
           <% end %>
           <% row.with_cell do %>
-            <%= govuk_link_to(pluralize(alp.statements.size, "statement"), admin_contract_period_framework_agreement_statements_path(@contract_period, alp), visually_hidden_suffix: "for #{alp.lead_provider.name}") %>
+            <%= govuk_link_to(pluralize(framework_agreement.statements.size, "statement"), admin_contract_period_framework_agreement_statements_path(@contract_period, framework_agreement), visually_hidden_suffix: "for #{framework_agreement.lead_provider.name}") %>
           <% end %>
           <% row.with_cell do %>
-            <%= govuk_link_to(pluralize(alp.delivery_partners.size, "delivery partner"), admin_contract_period_framework_agreement_lead_provider_delivery_partnerships_path(@contract_period, alp), visually_hidden_suffix: "for #{alp.lead_provider.name}") %>
+            <%= govuk_link_to(pluralize(framework_agreement.delivery_partners.size, "delivery partner"), admin_contract_period_framework_agreement_lead_provider_delivery_partnerships_path(@contract_period, framework_agreement), visually_hidden_suffix: "for #{framework_agreement.lead_provider.name}") %>
           <% end %>
           <% row.with_cell do %>
-            <%= govuk_link_to(pluralize(alp.bands.size, "band"), admin_contract_period_framework_agreement_bands_path(@contract_period, alp), visually_hidden_suffix: "for #{alp.lead_provider.name}") %>
+            <%= govuk_link_to(pluralize(framework_agreement.bands.size, "band"), admin_contract_period_framework_agreement_bands_path(@contract_period, framework_agreement), visually_hidden_suffix: "for #{framework_agreement.lead_provider.name}") %>
           <% end %>
           <% if @editable %>
             <% row.with_cell do %>
               <%= govuk_button_to "Remove",
-                    admin_contract_period_framework_agreement_path(@contract_period, alp),
+                    admin_contract_period_framework_agreement_path(@contract_period, framework_agreement),
                     method: :delete,
                     secondary: true,
-                    visually_hidden_suffix: alp.lead_provider.name,
+                    visually_hidden_suffix: framework_agreement.lead_provider.name,
                     class: "govuk-!-margin-bottom-0" %>
             <% end %>
           <% end %>

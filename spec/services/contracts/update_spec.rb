@@ -13,12 +13,12 @@ RSpec.describe Contracts::Update do
   let!(:band_term) do
     FactoryBot.create(:contract_banded_fee_structure_band_term,
                       banded_fee_structure:,
-                      band: alp_band,
+                      band:,
                       fee_per_declaration: 100,
                       output_fee_ratio: 0.70,
                       service_fee_ratio: 0.30)
   end
-  let(:alp_band) do
+  let(:band) do
     FactoryBot.create(:framework_agreement_band,
                       framework_agreement:)
   end

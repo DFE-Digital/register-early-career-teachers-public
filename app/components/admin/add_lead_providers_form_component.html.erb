@@ -14,7 +14,7 @@
     :lead_provider_ids,
     available_lead_providers,
     :id,
-    ->(alp) { alp.lead_provider.name },
+    ->(framework_agreement) { framework_agreement.lead_provider.name },
     legend: { text: legend_text, size: 'm' },
     hint: { text: hint_text }
   ) %>

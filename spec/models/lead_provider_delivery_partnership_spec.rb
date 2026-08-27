@@ -74,47 +74,47 @@ describe LeadProviderDeliveryPartnership do
       let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
       let(:other_contract_period) { FactoryBot.create(:contract_period, year: 2026) }
 
-      let(:alp_with_partnership) { FactoryBot.create(:framework_agreement, contract_period:) }
-      let(:alp_other_delivery_partner) { FactoryBot.create(:framework_agreement, contract_period:) }
-      let(:alp_other_contract_period) { FactoryBot.create(:framework_agreement, contract_period: other_contract_period) }
-      let(:alp_no_partnership) { FactoryBot.create(:framework_agreement, contract_period:) }
+      let(:framework_agreement_with_partnership) { FactoryBot.create(:framework_agreement, contract_period:) }
+      let(:framework_agreement_other_delivery_partner) { FactoryBot.create(:framework_agreement, contract_period:) }
+      let(:framework_agreement_other_contract_period) { FactoryBot.create(:framework_agreement, contract_period: other_contract_period) }
+      let(:framework_agreement_no_partnership) { FactoryBot.create(:framework_agreement, contract_period:) }
 
       let!(:partnership_same_delivery_partner) do
         FactoryBot.create(:lead_provider_delivery_partnership,
                           delivery_partner:,
-                          framework_agreement: alp_with_partnership)
+                          framework_agreement: framework_agreement_with_partnership)
       end
 
       let!(:partnership_other_delivery_partner) do
         FactoryBot.create(:lead_provider_delivery_partnership,
                           delivery_partner: other_delivery_partner,
-                          framework_agreement: alp_other_delivery_partner)
+                          framework_agreement: framework_agreement_other_delivery_partner)
       end
 
       let!(:partnership_other_contract_period) do
         FactoryBot.create(:lead_provider_delivery_partnership,
                           delivery_partner:,
-                          framework_agreement: alp_other_contract_period)
+                          framework_agreement: framework_agreement_other_contract_period)
       end
 
       it "returns framework agreement IDs for the specified delivery partner and contract period" do
         result = LeadProviderDeliveryPartnership.framework_agreement_ids_for(delivery_partner, contract_period)
-        expect(result.pluck(:framework_agreement_id)).to contain_exactly(alp_with_partnership.id)
+        expect(result.pluck(:framework_agreement_id)).to contain_exactly(framework_agreement_with_partnership.id)
       end
 
       it "excludes partnerships with other delivery partners" do
         result = LeadProviderDeliveryPartnership.framework_agreement_ids_for(delivery_partner, contract_period)
-        expect(result.pluck(:framework_agreement_id)).not_to include(alp_other_delivery_partner.id)
+        expect(result.pluck(:framework_agreement_id)).not_to include(framework_agreement_other_delivery_partner.id)
       end
 
       it "excludes partnerships from other contract periods" do
         result = LeadProviderDeliveryPartnership.framework_agreement_ids_for(delivery_partner, contract_period)
-        expect(result.pluck(:framework_agreement_id)).not_to include(alp_other_contract_period.id)
+        expect(result.pluck(:framework_agreement_id)).not_to include(framework_agreement_other_contract_period.id)
       end
 
       it "excludes framework agreements with no partnerships" do
         result = LeadProviderDeliveryPartnership.framework_agreement_ids_for(delivery_partner, contract_period)
-        expect(result.pluck(:framework_agreement_id)).not_to include(alp_no_partnership.id)
+        expect(result.pluck(:framework_agreement_id)).not_to include(framework_agreement_no_partnership.id)
       end
 
       it "returns a select query that can be used in subqueries" do

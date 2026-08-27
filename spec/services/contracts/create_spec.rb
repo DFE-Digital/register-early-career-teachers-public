@@ -2,7 +2,7 @@ describe Contracts::Create do
   subject(:service) { described_class.new(author:, framework_agreement:, params:) }
 
   let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
-  let(:alp_band) { FactoryBot.create(:framework_agreement_band, framework_agreement:) }
+  let(:band) { FactoryBot.create(:framework_agreement_band, framework_agreement:) }
   let(:user) { FactoryBot.create(:user, :admin) }
   let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
 
@@ -12,7 +12,7 @@ describe Contracts::Create do
       banded_fee_structure_attributes: {
         **banded_fee_structure_attributes,
         band_terms_attributes: [
-          { **band_terms_attributes, band_id: alp_band.id },
+          { **band_terms_attributes, band_id: band.id },
         ],
       },
       flat_rate_fee_structure_attributes:,
@@ -60,7 +60,7 @@ describe Contracts::Create do
   end
 
   context "when the framework agreement band is mismatched" do
-    let(:alp_band) { FactoryBot.create(:framework_agreement_band) }
+    let(:band) { FactoryBot.create(:framework_agreement_band) }
 
     it "does not create a contract or event" do
       expect { service.call }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Banded fee structure band terms band must belong to the contract's lead provider framework agreement")

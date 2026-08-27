@@ -6,11 +6,11 @@
   <%= f.govuk_check_boxes_fieldset :lead_provider_ids,
       legend: { text: legend_text, size: 'm' },
       hint: { text: hint_text } do %>
-    <% all_lead_providers_for_period.each do |alp| %>
+    <% all_lead_providers_for_period.each do |framework_agreement| %>
       <%= f.govuk_check_box :lead_provider_ids,
-          alp.id.to_s,
-          label: { text: alp.lead_provider.name },
-          checked: currently_selected_ids.include?(alp.id.to_s) %>
+          framework_agreement.id.to_s,
+          label: { text: framework_agreement.lead_provider.name },
+          checked: currently_selected_ids.include?(framework_agreement.id.to_s) %>
     <% end %>
   <% end %>
 
