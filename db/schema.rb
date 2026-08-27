@@ -965,6 +965,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_27_073016) do
   add_foreign_key "declarations", "mentorship_periods", on_delete: :nullify
   add_foreign_key "declarations", "statements", column: "clawback_statement_id"
   add_foreign_key "declarations", "statements", column: "payment_statement_id"
+  add_foreign_key "declarations", "training_periods", on_delete: :restrict
   add_foreign_key "declarations", "users", column: "voided_by_user_id"
   add_foreign_key "ect_at_school_periods", "appropriate_body_periods", column: "school_reported_appropriate_body_id"
   add_foreign_key "ect_at_school_periods", "schools"

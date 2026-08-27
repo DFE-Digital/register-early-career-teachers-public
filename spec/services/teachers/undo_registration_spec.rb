@@ -194,6 +194,7 @@ RSpec.describe Teachers::UndoRegistration do
 
         it "deletes the relevant periods" do
           expect_periods_to_be_deleted(ect_at_school_period:, training_period:, mentorship_period:)
+          expect { declaration.reload }.to raise_error(ActiveRecord::RecordNotFound)
         end
       end
 
@@ -202,6 +203,7 @@ RSpec.describe Teachers::UndoRegistration do
 
         it "deletes the relevant periods" do
           expect_periods_to_be_deleted(ect_at_school_period:, training_period:, mentorship_period:)
+          expect { declaration.reload }.to raise_error(ActiveRecord::RecordNotFound)
         end
       end
 

@@ -8,6 +8,8 @@ describe Declaration do
       if attribute_to_change == :mentorship_period_id
         mentee_school_partnership = FactoryBot.create(:school_partnership)
         create_mentorship_period_for(mentee_school_partnership:).tap { it.update!(id: new_value) }
+      elsif attribute_to_change == :training_period_id
+        FactoryBot.create(:training_period, id: new_value)
       end
     end
 
@@ -114,6 +116,28 @@ describe Declaration do
         let(:declaration_type) { :completed }
 
         it { is_expected.to have_error(:base, "Uplifts are only applicable to started declarations in an uplift enabled contract period") }
+      end
+    end
+
+    describe "training_period_id foreign key constraint" do
+      it "prevents creating a declaration that references a missing training period" do
+        declaration = FactoryBot.build(:declaration, training_period_id: TrainingPeriod.maximum(:id).to_i.next)
+
+        expect { declaration.save(validate: false) }.to raise_error(ActiveRecord::InvalidForeignKey)
+      end
+
+      it "prevents deleting a training period that has declarations" do
+        declaration = FactoryBot.create(:declaration)
+        training_period = declaration.training_period
+
+        expect { training_period.delete }.to raise_error(ActiveRecord::InvalidForeignKey)
+      end
+
+      it "allows destroying a training period that has declarations via callback" do
+        declaration = FactoryBot.create(:declaration)
+        training_period = declaration.training_period
+
+        expect { training_period.destroy! }.not_to raise_error
       end
     end
 
@@ -427,11 +451,14 @@ describe Declaration do
       end
 
       describe ".refundable" do
-        let(:declarations) { described_class.clawback_statuses.keys.map { |status| FactoryBot.create(:declaration, :"#{status}") } }
-        let(:refundable_declarations) { declarations.select { |d| described_class::REFUNDABLE_CLAWBACK_STATUSES.include?(d.clawback_status) } }
-
         it "returns declarations with refundable statuses" do
           expect(described_class.refundable.pluck(:clawback_status)).to all(be_in(described_class::REFUNDABLE_CLAWBACK_STATUSES))
+        end
+      end
+
+      describe ".non_billable" do
+        it "returns declarations with non-billable statuses" do
+          expect(described_class.non_billable.pluck(:payment_status)).to all(be_in(described_class.payment_statuses.values.excluding(described_class::BILLABLE_PAYMENT_STATUSES)))
         end
       end
     end
