@@ -22,6 +22,7 @@ ActiveSupport::Inflector.inflections(:en) do |inflect|
   inflect.acronym "ECTs" # Early Career Teachers
   inflect.acronym "ERO" # Early Roll Out (ECF1 pre-launch mentor participants)
   inflect.acronym "GIAS" # Get Information About Schools
+  inflect.acronym "HAR" # HTTP Archive
   inflect.acronym "ITT" # Initial teacher training
   inflect.acronym "OmniAuth"
   inflect.acronym "OpenID"
