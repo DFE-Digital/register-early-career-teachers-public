@@ -1,10 +1,10 @@
 # TRS status decorator.
 # Optional teacher param overrides `InProgress` if no ongoing induction is found
-class Teachers::InductionStatus
+class Induction::Status
   attr_reader :trs_induction_status,
               :teacher
 
-  Status = Data.define(:name, :colour) do
+  StatusColour = Data.define(:name, :colour) do
     def to_h = { text: name, colour: }
   end
 
@@ -49,13 +49,13 @@ private
     }
   end
 
-  def exempt = Status.new(name: "Exempt", colour: "green")
-  def failed = Status.new(name: "Failed", colour: "red")
-  def failed_in_wales = Status.new(name: "Failed in Wales", colour: "red")
-  def in_progress = Status.new(name: "In progress", colour: "blue")
-  def none = Status.new(name: "None", colour: "grey")
-  def passed = Status.new(name: "Passed", colour: "green")
-  def paused = Status.new(name: "Induction paused", colour: "magenta")
-  def required_to_complete = Status.new(name: "Required to complete", colour: "yellow")
-  def unknown = Status.new(name: "Unknown", colour: "grey")
+  def exempt = StatusColour.new(name: "Exempt", colour: "green")
+  def failed = StatusColour.new(name: "Failed", colour: "red")
+  def failed_in_wales = StatusColour.new(name: "Failed in Wales", colour: "red")
+  def in_progress = StatusColour.new(name: "In progress", colour: "blue")
+  def none = StatusColour.new(name: "None", colour: "grey")
+  def passed = StatusColour.new(name: "Passed", colour: "green")
+  def paused = StatusColour.new(name: "Induction paused", colour: "magenta")
+  def required_to_complete = StatusColour.new(name: "Required to complete", colour: "yellow")
+  def unknown = StatusColour.new(name: "Unknown", colour: "grey")
 end

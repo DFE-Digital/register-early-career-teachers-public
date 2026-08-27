@@ -43,7 +43,7 @@ module TestGuidance
     # Once used by RIAB the status changes to "In progress" if active or "Induction paused" once released
     def status_indicator(trs_induction_status, teacher)
       trs_induction_status = teacher&.induction_periods&.any? ? "InProgress" : trs_induction_status
-      induction_status = Teachers::InductionStatus.new(trs_induction_status:, teacher:)
+      induction_status = Induction::Status.new(trs_induction_status:, teacher:)
       govuk_tag(**induction_status.status_tag_kwargs)
     end
 

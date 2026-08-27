@@ -42,7 +42,7 @@
                 key: { text: "Status" },
                 value: {
                   text: govuk_tag(
-                    **Teachers::InductionStatus.new(
+                    **Induction::Status.new(
                       teacher:,
                       trs_induction_status: teacher.trs_induction_status
                     ).status_tag_kwargs
