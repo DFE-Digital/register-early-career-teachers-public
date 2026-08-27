@@ -63,14 +63,14 @@ describe FrameworkAgreement do
       let(:contract_period) { FactoryBot.create(:contract_period) }
       let!(:available_alp_1) { FactoryBot.create(:framework_agreement, contract_period:) }
       let!(:available_alp_2) { FactoryBot.create(:framework_agreement, contract_period:) }
-      let!(:assigned_alp) { FactoryBot.create(:framework_agreement, contract_period:) }
-      let!(:different_year_alp) { FactoryBot.create(:framework_agreement, :for_year, year: contract_period.year + 1) }
+      let!(:assigned_framework_agreement) { FactoryBot.create(:framework_agreement, contract_period:) }
+      let!(:different_year_framework_agreement) { FactoryBot.create(:framework_agreement, :for_year, year: contract_period.year + 1) }
 
-      # Create an existing partnership for one of the ALPs
+      # Create an existing partnership for one of the framework agreements
       let!(:existing_partnership) do
         FactoryBot.create(:lead_provider_delivery_partnership,
                           delivery_partner:,
-                          framework_agreement: assigned_alp)
+                          framework_agreement: assigned_framework_agreement)
       end
 
       it "returns available lead providers for the delivery partner and contract period" do
@@ -80,12 +80,12 @@ describe FrameworkAgreement do
 
       it "excludes already assigned lead providers" do
         result = described_class.available_for_delivery_partner(delivery_partner, contract_period)
-        expect(result).not_to include(assigned_alp)
+        expect(result).not_to include(assigned_framework_agreement)
       end
 
       it "excludes lead providers from different contract periods" do
         result = described_class.available_for_delivery_partner(delivery_partner, contract_period)
-        expect(result).not_to include(different_year_alp)
+        expect(result).not_to include(different_year_framework_agreement)
       end
 
       it "includes lead providers assigned to other delivery partners" do
@@ -103,7 +103,7 @@ describe FrameworkAgreement do
         available_alp_2.lead_provider.update!(name: "Alpha Lead Provider")
 
         result = described_class.available_for_delivery_partner(delivery_partner, contract_period)
-        expect(result.map { |alp| alp.lead_provider.name }).to eq(["Alpha Lead Provider", "Zebra Lead Provider"])
+        expect(result.map { |framework_agreement| framework_agreement.lead_provider.name }).to eq(["Alpha Lead Provider", "Zebra Lead Provider"])
       end
 
       it "includes the lead provider relationship" do
@@ -121,47 +121,47 @@ describe FrameworkAgreement do
     describe ".without_existing_partnership_for" do
       let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
       let(:contract_period) { FactoryBot.create(:contract_period) }
-      let!(:available_alp) { FactoryBot.create(:framework_agreement, contract_period:) }
-      let!(:partnered_alp) { FactoryBot.create(:framework_agreement, contract_period:) }
-      let!(:different_period_alp) { FactoryBot.create(:framework_agreement) }
+      let!(:available_framework_agreement) { FactoryBot.create(:framework_agreement, contract_period:) }
+      let!(:partnered_framework_agreement) { FactoryBot.create(:framework_agreement, contract_period:) }
+      let!(:different_period_framework_agreement) { FactoryBot.create(:framework_agreement) }
 
       before do
         FactoryBot.create(:lead_provider_delivery_partnership,
                           delivery_partner:,
-                          framework_agreement: partnered_alp)
+                          framework_agreement: partnered_framework_agreement)
       end
 
       it "returns framework agreements without existing partnerships for the delivery partner and contract period" do
         result = described_class.without_existing_partnership_for(delivery_partner, contract_period)
-        expect(result).to include(available_alp)
-        expect(result).not_to include(partnered_alp)
+        expect(result).to include(available_framework_agreement)
+        expect(result).not_to include(partnered_framework_agreement)
       end
 
       it "includes framework agreements from different contract periods even if they have partnerships" do
         result = described_class.without_existing_partnership_for(delivery_partner, contract_period)
-        expect(result).to include(different_period_alp)
+        expect(result).to include(different_period_framework_agreement)
       end
 
       it "includes framework agreements that have partnerships with other delivery partners" do
         other_delivery_partner = FactoryBot.create(:delivery_partner)
-        other_partnered_alp = FactoryBot.create(:framework_agreement, contract_period:)
+        other_partnered_framework_agreement = FactoryBot.create(:framework_agreement, contract_period:)
         FactoryBot.create(:lead_provider_delivery_partnership,
                           delivery_partner: other_delivery_partner,
-                          framework_agreement: other_partnered_alp)
+                          framework_agreement: other_partnered_framework_agreement)
 
         result = described_class.without_existing_partnership_for(delivery_partner, contract_period)
-        expect(result).to include(other_partnered_alp)
+        expect(result).to include(other_partnered_framework_agreement)
       end
     end
 
     describe ".with_lead_provider_ordered_by_name" do
-      let!(:zebra_alp) { FactoryBot.create(:framework_agreement, lead_provider: FactoryBot.create(:lead_provider, name: "Zebra Provider")) }
-      let!(:alpha_alp) { FactoryBot.create(:framework_agreement, lead_provider: FactoryBot.create(:lead_provider, name: "Alpha Provider")) }
-      let!(:beta_alp) { FactoryBot.create(:framework_agreement, lead_provider: FactoryBot.create(:lead_provider, name: "Beta Provider")) }
+      let!(:zebra_framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider: FactoryBot.create(:lead_provider, name: "Zebra Provider")) }
+      let!(:alpha_framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider: FactoryBot.create(:lead_provider, name: "Alpha Provider")) }
+      let!(:beta_framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider: FactoryBot.create(:lead_provider, name: "Beta Provider")) }
 
       it "returns framework agreements ordered by lead provider name" do
         result = described_class.with_lead_provider_ordered_by_name
-        lead_provider_names = result.map { |alp| alp.lead_provider.name }
+        lead_provider_names = result.map { |framework_agreement| framework_agreement.lead_provider.name }
         expect(lead_provider_names).to eq(lead_provider_names.sort)
       end
 

@@ -108,14 +108,14 @@ RSpec.describe "Admin::Teachers::Training", type: :request do
         before do
           lead_provider = FactoryBot.create(:lead_provider)
           latest_lead_provider = FactoryBot.create(:lead_provider)
-          older_active_lp = FactoryBot.create(:framework_agreement, lead_provider:)
-          newer_active_lp = FactoryBot.create(:framework_agreement, lead_provider:)
-          latest_active_lp = FactoryBot.create(:framework_agreement, lead_provider: latest_lead_provider)
+          older_framework_agreement = FactoryBot.create(:framework_agreement, lead_provider:)
+          newer_framework_agreement = FactoryBot.create(:framework_agreement, lead_provider:)
+          latest_framework_agreement = FactoryBot.create(:framework_agreement, lead_provider: latest_lead_provider)
 
           FactoryBot.create(:training_period,
                             :for_mentor,
                             :with_framework_agreement,
-                            framework_agreement: older_active_lp,
+                            framework_agreement: older_framework_agreement,
                             mentor_at_school_period:,
                             started_on: older_started_on,
                             finished_on: middle_started_on - 1.day)
@@ -123,7 +123,7 @@ RSpec.describe "Admin::Teachers::Training", type: :request do
           FactoryBot.create(:training_period,
                             :for_mentor,
                             :with_framework_agreement,
-                            framework_agreement: newer_active_lp,
+                            framework_agreement: newer_framework_agreement,
                             mentor_at_school_period:,
                             started_on: middle_started_on,
                             finished_on: newer_started_on - 1.day)
@@ -131,7 +131,7 @@ RSpec.describe "Admin::Teachers::Training", type: :request do
           FactoryBot.create(:training_period,
                             :for_mentor,
                             :with_framework_agreement,
-                            framework_agreement: latest_active_lp,
+                            framework_agreement: latest_framework_agreement,
                             mentor_at_school_period:,
                             started_on: newer_started_on,
                             finished_on: nil)
@@ -214,19 +214,19 @@ RSpec.describe "Admin::Teachers::Training", type: :request do
 
         before do
           lead_provider = FactoryBot.create(:lead_provider)
-          older_active_lp = FactoryBot.create(:framework_agreement, lead_provider:)
-          newer_active_lp = FactoryBot.create(:framework_agreement, lead_provider:)
+          older_framework_agreement = FactoryBot.create(:framework_agreement, lead_provider:)
+          newer_framework_agreement = FactoryBot.create(:framework_agreement, lead_provider:)
 
           FactoryBot.create(:training_period,
                             :with_framework_agreement,
-                            framework_agreement: older_active_lp,
+                            framework_agreement: older_framework_agreement,
                             ect_at_school_period: ect_period,
                             started_on: older_started_on,
                             finished_on: newer_started_on - 1.day)
 
           FactoryBot.create(:training_period,
                             :with_framework_agreement,
-                            framework_agreement: newer_active_lp,
+                            framework_agreement: newer_framework_agreement,
                             ect_at_school_period: ect_period,
                             started_on: newer_started_on,
                             finished_on: nil)

@@ -109,17 +109,17 @@ private
     list
   end
 
-  def framework_agreement_dependencies(alp, list)
-    alp_list = list[:framework_agreements] ||= {}
-    return list if alp_list[alp.id.to_s].present?
+  def framework_agreement_dependencies(framework_agreement, list)
+    framework_agreement_list = list[:framework_agreements] ||= {}
+    return list if framework_agreement_list[framework_agreement.id.to_s].present?
 
-    alp_list[alp.id.to_s] = { label: "framework_agreement_#{alp_list.count + 1}", data: alp }
+    framework_agreement_list[framework_agreement.id.to_s] = { label: "framework_agreement_#{framework_agreement_list.count + 1}", data: framework_agreement }
 
     lp_list = list[:lead_providers] ||= {}
-    lead_provider = alp.lead_provider
+    lead_provider = framework_agreement.lead_provider
     lp_list[lead_provider.id.to_s] = { label: "lead_provider_#{lp_list.count + 1}", data: lead_provider }
 
-    contract_period_dependencies(alp.contract_period, list)
+    contract_period_dependencies(framework_agreement.contract_period, list)
   end
 
   def contract_period_dependencies(contract_period, list)

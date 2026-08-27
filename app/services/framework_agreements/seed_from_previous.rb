@@ -85,7 +85,7 @@ private
     # Contract validates its presence at creation time, and the duped fee structure's
     # old contract_id cannot simply be nulled as it violates a DB constraint.
     #
-    # This ensures the contract_id is populated at save and avoids cross-ALP band references.
+    # This ensures the contract_id is populated at save and avoids cross-framework-agreement band references.
     #
     previous_contract = previous_latest_contract
 

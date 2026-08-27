@@ -176,9 +176,9 @@ module BlazerQueries
           "SELECT 1 FROM school_partnerships sp " \
           "INNER JOIN lead_provider_delivery_partnerships lpdp " \
           "ON lpdp.id = sp.lead_provider_delivery_partnership_id " \
-          "INNER JOIN framework_agreements alp " \
-          "ON alp.id = lpdp.framework_agreement_id " \
-          "INNER JOIN contract_periods cp ON cp.year = alp.contract_period_year " \
+          "INNER JOIN framework_agreements fa " \
+          "ON fa.id = lpdp.framework_agreement_id " \
+          "INNER JOIN contract_periods cp ON cp.year = fa.contract_period_year " \
           "WHERE sp.school_id = s.id AND cp.range @> #{current_date_sql})"
       end
 

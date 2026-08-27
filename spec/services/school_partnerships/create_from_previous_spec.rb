@@ -14,14 +14,14 @@ RSpec.describe SchoolPartnerships::CreateFromPrevious do
   let!(:previous_contract_period) { FactoryBot.create(:contract_period, year: previous_year) }
   let!(:current_contract_period)  { FactoryBot.create(:contract_period, year: current_year) }
 
-  let!(:active_lp_previous_year) do
+  let!(:framework_agreement_previous_year) do
     FactoryBot.create(:framework_agreement, lead_provider:, contract_period: previous_contract_period)
   end
 
   let!(:lpdp_previous_year) do
     FactoryBot.create(
       :lead_provider_delivery_partnership,
-      framework_agreement: active_lp_previous_year,
+      framework_agreement: framework_agreement_previous_year,
       delivery_partner:
     )
   end
@@ -71,7 +71,7 @@ RSpec.describe SchoolPartnerships::CreateFromPrevious do
     end
 
     context "when there is a framework agreement for the current year but no matching LP/DP pairing" do
-      let!(:active_lp_current_year) do
+      let!(:framework_agreement_current_year) do
         FactoryBot.create(:framework_agreement, lead_provider:, contract_period: current_contract_period)
       end
 
@@ -89,14 +89,14 @@ RSpec.describe SchoolPartnerships::CreateFromPrevious do
     end
 
     context "when a matching LP/DP pairing exists in the current year" do
-      let!(:active_lp_current_year) do
+      let!(:framework_agreement_current_year) do
         FactoryBot.create(:framework_agreement, lead_provider:, contract_period: current_contract_period)
       end
 
       let!(:lpdp_current_year) do
         FactoryBot.create(
           :lead_provider_delivery_partnership,
-          framework_agreement: active_lp_current_year,
+          framework_agreement: framework_agreement_current_year,
           delivery_partner:
         )
       end

@@ -199,7 +199,7 @@ RSpec.describe "Registering a mentor", :js do
 
   def and_i_should_see_mentor_funding_on_the_page
     expect(page.get_by_text("Our records show that Kirk Van Damme can get up to 20 hours of ECTE mentor training as your school is working with a DfE-funded training provider.")).to be_visible
-    expect(page.get_by_text("We'll pass on their details to Xavier's School for Gifted Youngsters who will contact them to arrange the training.")).to be_visible
+    expect(page.get_by_text("We’ll pass on their details to Xavier's School for Gifted Youngsters who will contact them to arrange the training.")).to be_visible
   end
 
   def then_i_should_be_taken_to_the_check_answers_page

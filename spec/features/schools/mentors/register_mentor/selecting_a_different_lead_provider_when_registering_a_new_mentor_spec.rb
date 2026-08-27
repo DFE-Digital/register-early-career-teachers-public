@@ -100,7 +100,7 @@ RSpec.describe "Selecting a different lead provider" do
   end
 
   def when_i_click_choose_another_provider_link
-    page.get_by_role("link", name: "#{@lead_provider.name} will not be providing mentor training to Kirk Van Houten").click
+    page.get_by_role("link", name: "tell us if a different provider will be training Kirk Van Houten").click
   end
 
   def then_i_should_be_taken_to_eligibility_lead_provider_page
