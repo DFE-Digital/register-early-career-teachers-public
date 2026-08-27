@@ -1,4 +1,5 @@
 class APIController < ActionController::API
+  include NPlusOneDetection
   include API::TokenAuthenticatable
   include API::Paginatable
   include API::ErrorRescuable

@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::Base
+  include NPlusOneDetection
   include Authentication
   include DfE::Analytics::Requests
   include TimeTravellable
