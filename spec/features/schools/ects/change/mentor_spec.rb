@@ -355,7 +355,7 @@ private
 
   def then_i_change_lead_provider
     page
-      .get_by_role("link", name: /will not be providing mentor training to Jane Smith/)
+      .get_by_role("link", name: /tell us if a different provider will be training Jane Smith/)
       .click
   end
 

@@ -88,7 +88,7 @@ RSpec.describe "Add a mentor to a provider led ECT" do
   end
 
   def and_i_click_on_the_my_lead_provider_is_not_providing_mentor_training_link
-    page.get_by_role("link", name: "#{@lead_provider.name} will not be providing mentor training to #{@mentor_name}").click
+    page.get_by_role("link", name: "tell us if a different provider will be training #{@mentor_name}").click
   end
 
   def given_there_is_a_school_in_the_service

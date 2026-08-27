@@ -15,19 +15,14 @@
   to arrange the training.
 </p>
 
+<p class="govuk-body">
+  You can <%= govuk_link_to(
+    "tell us if a different provider will be training #{@wizard.current_step.new_mentor_name}",
+    schools_ects_change_mentor_wizard_lead_provider_path(@wizard.current_step.ect_at_school_period)
+  ) %>.
+</p>
+
 <%= form_with model: @wizard.current_step, url: @wizard.current_step_path do |form| %>
   <%= form.hidden_field :accepting_current_lead_provider, value: true %>
   <%= form.govuk_submit "Continue" %>
-
-  <p class="govuk-body">
-    <% change_provider_link_text = <<~TXT.squish
-        #{@wizard.current_step.current_lead_provider_name} will not be providing
-        mentor training to #{@wizard.current_step.new_mentor_name}
-      TXT
-    %>
-    <%= govuk_link_to(
-          change_provider_link_text,
-          schools_ects_change_mentor_wizard_lead_provider_path(@wizard.current_step.ect_at_school_period)
-        ) %>
-  </p>
 <% end %>
