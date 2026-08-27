@@ -74,7 +74,7 @@ RSpec.describe Contract::BandedFeeStructure::BandTerm, type: :model do
       let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
       let!(:contract) { FactoryBot.create(:contract, :for_ecf, framework_agreement:) }
 
-      context "when the band and contract ALP match" do
+      context "when the band and contract framework agreement match" do
         let!(:band) { FactoryBot.create(:framework_agreement_band, framework_agreement:) }
 
         it "is valid" do
@@ -83,7 +83,7 @@ RSpec.describe Contract::BandedFeeStructure::BandTerm, type: :model do
         end
       end
 
-      context "when the band and contract ALP do not match" do
+      context "when the band and contract framework agreement do not match" do
         let!(:band) { FactoryBot.create(:framework_agreement_band) }
 
         it "raises an error" do

@@ -146,12 +146,12 @@ RSpec.describe "Viewing a mentor" do
   end
 
   def lp_dp_and_partnership
-    @lead_provider = FactoryBot.create(:lead_provider, name: "Hidden leaf village")
-    @active_lp     = FactoryBot.create(:framework_agreement, lead_provider: @lead_provider)
-    @dp            = FactoryBot.create(:delivery_partner, name: "Artisan Education Group")
-    @lpdp          = FactoryBot.create(:lead_provider_delivery_partnership,
-                                       framework_agreement: @active_lp,
-                                       delivery_partner: @dp)
+    @lead_provider       = FactoryBot.create(:lead_provider, name: "Hidden leaf village")
+    @framework_agreement = FactoryBot.create(:framework_agreement, lead_provider: @lead_provider)
+    @dp                  = FactoryBot.create(:delivery_partner, name: "Artisan Education Group")
+    @lpdp                = FactoryBot.create(:lead_provider_delivery_partnership,
+                                             framework_agreement: @framework_agreement,
+                                             delivery_partner: @dp)
     @school_partnership = FactoryBot.create(:school_partnership,
                                             lead_provider_delivery_partnership: @lpdp,
                                             school: @school)
@@ -164,7 +164,7 @@ RSpec.describe "Viewing a mentor" do
                       mentor_at_school_period: @mentor,
                       started_on: Time.zone.today.beginning_of_month,
                       finished_on: nil,
-                      expression_of_interest: @active_lp)
+                      expression_of_interest: @framework_agreement)
   end
 
   def given_an_eligible_mentor_with_confirmed_training

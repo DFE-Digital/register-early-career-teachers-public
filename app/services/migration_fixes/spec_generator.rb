@@ -124,9 +124,9 @@ class MigrationFixes::SpecGenerator
       lead_provider = dependencies[:lead_providers][model.lead_provider_id.to_s][:label]
       contract_period = dependencies[:contract_periods][model.contract_period_year.to_s][:label]
 
-      <<~ALP.chomp
+      <<~FRAMEWORK_AGREEMENT.chomp
         let!(:#{label}) { FactoryBot.create(:framework_agreement, id: #{model.id}, lead_provider: #{lead_provider}, contract_period: #{contract_period}) }
-      ALP
+      FRAMEWORK_AGREEMENT
     }.join("\n")
   end
 
@@ -136,11 +136,11 @@ class MigrationFixes::SpecGenerator
     dependencies[:lead_provider_delivery_partnerships].map { |_key, value|
       model = value[:data]
       label = value[:label]
-      alp = dependencies[:framework_agreements][model.framework_agreement_id.to_s][:label]
+      framework_agreement = dependencies[:framework_agreements][model.framework_agreement_id.to_s][:label]
       delivery_partner = dependencies[:delivery_partners][model.delivery_partner_id.to_s][:label]
 
       <<~LPDP.chomp
-        let!(:#{label}) { FactoryBot.create(:lead_provider_delivery_partnership, id: #{model.id}, framework_agreement: #{alp}, delivery_partner: #{delivery_partner}) }
+        let!(:#{label}) { FactoryBot.create(:lead_provider_delivery_partnership, id: #{model.id}, framework_agreement: #{framework_agreement}, delivery_partner: #{delivery_partner}) }
       LPDP
     }.join("\n")
   end

@@ -22,12 +22,12 @@ describe Contracts::Build do
     end
 
     context "when the framework agreement has bands" do
-      let!(:alp_band) do
+      let!(:band) do
         FactoryBot.create_list(:framework_agreement_band, 5,
                                framework_agreement:)
       end
 
-      it "builds one band term per ALP band" do
+      it "builds one band term per framework agreement band" do
         expect(contract.banded_fee_structure.band_terms.size).to eq(5)
       end
     end

@@ -65,7 +65,7 @@ RSpec.describe "Admin finance framework agreement contracts", type: :request do
       FactoryBot.create(:framework_agreement,
                         contract_period:)
     end
-    let!(:alp_bands) do
+    let!(:bands) do
       FactoryBot.create_list(:framework_agreement_band, 3,
                              framework_agreement:)
     end
@@ -84,17 +84,17 @@ RSpec.describe "Admin finance framework agreement contracts", type: :request do
         setup_fee: "1000",
         band_terms_attributes: {
           "0" => {
-            band_id: alp_bands[0].id,
+            band_id: bands[0].id,
             output_fee_percentage: "80",
             fee_per_declaration: "100"
           },
           "1" => {
-            band_id: alp_bands[1].id,
+            band_id: bands[1].id,
             output_fee_percentage: "80",
             fee_per_declaration: "100"
           },
           "2" => {
-            band_id: alp_bands[2].id,
+            band_id: bands[2].id,
             output_fee_percentage: "80",
             fee_per_declaration: "100"
           },

@@ -305,14 +305,14 @@ RSpec.describe "Moving School - backdated start spec" do
     @orange_institute_lead_provider = FactoryBot.create(:lead_provider, name: "Orange Institute")
     @reuse_delivery_partner = FactoryBot.create(:delivery_partner, name: "DP for Reuse")
 
-    @alp_current_year = FactoryBot.create(
+    @framework_agreement_current_year = FactoryBot.create(
       :framework_agreement,
       :for_year,
       year: @current_contract_year,
       lead_provider: @orange_institute_lead_provider
     )
 
-    @alp_previous_year = FactoryBot.create(
+    @framework_agreement_previous_year = FactoryBot.create(
       :framework_agreement,
       :for_year,
       year: @previous_contract_year,
@@ -321,13 +321,13 @@ RSpec.describe "Moving School - backdated start spec" do
 
     @lpdp_current_year = FactoryBot.create(
       :lead_provider_delivery_partnership,
-      framework_agreement: @alp_current_year,
+      framework_agreement: @framework_agreement_current_year,
       delivery_partner: @reuse_delivery_partner
     )
 
     @lpdp_previous_year = FactoryBot.create(
       :lead_provider_delivery_partnership,
-      framework_agreement: @alp_previous_year,
+      framework_agreement: @framework_agreement_previous_year,
       delivery_partner: @reuse_delivery_partner
     )
   end
