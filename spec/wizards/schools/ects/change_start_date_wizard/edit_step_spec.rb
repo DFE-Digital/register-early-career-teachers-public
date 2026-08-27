@@ -61,6 +61,24 @@ RSpec.describe Schools::ECTs::ChangeStartDateWizard::EditStep do
       end
     end
 
+    context "when a new start date and a stored start date are provided" do
+      let(:stored_start_date) do
+        {
+          "1" => "2027",
+          "2" => "8",
+          "3" => "1"
+        }
+      end
+
+      before do
+        store.start_date = stored_start_date
+      end
+
+      it "uses the newly provided date" do
+        expect(current_step.start_date).to eq(start_date)
+      end
+    end
+
     context "when no start date is provided" do
       subject(:current_step) do
         described_class.new(wizard:)
