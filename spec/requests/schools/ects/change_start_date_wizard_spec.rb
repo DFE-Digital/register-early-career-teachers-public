@@ -289,7 +289,7 @@ RSpec.describe "Schools::ECTs::ChangeStartDateWizardController" do
       end
     end
 
-    context "when the date is in an unopened contract period" do
+    context "when the date is in a not yet opened contract period" do
       let(:new_start_date) { Date.current + 6.months }
 
       let(:contract_period) do
@@ -330,6 +330,50 @@ RSpec.describe "Schools::ECTs::ChangeStartDateWizardController" do
         expect(response.body).to include(
           path_for_step("edit")
         )
+      end
+
+      context "when the user goes back and enters a different valid date" do
+        let(:replacement_start_date) { Date.current - 1.day }
+
+        let(:enabled_contract_period) do
+          FactoryBot.build_stubbed(
+            :contract_period,
+            enabled: true
+          )
+        end
+
+        before do
+          allow(ContractPeriod)
+            .to receive(:containing_date)
+            .with(replacement_start_date)
+            .and_return(enabled_contract_period)
+        end
+
+        it "continues with the replacement date" do
+          post_edit
+          follow_redirect!
+
+          get path_for_step("edit")
+
+          post path_for_step("edit"), params: {
+            edit: {
+              "start_date(1i)" =>
+                replacement_start_date.year.to_s,
+              "start_date(2i)" =>
+                replacement_start_date.month.to_s,
+              "start_date(3i)" =>
+                replacement_start_date.day.to_s
+            }
+          }
+
+          expect(response)
+            .to redirect_to(path_for_step("check-answers"))
+
+          follow_redirect!
+
+          expect(response.body)
+            .to include(replacement_start_date.to_fs(:govuk))
+        end
       end
     end
   end

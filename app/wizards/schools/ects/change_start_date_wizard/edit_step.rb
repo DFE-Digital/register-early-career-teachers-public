@@ -36,6 +36,7 @@ module Schools
       private
 
         def pre_populate_attributes
+          return if start_date.present?
           return unless store.start_date
 
           self.start_date = Schools::Validation::ECTStartDate
@@ -105,19 +106,6 @@ module Schools
         def earliest_permitted_start_date
           @earliest_permitted_start_date ||=
             ContractPeriod.earliest_permitted_start_date
-        end
-
-        def start_date_error_message
-          case start_date_input.error_message
-          when Schools::Validation::ECTStartDate::DATE_MISSING_MESSAGE
-            "Enter #{name_for(ect_at_school_period.teacher)}'s ECT start date"
-          when Schools::Validation::ECTStartDate::INVALID_FORMAT_MESSAGE
-            "ECT Start date must be a valid date"
-          else
-            "#{name_for(ect_at_school_period.teacher)}'s ECT start date " \
-              "must be on or after the start of the registration period, " \
-              "#{ContractPeriod.earliest_permitted_start_date.to_fs(:govuk)}."
-          end
         end
 
         def invalid_period_error_message
