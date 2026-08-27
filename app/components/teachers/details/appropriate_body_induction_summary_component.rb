@@ -4,7 +4,7 @@ module Teachers::Details
 
     def initialize(teacher:)
       @teacher = teacher
-      @induction = Teachers::Induction.new(teacher)
+      @induction = Induction::TeacherInformation.new(teacher)
       @induction_periods = teacher.induction_periods
     end
 

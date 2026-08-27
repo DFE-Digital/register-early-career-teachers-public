@@ -1,4 +1,4 @@
-RSpec.describe Teachers::Induction do
+describe Induction::TeacherInformation do
   subject(:service) { described_class.new(teacher) }
 
   let(:teacher) { FactoryBot.create(:teacher) }

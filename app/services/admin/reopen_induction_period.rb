@@ -65,7 +65,7 @@ module Admin
     end
 
     def induction_start_date
-      @induction_start_date ||= ::Teachers::Induction.new(teacher).induction_start_date
+      @induction_start_date ||= Induction::TeacherInformation.new(teacher).induction_start_date
     end
   end
 end
