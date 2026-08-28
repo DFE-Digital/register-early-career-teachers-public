@@ -1,6 +1,16 @@
 module API
   module V3
-    class SchoolsController < APIController
+    class SchoolsController < ActionController::API
+      include API::TokenAuthenticatable
+      include API::Paginatable
+      include API::ErrorRescuable
+      include API::DateFilterable
+      include API::ContractPeriodFilterable
+      include API::FilterValidatable
+      include API::Orderable
+      include API::ConditionExtractable
+      include API::Analyticable
+
       filter_validation required_filters: %i[cohort]
 
       def index
