@@ -5,10 +5,7 @@ module API
       include API::Paginatable
       include API::ErrorRescuable
       include API::DateFilterable
-      # include API::ContractPeriodFilterable
-      # include API::FilterValidatable
       include API::Orderable
-      # include API::ConditionExtractable
       include API::Analyticable
 
       def index
