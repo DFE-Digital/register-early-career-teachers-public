@@ -53,11 +53,7 @@ RSpec.configure do |config|
   end
 
   config.around do |example|
-    if example.metadata[:skip_n_plus_one_detection]
-      example.run
-    else
-      Prosopite.scan { example.run }
-    end
+    Prosopite.scan { example.run }
   end
 
   config.around do |example|

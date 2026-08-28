@@ -1,6 +1,4 @@
-# N+1 detection is skipped here because Prosopite reports potential N+1 queries
-# without a stack trace, suggesting they may be false positives.
-RSpec.describe "Declarations API", :skip_n_plus_one_detection, :with_metadata, :with_touches, type: :request do
+RSpec.describe "Declarations API", :with_metadata, type: :request do
   let(:serializer) { API::DeclarationSerializer }
   let(:serializer_options) { { lead_provider_id: lead_provider.id } }
   let(:query) { API::Declarations::Query }
