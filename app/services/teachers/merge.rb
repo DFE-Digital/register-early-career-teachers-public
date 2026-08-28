@@ -34,6 +34,16 @@ module Teachers
       raise MergeError, "Cannot merge a teacher into itself" if source == destination
     end
 
+    def ensure_distinct_periods
+      raise MergeError, "Cannot merge school periods for the same teacher" if any_overlapping_periods?
+    end
+
+    delegate :any_overlapping_periods?, to: :overlapping
+
+    def overlapping
+      Teachers::Overlapping.new(teacher: source, other_teacher: destination)
+    end
+
     def move_school_periods
       source.ect_at_school_periods.find_each { |period| period.update!(teacher: destination) }
       source.mentor_at_school_periods.find_each { |period| period.update!(teacher: destination) }
