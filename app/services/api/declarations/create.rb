@@ -1,8 +1,16 @@
 module API::Declarations
   class Create
-    include API::Concerns::Declarations::SharedAction
+    include ActiveModel::Model
+    include ActiveModel::Attributes
+
+    include API::FindDeclaration
+    include API::FindLeadProvider
+    include API::LeadProviderAuthor
 
     TEACHER_TYPES = %i[ect mentor].freeze
+
+    attribute :declaration_api_id
+    attribute :lead_provider_id
 
     attribute :teacher_api_id
     attribute :teacher_type

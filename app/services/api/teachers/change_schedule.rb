@@ -1,6 +1,17 @@
 module API::Teachers
   class ChangeSchedule
-    include API::Concerns::Teachers::SharedAction
+    include ActiveModel::Model
+    include ActiveModel::Attributes
+
+    include API::FindLeadProvider
+    include API::LeadProviderAuthor
+    include API::FindTeacher
+    include API::FindLatestTrainingPeriod
+
+    attribute :lead_provider_id
+
+    attribute :teacher_api_id
+    attribute :teacher_type
 
     attribute :contract_period_year
     attribute :schedule_identifier
@@ -13,7 +24,7 @@ module API::Teachers
       return false unless valid?
 
       Teachers::ChangeSchedule.new(
-        author: Events::LeadProviderAPIAuthor.new(lead_provider:),
+        author:,
         lead_provider:,
         teacher:,
         training_period:,

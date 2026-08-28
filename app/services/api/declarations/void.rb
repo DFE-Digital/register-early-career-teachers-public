@@ -1,6 +1,14 @@
 module API::Declarations
   class Void
-    include API::Concerns::Declarations::SharedAction
+    include ActiveModel::Model
+    include ActiveModel::Attributes
+
+    include API::FindDeclaration
+    include API::FindLeadProvider
+    include API::LeadProviderAuthor
+
+    attribute :declaration_api_id
+    attribute :lead_provider_id
 
     validate :not_already_voided
     validate :voidable_payment
