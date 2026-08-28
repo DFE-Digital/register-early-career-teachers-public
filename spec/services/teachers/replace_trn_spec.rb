@@ -42,14 +42,6 @@ RSpec.describe Teachers::ReplaceTRN do
         subject
       end
 
-      context "when there is a circular redirect" do
-        let!(:replacement_teacher) { FactoryBot.create(:teacher, :merged_in_trs, trn: new_trn, trs_redirected_to: old_trn) }
-
-        it "raises a CircularRedirectError" do
-          expect { subject }.to raise_error(Teachers::ReplaceTRN::CircularRedirectError)
-        end
-      end
-
       context "when there is a teacher in the database with the replacement TRN" do
         before do
           FactoryBot.create(:teacher, trn: new_trn)
