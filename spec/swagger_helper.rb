@@ -41,7 +41,7 @@ RSpec.configure do |config|
 
         schemas: {
           # Shared
-          IDAttribute: ID_ATTRIBUTE,
+          IDAttribute: OpenAPI::Schemas::ID_ATTRIBUTE,
           UnauthorisedResponse: UNAUTHORISED_RESPONSE,
           NotFoundResponse: NOT_FOUND_RESPONSE,
           BadRequestResponse: BAD_REQUEST_RESPONSE,
@@ -91,7 +91,7 @@ RSpec.configure do |config|
           DeclarationPost2024MentorCompletedAttributes: DECLARATION_POST2024_MENTOR_COMPLETED_ATTRIBUTES,
 
           # Delivery Partners
-          DeliveryPartner: DELIVERY_PARTNER,
+          DeliveryPartner: API::DeliveryPartnerSerializer.openapi_schema,
           DeliveryPartnersFilter: DELIVERY_PARTNERS_FILTER,
           DeliveryPartnerResponse: DELIVERY_PARTNER_RESPONSE,
           DeliveryPartnersResponse: DELIVERY_PARTNERS_RESPONSE,
