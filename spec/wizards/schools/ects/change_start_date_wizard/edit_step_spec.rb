@@ -362,12 +362,6 @@ RSpec.describe Schools::ECTs::ChangeStartDateWizard::EditStep do
     end
 
     context "when the start date is more than four months ahead" do
-      around do |example|
-        travel_to(Date.new(2025, 1, 1)) do
-          example.run
-        end
-      end
-
       let(:contract_period) do
         FactoryBot.build_stubbed(
           :contract_period,
@@ -382,6 +376,8 @@ RSpec.describe Schools::ECTs::ChangeStartDateWizard::EditStep do
       end
 
       before do
+        travel_to Date.new(2025, 1, 1)
+
         allow(ContractPeriod)
           .to receive(:containing_date)
           .and_return(contract_period)
@@ -422,12 +418,6 @@ RSpec.describe Schools::ECTs::ChangeStartDateWizard::EditStep do
     end
 
     context "when the date is more than four months ahead in an unopened contract period" do
-      around do |example|
-        travel_to(Date.new(2025, 1, 1)) do
-          example.run
-        end
-      end
-
       let(:start_date) do
         {
           1 => 2025,
@@ -437,6 +427,8 @@ RSpec.describe Schools::ECTs::ChangeStartDateWizard::EditStep do
       end
 
       before do
+        travel_to Date.new(2025, 1, 1)
+
         FactoryBot.create(
           :contract_period,
           year: 2025,
@@ -485,11 +477,7 @@ RSpec.describe Schools::ECTs::ChangeStartDateWizard::EditStep do
   end
 
   describe "#next_step" do
-    around do |example|
-      travel_to(Date.new(2024, 4, 15)) do
-        example.run
-      end
-    end
+    before { travel_to Date.new(2024, 4, 15) }
 
     context "when the start date is in the past" do
       let(:start_date) do
