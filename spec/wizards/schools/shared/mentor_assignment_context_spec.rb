@@ -155,26 +155,37 @@ RSpec.describe Schools::Shared::MentorAssignmentContext do
   end
 
   describe "#lead_providers_within_contract_period" do
-    let!(:in_contract_period) do
-      FactoryBot.create(:contract_period, started_on: Date.new(2025, 1, 1), finished_on: Date.new(2025, 12, 31))
-    end
-
-    let!(:out_of_contract_period) do
-      FactoryBot.create(:contract_period, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 12, 31))
-    end
+    let!(:current_contract_period) { FactoryBot.create(:contract_period, :current) }
+    let!(:earlier_contract_period) { FactoryBot.create(:contract_period, :previous) }
 
     let!(:lead_provider_1) { FactoryBot.create(:lead_provider) }
     let!(:lead_provider_2) { FactoryBot.create(:lead_provider) }
     let!(:excluded_provider) { FactoryBot.create(:lead_provider) }
 
     before do
-      FactoryBot.create(:framework_agreement, contract_period: in_contract_period, lead_provider: lead_provider_1)
-      FactoryBot.create(:framework_agreement, contract_period: in_contract_period, lead_provider: lead_provider_2)
-      FactoryBot.create(:framework_agreement, contract_period: out_of_contract_period, lead_provider: excluded_provider)
+      FactoryBot.create(:framework_agreement, contract_period: current_contract_period, lead_provider: lead_provider_1)
+      FactoryBot.create(:framework_agreement, contract_period: current_contract_period, lead_provider: lead_provider_2)
+      FactoryBot.create(:framework_agreement, contract_period: earlier_contract_period, lead_provider: excluded_provider)
     end
 
-    it "returns only lead providers within the ECTs contract period" do
+    it "returns only lead providers with a framework agreement for the current contract period" do
       expect(context.lead_providers_within_contract_period).to contain_exactly(lead_provider_1, lead_provider_2)
+    end
+
+    context "when the ECT started before the current contract period" do
+      let(:ect_at_school_period) do
+        FactoryBot.create(
+          :ect_at_school_period,
+          :unfinished,
+          school:,
+          teacher: ect_teacher,
+          started_on: earlier_contract_period.started_on.next_month
+        )
+      end
+
+      it "still returns the lead providers for the current contract period" do
+        expect(context.lead_providers_within_contract_period).to contain_exactly(lead_provider_1, lead_provider_2)
+      end
     end
   end
 end

@@ -143,17 +143,18 @@ describe Schools::ECTs::ChangeMentorWizard::LeadProviderStep do
   describe "#lead_providers_for_select" do
     subject(:lead_providers_for_select) { current_step.lead_providers_for_select }
 
-    let(:current_contract_period) do
+    let!(:current_contract_period) do
       FactoryBot.create(:contract_period, :current)
     end
     let(:upcoming_contract_period) do
       FactoryBot.create(:contract_period, :next)
     end
+    let(:framework_agreement_contract_period) { current_contract_period }
     let!(:framework_agreement) do
-      FactoryBot.create(:framework_agreement, contract_period: current_contract_period)
+      FactoryBot.create(:framework_agreement, contract_period: framework_agreement_contract_period)
     end
     let!(:other_lead_provider) do
-      FactoryBot.create(:framework_agreement, contract_period: current_contract_period)
+      FactoryBot.create(:framework_agreement, contract_period: framework_agreement_contract_period)
     end
     let!(:future_lead_provider) do
       FactoryBot.create(:framework_agreement, contract_period: upcoming_contract_period)
@@ -161,22 +162,25 @@ describe Schools::ECTs::ChangeMentorWizard::LeadProviderStep do
     let(:mentor_at_school_period) do
       FactoryBot.create(:mentor_at_school_period, school:, started_on:)
     end
+    let(:started_on) { current_contract_period.started_on.next_month }
 
-    context "when there are no framework agreements in contract period containing the mentor's start date" do
-      let(:started_on) { current_contract_period.started_on.prev_day }
+    it "offers the lead providers with a framework agreement for the current contract period" do
+      expect(lead_providers_for_select)
+        .to contain_exactly(framework_agreement.lead_provider, other_lead_provider.lead_provider)
+    end
+
+    context "when no lead provider has a framework agreement for the current contract period" do
+      let(:framework_agreement_contract_period) { upcoming_contract_period }
 
       it { is_expected.to be_empty }
     end
 
-    context "when there are framework agreements in contract period containing the mentor's start date" do
-      let(:started_on) { current_contract_period.started_on.next_month }
+    context "when the mentor started before the current contract period" do
+      let(:started_on) { current_contract_period.started_on.prev_day }
 
-      it { is_expected.to contain_exactly(framework_agreement.lead_provider, other_lead_provider.lead_provider) }
-
-      context "when the mentor started on the last day of the contract period" do
-        let(:started_on) { current_contract_period.finished_on }
-
-        it { is_expected.to contain_exactly(framework_agreement.lead_provider, other_lead_provider.lead_provider) }
+      it "still offers the lead providers for the current contract period" do
+        expect(lead_providers_for_select)
+          .to contain_exactly(framework_agreement.lead_provider, other_lead_provider.lead_provider)
       end
     end
   end

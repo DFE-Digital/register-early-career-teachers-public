@@ -53,7 +53,7 @@ module Schools
       end
 
       def contract_period
-        ContractPeriod.containing_date(@ect_at_school_period&.started_on&.to_date)
+        ContractPeriod.current
       end
     end
   end
