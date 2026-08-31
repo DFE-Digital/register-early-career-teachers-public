@@ -14,10 +14,10 @@ erDiagram
   Contract_BandedFeeStructure_BandTerm }o--|| FrameworkAgreement_Band : belongs_to
   FrameworkAgreement_Band {
     integer id
-    integer framework_agreement_id
     integer allocation_order
     integer capacity
     datetime created_at
+    integer framework_agreement_id
     datetime updated_at
   }
   FrameworkAgreement_Band }o--|| FrameworkAgreement : belongs_to
@@ -306,10 +306,10 @@ erDiagram
   LegacyAppropriateBody }o--|| AppropriateBodyPeriod : belongs_to
   LeadProviderDeliveryPartnership {
     integer id
-    integer framework_agreement_id
     datetime created_at
     integer delivery_partner_id
     uuid ecf_id
+    integer framework_agreement_id
     datetime updated_at
   }
   LeadProviderDeliveryPartnership }o--|| FrameworkAgreement : belongs_to
@@ -441,9 +441,9 @@ erDiagram
   }
   Contract {
     integer id
-    integer framework_agreement_id
     enum contract_type
     datetime created_at
+    integer framework_agreement_id
     datetime updated_at
     decimal vat_rate
   }
@@ -517,7 +517,6 @@ erDiagram
     datetime api_updated_at
     integer contract_period_year
     datetime created_at
-    boolean in_partnership
     enum induction_programme_choice
     integer school_id
     datetime updated_at
