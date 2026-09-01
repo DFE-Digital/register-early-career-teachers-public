@@ -7,8 +7,7 @@ RSpec.describe "Schools::ECTs::ChangeStartDateWizardController" do
       :ect_at_school_period,
       :unfinished,
       school:,
-      teacher:,
-      started_on: Date.new(2025, 9, 1)
+      teacher:
     )
   end
 
@@ -18,9 +17,12 @@ RSpec.describe "Schools::ECTs::ChangeStartDateWizardController" do
       :provider_led,
       :unfinished,
       :for_ect,
-      ect_at_school_period:,
-      started_on: Date.new(2025, 9, 1)
+      ect_at_school_period:
     )
+  end
+
+  let(:original_started_on) do
+    ect_at_school_period.started_on
   end
 
   describe "GET edit" do
@@ -80,64 +82,19 @@ RSpec.describe "Schools::ECTs::ChangeStartDateWizardController" do
         end
       end
 
-      context "when the ECT has multiple training periods" do
-        before do
-          training_period.update!(
-            finished_on: Date.new(2025, 12, 31)
-          )
-
-          FactoryBot.create(
-            :training_period,
-            :provider_led,
-            :unfinished,
-            :for_ect,
-            ect_at_school_period:,
-            started_on: Date.new(2026, 1, 1)
-          )
-        end
-
-        it "returns not found" do
-          get_edit
-
-          expect(response).to have_http_status(:not_found)
-        end
-      end
-
-      context "when the ECT has multiple mentorship periods" do
-        let(:first_mentor_at_school_period) do
-          FactoryBot.create(
-            :mentor_at_school_period,
-            :unfinished,
-            school:,
-            started_on: Date.new(2025, 9, 1)
-          )
-        end
-
-        let(:second_mentor_at_school_period) do
-          FactoryBot.create(
-            :mentor_at_school_period,
-            :unfinished,
-            school:,
-            started_on: Date.new(2025, 9, 1)
+      context "when the ECT is not eligible to change the start date" do
+        let(:eligibility) do
+          instance_double(
+            ECTAtSchoolPeriods::ChangeStartDate::Eligibility,
+            eligible?: false
           )
         end
 
         before do
-          FactoryBot.create(
-            :mentorship_period,
-            mentee: ect_at_school_period,
-            mentor: first_mentor_at_school_period,
-            started_on: Date.new(2025, 9, 1),
-            finished_on: Date.new(2025, 12, 31)
-          )
-
-          FactoryBot.create(
-            :mentorship_period,
-            :unfinished,
-            mentee: ect_at_school_period,
-            mentor: second_mentor_at_school_period,
-            started_on: Date.new(2026, 1, 1)
-          )
+          allow(ECTAtSchoolPeriods::ChangeStartDate::Eligibility)
+            .to receive(:new)
+            .with(ect_at_school_period:)
+            .and_return(eligibility)
         end
 
         it "returns not found" do
@@ -425,10 +382,10 @@ RSpec.describe "Schools::ECTs::ChangeStartDateWizardController" do
     it "updates the school and training period start dates" do
       expect { post_check_answers }
         .to change { ect_at_school_period.reload.started_on }
-        .from(Date.new(2025, 9, 1))
+        .from(original_started_on)
         .to(new_start_date)
         .and change { training_period.reload.started_on }
-        .from(Date.new(2025, 9, 1))
+        .from(original_started_on)
         .to(new_start_date)
     end
 
@@ -466,7 +423,7 @@ RSpec.describe "Schools::ECTs::ChangeStartDateWizardController" do
           :mentor_at_school_period,
           :unfinished,
           school:,
-          started_on: Date.new(2025, 9, 1)
+          started_on: original_started_on
         )
       end
 
@@ -475,7 +432,7 @@ RSpec.describe "Schools::ECTs::ChangeStartDateWizardController" do
           :mentorship_period,
           mentee: ect_at_school_period,
           mentor: mentor_at_school_period,
-          started_on: Date.new(2025, 9, 1),
+          started_on: original_started_on,
           finished_on: mentorship_finished_on
         )
       end
@@ -483,10 +440,10 @@ RSpec.describe "Schools::ECTs::ChangeStartDateWizardController" do
       it "updates the dates, removes the mentorship period and redirects to confirmation" do
         expect { post_check_answers }
           .to change { ect_at_school_period.reload.started_on }
-          .from(Date.new(2025, 9, 1))
+          .from(original_started_on)
           .to(new_start_date)
           .and change { training_period.reload.started_on }
-          .from(Date.new(2025, 9, 1))
+          .from(original_started_on)
           .to(new_start_date)
           .and change {
             MentorshipPeriod.exists?(mentorship_period.id)
