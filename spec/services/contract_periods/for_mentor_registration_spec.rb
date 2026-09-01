@@ -20,7 +20,7 @@ RSpec.describe ContractPeriods::ForMentorRegistration do
   let!(:current_contract_period) do
     FactoryBot.create(
       :contract_period,
-      :current,
+      :current
     )
   end
 
