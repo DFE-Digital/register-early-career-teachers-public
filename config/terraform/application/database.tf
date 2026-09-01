@@ -1,5 +1,5 @@
 module "postgres" {
-  source = "./vendor/modules/aks//aks/postgres"
+  source = "git::https://github.com/DFE-Digital/terraform-modules.git//aks/postgres?ref=2963-add-postgres-read-replica"
 
   namespace                      = var.namespace
   environment                    = var.environment
@@ -16,6 +16,7 @@ module "postgres" {
   azure_enable_high_availability = var.postgres_enable_high_availability
   azure_sku_name                 = var.postgres_flexible_server_sku
   azure_maintenance_window       = var.azure_maintenance_window
+  enable_read_replica            = true
 }
 
 module "postgres-snapshot" {
