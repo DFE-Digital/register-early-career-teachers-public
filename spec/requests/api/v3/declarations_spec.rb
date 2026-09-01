@@ -1,4 +1,4 @@
-RSpec.describe "Declarations API", :with_metadata, :with_touches, type: :request do
+RSpec.describe "Declarations API", :with_metadata, type: :request do
   let(:serializer) { API::DeclarationSerializer }
   let(:serializer_options) { { lead_provider_id: lead_provider.id } }
   let(:query) { API::Declarations::Query }
@@ -34,7 +34,6 @@ RSpec.describe "Declarations API", :with_metadata, :with_touches, type: :request
     it_behaves_like "a filter by delivery_partner_id endpoint", :delivery_partner_when_created
     it_behaves_like "a filter by participant_id endpoint"
     it_behaves_like "a filter by updated_since endpoint"
-    it_behaves_like "a N+1 queries free endpoint", :get
   end
 
   describe "#show" do
@@ -48,7 +47,6 @@ RSpec.describe "Declarations API", :with_metadata, :with_touches, type: :request
     it_behaves_like "a does not filter by delivery_partner_id endpoint", :delivery_partner_when_created
     it_behaves_like "a does not filter by participant_id endpoint"
     it_behaves_like "a does not filter by updated_since endpoint"
-    it_behaves_like "a N+1 queries free endpoint", :get
   end
 
   describe "#create" do
@@ -114,7 +112,6 @@ RSpec.describe "Declarations API", :with_metadata, :with_touches, type: :request
         it_behaves_like "a token authenticated endpoint", :post
         it_behaves_like "an API create endpoint"
         it_behaves_like "an endpoint that refreshes metadata", :post
-        it_behaves_like "a N+1 queries free endpoint", :post
 
         context "when the `declaration_type` is invalid" do
           let(:declaration_type) { "invalid" }
@@ -152,7 +149,6 @@ RSpec.describe "Declarations API", :with_metadata, :with_touches, type: :request
         it_behaves_like "a token authenticated endpoint", :put
         it_behaves_like "an API update endpoint", accepts_request_body: false
         it_behaves_like "an endpoint that refreshes metadata", :put
-        it_behaves_like "a N+1 queries free endpoint", :put
       end
     end
 
@@ -163,7 +159,6 @@ RSpec.describe "Declarations API", :with_metadata, :with_touches, type: :request
       it_behaves_like "a token authenticated endpoint", :put
       it_behaves_like "an API update endpoint", accepts_request_body: false
       it_behaves_like "an endpoint that refreshes metadata", :put
-      it_behaves_like "a N+1 queries free endpoint", :put
     end
 
     context "when the declaration is in `voided` status" do

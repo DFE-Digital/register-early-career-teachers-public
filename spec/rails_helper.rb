@@ -38,8 +38,9 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
 
   config.before do
-    # RIAB: new data model
-    allow(Rails.application.config).to receive(:enable_teaching_school_hubs).and_return(true)
+    allow(Rails.application.config).to receive_messages(
+      enable_teaching_school_hubs: true # RIAB: new data model
+    )
 
     # Ensure registration window (i.e contract periods) are always open
     allow(Schools::RegistrationWindow).to receive(:closed?).and_return(false)
@@ -49,6 +50,10 @@ RSpec.configure do |config|
       enable_maintenance_banner: false,
       enable_incident_banner: false
     )
+  end
+
+  config.around do |example|
+    Prosopite.scan { example.run }
   end
 
   config.around do |example|

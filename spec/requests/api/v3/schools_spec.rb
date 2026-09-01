@@ -45,7 +45,6 @@ RSpec.describe "Schools API", :with_metadata, type: :request do
     end
     it_behaves_like "a filter validatable endpoint", %i[cohort]
     it_behaves_like "a filter by urn endpoint"
-    it_behaves_like "a N+1 queries free endpoint", :get
   end
 
   describe "#show" do
@@ -60,6 +59,5 @@ RSpec.describe "Schools API", :with_metadata, type: :request do
         resource.contract_period_metadata.map(&:api_updated_at).max
       end
     end
-    it_behaves_like "a N+1 queries free endpoint", :get
   end
 end

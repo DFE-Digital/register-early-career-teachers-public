@@ -37,14 +37,16 @@ module DeliveryPartners
     end
 
     def add_partnerships(ids_to_add)
-      ids_to_add.each do |framework_agreement_id|
-        framework_agreement = FrameworkAgreement.find(framework_agreement_id)
-        LeadProviderDeliveryPartnerships::Create.new(
-          author:,
-          framework_agreement:,
-          params: { delivery_partner_id: delivery_partner.id }
-        ).call
-      end
+      FrameworkAgreement
+        .includes(:lead_provider, :contract_period)
+        .where(id: ids_to_add)
+        .find_each do |framework_agreement|
+          LeadProviderDeliveryPartnerships::Create.new(
+            author:,
+            framework_agreement:,
+            params: { delivery_partner_id: delivery_partner.id }
+          ).call
+        end
     end
   end
 end
