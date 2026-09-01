@@ -161,9 +161,7 @@ module Schools
         def previous_period
           @previous_period ||=
             ect_at_school_period
-              .teacher
-              .ect_at_school_periods
-              .where.not(id: ect_at_school_period.id)
+              .predecessors
               .latest_first
               .first
         end
