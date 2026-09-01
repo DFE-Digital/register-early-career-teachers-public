@@ -30,7 +30,7 @@ module APISeedData
         create_ongoing_induction_period(teacher:, school_time_period:)
 
         milestone = training_period.schedule.milestones.where(declaration_type: :"retained-1").sample
-        create_declaration(state: :paid, declaration_type: :"retained-1", training_period:, declaration_date: milestone.start_date + 2.months)
+        create_declaration(state: :paid, declaration_type: :"retained-1", training_period:, evidenced_at: milestone.start_date + 2.months)
 
         log_seed_info("Created participant for #{school_partnership.framework_agreement.lead_provider.name} with retained-1 declaration and no started declaration")
       end
@@ -48,10 +48,10 @@ module APISeedData
         create_ongoing_induction_period(teacher:, school_time_period:)
 
         milestone = training_period.schedule.milestones.where(declaration_type: :started).sample
-        create_declaration(state: :paid, declaration_type: :started, training_period:, declaration_date: milestone.start_date + 1.month)
+        create_declaration(state: :paid, declaration_type: :started, training_period:, evidenced_at: milestone.start_date + 1.month)
 
         milestone = training_period.schedule.milestones.where(declaration_type: :"retained-2").sample
-        create_declaration(state: :no_payment, declaration_type: :"retained-2", training_period:, declaration_date: milestone.start_date + 3.months)
+        create_declaration(state: :no_payment, declaration_type: :"retained-2", training_period:, evidenced_at: milestone.start_date + 3.months)
 
         log_seed_info("Created participant for #{school_partnership.framework_agreement.lead_provider.name} with paid started declaration and submitted retained-2 declaration")
       end
@@ -75,8 +75,8 @@ module APISeedData
         .where(lead_provider_delivery_partnership: { framework_agreement: })
     end
 
-    def create_declaration(state:, declaration_type:, training_period:, declaration_date:)
-      FactoryBot.create(:declaration, state, declaration_type:, training_period:, declaration_date:)
+    def create_declaration(state:, declaration_type:, training_period:, evidenced_at:)
+      FactoryBot.create(:declaration, state, declaration_type:, training_period:, evidenced_at:)
     end
 
     def create_ongoing_induction_period(teacher:, school_time_period:)

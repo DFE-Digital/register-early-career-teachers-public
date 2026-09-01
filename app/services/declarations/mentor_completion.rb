@@ -56,8 +56,8 @@ module Declarations
     end
 
     def finished_on
-      if declaration.declaration_date > latest_training_period.started_on
-        declaration.declaration_date
+      if declaration.evidenced_at > latest_training_period.started_on
+        declaration.evidenced_at
       else
         latest_training_period.started_on + 1.day
       end
@@ -77,7 +77,7 @@ module Declarations
 
     def mentor_completed_training!
       teacher.update!(
-        mentor_became_ineligible_for_funding_on: latest_billable_completed_declaration.declaration_date,
+        mentor_became_ineligible_for_funding_on: latest_billable_completed_declaration.evidenced_at,
         mentor_became_ineligible_for_funding_reason: "completed_declaration_received"
       )
     end
@@ -94,7 +94,7 @@ module Declarations
         .mentor_declarations
         .declaration_type_completed
         .billable_or_changeable
-        .order(declaration_date: :desc)
+        .order(evidenced_at: :desc)
         .first
     end
 

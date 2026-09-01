@@ -4,7 +4,7 @@ RSpec.describe API::Declarations::Create, type: :model do
       lead_provider_id:,
       teacher_api_id:,
       teacher_type:,
-      declaration_date:,
+      evidenced_at:,
       declaration_type:,
       evidence_type:
     )
@@ -21,7 +21,7 @@ RSpec.describe API::Declarations::Create, type: :model do
   let(:evidence_type) { "training-event-attended" }
   let(:schedule) { training_period.schedule }
   let(:declaration_datetime) { Faker::Time.between(from: milestone.start_date, to: milestone.milestone_date) }
-  let(:declaration_date) { declaration_datetime.rfc3339 }
+  let(:evidenced_at) { declaration_datetime.rfc3339 }
   let(:framework_agreement) { training_period.framework_agreement }
 
   let!(:milestone) do
@@ -102,25 +102,25 @@ RSpec.describe API::Declarations::Create, type: :model do
           it { is_expected.to have_error(:teacher_type, "Enter a '#/teacher_type'.") }
         end
 
-        context "when `declaration_date` is nil" do
-          let!(:declaration_date) { nil }
+        context "when `evidenced_at` is nil" do
+          let!(:evidenced_at) { nil }
 
           it { is_expected.to have_one_error_only }
-          it { is_expected.to have_error(:declaration_date, "Enter a '#/declaration_date'.") }
+          it { is_expected.to have_error(:evidenced_at, "Enter a '#/declaration_date'.") }
         end
 
-        context "when `declaration_date` is in the future" do
-          let!(:declaration_date) { 1.day.from_now.rfc3339 }
+        context "when `evidenced_at` is in the future" do
+          let!(:evidenced_at) { 1.day.from_now.rfc3339 }
 
           it { is_expected.to have_one_error_only }
-          it { is_expected.to have_error(:declaration_date, "The '#/declaration_date' value cannot be a future date. Check the date and try again.") }
+          it { is_expected.to have_error(:evidenced_at, "The '#/declaration_date' value cannot be a future date. Check the date and try again.") }
         end
 
-        context "when `declaration_date` is not in the correct format" do
-          let!(:declaration_date) { declaration_datetime.to_s }
+        context "when `evidenced_at` is not in the correct format" do
+          let!(:evidenced_at) { declaration_datetime.to_s }
 
           it { is_expected.to have_one_error_only }
-          it { is_expected.to have_error(:declaration_date, "Enter a valid RCF3339 '#/declaration_date'.") }
+          it { is_expected.to have_error(:evidenced_at, "Enter a valid RFC3339 '#/declaration_date'.") }
         end
 
         context "when `declaration_type` is nil" do
@@ -148,17 +148,17 @@ RSpec.describe API::Declarations::Create, type: :model do
         end
 
         context "when declaration date does not match the milestone start date" do
-          let(:declaration_date) { (milestone.start_date - 1.day).rfc3339 }
+          let(:evidenced_at) { (milestone.start_date - 1.day).rfc3339 }
 
           it { is_expected.to have_one_error_only }
-          it { is_expected.to have_error(:declaration_date, "Declaration date must be on or after the milestone start date for the same declaration type.") }
+          it { is_expected.to have_error(:evidenced_at, "Declaration date must be on or after the milestone start date for the same declaration type.") }
         end
 
         context "when declaration date does not match the milestone date" do
-          let(:declaration_date) { (milestone.milestone_date + 1.day).rfc3339 }
+          let(:evidenced_at) { (milestone.milestone_date + 1.day).rfc3339 }
 
           it { is_expected.to have_one_error_only }
-          it { is_expected.to have_error(:declaration_date, "Declaration date must be on or before the milestone date for the same declaration type.") }
+          it { is_expected.to have_error(:evidenced_at, "Declaration date must be on or before the milestone date for the same declaration type.") }
         end
 
         context "when teacher withdrew before the declaration date" do
@@ -259,7 +259,7 @@ RSpec.describe API::Declarations::Create, type: :model do
           end
 
           context "when teacher's latest ongoing training period is in a frozen contract period but declaration targets non-frozen" do
-            let(:declaration_date) { Faker::Date.between(from: training_period.started_on, to: training_period.finished_on).rfc3339 }
+            let(:evidenced_at) { Faker::Date.between(from: training_period.started_on, to: training_period.finished_on).rfc3339 }
 
             let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :unfinished, started_on: 6.months.ago) }
             let!(:training_period) do
@@ -311,7 +311,7 @@ RSpec.describe API::Declarations::Create, type: :model do
             context "with payment status `#{payment_status}`" do
               let!(:existing_duplicate_declaration) do
                 FactoryBot.create(:declaration, payment_status.to_sym,
-                                  declaration_date:,
+                                  evidenced_at:,
                                   declaration_type:,
                                   evidence_type:,
                                   training_period:)
@@ -349,7 +349,7 @@ RSpec.describe API::Declarations::Create, type: :model do
                                 milestone_date: Date.new(contract_period.year, 12, 1))
             end
 
-            it "selects the latest started training period, not the one closest to declaration_date" do
+            it "selects the latest started training period, not the one closest to evidenced_at" do
               expect(instance.training_period).to eq(current_training_period)
             end
           end
@@ -437,7 +437,7 @@ RSpec.describe API::Declarations::Create, type: :model do
                 FactoryBot.create(:declaration,
                                   declaration_type: :started,
                                   evidence_type: "training-event-attended",
-                                  declaration_date: (started_milestone.start_date + 1.month).rfc3339,
+                                  evidenced_at: (started_milestone.start_date + 1.month).rfc3339,
                                   training_period:)
               end
 
@@ -447,15 +447,15 @@ RSpec.describe API::Declarations::Create, type: :model do
 
               context "when `completed` is submitted before `started` declaration date" do
                 # New declaration with declaration date set 1 week before `started`
-                let(:declaration_date) { (started_declaration.declaration_date - 1.week).rfc3339 }
+                let(:evidenced_at) { (started_declaration.evidenced_at - 1.week).rfc3339 }
 
                 it { is_expected.to have_one_error_only }
-                it { is_expected.to have_error(:declaration_date, "This '#/declaration_date' is invalid. Check that it is in sequence with existing declaration dates for this participant.") }
+                it { is_expected.to have_error(:evidenced_at, "This '#/declaration_date' is invalid. Check that it is in sequence with existing declaration dates for this participant.") }
               end
 
               context "when `completed` is submitted after `started` declaration date" do
                 # New declaration with declaration date set 2 weeks after `started`
-                let(:declaration_date) { (started_declaration.declaration_date + 2.weeks).rfc3339 }
+                let(:evidenced_at) { (started_declaration.evidenced_at + 2.weeks).rfc3339 }
 
                 it { is_expected.to be_valid }
               end
@@ -470,7 +470,7 @@ RSpec.describe API::Declarations::Create, type: :model do
                 FactoryBot.create(:declaration,
                                   declaration_type: :completed,
                                   evidence_type: "75-percent-engagement-met",
-                                  declaration_date: (completed_milestone.start_date + 2.months).rfc3339,
+                                  evidenced_at: (completed_milestone.start_date + 2.months).rfc3339,
                                   training_period:)
               end
 
@@ -480,15 +480,15 @@ RSpec.describe API::Declarations::Create, type: :model do
 
               context "when `started` is submitted after `completed` declaration date" do
                 # New declaration with declaration date set 1 week after `completed`
-                let(:declaration_date) { (completed_declaration.declaration_date + 1.week).rfc3339 }
+                let(:evidenced_at) { (completed_declaration.evidenced_at + 1.week).rfc3339 }
 
                 it { is_expected.to have_one_error_only }
-                it { is_expected.to have_error(:declaration_date, "This '#/declaration_date' is invalid. Check that it is in sequence with existing declaration dates for this participant.") }
+                it { is_expected.to have_error(:evidenced_at, "This '#/declaration_date' is invalid. Check that it is in sequence with existing declaration dates for this participant.") }
               end
 
               context "when `started` is submitted before `completed` declaration date" do
                 # New declaration with declaration date set 2 weeks before `completed`
-                let(:declaration_date) { (completed_declaration.declaration_date - 2.weeks).rfc3339 }
+                let(:evidenced_at) { (completed_declaration.evidenced_at - 2.weeks).rfc3339 }
 
                 it { is_expected.to be_valid }
               end
@@ -506,7 +506,7 @@ RSpec.describe API::Declarations::Create, type: :model do
                   FactoryBot.create(:declaration,
                                     declaration_type: :started,
                                     evidence_type: "training-event-attended",
-                                    declaration_date: Date.new(contract_period_year, 7, 1).rfc3339,
+                                    evidenced_at: Date.new(contract_period_year, 7, 1).rfc3339,
                                     training_period:)
                 end
 
@@ -515,7 +515,7 @@ RSpec.describe API::Declarations::Create, type: :model do
                   FactoryBot.create(:declaration,
                                     declaration_type: :completed,
                                     evidence_type: "75-percent-engagement-met",
-                                    declaration_date: Date.new(contract_period_year, 9, 1).rfc3339,
+                                    evidenced_at: Date.new(contract_period_year, 9, 1).rfc3339,
                                     training_period:)
                 end
 
@@ -525,24 +525,24 @@ RSpec.describe API::Declarations::Create, type: :model do
                 context "when `retained-1` is submitted outside of `started` and `completed` declaration dates" do
                   context "when declaration date is before started" do
                     # New declaration with declaration date set 1 day before `started`
-                    let(:declaration_date) { (started_declaration.declaration_date - 1.day).rfc3339 }
+                    let(:evidenced_at) { (started_declaration.evidenced_at - 1.day).rfc3339 }
 
                     it { is_expected.to have_one_error_only }
-                    it { is_expected.to have_error(:declaration_date, "This '#/declaration_date' is invalid. Check that it is in sequence with existing declaration dates for this participant.") }
+                    it { is_expected.to have_error(:evidenced_at, "This '#/declaration_date' is invalid. Check that it is in sequence with existing declaration dates for this participant.") }
                   end
 
                   context "when declaration date is after completed" do
                     # New declaration with declaration date set 1 day after `completed`
-                    let(:declaration_date) { (completed_declaration.declaration_date + 1.day).rfc3339 }
+                    let(:evidenced_at) { (completed_declaration.evidenced_at + 1.day).rfc3339 }
 
                     it { is_expected.to have_one_error_only }
-                    it { is_expected.to have_error(:declaration_date, "This '#/declaration_date' is invalid. Check that it is in sequence with existing declaration dates for this participant.") }
+                    it { is_expected.to have_error(:evidenced_at, "This '#/declaration_date' is invalid. Check that it is in sequence with existing declaration dates for this participant.") }
                   end
                 end
 
                 context "when `retained-1` is submitted within `started` and `completed` declaration dates" do
                   # New declaration with declaration date set 1 day after `started`
-                  let(:declaration_date) { (started_declaration.declaration_date + 1.day).rfc3339 }
+                  let(:evidenced_at) { (started_declaration.evidenced_at + 1.day).rfc3339 }
 
                   it { is_expected.to be_valid }
                 end
@@ -552,7 +552,7 @@ RSpec.describe API::Declarations::Create, type: :model do
                   let!(:milestone) { FactoryBot.create(:milestone, declaration_type:, schedule:, start_date: Date.new(contract_period_year, 6, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
 
                   # New declaration with declaration date set 1 day after `completed`
-                  let(:declaration_date) { (completed_declaration.declaration_date + 1.day).rfc3339 }
+                  let(:evidenced_at) { (completed_declaration.evidenced_at + 1.day).rfc3339 }
 
                   it { is_expected.to be_valid }
                 end
@@ -573,13 +573,13 @@ RSpec.describe API::Declarations::Create, type: :model do
                   :declaration,
                   declaration_type: :started,
                   evidence_type: "training-event-attended",
-                  declaration_date: Date.new(contract_period_year, 8, 1).rfc3339,
+                  evidenced_at: Date.new(contract_period_year, 8, 1).rfc3339,
                   training_period:
                 )
               end
 
               # New declaration with declaration date set 1 month before `started`
-              let(:declaration_date) { (started_declaration.declaration_date - 1.month).rfc3339 }
+              let(:evidenced_at) { (started_declaration.evidenced_at - 1.month).rfc3339 }
               let(:declaration_type) { "completed" }
               let(:evidence_type) { "75-percent-engagement-met" }
 
@@ -596,13 +596,13 @@ RSpec.describe API::Declarations::Create, type: :model do
                   :declaration,
                   declaration_type: :completed,
                   evidence_type: "75-percent-engagement-met",
-                  declaration_date: Date.new(contract_period_year, 8, 1).rfc3339,
+                  evidenced_at: Date.new(contract_period_year, 8, 1).rfc3339,
                   training_period:
                 )
               end
 
               # New declaration with declaration date set 1 month before `completed`
-              let(:declaration_date) { (completed_declaration.declaration_date + 1.month).rfc3339 }
+              let(:evidenced_at) { (completed_declaration.evidenced_at + 1.month).rfc3339 }
               let(:declaration_type) { "started" }
               let(:evidence_type) { "training-event-attended" }
 
@@ -669,7 +669,7 @@ RSpec.describe API::Declarations::Create, type: :model do
                                                               lead_provider:,
                                                               teacher:,
                                                               training_period:,
-                                                              declaration_date:,
+                                                              evidenced_at:,
                                                               declaration_type:,
                                                               evidence_type:,
                                                               payment_statement:,

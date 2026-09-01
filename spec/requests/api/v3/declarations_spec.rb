@@ -66,7 +66,7 @@ RSpec.describe "Declarations API", :with_metadata, type: :request do
     let(:service_args) do
       {
         lead_provider_id: lead_provider.id,
-        declaration_date: declaration_date.rfc3339,
+        evidenced_at: declaration_date.rfc3339,
         declaration_type: "started",
         evidence_type: "other",
         teacher_api_id: teacher.api_id,

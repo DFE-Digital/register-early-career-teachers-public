@@ -66,7 +66,7 @@ RSpec.describe APISeedData::ECTDeclarationScenarios do
 
       retained_1_declaration = teacher.ect_declarations.first
       milestone = training_period.schedule.milestones.find_by(declaration_type: :"retained-1")
-      expect(retained_1_declaration.declaration_date).to eq((milestone.start_date + 2.months).in_time_zone)
+      expect(retained_1_declaration.evidenced_at).to eq((milestone.start_date + 2.months).in_time_zone)
 
       expect(retained_1_declaration).to have_attributes(
         declaration_type: "retained-1",
@@ -79,7 +79,7 @@ RSpec.describe APISeedData::ECTDeclarationScenarios do
         teacher_api_id: teacher.api_id,
         teacher_type: :ect,
         evidence_type: "other",
-        declaration_date: milestone.start_date.rfc3339,
+        evidenced_at: milestone.start_date.rfc3339,
         declaration_type: "started"
       )
 
@@ -113,7 +113,7 @@ RSpec.describe APISeedData::ECTDeclarationScenarios do
       started_declaration = teacher.ect_declarations.find_by(declaration_type: "started")
 
       milestone = training_period.schedule.milestones.find_by(declaration_type: :started)
-      expect(started_declaration.declaration_date).to eq((milestone.start_date + 1.month).in_time_zone)
+      expect(started_declaration.evidenced_at).to eq((milestone.start_date + 1.month).in_time_zone)
 
       expect(started_declaration).to have_attributes(
         declaration_type: "started",
@@ -122,7 +122,7 @@ RSpec.describe APISeedData::ECTDeclarationScenarios do
 
       retained_2_declaration = teacher.ect_declarations.find_by(declaration_type: "retained-2")
       milestone = training_period.schedule.milestones.find_by(declaration_type: :"retained-2")
-      expect(retained_2_declaration.declaration_date).to eq((milestone.start_date + 3.months).in_time_zone)
+      expect(retained_2_declaration.evidenced_at).to eq((milestone.start_date + 3.months).in_time_zone)
 
       expect(retained_2_declaration).to have_attributes(
         declaration_type: "retained-2",
@@ -142,7 +142,7 @@ RSpec.describe APISeedData::ECTDeclarationScenarios do
         teacher_api_id: teacher.api_id,
         teacher_type: :ect,
         evidence_type: "other",
-        declaration_date: (retained_2_declaration.declaration_date - 1.day).rfc3339,
+        evidenced_at: (retained_2_declaration.evidenced_at - 1.day).rfc3339,
         declaration_type: "retained-1"
       )
 

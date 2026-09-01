@@ -43,7 +43,7 @@ describe "Real data check for teacher 210915 (missing training period and declar
         action: "create",
         attributes: {
           declaration_type: "started",
-          declaration_date: "2023-09-22",
+          evidenced_at: "2023-09-22",
           training_period_id: "TP1",
           delivery_partner_when_created_id: 221,
           payment_status: "paid",
@@ -59,7 +59,7 @@ describe "Real data check for teacher 210915 (missing training period and declar
         action: "create",
         attributes: {
           declaration_type: "retained-1",
-          declaration_date: "2024-02-01",
+          evidenced_at: "2024-02-01",
           training_period_id: "TP1",
           delivery_partner_when_created_id: 221,
           payment_status: "paid",
@@ -76,7 +76,7 @@ describe "Real data check for teacher 210915 (missing training period and declar
         action: "create",
         attributes: {
           declaration_type: "retained-2",
-          declaration_date: "2024-07-02",
+          evidenced_at: "2024-07-02",
           training_period_id: "TP1",
           delivery_partner_when_created_id: 221,
           payment_status: "paid",
@@ -93,7 +93,7 @@ describe "Real data check for teacher 210915 (missing training period and declar
         action: "create",
         attributes: {
           declaration_type: "retained-3",
-          declaration_date: "2024-11-21",
+          evidenced_at: "2024-11-21",
           training_period_id: "TP1",
           delivery_partner_when_created_id: 221,
           payment_status: "paid",
@@ -110,7 +110,7 @@ describe "Real data check for teacher 210915 (missing training period and declar
         action: "create",
         attributes: {
           declaration_type: "retained-4",
-          declaration_date: "2025-01-24",
+          evidenced_at: "2025-01-24",
           training_period_id: "TP1",
           delivery_partner_when_created_id: 221,
           payment_status: "paid",
@@ -127,7 +127,7 @@ describe "Real data check for teacher 210915 (missing training period and declar
         action: "create",
         attributes: {
           declaration_type: "completed",
-          declaration_date: "2025-05-29",
+          evidenced_at: "2025-05-29",
           training_period_id: "TP1",
           delivery_partner_when_created_id: 221,
           payment_status: "paid",

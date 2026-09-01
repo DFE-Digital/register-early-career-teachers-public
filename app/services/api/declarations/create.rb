@@ -14,7 +14,7 @@ module API::Declarations
 
     attribute :teacher_api_id
     attribute :teacher_type
-    attribute :declaration_date
+    attribute :evidenced_at
     attribute :declaration_type
     attribute :evidence_type
 
@@ -25,7 +25,7 @@ module API::Declarations
       in: TEACHER_TYPES,
       message: "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again."
     }, allow_blank: true
-    validates :declaration_date, presence: { message: "Enter a '#/declaration_date'." }, if: -> { errors.empty? }
+    validates :evidenced_at, presence: { message: "Enter a '#/declaration_date'." }, if: -> { errors.empty? }
     validate :teacher_type_exists
     validates :declaration_type, presence: { message: "Enter a '#/declaration_type'." }, if: -> { errors.empty? }
     validates :declaration_type, inclusion: {
@@ -34,7 +34,7 @@ module API::Declarations
     }, allow_blank: true, if: -> { errors.empty? }
     validate :validates_billable_slot_available
     validate :declaration_date_in_the_past
-    validates :declaration_date,
+    validates :evidenced_at,
               declaration_date_within_milestone: true,
               api_date_time_format: true,
               allow_blank: true
@@ -55,7 +55,7 @@ module API::Declarations
         lead_provider:,
         teacher:,
         training_period:,
-        declaration_date:,
+        evidenced_at:,
         declaration_type:,
         evidence_type:,
         payment_statement:,
@@ -103,7 +103,7 @@ module API::Declarations
     def mentorship_period
       return unless training_period.for_ect?
 
-      @mentorship_period ||= training_period.mentorship_periods.closest_to(declaration_date).first
+      @mentorship_period ||= training_period.mentorship_periods.closest_to(evidenced_at).first
     end
 
     def delivery_partner
@@ -134,13 +134,13 @@ module API::Declarations
     end
 
     def declaration_date_in_the_past
-      return if errors[:declaration_date].any?
+      return if errors[:evidenced_at].any?
       return if errors[:declaration_type].any?
       return if errors[:teacher_api_id].any?
       return if errors[:teacher_type].any?
 
-      if declaration_date && declaration_date > Time.zone.now
-        errors.add(:declaration_date, "The '#/declaration_date' value cannot be a future date. Check the date and try again.")
+      if evidenced_at && evidenced_at > Time.zone.now
+        errors.add(:evidenced_at, "The '#/declaration_date' value cannot be a future date. Check the date and try again.")
       end
     end
 
@@ -157,7 +157,7 @@ module API::Declarations
       return if errors[:teacher_api_id].any?
       return if errors[:lead_provider_id].any?
       return if errors[:declaration_type].any?
-      return if errors[:declaration_date].any?
+      return if errors[:evidenced_at].any?
       return if training_period
       return unless teacher_registered_with_lead_provider?
 
@@ -180,7 +180,7 @@ module API::Declarations
     end
 
     def validate_milestone_exists
-      return if errors[:declaration_date].any?
+      return if errors[:evidenced_at].any?
       return if errors[:declaration_type].any?
       return if errors[:teacher_api_id].any?
       return if errors[:teacher_type].any?
@@ -196,7 +196,7 @@ module API::Declarations
     def teacher_not_withdrawn_before_declaration_date
       return if errors[:teacher_api_id].any?
       return unless training_status&.withdrawn?
-      return unless training_period.withdrawn_at <= declaration_date
+      return unless training_period.withdrawn_at <= evidenced_at
 
       errors.add(:teacher_api_id, "This participant withdrew from this course on #{training_period.withdrawn_at.utc.rfc3339}. Enter a '#/declaration_date' that's on or before the withdrawal date.")
     end
@@ -213,7 +213,7 @@ module API::Declarations
 
     def validates_billable_slot_available
       return if errors[:declaration_type].any?
-      return if errors[:declaration_date].any?
+      return if errors[:evidenced_at].any?
       return unless training_period
       return unless existing_declarations.billable_or_changeable_for_declaration_type(declaration_type).exists?
 
@@ -243,8 +243,8 @@ module API::Declarations
     end
 
     def declaration_in_sequence
-      return if errors[:declaration_date].any? || errors[:declaration_type].any?
-      return if declaration_date.blank? || declaration_type.blank?
+      return if errors[:evidenced_at].any? || errors[:declaration_type].any?
+      return if evidenced_at.blank? || declaration_type.blank?
       return unless contract_period && contract_period.year >= 2025
 
       ordered_types = Declaration.declaration_types.values
@@ -254,21 +254,21 @@ module API::Declarations
 
       from_declaration_date = existing_declarations
         .billable_or_changeable_for_declaration_type(before_declaration_types)
-        .maximum(:declaration_date)
+        .maximum(:evidenced_at)
 
       to_declaration_date = existing_declarations
         .billable_or_changeable_for_declaration_type(after_declaration_types)
-        .minimum(:declaration_date)
+        .minimum(:evidenced_at)
 
       error_message = "This '#/declaration_date' is invalid. Check that it is in sequence with existing declaration dates for this participant."
 
       if from_declaration_date && parsed_declaration_date.before?(from_declaration_date)
-        errors.add(:declaration_date, error_message)
+        errors.add(:evidenced_at, error_message)
       elsif to_declaration_date && parsed_declaration_date.after?(to_declaration_date)
-        errors.add(:declaration_date, error_message)
+        errors.add(:evidenced_at, error_message)
       end
     end
 
-    def parsed_declaration_date = Time.zone.parse(declaration_date)
+    def parsed_declaration_date = Time.zone.parse(evidenced_at)
   end
 end

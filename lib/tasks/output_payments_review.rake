@@ -77,7 +77,7 @@ module ProductReview
               :declaration,
               training_period:,
               declaration_type:,
-              declaration_date: milestone.start_date,
+              evidenced_at: milestone.start_date,
               payment_status: :paid,
               payment_statement: statement
             )

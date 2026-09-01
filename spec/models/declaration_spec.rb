@@ -24,7 +24,7 @@ describe Declaration do
         payment_statement_id
         clawback_statement_id
         declaration_type
-        declaration_date
+        evidenced_at
         payment_status
         clawback_status
         sparsity_uplift
@@ -73,7 +73,7 @@ describe Declaration do
 
     it { is_expected.to be_valid }
     it { is_expected.to validate_presence_of(:training_period).with_message("Choose a training period") }
-    it { is_expected.to validate_presence_of(:declaration_date).with_message("Declaration date must be specified") }
+    it { is_expected.to validate_presence_of(:evidenced_at).with_message("Declaration date must be specified") }
     it { is_expected.to allow_values(*described_class.declaration_types.keys).for(:declaration_type) }
     it { is_expected.to allow_values(*described_class.payment_statuses.keys).for(:payment_status) }
     it { is_expected.to validate_inclusion_of(:clawback_status).in_array(described_class.clawback_statuses.keys).with_message("Choose a valid clawback status") }
@@ -170,7 +170,7 @@ describe Declaration do
     end
 
     describe "declaration date relative to milestone dates" do
-      subject(:declaration) { FactoryBot.build(:declaration, :started, declaration_date:, training_period:) }
+      subject(:declaration) { FactoryBot.build(:declaration, :started, evidenced_at:, training_period:) }
 
       let(:schedule) { FactoryBot.create(:schedule, contract_period: school_partnership.contract_period) }
       let(:milestone) { FactoryBot.create(:milestone, :started, schedule:) }
@@ -178,13 +178,13 @@ describe Declaration do
       let(:training_period) { FactoryBot.create(:training_period, schedule:, school_partnership:) }
 
       context "when the declaration date is within the milestone dates" do
-        let(:declaration_date) { Faker::Date.between(from: milestone.start_date, to: milestone.milestone_date) }
+        let(:evidenced_at) { Faker::Date.between(from: milestone.start_date, to: milestone.milestone_date) }
 
         it { is_expected.to be_valid }
       end
 
-      context "when a declaration already exists with an invalid declaration_date" do
-        let(:declaration_date) { milestone.start_date.prev_day }
+      context "when a declaration already exists with an invalid evidenced_at" do
+        let(:evidenced_at) { milestone.start_date.prev_day }
 
         before { declaration.save!(validate: false) }
 
@@ -195,14 +195,14 @@ describe Declaration do
         it "still validates the declaration date when it is changed" do
           expect(declaration).to be_valid
 
-          declaration.declaration_date = milestone.milestone_date.next_day
+          declaration.evidenced_at = milestone.milestone_date.next_day
 
-          expect(declaration).to have_error(:declaration_date, "Declaration date must be on or before the milestone date for the same declaration type.")
+          expect(declaration).to have_error(:evidenced_at, "Declaration date must be on or before the milestone date for the same declaration type.")
         end
       end
 
       context "when the declaration training period changes schedule and the declaration date is no longer valid" do
-        let(:declaration_date) { Faker::Date.between(from: milestone.start_date, to: milestone.milestone_date) }
+        let(:evidenced_at) { Faker::Date.between(from: milestone.start_date, to: milestone.milestone_date) }
 
         before do
           declaration.save!
@@ -214,19 +214,19 @@ describe Declaration do
           declaration.training_period.schedule = different_schedule
         end
 
-        it { is_expected.to have_error(:declaration_date, "Declaration date must be on or before the milestone date for the same declaration type.") }
+        it { is_expected.to have_error(:evidenced_at, "Declaration date must be on or before the milestone date for the same declaration type.") }
       end
 
       context "when the declaration date is before the milestone start_date" do
-        let(:declaration_date) { milestone.start_date - 1.day }
+        let(:evidenced_at) { milestone.start_date - 1.day }
 
-        it { is_expected.to have_error(:declaration_date, "Declaration date must be on or after the milestone start date for the same declaration type.") }
+        it { is_expected.to have_error(:evidenced_at, "Declaration date must be on or after the milestone start date for the same declaration type.") }
       end
 
       context "when the declaration date is after the milestone_date" do
-        let(:declaration_date) { milestone.milestone_date + 1.day }
+        let(:evidenced_at) { milestone.milestone_date + 1.day }
 
-        it { is_expected.to have_error(:declaration_date, "Declaration date must be on or before the milestone date for the same declaration type.") }
+        it { is_expected.to have_error(:evidenced_at, "Declaration date must be on or before the milestone date for the same declaration type.") }
       end
 
       describe "contract period consistent across associations" do
@@ -873,7 +873,7 @@ describe Declaration do
     context "when milestone exists for `declaration_type`" do
       let(:training_period) { FactoryBot.create(:training_period) }
       let!(:milestone) { FactoryBot.create(:milestone, declaration_type: "started", schedule: training_period.schedule) }
-      let(:declaration) { FactoryBot.create(:declaration, :started, training_period:, declaration_date: Faker::Date.between(from: milestone.start_date, to: milestone.milestone_date)) }
+      let(:declaration) { FactoryBot.create(:declaration, :started, training_period:, evidenced_at: Faker::Date.between(from: milestone.start_date, to: milestone.milestone_date)) }
 
       it { is_expected.to eq(milestone) }
     end

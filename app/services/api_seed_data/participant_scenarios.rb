@@ -334,7 +334,7 @@ module APISeedData
                                       find_random_statement(framework_agreement)
                                     end
 
-                declaration_date = declaration_date(schedule, declaration_type)
+                evidenced_at = evidenced_at(schedule, declaration_type)
 
                 declaration = FactoryBot.build(
                   :declaration,
@@ -342,7 +342,7 @@ module APISeedData
                   declaration_type:,
                   payment_status:,
                   payment_statement:,
-                  declaration_date:
+                  evidenced_at:
                 )
 
                 next if existing_declarations.billable_or_changeable.where(declaration_type:).exists?
@@ -745,7 +745,7 @@ module APISeedData
       .sample
     end
 
-    def declaration_date(schedule, declaration_type)
+    def evidenced_at(schedule, declaration_type)
       milestone = schedule.milestones.find_by(declaration_type:)
       # Sometimes the milestone start_date is in the future; we will omit
       # these declarations in the calling method.

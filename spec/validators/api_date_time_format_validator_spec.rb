@@ -32,7 +32,7 @@ RSpec.describe APIDateTimeFormatValidator, type: :model do
 
     it "has a meaningful error" do
       expect(subject).to be_invalid
-      expect(subject.errors.messages_for(:date)).to include("Enter a valid RCF3339 '#/date'.")
+      expect(subject.errors.messages_for(:date)).to include("Enter a valid RFC3339 '#/date'.")
     end
   end
 
@@ -41,7 +41,7 @@ RSpec.describe APIDateTimeFormatValidator, type: :model do
 
     it "has a meaningful error", :aggregate_failures do
       expect(subject).to be_invalid
-      expect(subject.errors.messages_for(:date)).to include("Enter a valid RCF3339 '#/date'.")
+      expect(subject.errors.messages_for(:date)).to include("Enter a valid RFC3339 '#/date'.")
     end
   end
 
@@ -50,7 +50,26 @@ RSpec.describe APIDateTimeFormatValidator, type: :model do
 
     it "has a meaningful error", :aggregate_failures do
       expect(subject).to be_invalid
-      expect(subject.errors.messages_for(:date)).to include("Enter a valid RCF3339 '#/date'.")
+      expect(subject.errors.messages_for(:date)).to include("Enter a valid RFC3339 '#/date'.")
+    end
+  end
+
+  context "when attribute has a mapped name" do
+    subject { model_class.new(evidenced_at: "2021-06-21 08:46:29") }
+
+    let(:model_class) do
+      Class.new do
+        include ActiveModel::Model
+
+        attr_accessor :evidenced_at
+
+        validates :evidenced_at, api_date_time_format: true
+      end
+    end
+
+    it "uses the mapped name in the message" do
+      expect(subject).to be_invalid
+      expect(subject.errors.messages_for(:evidenced_at)).to include("Enter a valid RFC3339 '#/declaration_date'.")
     end
   end
 end

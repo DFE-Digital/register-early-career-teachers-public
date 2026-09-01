@@ -58,7 +58,7 @@ RSpec.describe Statements::DeclarationSelection do
       payment_status: :paid,
       clawback_status: :no_clawback,
       declaration_type: :started,
-      declaration_date: base_declaration_date,
+      evidenced_at: base_declaration_date,
       created_at: base_declaration_date
     }
   end
@@ -94,7 +94,7 @@ RSpec.describe Statements::DeclarationSelection do
         :declaration,
         **default_declaration_attrs.merge(
           payment_statement: statement,
-          declaration_date: base_declaration_date + 1.day,
+          evidenced_at: base_declaration_date + 1.day,
           created_at: base_declaration_date + 1.day
         ),
         training_period: FactoryBot.create(:training_period,
@@ -132,7 +132,7 @@ RSpec.describe Statements::DeclarationSelection do
         :declaration,
         **default_declaration_attrs.merge(
           payment_statement: statement,
-          declaration_date: base_declaration_date + 1.day,
+          evidenced_at: base_declaration_date + 1.day,
           created_at: base_declaration_date + 1.day
         ),
         training_period: FactoryBot.create(:training_period,
@@ -147,7 +147,7 @@ RSpec.describe Statements::DeclarationSelection do
         :declaration,
         **default_declaration_attrs.merge(
           payment_statement: statement,
-          declaration_date: base_declaration_date + 2.days,
+          evidenced_at: base_declaration_date + 2.days,
           created_at: base_declaration_date + 2.days
         ),
         training_period: FactoryBot.create(:training_period,
@@ -163,7 +163,7 @@ RSpec.describe Statements::DeclarationSelection do
     end
   end
 
-  context "when declarations tie on declaration_date and created_at" do
+  context "when declarations tie on evidenced_at and created_at" do
     let(:band_max) { 2 }
 
     let!(:same_timestamp_declaration_one) do
@@ -295,7 +295,7 @@ RSpec.describe Statements::DeclarationSelection do
         **default_declaration_attrs.merge(
           payment_statement: statement,
           declaration_type: :started,
-          declaration_date: base_declaration_date,
+          evidenced_at: base_declaration_date,
           created_at: base_declaration_date
         ),
         training_period: FactoryBot.create(:training_period,
@@ -311,7 +311,7 @@ RSpec.describe Statements::DeclarationSelection do
         **default_declaration_attrs.merge(
           payment_statement: statement,
           declaration_type: "retained-1",
-          declaration_date: base_declaration_date + 1.day,
+          evidenced_at: base_declaration_date + 1.day,
           created_at: base_declaration_date + 1.day
         ),
         training_period: FactoryBot.create(:training_period,
@@ -327,7 +327,7 @@ RSpec.describe Statements::DeclarationSelection do
         **default_declaration_attrs.merge(
           payment_statement: statement,
           declaration_type: :completed,
-          declaration_date: base_declaration_date + 2.days,
+          evidenced_at: base_declaration_date + 2.days,
           created_at: base_declaration_date + 2.days
         ),
         training_period: FactoryBot.create(:training_period,
@@ -345,7 +345,7 @@ RSpec.describe Statements::DeclarationSelection do
           clawback_statement: statement,
           clawback_status: :awaiting_clawback,
           declaration_type: :started,
-          declaration_date: base_declaration_date + 3.days,
+          evidenced_at: base_declaration_date + 3.days,
           created_at: base_declaration_date + 3.days
         ),
         training_period: FactoryBot.create(:training_period,
@@ -361,7 +361,7 @@ RSpec.describe Statements::DeclarationSelection do
         **default_declaration_attrs.merge(
           payment_statement: statement,
           payment_status: :voided,
-          declaration_date: base_declaration_date + 4.days,
+          evidenced_at: base_declaration_date + 4.days,
           created_at: base_declaration_date + 4.days
         ),
         training_period: FactoryBot.create(:training_period,
@@ -440,7 +440,7 @@ RSpec.describe Statements::DeclarationSelection do
         :declaration,
         **default_declaration_attrs.merge(
           payment_statement: previous_statement,
-          declaration_date: base_declaration_date,
+          evidenced_at: base_declaration_date,
           created_at: base_declaration_date
         ),
         training_period: FactoryBot.create(:training_period,
@@ -455,7 +455,7 @@ RSpec.describe Statements::DeclarationSelection do
         :declaration,
         **default_declaration_attrs.merge(
           payment_statement: previous_statement,
-          declaration_date: base_declaration_date + 1.hour,
+          evidenced_at: base_declaration_date + 1.hour,
           created_at: base_declaration_date + 1.hour
         ),
         training_period: FactoryBot.create(:training_period,
@@ -470,7 +470,7 @@ RSpec.describe Statements::DeclarationSelection do
         :declaration,
         **default_declaration_attrs.merge(
           payment_statement: statement,
-          declaration_date: base_declaration_date + 1.day,
+          evidenced_at: base_declaration_date + 1.day,
           created_at: base_declaration_date + 1.day
         ),
         training_period: FactoryBot.create(:training_period,
@@ -541,7 +541,7 @@ RSpec.describe Statements::DeclarationSelection do
         :declaration,
         **default_declaration_attrs.merge(
           payment_statement: statement,
-          declaration_date: base_declaration_date + 1.day,
+          evidenced_at: base_declaration_date + 1.day,
           created_at: base_declaration_date + 1.day
         ),
         training_period: FactoryBot.create(:training_period,
@@ -632,7 +632,7 @@ RSpec.describe Statements::DeclarationSelection do
         :declaration,
         **default_declaration_attrs.merge(
           payment_statement: statement,
-          declaration_date: base_declaration_date + 1.day,
+          evidenced_at: base_declaration_date + 1.day,
           created_at: base_declaration_date + 1.day
         ),
         training_period: FactoryBot.create(:training_period,

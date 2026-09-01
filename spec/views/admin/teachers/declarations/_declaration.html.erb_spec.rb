@@ -7,7 +7,7 @@ RSpec.describe "admin/teachers/declarations/_declaration.html.erb", type: :view 
     FactoryBot.build_stubbed(
       :declaration,
       declaration_type: "started",
-      declaration_date: Date.new(2024, 1, 15),
+      evidenced_at: Date.new(2024, 1, 15),
       api_id: "test-declaration-uuid",
       evidence_type: "training-event-attended"
     ).tap do |d|
