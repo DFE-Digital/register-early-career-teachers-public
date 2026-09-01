@@ -49,7 +49,13 @@ module Admin
       end
 
       def trn_row
-        { key: "TRN", value: teacher.trn }
+        { key: "TRN", value: trn_value }
+      end
+
+      def trn_value
+        return teacher.trn unless teacher.trs_response_gone?
+
+        safe_join([teacher.trn, govuk_tag(text: "Deactivated", colour: "grey", classes: "govuk-!-margin-left-1")], " ")
       end
 
       def role_row
