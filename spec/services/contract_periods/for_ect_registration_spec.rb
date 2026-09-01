@@ -10,21 +10,19 @@ RSpec.describe ContractPeriods::ForECTRegistration do
   let(:previous_training_period) { nil }
   let(:reassignment) { nil }
 
-  let!(:contract_2024) do
+  let(:current_year) { current_contract_period.year }
+
+  let!(:previous_contract_period) do
     FactoryBot.create(
       :contract_period,
-      year: 2024,
-      started_on: Date.new(2024, 9, 1),
-      finished_on: Date.new(2025, 8, 31)
+      :previous
     )
   end
 
-  let!(:contract_2025) do
+  let!(:current_contract_period) do
     FactoryBot.create(
       :contract_period,
-      year: 2025,
-      started_on: Date.new(2025, 9, 1),
-      finished_on: Date.new(2026, 8, 31)
+      :current
     )
   end
 
@@ -33,23 +31,23 @@ RSpec.describe ContractPeriods::ForECTRegistration do
       let(:started_on) { Date.new(2024, 9, 5) }
 
       it "returns the current contract period" do
-        expect(resolver.call).to eq(contract_2025)
+        expect(resolver.call).to eq(current_contract_period)
       end
     end
 
     context "when started_on is exactly the start date of the current contract period" do
-      let(:started_on) { Date.new(2025, 9, 1) }
+      let(:started_on) { Date.new(current_year, 9, 1) }
 
       it "returns the current contract period" do
-        expect(resolver.call).to eq(contract_2025)
+        expect(resolver.call).to eq(current_contract_period)
       end
     end
 
     context "when started_on is the last included date of an older contract period" do
-      let(:started_on) { Date.new(2025, 8, 31) }
+      let(:started_on) { Date.new(current_year, 8, 31) }
 
       it "returns the current contract period" do
-        expect(resolver.call).to eq(contract_2025)
+        expect(resolver.call).to eq(current_contract_period)
       end
     end
 
@@ -57,25 +55,25 @@ RSpec.describe ContractPeriods::ForECTRegistration do
       let(:started_on) { Date.new(2023, 1, 1) }
 
       it "returns the current contract period" do
-        expect(resolver.call).to eq(contract_2025)
+        expect(resolver.call).to eq(current_contract_period)
       end
     end
 
     context "when started_on is in a future period that does not yet exist" do
-      let(:started_on) { Date.new(2026, 9, 1) }
+      let(:started_on) { Date.new(current_year + 1, 9, 1) }
 
       it "returns the current contract period" do
-        expect(resolver.call).to eq(contract_2025)
+        expect(resolver.call).to eq(current_contract_period)
       end
     end
 
     context "when there is a previous provider-led training period and no reassignment is required" do
-      let(:started_on) { Date.new(2025, 9, 1) }
+      let(:started_on) { Date.new(current_year, 9, 1) }
 
       let(:previous_training_period) do
         instance_double(
           TrainingPeriod,
-          contract_period: contract_2024,
+          contract_period: previous_contract_period,
           provider_led_training_programme?: true
         )
       end
@@ -85,17 +83,17 @@ RSpec.describe ContractPeriods::ForECTRegistration do
       end
 
       it "returns the previous training period's contract period" do
-        expect(resolver.call).to eq(contract_2024)
+        expect(resolver.call).to eq(previous_contract_period)
       end
     end
 
     context "when there is a previous school-led training period" do
-      let(:started_on) { Date.new(2025, 9, 1) }
+      let(:started_on) { Date.new(current_year, 9, 1) }
 
       let(:previous_training_period) do
         instance_double(
           TrainingPeriod,
-          contract_period: contract_2024,
+          contract_period: previous_contract_period,
           provider_led_training_programme?: false
         )
       end
@@ -105,17 +103,17 @@ RSpec.describe ContractPeriods::ForECTRegistration do
       end
 
       it "returns the registration contract period" do
-        expect(resolver.call).to eq(contract_2025)
+        expect(resolver.call).to eq(current_contract_period)
       end
     end
 
     context "when the previous provider-led training period used an EOI" do
-      let(:started_on) { Date.new(2026, 5, 1) }
+      let(:started_on) { Date.new(current_year, 5, 1) }
 
       let(:framework_agreement) do
         instance_double(
           FrameworkAgreement,
-          contract_period: contract_2024
+          contract_period: previous_contract_period
         )
       end
 
@@ -138,17 +136,17 @@ RSpec.describe ContractPeriods::ForECTRegistration do
       end
 
       it "returns the expression of interest contract period" do
-        expect(resolver.call).to eq(contract_2024)
+        expect(resolver.call).to eq(previous_contract_period)
       end
     end
 
     context "when the previous provider-led contract period is payments frozen" do
-      let(:started_on) { Date.new(2025, 9, 1) }
+      let(:started_on) { Date.new(current_year, 9, 1) }
 
       let(:previous_training_period) do
         instance_double(
           TrainingPeriod,
-          contract_period: contract_2024,
+          contract_period: previous_contract_period,
           provider_led_training_programme?: true
         )
       end
@@ -158,28 +156,28 @@ RSpec.describe ContractPeriods::ForECTRegistration do
       end
 
       before do
-        allow(contract_2024).to receive(:payments_frozen?).and_return(true)
+        allow(previous_contract_period).to receive(:payments_frozen?).and_return(true)
       end
 
       it "returns the registration contract period" do
-        expect(resolver.call).to eq(contract_2025)
+        expect(resolver.call).to eq(current_contract_period)
       end
     end
 
     context "when reassignment is required" do
-      let(:started_on) { Date.new(2025, 9, 1) }
+      let(:started_on) { Date.new(current_year, 9, 1) }
       let(:previous_training_period) { instance_double(TrainingPeriod) }
 
       let(:reassignment) do
         instance_double(
           ContractPeriods::Reassignment,
           required?: true,
-          successor_contract_period: contract_2024
+          successor_contract_period: previous_contract_period
         )
       end
 
       it "returns the successor contract period" do
-        expect(resolver.call).to eq(contract_2024)
+        expect(resolver.call).to eq(previous_contract_period)
       end
     end
   end
