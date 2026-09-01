@@ -116,14 +116,8 @@ RSpec.describe Schools::Shared::MentorAssignmentContext do
     let!(:current_contract_period) { FactoryBot.create(:contract_period, :current) }
     let(:ect_lead_provider_contract_period) { current_contract_period }
 
-    let(:school_partnership) do
-      framework_agreement = FactoryBot.create(:framework_agreement, lead_provider:, contract_period: ect_lead_provider_contract_period)
-
-      FactoryBot.create(
-        :school_partnership,
-        school:,
-        lead_provider_delivery_partnership: FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:)
-      )
+    let(:framework_agreement) do
+      FactoryBot.create(:framework_agreement, lead_provider:, contract_period: ect_lead_provider_contract_period)
     end
 
     let!(:ect_training_period) do
@@ -131,9 +125,10 @@ RSpec.describe Schools::Shared::MentorAssignmentContext do
         :training_period,
         :provider_led,
         :unfinished,
+        :with_framework_agreement,
         ect_at_school_period:,
         started_on: ect_at_school_period.started_on,
-        school_partnership:
+        framework_agreement:
       )
     end
 

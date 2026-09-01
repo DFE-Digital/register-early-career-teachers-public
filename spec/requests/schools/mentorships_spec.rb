@@ -105,13 +105,8 @@ RSpec.describe "Create mentorship of an ECT to a mentor" do
 
         before do
           framework_agreement = FactoryBot.create(:framework_agreement, contract_period: ect_lead_provider_contract_period)
-          school_partnership = FactoryBot.create(
-            :school_partnership,
-            school:,
-            lead_provider_delivery_partnership: FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:)
-          )
 
-          FactoryBot.create(:training_period, :unfinished, :provider_led, ect_at_school_period:, school_partnership:)
+          FactoryBot.create(:training_period, :unfinished, :provider_led, :with_framework_agreement, ect_at_school_period:, framework_agreement:)
         end
 
         context "when the mentor is eligible for funding" do
