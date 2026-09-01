@@ -10,13 +10,13 @@ module ECTAtSchoolPeriods
       @training_period = ect_at_school_period.latest_training_period
       @mentorship_period = ect_at_school_period.latest_mentorship_period
       @original_started_on = ect_at_school_period.started_on
-      @started_on = started_on
+      @proposed_started_on = started_on
       @author = author
     end
 
     def change
       ActiveRecord::Base.transaction do
-        if moving_start_date_earlier?
+        if proposed_started_on.before?(original_started_on)
           move_start_date_earlier!
         else
           move_start_date_later!
@@ -32,7 +32,7 @@ module ECTAtSchoolPeriods
                 :training_period,
                 :mentorship_period,
                 :original_started_on,
-                :started_on,
+                :proposed_started_on,
                 :author
 
     def move_start_date_earlier!
@@ -48,7 +48,9 @@ module ECTAtSchoolPeriods
     end
 
     def update_ect_at_school_period!
-      ect_at_school_period.update!(started_on:)
+      ect_at_school_period.update!(
+        started_on: proposed_started_on
+      )
     end
 
     def update_training_period!
@@ -60,41 +62,36 @@ module ECTAtSchoolPeriods
     def update_mentorship_period!
       return unless mentorship_period
 
-      if new_start_date_on_or_after_mentorship_end?
+      updated_started_on = mentorship_period_started_on
+
+      if mentorship_period.finished_on.present? &&
+          updated_started_on >= mentorship_period.finished_on
         mentorship_period.destroy!
       else
         mentorship_period.update!(
-          started_on: mentorship_period_started_on
+          started_on: updated_started_on
         )
       end
     end
 
-    def new_start_date_on_or_after_mentorship_end?
-      mentorship_period.finished_on.present? &&
-        started_on >= mentorship_period.finished_on
-    end
-
     def training_period_started_on
-      return started_on unless moving_start_date_earlier?
+      return proposed_started_on unless
+        proposed_started_on.before?(original_started_on)
 
-      [started_on, Date.current].max
+      [proposed_started_on, Date.current].max
     end
 
     def mentorship_period_started_on
       [
-        started_on,
+        proposed_started_on,
         mentorship_period.mentor.started_on
       ].max
-    end
-
-    def moving_start_date_earlier?
-      started_on < original_started_on
     end
 
     def record_event!
       Events::Record.record_teacher_school_start_date_updated_event!(
         old_start_date: original_started_on,
-        new_start_date: started_on,
+        new_start_date: proposed_started_on,
         author:,
         ect_at_school_period:,
         school: ect_at_school_period.school,
