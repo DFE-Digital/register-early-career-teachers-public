@@ -95,11 +95,11 @@ describe API::OAuth::Client do
     end
   end
 
-  describe "#assign_client_secret" do
+  describe "#rotate_client_secret" do
     subject(:client) { described_class.new }
 
     it "replaces the current client secret and its digest" do
-      expect { client.assign_client_secret }.to change(client, :client_secret).and change(client, :client_secret_digest)
+      expect { client.rotate_client_secret }.to change(client, :client_secret).and change(client, :client_secret_digest)
       expect(client.client_secret_digest).to eq(Digest::SHA256.hexdigest(client.client_secret))
     end
   end

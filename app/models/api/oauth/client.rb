@@ -23,12 +23,14 @@ class API::OAuth::Client < ApplicationRecord
   validate :redirect_uris_are_well_formed, if: :redirect_uris
   validate :redirect_uris_are_not_blacklisted, if: -> { Rails.env.production? && !any_malformed_urls? }
 
+  def rotate_client_secret = assign_client_secret
+
+private
+
   def assign_client_secret
     @client_secret = SecureRandom.base58(32)
     self.client_secret_digest = Digest::SHA256.hexdigest(@client_secret)
   end
-
-private
 
   def redirect_uris_are_well_formed
     errors.add(:redirect_uris, :invalid) if any_malformed_urls?

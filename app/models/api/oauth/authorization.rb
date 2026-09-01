@@ -29,6 +29,6 @@ class API::OAuth::Authorization < ApplicationRecord
     end
   end
 
-  def code_expired? = code_expires_at.past?
-  def token_expired? = token_expires_at.past?
+  def code_expired? = code_expires_at&.past?
+  def token_expired? = token_expires_at&.past?
 end
