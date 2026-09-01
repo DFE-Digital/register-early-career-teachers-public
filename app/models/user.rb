@@ -21,14 +21,6 @@ class User < ApplicationRecord
             notify_email: true
   validate :ensure_email_belongs_to_dfe, if: -> { email.present? }
 
-  validates :otp_school_urn,
-            reference_number_format: {
-              allow_blank: true,
-              minimum: 5,
-              maximum: 6,
-              message: "URN must be 5 or 6 numbers"
-            }
-
   # Associations
   has_many :events
   has_many :authored_events, class_name: "Event", inverse_of: :author
