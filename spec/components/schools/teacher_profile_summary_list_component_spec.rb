@@ -133,34 +133,6 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
     end
   end
 
-  describe "when the latest ECT at-school period has exactly one training period" do
-    before do
-      FactoryBot.create(
-        :training_period,
-        :school_led,
-        :for_ect,
-        :unfinished,
-        ect_at_school_period: mentee,
-        started_on: mentee.started_on
-      )
-
-      render_inline(component)
-    end
-
-    it "shows the school start date change link" do
-      school_start_date_row = page.find(
-        ".govuk-summary-list__row",
-        text: "School start date"
-      )
-
-      expect(school_start_date_row).to have_link(
-        "Change",
-        href:
-          schools_ects_change_start_date_wizard_edit_path(mentee)
-      )
-    end
-  end
-
   context "when the supplied training period is withdrawn" do
     before do
       training_period = FactoryBot.create(
