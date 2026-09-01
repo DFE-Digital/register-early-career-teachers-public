@@ -24,11 +24,15 @@ module Schools
     private
 
       def ensure_eligible!
-        return if ECTAtSchoolPeriods::ChangeStartDate::Eligibility
+        return if eligible_to_change_start_date?
+
+        render "errors/not_found", status: :not_found
+      end
+
+      def eligible_to_change_start_date?
+        ECTAtSchoolPeriods::ChangeStartDate::Eligibility
           .new(ect_at_school_period: @ect_at_school_period)
           .eligible?
-
-        raise ActiveRecord::RecordNotFound
       end
     end
   end
