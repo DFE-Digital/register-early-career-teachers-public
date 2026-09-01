@@ -134,7 +134,7 @@ RSpec.shared_examples "a use previous ect choices view" do |current_step:, back_
     let(:contract_start_date) { Date.new(2025, 9, 1) }
 
     before do
-      # ensure a valid contract period includes that date
+      travel_to(contract_start_date)
       FactoryBot.create(
         :contract_period,
         started_on: Date.new(2025, 9, 1),
