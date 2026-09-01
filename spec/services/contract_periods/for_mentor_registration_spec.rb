@@ -8,52 +8,50 @@ RSpec.describe ContractPeriods::ForMentorRegistration do
 
   let(:previous_training_period) { nil }
 
-  let!(:contract_2024) do
+  let(:current_year) { current_contract_period.year }
+
+  let!(:previous_contract_period) do
     FactoryBot.create(
       :contract_period,
-      year: 2024,
-      started_on: Date.new(2024, 9, 1),
-      finished_on: Date.new(2025, 8, 31)
+      :previous
     )
   end
 
-  let!(:contract_2025) do
+  let!(:current_contract_period) do
     FactoryBot.create(
       :contract_period,
-      year: 2025,
-      started_on: Date.new(2025, 9, 1),
-      finished_on: Date.new(2026, 8, 31)
+      :current,
     )
   end
 
   describe "#call" do
     context "when there is no previous training period" do
-      let(:started_on) { Date.new(2025, 9, 1) }
+      let(:started_on) { Date.new(current_year, 9, 1) }
 
       it "returns the registration contract period" do
-        expect(resolver.call).to eq(contract_2025)
+        expect(resolver.call).to eq(current_contract_period)
       end
     end
 
     context "when there is a previous provider-led training period" do
-      let(:started_on) { Date.new(2025, 9, 1) }
+      let(:started_on) { Date.new(current_year, 9, 1) }
 
       let(:previous_training_period) do
         instance_double(
           TrainingPeriod,
-          contract_period: contract_2024,
+          contract_period: previous_contract_period,
           expression_of_interest: nil,
           provider_led_training_programme?: true
         )
       end
 
       it "returns the previous training period's contract period" do
-        expect(resolver.call).to eq(contract_2024)
+        expect(resolver.call).to eq(previous_contract_period)
       end
     end
 
     context "when the mentor was previously registered in the 2023 contract period" do
-      let(:started_on) { Date.new(2025, 9, 1) }
+      let(:started_on) { Date.new(current_year, 9, 1) }
       let(:contract_2023) { FactoryBot.create(:contract_period, year: 2023) }
 
       let(:previous_training_period) do
@@ -71,7 +69,7 @@ RSpec.describe ContractPeriods::ForMentorRegistration do
     end
 
     context "when the mentor was previously registered in a payments frozen contract period (2022)" do
-      let(:started_on) { Date.new(2025, 9, 1) }
+      let(:started_on) { Date.new(current_year, 9, 1) }
       let(:frozen_contract) { FactoryBot.create(:contract_period, :with_payments_frozen, year: 2022) }
 
       let(:previous_training_period) do
@@ -84,31 +82,31 @@ RSpec.describe ContractPeriods::ForMentorRegistration do
       end
 
       it "falls back to the registration contract period" do
-        expect(resolver.call).to eq(contract_2025)
+        expect(resolver.call).to eq(current_contract_period)
       end
     end
 
     context "when there is a previous school-led training period" do
-      let(:started_on) { Date.new(2025, 9, 1) }
+      let(:started_on) { Date.new(current_year, 9, 1) }
 
       let(:previous_training_period) do
         instance_double(
           TrainingPeriod,
-          contract_period: contract_2024,
+          contract_period: previous_contract_period,
           provider_led_training_programme?: false
         )
       end
 
       it "returns the registration contract period" do
-        expect(resolver.call).to eq(contract_2025)
+        expect(resolver.call).to eq(current_contract_period)
       end
     end
 
     context "when the previous provider-led training period used an EOI" do
-      let(:started_on) { Date.new(2025, 9, 1) }
+      let(:started_on) { Date.new(current_year, 9, 1) }
 
       let(:framework_agreement) do
-        instance_double(FrameworkAgreement, contract_period: contract_2024)
+        instance_double(FrameworkAgreement, contract_period: previous_contract_period)
       end
 
       let(:previous_training_period) do
@@ -121,26 +119,26 @@ RSpec.describe ContractPeriods::ForMentorRegistration do
       end
 
       it "returns the expression of interest contract period" do
-        expect(resolver.call).to eq(contract_2024)
+        expect(resolver.call).to eq(previous_contract_period)
       end
     end
 
     context "when the previous contract period is payments frozen" do
-      let(:started_on) { Date.new(2025, 9, 1) }
+      let(:started_on) { Date.new(current_year, 9, 1) }
 
       let(:previous_training_period) do
         instance_double(
           TrainingPeriod,
-          contract_period: contract_2024,
+          contract_period: previous_contract_period,
           expression_of_interest: nil,
           provider_led_training_programme?: true
         )
       end
 
-      before { allow(contract_2024).to receive(:payments_frozen?).and_return(true) }
+      before { allow(previous_contract_period).to receive(:payments_frozen?).and_return(true) }
 
       it "returns the registration contract period" do
-        expect(resolver.call).to eq(contract_2025)
+        expect(resolver.call).to eq(current_contract_period)
       end
     end
   end
