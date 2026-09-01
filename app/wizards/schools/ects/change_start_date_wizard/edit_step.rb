@@ -2,6 +2,7 @@ module Schools
   module ECTs
     module ChangeStartDateWizard
       class EditStep < ECTs::Step
+        include Schools::StartDateStepHelpers
         attr_accessor :start_date
 
         validate :start_date_must_be_present
@@ -166,38 +167,6 @@ module Schools
               .latest_first
               .first
         end
-
-        def start_date_boundary_validator
-          @start_date_boundary_validator ||=
-            Schools::Validation::PeriodBoundary.new(
-              input_period: previous_period,
-              input_date: start_date_as_date
-            )
-        end
-
-        def start_date_input
-          @start_date_input ||=
-            Schools::Validation::ECTStartDate.new(
-              date_as_hash: start_date
-            )
-        end
-
-        def start_date_as_date
-          start_date_input.value_as_date
-        end
-
-        def start_date_contract_period
-          @start_date_contract_period ||=
-            ContractPeriod.containing_date(start_date_as_date)
-        end
-
-        delegate :type,
-                 :started_on_formatted,
-                 to: :start_date_boundary_validator,
-                 prefix: :invalid_period
-
-        delegate :earliest_valid_input_date_formatted,
-                 to: :start_date_boundary_validator
       end
     end
   end
