@@ -175,7 +175,6 @@
   - otp_secret
   - otp_verified_at
   - role
-  - otp_school_urn
   - otp_failed_attempts
   - otp_locked_at
   :teachers:

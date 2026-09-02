@@ -49,7 +49,6 @@ erDiagram
     string name
     integer otp_failed_attempts
     datetime otp_locked_at
-    integer otp_school_urn
     string otp_secret
     datetime otp_verified_at
     enum role
