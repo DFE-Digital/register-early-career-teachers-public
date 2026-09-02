@@ -80,6 +80,7 @@ end
 
 group :test do
   gem "capybara"
+  gem "json_schemer"
   gem "playwright-ruby-client"
   gem "rspec"
   gem "rspec-rails"

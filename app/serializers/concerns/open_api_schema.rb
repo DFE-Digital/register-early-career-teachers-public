@@ -62,6 +62,18 @@ module OpenAPISchema
       }.compact
     end
 
+    def openapi_schema_name
+      name
+        .delete_prefix("API::")
+        .delete_suffix("Serializer")
+    end
+
+    def openapi_ref
+      {
+        "$ref": "#/components/schemas/#{openapi_schema_name}"
+      }
+    end
+
   private
 
     def register_schema_field(name, required:, schema:)
