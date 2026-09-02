@@ -106,6 +106,40 @@ RSpec.describe Schools::AssignExistingMentorWizard::LeadProviderStep do
       )
     end
 
+    context "when the ECTs own lead provider is not active in the current contract period" do
+      let(:ect_at_school_period) do
+        FactoryBot.create(:ect_at_school_period, :unfinished, school:, started_on: mid_year - 1.year)
+      end
+
+      before do
+        earlier_contract_period = FactoryBot.create(:contract_period, :previous, :with_schedules)
+        earlier_framework_agreement = FactoryBot.create(:framework_agreement, contract_period: earlier_contract_period)
+        school_partnership = FactoryBot.create(
+          :school_partnership,
+          school:,
+          lead_provider_delivery_partnership: FactoryBot.create(
+            :lead_provider_delivery_partnership,
+            framework_agreement: earlier_framework_agreement
+          )
+        )
+
+        FactoryBot.create(
+          :training_period,
+          :unfinished,
+          :provider_led,
+          ect_at_school_period:,
+          started_on: ect_at_school_period.started_on,
+          school_partnership:
+        )
+      end
+
+      it "creates the mentor training period against the chosen lead provider" do
+        expect { step.save! }.to change { mentor_at_school_period.reload.training_periods.count }.from(0).to(1)
+
+        expect(mentor_at_school_period.training_periods.sole.expression_of_interest).to eq(framework_agreement)
+      end
+    end
+
     context "when the mentee has previously started training with another mentor" do
       let(:previous_mentor) { FactoryBot.create(:mentor_at_school_period, school:, started_on:, finished_on: started_on + 2.months) }
       let(:previous_mentor_training_period) { FactoryBot.create(:training_period, :provider_led, :for_mentor, started_on:, finished_on: started_on + 2.months, mentor_at_school_period: previous_mentor) }
