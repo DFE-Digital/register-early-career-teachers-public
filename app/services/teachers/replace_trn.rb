@@ -1,7 +1,5 @@
 module Teachers
   class ReplaceTRN
-    class CircularRedirectError < StandardError; end
-
     def initialize(teacher:)
       @teacher = teacher
     end
@@ -14,13 +12,11 @@ module Teachers
         old_trn = teacher.trn
         new_trn = teacher.trs_redirected_to
 
-        teacher.trn = new_trn
-        teacher.trs_redirected_to = nil
-        teacher.trs_response = "ok"
-
-        return unless teacher.valid?
-
-        teacher.save!
+        teacher.update!(
+          trn: new_trn,
+          trs_redirected_to: nil,
+          trs_response: "ok"
+        )
 
         record_teacher_trn_replaced_event!(old_trn, new_trn)
       end
@@ -37,11 +33,7 @@ module Teachers
     end
 
     def only_one_teacher_with_redirected_trn?
-      candidates.size == 1
-    end
-
-    def candidates
-      @candidates ||= Teacher.where(trs_redirected_to: teacher.trs_redirected_to).take(2)
+      Teacher.where(trs_redirected_to: teacher.trs_redirected_to).one?
     end
 
     def author

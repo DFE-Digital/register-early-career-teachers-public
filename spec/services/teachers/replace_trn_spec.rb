@@ -7,22 +7,12 @@ RSpec.describe Teachers::ReplaceTRN do
     let(:new_trn) { "123456" }
 
     context "when the teacher has a TRS permanent redirect" do
-      it "replaces the teacher's TRN with the redirected TRN" do
+      it "replaces the teacher's TRN with the redirected TRN and resets the TRS attributes" do
         subject
 
         expect(teacher.reload.trn).to eq(new_trn)
-      end
-
-      it "updates the trs_response attribute to ok" do
-        subject
-
-        expect(teacher.reload.trs_response).to eq("ok")
-      end
-
-      it "updates the trs_redirected_to attribute to nil" do
-        subject
-
-        expect(teacher.reload.trs_redirected_to).to be_nil
+        expect(teacher.trs_response).to eq("ok")
+        expect(teacher.trs_redirected_to).to be_nil
       end
 
       it "records a teacher_trn_replaced event" do
@@ -48,7 +38,7 @@ RSpec.describe Teachers::ReplaceTRN do
         end
 
         it "does not change the teacher's TRN, response or redirected_to attribute" do
-          subject
+          expect { subject }.to raise_error(ActiveRecord::RecordInvalid)
 
           expect(teacher.reload.trn).to eq(old_trn)
           expect(teacher.trs_redirected_to).to eq(new_trn)
@@ -58,45 +48,19 @@ RSpec.describe Teachers::ReplaceTRN do
         it "does not enqueue the SyncTeacherWithTRSJob" do
           expect(Teachers::SyncTeacherWithTRSJob).not_to receive(:perform_later).with(teacher:)
 
-          subject
+          expect { subject }.to raise_error(ActiveRecord::RecordInvalid)
         end
 
         it "does not record a teacher_trn_replaced event" do
           expect(Events::Record).not_to receive(:record_teacher_trn_replaced_event!)
 
-          subject
+          expect { subject }.to raise_error(ActiveRecord::RecordInvalid)
         end
       end
 
       context "when there are several teachers with the same redirected TRN" do
         before do
           FactoryBot.create(:teacher, :merged_in_trs, trs_redirected_to: teacher.trs_redirected_to)
-        end
-
-        it "does not change the teacher's TRN, response or redirected_to attribute" do
-          subject
-
-          expect(teacher.reload.trn).to eq(old_trn)
-          expect(teacher.trs_redirected_to).to eq(new_trn)
-          expect(teacher.trs_response).to eq("permanent_redirect")
-        end
-
-        it "does not enqueue the SyncTeacherWithTRSJob" do
-          expect(Teachers::SyncTeacherWithTRSJob).not_to receive(:perform_later).with(teacher:)
-
-          subject
-        end
-
-        it "does not record a teacher_trn_replaced event" do
-          expect(Events::Record).not_to receive(:record_teacher_trn_replaced_event!)
-
-          subject
-        end
-      end
-
-      context "when the teacher is invalid" do
-        before do
-          allow(teacher).to receive(:valid?).and_return(false)
         end
 
         it "does not change the teacher's TRN, response or redirected_to attribute" do
