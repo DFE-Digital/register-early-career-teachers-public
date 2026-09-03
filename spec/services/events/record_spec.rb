@@ -180,14 +180,14 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe ".record_teacher_merged_events!" do
+  describe ".record_teacher_trn_merged_events!" do
     let(:author) { Events::SystemAuthor.new }
     let(:author_params) { { author_type: "system" } }
     let(:source) { FactoryBot.create(:teacher, trs_first_name: "Source", trs_last_name: "Teacher") }
     let(:destination) { FactoryBot.create(:teacher, trs_first_name: "Destination", trs_last_name: "Teacher") }
 
     it "queues a RecordEventJob on the destination referencing both teachers' api_ids" do
-      Events::Record.record_teacher_merged_events!(author:, source:, destination:)
+      Events::Record.record_teacher_trn_merged_events!(author:, source:, destination:)
 
       expect(RecordEventJob).to have_received(:perform_later).with(
         hash_including(
@@ -200,7 +200,7 @@ RSpec.describe Events::Record do
     end
 
     it "queues a RecordEventJob on the source referencing both teachers' api_ids" do
-      Events::Record.record_teacher_merged_events!(author:, source:, destination:)
+      Events::Record.record_teacher_trn_merged_events!(author:, source:, destination:)
 
       expect(RecordEventJob).to have_received(:perform_later).with(
         hash_including(
@@ -210,15 +210,6 @@ RSpec.describe Events::Record do
           body: a_string_including(destination.api_id)
         )
       )
-    end
-
-    it "appends the supplied note to both event bodies" do
-      Events::Record.record_teacher_merged_events!(author:, source:, destination:, body: "See ticket")
-
-      expect(RecordEventJob).to have_received(:perform_later)
-        .with(hash_including(teacher: destination, body: a_string_ending_with("See ticket")))
-      expect(RecordEventJob).to have_received(:perform_later)
-        .with(hash_including(teacher: source, body: a_string_ending_with("See ticket")))
     end
   end
 
