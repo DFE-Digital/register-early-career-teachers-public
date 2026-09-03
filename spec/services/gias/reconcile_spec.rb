@@ -190,6 +190,19 @@ RSpec.describe GIAS::Reconcile, type: :service do
           expect(GIAS::Reconciliation::Merge).to have_received(:merge!).with(merged_gias_school)
           expect(GIAS::Reconciliation::Replace).to have_received(:replace!).with(replaced_gias_school)
         end
+
+        context "for schools with a proposed status" do
+          let!(:proposed_to_open_gias_school) { FactoryBot.create(:gias_school, status: "proposed_to_open", urn: 20_011) }
+          let!(:proposed_to_close_gias_school) { FactoryBot.create(:gias_school, status: "proposed_to_close", urn: 20_012) }
+          let(:urns) { [20_011, 20_012] }
+
+          it "does not log a failure for the schools" do
+            expect(Sentry).not_to receive(:capture_message).with("Could not reconcile school with URN 20011", any_args)
+            expect(Sentry).not_to receive(:capture_message).with("Could not reconcile school with URN 20012", any_args)
+
+            service
+          end
+        end
       end
 
       context "when reconciling a school raises an error" do
