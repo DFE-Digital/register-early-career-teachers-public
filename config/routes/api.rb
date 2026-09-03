@@ -5,6 +5,10 @@ namespace :api do
   get "guidance/*page", to: "guidance#page", as: :guidance_page
   get "docs/:version", to: "documentation#index", as: :documentation
 
+  namespace :oauth do
+    post "token", to: "authorization_handshake#create", as: :authorization_handshake
+  end
+
   namespace :v3 do
     resources :participants, only: %i[index show], param: :api_id do
       member do
