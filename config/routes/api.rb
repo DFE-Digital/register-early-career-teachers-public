@@ -17,7 +17,6 @@ namespace :api do
 
       collection do
         resources :transfers, only: %i[index]
-        resources :mentorship_periods, only: %i[index], path: "mentorship-periods", controller: "participants/mentorship_periods"
       end
     end
 
