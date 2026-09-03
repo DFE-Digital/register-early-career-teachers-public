@@ -192,12 +192,12 @@ describe Declaration do
           expect { declaration.update!(declaration_type: "retained-1") }.not_to raise_error
         end
 
-        it "still validates the declaration date when it is changed" do
+        it "still validates the evidenced_at when it is changed" do
           expect(declaration).to be_valid
 
           declaration.evidenced_at = milestone.milestone_date.next_day
 
-          expect(declaration).to have_error(:evidenced_at, "Declaration date must be on or before the milestone date for the same declaration type.")
+          expect(declaration).to have_error(:evidenced_at, "Evidenced at must be on or before the milestone date for the same declaration type.")
         end
       end
 
@@ -214,19 +214,19 @@ describe Declaration do
           declaration.training_period.schedule = different_schedule
         end
 
-        it { is_expected.to have_error(:evidenced_at, "Declaration date must be on or before the milestone date for the same declaration type.") }
+        it { is_expected.to have_error(:evidenced_at, "Evidenced at must be on or before the milestone date for the same declaration type.") }
       end
 
-      context "when the declaration date is before the milestone start_date" do
+      context "when the evidenced_at is before the milestone start_date" do
         let(:evidenced_at) { milestone.start_date - 1.day }
 
-        it { is_expected.to have_error(:evidenced_at, "Declaration date must be on or after the milestone start date for the same declaration type.") }
+        it { is_expected.to have_error(:evidenced_at, "Evidenced at must be on or after the milestone start date for the same declaration type.") }
       end
 
-      context "when the declaration date is after the milestone_date" do
+      context "when the evidenced_at is after the milestone_date" do
         let(:evidenced_at) { milestone.milestone_date + 1.day }
 
-        it { is_expected.to have_error(:evidenced_at, "Declaration date must be on or before the milestone date for the same declaration type.") }
+        it { is_expected.to have_error(:evidenced_at, "Evidenced at must be on or before the milestone date for the same declaration type.") }
       end
 
       describe "contract period consistent across associations" do
