@@ -20,8 +20,8 @@ RSpec.describe API::Declarations::Create, type: :model do
   let(:declaration_type) { "started" }
   let(:evidence_type) { "training-event-attended" }
   let(:schedule) { training_period.schedule }
-  let(:declaration_datetime) { Faker::Time.between(from: milestone.start_date, to: milestone.milestone_date) }
-  let(:evidenced_at) { declaration_datetime.rfc3339 }
+  let(:evidence_datetime) { Faker::Time.between(from: milestone.start_date, to: milestone.milestone_date) }
+  let(:evidenced_at) { evidence_datetime.rfc3339 }
   let(:framework_agreement) { training_period.framework_agreement }
 
   let!(:milestone) do
@@ -106,21 +106,21 @@ RSpec.describe API::Declarations::Create, type: :model do
           let!(:evidenced_at) { nil }
 
           it { is_expected.to have_one_error_only }
-          it { is_expected.to have_error(:evidenced_at, "Enter a '#/declaration_date'.") }
+          it { is_expected.to have_error(:evidenced_at, "Enter a '#/evidenced_at'.") }
         end
 
         context "when `evidenced_at` is in the future" do
           let!(:evidenced_at) { 1.day.from_now.rfc3339 }
 
           it { is_expected.to have_one_error_only }
-          it { is_expected.to have_error(:evidenced_at, "The '#/declaration_date' value cannot be a future date. Check the date and try again.") }
+          it { is_expected.to have_error(:evidenced_at, "The '#/evidenced_at' value cannot be a future date. Check the date and try again.") }
         end
 
         context "when `evidenced_at` is not in the correct format" do
-          let!(:evidenced_at) { declaration_datetime.to_s }
+          let!(:evidenced_at) { evidence_datetime.to_s }
 
           it { is_expected.to have_one_error_only }
-          it { is_expected.to have_error(:evidenced_at, "Enter a valid RFC3339 '#/declaration_date'.") }
+          it { is_expected.to have_error(:evidenced_at, "Enter a valid RFC3339 '#/evidenced_at'.") }
         end
 
         context "when `declaration_type` is nil" do
@@ -147,29 +147,29 @@ RSpec.describe API::Declarations::Create, type: :model do
           it { is_expected.to have_error(:declaration_type, "The property '#/declaration_type' does not exist for this schedule.") }
         end
 
-        context "when declaration date does not match the milestone start date" do
+        context "when evidenced at does not match the milestone start date" do
           let(:evidenced_at) { (milestone.start_date - 1.day).rfc3339 }
 
           it { is_expected.to have_one_error_only }
-          it { is_expected.to have_error(:evidenced_at, "Declaration date must be on or after the milestone start date for the same declaration type.") }
+          it { is_expected.to have_error(:evidenced_at, "Evidenced at must be on or after the milestone start date for the same declaration type.") }
         end
 
         context "when declaration date does not match the milestone date" do
           let(:evidenced_at) { (milestone.milestone_date + 1.day).rfc3339 }
 
           it { is_expected.to have_one_error_only }
-          it { is_expected.to have_error(:evidenced_at, "Declaration date must be on or before the milestone date for the same declaration type.") }
+          it { is_expected.to have_error(:evidenced_at, "Evidenced at must be on or before the milestone date for the same declaration type.") }
         end
 
         context "when teacher withdrew before the declaration date" do
-          let(:withdrawn_at) { declaration_datetime - 1.second }
+          let(:withdrawn_at) { evidence_datetime - 1.second }
 
           before do
             training_period.update!(withdrawn_at:, withdrawal_reason: "other")
           end
 
           it { is_expected.to have_one_error_only }
-          it { is_expected.to have_error(:teacher_api_id, "This participant withdrew from this course on #{withdrawn_at.utc.rfc3339}. Enter a '#/declaration_date' that's on or before the withdrawal date.") }
+          it { is_expected.to have_error(:teacher_api_id, "This participant withdrew from this course on #{withdrawn_at.utc.rfc3339}. Enter a '#/evidenced_at' that's on or before the withdrawal date.") }
         end
 
         if trainee_type == :mentor
@@ -450,7 +450,7 @@ RSpec.describe API::Declarations::Create, type: :model do
                 let(:evidenced_at) { (started_declaration.evidenced_at - 1.week).rfc3339 }
 
                 it { is_expected.to have_one_error_only }
-                it { is_expected.to have_error(:evidenced_at, "This '#/declaration_date' is invalid. Check that it is in sequence with existing declaration dates for this participant.") }
+                it { is_expected.to have_error(:evidenced_at, "This '#/evidenced_at' is invalid. Check that it is in sequence with existing declaration dates for this participant.") }
               end
 
               context "when `completed` is submitted after `started` declaration date" do
@@ -483,7 +483,7 @@ RSpec.describe API::Declarations::Create, type: :model do
                 let(:evidenced_at) { (completed_declaration.evidenced_at + 1.week).rfc3339 }
 
                 it { is_expected.to have_one_error_only }
-                it { is_expected.to have_error(:evidenced_at, "This '#/declaration_date' is invalid. Check that it is in sequence with existing declaration dates for this participant.") }
+                it { is_expected.to have_error(:evidenced_at, "This '#/evidenced_at' is invalid. Check that it is in sequence with existing declaration dates for this participant.") }
               end
 
               context "when `started` is submitted before `completed` declaration date" do
@@ -528,7 +528,7 @@ RSpec.describe API::Declarations::Create, type: :model do
                     let(:evidenced_at) { (started_declaration.evidenced_at - 1.day).rfc3339 }
 
                     it { is_expected.to have_one_error_only }
-                    it { is_expected.to have_error(:evidenced_at, "This '#/declaration_date' is invalid. Check that it is in sequence with existing declaration dates for this participant.") }
+                    it { is_expected.to have_error(:evidenced_at, "This '#/evidenced_at' is invalid. Check that it is in sequence with existing declaration dates for this participant.") }
                   end
 
                   context "when declaration date is after completed" do
@@ -536,7 +536,7 @@ RSpec.describe API::Declarations::Create, type: :model do
                     let(:evidenced_at) { (completed_declaration.evidenced_at + 1.day).rfc3339 }
 
                     it { is_expected.to have_one_error_only }
-                    it { is_expected.to have_error(:evidenced_at, "This '#/declaration_date' is invalid. Check that it is in sequence with existing declaration dates for this participant.") }
+                    it { is_expected.to have_error(:evidenced_at, "This '#/evidenced_at' is invalid. Check that it is in sequence with existing declaration dates for this participant.") }
                   end
                 end
 

@@ -1,4 +1,4 @@
-class DeclarationDateWithinMilestoneValidator < ActiveModel::Validator
+class EvidencedAtWithinMilestoneValidator < ActiveModel::Validator
   def validate(record)
     declaration_within_milestone(record)
   end
@@ -13,11 +13,11 @@ private
     return unless record.milestone && record.evidenced_at.present?
 
     if record.evidenced_at < record.milestone.start_date.beginning_of_day
-      record.errors.add(:evidenced_at, "Declaration date must be on or after the milestone start date for the same declaration type.")
+      record.errors.add(:evidenced_at, "Evidenced at must be on or after the milestone start date for the same declaration type.")
     end
 
     if record.milestone.milestone_date.present? && (record.milestone.milestone_date.end_of_day <= record.evidenced_at)
-      record.errors.add(:evidenced_at, "Declaration date must be on or before the milestone date for the same declaration type.")
+      record.errors.add(:evidenced_at, "Evidenced at must be on or before the milestone date for the same declaration type.")
     end
   end
 

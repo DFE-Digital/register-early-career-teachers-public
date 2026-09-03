@@ -25,7 +25,7 @@ module API::Declarations
       in: TEACHER_TYPES,
       message: "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again."
     }, allow_blank: true
-    validates :evidenced_at, presence: { message: "Enter a '#/declaration_date'." }, if: -> { errors.empty? }
+    validates :evidenced_at, presence: { message: "Enter a '#/evidenced_at'." }, if: -> { errors.empty? }
     validate :teacher_type_exists
     validates :declaration_type, presence: { message: "Enter a '#/declaration_type'." }, if: -> { errors.empty? }
     validates :declaration_type, inclusion: {
@@ -33,14 +33,14 @@ module API::Declarations
       message: "Enter a valid declaration type."
     }, allow_blank: true, if: -> { errors.empty? }
     validate :validates_billable_slot_available
-    validate :declaration_date_in_the_past
+    validate :evidenced_at_in_the_past
     validates :evidenced_at,
-              declaration_date_within_milestone: true,
+              evidenced_at_within_milestone: true,
               api_date_time_format: true,
               allow_blank: true
     validate :validate_only_started_or_completed_if_mentor
     validates :evidence_type, evidence_type: true, if: -> { errors.empty? }
-    validate :teacher_not_withdrawn_before_declaration_date
+    validate :teacher_not_withdrawn_before_evidenced_at
     validate :contract_period_is_not_payments_frozen
     validate :payment_statement_available
     validate :validate_milestone_exists
@@ -133,14 +133,14 @@ module API::Declarations
       ).statements.first
     end
 
-    def declaration_date_in_the_past
+    def evidenced_at_in_the_past
       return if errors[:evidenced_at].any?
       return if errors[:declaration_type].any?
       return if errors[:teacher_api_id].any?
       return if errors[:teacher_type].any?
 
       if evidenced_at && evidenced_at > Time.zone.now
-        errors.add(:evidenced_at, "The '#/declaration_date' value cannot be a future date. Check the date and try again.")
+        errors.add(:evidenced_at, "The '#/evidenced_at' value cannot be a future date. Check the date and try again.")
       end
     end
 
@@ -193,12 +193,12 @@ module API::Declarations
       end
     end
 
-    def teacher_not_withdrawn_before_declaration_date
+    def teacher_not_withdrawn_before_evidenced_at
       return if errors[:teacher_api_id].any?
       return unless training_status&.withdrawn?
       return unless training_period.withdrawn_at <= evidenced_at
 
-      errors.add(:teacher_api_id, "This participant withdrew from this course on #{training_period.withdrawn_at.utc.rfc3339}. Enter a '#/declaration_date' that's on or before the withdrawal date.")
+      errors.add(:teacher_api_id, "This participant withdrew from this course on #{training_period.withdrawn_at.utc.rfc3339}. Enter a '#/evidenced_at' that's on or before the withdrawal date.")
     end
 
     def validate_only_started_or_completed_if_mentor
@@ -252,23 +252,23 @@ module API::Declarations
       before_declaration_types = ordered_types[0...index]
       after_declaration_types = ordered_types[(index + 1)..]
 
-      from_declaration_date = existing_declarations
+      from_evidenced_at = existing_declarations
         .billable_or_changeable_for_declaration_type(before_declaration_types)
         .maximum(:evidenced_at)
 
-      to_declaration_date = existing_declarations
+      to_evidenced_at = existing_declarations
         .billable_or_changeable_for_declaration_type(after_declaration_types)
         .minimum(:evidenced_at)
 
-      error_message = "This '#/declaration_date' is invalid. Check that it is in sequence with existing declaration dates for this participant."
+      error_message = "This '#/evidenced_at' is invalid. Check that it is in sequence with existing declaration dates for this participant."
 
-      if from_declaration_date && parsed_declaration_date.before?(from_declaration_date)
+      if from_evidenced_at && parsed_evidenced_at.before?(from_evidenced_at)
         errors.add(:evidenced_at, error_message)
-      elsif to_declaration_date && parsed_declaration_date.after?(to_declaration_date)
+      elsif to_evidenced_at && parsed_evidenced_at.after?(to_evidenced_at)
         errors.add(:evidenced_at, error_message)
       end
     end
 
-    def parsed_declaration_date = Time.zone.parse(evidenced_at)
+    def parsed_evidenced_at = Time.zone.parse(evidenced_at)
   end
 end

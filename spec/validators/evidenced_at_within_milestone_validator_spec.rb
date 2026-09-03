@@ -1,4 +1,4 @@
-RSpec.describe DeclarationDateWithinMilestoneValidator, type: :model do
+RSpec.describe EvidencedAtWithinMilestoneValidator, type: :model do
   subject { model_class.new(evidenced_at:) }
 
   let(:model_class) do
@@ -7,7 +7,7 @@ RSpec.describe DeclarationDateWithinMilestoneValidator, type: :model do
 
       attr_accessor :evidenced_at
 
-      validates :evidenced_at, declaration_date_within_milestone: true
+      validates :evidenced_at, evidenced_at_within_milestone: true
 
       def milestone
         Milestone.first
@@ -25,7 +25,7 @@ RSpec.describe DeclarationDateWithinMilestoneValidator, type: :model do
   context "when before the milestone start" do
     let(:evidenced_at) { Date.new(contract_period.year, 7, 28) }
 
-    it { is_expected.to have_error(:evidenced_at, "Declaration date must be on or after the milestone start date for the same declaration type.") }
+    it { is_expected.to have_error(:evidenced_at, "Evidenced at must be on or after the milestone start date for the same declaration type.") }
   end
 
   context "when at the milestone start" do
@@ -49,6 +49,6 @@ RSpec.describe DeclarationDateWithinMilestoneValidator, type: :model do
   context "when after the milestone start" do
     let(:evidenced_at) { milestone_date + 1 }
 
-    it { is_expected.to have_error(:evidenced_at, "Declaration date must be on or before the milestone date for the same declaration type.") }
+    it { is_expected.to have_error(:evidenced_at, "Evidenced at must be on or before the milestone date for the same declaration type.") }
   end
 end

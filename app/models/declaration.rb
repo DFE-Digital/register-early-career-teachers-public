@@ -70,7 +70,7 @@ class Declaration < ApplicationRecord
   validates :voided_by_user_at, presence: { message: "Voided by user at must be set as well as the voided by user" }, if: :voided_by_user
   validates :api_id, uniqueness: { case_sensitive: false, message: "API id already exists for another declaration" }
   validates :evidenced_at, presence: { message: "Declaration date must be specified" }
-  validates :evidenced_at, declaration_date_within_milestone: true, if: :evidenced_at_or_schedule_changed?
+  validates :evidenced_at, evidenced_at_within_milestone: true, if: :evidenced_at_or_schedule_changed?
   validates :declaration_type, inclusion: { in: Declaration.declaration_types.keys, message: "Choose a valid declaration type" }
   validates :evidence_type, inclusion: { in: Declaration.evidence_types.keys, message: "Choose a valid evidence type" }, allow_nil: true
   validates :mentorship_period, absence: { message: "Mentor teacher can only be assigned to declarations for ECTs" }, if: :for_mentor?

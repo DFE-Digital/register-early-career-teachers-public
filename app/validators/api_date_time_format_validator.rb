@@ -18,12 +18,6 @@ private
       false
     end
 
-    record.errors.add(attribute, "Enter a valid RFC3339 '#/#{mapped_name(attribute)}'.")
-  end
-
-  def mapped_name(attribute)
-    return "declaration_date" if attribute.to_s == "evidenced_at"
-
-    attribute
+    record.errors.add(attribute, "Enter a valid RFC3339 '#/#{attribute}'.")
   end
 end
