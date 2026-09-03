@@ -58,6 +58,15 @@ RSpec.describe Admin::Teachers::OverviewSummaryComponent, type: :component do
         expect(rendered).to have_css(".govuk-tag.govuk-tag--grey", text: "Deactivated")
       end
     end
+
+    context "when the teacher's TRN has been merged into another in TRS" do
+      let(:teacher) { FactoryBot.create(:teacher, :merged_in_trs) }
+
+      it "shows a grey merged tag alongside the TRN" do
+        expect(rendered).to have_text(teacher.trn)
+        expect(rendered).to have_css(".govuk-tag.govuk-tag--grey", text: "Merged")
+      end
+    end
   end
 
   context "when the teacher is not an Early Career Teacher" do
