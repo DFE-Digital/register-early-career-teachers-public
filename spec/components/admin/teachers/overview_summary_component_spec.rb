@@ -40,6 +40,26 @@ RSpec.describe Admin::Teachers::OverviewSummaryComponent, type: :component do
     end
   end
 
+  describe "the TRN row" do
+    context "when the teacher's TRN is active in TRS" do
+      let(:teacher) { FactoryBot.create(:teacher, :found_in_trs) }
+
+      it "shows the TRN without a deactivated tag" do
+        expect(rendered).to have_text(teacher.trn)
+        expect(rendered).not_to have_css(".govuk-tag", text: "Deactivated")
+      end
+    end
+
+    context "when the teacher's TRN has been deactivated in TRS" do
+      let(:teacher) { FactoryBot.create(:teacher, :deactivated_in_trs) }
+
+      it "shows a grey deactivated tag alongside the TRN" do
+        expect(rendered).to have_text(teacher.trn)
+        expect(rendered).to have_css(".govuk-tag.govuk-tag--grey", text: "Deactivated")
+      end
+    end
+  end
+
   context "when the teacher is not an Early Career Teacher" do
     let(:teacher) { FactoryBot.create(:teacher, api_id: SecureRandom.uuid, trs_induction_status: nil) }
 
