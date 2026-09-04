@@ -17,7 +17,7 @@ module Teachers
     # In the sandbox environment we don't want to allow data in TRS to
     # overwrite existing teacher data, so we skip the refresh.
     #
-    # @return [Symbol] :refresh_disabled, :teacher_updated, :teacher_deactivated, :teacher_not_found
+    # @return [Symbol] :refresh_disabled, :teacher_updated, :teacher_deactivated, :teacher_not_found, :teacher_merged
     def refresh!
       return :refresh_disabled unless enabled?
 
