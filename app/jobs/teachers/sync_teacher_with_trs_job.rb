@@ -11,7 +11,13 @@ module Teachers
       api_client = TRS::APIClient.build
       status = Teachers::RefreshTRSAttributes.new(teacher, api_client:).refresh!
 
-      Teachers::ReplaceTRN.new(teacher:).replace! if status == :teacher_merged
+      return unless status == :teacher_merged
+
+      if Teacher.where(trn: teacher.trs_redirected_to).exists?
+        Teachers::MergeTRN.new(teacher:).merge!
+      else
+        Teachers::ReplaceTRN.new(teacher:).replace!
+      end
     end
   end
 end
