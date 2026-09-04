@@ -7,7 +7,7 @@ module Statements
   class DeclarationSelection
     class UnsupportedCalculatorError < StandardError; end
 
-    ORDER_BY = { declaration_date: :asc, created_at: :asc, id: :asc }.freeze
+    ORDER_BY = { evidenced_at: :asc, created_at: :asc, id: :asc }.freeze
 
     attr_reader :statement
 

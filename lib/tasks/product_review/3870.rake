@@ -75,7 +75,7 @@ namespace :product_review do
       Declaration.create!(
         training_period: adrian_brookfield_training,
         declaration_type: "started",
-        declaration_date: Date.new(2023, 12, 15),
+        evidenced_at: Date.new(2023, 12, 15),
         evidence_type: "training-event-attended",
         payment_status: :no_payment,
         clawback_status: :no_clawback,

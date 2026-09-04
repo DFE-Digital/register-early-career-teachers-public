@@ -25,7 +25,7 @@ module Statements
       Column.new("Declaration ID", :declaration_id),
       Column.new("Declaration Status", :declaration_status),
       Column.new("Declaration Type", :csv_declaration_type),
-      Column.new("Declaration Date", :declaration_date),
+      Column.new("Declaration Date", :evidenced_at),
       Column.new("Declaration Created At", :declaration_created_at),
       Column.new("Evidence Held", :evidence_held),
       Column.new("Statement Name", :statement_name),
@@ -76,7 +76,7 @@ module Statements
             { mentor_at_school_period: %i[school teacher] }
           ]
         )
-        .order(:declaration_date, :created_at, :id)
+        .order(:evidenced_at, :created_at, :id)
         .distinct
     end
 
@@ -188,8 +188,8 @@ module Statements
       declaration.declaration_type
     end
 
-    def declaration_date(declaration)
-      declaration.declaration_date.utc.iso8601
+    def evidenced_at(declaration)
+      declaration.evidenced_at.utc.iso8601
     end
 
     def declaration_created_at(declaration)

@@ -1,13 +1,13 @@
-RSpec.describe DeclarationDateWithinMilestoneValidator, type: :model do
-  subject { model_class.new(declaration_date:) }
+RSpec.describe EvidencedAtWithinMilestoneValidator, type: :model do
+  subject { model_class.new(evidenced_at:) }
 
   let(:model_class) do
     Class.new do
       include ActiveModel::Model
 
-      attr_accessor :declaration_date
+      attr_accessor :evidenced_at
 
-      validates :declaration_date, declaration_date_within_milestone: true
+      validates :evidenced_at, evidenced_at_within_milestone: true
 
       def milestone
         Milestone.first
@@ -15,7 +15,7 @@ RSpec.describe DeclarationDateWithinMilestoneValidator, type: :model do
     end
   end
 
-  let(:declaration_date) { Date.new(contract_period.year, 7, 30) }
+  let(:evidenced_at) { Date.new(contract_period.year, 7, 30) }
   let(:start_date) { Date.new(contract_period.year, 7, 29) }
   let(:milestone_date) { Date.new(contract_period.year, 7, 31) }
   let(:contract_period) { FactoryBot.create(:contract_period, :current) }
@@ -23,32 +23,32 @@ RSpec.describe DeclarationDateWithinMilestoneValidator, type: :model do
   let!(:milestone) { FactoryBot.create(:milestone, schedule:, start_date:, milestone_date:) }
 
   context "when before the milestone start" do
-    let(:declaration_date) { Date.new(contract_period.year, 7, 28) }
+    let(:evidenced_at) { Date.new(contract_period.year, 7, 28) }
 
-    it { is_expected.to have_error(:declaration_date, "Declaration date must be on or after the milestone start date for the same declaration type.") }
+    it { is_expected.to have_error(:evidenced_at, "Evidenced at must be on or after the milestone start date for the same declaration type.") }
   end
 
   context "when at the milestone start" do
-    let(:declaration_date) { start_date }
+    let(:evidenced_at) { start_date }
 
     it { is_expected.to be_valid }
   end
 
   context "when in the middle of milestone" do
-    let(:declaration_date) { start_date + 1 }
+    let(:evidenced_at) { start_date + 1 }
 
     it { is_expected.to be_valid }
   end
 
   context "when at the milestone end" do
-    let(:declaration_date) { milestone_date }
+    let(:evidenced_at) { milestone_date }
 
     it { is_expected.to be_valid }
   end
 
   context "when after the milestone start" do
-    let(:declaration_date) { milestone_date + 1 }
+    let(:evidenced_at) { milestone_date + 1 }
 
-    it { is_expected.to have_error(:declaration_date, "Declaration date must be on or before the milestone date for the same declaration type.") }
+    it { is_expected.to have_error(:evidenced_at, "Evidenced at must be on or before the milestone date for the same declaration type.") }
   end
 end

@@ -106,7 +106,7 @@ module API::Declarations
             AND declarations.clawback_status = 'no_clawback'
             AND (
               latest_training_period.finished_on IS NULL
-              OR declarations.declaration_date <= latest_training_period.finished_on
+              OR declarations.evidenced_at <= latest_training_period.finished_on
             )
           )
         SQL

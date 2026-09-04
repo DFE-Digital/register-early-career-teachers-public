@@ -7,7 +7,7 @@ RSpec.describe Declarations::Create do
   let(:schedule) { training_period.schedule }
   let!(:milestone) { FactoryBot.create(:milestone, declaration_type:, schedule:) }
   let(:declaration_datetime) { Faker::Time.between(from: milestone.start_date, to: milestone.milestone_date) }
-  let(:declaration_date) { declaration_datetime.iso8601 }
+  let(:evidenced_at) { declaration_datetime.iso8601 }
   let(:contract_period) { training_period.contract_period }
   let(:framework_agreement) { training_period.framework_agreement }
   let(:delivery_partner) { training_period.delivery_partner }
@@ -19,7 +19,7 @@ RSpec.describe Declarations::Create do
       lead_provider:,
       teacher:,
       training_period:,
-      declaration_date:,
+      evidenced_at:,
       declaration_type:,
       evidence_type:,
       payment_statement:,

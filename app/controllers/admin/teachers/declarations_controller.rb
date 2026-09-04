@@ -10,10 +10,10 @@ module Admin
 
         @ect_declarations = @teacher.ect_declarations
           .includes(training_period: %i[lead_provider delivery_partner])
-          .order(declaration_date: :asc)
+          .order(evidenced_at: :asc)
         @mentor_declarations = @teacher.mentor_declarations
           .includes(training_period: %i[lead_provider delivery_partner])
-          .order(declaration_date: :asc)
+          .order(evidenced_at: :asc)
       end
 
     private

@@ -29,7 +29,7 @@ class API::DeclarationSerializer < Blueprinter::Base
       end
     end
 
-    field(:declaration_date)
+    field(:evidenced_at, name: :declaration_date)
     field(:mentor_id) { |declaration| declaration.mentorship_period&.mentor&.teacher&.api_id }
 
     field(:state) do |declaration|

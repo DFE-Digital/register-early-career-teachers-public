@@ -39,22 +39,22 @@ module TeacherHistories
       end
     end
 
-    def declaration(declaration_type, declaration_date, *traits, &block)
+    def declaration(declaration_type, evidenced_at, *traits, &block)
       declaration = FactoryBot.build(
         :declaration,
         *traits,
         training_period:,
         declaration_type:,
-        declaration_date:,
+        evidenced_at:,
         delivery_partner_when_created: training_period.delivery_partner
       )
 
       if declaration.save
-        print_seed_info("🧾 #{declaration.declaration_type} declaration added (#{declaration.declaration_date.to_date})", indent:)
+        print_seed_info("🧾 #{declaration.declaration_type} declaration added (#{declaration.evidenced_at.to_date})", indent:)
 
         Events::Record.record_declaration_created_event!(author:, teacher: training_period.teacher, lead_provider: training_period.lead_provider, declaration:)
       else
-        print_seed_info("Invalid #{declaration.declaration_type} declaration #{declaration.declaration_date}", error: true, indent:)
+        print_seed_info("Invalid #{declaration.declaration_type} declaration #{declaration.evidenced_at}", error: true, indent:)
         print_seed_info("Valid milestones:", error: true, indent: indent(2))
 
         training_period.schedule.milestones.select(:declaration_type, :milestone_date).each do |ms|

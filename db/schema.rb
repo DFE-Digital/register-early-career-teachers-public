@@ -257,10 +257,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_01_162714) do
     t.bigint "clawback_statement_id"
     t.enum "clawback_status", default: "no_clawback", null: false, enum_type: "declaration_clawback_statuses"
     t.datetime "created_at", null: false
-    t.datetime "declaration_date", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.enum "declaration_type", default: "started", null: false, enum_type: "declaration_types"
     t.bigint "delivery_partner_when_created_id", null: false
     t.enum "evidence_type", enum_type: "evidence_types"
+    t.datetime "evidenced_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.bigint "mentorship_period_id"
     t.bigint "payment_statement_id"
     t.enum "payment_status", default: "no_payment", null: false, enum_type: "declaration_payment_statuses"

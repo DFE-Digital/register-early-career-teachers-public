@@ -60,13 +60,13 @@ RSpec.describe "Declarations API", :with_metadata, type: :request do
     let(:schedule) { FactoryBot.create(:schedule, contract_period: school_partnership.contract_period) }
     let(:milestone) { FactoryBot.create(:milestone, declaration_type: :started, schedule:) }
     let(:declaration_date) do
-      Faker::Date.between(from: milestone.start_date, to: milestone.milestone_date)
+      Faker::Date.between(from: milestone.start_date, to: milestone.milestone_date).rfc3339
     end
 
     let(:service_args) do
       {
         lead_provider_id: lead_provider.id,
-        declaration_date: declaration_date.rfc3339,
+        evidenced_at: declaration_date,
         declaration_type: "started",
         evidence_type: "other",
         teacher_api_id: teacher.api_id,
@@ -81,7 +81,7 @@ RSpec.describe "Declarations API", :with_metadata, type: :request do
           attributes: {
             participant_id: teacher.api_id,
             declaration_type:,
-            declaration_date: declaration_date.rfc3339,
+            declaration_date:,
             course_identifier:,
             evidence_held: "other"
           }
@@ -123,6 +123,20 @@ RSpec.describe "Declarations API", :with_metadata, type: :request do
             expect(parsed_response[:errors]).to contain_exactly(
               title: "declaration_type",
               detail: "Enter a valid declaration type."
+            )
+          end
+        end
+
+        context "when the `evidenced_at` is blank" do
+          let(:declaration_date) { nil }
+
+          it "returns `unprocessable_content`" do
+            authenticated_api_post(path, params:)
+
+            expect(response).to have_http_status(:unprocessable_content)
+            expect(parsed_response[:errors]).to contain_exactly(
+              title: "declaration_date",
+              detail: "Enter a '#/declaration_date'."
             )
           end
         end
