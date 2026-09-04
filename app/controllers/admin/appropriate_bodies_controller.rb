@@ -9,10 +9,7 @@ module Admin
         "Organisations" => admin_organisations_path,
         "Appropriate bodies" => nil,
       }
-      @pagy, @appropriate_bodies = pagy(
-        ::AppropriateBodies::Search.new(params[:q]).search,
-        limit: 30
-      )
+      @pagy, @appropriate_bodies = pagy(::AppropriateBodies::Search.new(params[:q]).search.active)
     end
 
     def show

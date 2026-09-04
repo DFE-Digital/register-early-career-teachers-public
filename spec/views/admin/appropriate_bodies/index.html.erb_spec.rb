@@ -3,7 +3,7 @@ RSpec.describe "admin/appropriate_bodies/index.html.erb" do
 
   let(:number_of_appropriate_bodies) { 2 }
   let(:appropriate_bodies) { FactoryBot.create_list(:appropriate_body_period, number_of_appropriate_bodies) }
-  let(:pagy) { pagy_array(appropriate_bodies, items: 5, page: 1) }
+  let(:pagy) { Pagy.new(count: number_of_appropriate_bodies, limit: 5, page: 1) }
 
   before do
     assign(:appropriate_bodies, appropriate_bodies)
@@ -46,6 +46,24 @@ RSpec.describe "admin/appropriate_bodies/index.html.erb" do
 
     appropriate_bodies.each do |appropriate_body|
       expect(rendered).to have_link(appropriate_body.name, href: admin_appropriate_body_path(appropriate_body))
+    end
+  end
+
+  it "does not render pagination when there is only one page" do
+    render
+
+    expect(rendered).not_to have_css(".govuk-pagination")
+    expect(rendered).not_to have_css("div.govuk-body", text: "Showing")
+  end
+
+  context "when there is more than one page" do
+    let(:number_of_appropriate_bodies) { 10 }
+
+    it "renders pagination and results summary" do
+      render
+
+      expect(rendered).to have_css(".govuk-pagination")
+      expect(rendered).to have_css("div.govuk-body", text: "Showing 1 to 5 of 10 appropriate bodies")
     end
   end
 end

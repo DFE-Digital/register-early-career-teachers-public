@@ -28,11 +28,55 @@ RSpec.describe "Viewing the appropriate bodies index", type: :request do
         expect(response.body).to include("Captain Scrummy", "Captain Hook")
       end
 
+      it "omits de-designated appropriate bodies" do
+        FactoryBot.create(:appropriate_body_period, :inactive, name: "Captain Retired")
+
+        get "/admin/organisations/appropriate-bodies"
+
+        expect(response.status).to eq(200)
+        expect(response.body).not_to include("Captain Retired")
+      end
+
+      it "shows 20 appropriate bodies per page" do
+        20.times { |i| FactoryBot.create(:appropriate_body_period, name: "Admiral Ackbar #{i}") }
+
+        get "/admin/organisations/appropriate-bodies"
+
+        expect(response.status).to eq(200)
+        expect(response.body).not_to include("Captain Hook")
+        expect(response.body).not_to include("Captain Scrummy")
+
+        get "/admin/organisations/appropriate-bodies?page=2"
+
+        expect(response.status).to eq(200)
+        expect(response.body).to include("Captain Hook", "Captain Scrummy")
+      end
+
       context "when searching for appropriate bodies" do
         it "displays search results" do
           get "/admin/organisations/appropriate-bodies?q=Hook"
           expect(response.status).to eq(200)
 
+          expect(response.body).to include("Captain Hook")
+          expect(response.body).not_to include("Captain Scrummy")
+        end
+
+        it "omits de-designated appropriate bodies" do
+          FactoryBot.create(:appropriate_body_period, :inactive, name: "Captain Hooked")
+
+          get "/admin/organisations/appropriate-bodies?q=Hook"
+
+          expect(response.status).to eq(200)
+          expect(response.body).to include("Captain Hook")
+          expect(response.body).not_to include("Captain Hooked")
+        end
+
+        it "keeps filtering by the search term on later pages" do
+          25.times { |i| FactoryBot.create(:appropriate_body_period, name: "Captain Hook #{i}") }
+
+          get "/admin/organisations/appropriate-bodies?q=Hook&page=2"
+
+          expect(response.status).to eq(200)
           expect(response.body).to include("Captain Hook")
           expect(response.body).not_to include("Captain Scrummy")
         end
