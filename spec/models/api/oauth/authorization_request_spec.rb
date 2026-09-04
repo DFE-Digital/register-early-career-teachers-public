@@ -55,9 +55,20 @@ describe API::OAuth::AuthorizationRequest do
     end
 
     context "when the redirect URI is not registered with the client" do
-      before { authorization_request.redirect_uri = "https://elsewhere.example.com/oauth/callback" }
+      [
+        "https://elsewhere.example.com/oauth/callback",
+        "http://vendor.com/oauth/callback",
+        "http://vendor.com/oauth-callback",
+        "http://vendor.in/oauth-callback",
+        "",
+        nil
+      ].each do |bad_uri|
+        context "When redirect_uri is: #{bad_uri}" do
+          before { authorization_request.redirect_uri = bad_uri }
 
-      it { is_expected.not_to be_redirectable }
+          it { is_expected.not_to be_redirectable }
+        end
+      end
     end
   end
 
