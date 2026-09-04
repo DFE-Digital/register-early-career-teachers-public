@@ -1,4 +1,6 @@
 RSpec.describe "API OAuth authorizations", type: :request do
+  include ActiveJob::TestHelper
+
   let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let(:client) { FactoryBot.create(:api_oauth_client) }
   let(:redirect_uri) { client.redirect_uris.first }
@@ -51,6 +53,51 @@ RSpec.describe "API OAuth authorizations", type: :request do
         expect(response).to redirect_to(
           "#{redirect_uri}?error=unsupported_response_type&error_description=Response+type+is+not+included+in+the+list&state=xyz"
         )
+      end
+    end
+  end
+
+  describe "POST /oauth/authorize" do
+    context "when not signed in" do
+      it "redirects to root url" do
+        post("/oauth/authorize")
+        expect(response).to redirect_to(root_url)
+      end
+    end
+
+    context "when signed in" do
+      before { sign_in_as(:appropriate_body_user, appropriate_body: appropriate_body_period) }
+
+      context "when an authorization_request is stored" do
+        before { get("/oauth/authorize", params:) }
+
+        it "issues a code, records an event and redirects to the vendor with the code" do
+          expect { perform_enqueued_jobs { post("/oauth/authorize") } }.to change(client.authorizations, :count).by(1)
+
+          authorization = client.authorizations.last
+          code = URI.decode_www_form(URI.parse(response.location).query).to_h["code"]
+          event = Event.with_event_type(:oauth_authorization_created).sole
+
+          expect(response).to redirect_to("#{redirect_uri}?code=#{code}&state=xyz")
+          expect(Digest::SHA256.hexdigest(code)).to eq(authorization.code_digest)
+          expect(authorization.client).to eq(client)
+          expect(authorization.appropriate_body_period).to eq(appropriate_body_period)
+          expect(authorization.redirect_uri).to eq(redirect_uri)
+          expect(authorization.code_challenge).to eq(params[:code_challenge])
+          expect(authorization).to be_s256
+          expect(session[:oauth_authorization_request]).to be_nil
+          expect(event.heading).to eq("#{client.name} was authorised by #{appropriate_body_period.name}")
+          expect(event.appropriate_body_period).to eq(appropriate_body_period)
+          expect(event.author_type).to eq("appropriate_body_user")
+          expect(event.metadata).to eq("client_name" => client.name, "client_id" => client.client_id)
+        end
+      end
+
+      context "when no authorization_request is stored" do
+        it "returns a bad request when no authorization request is in progress" do
+          post("/oauth/authorize")
+          expect(response).to have_http_status(:bad_request)
+        end
       end
     end
   end

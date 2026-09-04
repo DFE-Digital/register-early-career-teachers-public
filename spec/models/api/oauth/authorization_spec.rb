@@ -21,12 +21,14 @@ describe API::OAuth::Authorization do
     it { is_expected.to validate_presence_of(:client) }
     it { is_expected.to validate_presence_of(:appropriate_body_period) }
     it { is_expected.to validate_presence_of(:redirect_uri) }
-    it { is_expected.to validate_presence_of(:code_digest) }
-    it { is_expected.to validate_uniqueness_of(:code_digest) }
     it { is_expected.to validate_presence_of(:code_challenge) }
-    it { is_expected.to validate_presence_of(:code_expires_at) }
-    it { is_expected.to validate_uniqueness_of(:token_digest).allow_nil }
     it { is_expected.not_to validate_presence_of(:token_expires_at) }
+
+    context "using a persisted record as the matcher's own insert would skip the code assignment" do
+      subject(:authorization) { FactoryBot.create(:api_oauth_authorization) }
+
+      it { is_expected.to validate_uniqueness_of(:token_digest).allow_nil }
+    end
 
     context "when a token has been issued" do
       subject(:authorization) { FactoryBot.build(:api_oauth_authorization).tap(&:assign_token) }
@@ -54,23 +56,48 @@ describe API::OAuth::Authorization do
     end
   end
 
+  describe "granting an authorization" do
+    let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
+    let(:current_user) do
+      FactoryBot.build(:appropriate_body_user, dfe_sign_in_organisation_id: appropriate_body_period.dfe_sign_in_organisation_id)
+    end
+
+    before { allow(Events::Record).to receive(:record_oauth_authorization_created_event!) }
+
+    it "defaults the author to the current user" do
+      Current.set(user: current_user) do
+        expect(described_class.new.author).to eq(current_user)
+      end
+    end
+
+    it "records an event when the authorization is created and not when it changes afterwards" do
+      authorization = FactoryBot.create(:api_oauth_authorization, appropriate_body_period:, author: current_user)
+
+      expect(Events::Record).to have_received(:record_oauth_authorization_created_event!).once.with(
+        author: current_user, authorization:
+      )
+
+      authorization.update!(code_exchanged_at: Time.zone.now)
+
+      expect(Events::Record).to have_received(:record_oauth_authorization_created_event!).once
+    end
+  end
+
   context "when a code is assigned" do
-    subject(:authorization) { described_class.new }
-
-    it "returns the code, storing its digest and expiring it 10 minutes later" do
+    it "exposes the code, storing its digest and expiring it 10 minutes later" do
       freeze_time do
-        code = authorization.assign_code
+        authorization = FactoryBot.create(:api_oauth_authorization)
 
-        expect(authorization.code_digest).to eq(Digest::SHA256.hexdigest(code))
+        expect(authorization.code).to be_present
+        expect(authorization.code_digest).to eq(Digest::SHA256.hexdigest(authorization.code))
         expect(authorization.code_expires_at).to eq(10.minutes.from_now)
       end
     end
 
     context "when the code expiry has passed" do
-      before do
-        authorization.assign_code
-        travel_to(authorization.code_expires_at + 1.second)
-      end
+      subject(:authorization) { FactoryBot.create(:api_oauth_authorization) }
+
+      before { travel_to(authorization.code_expires_at + 1.second) }
 
       it { is_expected.to be_code_expired }
     end
@@ -79,11 +106,12 @@ describe API::OAuth::Authorization do
   context "when a token is assigned" do
     subject(:authorization) { described_class.new }
 
-    it "returns the token, storing its digest and expiring it 1 year later" do
+    it "exposes the token, storing its digest and expiring it 1 year later" do
       freeze_time do
-        token = authorization.assign_token
+        authorization.assign_token
 
-        expect(authorization.token_digest).to eq(Digest::SHA256.hexdigest(token))
+        expect(authorization.token).to be_present
+        expect(authorization.token_digest).to eq(Digest::SHA256.hexdigest(authorization.token))
         expect(authorization.token_expires_at).to eq(1.year.from_now)
       end
     end

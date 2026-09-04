@@ -8,12 +8,12 @@ module API::OAuth::AuthorizationRequest::Redirectable
 
   def redirectable? = redirect_uri.present? && client&.redirect_uris&.include?(redirect_uri)
 
-  def redirect_uri_with_params(error: error_code, error_description: error_messages_description)
+  def redirect_uri_with_params(code: nil, error: error_code, error_description: error_messages_description)
     uri = URI.parse(redirect_uri)
     existing_query_params = uri.query.present? ? URI.decode_www_form(uri.query).to_h : {}
-    error_params = error.present? ? { error:, error_description: } : {}
+    response_params = error.present? ? { error:, error_description: } : { code: }
     state_params = { state: state.presence }
-    query_params = existing_query_params.merge(error_params).merge(state_params).compact
+    query_params = existing_query_params.merge(response_params).merge(state_params).compact
     uri.query = URI.encode_www_form(query_params)
     uri.to_s
   end

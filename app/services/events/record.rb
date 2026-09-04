@@ -764,6 +764,18 @@ module Events
       new(event_type:, author:, heading:, lead_provider:, happened_at: Time.zone.now, metadata:).record_event!
     end
 
+    # OAuth Events
+
+    def self.record_oauth_authorization_created_event!(author:, authorization:)
+      event_type = :oauth_authorization_created
+      client = authorization.client
+      appropriate_body_period = authorization.appropriate_body_period
+      heading = "#{client.name} was authorised by #{appropriate_body_period.name}"
+      metadata = { client_name: client.name, client_id: client.client_id }
+
+      new(event_type:, author:, heading:, appropriate_body_period:, happened_at: Time.zone.now, metadata:).record_event!
+    end
+
     # School Partnership Events
 
     def self.record_school_partnership_created_event!(author:, school_partnership:)
