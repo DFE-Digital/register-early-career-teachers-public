@@ -7,7 +7,7 @@ module GIAS::Reconciliation
     end
 
     def close!
-      return false unless eligibility.can_be_closed?
+      return false unless eligibility.can_be_closed? || eligibility.can_be_split?
 
       ActiveRecord::Base.transaction do
         destroy_unstarted_mentorship_periods!

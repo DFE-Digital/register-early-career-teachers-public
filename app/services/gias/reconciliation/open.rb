@@ -7,7 +7,7 @@ module GIAS::Reconciliation
     end
 
     def open!
-      return false unless eligibility.can_be_opened?
+      return false unless eligibility.can_be_opened? || eligibility.was_split?
 
       ActiveRecord::Base.transaction do
         gias_school.create_school!
