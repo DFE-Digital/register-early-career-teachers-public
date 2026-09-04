@@ -11,7 +11,7 @@ module API
         else
           destroy_authorization_request
           redirect_to(
-            @authorization_request.redirect_uri_with(error: :invalid_request),
+            @authorization_request.redirect_uri_with_params,
             allow_other_host: true
           )
         end
@@ -28,7 +28,7 @@ module API
         destroy_authorization_request
 
         redirect_to(
-          @authorization_request.redirect_uri_with(error: :access_denied, error_description: "User refused connection"),
+          @authorization_request.redirect_uri_with_params(error: :access_denied, error_description: "User refused connection"),
           allow_other_host: true
         )
       end

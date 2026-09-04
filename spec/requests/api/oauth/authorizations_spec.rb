@@ -49,7 +49,7 @@ RSpec.describe "API OAuth authorizations", type: :request do
       it "redirects to the vendor with an OAuth error for recoverable problems" do
         get("/oauth/authorize", params: params.merge(response_type: "token"))
         expect(response).to redirect_to(
-          "#{redirect_uri}?error=invalid_request&error_description=Response+type+is+not+included+in+the+list&state=xyz"
+          "#{redirect_uri}?error=unsupported_response_type&error_description=Response+type+is+not+included+in+the+list&state=xyz"
         )
       end
     end

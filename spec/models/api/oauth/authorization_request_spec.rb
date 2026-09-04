@@ -17,6 +17,7 @@ describe API::OAuth::AuthorizationRequest do
 
   describe "validations" do
     it { is_expected.to be_valid }
+    it { is_expected.to validate_presence_of(:response_type) }
     it { is_expected.to validate_inclusion_of(:response_type).in_array(%w[code]) }
     it { is_expected.to validate_presence_of(:code_challenge) }
     it { is_expected.to validate_inclusion_of(:code_challenge_method).in_array(%w[S256]) }
@@ -60,6 +61,42 @@ describe API::OAuth::AuthorizationRequest do
     end
   end
 
+  describe "#error_code" do
+    it "is nil when the request is valid" do
+      authorization_request.validate
+      expect(authorization_request.error_code).to be_nil
+    end
+
+    it "is invalid_request when a parameter is missing or malformed" do
+      authorization_request.response_type = nil
+      authorization_request.validate
+      expect(authorization_request.error_code).to eq(:invalid_request)
+
+      authorization_request.response_type = "code"
+      authorization_request.code_challenge = nil
+      authorization_request.validate
+      expect(authorization_request.error_code).to eq(:invalid_request)
+    end
+
+    context "when the response type is not code" do
+      before do
+        authorization_request.response_type = "token"
+        authorization_request.validate
+      end
+
+      it { expect(authorization_request.error_code).to eq(:unsupported_response_type) }
+    end
+
+    context "when the Appropriate Body does not match the logged-in one" do
+      before do
+        authorization_request.appropriate_body_period_id = 0
+        authorization_request.validate
+      end
+
+      it { expect(authorization_request.error_code).to eq(:access_denied) }
+    end
+  end
+
   context "when the client's redirect URI has a query string" do
     let(:client) { FactoryBot.create(:api_oauth_client, redirect_uris: %w[https://vendor.example.com/callback?tenant=1]) }
 
@@ -69,14 +106,14 @@ describe API::OAuth::AuthorizationRequest do
     end
 
     it "appends the error and state to the redirect URI, keeping the existing query string" do
-      expect(authorization_request.redirect_uri_with(error: :invalid_request)).to eq(
+      expect(authorization_request.redirect_uri_with_params(error: :invalid_request)).to eq(
         "https://vendor.example.com/callback" \
         "?tenant=1" \
         "&error=invalid_request" \
         "&error_description=Appropriate+body+period+does+not+match+the+logged-in+Appropriate+Body" \
         "&state=xyz"
       )
-      expect(authorization_request.redirect_uri_with(error: :access_denied)).to eq(
+      expect(authorization_request.redirect_uri_with_params(error: :access_denied)).to eq(
         "https://vendor.example.com/callback" \
         "?tenant=1" \
         "&error=access_denied" \
@@ -89,7 +126,7 @@ describe API::OAuth::AuthorizationRequest do
       before { authorization_request.state = nil }
 
       it "omits the state from the redirect URI" do
-        expect(authorization_request.redirect_uri_with(error: :access_denied)).to eq(
+        expect(authorization_request.redirect_uri_with_params(error: :access_denied)).to eq(
           "https://vendor.example.com/callback" \
           "?tenant=1" \
           "&error=access_denied" \
