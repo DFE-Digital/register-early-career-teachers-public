@@ -31,7 +31,9 @@ RSpec.describe AppropriateBodies::Importers::RejectedTeacherImporter do
       end
 
       it "fails fast" do
-        expect { importer.import! }.to raise_error.and not_change(Teacher, :count).and not_change(Event, :count)
+        expect { importer.import! }.to raise_error(StandardError, "Import found no missing teachers")
+          .and not_change(Teacher, :count)
+          .and not_change(Event, :count)
       end
     end
 
