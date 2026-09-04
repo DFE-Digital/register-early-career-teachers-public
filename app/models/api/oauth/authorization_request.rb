@@ -48,8 +48,8 @@ module API
         uri = URI.parse(redirect_uri)
         existing_query_params = uri.query.present? ? URI.decode_www_form(uri.query).to_h : {}
         error_params = error.present? ? { error:, error_description: } : {}
-        state = self.state.present? ? { state: self.state } : {}
-        query_params = existing_query_params.merge(error_params).merge(state).compact
+        state_params = { state: state.presence }
+        query_params = existing_query_params.merge(error_params).merge(state_params).compact
         uri.query = URI.encode_www_form(query_params)
         uri.to_s
       end
