@@ -15,6 +15,19 @@
         )
       %>
 
+      <%= f.govuk_check_boxes_fieldset("include_de_designated", legend: nil, multiple: false) do %>
+        <%=
+          f.govuk_check_box(
+            "include_de_designated",
+            "1",
+            multiple: false,
+            checked: @include_de_designated,
+            include_hidden: false,
+            label: { text: "Include de-designated appropriate bodies" }
+          )
+        %>
+      <% end %>
+
       <%= f.govuk_submit "Search" %>
     <% end %>
 
@@ -22,6 +35,13 @@
       <%=
         govuk_summary_card(title: govuk_link_to(appropriate_body.name, admin_appropriate_body_path(appropriate_body))) do |card|
           card.with_summary_list do |summary_list|
+            unless appropriate_body.active?
+              summary_list.with_row do |row|
+                row.with_key(text: "Status")
+                row.with_value(text: govuk_tag(text: "De-designated", colour: "grey"))
+              end
+            end
+
             summary_list.with_row do |row|
               row.with_key(text: "Ongoing inductions")
               row.with_value(text: appropriate_body.induction_periods.unfinished.count)

@@ -49,6 +49,36 @@ RSpec.describe "admin/appropriate_bodies/index.html.erb" do
     end
   end
 
+  it "renders an unchecked toggle for de-designated appropriate bodies" do
+    render
+
+    expect(rendered).to have_unchecked_field("Include de-designated appropriate bodies")
+  end
+
+  context "when de-designated appropriate bodies are included" do
+    let(:appropriate_bodies) { [FactoryBot.create(:appropriate_body_period, :inactive, name: "Captain Retired")] }
+
+    before { assign(:include_de_designated, true) }
+
+    it "checks the toggle" do
+      render
+
+      expect(rendered).to have_checked_field("Include de-designated appropriate bodies")
+    end
+
+    it "marks de-designated appropriate bodies" do
+      render
+
+      expect(rendered).to have_css(".govuk-tag", text: "De-designated")
+    end
+  end
+
+  it "does not mark active appropriate bodies as de-designated" do
+    render
+
+    expect(rendered).not_to have_css(".govuk-tag", text: "De-designated")
+  end
+
   it "does not render pagination when there is only one page" do
     render
 

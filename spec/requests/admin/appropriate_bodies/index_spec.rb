@@ -37,6 +37,15 @@ RSpec.describe "Viewing the appropriate bodies index", type: :request do
         expect(response.body).not_to include("Captain Retired")
       end
 
+      it "includes de-designated appropriate bodies when asked for" do
+        FactoryBot.create(:appropriate_body_period, :inactive, name: "Captain Retired")
+
+        get "/admin/organisations/appropriate-bodies?include_de_designated=1"
+
+        expect(response.status).to eq(200)
+        expect(response.body).to include("Captain Retired", "Captain Hook", "Captain Scrummy")
+      end
+
       it "shows 20 appropriate bodies per page" do
         20.times { |i| FactoryBot.create(:appropriate_body_period, name: "Admiral Ackbar #{i}") }
 
@@ -69,6 +78,16 @@ RSpec.describe "Viewing the appropriate bodies index", type: :request do
           expect(response.status).to eq(200)
           expect(response.body).to include("Captain Hook")
           expect(response.body).not_to include("Captain Hooked")
+        end
+
+        it "includes de-designated appropriate bodies when asked for" do
+          FactoryBot.create(:appropriate_body_period, :inactive, name: "Captain Hooked")
+
+          get "/admin/organisations/appropriate-bodies?q=Hook&include_de_designated=1"
+
+          expect(response.status).to eq(200)
+          expect(response.body).to include("Captain Hook", "Captain Hooked")
+          expect(response.body).not_to include("Captain Scrummy")
         end
 
         it "keeps filtering by the search term on later pages" do
