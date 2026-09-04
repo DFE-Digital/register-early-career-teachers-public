@@ -13,23 +13,34 @@ module AppropriateBodies::Importers
     def import!
       ActiveRecord::Base.transaction do
         rows_by_trn = csv_rows.group_by { |row| row["trn"] }
-        service_trns = Teacher.pluck(:trn).to_set
-        target_trns = rows_by_trn.keys.reject { |trn| service_trns.include?(trn) }
-        skipped_trns = rows_by_trn.keys - target_trns
-        teacher_data = target_trns.map { |trn| { trn: } }
-        inserted_teachers = Teacher.insert_all!(teacher_data, returning: %i[id trn])
-        inserted_trns = inserted_teachers.to_h { |row| [row["trn"], row["id"]] }
+        rejected_trns = rows_by_trn.keys
 
-        event_data = target_trns.map do |trn|
-          teacher_id = inserted_trns.fetch(trn)
+        # identify missing records
+        existing_trns = Teacher.where(trn: rejected_trns).pluck(:trn)
+        missing_trns = rejected_trns - existing_trns
 
-          reason = rows_by_trn.fetch(trn).map { |row| row["reason"] }.compact.uniq.first
+        # fail fast if already imported
+        raise "Import found no missing teachers" if missing_trns.none?
 
-          originals = rows_by_trn.fetch(trn).map do |row|
+        # Insert any teachers who are missing
+        missing_teacher_data = missing_trns.map { |trn| { trn: } }
+        teachers = Teacher.insert_all!(missing_teacher_data)
+
+        # fetch all rejected teacher data
+        rejected_ids = Teacher.where(trn: rejected_trns).pluck(:trn, :id).to_h
+
+        # build event data from CSV which uses as single consistent reason for any rejected induction rows
+        event_data = rejected_trns.map do |trn|
+          teacher_id = rejected_ids.fetch(trn)
+          teacher_invalid_rows = rows_by_trn.fetch(trn)
+
+          reason = teacher_invalid_rows.map { |row| row["reason"] }.compact.uniq.first
+
+          originals = teacher_invalid_rows.map do |row|
             {
               legacy_appropriate_body_id: row["dqt_id_discarded"],
-              started_on: row["started_on_discarded"],
-              finished_on: row["finished_on_discarded"],
+              started_on: extract_date(row["started_on_discarded"]),
+              finished_on: extract_date(row["finished_on_discarded"])
             }
           end
           event_params(teacher_id:, reason:, originals:)
@@ -37,16 +48,24 @@ module AppropriateBodies::Importers
 
         events = Event.insert_all!(event_data)
 
-        logger.info("Created #{target_trns.size} teachers with #{events.count} rejection events (#{skipped_trns.count} skipped)")
+        logger.info("Created #{teachers.count} missing teachers and added #{events.count} rejection events for #{rejected_trns.size} TRNs")
       end
     end
 
   private
 
-    # @return [Hash]
+    # @param date [String]
+    # @return [Date, nil]
+    def extract_date(date)
+      return if date.blank?
+
+      Date.strptime(date, "%d/%m/%Y")
+    end
+
     # @param teacher_id [Integer]
     # @param reason [String]
     # @param originals [Array<Hash>]
+    # @return [Hash]
     def event_params(teacher_id:, reason:, originals:)
       {
         author_type: :system,
