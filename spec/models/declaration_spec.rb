@@ -73,7 +73,7 @@ describe Declaration do
 
     it { is_expected.to be_valid }
     it { is_expected.to validate_presence_of(:training_period).with_message("Choose a training period") }
-    it { is_expected.to validate_presence_of(:evidenced_at).with_message("Declaration date must be specified") }
+    it { is_expected.to validate_presence_of(:evidenced_at).with_message("Evidenced at must be specified") }
     it { is_expected.to allow_values(*described_class.declaration_types.keys).for(:declaration_type) }
     it { is_expected.to allow_values(*described_class.payment_statuses.keys).for(:payment_status) }
     it { is_expected.to validate_inclusion_of(:clawback_status).in_array(described_class.clawback_statuses.keys).with_message("Choose a valid clawback status") }

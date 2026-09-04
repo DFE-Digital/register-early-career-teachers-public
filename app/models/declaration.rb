@@ -69,7 +69,7 @@ class Declaration < ApplicationRecord
   validates :voided_by_user, presence: { message: "Voided by user must be set as well as the voided date" }, if: :voided_by_user_at
   validates :voided_by_user_at, presence: { message: "Voided by user at must be set as well as the voided by user" }, if: :voided_by_user
   validates :api_id, uniqueness: { case_sensitive: false, message: "API id already exists for another declaration" }
-  validates :evidenced_at, presence: { message: "Declaration date must be specified" }
+  validates :evidenced_at, presence: { message: "Evidenced at must be specified" }
   validates :evidenced_at, evidenced_at_within_milestone: true, if: :evidenced_at_or_schedule_changed?
   validates :declaration_type, inclusion: { in: Declaration.declaration_types.keys, message: "Choose a valid declaration type" }
   validates :evidence_type, inclusion: { in: Declaration.evidence_types.keys, message: "Choose a valid evidence type" }, allow_nil: true
