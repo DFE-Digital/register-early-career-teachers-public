@@ -13,7 +13,7 @@ module Teachers::Details
       super
 
       @teacher = teacher
-      @induction = Teachers::Induction.new(teacher)
+      @induction = Induction::TeacherInformation.new(teacher)
       @enable_edit = enable_edit
       @enable_delete = enable_delete
       @enable_release = enable_release

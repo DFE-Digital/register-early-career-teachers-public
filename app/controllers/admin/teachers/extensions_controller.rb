@@ -46,7 +46,7 @@ module Admin
     private
 
       def manage_extensions
-        @manage_extensions ||= ::InductionExtensions::Manage.new(
+        @manage_extensions ||= Induction::Extensions::Manage.new(
           author: current_user,
           appropriate_body_period: nil,
           teacher: @teacher

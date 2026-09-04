@@ -24,11 +24,11 @@ module TeachersIndex
     end
 
     def teacher_induction_start_date(teacher)
-      Teachers::InductionPeriod.new(teacher).formatted_induction_start_date
+      Induction::TeacherInformation.new(teacher).formatted_induction_start_date
     end
 
     def teacher_status_tag_kwargs(teacher)
-      Teachers::InductionStatus.new(
+      Induction::Status.new(
         trs_induction_status: teacher.trs_induction_status,
         teacher:
       ).status_tag_kwargs

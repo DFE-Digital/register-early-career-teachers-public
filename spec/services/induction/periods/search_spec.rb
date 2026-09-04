@@ -1,4 +1,4 @@
-describe InductionPeriods::Search do
+describe Induction::Periods::Search do
   let(:result) { described_class.new(order: :started_on).induction_periods(**conditions) }
 
   let(:conditions) { {} }

@@ -54,7 +54,7 @@ module Admin
     def induction_status
       return unless ect?
 
-      ::Teachers::InductionStatus.new(trs_induction_status: teacher.trs_induction_status, teacher:).induction_status
+      ::Induction::Status.new(trs_induction_status: teacher.trs_induction_status, teacher:).induction_status
     end
 
     def api_participant_id

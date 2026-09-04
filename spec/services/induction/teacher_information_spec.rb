@@ -1,4 +1,4 @@
-RSpec.describe Teachers::Induction do
+describe Induction::TeacherInformation do
   subject(:service) { described_class.new(teacher) }
 
   let(:teacher) { FactoryBot.create(:teacher) }
@@ -14,6 +14,9 @@ RSpec.describe Teachers::Induction do
   let(:induction_period_finished_two_years_ago) do
     FactoryBot.create(:induction_period, teacher:, started_on: 3.years.ago, finished_on: 2.years.ago)
   end
+
+  it { is_expected.to delegate_method(:first_induction_period).to(:teacher) }
+  it { is_expected.to delegate_method(:last_induction_period).to(:teacher) }
 
   describe "#current_induction_period" do
     context "with ongoing period" do
@@ -63,6 +66,26 @@ RSpec.describe Teachers::Induction do
 
     context "without induction periods" do
       it { expect(service.induction_start_date).to be_nil }
+    end
+  end
+
+  describe "#ongoing_induction_period" do
+    context "without ongoing induction period" do
+      before do
+        FactoryBot.create(:induction_period, teacher:, started_on: "2023-10-3", finished_on: "2023-12-3")
+      end
+
+      it { expect(service.ongoing_induction_period).to be_nil }
+    end
+
+    context "with ongoing induction period" do
+      let!(:ongoing_induction_period) do
+        FactoryBot.create(:induction_period, :unfinished, teacher:, started_on: "2023-10-3")
+      end
+
+      it "returns the ongoing induction period" do
+        expect(service.ongoing_induction_period).to eq(ongoing_induction_period)
+      end
     end
   end
 
