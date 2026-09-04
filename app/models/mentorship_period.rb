@@ -12,7 +12,8 @@ class MentorshipPeriod < ApplicationRecord
              class_name: "MentorAtSchoolPeriod",
              foreign_key: :mentor_at_school_period_id,
              inverse_of: :mentorship_periods
-
+  has_one :ect_teacher, through: :mentee, source: :teacher
+  has_one :mentor_teacher, through: :mentor, source: :teacher
   has_many :events
 
   # Validations
