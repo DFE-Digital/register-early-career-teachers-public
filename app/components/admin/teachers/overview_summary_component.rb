@@ -53,9 +53,17 @@ module Admin
       end
 
       def trn_value
-        return teacher.trn unless teacher.trs_response_gone?
+        return teacher.trn if trn_tag_text.nil?
 
-        safe_join([teacher.trn, govuk_tag(text: "Deactivated", colour: "grey", classes: "govuk-!-margin-left-1")], " ")
+        safe_join([teacher.trn, govuk_tag(text: trn_tag_text, colour: "grey", classes: "govuk-!-margin-left-1")], " ")
+      end
+
+      def trn_tag_text
+        if teacher.trs_response_gone?
+          "Deactivated"
+        elsif teacher.trs_response_permanent_redirect?
+          "Merged"
+        end
       end
 
       def role_row
