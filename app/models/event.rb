@@ -38,6 +38,7 @@ class Event < ApplicationRecord
     statement_adjustment_updated
     teacher_email_address_updated
     teacher_working_pattern_updated
+    teacher_school_start_date_updated
     teacher_training_programme_updated
     teacher_training_lead_provider_updated
     teacher_fails_induction
