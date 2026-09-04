@@ -1,7 +1,20 @@
 class API::MentorshipPeriodsSerializer < Blueprinter::Base
+  def self.dependencies
+    [
+      {
+        mentee: %i[teacher school],
+        mentor: [
+          :teacher,
+          { training_periods: :lead_provider }
+        ]
+      }
+    ]
+  end
+
   class AttributesSerializer < Blueprinter::Base
     field(:started_on)
     field(:finished_on)
+    field(:updated_at)
 
     field(:school_urn) do |mentorship_period|
       mentorship_period.mentee.school.urn
@@ -12,7 +25,7 @@ class API::MentorshipPeriodsSerializer < Blueprinter::Base
     end
 
     field(:mentor_participant_id) do |mentorship_period|
-      mentorship_period.mentor.teacher.api_ect_training_record_id
+      mentorship_period.mentor.teacher.api_mentor_training_record_id
     end
 
     field(:mentor_email) do |mentorship_period|
@@ -21,14 +34,11 @@ class API::MentorshipPeriodsSerializer < Blueprinter::Base
 
     field(:mentor_full_name) { |mentorship_period| Teachers::Name.new(mentorship_period.mentor.teacher).full_name }
 
-    field(:mentor_training_status) do |mentorship_period, options|
-      actively_training = mentorship_period.mentor.training_periods.any? { it.lead_provider&.id == options[:lead_provider_id] }
-
-      if actively_training
-        :actively_training
-      else
-        :not_actively_training
-      end
+    field(:mentorship_status) do |mentorship_period, options|
+      API::MentorshipPeriods::MentorshipStatus.new(
+        mentorship_period:,
+        lead_provider_id: options[:lead_provider_id]
+      ).status
     end
   end
 
