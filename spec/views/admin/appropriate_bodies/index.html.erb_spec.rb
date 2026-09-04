@@ -3,7 +3,7 @@ RSpec.describe "admin/appropriate_bodies/index.html.erb" do
 
   let(:number_of_appropriate_bodies) { 2 }
   let(:appropriate_bodies) { FactoryBot.create_list(:appropriate_body_period, number_of_appropriate_bodies) }
-  let(:pagy) { pagy_array(appropriate_bodies, items: 5, page: 1) }
+  let(:pagy) { Pagy.new(count: number_of_appropriate_bodies, limit: 5, page: 1) }
 
   before do
     assign(:appropriate_bodies, appropriate_bodies)
@@ -46,6 +46,54 @@ RSpec.describe "admin/appropriate_bodies/index.html.erb" do
 
     appropriate_bodies.each do |appropriate_body|
       expect(rendered).to have_link(appropriate_body.name, href: admin_appropriate_body_path(appropriate_body))
+    end
+  end
+
+  it "renders an unchecked toggle for de-designated appropriate bodies" do
+    render
+
+    expect(rendered).to have_unchecked_field("Include de-designated appropriate bodies")
+  end
+
+  context "when de-designated appropriate bodies are included" do
+    let(:appropriate_bodies) { [FactoryBot.create(:appropriate_body_period, :inactive, name: "Captain Retired")] }
+
+    before { assign(:include_de_designated, true) }
+
+    it "checks the toggle" do
+      render
+
+      expect(rendered).to have_checked_field("Include de-designated appropriate bodies")
+    end
+
+    it "marks de-designated appropriate bodies" do
+      render
+
+      expect(rendered).to have_css(".govuk-tag", text: "De-designated")
+    end
+  end
+
+  it "does not mark active appropriate bodies as de-designated" do
+    render
+
+    expect(rendered).not_to have_css(".govuk-tag", text: "De-designated")
+  end
+
+  it "does not render pagination when there is only one page" do
+    render
+
+    expect(rendered).not_to have_css(".govuk-pagination")
+    expect(rendered).not_to have_css("div.govuk-body", text: "Showing")
+  end
+
+  context "when there is more than one page" do
+    let(:number_of_appropriate_bodies) { 10 }
+
+    it "renders pagination and results summary" do
+      render
+
+      expect(rendered).to have_css(".govuk-pagination")
+      expect(rendered).to have_css("div.govuk-body", text: "Showing 1 to 5 of 10 appropriate bodies")
     end
   end
 end
