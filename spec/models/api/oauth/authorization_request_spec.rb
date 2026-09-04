@@ -120,6 +120,17 @@ describe API::OAuth::AuthorizationRequest do
         "&error_description=Appropriate+body+period+does+not+match+the+logged-in+Appropriate+Body" \
         "&state=xyz"
       )
+      expect(
+        authorization_request.redirect_uri_with_params(
+          error: :access_denied, error_description: "banana"
+        )
+      ).to eq(
+        "https://vendor.example.com/callback" \
+        "?tenant=1" \
+        "&error=access_denied" \
+        "&error_description=banana" \
+        "&state=xyz"
+      )
     end
 
     context "when no state was supplied" do
