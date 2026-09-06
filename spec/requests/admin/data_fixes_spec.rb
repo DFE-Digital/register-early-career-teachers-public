@@ -102,15 +102,26 @@ RSpec.describe "Admin::DataFixesController" do
         include_context "sign in as product_team DfE user"
 
         let(:teacher) { FactoryBot.create(:teacher, trn: "123456") }
-        let(:other_teacher) { FactoryBot.create(:teacher, trn: "234567") }
+        let(:ect_at_school_period) do
+          FactoryBot.create(
+            :ect_at_school_period,
+            :unfinished,
+            started_on: 2.years.ago
+          )
+        end
+        let(:other_teacher) { FactoryBot.create(:teacher) }
 
         context "when the CSV is valid and changes can be processed" do
           let(:csv_string) do
             <<~ROWS
               object_type,object_id,action,attributes
               Teacher,#{teacher.id},update,"trn,345678"
-              Teacher,#{other_teacher.id},update,"trn,456789"
+              Teacher,#{other_teacher.id},delete,""
+              ECTAtSchoolPeriod,#{ect_at_school_period.id},update,"started_on,#{Date.yesterday}"
             ROWS
+          end
+          let(:verify_params) do
+            { verify: { note: "This is a test note explaining the change" } }
           end
 
           it "redirects to preview step, then redirects to verify step " \
@@ -120,17 +131,53 @@ RSpec.describe "Admin::DataFixesController" do
 
             expect { post path_for_step("preview") }
               .to not_change { teacher.reload.trn }
-              .and(not_change { other_teacher.reload.trn })
+              .and(not_change { ect_at_school_period.reload.started_on })
+            expect { other_teacher.reload }.not_to raise_error
 
             expect(response).to redirect_to(path_for_step("verify"))
             follow_redirect!
 
-            expect { post path_for_step("verify") }
-              .to change { teacher.reload.trn }.from("123456").to("345678")
-              .and change { other_teacher.reload.trn }.from("234567").to("456789")
+            expect { post path_for_step("verify"), params: verify_params }
+              .to change { teacher.reload.trn }
+              .from("123456").to("345678")
+              .and change { ect_at_school_period.reload.started_on }
+              .from(2.years.ago.to_date).to(Date.yesterday)
+            expect { other_teacher.reload }.to raise_error(ActiveRecord::RecordNotFound)
           end
 
-          context "but there is an unexpected error" do
+          context "but there are errors in the verify step" do
+            it "redirects to preview step, then redirects to verify step and " \
+               "returns unprocessable_content" do
+              expect(subject).to redirect_to(path_for_step("preview"))
+              follow_redirect!
+
+              expect { post path_for_step("preview") }
+                .to not_change { teacher.reload.trn }
+                .and(not_change { ect_at_school_period.reload.started_on })
+              expect { other_teacher.reload }.not_to raise_error
+
+              expect(response).to redirect_to(path_for_step("verify"))
+              follow_redirect!
+
+              # Invalidate the changes
+              FactoryBot.create(:ect_at_school_period, teacher: other_teacher)
+              ect_at_school_period.finish!(2.days.ago)
+
+              expect { post path_for_step("verify"), params: verify_params }
+                .to not_change { teacher.reload.trn }
+                .and(not_change { ect_at_school_period.reload.started_on })
+              expect { other_teacher.reload }.not_to raise_error
+
+              expect(response).to have_http_status(:unprocessable_content)
+              page = Capybara.string(response.body)
+              error_summary = page.find(".govuk-error-summary")
+              expect(error_summary)
+                .to have_text("Row 2: PG::ForeignKeyViolation")
+                .and have_text("Row 3: PG::InFailedSqlTransaction")
+            end
+          end
+
+          context "but there is an unexpected error in the preview step" do
             before do
               processor = Admin::DataFixes::Processor.new
               allow(Admin::DataFixes::Processor)
@@ -150,10 +197,19 @@ RSpec.describe "Admin::DataFixesController" do
                 .with(data_change: {
                   "object_type" => "Teacher",
                   "object_id" => other_teacher.id.to_s,
-                  "action" => "update",
-                  "attributes" => "trn,456789"
+                  "action" => "delete",
+                  "attributes" => ""
                 })
                 .and_raise(StandardError, "oops")
+              allow(processor)
+                .to receive(:process!)
+                .with(data_change: {
+                  "object_type" => "ECTAtSchoolPeriod",
+                  "object_id" => ect_at_school_period.id.to_s,
+                  "action" => "update",
+                  "attributes" => "started_on,#{Date.yesterday}"
+                })
+                .and_call_original
             end
 
             it "redirects to preview step, then raises the unexpected error " \
@@ -166,6 +222,7 @@ RSpec.describe "Admin::DataFixesController" do
                 .to raise_error(StandardError, "oops")
                 .and not_change { teacher.reload.trn }
                 .and(not_change { other_teacher.reload.trn })
+                .and(not_change { ect_at_school_period.reload.started_on })
             end
           end
         end

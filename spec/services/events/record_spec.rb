@@ -2638,6 +2638,41 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe ".record_admin_data_fix_event!" do
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time
+
+      Events::Record.record_admin_data_fix_event!(
+        author:,
+        body: "A test reason for the change",
+        zendesk_ticket_id: "123456",
+        modifications: { "trs_first_name" => ["Old Name", "New Name"] },
+        metadata: {
+          gid: "gid://app/Teacher/1",
+          action: "update",
+          changes: { "trs_first_name" => ["Old Name", "New Name"] }
+        }
+      )
+
+      expect(RecordEventJob).to have_received(:perform_later).with(
+        hash_including(
+          event_type: :admin_data_fix,
+          heading: "Admin data fix: gid://app/Teacher/1 (update)",
+          body: "A test reason for the change",
+          zendesk_ticket_id: "123456",
+          modifications: ["TRS first name changed from 'Old Name' to 'New Name'"],
+          metadata: {
+            gid: "gid://app/Teacher/1",
+            action: "update",
+            changes: { "trs_first_name" => ["Old Name", "New Name"] }
+          },
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      )
+    end
+  end
+
   describe ".record_teacher_set_funding_eligibility_event!" do
     it "queues a RecordEventJob with the correct values" do
       freeze_time do

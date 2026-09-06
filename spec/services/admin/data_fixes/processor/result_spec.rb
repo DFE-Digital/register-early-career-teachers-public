@@ -3,13 +3,12 @@ describe Admin::DataFixes::Processor::Result do
 
   let(:data_change) { { action: "update" } }
   let(:target_object) do
-    instance_double(
-      TrainingPeriod,
-      id: 1,
-      model_name: "TrainingPeriod",
-      saved_changes: "something"
-    )
+    FactoryBot.create(:teacher, corrected_name: "Jane Smith").tap do |teacher|
+      teacher.update!(corrected_name: "Jane Doe")
+    end
   end
+
+  before { freeze_time }
 
   describe "#success?" do
     context "when there is no error" do
@@ -31,7 +30,13 @@ describe Admin::DataFixes::Processor::Result do
     context "when there is no error" do
       let(:error) { nil }
 
-      it { is_expected.to eq({ record_identifier: "TrainingPeriod(#1)", action: "update", changes: "something" }) }
+      it "returns the saved change" do
+        expect(saved_change).to eq({
+          gid: target_object.to_global_id.to_s,
+          action: "update",
+          changes: { "corrected_name" => ["Jane Smith", "Jane Doe"] }
+        })
+      end
     end
 
     context "when there is an error" do
