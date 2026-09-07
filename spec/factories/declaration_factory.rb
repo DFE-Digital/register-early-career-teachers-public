@@ -9,7 +9,7 @@ FactoryBot.define do
     payment_status { :no_payment }
     clawback_status { :no_clawback }
     api_id { SecureRandom.uuid }
-    declaration_date { Faker::Date.between(from: Time.zone.now, to: 1.year.from_now) }
+    evidenced_at { Faker::Date.between(from: Time.zone.now, to: 1.year.from_now) }
     evidence_type do
       detailed_evidence_types_enabled = training_period&.contract_period&.detailed_evidence_types_enabled
       if declaration_type != "started" || detailed_evidence_types_enabled
@@ -46,9 +46,9 @@ FactoryBot.define do
     # Use when the declaration should count toward `replacement_schedule?`,
     # which expects a declaration within the mentor's mentorship of the ECT.
     trait :within_mentorship_period do
-      declaration_date do
+      evidenced_at do
         mp = training_period&.mentor_at_school_period&.mentorship_periods&.order(:started_on)&.first
-        raise ArgumentError, "Cannot derive declaration_date: training_period must belong to a mentor with a mentorship_period" unless mp
+        raise ArgumentError, "Cannot derive evidenced_at: training_period must belong to a mentor with a mentorship_period" unless mp
 
         mp.started_on + 1.day
       end
@@ -105,7 +105,7 @@ FactoryBot.define do
         school_partnership { nil }
         training_period { nil }
         framework_agreement { nil }
-        started_on { declaration_date }
+        started_on { evidenced_at }
         declaration_type { "started" }
         payment_status { "no_payment" }
         payment_statement { nil }
@@ -147,7 +147,7 @@ FactoryBot.define do
 
         declaration.training_period = training_period
         milestone = training_period.schedule.milestones.find { |m| m.declaration_type == declaration.declaration_type }
-        declaration.declaration_date = milestone.start_date + 1.day
+        declaration.evidenced_at = milestone.start_date + 1.day
         declaration.payment_status = payment_status
         declaration.clawback_status = clawback_status
 
@@ -172,7 +172,7 @@ FactoryBot.define do
         school_partnership { nil }
         training_period { nil }
         framework_agreement { nil }
-        started_on { declaration_date }
+        started_on { evidenced_at }
         declaration_type { "started" }
         payment_status { "no_payment" }
         payment_statement { nil }
@@ -214,7 +214,7 @@ FactoryBot.define do
 
         declaration.training_period = training_period
         milestone = training_period.schedule.milestones.find { |m| m.declaration_type == declaration.declaration_type }
-        declaration.declaration_date = milestone.start_date + 1.day
+        declaration.evidenced_at = milestone.start_date + 1.day
         declaration.payment_status = payment_status
         declaration.clawback_status = clawback_status
 

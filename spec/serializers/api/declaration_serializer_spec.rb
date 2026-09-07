@@ -38,7 +38,7 @@ describe API::DeclarationSerializer, type: :serializer do
     it "serializes correctly" do
       expect(attributes["participant_id"]).to eq(teacher.api_id)
       expect(attributes["declaration_type"]).to eq(declaration.declaration_type)
-      expect(attributes["declaration_date"]).to eq(declaration.declaration_date.utc.rfc3339)
+      expect(attributes["declaration_date"]).to eq(declaration.evidenced_at.utc.rfc3339)
 
       expect(attributes["updated_at"]).to eq(declaration.api_updated_at.utc.rfc3339)
       expect(attributes["created_at"]).to eq(declaration.created_at.utc.rfc3339)

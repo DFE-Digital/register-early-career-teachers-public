@@ -4,7 +4,7 @@ module Declarations
                 :lead_provider,
                 :teacher,
                 :training_period,
-                :declaration_date,
+                :evidenced_at,
                 :declaration_type,
                 :evidence_type,
                 :payment_statement,
@@ -16,7 +16,7 @@ module Declarations
       lead_provider:,
       teacher:,
       training_period:,
-      declaration_date:,
+      evidenced_at:,
       declaration_type:,
       evidence_type:,
       payment_statement:,
@@ -27,7 +27,7 @@ module Declarations
       @lead_provider = lead_provider
       @teacher = teacher
       @training_period = training_period
-      @declaration_date = declaration_date
+      @evidenced_at = evidenced_at
       @declaration_type = declaration_type
       @evidence_type = evidence_type
       @payment_statement = payment_statement
@@ -69,7 +69,7 @@ module Declarations
 
     def create_declaration
       training_period.declarations.create!(
-        declaration_date:,
+        evidenced_at:,
         declaration_type:,
         evidence_type:,
         mentorship_period:,

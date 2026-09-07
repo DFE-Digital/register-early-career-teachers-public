@@ -14,10 +14,10 @@ erDiagram
   Contract_BandedFeeStructure_BandTerm }o--|| FrameworkAgreement_Band : belongs_to
   FrameworkAgreement_Band {
     integer id
+    integer framework_agreement_id
     integer allocation_order
     integer capacity
     datetime created_at
-    integer framework_agreement_id
     datetime updated_at
   }
   FrameworkAgreement_Band }o--|| FrameworkAgreement : belongs_to
@@ -214,9 +214,9 @@ erDiagram
     string trs_last_name
     date trs_qts_awarded_on
     string trs_qts_status_description
-    string trs_redirected_to
-    enum trs_response
     datetime updated_at
+    enum trs_response
+    string trs_redirected_to
   }
   PendingInductionSubmission {
     integer id
@@ -305,10 +305,10 @@ erDiagram
   LegacyAppropriateBody }o--|| AppropriateBodyPeriod : belongs_to
   LeadProviderDeliveryPartnership {
     integer id
+    integer framework_agreement_id
     datetime created_at
     integer delivery_partner_id
     uuid ecf_id
-    integer framework_agreement_id
     datetime updated_at
   }
   LeadProviderDeliveryPartnership }o--|| FrameworkAgreement : belongs_to
@@ -405,7 +405,7 @@ erDiagram
     integer clawback_statement_id
     enum clawback_status
     datetime created_at
-    datetime declaration_date
+    datetime evidenced_at
     enum declaration_type
     integer delivery_partner_when_created_id
     enum evidence_type
@@ -440,9 +440,9 @@ erDiagram
   }
   Contract {
     integer id
+    integer framework_agreement_id
     enum contract_type
     datetime created_at
-    integer framework_agreement_id
     datetime updated_at
     decimal vat_rate
   }

@@ -318,7 +318,7 @@ RSpec.describe Schedules::Find do
             it_behaves_like "replacement schedule assigned"
 
             context "when the previous mentor's declaration is dated outside the mentorship period" do
-              let!(:declaration) { FactoryBot.create(:declaration, training_period: mentor_training_period, declaration_date: 1.day.from_now) }
+              let!(:declaration) { FactoryBot.create(:declaration, training_period: mentor_training_period, evidenced_at: 1.day.from_now) }
 
               it_behaves_like "no replacement schedule assigned"
             end

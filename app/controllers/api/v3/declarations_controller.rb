@@ -32,7 +32,7 @@ module API
       def create
         service = API::Declarations::Create.new({
           **lead_provider_filter,
-          declaration_date: create_declaration_params[:declaration_date],
+          evidenced_at: create_declaration_params[:declaration_date],
           declaration_type: create_declaration_params[:declaration_type],
           evidence_type: create_declaration_params[:evidence_held],
           teacher_api_id: create_declaration_params[:participant_id],

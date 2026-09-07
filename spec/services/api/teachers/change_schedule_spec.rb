@@ -190,7 +190,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
 
             context "when declarations are not valid for the new schedule" do
               before do
-                declaration.update!(declaration_date: 5.years.ago)
+                declaration.update!(evidenced_at: 5.years.ago)
                 FactoryBot.create(:milestone, schedule:)
               end
 

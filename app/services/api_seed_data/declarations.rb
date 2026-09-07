@@ -46,9 +46,9 @@ module APISeedData
 
       declaration_types(training_period, framework_agreement).each do |declaration_type|
         schedule = training_period.schedule
-        declaration_date = declaration_date(schedule, declaration_type)
+        evidenced_at = evidenced_at(schedule, declaration_type)
 
-        next unless declaration_date.past?
+        next unless evidenced_at.past?
 
         payment_status = Declaration.payment_statuses.keys.sample
         unless payment_status == "no_payment"
@@ -67,7 +67,7 @@ module APISeedData
         declaration = FactoryBot.build(
           :declaration,
           declaration_type:,
-          declaration_date:,
+          evidenced_at:,
           payment_status:,
           clawback_status:,
           payment_statement:,
@@ -91,7 +91,7 @@ module APISeedData
     end
 
     def log_declaration_info(declaration)
-      log_seed_info("#{declaration.declaration_type} - #{declaration.overall_status} - #{declaration.declaration_date.to_date}", indent: 6)
+      log_seed_info("#{declaration.declaration_type} - #{declaration.overall_status} - #{declaration.evidenced_at.to_date}", indent: 6)
     end
 
     def find_random_statement(framework_agreement, deadline_date = :ignore)
@@ -120,7 +120,7 @@ module APISeedData
       types.sample(rand(1..types.size))
     end
 
-    def declaration_date(schedule, declaration_type)
+    def evidenced_at(schedule, declaration_type)
       milestone = schedule.milestones.find_by(declaration_type:)
       # Sometimes the milestone start_date is in the future; we will omit
       # these declarations in the calling method.

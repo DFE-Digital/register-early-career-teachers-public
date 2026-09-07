@@ -96,8 +96,8 @@ module Schedules
         .where(ect_at_school_periods: { teacher_id: mentee.teacher_id }) # all periods at _any_ school
         .where.not(mentor_at_school_period_id: period.id)
         .where.not(declarations: { payment_status: :voided })
-        .where("declarations.declaration_date >= mentorship_periods.started_on")
-        .where("declarations.declaration_date <= COALESCE(mentorship_periods.finished_on, CURRENT_DATE)")
+        .where("declarations.evidenced_at >= mentorship_periods.started_on")
+        .where("declarations.evidenced_at <= COALESCE(mentorship_periods.finished_on, CURRENT_DATE)")
         .exists?
     end
 
