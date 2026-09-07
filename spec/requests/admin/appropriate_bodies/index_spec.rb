@@ -28,7 +28,7 @@ RSpec.describe "Viewing the appropriate bodies index", type: :request do
         expect(response.body).to include("Captain Scrummy", "Captain Hook")
       end
 
-      it "omits de-designated appropriate bodies" do
+      it "omits inactive appropriate bodies" do
         FactoryBot.create(:appropriate_body_period, :inactive, name: "Captain Retired")
 
         get "/admin/organisations/appropriate-bodies"
@@ -37,10 +37,10 @@ RSpec.describe "Viewing the appropriate bodies index", type: :request do
         expect(response.body).not_to include("Captain Retired")
       end
 
-      it "includes de-designated appropriate bodies when asked for" do
+      it "includes inactive appropriate bodies when asked for" do
         FactoryBot.create(:appropriate_body_period, :inactive, name: "Captain Retired")
 
-        get "/admin/organisations/appropriate-bodies?include_de_designated=1"
+        get "/admin/organisations/appropriate-bodies?show_inactive=1"
 
         expect(response.status).to eq(200)
         expect(response.body).to include("Captain Retired", "Captain Hook", "Captain Scrummy")
@@ -70,7 +70,7 @@ RSpec.describe "Viewing the appropriate bodies index", type: :request do
           expect(response.body).not_to include("Captain Scrummy")
         end
 
-        it "omits de-designated appropriate bodies" do
+        it "omits inactive appropriate bodies" do
           FactoryBot.create(:appropriate_body_period, :inactive, name: "Captain Hooked")
 
           get "/admin/organisations/appropriate-bodies?q=Hook"
@@ -80,10 +80,10 @@ RSpec.describe "Viewing the appropriate bodies index", type: :request do
           expect(response.body).not_to include("Captain Hooked")
         end
 
-        it "includes de-designated appropriate bodies when asked for" do
+        it "includes inactive appropriate bodies when asked for" do
           FactoryBot.create(:appropriate_body_period, :inactive, name: "Captain Hooked")
 
-          get "/admin/organisations/appropriate-bodies?q=Hook&include_de_designated=1"
+          get "/admin/organisations/appropriate-bodies?q=Hook&show_inactive=1"
 
           expect(response.status).to eq(200)
           expect(response.body).to include("Captain Hook", "Captain Hooked")

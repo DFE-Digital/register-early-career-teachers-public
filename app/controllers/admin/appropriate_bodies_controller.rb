@@ -9,7 +9,7 @@ module Admin
         "Organisations" => admin_organisations_path,
         "Appropriate bodies" => nil,
       }
-      @include_de_designated = params[:include_de_designated] == "1"
+      @show_inactive = params[:show_inactive] == "1"
       @pagy, @appropriate_bodies = pagy(appropriate_bodies)
     end
 
@@ -22,7 +22,7 @@ module Admin
     def appropriate_bodies
       scope = ::AppropriateBodies::Search.new(params[:q]).search
 
-      @include_de_designated ? scope : scope.active
+      @show_inactive ? scope : scope.active
     end
   end
 end

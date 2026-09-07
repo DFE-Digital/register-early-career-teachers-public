@@ -15,13 +15,13 @@
         )
       %>
 
-      <%= f.govuk_check_boxes_fieldset("include_de_designated", legend: nil, multiple: false) do %>
+      <%= f.govuk_check_boxes_fieldset("show_inactive", legend: nil, multiple: false) do %>
         <%=
           f.govuk_check_box(
-            "include_de_designated",
+            "show_inactive",
             "1",
             multiple: false,
-            checked: @include_de_designated,
+            checked: @show_inactive,
             include_hidden: false,
             label: { text: "Include de-designated appropriate bodies" }
           )

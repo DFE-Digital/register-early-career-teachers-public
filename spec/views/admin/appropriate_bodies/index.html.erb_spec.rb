@@ -58,7 +58,7 @@ RSpec.describe "admin/appropriate_bodies/index.html.erb" do
   context "when de-designated appropriate bodies are included" do
     let(:appropriate_bodies) { [FactoryBot.create(:appropriate_body_period, :inactive, name: "Captain Retired")] }
 
-    before { assign(:include_de_designated, true) }
+    before { assign(:show_inactive, true) }
 
     it "checks the toggle" do
       render
