@@ -4,7 +4,7 @@ module Teachers::Details
 
     def initialize(teacher:)
       @teacher = teacher
-      @induction = Teachers::Induction.new(teacher)
+      @induction = Induction::TeacherInformation.new(teacher)
       @induction_periods = teacher.induction_periods
     end
 
@@ -19,11 +19,11 @@ module Teachers::Details
   private
 
     def induction_extensions
-      @induction_extensions ||= Teachers::InductionExtensions.new(teacher)
+      @induction_extensions ||= Induction::Extensions::ExtensionInformation.new(teacher)
     end
 
     def status_tag
-      helpers.govuk_tag(**Teachers::InductionStatus.new(trs_induction_status:, teacher:).status_tag_kwargs)
+      helpers.govuk_tag(**Induction::Status.new(trs_induction_status:, teacher:).status_tag_kwargs)
     end
 
     def trs_induction_status

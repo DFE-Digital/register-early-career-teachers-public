@@ -73,8 +73,8 @@ RSpec.describe "Admin::Teachers::Extensions", type: :request do
     let!(:extension) { FactoryBot.create(:induction_extension, teacher:) }
 
     it "uses the manage service to delete the extension and redirects to the teacher's page" do
-      manage_service = instance_double(InductionExtensions::Manage, delete!: true)
-      allow(InductionExtensions::Manage).to receive(:new).and_return(manage_service)
+      manage_service = instance_double(Induction::Extensions::Manage, delete!: true)
+      allow(Induction::Extensions::Manage).to receive(:new).and_return(manage_service)
 
       delete admin_teacher_extension_path(teacher, extension)
 
@@ -85,8 +85,8 @@ RSpec.describe "Admin::Teachers::Extensions", type: :request do
 
     context "when deletion fails" do
       it "redirects to the extensions index with an alert" do
-        manage_service = instance_double(InductionExtensions::Manage, delete!: false)
-        allow(InductionExtensions::Manage).to receive(:new).and_return(manage_service)
+        manage_service = instance_double(Induction::Extensions::Manage, delete!: false)
+        allow(Induction::Extensions::Manage).to receive(:new).and_return(manage_service)
 
         delete admin_teacher_extension_path(teacher, extension)
 

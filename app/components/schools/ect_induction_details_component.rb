@@ -82,7 +82,7 @@ module Schools
     end
 
     def induction_start_date
-      Teachers::Induction.new(@ect.teacher).induction_start_date&.to_fs(:govuk)
+      Induction::TeacherInformation.new(@ect.teacher).induction_start_date&.to_fs(:govuk)
     end
 
     def induction_start_date_with_suffix(date)

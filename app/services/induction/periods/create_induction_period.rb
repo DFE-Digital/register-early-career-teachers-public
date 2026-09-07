@@ -1,4 +1,4 @@
-module InductionPeriods
+module Induction::Periods
   class CreateInductionPeriod
     attr_reader :induction_period,
                 :event,

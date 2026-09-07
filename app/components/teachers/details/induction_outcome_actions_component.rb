@@ -12,7 +12,7 @@ module Teachers::Details
     end
 
     def render?
-      Teachers::InductionPeriod.new(teacher).ongoing_induction_period.present?
+      Induction::TeacherInformation.new(teacher).ongoing_induction_period.present?
     end
 
   private

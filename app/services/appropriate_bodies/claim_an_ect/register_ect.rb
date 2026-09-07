@@ -61,7 +61,7 @@ module AppropriateBodies
 
       # @return [Boolean]
       def create_induction_period
-        InductionPeriods::CreateInductionPeriod.new(
+        Induction::Periods::CreateInductionPeriod.new(
           author:,
           teacher:,
           params: {

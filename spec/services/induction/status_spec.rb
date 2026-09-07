@@ -1,4 +1,4 @@
-RSpec.describe Teachers::InductionStatus do
+describe Induction::Status do
   subject(:service) do
     described_class.new(trs_induction_status:, teacher:)
   end

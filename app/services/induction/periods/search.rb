@@ -1,4 +1,4 @@
-module InductionPeriods
+module Induction::Periods
   class Search
     attr_reader :scope
 

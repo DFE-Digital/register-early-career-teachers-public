@@ -31,7 +31,7 @@ module Admin
       service = update_induction_period_service
       service.update_induction_period!
       redirect_to admin_teacher_induction_path(@teacher), alert: "Induction period updated successfully"
-    rescue InductionPeriods::UpdateInductionPeriod::RecordedOutcomeError => e
+    rescue Induction::Periods::UpdateInductionPeriod::RecordedOutcomeError => e
       @induction_period.errors.add(:base, e.message)
       render :edit, status: :unprocessable_content
     rescue ActiveRecord::RecordInvalid
@@ -43,7 +43,7 @@ module Admin
     end
 
     def confirm_delete
-      @delete_induction = InductionPeriods::DeleteInductionPeriod.new(
+      @delete_induction = Induction::Periods::DeleteInductionPeriod.new(
         induction_period: @induction_period
       )
     end
@@ -82,7 +82,7 @@ module Admin
     end
 
     def create_induction_period_service
-      InductionPeriods::CreateInductionPeriod.new(
+      Induction::Periods::CreateInductionPeriod.new(
         author: current_user,
         teacher: @teacher,
         params: induction_period_params
@@ -90,7 +90,7 @@ module Admin
     end
 
     def update_induction_period_service
-      InductionPeriods::UpdateInductionPeriod.new(
+      Induction::Periods::UpdateInductionPeriod.new(
         author: current_user,
         induction_period: @induction_period,
         params: induction_period_params
@@ -98,7 +98,7 @@ module Admin
     end
 
     def delete_induction_period_service
-      InductionPeriods::DeleteInductionPeriod.new(
+      Induction::Periods::DeleteInductionPeriod.new(
         author: current_user,
         induction_period: @induction_period,
         **auditable_params
@@ -106,7 +106,7 @@ module Admin
     end
 
     def auditable_params
-      params.expect(InductionPeriods::DeleteInductionPeriod.auditable_params)
+      params.expect(Induction::Periods::DeleteInductionPeriod.auditable_params)
     end
   end
 end

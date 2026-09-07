@@ -1,4 +1,4 @@
-describe Teachers::InductionExtensions do
+describe Induction::Extensions::ExtensionInformation do
   let(:teacher) { FactoryBot.create(:teacher) }
 
   describe "#yes_or_no" do
