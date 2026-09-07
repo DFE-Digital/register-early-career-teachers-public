@@ -1,0 +1,12 @@
+class Events::ClientAuthor
+  def initialize(client:)
+    @client = client
+  end
+
+  def event_author_params
+    {
+      author_type: "api_oauth_client",
+      author_name: client.name
+    }
+  end
+end

@@ -1532,6 +1532,19 @@ module Events
       ).record_event!
     end
 
+    def self.record_api_oauth_authorization_verified(author:, authorization:)
+      event_type = :api_oauth_authorization_verified
+      heading = "Authorization verified by client '#{authorization.client.name}' for '#{authorization.appropriate_body_period.appropriate_body.name}'"
+      happended_at = authorization.updated_at
+      
+      new(
+        event_type:,
+        author:,
+        heading:,
+        happended_at:
+      ).record_event!
+    end
+
   private
 
     def attributes
@@ -1558,6 +1571,8 @@ module Events
       when Events::LeadProviderAPIAuthor
         author.lead_provider_api_author_params
       when Events::AppropriateBodyBatchAuthor
+        author.event_author_params
+      when Events::ClientAuthor
         author.event_author_params
       else
         fail(InvalidAuthor, author.class)

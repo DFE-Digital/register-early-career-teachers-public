@@ -17,14 +17,26 @@ module API
       validates :code_verifier, presence: { message: "invalid_grant" }
       validates :redirect_uri, presence: { message: "invalid_grant" }
 
-      validate :code_matches
+      validate :code_is_consumable
       validate :code_verifier_is_valid
       validate :redirect_uri_matches_authorization
 
-      def code_matches
+      attr_reader :token
+
+      def create
+        return unless valid?
+
+        @token = authorization_request.assign_token
+        
+        Events::Record.record_api_oauth_authorization_verified(author:, authorization: authorization_request)
+
+        return [token, authorization_request.token_expires_at]
+      end
+
+      def code_is_consumable
         return if errors.any?
 
-        errors.add(:code, "invalid_grant") if authorization_request.blank?
+        errors.add(:code, "invalid_grant") unless authorization_confirmable?
       end
 
       def code_verifier_is_valid
@@ -39,10 +51,6 @@ module API
         ActiveSupport::SecurityUtils.secure_compare(redirect_uri, authorization_request.redirect_uri)
       end
 
-      def code_digest
-        @code_digest ||= Digest::SHA256.hexdigest(code)
-      end
-
       def code_challenge_verified?
         return false unless authorization_request&.code_challenge_method == "S256"
 
@@ -51,8 +59,20 @@ module API
         ActiveSupport::SecurityUtils.secure_compare(expected_code_challenge, authorization_request.code_challenge)
       end
 
+      def authorization_confirmable?
+        authorization_request.present? && !authorization_request.code_expired? && authorization_request.token_digest.blank?
+      end
+
       def authorization_request
         @authorization_request ||= client&.authorizations&.find_by(code_digest:)
+      end
+
+      def code_digest
+        @code_digest ||= Digest::SHA256.hexdigest(code)
+      end
+
+      def author
+        @author ||= Events::ClientAuthor.new(client:)
       end
     end
   end
