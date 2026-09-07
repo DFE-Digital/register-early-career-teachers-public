@@ -22,7 +22,7 @@ module OpenAPISchema
       register_schema_field(
         serialized_name,
         required:,
-        schema: normalize_schema(schema)
+        schema:
       )
 
       field(name, name: serialized_name, &block)
@@ -34,20 +34,35 @@ module OpenAPISchema
       register_schema_field(
         serialized_name,
         required:,
-        schema: normalize_schema(schema)
+        schema:
       )
 
       identifier(name, name: serialized_name)
+    end
+
+    def schema_object(name, required: true, **schema, &block)
+      blueprint = Class.new(BaseSerializer) do
+        exclude :id
+      end
+
+      blueprint.class_eval(&block)
+
+      register_schema_field(
+        name,
+        required:,
+        schema: blueprint.openapi_schema.merge(schema)
+      )
+
+      association(name, blueprint:) do |record|
+        record
+      end
     end
 
     def schema_association(name, blueprint:, required: true, **schema, &block)
       register_schema_field(
         name,
         required:,
-        schema: {
-          **blueprint.openapi_schema,
-          **normalize_schema(schema),
-        }
+        schema: blueprint.openapi_schema.merge(schema)
       )
 
       association(name, blueprint:, &block)
@@ -95,41 +110,6 @@ module OpenAPISchema
       openapi_fields.transform_values do |definition|
         definition.fetch(:schema)
       end
-    end
-
-    def normalize_schema(schema)
-      schema
-        .then { normalize_type(it) }
-        .then { normalize_ref(it) }
-    end
-
-    def normalize_type(schema)
-      case schema[:type]
-      when :datetime
-        schema.merge(
-          type: :string,
-          format: :"date-time"
-        )
-      when Array
-        item_type = schema[:type].sole
-
-        schema.merge(
-          type: :array,
-          items: { type: item_type }
-        )
-      else
-        schema
-      end
-    end
-
-    def normalize_ref(schema)
-      return schema unless schema.key?(:ref)
-
-      ref = schema.fetch(:ref)
-
-      schema.except(:ref).merge(
-        "$ref": ref
-      )
     end
   end
 end
