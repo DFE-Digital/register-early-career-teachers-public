@@ -12,6 +12,7 @@ module API::MentorshipPeriods
       return :completed_training_access_only if mentor_completed_training?
       return :access_and_training if mentor_training_with_lead_provider?
       return :training_elsewhere_access_only if mentor_training_elsewhere?
+      return :not_currently_training if mentor_has_finished_training?
       return :no_known_training_access_only if mentor_has_no_training?
 
       :unknown
@@ -40,6 +41,12 @@ module API::MentorshipPeriods
         it.started_on.past? &&
           (it.unfinished? || it.finished_on.future?) &&
           it.lead_provider&.id != lead_provider_id
+      end
+    end
+
+    def mentor_has_finished_training?
+      mentorship_period.mentor.training_periods.any? do
+        it.finished_on&.past? || it.finished_on&.today?
       end
     end
 
