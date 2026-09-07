@@ -1,0 +1,14 @@
+<% page_data(title: "Authorise #{@authorization_request.client_name} to access your ECTs") %>
+
+<p class="govuk-body">
+  <%= @authorization_request.client_name %> has asked for access to early career teacher (ECT) data for <%= @appropriate_body.name %>.
+</p>
+
+<p class="govuk-body">
+  If you authorise this, <%= @authorization_request.client_name %> will be able to view and record induction data for your ECTs.
+</p>
+
+<div class="govuk-button-group">
+  <%= button_to "Authorise", oauth_authorization_path, class: "govuk-button", data: { module: "govuk-button" } %>
+  <%= button_to "Cancel", oauth_authorization_path, method: :delete, class: "govuk-button govuk-button--secondary", data: { module: "govuk-button" } %>
+</div>

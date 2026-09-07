@@ -31,3 +31,9 @@ namespace :api do
     resources :unfunded_mentors, only: %i[index show], path: "unfunded-mentors", param: :api_id
   end
 end
+
+namespace :oauth, module: "api/oauth" do
+  get "authorize", to: "authorizations#new", as: :authorization
+  post "authorize", to: "authorizations#create"
+  delete "authorize", to: "authorizations#destroy"
+end
