@@ -506,6 +506,21 @@ module Events
       new(event_type:, author:, heading:, mentorship_period:, mentor_at_school_period:, teacher: mentor, school:, metadata:, happened_at:).record_event!
     end
 
+    def self.record_teacher_mentorship_period_removed_event!(author:, mentor:, mentee:, mentor_at_school_period:, school:, old_ect_start_date:, new_ect_start_date:, happened_at: Time.zone.now)
+      event_type = :teacher_mentorship_period_removed
+      mentor_name = Teachers::Name.new(mentor).full_name
+      mentee_name = Teachers::Name.new(mentee).full_name
+      heading = "#{mentor_name} is no longer mentoring #{mentee_name} because #{mentee_name}'s school start date changed from #{old_ect_start_date.to_fs(:govuk)} to #{new_ect_start_date.to_fs(:govuk)}"
+      metadata = {
+        mentor_id: mentor.id,
+        mentee_id: mentee.id,
+        old_ect_start_date: old_ect_start_date.to_s,
+        new_ect_start_date: new_ect_start_date.to_s
+      }
+
+      new(event_type:, author:, heading:, mentor_at_school_period:, teacher: mentor, school:, metadata:, happened_at:).record_event!
+    end
+
     def self.record_teacher_finishes_being_mentored_event!(author:, mentor:, mentee:, ect_at_school_period:, mentorship_period:, school:, happened_at:)
       event_type = :teacher_finishes_being_mentored
       mentor_name = Teachers::Name.new(mentor).full_name

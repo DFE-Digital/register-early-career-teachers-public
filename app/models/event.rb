@@ -63,6 +63,7 @@ class Event < ApplicationRecord
     teacher_finishes_training_period
     teacher_finishes_being_mentored
     teacher_finishes_mentoring
+    teacher_mentorship_period_removed
     teacher_trs_attributes_updated
     teacher_trs_deactivated
     teacher_trs_not_found

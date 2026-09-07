@@ -1282,6 +1282,63 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe ".record_teacher_mentorship_period_removed_event!" do
+    let(:school) { FactoryBot.create(:school) }
+    let(:mentor) do
+      FactoryBot.create(
+        :teacher,
+        trs_first_name: "Steffan",
+        trs_last_name: "Rhodri"
+      )
+    end
+    let(:mentee) { teacher }
+    let(:mentor_at_school_period) do
+      FactoryBot.create(
+        :mentor_at_school_period,
+        :unfinished,
+        teacher: mentor,
+        school:
+      )
+    end
+    let(:old_ect_start_date) { Date.current }
+    let(:new_ect_start_date) { old_ect_start_date.next_month }
+
+    it "queues an event on the mentor's timeline" do
+      freeze_time do
+        Events::Record
+          .record_teacher_mentorship_period_removed_event!(
+            author:,
+            mentor:,
+            mentee:,
+            mentor_at_school_period:,
+            school:,
+            old_ect_start_date:,
+            new_ect_start_date:
+          )
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          teacher: mentor,
+          school:,
+          mentor_at_school_period:,
+          heading:
+            "Steffan Rhodri is no longer mentoring Rhys Ifans because " \
+            "Rhys Ifans's school start date changed from " \
+            "#{old_ect_start_date.to_fs(:govuk)} to " \
+            "#{new_ect_start_date.to_fs(:govuk)}",
+          event_type: :teacher_mentorship_period_removed,
+          happened_at: Time.zone.now,
+          metadata: {
+            mentor_id: mentor.id,
+            mentee_id: mentee.id,
+            old_ect_start_date: old_ect_start_date.to_s,
+            new_ect_start_date: new_ect_start_date.to_s
+          },
+          **author_params
+        )
+      end
+    end
+  end
+
   describe ".record_teacher_finishes_being_mentored_event!" do
     let(:finished_on) { 1.month.ago.to_date }
     let(:started_on_param) { { started_on: 2.years.ago.to_date } }

@@ -22,7 +22,7 @@ module ECTAtSchoolPeriods
           move_start_date_later!
         end
 
-        record_event!
+        record_school_start_date_updated_event!
       end
     end
 
@@ -66,6 +66,7 @@ module ECTAtSchoolPeriods
 
       if mentorship_period.finished_on.present? &&
           updated_started_on >= mentorship_period.finished_on
+        record_mentorship_period_removed_event!
         mentorship_period.destroy!
       else
         mentorship_period.update!(
@@ -88,7 +89,7 @@ module ECTAtSchoolPeriods
       ].max
     end
 
-    def record_event!
+    def record_school_start_date_updated_event!
       Events::Record.record_teacher_school_start_date_updated_event!(
         old_start_date: original_started_on,
         new_start_date: proposed_started_on,
@@ -96,6 +97,19 @@ module ECTAtSchoolPeriods
         ect_at_school_period:,
         school: ect_at_school_period.school,
         teacher: ect_at_school_period.teacher,
+        happened_at: Time.zone.now
+      )
+    end
+
+    def record_mentorship_period_removed_event!
+      Events::Record.record_teacher_mentorship_period_removed_event!(
+        author:,
+        mentor: mentorship_period.mentor.teacher,
+        mentee: ect_at_school_period.teacher,
+        mentor_at_school_period: mentorship_period.mentor,
+        school: ect_at_school_period.school,
+        old_ect_start_date: original_started_on,
+        new_ect_start_date: proposed_started_on,
         happened_at: Time.zone.now
       )
     end

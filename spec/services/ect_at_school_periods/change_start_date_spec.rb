@@ -179,8 +179,29 @@ RSpec.describe ECTAtSchoolPeriods::ChangeStartDate do
           )
         end
 
+        shared_examples "records the mentorship period removal event" do
+          it "records the removal on the mentor's timeline" do
+            expect(Events::Record)
+              .to receive(
+                :record_teacher_mentorship_period_removed_event!
+              )
+              .with(
+                author:,
+                mentor: mentor_at_school_period.teacher,
+                mentee: teacher,
+                mentor_at_school_period:,
+                school:,
+                old_ect_start_date: current_started_on,
+                new_ect_start_date: new_started_on,
+                happened_at: Time.current
+              )
+
+            change_start_date
+          end
+        end
+
         context "when the new start date is before the mentorship end date" do
-          let(:mentorship_finished_on) { Date.new(2026, 10, 2) }
+          let(:mentorship_finished_on) { new_started_on.next_day }
 
           it "moves the mentorship period start date" do
             expect { change_start_date }
@@ -203,10 +224,12 @@ RSpec.describe ECTAtSchoolPeriods::ChangeStartDate do
             expect(MentorshipPeriod.exists?(mentorship_period.id))
               .to be(false)
           end
+
+          it_behaves_like "records the mentorship period removal event"
         end
 
         context "when the new start date is after the mentorship end date" do
-          let(:mentorship_finished_on) { Date.new(2026, 9, 30) }
+          let(:mentorship_finished_on) { new_started_on.prev_day }
 
           it "removes the mentorship period" do
             expect { change_start_date }
@@ -216,6 +239,8 @@ RSpec.describe ECTAtSchoolPeriods::ChangeStartDate do
             expect(MentorshipPeriod.exists?(mentorship_period.id))
               .to be(false)
           end
+
+          it_behaves_like "records the mentorship period removal event"
         end
       end
     end
@@ -395,7 +420,7 @@ RSpec.describe ECTAtSchoolPeriods::ChangeStartDate do
           .to eq(Date.new(2026, 9, 30))
       end
 
-      it "does not record an event" do
+      it "does not record the school start-date change event" do
         expect(Events::Record)
           .not_to receive(
             :record_teacher_school_start_date_updated_event!
