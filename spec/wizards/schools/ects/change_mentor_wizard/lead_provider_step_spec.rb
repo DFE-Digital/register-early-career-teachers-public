@@ -38,8 +38,26 @@ describe Schools::ECTs::ChangeMentorWizard::LeadProviderStep do
   end
 
   describe "#previous_step" do
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school:) }
+    let!(:current_contract_period) { FactoryBot.create(:contract_period, :current) }
+    let(:ect_lead_provider_contract_period) { current_contract_period }
+
+    before do
+      framework_agreement = FactoryBot.create(:framework_agreement, contract_period: ect_lead_provider_contract_period)
+
+      FactoryBot.create(:training_period, :unfinished, :provider_led, :with_framework_agreement, ect_at_school_period:, framework_agreement:)
+    end
+
     it "returns the review_mentor_eligibility step" do
       expect(current_step.previous_step).to eq(:review_mentor_eligibility)
+    end
+
+    context "when the ECT's lead provider is not active in the current contract period" do
+      let(:ect_lead_provider_contract_period) { FactoryBot.create(:contract_period, :previous) }
+
+      it "returns the edit step" do
+        expect(current_step.previous_step).to eq(:edit)
+      end
     end
   end
 
@@ -120,17 +138,18 @@ describe Schools::ECTs::ChangeMentorWizard::LeadProviderStep do
   describe "#lead_providers_for_select" do
     subject(:lead_providers_for_select) { current_step.lead_providers_for_select }
 
-    let(:current_contract_period) do
+    let!(:current_contract_period) do
       FactoryBot.create(:contract_period, :current)
     end
     let(:upcoming_contract_period) do
       FactoryBot.create(:contract_period, :next)
     end
+    let(:framework_agreement_contract_period) { current_contract_period }
     let!(:framework_agreement) do
-      FactoryBot.create(:framework_agreement, contract_period: current_contract_period)
+      FactoryBot.create(:framework_agreement, contract_period: framework_agreement_contract_period)
     end
     let!(:other_lead_provider) do
-      FactoryBot.create(:framework_agreement, contract_period: current_contract_period)
+      FactoryBot.create(:framework_agreement, contract_period: framework_agreement_contract_period)
     end
     let!(:future_lead_provider) do
       FactoryBot.create(:framework_agreement, contract_period: upcoming_contract_period)
@@ -138,22 +157,25 @@ describe Schools::ECTs::ChangeMentorWizard::LeadProviderStep do
     let(:mentor_at_school_period) do
       FactoryBot.create(:mentor_at_school_period, school:, started_on:)
     end
+    let(:started_on) { current_contract_period.started_on.next_month }
 
-    context "when there are no framework agreements in contract period containing the mentor's start date" do
-      let(:started_on) { current_contract_period.started_on.prev_day }
+    it "offers the lead providers with a framework agreement for the current contract period" do
+      expect(lead_providers_for_select)
+        .to contain_exactly(framework_agreement.lead_provider, other_lead_provider.lead_provider)
+    end
+
+    context "when no lead provider has a framework agreement for the current contract period" do
+      let(:framework_agreement_contract_period) { upcoming_contract_period }
 
       it { is_expected.to be_empty }
     end
 
-    context "when there are framework agreements in contract period containing the mentor's start date" do
-      let(:started_on) { current_contract_period.started_on.next_month }
+    context "when the mentor started before the current contract period" do
+      let(:started_on) { current_contract_period.started_on.prev_day }
 
-      it { is_expected.to contain_exactly(framework_agreement.lead_provider, other_lead_provider.lead_provider) }
-
-      context "when the mentor started on the last day of the contract period" do
-        let(:started_on) { current_contract_period.finished_on }
-
-        it { is_expected.to contain_exactly(framework_agreement.lead_provider, other_lead_provider.lead_provider) }
+      it "still offers the lead providers for the current contract period" do
+        expect(lead_providers_for_select)
+          .to contain_exactly(framework_agreement.lead_provider, other_lead_provider.lead_provider)
       end
     end
   end

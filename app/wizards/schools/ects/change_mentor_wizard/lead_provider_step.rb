@@ -10,7 +10,14 @@ module Schools
 
         def self.permitted_params = [:lead_provider_id]
 
-        def previous_step = :review_mentor_eligibility
+        def previous_step
+          if ect_current_training.lead_provider_available_for_training?
+            :review_mentor_eligibility
+          else
+            :edit
+          end
+        end
+
         def next_step = :check_answers
 
         def new_mentor_name = name_for(selected_mentor_at_school_period.teacher)
@@ -46,14 +53,15 @@ module Schools
         end
 
         def contract_period
-          @contract_period ||= ContractPeriod
-            .containing_date(selected_mentor_at_school_period.started_on)
+          @contract_period ||= ContractPeriod.current
         end
 
         def lead_provider_for_ect_at_school_period
-          @lead_provider_for_ect_at_school_period ||= ECTAtSchoolPeriods::CurrentTraining
-            .new(ect_at_school_period)
-            .lead_provider_via_school_partnership_or_eoi
+          @lead_provider_for_ect_at_school_period ||= ect_current_training.lead_provider_via_school_partnership_or_eoi
+        end
+
+        def ect_current_training
+          @ect_current_training ||= ECTAtSchoolPeriods::CurrentTraining.new(ect_at_school_period)
         end
       end
     end

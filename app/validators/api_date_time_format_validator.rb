@@ -18,6 +18,6 @@ private
       false
     end
 
-    record.errors.add(attribute, "Enter a valid RCF3339 '#/#{attribute}'.")
+    record.errors.add(attribute, "Enter a valid RFC3339 '#/#{attribute}'.")
   end
 end

@@ -31,9 +31,11 @@ module Schools
       end
 
       def ect_lead_provider
-        @ect_lead_provider ||= ECTAtSchoolPeriods::CurrentTraining
-          .new(@ect_at_school_period)
-          .lead_provider_via_school_partnership_or_eoi
+        @ect_lead_provider ||= ect_current_training.lead_provider_via_school_partnership_or_eoi
+      end
+
+      def ect_lead_provider_available?
+        ect_current_training.lead_provider_available_for_training?
       end
 
       def lead_providers_within_contract_period
@@ -46,8 +48,12 @@ module Schools
 
     private
 
+      def ect_current_training
+        @ect_current_training ||= ECTAtSchoolPeriods::CurrentTraining.new(@ect_at_school_period)
+      end
+
       def contract_period
-        ContractPeriod.containing_date(@ect_at_school_period&.started_on&.to_date)
+        ContractPeriod.current
       end
     end
   end

@@ -81,7 +81,7 @@ RSpec.describe Statements::DeclarationsCSV do
       payment_statement: statement,
       api_id: "7fba95c0-a63f-4d6f-a373-cf2efa7b7188",
       declaration_type: "started",
-      declaration_date: declaration_timestamp,
+      evidenced_at: declaration_timestamp,
       created_at: created_timestamp,
       evidence_type: "training-event-attended",
       sparsity_uplift: true,
@@ -195,7 +195,7 @@ RSpec.describe Statements::DeclarationsCSV do
           training_period: earlier_training_period,
           payment_statement: statement,
           declaration_type: "started",
-          declaration_date: declaration_timestamp - 1.day,
+          evidenced_at: declaration_timestamp - 1.day,
           created_at: created_timestamp - 1.day,
           api_id: "1fba95c0-a63f-4d6f-a373-cf2efa7b7188",
           delivery_partner_when_created: delivery_partner
@@ -235,7 +235,7 @@ RSpec.describe Statements::DeclarationsCSV do
           training_period:,
           payment_statement: statement,
           declaration_type: :started,
-          declaration_date: declaration_timestamp,
+          evidenced_at: declaration_timestamp,
           created_at: created_timestamp,
           delivery_partner_when_created: delivery_partner
         )
@@ -260,7 +260,7 @@ RSpec.describe Statements::DeclarationsCSV do
           payment_statement: nil,
           api_id: "7fba95c0-a63f-4d6f-a373-cf2efa7b7188",
           declaration_type: "started",
-          declaration_date: declaration_timestamp,
+          evidenced_at: declaration_timestamp,
           created_at: created_timestamp,
           evidence_type: "training-event-attended",
           delivery_partner_when_created: delivery_partner

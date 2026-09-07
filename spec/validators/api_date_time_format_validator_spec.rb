@@ -32,7 +32,7 @@ RSpec.describe APIDateTimeFormatValidator, type: :model do
 
     it "has a meaningful error" do
       expect(subject).to be_invalid
-      expect(subject.errors.messages_for(:date)).to include("Enter a valid RCF3339 '#/date'.")
+      expect(subject.errors.messages_for(:date)).to include("Enter a valid RFC3339 '#/date'.")
     end
   end
 
@@ -41,7 +41,7 @@ RSpec.describe APIDateTimeFormatValidator, type: :model do
 
     it "has a meaningful error", :aggregate_failures do
       expect(subject).to be_invalid
-      expect(subject.errors.messages_for(:date)).to include("Enter a valid RCF3339 '#/date'.")
+      expect(subject.errors.messages_for(:date)).to include("Enter a valid RFC3339 '#/date'.")
     end
   end
 
@@ -50,7 +50,7 @@ RSpec.describe APIDateTimeFormatValidator, type: :model do
 
     it "has a meaningful error", :aggregate_failures do
       expect(subject).to be_invalid
-      expect(subject.errors.messages_for(:date)).to include("Enter a valid RCF3339 '#/date'.")
+      expect(subject.errors.messages_for(:date)).to include("Enter a valid RFC3339 '#/date'.")
     end
   end
 end

@@ -97,12 +97,17 @@ RSpec.describe "Create mentorship of an ECT to a mentor" do
       end
 
       context "provider-led ECT mentorship" do
-        before do
-          FactoryBot.create(:training_period, :unfinished, :provider_led, ect_at_school_period:)
-        end
+        let!(:current_contract_period) { FactoryBot.create(:contract_period, :current) }
 
         let(:params) { { schools_assign_mentor_form: { mentor_id: mentor.id } } }
         let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school:) }
+        let(:ect_lead_provider_contract_period) { current_contract_period }
+
+        before do
+          framework_agreement = FactoryBot.create(:framework_agreement, contract_period: ect_lead_provider_contract_period)
+
+          FactoryBot.create(:training_period, :unfinished, :provider_led, :with_framework_agreement, ect_at_school_period:, framework_agreement:)
+        end
 
         context "when the mentor is eligible for funding" do
           before do
@@ -117,6 +122,16 @@ RSpec.describe "Create mentorship of an ECT to a mentor" do
             expect(response).to redirect_to(
               schools_assign_existing_mentor_wizard_review_mentor_eligibility_path
             )
+          end
+
+          context "when the ECT's lead provider is not active in the current contract period" do
+            let(:ect_lead_provider_contract_period) { FactoryBot.create(:contract_period, :previous) }
+
+            it "redirects the user to the lead provider step of the assign existing mentor wizard" do
+              expect(response).to redirect_to(
+                schools_assign_existing_mentor_wizard_lead_provider_path
+              )
+            end
           end
         end
 

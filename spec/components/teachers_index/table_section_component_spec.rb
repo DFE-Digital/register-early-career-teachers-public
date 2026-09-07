@@ -214,9 +214,9 @@ RSpec.describe TeachersIndex::TableSectionComponent, type: :component do
       end
 
       describe "#teacher_induction_start_date" do
-        it "delegates to Teachers::InductionPeriod service" do
-          period_service = double("Teachers::InductionPeriod")
-          allow(Teachers::InductionPeriod).to receive(:new).with(teacher).and_return(period_service)
+        it "delegates to Induction::TeacherInformation service" do
+          period_service = double("Induction::TeacherInformation")
+          allow(Induction::TeacherInformation).to receive(:new).with(teacher).and_return(period_service)
           allow(period_service).to receive(:formatted_induction_start_date).and_return("1 January 2024")
 
           expect(component.send(:teacher_induction_start_date, teacher)).to eq("1 January 2024")
@@ -224,11 +224,11 @@ RSpec.describe TeachersIndex::TableSectionComponent, type: :component do
       end
 
       describe "#teacher_status_tag_kwargs" do
-        it "delegates to Teachers::InductionStatus service" do
-          status_service = double("Teachers::InductionStatus")
+        it "delegates to Induction::Status service" do
+          status_service = double("Induction::Status")
           expected_kwargs = { text: "Active", colour: "green" }
 
-          allow(Teachers::InductionStatus).to receive(:new).with(
+          allow(Induction::Status).to receive(:new).with(
             teacher:,
             trs_induction_status: teacher.trs_induction_status
           ).and_return(status_service)
@@ -265,11 +265,11 @@ RSpec.describe TeachersIndex::TableSectionComponent, type: :component do
       expect(rendered.to_html).to include("1234567")
     end
 
-    it "displays formatted induction start date using Teachers::InductionPeriod service" do
+    it "displays formatted induction start date using Induction::TeacherInformation service" do
       expect(rendered.css("tbody td").map(&:text)).to include("15 March 2024")
     end
 
-    it "displays induction status using Teachers::InductionStatus service" do
+    it "displays induction status using Induction::Status service" do
       # The service will determine status from actual teacher data
       expect(rendered.css(".govuk-tag").length).to eq(1)
     end

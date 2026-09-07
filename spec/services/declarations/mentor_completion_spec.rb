@@ -17,11 +17,11 @@ RSpec.describe Declarations::MentorCompletion, :with_metadata do
     context "when declaration is billable or changeable" do
       context "when mentor training is completed" do
         before do
-          # Voided declaration with a later declaration_date should be ignored.
-          FactoryBot.create(:declaration, :voided, declaration_type: "completed", training_period:, declaration_date: 1.week.ago)
+          # Voided declaration with a later evidenced_at should be ignored.
+          FactoryBot.create(:declaration, :voided, declaration_type: "completed", training_period:, evidenced_at: 1.week.ago)
         end
 
-        let(:declaration) { FactoryBot.create(:declaration, :eligible, declaration_type: "completed", training_period:, declaration_date: 2.weeks.ago) }
+        let(:declaration) { FactoryBot.create(:declaration, :eligible, declaration_type: "completed", training_period:, evidenced_at: 2.weeks.ago) }
 
         it "mentor is now ineligible for funding" do
           expect(teacher.mentor_became_ineligible_for_funding_on).to be_nil
@@ -29,16 +29,16 @@ RSpec.describe Declarations::MentorCompletion, :with_metadata do
 
           service.perform
 
-          expect(teacher.mentor_became_ineligible_for_funding_on).to eq(declaration.declaration_date.to_date)
+          expect(teacher.mentor_became_ineligible_for_funding_on).to eq(declaration.evidenced_at.to_date)
           expect(teacher.mentor_became_ineligible_for_funding_reason).to eq("completed_declaration_received")
         end
 
         it "finishes the training period" do
-          expect { service.perform }.to change { training_period.reload.finished_on }.from(nil).to(declaration.declaration_date.to_date)
+          expect { service.perform }.to change { training_period.reload.finished_on }.from(nil).to(declaration.evidenced_at.to_date)
         end
 
-        context "when the declaration_date is before the training period started_on date" do
-          let(:declaration) { FactoryBot.create(:declaration, :eligible, declaration_type: "completed", training_period:, declaration_date: 2.months.ago) }
+        context "when the evidenced_at is before the training period started_on date" do
+          let(:declaration) { FactoryBot.create(:declaration, :eligible, declaration_type: "completed", training_period:, evidenced_at: 2.months.ago) }
 
           it "sets finished_on to the day after started_on" do
             expect { service.perform }.to change { training_period.reload.finished_on }.from(nil).to(training_period.started_on + 1.day)
@@ -48,9 +48,9 @@ RSpec.describe Declarations::MentorCompletion, :with_metadata do
         context "when the training period is already finished" do
           let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, started_on: 2.months.ago, finished_on:) }
           let(:training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: 2.months.ago, finished_on:) }
-          let(:declaration) { FactoryBot.create(:declaration, :eligible, declaration_type: "completed", training_period:, declaration_date:) }
+          let(:declaration) { FactoryBot.create(:declaration, :eligible, declaration_type: "completed", training_period:, evidenced_at:) }
 
-          let(:declaration_date) { 2.weeks.ago }
+          let(:evidenced_at) { 2.weeks.ago }
           let(:finished_on) { 1.week.ago }
 
           it "does not change the training period finished_on" do
@@ -61,12 +61,12 @@ RSpec.describe Declarations::MentorCompletion, :with_metadata do
             service.perform
 
             teacher.reload
-            expect(teacher.mentor_became_ineligible_for_funding_on).to eq(declaration.declaration_date.to_date)
+            expect(teacher.mentor_became_ineligible_for_funding_on).to eq(declaration.evidenced_at.to_date)
             expect(teacher.mentor_became_ineligible_for_funding_reason).to eq("completed_declaration_received")
           end
 
           context "when the declaration date is outside the school period" do
-            let(:declaration_date) { mentor_at_school_period.finished_on + 2.days }
+            let(:evidenced_at) { mentor_at_school_period.finished_on + 2.days }
 
             it "does not raise an error" do
               expect { service.perform }.not_to raise_error
@@ -81,14 +81,14 @@ RSpec.describe Declarations::MentorCompletion, :with_metadata do
             let(:finished_on) { 2.months.from_now }
 
             it "brings forward the training period finished_on to the declaration date" do
-              expect { service.perform }.to change { training_period.reload.finished_on }.from(finished_on.to_date).to(declaration.declaration_date.to_date)
+              expect { service.perform }.to change { training_period.reload.finished_on }.from(finished_on.to_date).to(declaration.evidenced_at.to_date)
             end
 
             it "marks the teacher as ineligible for funding" do
               service.perform
 
               teacher.reload
-              expect(teacher.mentor_became_ineligible_for_funding_on).to eq(declaration.declaration_date.to_date)
+              expect(teacher.mentor_became_ineligible_for_funding_on).to eq(declaration.evidenced_at.to_date)
               expect(teacher.mentor_became_ineligible_for_funding_reason).to eq("completed_declaration_received")
             end
           end
@@ -101,7 +101,7 @@ RSpec.describe Declarations::MentorCompletion, :with_metadata do
             training_period:,
             declaration:,
             modifications: hash_including(
-              mentor_became_ineligible_for_funding_on: [nil, declaration.declaration_date.to_date],
+              mentor_became_ineligible_for_funding_on: [nil, declaration.evidenced_at.to_date],
               mentor_became_ineligible_for_funding_reason: [nil, "completed_declaration_received"]
             )
           )

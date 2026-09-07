@@ -17,15 +17,15 @@ RSpec.describe API::Declarations::Query, :with_metadata do
     end
   end
 
-  def create_declaration(declaration_type: "started", contract_period: nil, training_period: nil, status: nil, declaration_date: nil)
+  def create_declaration(declaration_type: "started", contract_period: nil, training_period: nil, status: nil, evidenced_at: nil)
     training_period ||= create_training_period(contract_period:, trainee: :ect)
-    declaration_date ||= training_period.started_on.next_day
+    evidenced_at ||= training_period.started_on.next_day
     FactoryBot.create(
       :declaration,
       status,
       training_period:,
       declaration_type:,
-      declaration_date:
+      evidenced_at:
     )
   end
 
@@ -156,7 +156,7 @@ RSpec.describe API::Declarations::Query, :with_metadata do
           end
 
           context "when previous declaration is submitted after training_period2.finished_on date" do
-            before { declaration1.update!(declaration_date: training_period2.finished_on.next_day) }
+            before { declaration1.update!(evidenced_at: training_period2.finished_on.next_day) }
 
             it "returns only the direct declaration" do
               query = described_class.new(lead_provider_id: lead_provider2.id)
@@ -182,7 +182,7 @@ RSpec.describe API::Declarations::Query, :with_metadata do
               create_declaration(
                 training_period: training_period1,
                 declaration_type: "retained-4",
-                declaration_date: training_period3.started_on.next_day
+                evidenced_at: training_period3.started_on.next_day
               )
             end
 

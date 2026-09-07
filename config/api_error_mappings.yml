@@ -7,3 +7,5 @@
 "teacher_type": "course_identifier"
 "declaration_api_id": "participant_declaration_id"
 "evidence_type": "evidence_held"
+"evidenced_at": "declaration_date"
+"Evidenced at": "Declaration date"

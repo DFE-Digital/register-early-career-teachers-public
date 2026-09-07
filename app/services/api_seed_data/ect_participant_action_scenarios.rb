@@ -118,13 +118,13 @@ module APISeedData
       milestone = schedule.milestones.find_by(declaration_type:)
       end_date = [milestone&.start_date, 1.day.ago].compact.max
 
-      declaration_date = if milestone
-                           Faker::Date.between(from: milestone.start_date, to: milestone.milestone_date || end_date)
-                         else
-                           Faker::Date.between(from: Date.new(schedule.contract_period.year), to: end_date)
-                         end
+      evidenced_at = if milestone
+                       Faker::Date.between(from: milestone.start_date, to: milestone.milestone_date || end_date)
+                     else
+                       Faker::Date.between(from: Date.new(schedule.contract_period.year), to: end_date)
+                     end
 
-      FactoryBot.create(:declaration, state, declaration_type:, training_period:, declaration_date:)
+      FactoryBot.create(:declaration, state, declaration_type:, training_period:, evidenced_at:)
     end
 
     def school_partnerships(framework_agreement: nil, excluding_framework_agreement: nil, year: nil, school: nil)

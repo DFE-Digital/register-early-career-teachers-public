@@ -79,8 +79,14 @@ module GIAS
 
     def log_failures
       gias_schools_to_reconcile.find_each do |gias_school|
+        next if has_proposed_status?(gias_school)
+
         Sentry.capture_message("Could not reconcile school with URN #{gias_school.urn}", level: :info, extra: metadata(gias_school))
       end
+    end
+
+    def has_proposed_status?(gias_school)
+      gias_school.proposed_to_close_status? || gias_school.proposed_to_open_status?
     end
 
     def gias_schools_to_reconcile

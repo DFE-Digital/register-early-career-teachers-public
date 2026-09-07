@@ -31,7 +31,7 @@ module AppropriateBodies
 
         return unless existing_teacher
 
-        ongoing_induction_period = ::Teachers::InductionPeriod.new(existing_teacher).ongoing_induction_period
+        ongoing_induction_period = Induction::TeacherInformation.new(existing_teacher).ongoing_induction_period
 
         return unless ongoing_induction_period
 

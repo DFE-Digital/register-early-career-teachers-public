@@ -30,13 +30,13 @@ module AppropriateBodyHelper
           { key: { text: "TRN" }, value: { text: teacher.trn } },
           {
             key: { text: "Induction start date" },
-            value: { text: Teachers::InductionPeriod.new(teacher).formatted_induction_start_date },
+            value: { text: Induction::TeacherInformation.new(teacher).formatted_induction_start_date },
           },
           {
             key: { text: "Status" },
             value: {
               text: govuk_tag(
-                **Teachers::InductionStatus.new(
+                **Induction::Status.new(
                   trs_induction_status: teacher.trs_induction_status,
                   teacher:
                 ).status_tag_kwargs
@@ -55,7 +55,7 @@ module AppropriateBodyHelper
   def induction_extensions(teacher)
     return if teacher.blank?
 
-    @induction_extensions ||= Teachers::InductionExtensions.new(teacher)
+    @induction_extensions ||= Induction::Extensions::ExtensionInformation.new(teacher)
   end
 
   def show_extensions_row?(teacher)

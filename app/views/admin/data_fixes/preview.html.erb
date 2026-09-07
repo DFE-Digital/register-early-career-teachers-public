@@ -4,9 +4,7 @@
 ) %>
 
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |form| %>
-  <%= content_for(:error_summary) do %>
-    <%= form.govuk_error_summary(presenter: @wizard.current_step.error_presenter) %>
-  <% end %>
+  <%= content_for(:error_summary) { form.govuk_error_summary(presenter: @wizard.error_presenter) } %>
 
   <%= govuk_list(@wizard.current_step.parsed_rows, type: :bullet) %>
 

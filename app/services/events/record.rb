@@ -183,6 +183,15 @@ module Events
       ).record_event!
     end
 
+    def self.record_teacher_trn_replaced_event!(teacher:, author:, old_trn:, new_trn:, happened_at: Time.zone.now)
+      event_type = :teacher_trn_replaced
+
+      heading = TransitionDescription.for("trn", from: old_trn, to: new_trn)
+      metadata = { old_trn:, new_trn: }
+
+      new(event_type:, author:, teacher:, heading:, happened_at:, metadata:).record_event!
+    end
+
     def self.record_teacher_passes_induction_event!(author:, appropriate_body_period:, induction_period:, ect_at_school_period:, mentorship_period:, training_period:, teacher:, body: nil, zendesk_ticket_id: nil)
       fail(NoInductionPeriod) unless induction_period
 

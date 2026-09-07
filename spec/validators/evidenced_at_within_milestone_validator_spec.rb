@@ -1,0 +1,54 @@
+RSpec.describe EvidencedAtWithinMilestoneValidator, type: :model do
+  subject { model_class.new(evidenced_at:) }
+
+  let(:model_class) do
+    Class.new do
+      include ActiveModel::Model
+
+      attr_accessor :evidenced_at
+
+      validates :evidenced_at, evidenced_at_within_milestone: true
+
+      def milestone
+        Milestone.first
+      end
+    end
+  end
+
+  let(:evidenced_at) { Date.new(contract_period.year, 7, 30) }
+  let(:start_date) { Date.new(contract_period.year, 7, 29) }
+  let(:milestone_date) { Date.new(contract_period.year, 7, 31) }
+  let(:contract_period) { FactoryBot.create(:contract_period, :current) }
+  let(:schedule) { FactoryBot.create(:schedule, contract_period:) }
+  let!(:milestone) { FactoryBot.create(:milestone, schedule:, start_date:, milestone_date:) }
+
+  context "when before the milestone start" do
+    let(:evidenced_at) { Date.new(contract_period.year, 7, 28) }
+
+    it { is_expected.to have_error(:evidenced_at, "Evidenced at must be on or after the milestone start date for the same declaration type.") }
+  end
+
+  context "when at the milestone start" do
+    let(:evidenced_at) { start_date }
+
+    it { is_expected.to be_valid }
+  end
+
+  context "when in the middle of milestone" do
+    let(:evidenced_at) { start_date + 1 }
+
+    it { is_expected.to be_valid }
+  end
+
+  context "when at the milestone end" do
+    let(:evidenced_at) { milestone_date }
+
+    it { is_expected.to be_valid }
+  end
+
+  context "when after the milestone start" do
+    let(:evidenced_at) { milestone_date + 1 }
+
+    it { is_expected.to have_error(:evidenced_at, "Evidenced at must be on or before the milestone date for the same declaration type.") }
+  end
+end

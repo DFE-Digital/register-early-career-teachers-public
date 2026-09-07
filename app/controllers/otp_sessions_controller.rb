@@ -27,11 +27,6 @@ class OTPSessionsController < ApplicationController
       return render :request_code
     end
 
-    if otp_access_policy.denied?
-      @otp_form.errors.add(:base, "This account is not enabled for one time password sign in")
-      return render :request_code
-    end
-
     clean_up_session
     session_manager.begin_session!(session_user)
 
@@ -66,27 +61,6 @@ private
   end
 
   def session_user
-    return otp_school_user if otp_access_policy.school_sign_in?
-
-    Sessions::Users::DfEUser.new(email: otp_user.email)
-  end
-
-  def otp_school_sign_in_flag_enabled?
-    Rails.application.config.enable_otp_school_sign_in
-  end
-
-  def otp_access_policy
-    @otp_access_policy ||= Sessions::OTPAccessPolicy.new(
-      user: otp_user,
-      otp_school_sign_in_enabled: otp_school_sign_in_flag_enabled?
-    )
-  end
-
-  def otp_school_user
-    Sessions::Users::OTPSchoolUser.new(email: otp_user.email, name: otp_user.name, school_urn: otp_user.otp_school_urn)
-  end
-
-  def otp_user
-    @otp_user ||= @otp_form.user
+    Sessions::Users::DfEUser.new(email: @otp_form.email)
   end
 end

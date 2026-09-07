@@ -59,14 +59,29 @@ describe Schools::ECTs::ChangeMentorWizard::EditStep do
     before { store.mentor_at_school_period_id = mentor_at_school_period.id }
 
     context "when the mentor is eligible for training" do
+      let!(:current_contract_period) { FactoryBot.create(:contract_period, :current) }
+      let(:ect_lead_provider_contract_period) { current_contract_period }
+
       before do
         allow(::MentorAtSchoolPeriods::Assignment::Eligibility)
           .to receive(:for_first_provider_led_training?)
           .and_return(true)
+
+        framework_agreement = FactoryBot.create(:framework_agreement, contract_period: ect_lead_provider_contract_period)
+
+        FactoryBot.create(:training_period, :unfinished, :provider_led, :with_framework_agreement, ect_at_school_period:, framework_agreement:)
       end
 
       it "returns the review_mentor_eligibility step" do
         expect(current_step.next_step).to eq(:review_mentor_eligibility)
+      end
+
+      context "when the ECT's lead provider is not active in the current contract period" do
+        let(:ect_lead_provider_contract_period) { FactoryBot.create(:contract_period, :previous) }
+
+        it "returns the lead_provider step" do
+          expect(current_step.next_step).to eq(:lead_provider)
+        end
       end
     end
 

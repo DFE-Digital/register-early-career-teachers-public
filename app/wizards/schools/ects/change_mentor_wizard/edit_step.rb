@@ -9,10 +9,12 @@ module Schools
         def self.permitted_params = [:mentor_at_school_period_id]
 
         def next_step
-          if mentor_eligible_for_training?
+          if !mentor_eligible_for_training?
+            :check_answers
+          elsif ect_lead_provider_available?
             :review_mentor_eligibility
           else
-            :check_answers
+            :lead_provider
           end
         end
 
@@ -34,6 +36,12 @@ module Schools
 
         def pre_populate_attributes
           self.mentor_at_school_period_id = @wizard.new_mentor_requested ? 0 : store.mentor_at_school_period_id
+        end
+
+        def ect_lead_provider_available?
+          ECTAtSchoolPeriods::CurrentTraining
+            .new(ect_at_school_period)
+            .lead_provider_available_for_training?
         end
 
         def mentor_eligible_for_training?

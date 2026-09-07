@@ -102,31 +102,57 @@ RSpec.describe "Admin::DataFixesController" do
         include_context "sign in as product_team DfE user"
 
         let(:teacher) { FactoryBot.create(:teacher, trn: "123456") }
+        let(:other_teacher) { FactoryBot.create(:teacher, trn: "234567") }
 
         context "when the CSV is valid and changes can be processed" do
           let(:csv_string) do
             <<~ROWS
               object_type,object_id,action,attributes
               Teacher,#{teacher.id},update,"trn,345678"
+              Teacher,#{other_teacher.id},update,"trn,456789"
             ROWS
           end
 
           it "redirects to preview step, then redirects to verify step " \
-             "without persisting any changes" do
+             "and persists changes after verification" do
             expect(subject).to redirect_to(path_for_step("preview"))
-
             follow_redirect!
 
             expect { post path_for_step("preview") }
-              .not_to(change { teacher.reload.trn })
+              .to not_change { teacher.reload.trn }
+              .and(not_change { other_teacher.reload.trn })
 
             expect(response).to redirect_to(path_for_step("verify"))
+            follow_redirect!
+
+            expect { post path_for_step("verify") }
+              .to change { teacher.reload.trn }.from("123456").to("345678")
+              .and change { other_teacher.reload.trn }.from("234567").to("456789")
           end
 
           context "but there is an unexpected error" do
             before do
+              processor = Admin::DataFixes::Processor.new
               allow(Admin::DataFixes::Processor)
                 .to receive(:new)
+                .and_return(processor)
+              allow(processor)
+                .to receive(:process!)
+                .with(data_change: {
+                  "object_type" => "Teacher",
+                  "object_id" => teacher.id.to_s,
+                  "action" => "update",
+                  "attributes" => "trn,345678"
+                })
+                .and_call_original
+              allow(processor)
+                .to receive(:process!)
+                .with(data_change: {
+                  "object_type" => "Teacher",
+                  "object_id" => other_teacher.id.to_s,
+                  "action" => "update",
+                  "attributes" => "trn,456789"
+                })
                 .and_raise(StandardError, "oops")
             end
 
@@ -138,7 +164,8 @@ RSpec.describe "Admin::DataFixesController" do
 
               expect { post path_for_step("preview") }
                 .to raise_error(StandardError, "oops")
-              expect(teacher.reload.trn).not_to eq("345678")
+                .and not_change { teacher.reload.trn }
+                .and(not_change { other_teacher.reload.trn })
             end
           end
         end

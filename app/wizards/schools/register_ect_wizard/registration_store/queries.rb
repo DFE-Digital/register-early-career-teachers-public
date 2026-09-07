@@ -72,7 +72,7 @@ module Schools
         end
 
         def ordered_induction_periods
-          @ordered_induction_periods ||= InductionPeriods::Search
+          @ordered_induction_periods ||= Induction::Periods::Search
             .new(order: :started_on)
             .induction_periods(trn: registration_store.trn)
         end

@@ -23,12 +23,6 @@ RSpec.describe Admin::DataFixesWizard::PreviewStep do
     it { is_expected.to be_empty }
   end
 
-  describe "#error_presenter" do
-    subject(:error_presenter) { current_step.error_presenter }
-
-    it { is_expected.to eq(Admin::DataFixesWizard::PreviewStep::ErrorSummaryPresenter) }
-  end
-
   describe "#previous_step" do
     subject(:previous_step) { current_step.previous_step }
 

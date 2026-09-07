@@ -222,6 +222,29 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe ".record_teacher_trn_replaced_event!" do
+    let(:teacher) { FactoryBot.create(:teacher) }
+    let(:old_trn) { "1234567" }
+    let(:new_trn) { "7654321" }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        Events::Record.record_teacher_trn_replaced_event!(teacher:, author:, old_trn:, new_trn:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          hash_including(
+            teacher:,
+            happened_at: Time.zone.now,
+            event_type: :teacher_trn_replaced,
+            heading: "TRN changed from '#{old_trn}' to '#{new_trn}'",
+            metadata: { old_trn:, new_trn: },
+            **author_params
+          )
+        )
+      end
+    end
+  end
+
   describe ".record_teacher_passes_induction_event!" do
     let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
     let(:mentorship_period) { FactoryBot.create(:mentorship_period, mentee: ect_at_school_period, mentor:) }

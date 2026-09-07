@@ -30,6 +30,60 @@ RSpec.describe Admin::DataFixesWizard::VerifyStep do
   describe "#next_step" do
     subject(:next_step) { current_step.next_step }
 
-    it { is_expected.to be_nil }
+    it { is_expected.to eq(:confirmation) }
+  end
+
+  describe "#save!" do
+    subject(:save!) { current_step.save! }
+
+    before do
+      allow(Admin::DataFixes::Changes).to receive(:new).and_return(fake_changes)
+    end
+
+    context "when changes are processed successfully" do
+      let(:fake_changes) do
+        instance_double(
+          Admin::DataFixes::Changes,
+          process: [{ record_identifier: "Teacher(#1)", action: "destroy" }]
+        )
+      end
+
+      it { is_expected.to be_truthy }
+
+      it "persists confirmed changes in the store" do
+        expect { save! }
+          .to change { current_step.store.confirmed_changes }
+          .from(nil)
+          .to([{ record_identifier: "Teacher(#1)", action: "destroy" }])
+      end
+    end
+
+    context "when changes are not processed successfully" do
+      let(:fake_changes) do
+        instance_double(Admin::DataFixes::Changes, process: false)
+      end
+
+      it { is_expected.to be_falsey }
+
+      it "does not persist confirmed changes in the store" do
+        expect { save! }.not_to(change { current_step.store.confirmed_changes })
+      end
+
+      context "but there were confirmed changes already in the store" do
+        let(:store) { FactoryBot.build(:session_repository, confirmed_changes:) }
+        let(:confirmed_changes) do
+          [{ record_identifier: "Teacher(#1)", action: "destroy" }]
+        end
+
+        it { is_expected.to be_falsey }
+
+        it "clears the existing processed changes from the store" do
+          expect { save! }
+            .to change { current_step.store.confirmed_changes }
+            .from([{ record_identifier: "Teacher(#1)", action: "destroy" }])
+            .to(nil)
+        end
+      end
+    end
   end
 end
