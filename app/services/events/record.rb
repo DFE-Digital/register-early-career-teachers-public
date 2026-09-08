@@ -1534,14 +1534,14 @@ module Events
 
     def self.record_api_oauth_authorization_verified(author:, authorization:)
       event_type = :api_oauth_authorization_verified
-      heading = "Authorization verified by client '#{authorization.client.name}' for '#{authorization.appropriate_body_period.appropriate_body.name}'"
-      happended_at = authorization.updated_at
-      
+      heading = "Authorization verified by client '#{authorization.client.name}' for '#{authorization.appropriate_body_name}'"
+      happened_at = authorization.code_exchanged_at
+
       new(
         event_type:,
         author:,
         heading:,
-        happended_at:
+        happened_at:
       ).record_event!
     end
 

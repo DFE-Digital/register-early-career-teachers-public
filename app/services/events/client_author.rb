@@ -1,4 +1,6 @@
 class Events::ClientAuthor
+  attr_reader :client
+
   def initialize(client:)
     @client = client
   end

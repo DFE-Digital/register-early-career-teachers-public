@@ -12,12 +12,12 @@ module API
 
       validates :client, presence: { message: "Enter a client" }
       validates :grant_type, presence: { message: "invalid_request" }
-      validates :grant_type, inclusion: { in: -> { it.client.grant_types }, message: "unsupported_grant_type" }
       validates :code, presence: { message: "invalid_grant" }
       validates :code_verifier, presence: { message: "invalid_grant" }
       validates :redirect_uri, presence: { message: "invalid_grant" }
 
-      validate :code_is_consumable
+      validate :grant_type_is_supported_by_client
+      validate :code_can_be_exchanged
       validate :code_verifier_is_valid
       validate :redirect_uri_matches_authorization
 
@@ -26,14 +26,17 @@ module API
       def create
         return unless valid?
 
-        @token = authorization_request.assign_token
-        
-        Events::Record.record_api_oauth_authorization_verified(author:, authorization: authorization_request)
+        ActiveRecord::Base.transaction do
+          @token = authorization_request.assign_token
+          authorization_request.update!(code_exchanged_at: Time.zone.now)
 
-        return [token, authorization_request.token_expires_at]
+          Events::Record.record_api_oauth_authorization_verified(author:, authorization: authorization_request)
+
+          return [token, authorization_request.token_expires_at]
+        end
       end
 
-      def code_is_consumable
+      def code_can_be_exchanged
         return if errors.any?
 
         errors.add(:code, "invalid_grant") unless authorization_confirmable?
@@ -45,22 +48,28 @@ module API
         errors.add(:code_verifier, "invalid_grant") unless code_challenge_verified?
       end
 
-      def redirect_uri_matches
+      def grant_type_is_supported_by_client
         return if errors.any?
 
-        ActiveSupport::SecurityUtils.secure_compare(redirect_uri, authorization_request.redirect_uri)
+        errors.add(:grant_type, "unsupported_grant_type") unless grant_type.in? client.grant_types
+      end
+
+      def redirect_uri_matches_authorization
+        return if errors.any?
+
+        errors.add(:redirect_uri, "invalid_grant") unless ActiveSupport::SecurityUtils.secure_compare(redirect_uri, authorization_request.redirect_uri)
       end
 
       def code_challenge_verified?
-        return false unless authorization_request&.code_challenge_method == "S256"
+        return false unless authorization_request&.s256?
 
-        expected_code_challenge = Base64.urlsafe_encode64(Digest::SHA256.digest(code_verifier), padding: false)
+        presented_code_challenge = Base64.urlsafe_encode64(Digest::SHA256.digest(code_verifier), padding: false)
 
-        ActiveSupport::SecurityUtils.secure_compare(expected_code_challenge, authorization_request.code_challenge)
+        ActiveSupport::SecurityUtils.secure_compare(authorization_request.code_challenge, presented_code_challenge)
       end
 
       def authorization_confirmable?
-        authorization_request.present? && !authorization_request.code_expired? && authorization_request.token_digest.blank?
+        authorization_request.present? && !authorization_request.code_expired? && authorization_request.code_exchanged_at.blank?
       end
 
       def authorization_request

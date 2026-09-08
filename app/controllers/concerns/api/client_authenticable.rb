@@ -21,7 +21,11 @@ module API
 
     def authenticate_client(client_id:, secret:)
       client = API::OAuth::Client.find_by(client_id:)
-      return if client.blank? || client.client_secret_digest != Digest::SHA256.hexdigest(secret)
+      return if client.blank?
+
+      secret_digest = Digest::SHA256.hexdigest(secret)
+      return unless ActiveSupport::SecurityUtils.secure_compare(client.client_secret_digest, secret_digest)
+
       client
     end
 

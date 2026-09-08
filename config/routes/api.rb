@@ -5,10 +5,6 @@ namespace :api do
   get "guidance/*page", to: "guidance#page", as: :guidance_page
   get "docs/:version", to: "documentation#index", as: :documentation
 
-  namespace :oauth do
-    post "token", to: "authorization_handshake#create", as: :authorization_handshake
-  end
-
   namespace :v3 do
     resources :participants, only: %i[index show], param: :api_id do
       member do
@@ -40,4 +36,5 @@ namespace :oauth, module: "api/oauth" do
   get "authorize", to: "authorizations#new", as: :authorization
   post "authorize", to: "authorizations#create"
   delete "authorize", to: "authorizations#destroy"
+  post "token", to: "authorization_token#create", as: :authorization_token
 end
