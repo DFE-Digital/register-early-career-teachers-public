@@ -279,7 +279,6 @@
   - revoked_at
   - created_at
   - updated_at
-  - author
   :api_oauth_clients:
   - id
   - name
