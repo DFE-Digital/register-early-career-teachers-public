@@ -76,7 +76,7 @@ private
   def delete!(target_object)
     ActiveRecord::Base.transaction do
       remove_references_to!(target_object)
-      target_object.destroy
+      target_object.destroy!
     end
   end
 
