@@ -1,11 +1,13 @@
 <%
   page_data(
     title: "Get help with registering early career teachers",
-    backlink_href: request.referer || schools_ects_home_path
+    backlink_href: request.referer || schools_ects_home_path,
+    error: @support_query.errors.any?
   )
 %>
 
 <%= form_with model: [:schools, @support_query] do |form| %>
+  <%= content_for(:error_summary) { form.govuk_error_summary } %>
   <p>Send us a message if you have a question or are having problems using this service.</p>
 
   <p>We'll automatically include the following in your message:</p>

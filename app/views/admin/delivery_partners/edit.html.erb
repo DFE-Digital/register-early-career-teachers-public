@@ -1,5 +1,6 @@
 <% page_data(
      title: delivery_partner_title(@delivery_partner),
+     error: @delivery_partner.errors.any?,
      breadcrumbs: @breadcrumbs,
      backlink_href: admin_delivery_partner_path(@delivery_partner, page: @page, q: @q)
    ) %>
