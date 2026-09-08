@@ -11,23 +11,23 @@ module API
         else
           AuthorizationRequest.clear_from(session)
           redirect_to(
-            @authorization_request.redirect_uri_with_params,
+            @authorization_request.unsuccessful_redirect_uri,
             allow_other_host: true
           )
         end
       end
 
       def create
-        @authorization = Authorization.new(authorization_params)
+        @authorization = @authorization_request.build_authorization
         if @authorization.save
           AuthorizationRequest.clear_from(session)
           redirect_to(
-            @authorization_request.redirect_uri_with_params(code: @authorization.code),
+            @authorization_request.successful_redirect_uri(code: @authorization.code),
             allow_other_host: true
           )
         else
           redirect_to(
-            @authorization_request.redirect_uri_with_params(
+            @authorization_request.unsuccessful_redirect_uri(
               error: :invalid_request,
               error_description: @authorization.error_messages_description
             ),
@@ -39,7 +39,7 @@ module API
       def destroy
         AuthorizationRequest.clear_from(session)
         redirect_to(
-          @authorization_request.redirect_uri_with_params(
+          @authorization_request.unsuccessful_redirect_uri(
             error: :access_denied, error_description: "User refused connection"
           ),
           allow_other_host: true
@@ -68,12 +68,6 @@ module API
           .to_h
           .symbolize_keys
           .merge(logged_in_appropriate_body_period_id: @appropriate_body.id)
-      end
-
-      def authorization_params
-        @authorization_request.attributes
-          .slice("appropriate_body_period_id", "redirect_uri", "code_challenge", "code_challenge_method")
-          .merge(client: @authorization_request.client)
       end
     end
   end
