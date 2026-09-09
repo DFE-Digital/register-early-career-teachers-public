@@ -58,6 +58,7 @@ module RegisterEarlyCareerTeachers
     config.enable_blazer = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_BLAZER", false))
     config.enable_time_travel = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_TIME_TRAVEL", false))
     config.enable_debug_css = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_DEBUG_CSS", false))
+    config.enable_api_test_client = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_API_TEST_CLIENT", false))
     config.bypass_filter_parameter_logging = false
     config.sentry_dsn = ENV["SENTRY_DSN"]
     config.enable_request_specs_timeout = ActiveModel::Type::Boolean.new.cast(ENV.fetch("CI", false))

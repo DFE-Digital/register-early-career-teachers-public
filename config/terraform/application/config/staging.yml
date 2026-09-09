@@ -29,4 +29,5 @@ TRS_API_BASE_URL: "https://preprod.teacher-qualifications-api.education.gov.uk"
 TRS_API_VERSION: "20260120"
 RAILS_ENV: staging
 ENABLE_TIME_TRAVEL: true
+ENABLE_API_TEST_CLIENT: true
 MAX_SESSION_IDLE_TIME: 7200
