@@ -668,6 +668,34 @@ RSpec.describe AppropriateBodies::Importers::InductionPeriodParser do
             )
           end
         end
+
+        context "and the two periods touch at a single day boundary" do
+          let(:sample_csv_data) do
+            <<~CSV
+              appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
+              #{ab_1.dqt_id},01/01/2022 00:00:00,06/30/2022 00:00:00,Full Induction Programme,3,#{ect_1.trn}
+              #{ab_1.dqt_id},06/30/2022 00:00:00,12/31/2022 00:00:00,Full Induction Programme,3,#{ect_1.trn}
+            CSV
+          end
+
+          it "extends the earlier period to absorb the later one, leaving no overlap" do
+            expect(parsed_to_record).to eql(
+              {
+                ect_1.trn => [
+                  {
+                    teacher_id: nil,
+                    appropriate_body_period_id: nil,
+                    outcome: :pass,
+                    started_on: Date.new(2022, 1, 1),
+                    finished_on: Date.new(2022, 12, 31),
+                    induction_programme: "fip",
+                    number_of_terms: 3.0,
+                  }
+                ]
+              }
+            )
+          end
+        end
       end
 
       context "when an ECT has two induction periods that have different programme types with one AB" do
@@ -689,7 +717,7 @@ RSpec.describe AppropriateBodies::Importers::InductionPeriodParser do
                     appropriate_body_period_id: nil,
                     outcome: nil,
                     started_on: Date.new(2022, 1, 1),
-                    finished_on: Date.new(2022, 3, 3),
+                    finished_on: Date.new(2022, 3, 2),
                     induction_programme: "fip",
                     number_of_terms: 4.0,
                   },
@@ -740,7 +768,7 @@ RSpec.describe AppropriateBodies::Importers::InductionPeriodParser do
                     appropriate_body_period_id: nil,
                     outcome: nil,
                     started_on: Date.new(2022, 1, 1),
-                    finished_on: Date.new(2022, 4, 4),
+                    finished_on: Date.new(2022, 4, 3),
                     induction_programme: "fip",
                     number_of_terms: 4.0,
                   },
@@ -811,7 +839,7 @@ RSpec.describe AppropriateBodies::Importers::InductionPeriodParser do
                     appropriate_body_period_id: nil,
                     outcome: nil,
                     started_on: Date.new(2022, 1, 1),
-                    finished_on: Date.new(2022, 3, 3),
+                    finished_on: Date.new(2022, 3, 2),
                     induction_programme: "fip",
                     number_of_terms: 4.0,
                   },
@@ -852,7 +880,7 @@ RSpec.describe AppropriateBodies::Importers::InductionPeriodParser do
                     appropriate_body_period_id: nil,
                     outcome: nil,
                     started_on: Date.new(2012, 1, 1),
-                    finished_on: Date.new(2012, 2, 2),
+                    finished_on: Date.new(2012, 2, 1),
                     induction_programme: "pre_september_2021",
                     number_of_terms: 1.0,
                   },

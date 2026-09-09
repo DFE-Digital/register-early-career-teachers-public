@@ -83,7 +83,7 @@ module AppropriateBodies::Importers
       end
 
       def range
-        started_on...finished_on
+        started_on..finished_on
       end
 
       # @return [Boolean]
@@ -490,7 +490,7 @@ module AppropriateBodies::Importers
                     #               ┌─────────┬┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┐
                     #   SIBLING     │ SHRINK  │ - - - - - - - - - -┊
                     #               └─────────┴┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┘
-                    sibling.finished_on = current.started_on
+                    sibling.finished_on = 1.day.before(current.started_on)
                     sibling.notes << {
                       heading:,
                       body: "DQT held 2 overlapping induction periods for this teacher/appropriate body combination with different induction programmes. This record was cut off when the later one started to prevent overlaps.",
@@ -556,7 +556,7 @@ module AppropriateBodies::Importers
                     #               ┌─────────┬┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┐
                     #   SIBLING     │ SHRINK  │ - - - - - - - - - -┊
                     #               └─────────┴┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┘
-                    sibling.finished_on = current.started_on
+                    sibling.finished_on = 1.day.before(current.started_on)
                     sibling.notes << {
                       heading:,
                       body: "DQT held 2 overlapping induction periods for this teacher with different appropriate bodies. This record was cut off when the later one started to prevent overlaps.",

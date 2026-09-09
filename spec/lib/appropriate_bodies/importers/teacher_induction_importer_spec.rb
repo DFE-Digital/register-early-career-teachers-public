@@ -139,18 +139,18 @@ RSpec.describe AppropriateBodies::Importers::TeacherInductionImporter do
 
       expect { induction_importer.import! }.not_to raise_error
 
-      expect(Teacher.count).to eq(589_988) # On prod where some already exist we will see 588_533 imported (1_306 delta)
+      expect(Teacher.count).to eq(589_779) # On prod where some already exist we will see 588_533 imported (1_306 delta)
       expect(Teacher.induction_status_in_progress.count).to be_zero
       expect(Teacher.induction_status_required_to_complete.count).to be_zero
       expect(Teacher.induction_status_failed.count).to eq(308)
       expect(Teacher.induction_status_failed_in_wales.count).to eq(2)
-      expect(Teacher.induction_status_passed.count).to eq(589_371)
+      expect(Teacher.induction_status_passed.count).to eq(589_162)
       expect(Teacher.induction_status_exempt.count).to eq(302)
 
       expect(InductionPeriod.unfinished.count).to be_zero
-      expect(InductionPeriod.count).to eq(635_002)
+      expect(InductionPeriod.count).to eq(634_363)
       expect(InductionPeriod.finished.count).to eq(InductionPeriod.count)
-      expect(InductionPeriod.released.count).to eq(45_321)
+      expect(InductionPeriod.released.count).to eq(44_891)
 
       expect(InductionPeriod.failed.count).to eq(Teacher.induction_status_failed.count + Teacher.induction_status_failed_in_wales.count)
       expect(InductionPeriod.passed.count).to eq(Teacher.induction_status_passed.count)
@@ -172,26 +172,26 @@ RSpec.describe AppropriateBodies::Importers::TeacherInductionImporter do
       expect(teacher_induction_period_frequency.values.sum).to eq(Teacher.count)
 
       expect(teacher_induction_period_frequency).to eq({
-        1 => 548_690,
-        2 => 37_839,
-        3 => 3_227,
-        4 => 213,
-        5 => 15,
+        1 => 548_783,
+        2 => 37_656,
+        3 => 3_115,
+        4 => 208,
+        5 => 13,
         6 => 2,
         7 => 2
       })
 
-      expect(InductionExtension.count).to eq(3_472)
+      expect(InductionExtension.count).to eq(3_470)
 
-      expect(Event.count).to eq(1_274_530)
-      expect(Event.where(body: "Imported from DQT").count).to eq(1_269_697)
+      expect(Event.count).to eq(1_273_810)
+      expect(Event.where(body: "Imported from DQT").count).to eq(1_268_419)
       expect(Event.where(body: "Imported from DQT").count).to eq(
         Event.with_event_type(:induction_period_opened).count +
         Event.with_event_type(:teacher_fails_induction).count +
         Event.with_event_type(:teacher_passes_induction).count +
         Event.with_event_type(:induction_period_closed).count
       )
-      expect(Event.with_event_type(:import_from_dqt).count).to eq(4_833)
+      expect(Event.with_event_type(:import_from_dqt).count).to eq(5_391)
       expect(Event.with_event_type(:induction_period_opened).count).to eq(InductionPeriod.count)
       expect(Event.with_event_type(:teacher_fails_induction).count).to eq(InductionPeriod.failed.count)
       expect(Event.with_event_type(:teacher_passes_induction).count).to eq(InductionPeriod.passed.count)
@@ -206,10 +206,10 @@ RSpec.describe AppropriateBodies::Importers::TeacherInductionImporter do
       unimported_periods = parsed_periods - imported_periods
 
       expect(source_rows).to eq(829_189)          # all rows in inductionperiods.csv
-      expect(parsed_periods).to eq(671_497)       # periods surviving the parser (all teachers)
-      expect(discarded_periods).to eq(157_692)    # periods rejected and logged by the parser (all teachers)
-      expect(imported_periods).to eq(635_002)     # periods persisted for chosen teachers
-      expect(unimported_periods).to eq(36_495)    # parsed periods for rejected teachers (eg. active status)
+      expect(parsed_periods).to eq(670_816)       # periods surviving the parser (all teachers)
+      expect(discarded_periods).to eq(158_373)    # periods rejected and logged by the parser (all teachers)
+      expect(imported_periods).to eq(634_363)     # periods persisted for chosen teachers
+      expect(unimported_periods).to eq(36_453)    # parsed periods for rejected teachers (eg. active status)
 
       # every source row is kept or discarded exactly once
       expect(source_rows).to eq(parsed_periods + discarded_periods)
