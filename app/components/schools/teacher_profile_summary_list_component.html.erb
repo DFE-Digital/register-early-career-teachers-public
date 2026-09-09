@@ -56,6 +56,15 @@
     <% list.with_row do |row| %>
       <% row.with_key { "School start date" } %>
       <% row.with_value { ect_start_date(@ect) } %>
+
+      <% if change_school_start_date_eligible? %>
+        <% row.with_action(
+          text: "Change",
+          visually_hidden_text: "school start date",
+          href: schools_ects_change_start_date_wizard_edit_path(@ect),
+          classes: "govuk-link--no-visited-state"
+        ) %>
+      <% end %>
     <% end %>
   <% end %>
 

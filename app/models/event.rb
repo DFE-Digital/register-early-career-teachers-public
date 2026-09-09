@@ -38,6 +38,7 @@ class Event < ApplicationRecord
     statement_adjustment_updated
     teacher_email_address_updated
     teacher_working_pattern_updated
+    teacher_school_start_date_updated
     teacher_training_programme_updated
     teacher_training_lead_provider_updated
     teacher_fails_induction
@@ -62,6 +63,7 @@ class Event < ApplicationRecord
     teacher_finishes_training_period
     teacher_finishes_being_mentored
     teacher_finishes_mentoring
+    teacher_mentorship_period_removed
     teacher_trs_attributes_updated
     teacher_trs_deactivated
     teacher_trs_not_found
