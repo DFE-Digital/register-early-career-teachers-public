@@ -280,7 +280,7 @@ RSpec.describe GIAS::Importer, type: :service do
         end
       end
 
-      context "when an existing school has a predecessor link added" do
+      context "when an existing school has a predecessor link added from the CSV file" do
         let!(:existing_school) { FactoryBot.create(:gias_school, status: "open", urn: independent_school_urn) }
 
         it "returns a list of URNs which excludes schools with new predecessor links" do
