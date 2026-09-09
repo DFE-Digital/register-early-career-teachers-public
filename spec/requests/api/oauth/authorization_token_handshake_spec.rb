@@ -166,7 +166,7 @@ RSpec.describe "API OAuth Token Handshake", type: :request do
       it "does not change the Authorization" do
         expect {
           post("/oauth/token", params:, headers: basic_auth)
-        }.not_to change(authorization(:updated_at))
+        }.not_to change(authorization, :updated_at)
       end
     end
 
