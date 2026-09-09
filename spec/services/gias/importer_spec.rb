@@ -34,7 +34,7 @@ RSpec.describe GIAS::Importer, type: :service do
       end
 
       it "imports GIAS school links for the imported schools" do
-        expect { importer.fetch }.to change(GIAS::SchoolLink, :count).by(2)
+        expect { importer.fetch }.to change(GIAS::SchoolLink, :count).by(3)
       end
 
       it "does not call any metadata refresh handlers during the process" do
@@ -134,7 +134,7 @@ RSpec.describe GIAS::Importer, type: :service do
       end
 
       it "imports GIAS school links that do not exist in the database" do
-        expect { importer.fetch }.to change(GIAS::SchoolLink, :count).by(1)
+        expect { importer.fetch }.to change(GIAS::SchoolLink, :count).by(2)
       end
 
       it "assigns correct attributes to the GIAS schools" do
@@ -277,6 +277,16 @@ RSpec.describe GIAS::Importer, type: :service do
           urns = importer.fetch
 
           expect(urns).to include(existing_school.urn)
+        end
+      end
+
+      context "when an existing school has a predecessor link added from the CSV file" do
+        let!(:existing_school) { FactoryBot.create(:gias_school, status: "open", urn: independent_school_urn) }
+
+        it "returns a list of URNs which excludes schools with new predecessor links" do
+          urns = importer.fetch
+
+          expect(urns).not_to include(existing_school.urn)
         end
       end
 

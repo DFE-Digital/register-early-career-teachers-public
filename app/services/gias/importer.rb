@@ -85,7 +85,11 @@ module GIAS
     end
 
     def needs_reconciliation?(link, imported_link_type)
-      link.link_type != imported_link_type || link.previously_new_record? || link.link_date == Date.current
+      return false if GIAS::SchoolLink::PREDECESSOR_LINK_TYPES.include?(imported_link_type)
+      return true if link.link_type != imported_link_type
+      return true if link.previously_new_record?
+
+      link.link_date == Date.current
     end
 
     def parse_school_row(row)

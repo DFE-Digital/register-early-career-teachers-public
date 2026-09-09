@@ -4,3 +4,4 @@
 20003,20004,"School 3 Centre","Other","01-01-1900"
 20004,20001,"School 4 Centre","Other","01-01-1900"
 20007,20008,"School 5 Centre","Successor","30-06-2026"
+20002,20001,"School 6 Centre","Predecessor","30-06-2026"
