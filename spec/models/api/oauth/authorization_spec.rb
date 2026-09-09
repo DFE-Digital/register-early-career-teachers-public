@@ -56,33 +56,6 @@ describe API::OAuth::Authorization do
     end
   end
 
-  describe "granting an authorization" do
-    let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
-    let(:current_user) do
-      FactoryBot.build(:appropriate_body_user, dfe_sign_in_organisation_id: appropriate_body_period.dfe_sign_in_organisation_id)
-    end
-
-    before { allow(Events::Record).to receive(:record_oauth_authorization_created_event!) }
-
-    it "defaults the author to the current user" do
-      Current.set(user: current_user) do
-        expect(described_class.new.author).to eq(current_user)
-      end
-    end
-
-    it "records an event when the authorization is created and not when it changes afterwards" do
-      authorization = FactoryBot.create(:api_oauth_authorization, appropriate_body_period:, author: current_user)
-
-      expect(Events::Record).to have_received(:record_oauth_authorization_created_event!).once.with(
-        author: current_user, authorization:
-      )
-
-      authorization.update!(code_exchanged_at: Time.zone.now)
-
-      expect(Events::Record).to have_received(:record_oauth_authorization_created_event!).once
-    end
-  end
-
   context "when a code is assigned" do
     it "exposes the code, storing its digest and expiring it 10 minutes later" do
       freeze_time do

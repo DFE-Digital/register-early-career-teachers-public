@@ -18,8 +18,9 @@ module API
       end
 
       def create
-        @authorization = @authorization_request.build_authorization
-        if @authorization.save
+        @authorization = Authorizations::Create.new(authorization_request: @authorization_request, author: current_user).call
+
+        if @authorization.persisted?
           AuthorizationRequest.clear_from(session)
           redirect_to(
             @authorization_request.successful_redirect_uri(code: @authorization.code),
