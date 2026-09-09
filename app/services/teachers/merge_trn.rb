@@ -16,7 +16,7 @@ module Teachers
         record_teacher_id_change
         refresh_metadata
         record_merge_events
-        anonymise_teacher
+        teacher.destroy!
       end
 
       Teachers::SyncTeacherWithTRSJob.perform_later(teacher: destination)
