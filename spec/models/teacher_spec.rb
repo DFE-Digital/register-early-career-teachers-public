@@ -96,6 +96,7 @@ describe Teacher do
   end
 
   describe "associations" do
+    it { is_expected.to belong_to(:redirected_teacher).class_name("Teacher").with_foreign_key(:trs_redirected_to).with_primary_key(:trn).optional }
     it { is_expected.to have_many(:ect_at_school_periods) }
     it { is_expected.to have_many(:mentor_at_school_periods) }
     it { is_expected.to have_many(:ect_training_periods).through(:ect_at_school_periods) }
