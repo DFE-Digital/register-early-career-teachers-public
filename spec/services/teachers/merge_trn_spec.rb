@@ -227,11 +227,7 @@ RSpec.describe Teachers::MergeTRN do
     end
 
     context "when the destination has an overlapping period" do
-      let(:overlapping_service) { instance_double(Teachers::Overlapping, any_overlapping_periods?: true) }
-
-      before do
-        allow(Teachers::Overlapping).to receive(:new).and_return(overlapping_service)
-      end
+      let(:second_period_started_on) { Date.new(2025, 3, 1) }
 
       it_behaves_like "does not move or change any data"
 

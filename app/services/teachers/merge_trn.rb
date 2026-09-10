@@ -34,10 +34,28 @@ module Teachers
       teacher.trs_response == "permanent_redirect" && teacher.trs_redirected_to.present?
     end
 
-    delegate :any_overlapping_periods?, to: :overlapping
+    def any_overlapping_periods?
+      overlapping_induction_periods? ||
+        overlapping_mentor_at_school_periods? ||
+        overlapping_ect_at_school_periods?
+    end
 
-    def overlapping
-      Teachers::Overlapping.new(teacher:, other_teacher: destination)
+    def overlapping_induction_periods?
+      teacher.induction_periods.any? do
+        destination.induction_periods.overlapping_with(it).exists?
+      end
+    end
+
+    def overlapping_mentor_at_school_periods?
+      teacher.mentor_at_school_periods.any? do
+        destination.mentor_at_school_periods.overlapping_with(it).exists?
+      end
+    end
+
+    def overlapping_ect_at_school_periods?
+      teacher.ect_at_school_periods.any? do
+        destination.ect_at_school_periods.overlapping_with(it).exists?
+      end
     end
 
     def move_school_periods
