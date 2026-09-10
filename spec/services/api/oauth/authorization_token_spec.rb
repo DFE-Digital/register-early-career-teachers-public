@@ -31,7 +31,7 @@ RSpec.describe API::OAuth::AuthorizationToken, type: :model do
 
   describe "validations" do
     it { is_expected.to be_valid }
-    it { is_expected.to validate_presence_of(:client).with_message("Enter a client") }
+    it { is_expected.to validate_presence_of(:client).with_message("invalid_client") }
     it { is_expected.to validate_presence_of(:grant_type).with_message("invalid_request") }
     it { is_expected.to validate_presence_of(:code).with_message("invalid_grant") }
     it { is_expected.to validate_presence_of(:code_verifier).with_message("invalid_grant") }
@@ -90,9 +90,10 @@ RSpec.describe API::OAuth::AuthorizationToken, type: :model do
       expect(RecordEventJob).to have_received(:perform_later).with(
         author_name: client.name,
         author_type: "api_oauth_client",
-        event_type: :api_oauth_authorization_verified,
+        event_type: :api_oauth_authorization_code_exchanged,
         happened_at: authorization.reload.code_exchanged_at,
-        heading: "Authorization verified by client '#{client.name}' for '#{authorization.appropriate_body_name}'"
+        appropriate_body_period: authorization.appropriate_body_period,
+        heading: "Authorization code exchanged by client '#{client.name}' for '#{authorization.appropriate_body_period.name}'"
       )
     end
 

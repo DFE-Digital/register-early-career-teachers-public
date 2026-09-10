@@ -1,6 +1,8 @@
 module API::OAuth::Authorization::ExpirableCredentials
   extend ActiveSupport::Concern
 
+  class CodeNotExchangedError < StandardError; end
+
   CODE_EXPIRES_IN = 10.minutes
   TOKEN_EXPIRES_IN = 1.year
 
@@ -21,6 +23,35 @@ module API::OAuth::Authorization::ExpirableCredentials
 
   def code_expired? = code_expires_at&.past?
   def token_expired? = token_expires_at&.past?
+
+  def code_exchangable?
+    code_exchanged_at.blank? && !code_expired?
+  end
+
+  def seconds_to_token_expiration
+    return if token_expires_at.blank?
+
+    (token_expires_at - Time.zone.now).round
+  end
+
+  def code_challenge_verified?(code_verifier:)
+    return false unless s256?
+
+    presented_code_challenge = Base64.urlsafe_encode64(Digest::SHA256.digest(code_verifier), padding: false)
+
+    ActiveSupport::SecurityUtils.secure_compare(code_challenge, presented_code_challenge)
+  end
+
+  def exchange_code_for_token!(code_verifier:)
+    if code_exchangable? && code_challenge_verified?(code_verifier:)
+      assign_token
+      update!(code_exchanged_at: Time.zone.now)
+    else
+      raise CodeNotExchangedError, "Code cannot be exchanged or is not verified"
+    end
+
+    token
+  end
 
 private
 

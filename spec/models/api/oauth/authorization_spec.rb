@@ -98,4 +98,28 @@ describe API::OAuth::Authorization do
       it { is_expected.to be_token_expired }
     end
   end
+
+  describe "#seconds_to_token_expiration" do
+    subject(:authorization) { FactoryBot.build(:api_oauth_authorization) }
+
+    it "returns the number of seconds until the token expires" do
+      authorization.assign_token
+      authorization.token_expires_at = 1.day.from_now
+      expect(authorization.seconds_to_token_expiration).to be_within(1.second).of(1.day.to_i)
+    end
+
+    context "when there is no token" do
+      it "returns nil" do
+        expect(authorization.seconds_to_token_expiration).to be_nil
+      end
+    end
+  end
+
+  describe "#appropriate_body_name" do
+    subject(:authorization) { FactoryBot.build(:api_oauth_authorization) }
+
+    it "delegates to the appropriate_body_period.name" do
+      expect(authorization.appropriate_body_name).to eq authorization.appropriate_body_period.name
+    end
+  end
 end
