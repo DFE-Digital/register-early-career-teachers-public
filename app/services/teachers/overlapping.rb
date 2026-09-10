@@ -6,25 +6,25 @@ module Teachers
     end
 
     def any_overlapping_periods?
-      comparable_periods.any? do |periods, other_periods|
-        overlapping?(periods, other_periods)
-      end
+      overlapping_induction_periods? ||
+        overlapping_mentor_at_school_periods? ||
+        overlapping_ect_at_school_periods?
     end
 
   private
 
     attr_reader :teacher, :other_teacher
 
-    def periods_for(teacher)
-      [
-        teacher.mentor_at_school_periods,
-        teacher.ect_at_school_periods,
-        teacher.induction_periods
-      ]
+    def overlapping_induction_periods?
+      overlapping?(teacher.induction_periods, other_teacher.induction_periods)
     end
 
-    def comparable_periods
-      periods_for(teacher).zip(periods_for(other_teacher))
+    def overlapping_mentor_at_school_periods?
+      overlapping?(teacher.mentor_at_school_periods, other_teacher.mentor_at_school_periods)
+    end
+
+    def overlapping_ect_at_school_periods?
+      overlapping?(teacher.ect_at_school_periods, other_teacher.ect_at_school_periods)
     end
 
     def overlapping?(periods, other_periods)

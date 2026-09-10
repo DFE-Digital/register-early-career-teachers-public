@@ -13,7 +13,7 @@ module Teachers
 
       return unless status == :teacher_merged
 
-      if Teacher.where(trn: teacher.trs_redirected_to).exists?
+      if Teacher.exists?(trn: teacher.trs_redirected_to)
         Teachers::MergeTRN.new(teacher:).merge!
       else
         Teachers::ReplaceTRN.new(teacher:).replace!
