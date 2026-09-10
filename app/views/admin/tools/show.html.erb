@@ -1,13 +1,11 @@
 <% page_data(title: "Tools") %>
 
-<% if Rails.application.config.enable_admin_data_fixes %>
-  <%= render Admin::ToolComponent.new(name: "Data fixes", href: admin_data_fixes_csv_path) do %>
-    Fix records in bulk by entering the changes in CSV format, previewing them
-    and confirming.
-  <% end %>
-
-  <%= govuk_section_break(visible: true, size: "l") %>
+<%= render Admin::ToolComponent.new(name: "Data fixes", href: admin_data_fixes_csv_path) do %>
+  Fix records in bulk by entering the changes in CSV format, previewing them
+  and confirming.
 <% end %>
+
+<%= govuk_section_break(visible: true, size: "l") %>
 
 <% if Rails.application.config.enable_blazer %>
   <%= render Admin::ToolComponent.new(name: "Blazer", href: admin_blazer_path) do %>
