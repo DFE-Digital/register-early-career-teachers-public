@@ -1,7 +1,6 @@
 RSpec.describe "Product team users can paste inline CSV to fix data" do
   before do
     freeze_time
-    enable_admin_data_fixes_feature_flag
     setup_data_to_fix
   end
 
@@ -48,10 +47,6 @@ RSpec.describe "Product team users can paste inline CSV to fix data" do
   end
 
 private
-
-  def enable_admin_data_fixes_feature_flag
-    allow(Rails.application.config).to receive(:enable_admin_data_fixes).and_return(true)
-  end
 
   def setup_data_to_fix
     @ect_at_school_period = FactoryBot.create(:ect_at_school_period)

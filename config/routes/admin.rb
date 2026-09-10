@@ -17,10 +17,8 @@ namespace :admin do
   end
   resources :batches, only: %i[index], path: "bulk" # all activity
 
-  constraints -> { Rails.application.config.enable_admin_data_fixes } do
-    namespace :data_fixes do
-      concerns :wizardable, wizard: Admin::DataFixesWizard
-    end
+  namespace :data_fixes do
+    concerns :wizardable, wizard: Admin::DataFixesWizard
   end
 
   resources :organisations, only: %i[index] do
