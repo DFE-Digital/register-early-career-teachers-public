@@ -32,10 +32,14 @@ module PaymentCalculator
       @total_net_amount ||= declaration_type_outputs.sum(&:total_net_amount)
     end
 
+    def unpaid_declarations_count
+      @unpaid_declarations_count ||= band_allocator.unallocated_billable_count
+    end
+
   private
 
     def band_allocator
-      Banded::BandAllocator.new(
+      @band_allocator ||= Banded::BandAllocator.new(
         bands:,
         billable_declarations:,
         refundable_declarations:,

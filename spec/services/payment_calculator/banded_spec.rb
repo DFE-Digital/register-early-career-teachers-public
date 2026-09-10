@@ -322,4 +322,53 @@ RSpec.describe PaymentCalculator::Banded do
       it { is_expected.to eq(2) }
     end
   end
+
+  describe "#band_capacity_exceeded?" do
+    subject { banded.band_capacity_exceeded? }
+
+    let(:band) { FactoryBot.create(:framework_agreement_band, framework_agreement:, capacity: 1) }
+    let(:banded_fee_structure) do
+      FactoryBot.build(:contract_banded_fee_structure,
+                       band_terms: [FactoryBot.build(:contract_banded_fee_structure_band_term, band:)])
+    end
+
+    context "when the billable declarations fit within the bands" do
+      it { is_expected.to be(false) }
+    end
+
+    context "when a billable declaration on this statement does not fit within the bands" do
+      before do
+        FactoryBot.create(:declaration, :payable,
+                          declaration_type: :started,
+                          training_period: FactoryBot.create(:training_period, :for_ect, :with_framework_agreement, framework_agreement:),
+                          payment_statement: statement_july)
+      end
+
+      it { is_expected.to be(true) }
+    end
+
+    context "when a billable declaration on a previous statement did not fit within the bands" do
+      before do
+        FactoryBot.create(:declaration, :paid,
+                          declaration_type: :started,
+                          training_period: FactoryBot.create(:training_period, :for_ect, :with_framework_agreement, framework_agreement:),
+                          payment_statement: statement_june)
+      end
+
+      it { is_expected.to be(true) }
+    end
+
+    context "when the declarations exceeding the bands are filtered out by the declaration selector" do
+      let(:declaration_selector) { ->(declarations) { declarations.ects } }
+
+      before do
+        FactoryBot.create(:declaration, :payable,
+                          declaration_type: :started,
+                          training_period: mentor_training_period,
+                          payment_statement: statement_july)
+      end
+
+      it { is_expected.to be(false) }
+    end
+  end
 end
