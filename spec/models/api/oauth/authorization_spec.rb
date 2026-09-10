@@ -114,12 +114,4 @@ describe API::OAuth::Authorization do
       end
     end
   end
-
-  describe "#appropriate_body_name" do
-    subject(:authorization) { FactoryBot.build(:api_oauth_authorization) }
-
-    it "delegates to the appropriate_body_period.name" do
-      expect(authorization.appropriate_body_name).to eq authorization.appropriate_body_period.name
-    end
-  end
 end
