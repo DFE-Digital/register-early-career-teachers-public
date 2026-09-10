@@ -76,9 +76,9 @@ RSpec.describe API::OAuth::AuthorizationToken, type: :model do
   describe "#create" do
     subject(:result) { instance.create }
 
-    before do
-      allow(RecordEventJob).to receive(:perform_later).and_return(true)
-    end
+    # before do
+    #   allow(RecordEventJob).to receive(:perform_later).and_return(true)
+    # end
 
     it "marks the authorization as exchanged" do
       result
@@ -86,15 +86,28 @@ RSpec.describe API::OAuth::AuthorizationToken, type: :model do
     end
 
     it "generates an event" do
-      result
-      expect(RecordEventJob).to have_received(:perform_later).with(
-        author_name: client.name,
-        author_type: "api_oauth_client",
-        event_type: :api_oauth_authorization_code_exchanged,
-        happened_at: authorization.reload.code_exchanged_at,
-        appropriate_body_period: authorization.appropriate_body_period,
-        heading: "Authorization code exchanged by client '#{client.name}' for '#{authorization.appropriate_body_period.name}'"
-      )
+      freeze_time do
+        expect {
+          result
+        }.to have_enqueued_job(RecordEventJob).with(
+          author_name: client.name,
+          author_type: "api_oauth_client",
+          event_type: :api_oauth_authorization_code_exchanged,
+          happened_at: Time.zone.now,
+          appropriate_body_period: authorization.appropriate_body_period,
+          heading: "Authorization code exchanged by client '#{client.name}' for '#{authorization.appropriate_body_period.name}'"
+        )
+      end
+    end
+
+    it "the queued job adds an event record when performed" do
+      ActiveJob::Base.queue_adapter.perform_enqueued_jobs = true
+
+      expect {
+        result
+      }.to change(Event, :count).by(1)
+
+      expect(Event.first.event_type).to eq "api_oauth_authorization_code_exchanged"
     end
 
     it "creates and returns the token information" do

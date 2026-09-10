@@ -111,7 +111,7 @@ class Event < ApplicationRecord
     band_added
     band_updated
     band_deleted
-    api_oauth_authorization_verified
+    api_oauth_authorization_code_exchanged
   ].freeze
 
   belongs_to :author, class_name: "User"
@@ -166,6 +166,7 @@ private
   def check_author_present
     return if author_type.in?(%w[system lead_provider_api])
     return if author_id.present? || author_email.present?
+    return if author_type == "appropriate_body_user" && author_name.present?
 
     errors.add(:base, "Author is missing")
   end

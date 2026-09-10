@@ -72,7 +72,7 @@ module API
       end
 
       def author
-        @author ||= Events::ClientAuthor.new(client:)
+        @author ||= Events::AppropriateBodyAuthor.new(appropriate_body_period: authorization.appropriate_body_period)
       end
     end
   end

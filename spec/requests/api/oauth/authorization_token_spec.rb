@@ -51,7 +51,6 @@ RSpec.describe "API OAuth code for token exchange", type: :request do
   describe "POST /oauth/token" do
     before do
       authorization.update!(code_digest:, code_expires_at:)
-      allow(RecordEventJob).to receive(:perform_later).and_return(true)
     end
 
     it "verifies the authorization record" do
