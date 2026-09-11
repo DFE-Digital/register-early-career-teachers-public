@@ -4,11 +4,17 @@ RSpec.describe GIAS::Reconciliation::Open do
 
     let!(:gias_school) { FactoryBot.create(:gias_school, status: :open) }
     let(:gias_school_can_be_opened?) { true }
-    let(:eligibility) { instance_double(GIAS::Reconciliation::Eligibility) }
+    let(:gias_school_can_be_split?) { false }
+    let(:eligibility) do
+      instance_double(
+        GIAS::Reconciliation::Eligibility,
+        can_be_opened?: gias_school_can_be_opened?,
+        can_be_split?: gias_school_can_be_split?
+      )
+    end
 
     before do
       allow(GIAS::Reconciliation::Eligibility).to receive(:new).with(gias_school).and_return(eligibility)
-      allow(eligibility).to receive(:can_be_opened?).and_return(gias_school_can_be_opened?)
     end
 
     it { is_expected.to be_truthy }
@@ -37,6 +43,24 @@ RSpec.describe GIAS::Reconciliation::Open do
         happened_at: Date.current,
         author: an_instance_of(Events::SystemAuthor)
       ).once
+    end
+
+    context "when the school can be split" do
+      let(:gias_school_can_be_split?) { true }
+      let(:gias_school_can_be_opened?) { false }
+
+      it { is_expected.to be_truthy }
+
+      it "creates a school" do
+        expect { service }.to change(School, :count).by(1)
+      end
+
+      it "associates the school with the GIAS school" do
+        service
+
+        gias_school.reload
+        expect(gias_school.school).to be_present
+      end
     end
 
     context "when GIAS provides an opening date" do
