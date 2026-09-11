@@ -6,7 +6,7 @@ class Admin::DataFixes::Processor
       return if error.present?
 
       {
-        record_identifier: "#{target_object.model_name}(##{target_object.id})",
+        gid: target_object.to_global_id.to_s,
         action: data_change[:action],
         changes: target_object.saved_changes
       }

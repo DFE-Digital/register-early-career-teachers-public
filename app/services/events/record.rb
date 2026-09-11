@@ -1247,6 +1247,12 @@ module Events
       new(event_type:, author:, user:, heading:, modifications:, happened_at:).record_event!
     end
 
+    def self.record_admin_data_fix_event!(author:, body:, zendesk_ticket_id:, modifications:, metadata:, happened_at: Time.zone.now)
+      event_type = :admin_data_fix
+      heading = "Admin data fix: #{metadata[:gid]} (#{metadata[:action]})"
+      new(event_type:, author:, heading:, body:, zendesk_ticket_id:, modifications:, metadata:, happened_at:).record_event!
+    end
+
     # Declarations events
 
     def self.record_declaration_created_event!(author:, teacher:, lead_provider:, declaration:)
