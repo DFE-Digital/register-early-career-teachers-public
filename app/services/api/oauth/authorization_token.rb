@@ -27,7 +27,7 @@ module API
 
           Events::Record.record_api_oauth_authorization_code_exchanged(author:, authorization:)
 
-          return [token, authorization.token_expires_at]
+          return [token, authorization.seconds_to_token_expiration]
         end
       end
 

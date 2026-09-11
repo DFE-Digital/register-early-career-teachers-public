@@ -14,8 +14,6 @@ module API::OAuth::Authorization::ExchangesCodeForToken
     token
   end
 
-private
-
   def code_exchangable?
     code_exchanged_at.blank? && !code_expired?
   end

@@ -7,8 +7,8 @@ module API
         service = API::OAuth::AuthorizationToken.new(client: current_client, **authorization_token_params)
 
         if service.valid?
-          token, token_expires_at = service.create
-          render json: serializer.render({ access_token: token, token_expires_at:, }), status: :created
+          token, expires_in = service.create
+          render json: serializer.render({ access_token: token, expires_in: }), status: :created
         else
           render json: error_message(service).to_json, status: :bad_request
         end
