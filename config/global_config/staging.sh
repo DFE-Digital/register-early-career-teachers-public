@@ -5,4 +5,4 @@ CONFIG_SHORT=st
 ENVIRONMENT=staging
 KV_PURGE_PROTECTION=false
 NAMESPACE=cpd-development
-TERRAFORM_MODULES_TAG=testing
+TERRAFORM_MODULES_TAG=2973-disable-postgres-connection-throttling
