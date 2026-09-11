@@ -30,16 +30,14 @@ module API::MentorshipPeriods
 
     def mentor_training_with_lead_provider?
       mentorship_period.mentor.training_periods.any? do
-        it.started_on.past? &&
-          (it.unfinished? || it.finished_on.future?) &&
+        (it.unfinished? || it.finished_on.future?) &&
           it.lead_provider&.id == lead_provider_id
       end
     end
 
     def mentor_training_elsewhere?
       mentorship_period.mentor.training_periods.any? do
-        it.started_on.past? &&
-          (it.unfinished? || it.finished_on.future?) &&
+        (it.unfinished? || it.finished_on.future?) &&
           it.lead_provider&.id != lead_provider_id
       end
     end
