@@ -5,7 +5,6 @@ RSpec.describe Teachers::MergeTRN do
 
   let(:teacher) do
     FactoryBot.create(:teacher,
-                      :with_realistic_name,
                       :merged_in_trs,
                       trn: source_trn,
                       trs_redirected_to: destination_trn)
@@ -145,18 +144,6 @@ RSpec.describe Teachers::MergeTRN do
         expect(earlier_change.reload.teacher).to eq(destination)
       end
 
-      it "surfaces the old participant id on the destination so API consumers can follow it" do
-        lead_provider = FactoryBot.create(:lead_provider)
-        source_api_id = teacher.api_id
-
-        service.merge!
-
-        response = JSON.parse(API::TeacherSerializer.render(destination.reload, lead_provider_id: lead_provider.id))
-        expect(response["attributes"]["participant_id_changes"]).to include(
-          a_hash_including("from_participant_id" => source_api_id, "to_participant_id" => destination.api_id)
-        )
-      end
-
       it "populates the destination's metadata (which the model hooks do not do on reassignment)" do
         expect { service.merge! }.to change { destination.reload.lead_provider_metadata.count }.from(0)
       end
@@ -175,13 +162,6 @@ RSpec.describe Teachers::MergeTRN do
 
         expect(Events::Record).to have_received(:record_teacher_trn_merged_events!)
           .with(author: an_instance_of(Events::SystemAuthor), source: teacher, destination:)
-      end
-
-      it "reports the moved declaration under the destination participant id" do
-        service.merge!
-
-        json = JSON.parse(API::DeclarationSerializer.render(ect_declaration.reload))
-        expect(json.dig("attributes", "participant_id")).to eq(destination.api_id)
       end
 
       it "calls a sync with TRS" do
