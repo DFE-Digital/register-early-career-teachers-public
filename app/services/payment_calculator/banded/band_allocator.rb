@@ -31,6 +31,17 @@ module PaymentCalculator
       @band_allocations_by_declaration_type ||= build_band_allocations_by_declaration_type
     end
 
+    # Billable declarations left over once every band is full.
+    def unallocated_billable_count
+      declaration_types.sum do |declaration_type|
+        allocated = band_allocations_by_declaration_type
+          .select { it.declaration_type == declaration_type }
+          .sum { it.previous_billable_count + it.billable_count }
+
+        previous_billable_count(declaration_type) + current_billable_count(declaration_type) - allocated
+      end
+    end
+
   private
 
     def declaration_types
@@ -106,7 +117,8 @@ module PaymentCalculator
     end
 
     def previous_billable_count(declaration_type)
-      previous_billable_declarations.where(declaration_type:).count
+      @previous_billable_counts ||= {}
+      @previous_billable_counts[declaration_type] ||= previous_billable_declarations.where(declaration_type:).count
     end
 
     def previous_refundable_count(declaration_type)
@@ -114,7 +126,8 @@ module PaymentCalculator
     end
 
     def current_billable_count(declaration_type)
-      billable_declarations.where(declaration_type:).count
+      @current_billable_counts ||= {}
+      @current_billable_counts[declaration_type] ||= billable_declarations.where(declaration_type:).count
     end
 
     def current_refundable_count(declaration_type)
