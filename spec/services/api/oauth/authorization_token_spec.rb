@@ -24,6 +24,7 @@ RSpec.describe API::OAuth::AuthorizationToken, type: :model do
   let(:code_digest) { Digest::SHA256.hexdigest(code) }
   let(:code_expires_at) { 1.day.from_now }
   let(:code_exchanged_at) { nil }
+  let(:appropriate_body_period) { authorization.appropriate_body_period }
 
   before do
     authorization.update!(code_digest:, code_expires_at:, code_exchanged_at:)
@@ -76,10 +77,6 @@ RSpec.describe API::OAuth::AuthorizationToken, type: :model do
   describe "#create" do
     subject(:result) { instance.create }
 
-    # before do
-    #   allow(RecordEventJob).to receive(:perform_later).and_return(true)
-    # end
-
     it "marks the authorization as exchanged" do
       result
       expect(authorization.reload.code_exchanged_at).to be_within(1.second).of Time.zone.now
@@ -90,12 +87,13 @@ RSpec.describe API::OAuth::AuthorizationToken, type: :model do
         expect {
           result
         }.to have_enqueued_job(RecordEventJob).with(
-          author_name: client.name,
-          author_type: "api_oauth_client",
+          author_name: appropriate_body_period.name,
+          author_type: :appropriate_body_user,
           event_type: :api_oauth_authorization_code_exchanged,
           happened_at: Time.zone.now,
-          appropriate_body_period: authorization.appropriate_body_period,
-          heading: "Authorization code exchanged by client '#{client.name}' for '#{authorization.appropriate_body_period.name}'"
+          appropriate_body_period:,
+          appropriate_body_period_id: appropriate_body_period.id,
+          heading: "Authorization code exchanged by client '#{client.name}' for '#{appropriate_body_period.name}'"
         )
       end
     end
