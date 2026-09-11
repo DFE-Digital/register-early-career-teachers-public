@@ -39,9 +39,12 @@ RSpec.describe Sessions::Users::Builder do
       let(:school_urn) { nil }
       let(:dfe_staff) { nil }
       let(:dfe_sign_in_roles) { [] }
+      let(:migrator) { instance_double(AppropriateBodyMigrator, call: true) }
 
       before do
         allow_any_instance_of(Organisation::Access).to receive(:roles).and_return(dfe_sign_in_roles)
+        FactoryBot.create(:school) # A school is required to exists for the AB migrator to run.
+        allow(AppropriateBodyMigrator).to receive(:new).with(a_hash_including("id" => organisation_id)) { migrator }
       end
 
       context "when the AppropriateBodyPeriod exists and the user has the AppropriateBodyUser role" do
@@ -52,6 +55,11 @@ RSpec.describe Sessions::Users::Builder do
         it "returns an appropriate body user session" do
           expect(session_user).to be_a(Sessions::Users::AppropriateBodyUser)
         end
+
+        it "migrates appropriate bodies" do
+          session_user
+          expect(migrator).to have_received(:call)
+        end
       end
 
       context "when the School exists and the user has the SchoolUser role" do
@@ -61,6 +69,11 @@ RSpec.describe Sessions::Users::Builder do
 
         it "returns a school user session" do
           expect(session_user).to be_a(Sessions::Users::SchoolUser)
+        end
+
+        it "does not migrate appropriate bodies" do
+          session_user
+          expect(migrator).not_to have_received(:call)
         end
       end
 
@@ -75,6 +88,11 @@ RSpec.describe Sessions::Users::Builder do
           expect(session_user.school).to be_nil
           expect(session_user.gias_school).to eq(gias_school)
         end
+
+        it "does not migrate appropriate bodies" do
+          session_user
+          expect(migrator).not_to have_received(:call)
+        end
       end
 
       context "when both the AppropriateBodyPeriod and School exist and the user has both roles" do
@@ -85,14 +103,20 @@ RSpec.describe Sessions::Users::Builder do
         it "defaults to a school user session" do
           expect(session_user).to be_a(Sessions::Users::SchoolUser)
         end
+
+        it "migrates appropriate bodies" do
+          session_user
+          expect(migrator).to have_received(:call)
+        end
       end
 
       context "when neither the AppropriateBody or School exist" do
         let(:organisation_id) { Faker::Internet.uuid }
         let(:organisation_urn) { nil }
 
-        it do
+        it "raises an error and does not migrate appropriate bodies" do
           expect { session_user }.to raise_error(described_class::UnknownOrganisation, /#{organisation_id}/)
+          expect(migrator).not_to have_received(:call)
         end
       end
     end

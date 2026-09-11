@@ -255,7 +255,8 @@ RSpec.describe "Sessions", type: :request do
                                    first_name:,
                                    last_name:,
                                    organisation_id: dfe_sign_in_organisation_id,
-                                   organisation_urn: school_urn)
+                                   organisation_urn: school_urn,
+                                   organisation_name: school.name)
       end
 
       after do
