@@ -856,9 +856,7 @@ describe TrainingPeriod do
           training_period.school_partnership = new_school_partnership
 
           expect(training_period).not_to be_valid
-          expect(training_period.errors[:base]).to include(
-            "Cannot change the lead provider for a training period with billable declarations"
-          )
+          expect(training_period.errors[:base]).to include("Cannot change the lead provider for a training period with billable declarations")
         end
 
         it "does not allow the expression of interest to change" do
@@ -868,9 +866,7 @@ describe TrainingPeriod do
           )
 
           expect(training_period).not_to be_valid
-          expect(training_period.errors[:base]).to include(
-            "Cannot change the lead provider for a training period with billable declarations"
-          )
+          expect(training_period.errors[:base]).to include("Cannot change the lead provider for a training period with billable declarations")
         end
 
         it "allows the schedule to change" do
@@ -894,6 +890,15 @@ describe TrainingPeriod do
           )
 
           training_period.school_partnership = new_school_partnership
+
+          expect(training_period).to be_valid
+        end
+
+        it "allows the expression of interest to change" do
+          training_period.expression_of_interest = FactoryBot.create(
+            :framework_agreement,
+            contract_period:
+          )
 
           expect(training_period).to be_valid
         end

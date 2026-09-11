@@ -205,10 +205,7 @@ private
       will_save_change_to_expression_of_interest_id?
     return unless declarations.billable.exists?
 
-    errors.add(
-      :base,
-      "Cannot change the lead provider for a training period with billable declarations"
-    )
+    errors.add(:base, "Cannot change the lead provider for a training period with billable declarations")
   end
 
   def destroy_non_billable_declarations
