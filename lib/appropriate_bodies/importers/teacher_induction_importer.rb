@@ -11,7 +11,7 @@ module AppropriateBodies::Importers
   # This class imports teachers and their induction periods from DQT export CSVs.
   # It also creates events for the start and end of each induction period, and any extensions.
   class TeacherInductionImporter
-    BATCH_SIZE = 10_000
+    BATCH_SIZE = 1_000
 
     IMPORT_INFO_LOG = "tmp/dqt_import_info.log"
 
