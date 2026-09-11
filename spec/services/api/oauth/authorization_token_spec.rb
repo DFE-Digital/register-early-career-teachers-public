@@ -99,6 +99,7 @@ RSpec.describe API::OAuth::AuthorizationToken, type: :model do
     end
 
     it "the queued job adds an event record when performed" do
+      old_perform_value = ActiveJob::Base.queue_adapter.perform_enqueued_jobs
       ActiveJob::Base.queue_adapter.perform_enqueued_jobs = true
 
       expect {
@@ -106,12 +107,14 @@ RSpec.describe API::OAuth::AuthorizationToken, type: :model do
       }.to change(Event, :count).by(1)
 
       expect(Event.first.event_type).to eq "api_oauth_authorization_code_exchanged"
+
+      ActiveJob::Base.queue_adapter.perform_enqueued_jobs = old_perform_value
     end
 
     it "creates and returns the token information" do
-      token, token_expires_at = result
+      token, seconds_to_token_expiration = result
       expect(Digest::SHA256.hexdigest(token)).to eq authorization.reload.token_digest
-      expect(token_expires_at).to be_within(1.second).of(365.days.from_now)
+      expect(seconds_to_token_expiration).to be_within(1.second).of(365.days.to_i)
     end
   end
 end
