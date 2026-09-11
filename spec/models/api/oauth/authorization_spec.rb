@@ -113,5 +113,16 @@ describe API::OAuth::Authorization do
         expect(authorization.seconds_to_token_expiration).to be_nil
       end
     end
+
+    context "when the token has expired" do
+      # It should never happen in a real interaction but we could call this method on an existing
+      # authorization so we should return something sensible.  The OAuth spec doesn't specify this.
+      it "returns zero" do
+        authorization.assign_token
+        authorization.token_expires_at = 1.day.ago
+
+        expect(authorization.seconds_to_token_expiration).to be_zero
+      end
+    end
   end
 end

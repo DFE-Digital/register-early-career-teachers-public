@@ -4,14 +4,10 @@ module API::OAuth::Authorization::ExchangesCodeForToken
   class CodeNotExchangedError < StandardError; end
 
   def exchange_code_for_token!(code_verifier:)
-    if code_exchangable? && code_challenge_verified?(code_verifier:)
-      assign_token
-      update!(code_exchanged_at: Time.zone.now)
-    else
-      raise CodeNotExchangedError, "Code cannot be exchanged or is not verified"
-    end
+    raise(CodeNotExchangedError, "Code cannot be exchanged or is not verified") unless code_exchangable? &&
+      code_challenge_verified?(code_verifier:)
 
-    token
+    assign_token.tap { update!(code_exchanged_at: Time.zone.now) }
   end
 
   def code_exchangable?

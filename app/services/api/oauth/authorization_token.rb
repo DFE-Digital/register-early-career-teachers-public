@@ -17,7 +17,7 @@ module API
       validate :code_verifier_is_valid
       validate :redirect_uri_matches_authorization
 
-      delegate :token, to: :authorization
+      delegate :code_exchangable?, to: :authorization, prefix: true, allow_nil: true
 
       def create
         return unless valid?
@@ -27,7 +27,7 @@ module API
 
           Events::Record.record_api_oauth_authorization_code_exchanged(author:, authorization:)
 
-          return [token, authorization.seconds_to_token_expiration]
+          authorization
         end
       end
 
@@ -61,18 +61,12 @@ module API
           ActiveSupport::SecurityUtils.secure_compare(redirect_uri, authorization.redirect_uri)
       end
 
-      def authorization_code_exchangable?
-        authorization.present? && authorization.code_exchangable?
-      end
-
       def authorization
-        @authorization ||= client&.authorization_for!(code:)
-      rescue ActiveRecord::RecordNotFound
-        nil
+        @authorization ||= client&.authorization_for(code:)
       end
 
       def author
-        @author ||= Events::AppropriateBodyAuthor.new(appropriate_body_period: authorization.appropriate_body_period)
+        @author ||= Events::OAuthClientAuthor.new(client:)
       end
     end
   end

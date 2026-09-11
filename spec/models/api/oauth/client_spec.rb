@@ -129,7 +129,7 @@ describe API::OAuth::Client do
     end
   end
 
-  describe "authorization_for!" do
+  describe "authorization_for" do
     let(:client) { authorization_1.client }
     let!(:authorization_1) { FactoryBot.create(:api_oauth_authorization) }
     let!(:authorization_2) { FactoryBot.create(:api_oauth_authorization, client:) }
@@ -142,14 +142,12 @@ describe API::OAuth::Client do
     end
 
     it "returns the authorization record matching the code" do
-      expect(client.authorization_for!(code:)).to eq authorization_1
+      expect(client.authorization_for(code:)).to eq authorization_1
     end
 
     context "when the code does not match any authorizations" do
-      it "raises an error" do
-        expect {
-          client.authorization_for!(code: "wrong-code")
-        }.to raise_error(ActiveRecord::RecordNotFound)
+      it "returns nil" do
+        expect(client.authorization_for(code: "wrong-code")).to be_nil
       end
     end
   end

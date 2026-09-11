@@ -30,9 +30,9 @@ class API::OAuth::Client < ApplicationRecord
     ActiveSupport::SecurityUtils.secure_compare(client_secret_digest, secret_digest)
   end
 
-  def authorization_for!(code:)
+  def authorization_for(code:)
     code_digest = Digest::SHA256.hexdigest(code)
-    authorizations.find_by!(code_digest:)
+    authorizations.find_by(code_digest:)
   end
 
 private

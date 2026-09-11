@@ -25,7 +25,8 @@ module API::OAuth::Authorization::ExpirableCredentials
   def seconds_to_token_expiration
     return if token_expires_at.blank?
 
-    (token_expires_at - Time.zone.now).round
+    seconds = (token_expires_at - Time.zone.now).round
+    seconds.negative? ? 0 : seconds
   end
 
 private

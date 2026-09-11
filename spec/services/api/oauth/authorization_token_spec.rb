@@ -87,12 +87,11 @@ RSpec.describe API::OAuth::AuthorizationToken, type: :model do
         expect {
           result
         }.to have_enqueued_job(RecordEventJob).with(
-          author_name: appropriate_body_period.name,
-          author_type: :appropriate_body_user,
+          author_name: authorization.client.name,
+          author_type: :oauth_client,
           event_type: :api_oauth_authorization_code_exchanged,
           happened_at: Time.zone.now,
           appropriate_body_period:,
-          appropriate_body_period_id: appropriate_body_period.id,
           heading: "Authorization code exchanged by client '#{client.name}' for '#{appropriate_body_period.name}'"
         )
       end
@@ -111,10 +110,10 @@ RSpec.describe API::OAuth::AuthorizationToken, type: :model do
       ActiveJob::Base.queue_adapter.perform_enqueued_jobs = old_perform_value
     end
 
-    it "creates and returns the token information" do
-      token, seconds_to_token_expiration = result
-      expect(Digest::SHA256.hexdigest(token)).to eq authorization.reload.token_digest
-      expect(seconds_to_token_expiration).to be_within(1.second).of(365.days.to_i)
+    it "creates a token and returns the relevant authorization" do
+      authorization = result
+      expect(Digest::SHA256.hexdigest(authorization.token)).to eq authorization.reload.token_digest
+      expect(authorization.seconds_to_token_expiration).to be_within(1.second).of(365.days.to_i)
     end
   end
 end
