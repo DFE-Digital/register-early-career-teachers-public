@@ -22,6 +22,13 @@ module API::OAuth::Authorization::ExpirableCredentials
   def code_expired? = code_expires_at&.past?
   def token_expired? = token_expires_at&.past?
 
+  def seconds_to_token_expiration
+    return if token_expires_at.blank?
+
+    seconds = (token_expires_at - Time.zone.now).round
+    seconds.negative? ? 0 : seconds
+  end
+
 private
 
   def assign_code

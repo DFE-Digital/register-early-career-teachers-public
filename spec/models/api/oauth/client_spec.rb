@@ -104,6 +104,54 @@ describe API::OAuth::Client do
     end
   end
 
+  describe "#secret_matches?" do
+    subject(:client) { described_class.new }
+
+    let(:client_secret) do
+      client.rotate_client_secret
+      client.client_secret
+    end
+
+    context "when the secret matches the client secret" do
+      let(:secret) { client_secret }
+
+      it "returns true" do
+        expect(client.secret_matches?(secret:)).to be true
+      end
+    end
+
+    context "when the secret does not match the client's secret" do
+      let(:secret) { "haxx0rz" }
+
+      it "returns false" do
+        expect(client.secret_matches?(secret:)).to be false
+      end
+    end
+  end
+
+  describe "authorization_for" do
+    let(:client) { authorization_1.client }
+    let!(:authorization_1) { FactoryBot.create(:api_oauth_authorization) }
+    let!(:authorization_2) { FactoryBot.create(:api_oauth_authorization, client:) }
+
+    let(:code) { "secret-code" }
+    let(:code_digest) { Digest::SHA256.hexdigest(code) }
+
+    before do
+      authorization_1.update!(code_digest:)
+    end
+
+    it "returns the authorization record matching the code" do
+      expect(client.authorization_for(code:)).to eq authorization_1
+    end
+
+    context "when the code does not match any authorizations" do
+      it "returns nil" do
+        expect(client.authorization_for(code: "wrong-code")).to be_nil
+      end
+    end
+  end
+
   context "when there is unexpected whitespace" do
     subject(:client) do
       described_class.new(
