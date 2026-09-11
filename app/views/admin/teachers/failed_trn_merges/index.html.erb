@@ -1,0 +1,35 @@
+<% page_data(title: "Failed merges") %>
+
+<p class="govuk-body"> Automated merge of teacher records with 2 TRNs has failed for the following. These need to be resolved manually.</p>
+
+<%= govuk_table do |table|
+  table.with_head do |head|
+    head.with_row do |row|
+      row.with_cell(text: "TRN 1")
+      row.with_cell(text: "TRN 2")
+      row.with_cell(text: "Date and time failed")
+    end
+  end
+
+  table.with_body do |body|
+    @teachers.each do |teacher|
+      body.with_row do |row|
+        row.with_cell do
+          govuk_link_to teacher.trn, admin_teacher_path(teacher)
+        end
+        row.with_cell do
+          if teacher.redirected_teacher.present?
+            govuk_link_to teacher.trs_redirected_to, admin_teacher_path(teacher.redirected_teacher)
+          else
+            teacher.trs_redirected_to
+          end
+        end
+        row.with_cell(text: teacher.updated_at.to_fs(:govuk))
+      end
+    end
+  end
+end %>
+
+<%= render Shared::PaginationSummaryComponent.new(pagy: @pagy, record_name: "teachers") %>
+
+<%= govuk_link_to("Back to teachers", admin_teachers_path) %>

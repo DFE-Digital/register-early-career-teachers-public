@@ -62,6 +62,12 @@ namespace :admin do
     end
   end
 
+  scope path: "teachers", module: :teachers do
+    resources :failed_trn_merges,
+              only: :index,
+              path: "failed-trn-merges"
+  end
+
   resources :teachers, only: %i[show index] do
     scope module: :teachers do
       resource :induction, only: %i[show]
