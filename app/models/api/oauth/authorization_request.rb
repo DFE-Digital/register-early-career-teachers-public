@@ -31,6 +31,14 @@ module API
       delegate :name, to: :client, prefix: true, allow_nil: true
 
       def client = @client ||= Client.find_by(client_id:)
+
+      def build_authorization
+        Authorization.new(
+          attributes
+            .slice("appropriate_body_period_id", "redirect_uri", "code_challenge", "code_challenge_method")
+            .merge(client:)
+        )
+      end
     end
   end
 end

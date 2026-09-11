@@ -21,12 +21,14 @@ describe API::OAuth::Authorization do
     it { is_expected.to validate_presence_of(:client) }
     it { is_expected.to validate_presence_of(:appropriate_body_period) }
     it { is_expected.to validate_presence_of(:redirect_uri) }
-    it { is_expected.to validate_presence_of(:code_digest) }
-    it { is_expected.to validate_uniqueness_of(:code_digest) }
     it { is_expected.to validate_presence_of(:code_challenge) }
-    it { is_expected.to validate_presence_of(:code_expires_at) }
-    it { is_expected.to validate_uniqueness_of(:token_digest).allow_nil }
     it { is_expected.not_to validate_presence_of(:token_expires_at) }
+
+    context "using a persisted record as the matcher's own insert would skip the code assignment" do
+      subject(:authorization) { FactoryBot.create(:api_oauth_authorization) }
+
+      it { is_expected.to validate_uniqueness_of(:token_digest).allow_nil }
+    end
 
     context "when a token has been issued" do
       subject(:authorization) { FactoryBot.build(:api_oauth_authorization).tap(&:assign_token) }
@@ -55,22 +57,20 @@ describe API::OAuth::Authorization do
   end
 
   context "when a code is assigned" do
-    subject(:authorization) { described_class.new }
-
-    it "returns the code, storing its digest and expiring it 10 minutes later" do
+    it "exposes the code, storing its digest and expiring it 10 minutes later" do
       freeze_time do
-        code = authorization.assign_code
+        authorization = FactoryBot.create(:api_oauth_authorization)
 
-        expect(authorization.code_digest).to eq(Digest::SHA256.hexdigest(code))
+        expect(authorization.code).to be_present
+        expect(authorization.code_digest).to eq(Digest::SHA256.hexdigest(authorization.code))
         expect(authorization.code_expires_at).to eq(10.minutes.from_now)
       end
     end
 
     context "when the code expiry has passed" do
-      before do
-        authorization.assign_code
-        travel_to(authorization.code_expires_at + 1.second)
-      end
+      subject(:authorization) { FactoryBot.create(:api_oauth_authorization) }
+
+      before { travel_to(authorization.code_expires_at + 1.second) }
 
       it { is_expected.to be_code_expired }
     end
@@ -79,11 +79,12 @@ describe API::OAuth::Authorization do
   context "when a token is assigned" do
     subject(:authorization) { described_class.new }
 
-    it "returns the token, storing its digest and expiring it 1 year later" do
+    it "exposes the token, storing its digest and expiring it 1 year later" do
       freeze_time do
-        token = authorization.assign_token
+        authorization.assign_token
 
-        expect(authorization.token_digest).to eq(Digest::SHA256.hexdigest(token))
+        expect(authorization.token).to be_present
+        expect(authorization.token_digest).to eq(Digest::SHA256.hexdigest(authorization.token))
         expect(authorization.token_expires_at).to eq(1.year.from_now)
       end
     end

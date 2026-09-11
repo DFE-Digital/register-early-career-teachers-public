@@ -1968,6 +1968,25 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe ".record_oauth_authorization_created_event!" do
+    let(:authorization) { FactoryBot.create(:api_oauth_authorization, appropriate_body_period:) }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        Events::Record.record_oauth_authorization_created_event!(author:, authorization:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          heading: "#{authorization.client.name} was authorised by Burns Slant Drilling Co.",
+          appropriate_body_period:,
+          event_type: :oauth_authorization_created,
+          happened_at: Time.zone.now,
+          metadata: { client_name: authorization.client.name, client_id: authorization.client.client_id },
+          **author_params
+        )
+      end
+    end
+  end
+
   describe ".record_statement_adjustment_added_event!" do
     let(:statement) { FactoryBot.create(:statement) }
     let(:statement_adjustment) { FactoryBot.create(:statement_adjustment, statement:) }
