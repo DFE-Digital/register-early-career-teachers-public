@@ -1,5 +1,12 @@
 ---
 :shared:
+  :invalid_records:
+    - id
+    - table_name
+    - record_id
+    - error_messages
+    - created_at
+    - updated_at
   :dfe_sign_in_organisations:
     - id
     - name

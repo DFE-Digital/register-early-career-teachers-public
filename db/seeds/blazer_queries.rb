@@ -82,6 +82,33 @@ end
     name: "Active lead provider bands",
     statement: "SELECT * FROM framework_agreement_bands ORDER BY framework_agreement_id, allocation_order",
     description: "new data model"
+  },
+  {
+    name: "Invalid teachers",
+    description: "Fails model validations",
+    statement: <<~SQL.strip
+      SELECT record_id AS teacher_id,
+             error_messages,
+             created_at
+      FROM invalid_records
+      WHERE table_name = 'teachers'
+      ORDER BY teacher_id
+    SQL
+  },
+  {
+    name: "Invalid induction periods",
+    description: "Fails model validations",
+    statement: <<~SQL.strip
+      SELECT t.id AS teacher_id,
+            record_id AS induction_period_id,
+            error_messages,
+            ir.created_at
+      FROM invalid_records ir
+      JOIN induction_periods ip ON ip.id = ir.record_id
+      JOIN teachers t ON t.id = ip.teacher_id
+      WHERE table_name = 'induction_periods'
+      ORDER BY teacher_id
+    SQL
   }
 ].each do |query|
   create_query(creator: user_manager, **query)
