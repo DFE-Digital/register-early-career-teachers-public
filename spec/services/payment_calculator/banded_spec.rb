@@ -358,6 +358,34 @@ RSpec.describe PaymentCalculator::Banded do
       it { is_expected.to be(true) }
     end
 
+    context "when statements in a previous contract period exceeded their band capacity" do
+      let(:previous_framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:) }
+      let(:previous_statement) do
+        deadline_date = Date.new(2025, 5, 1).prev_day
+        payment_date = Date.new(2025, 5, 25)
+        FactoryBot.create(
+          :statement,
+          :paid,
+          framework_agreement: previous_framework_agreement,
+          deadline_date:,
+          payment_date:,
+          year: payment_date.year,
+          month: payment_date.month
+        )
+      end
+
+      before do
+        2.times do
+          FactoryBot.create(:declaration, :paid,
+                            declaration_type: :started,
+                            training_period: FactoryBot.create(:training_period, :for_ect, :with_framework_agreement, framework_agreement: previous_framework_agreement),
+                            payment_statement: previous_statement)
+        end
+      end
+
+      it { is_expected.to be(false) }
+    end
+
     context "when the declarations exceeding the bands are filtered out by the declaration selector" do
       let(:declaration_selector) { ->(declarations) { declarations.ects } }
 
