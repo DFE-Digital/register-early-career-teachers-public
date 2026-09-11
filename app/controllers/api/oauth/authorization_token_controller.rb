@@ -22,7 +22,7 @@ module API
       def token_payload_for(authorization)
         {
           access_token: authorization.token,
-          expires_in: authorization.seconds_to_token_expiry,
+          expires_in: authorization.seconds_to_token_expiration,
           token_type: "Bearer",
         }
       end
