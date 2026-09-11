@@ -11,7 +11,7 @@ module API::MentorshipPeriods
       sort: { created_at: :desc },
       included_associations: []
     )
-      @scope = MentorshipPeriod.all
+      @scope = MentorshipPeriod.distinct
       @included_associations = included_associations
 
       where_lead_provider(lead_provider_id)
