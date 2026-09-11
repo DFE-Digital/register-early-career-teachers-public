@@ -40,7 +40,6 @@ module Schools
     end
 
     def destroy_mentorship!(mentorship_period)
-      Event.where(mentorship_period:).delete_all
       mentorship_period.destroy!
     end
 
