@@ -74,18 +74,16 @@ module ECTAtSchoolPeriods
     def handle_training_period_for_switch!
       return if @training_period.blank?
 
-      if training_not_started? || !keep_existing_training_period?
+      if training_not_started?
         @training_period.destroy!
       else
         finish_training_period!
       end
     end
 
-    def keep_existing_training_period?
+    def current_or_next_training_period_confirmed?
       @ect_at_school_period.school_led_training_programme? || @training_period.school_partnership.present?
     end
-
-    def current_or_next_training_period_confirmed? = keep_existing_training_period?
 
     def training_not_started?
       @training_period.started_on.today? || date_of_transition.future?
@@ -145,7 +143,8 @@ module ECTAtSchoolPeriods
         finished_on: @mentor_at_school_period.finished_on,
         school_partnership: earliest_matching_school_partnership,
         expression_of_interest:,
-        author: @author
+        author: @author,
+        contract_period:
       ).call
     end
 
