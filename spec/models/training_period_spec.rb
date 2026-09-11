@@ -840,6 +840,71 @@ describe TrainingPeriod do
       end
     end
 
+    describe "lead provider changes" do
+      let(:declaration) { FactoryBot.create(:declaration, :paid) }
+      let(:training_period) { declaration.training_period }
+      let(:contract_period) { training_period.schedule.contract_period }
+
+      context "when there is a billable declaration" do
+        it "does not allow the school partnership to change" do
+          new_school_partnership = make_partnership_for(
+            training_period.school,
+            contract_period,
+            lead_provider_name: "New lead provider"
+          )
+
+          training_period.school_partnership = new_school_partnership
+
+          expect(training_period).not_to be_valid
+          expect(training_period.errors[:base]).to include("Cannot change the lead provider for a training period with billable declarations")
+        end
+
+        it "does not allow the expression of interest to change" do
+          training_period.expression_of_interest = FactoryBot.create(
+            :framework_agreement,
+            contract_period:
+          )
+
+          expect(training_period).not_to be_valid
+          expect(training_period.errors[:base]).to include("Cannot change the lead provider for a training period with billable declarations")
+        end
+
+        it "allows the schedule to change" do
+          training_period.schedule = FactoryBot.create(
+            :schedule,
+            contract_period:
+          )
+
+          expect(training_period).to be_valid
+        end
+      end
+
+      context "when there are no billable declarations" do
+        let(:declaration) { FactoryBot.create(:declaration, :no_payment) }
+
+        it "allows the school partnership to change" do
+          new_school_partnership = make_partnership_for(
+            training_period.school,
+            contract_period,
+            lead_provider_name: "New lead provider"
+          )
+
+          training_period.school_partnership = new_school_partnership
+
+          expect(training_period).to be_valid
+        end
+
+        it "allows the expression of interest to change" do
+          training_period.expression_of_interest = FactoryBot.create(
+            :framework_agreement,
+            contract_period:
+          )
+
+          expect(training_period).to be_valid
+        end
+      end
+    end
+
     describe "school consistency" do
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period) }
       let(:training_period) { FactoryBot.build(:training_period, ect_at_school_period:, school_partnership:, expression_of_interest:) }

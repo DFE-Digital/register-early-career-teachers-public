@@ -132,6 +132,24 @@ module ECTAtSchoolPeriods
           expect(training_period.expression_of_interest.lead_provider)
             .to eq(lead_provider)
         end
+
+        context "when the training period has a billable declaration" do
+          before do
+            FactoryBot.create(:declaration, :paid, training_period:)
+          end
+
+          it "raises and does not change the lead provider" do
+            expect {
+              expect { change_lead_provider }
+                .to raise_error(ActiveRecord::RecordInvalid)
+            }.not_to change(TrainingPeriod, :count)
+
+            training_period.reload
+
+            expect(training_period.school_partnership).to eq(school_partnership)
+            expect(training_period.lead_provider).to eq(old_lead_provider)
+          end
+        end
       end
 
       context "when the training period starts in the future" do
@@ -151,6 +169,58 @@ module ECTAtSchoolPeriods
           expect(training_period.school_partnership).to be_nil
           expect(training_period.expression_of_interest.lead_provider)
             .to eq(lead_provider)
+        end
+
+        context "when the training period has a billable declaration" do
+          before do
+            FactoryBot.create(:declaration, :paid, training_period:)
+          end
+
+          it "raises and does not change the lead provider" do
+            expect {
+              expect { change_lead_provider }
+                .to raise_error(ActiveRecord::RecordInvalid)
+            }.not_to change(TrainingPeriod, :count)
+
+            training_period.reload
+
+            expect(training_period.school_partnership).to eq(school_partnership)
+            expect(training_period.lead_provider).to eq(old_lead_provider)
+          end
+        end
+
+        context "when the new lead provider has a school partnership and the training period has a billable declaration" do
+          let(:new_lead_provider_delivery_partnership) do
+            FactoryBot.create(
+              :lead_provider_delivery_partnership,
+              framework_agreement:
+            )
+          end
+
+          let!(:new_school_partnership) do
+            FactoryBot.create(
+              :school_partnership,
+              school: ect_at_school_period.school,
+              lead_provider_delivery_partnership: new_lead_provider_delivery_partnership
+            )
+          end
+
+          before do
+            FactoryBot.create(:declaration, :paid, training_period:)
+          end
+
+          it "raises and does not change the school partnership" do
+            expect {
+              expect { change_lead_provider }
+                .to raise_error(ActiveRecord::RecordInvalid)
+            }.not_to change(TrainingPeriod, :count)
+
+            training_period.reload
+
+            expect(training_period.school_partnership).to eq(school_partnership)
+            expect(training_period.school_partnership).not_to eq(new_school_partnership)
+            expect(training_period.lead_provider).to eq(old_lead_provider)
+          end
         end
 
         it "records a `teacher_training_lead_provider_updated` event" do
