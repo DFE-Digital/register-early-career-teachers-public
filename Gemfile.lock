@@ -472,12 +472,12 @@ GEM
       nanoc-core (~> 4.14, >= 4.14.7)
     net-http (0.9.1)
       uri (>= 0.11.1)
-    net-imap (0.6.6)
+    net-imap (0.6.7)
       date
       net-protocol
     net-pop (0.1.2)
       net-protocol
-    net-protocol (0.2.2)
+    net-protocol (0.3.0)
       timeout
     net-smtp (0.5.1)
       net-protocol
@@ -754,7 +754,7 @@ GEM
     rubypants (0.7.1)
     rubyzip (3.6.0)
     safely_block (1.0.0)
-    savon (2.17.4)
+    savon (2.17.5)
       akami (~> 1.2)
       builder (>= 2.1.2)
       gyoku (~> 1.2)
