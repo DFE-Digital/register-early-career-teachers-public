@@ -32,6 +32,7 @@ RSpec.configure do |config|
   config.include HaveStatementTable, type: :component
   config.include HaveStatementTable, type: :view
   config.include SwaggerExampleParser, type: :request
+  config.include ActiveJob::TestHelper
 
   config.use_transactional_fixtures = true
   config.infer_spec_type_from_file_location!

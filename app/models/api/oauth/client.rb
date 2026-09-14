@@ -25,6 +25,16 @@ class API::OAuth::Client < ApplicationRecord
 
   def rotate_client_secret = assign_client_secret
 
+  def secret_matches?(secret:)
+    secret_digest = Digest::SHA256.hexdigest(secret)
+    ActiveSupport::SecurityUtils.secure_compare(client_secret_digest, secret_digest)
+  end
+
+  def authorization_for(code:)
+    code_digest = Digest::SHA256.hexdigest(code)
+    authorizations.find_by(code_digest:)
+  end
+
 private
 
   def assign_client_secret
