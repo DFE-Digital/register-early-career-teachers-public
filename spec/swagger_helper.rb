@@ -1,7 +1,5 @@
 require "api/version"
 
-Dir[Rails.root.join("spec/swagger_schemas/**/*.rb")].sort.each { |f| require f }
-
 RSpec.configure do |config|
   # Specify a root folder where Swagger JSON files are generated
   # NOTE: If you're using the rswag-api to serve API descriptions, you'll need
@@ -40,95 +38,9 @@ RSpec.configure do |config|
         },
 
         schemas: {
-          # Shared
-          IDAttribute: ID_ATTRIBUTE,
-          UnauthorisedResponse: UNAUTHORISED_RESPONSE,
-          NotFoundResponse: NOT_FOUND_RESPONSE,
-          BadRequestResponse: BAD_REQUEST_RESPONSE,
-          UnprocessableContentResponse: UNPROCESSABLE_CONTENT_RESPONSE,
-          PaginationFilter: PAGINATION_FILTER,
-          SortingTimestamps: SORTING_TIMESTAMPS,
-
-          # Schools
-          School: SCHOOL,
-          SchoolsFilter: SCHOOLS_FILTER,
-          SchoolFilter: SCHOOL_FILTER,
-          SchoolResponse: SCHOOL_RESPONSE,
-          SchoolsResponse: SCHOOLS_RESPONSE,
-
-          # Statements
-          Statement: STATEMENT,
-          StatementsFilter: STATEMENTS_FILTER,
-          StatementResponse: STATEMENT_RESPONSE,
-          StatementsResponse: STATEMENTS_RESPONSE,
-
-          # Declarations
-          Declaration: DECLARATION,
-          DeclarationCreate: DECLARATION_CREATE,
-          DeclarationsFilter: DECLARATIONS_FILTER,
-          DeclarationResponse: DECLARATION_RESPONSE,
-          DeclarationsResponse: DECLARATIONS_RESPONSE,
-          DeclarationCreateRequest: DECLARATION_CREATE_REQUEST,
-          DeclarationCreateResponse: DECLARATION_CREATE_RESPONSE,
-
-          # Declaration Create - Pre-2025 (ECT and Mentor)
-          DeclarationPre2025DataRequest: DECLARATION_PRE2025_DATA_REQUEST,
-          DeclarationPre2025StartedAttributes: DECLARATION_PRE2025_STARTED_ATTRIBUTES,
-          DeclarationPre2025RetainedAttributes: DECLARATION_PRE2025_RETAINED_ATTRIBUTES,
-          DeclarationPre2025CompletedAttributes: DECLARATION_PRE2025_COMPLETED_ATTRIBUTES,
-          DeclarationPre2025ExtendedAttributes: DECLARATION_PRE2025_EXTENDED_ATTRIBUTES,
-
-          # Declaration Create - Post-2024 ECT
-          DeclarationPost2024ECTDataRequest: DECLARATION_POST2024_ECT_DATA_REQUEST,
-          DeclarationPost2024ECTStartedAttributes: DECLARATION_POST2024_ECT_STARTED_ATTRIBUTES,
-          DeclarationPost2024ECTRetainedAttributes: DECLARATION_POST2024_ECT_RETAINED_ATTRIBUTES,
-          DeclarationPost2024ECTCompletedAttributes: DECLARATION_POST2024_ECT_COMPLETED_ATTRIBUTES,
-          DeclarationPost2024ECTExtendedAttributes: DECLARATION_POST2024_ECT_EXTENDED_ATTRIBUTES,
-
-          # Declaration Create - Post-2024 Mentor
-          DeclarationPost2024MentorDataRequest: DECLARATION_POST2024_MENTOR_DATA_REQUEST,
-          DeclarationPost2024MentorStartedAttributes: DECLARATION_POST2024_MENTOR_STARTED_ATTRIBUTES,
-          DeclarationPost2024MentorCompletedAttributes: DECLARATION_POST2024_MENTOR_COMPLETED_ATTRIBUTES,
-
-          # Delivery Partners
-          DeliveryPartner: DELIVERY_PARTNER,
-          DeliveryPartnersFilter: DELIVERY_PARTNERS_FILTER,
-          DeliveryPartnerResponse: DELIVERY_PARTNER_RESPONSE,
-          DeliveryPartnersResponse: DELIVERY_PARTNERS_RESPONSE,
-
-          # Partnerships
-          Partnership: PARTNERSHIP,
-          PartnershipsFilter: PARTNERSHIPS_FILTER,
-          PartnershipResponse: PARTNERSHIP_RESPONSE,
-          PartnershipCreateRequest: PARTNERSHIP_CREATE_REQUEST,
-          PartnershipUpdateRequest: PARTNERSHIP_UPDATE_REQUEST,
-          PartnershipsResponse: PARTNERSHIPS_RESPONSE,
-
-          # Participants
-          Participant: PARTICIPANT,
-          ParticipantsFilter: PARTICIPANTS_FILTER,
-          ParticipantResponse: PARTICIPANT_RESPONSE,
-          ParticipantWithdrawRequest: PARTICIPANT_WITHDRAW_REQUEST,
-          ParticipantDeferRequest: PARTICIPANT_DEFER_REQUEST,
-          ParticipantResumeRequest: PARTICIPANT_RESUME_REQUEST,
-          ParticipantChangeScheduleRequest: PARTICIPANT_CHANGE_SCHEDULE_REQUEST,
-          ParticipantsResponse: PARTICIPANTS_RESPONSE,
-          ParticipantECFEnrolment: PARTICIPANT_ECF_ENROLMENT,
-          ParticipantIDChange: PARTICIPANT_ID_CHANGE,
-
-          # Participants Transfers
-          ParticipantTransfer: PARTICIPANT_TRANSFER,
-          ParticipantTransfersTransfer: PARTICIPANT_TRANSFERS_TRANSFER,
-          ParticipantsTransfersResponse: PARTICIPANTS_TRANSFERS_RESPONSE,
-          ParticipantsTransfersFilter: PARTICIPANTS_TRANSFERS_FILTER,
-          ParticipantTransfersResponse: PARTICIPANT_TRANSFERS_RESPONSE,
-
-          # Unfunded mentors
-          UnfundedMentor: UNFUNDED_MENTOR,
-          UnfundedMentorsFilter: UNFUNDED_MENTORS_FILTER,
-          UnfundedMentorResponse: UNFUNDED_MENTOR_RESPONSE,
-          UnfundedMentorsResponse: UNFUNDED_MENTORS_RESPONSE,
-
+          **API::DeliveryPartnerSerializer.openapi_schema_definition,
+          **API::PaginationSerializer.openapi_schema_definition,
+          **API::DeliveryPartners::FilterSerializer.openapi_schema_definition,
         }
       }
     }
