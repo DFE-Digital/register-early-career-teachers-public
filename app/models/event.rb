@@ -112,6 +112,7 @@ class Event < ApplicationRecord
     band_updated
     band_deleted
     api_oauth_authorization_code_exchanged
+    api_oauth_authorization_revoked
   ].freeze
 
   belongs_to :author, class_name: "User"
