@@ -12,7 +12,7 @@ module API::OAuth::Authorizations
 
       ActiveRecord::Base.transaction do
         authorization.revoke!
-        Events::Record.record_oauth_authorization_revoked_event!(author:, authorization:)
+        Events::Record.record_api_oauth_authorization_revoked_event!(author:, authorization:)
         authorization
       end
     end
