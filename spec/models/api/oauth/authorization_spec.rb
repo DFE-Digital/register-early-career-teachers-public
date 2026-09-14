@@ -31,7 +31,11 @@ describe API::OAuth::Authorization do
     end
 
     context "when a token has been issued" do
-      subject(:authorization) { FactoryBot.build(:api_oauth_authorization).tap(&:assign_token) }
+      subject(:authorization) do
+        FactoryBot.build(:api_oauth_authorization, code_verifier:).tap { it.exchange_code_for_token!(code_verifier:) }
+      end
+
+      let(:code_verifier) { "code_verifier_value" }
 
       it { is_expected.to validate_presence_of(:token_expires_at) }
     end
@@ -77,11 +81,13 @@ describe API::OAuth::Authorization do
   end
 
   context "when a token is assigned" do
-    subject(:authorization) { described_class.new }
+    subject(:authorization) { FactoryBot.create(:api_oauth_authorization, code_verifier:) }
+
+    let(:code_verifier) { "code_verifier_value" }
 
     it "exposes the token, storing its digest and expiring it 1 year later" do
       freeze_time do
-        authorization.assign_token
+        authorization.exchange_code_for_token!(code_verifier:)
 
         expect(authorization.token).to be_present
         expect(authorization.token_digest).to eq(Digest::SHA256.hexdigest(authorization.token))
@@ -91,7 +97,7 @@ describe API::OAuth::Authorization do
 
     context "when the token expiry has passed" do
       before do
-        authorization.assign_token
+        authorization.exchange_code_for_token!(code_verifier:)
         travel_to(authorization.token_expires_at + 1.second)
       end
 
@@ -100,10 +106,12 @@ describe API::OAuth::Authorization do
   end
 
   describe "#seconds_to_token_expiration" do
-    subject(:authorization) { FactoryBot.build(:api_oauth_authorization) }
+    subject(:authorization) { FactoryBot.build(:api_oauth_authorization, code_verifier:) }
+
+    let(:code_verifier) { "code_verifier_value" }
 
     it "returns the number of seconds until the token expires" do
-      authorization.assign_token
+      authorization.exchange_code_for_token!(code_verifier:)
       authorization.token_expires_at = 1.day.from_now
       expect(authorization.seconds_to_token_expiration).to be_within(1.second).of(1.day.to_i)
     end
@@ -118,7 +126,7 @@ describe API::OAuth::Authorization do
       # It should never happen in a real interaction but we could call this method on an existing
       # authorization so we should return something sensible.  The OAuth spec doesn't specify this.
       it "returns zero" do
-        authorization.assign_token
+        authorization.exchange_code_for_token!(code_verifier:)
         authorization.token_expires_at = 1.day.ago
 
         expect(authorization.seconds_to_token_expiration).to be_zero

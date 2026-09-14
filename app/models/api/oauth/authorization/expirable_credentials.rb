@@ -17,10 +17,6 @@ module API::OAuth::Authorization::ExpirableCredentials
     validates :token_expires_at, presence: true, if: :token_digest
   end
 
-  def assign_token
-    @token, self.token_digest, self.token_expires_at = new_expirable_secret_with_digest(TOKEN_EXPIRES_IN)
-  end
-
   def code_expired? = code_expires_at&.past?
   def token_expired? = token_expires_at&.past?
 
@@ -51,6 +47,10 @@ module API::OAuth::Authorization::ExpirableCredentials
   end
 
 private
+
+  def assign_token
+    @token, self.token_digest, self.token_expires_at = new_expirable_secret_with_digest(TOKEN_EXPIRES_IN)
+  end
 
   def assign_code
     @code, self.code_digest, self.code_expires_at = new_expirable_secret_with_digest(CODE_EXPIRES_IN)
