@@ -74,8 +74,8 @@ RSpec.describe API::OAuth::AuthorizationToken, type: :model do
     end
   end
 
-  describe "#create" do
-    subject(:result) { instance.create }
+  describe "#exchange_code_for_token" do
+    subject(:result) { instance.exchange_code_for_token }
 
     it "marks the authorization as exchanged" do
       result

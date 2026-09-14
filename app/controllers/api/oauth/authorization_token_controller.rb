@@ -6,7 +6,7 @@ module API
       def create
         service = API::OAuth::AuthorizationToken.new(client: current_client, **authorization_token_params)
 
-        if service.valid? && (authorization = service.create) # rubocop:disable Rails/SaveBang
+        if service.valid? && (authorization = service.exchange_code_for_token)
           render json: token_payload_for(authorization).to_json, status: :created
         else
           render json: error_message(service).to_json, status: :bad_request

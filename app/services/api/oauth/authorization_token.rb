@@ -19,7 +19,7 @@ module API
 
       delegate :code_exchangable?, to: :authorization, prefix: true, allow_nil: true
 
-      def create
+      def exchange_code_for_token
         return unless valid?
 
         ActiveRecord::Base.transaction do
