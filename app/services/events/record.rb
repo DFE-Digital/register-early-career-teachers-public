@@ -1233,6 +1233,17 @@ module Events
       new(event_type:, author:, user:, heading:, modifications:, happened_at:).record_event!
     end
 
+    def self.record_dfe_user_deleted_event!(author:, user_name:, user_email:, user_role:, happened_at: Time.zone.now)
+      event_type = :dfe_user_deleted
+      heading = "User #{user_name} removed"
+      metadata = {
+        name: user_name,
+        email: user_email,
+        role: user_role,
+      }
+      new(event_type:, author:, heading:, metadata:, happened_at:).record_event!
+    end
+
     def self.record_otp_account_locked_event!(user:, modifications:, author: Events::SystemAuthor.new, happened_at: Time.zone.now)
       event_type = :otp_account_locked
       heading = "#{user.name}’s account was locked after too many failed OTP attempts"

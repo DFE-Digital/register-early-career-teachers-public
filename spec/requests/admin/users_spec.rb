@@ -69,6 +69,32 @@ RSpec.describe "Admin::Users" do
         expect(user_record.otp_failed_attempts).to eq(10)
       end
     end
+
+    it "returns unauthorised for GET /admin/users/:id/remove" do
+      user_record = FactoryBot.create(:user)
+
+      get remove_admin_user_path(user_record)
+
+      aggregate_failures do
+        expect(response).to have_http_status(:unauthorized)
+        expect(response.body).to include("You are not authorised to access this page")
+        expect(response.body).to include(error_message)
+      end
+    end
+
+    it "returns unauthorised for DELETE /admin/users/:id and does not remove the user" do
+      user_record = FactoryBot.create(:user)
+
+      expect {
+        delete admin_user_path(user_record)
+      }.not_to change(User, :count)
+
+      aggregate_failures do
+        expect(response).to have_http_status(:unauthorized)
+        expect(response.body).to include("You are not authorised to access this page")
+        expect(response.body).to include(error_message)
+      end
+    end
   end
 
   context "when signed in as a user manager" do
@@ -78,6 +104,7 @@ RSpec.describe "Admin::Users" do
       sign_in_as(:dfe_user, user:)
       allow(Events::Record).to receive(:record_dfe_user_created_event!).with(any_args).and_call_original
       allow(Events::Record).to receive(:record_dfe_user_updated_event!).with(any_args).and_call_original
+      allow(Events::Record).to receive(:record_dfe_user_deleted_event!).with(any_args).and_call_original
     end
 
     describe "GET /admin/users" do
@@ -214,6 +241,63 @@ RSpec.describe "Admin::Users" do
             expect(response).to be_bad_request
             expect(Events::Record).not_to have_received(:record_dfe_user_updated_event!)
           end
+        end
+      end
+    end
+
+    describe "GET /admin/users/:id/remove" do
+      let!(:user_record) { FactoryBot.create(:user) }
+
+      before { allow(User).to receive(:find).and_call_original }
+
+      it "finds the requested user" do
+        get remove_admin_user_path(user_record)
+
+        expect(User).to have_received(:find).with(user_record.id.to_s)
+      end
+    end
+
+    describe "DELETE /admin/users/:id" do
+      let!(:user_record) do
+        FactoryBot.create(
+          :user,
+          name: "Daphne Blake",
+          email: "daphne.blake@education.gov.uk"
+        )
+      end
+
+      it "removes the user and records an event" do
+        expect {
+          delete admin_user_path(user_record)
+        }.to change(User, :count).by(-1)
+
+        expect(Events::Record)
+          .to have_received(:record_dfe_user_deleted_event!)
+          .once
+      end
+
+      it "uses the DfEUsers service to remove the user" do
+        fake_dfe_users_object = double(Admin::DfEUsers, remove_user: true)
+
+        allow(Admin::DfEUsers)
+          .to receive(:new)
+          .and_return(fake_dfe_users_object)
+
+        delete admin_user_path(user_record)
+
+        expect(fake_dfe_users_object)
+          .to have_received(:remove_user)
+          .with(user_record.id)
+      end
+
+      it "redirects to the users page with a success message" do
+        delete admin_user_path(user_record)
+
+        aggregate_failures do
+          expect(response).to redirect_to(admin_users_path)
+          expect(flash[:notice]).to eq(
+            "Daphne Blake has been removed as a user and no longer has access to the admin console"
+          )
         end
       end
     end

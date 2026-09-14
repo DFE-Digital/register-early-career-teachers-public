@@ -2605,6 +2605,33 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe ".record_dfe_user_deleted_event!" do
+    it "queues a RecordEventJob with a snapshot of the deleted user" do
+      freeze_time do
+        Events::Record.record_dfe_user_deleted_event!(
+          author:,
+          user_name: another_dfe_user.name,
+          user_email: another_dfe_user.email,
+          user_role: another_dfe_user.role
+        )
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          hash_including(
+            heading: "User Ian Richardson removed",
+            event_type: :dfe_user_deleted,
+            happened_at: Time.zone.now,
+            metadata: {
+              name: another_dfe_user.name,
+              email: another_dfe_user.email,
+              role: another_dfe_user.role,
+            },
+            **author_params
+          )
+        )
+      end
+    end
+  end
+
   describe ".record_otp_account_locked_event!" do
     let(:author_params) { { author_type: "system" } }
 
