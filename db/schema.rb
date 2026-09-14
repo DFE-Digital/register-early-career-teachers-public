@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_07_093816) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_09_161705) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -954,6 +954,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_093816) do
     t.index ["search"], name: "index_teachers_on_search", using: :gin
     t.index ["trn"], name: "index_teachers_on_trn", unique: true
     t.index ["trs_first_name", "trs_last_name", "corrected_name"], name: "idx_on_trs_first_name_trs_last_name_corrected_name_6d0edad502", opclass: :gin_trgm_ops, using: :gin
+    t.index ["trs_redirected_to"], name: "index_teachers_on_trs_redirected_to", where: "(trs_redirected_to IS NOT NULL)"
     t.check_constraint "trnless OR trn IS NOT NULL", name: "check_trn_presence"
   end
 

@@ -27,6 +27,7 @@ class Teacher < ApplicationRecord
   enum :trs_response, TRS_RESPONSES, prefix: true
 
   # Associations
+  belongs_to :redirected_teacher, class_name: "Teacher", foreign_key: :trs_redirected_to, primary_key: :trn, optional: true
   has_many :ect_at_school_periods, inverse_of: :teacher
   has_many :mentor_at_school_periods, inverse_of: :teacher
   has_many :ect_training_periods, through: :ect_at_school_periods, source: :training_periods
