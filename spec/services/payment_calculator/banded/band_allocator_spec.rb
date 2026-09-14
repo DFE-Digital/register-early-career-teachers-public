@@ -214,4 +214,47 @@ RSpec.describe PaymentCalculator::Banded::BandAllocator do
       end
     end
   end
+
+  describe "#unallocated_billable_count" do
+    subject { allocator.unallocated_billable_count }
+
+    context "when all declarations fit within the bands" do
+      let(:current_declarations) { FactoryBot.create_list(:declaration, 6, :eligible) }
+      let(:current_billable_ids) { current_declarations.map(&:id) }
+
+      it { is_expected.to eq(0) }
+    end
+
+    context "when current billable declarations overflow the last band" do
+      let(:current_declarations) { FactoryBot.create_list(:declaration, 8, :eligible) }
+      let(:current_billable_ids) { current_declarations.map(&:id) }
+
+      it { is_expected.to eq(2) }
+    end
+
+    context "when previous billable declarations already overflow the bands" do
+      let(:previous_declarations) { FactoryBot.create_list(:declaration, 7, :eligible) }
+      let(:previous_billable_ids) { previous_declarations.map(&:id) }
+
+      it { is_expected.to eq(1) }
+    end
+
+    context "when previous and current billable declarations overflow together" do
+      let(:previous_declarations) { FactoryBot.create_list(:declaration, 5, :eligible) }
+      let(:previous_billable_ids) { previous_declarations.map(&:id) }
+
+      let(:current_declarations) { FactoryBot.create_list(:declaration, 3, :eligible) }
+      let(:current_billable_ids) { current_declarations.map(&:id) }
+
+      it { is_expected.to eq(2) }
+    end
+
+    context "when declaration types overflow independently" do
+      let(:started_billable) { FactoryBot.create_list(:declaration, 7, :eligible, declaration_type: "started") }
+      let(:completed_billable) { FactoryBot.create_list(:declaration, 8, :eligible, declaration_type: "completed") }
+      let(:current_billable_ids) { started_billable.map(&:id) + completed_billable.map(&:id) }
+
+      it { is_expected.to eq(3) }
+    end
+  end
 end

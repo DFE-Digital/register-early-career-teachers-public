@@ -1,5 +1,16 @@
-<% page_data( title: 'Early career teacher programme: financial statements', 
+<% page_data( title: 'Early career teacher programme: financial statements',
+              header: nil,
               backlink_href: backlink_with_fallback(fallback: admin_finance_statements_path)) %>
+
+<% if @statement.band_capacity_exceeded? %>
+  <%= govuk_notification_banner(title_text: "Important") do |banner| %>
+    <% banner.with_heading(text: "Band capacity exceeded") %>
+    <p class="govuk-body"><%= @statement.lead_provider_name %> has exceeded their band capacity for the <%= @statement.contract_period_year %> contract period. They will not be paid for any declarations that exceed their limit.</p>
+    <p class="govuk-body">Unpaid declarations are not shown on the statement.</p>
+  <% end %>
+<% end %>
+
+<h1 class="govuk-heading-l">Early career teacher programme: financial statements</h1>
 
 <span class="govuk-caption-l"><%= @statement.lead_provider_name %></span>
 <h2 class="govuk-heading-m"><%= @statement.period %></h2>

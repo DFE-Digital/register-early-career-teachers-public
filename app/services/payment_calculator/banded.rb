@@ -52,6 +52,10 @@ module PaymentCalculator
       filtered_voided_declarations.count
     end
 
+    def band_capacity_exceeded?
+      outputs.unpaid_declarations_count.positive?
+    end
+
   private
 
     def subtotal

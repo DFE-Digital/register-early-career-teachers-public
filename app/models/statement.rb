@@ -105,6 +105,12 @@ class Statement < ApplicationRecord
     @calculators ||= PaymentCalculator::Collection.for(self)
   end
 
+  def band_capacity_exceeded?
+    return false unless output_fee?
+
+    calculators.select(&:banded?).any?(&:band_capacity_exceeded?)
+  end
+
 private
 
   def unique_lead_provider_month_year

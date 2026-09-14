@@ -211,4 +211,28 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
       expect(rendered).to have_css("p", text: "Amount differs from the invoiced amount")
     end
   end
+
+  describe "band capacity exceeded banner" do
+    before do
+      allow(feb_statement).to receive(:band_capacity_exceeded?).and_return(band_capacity_exceeded)
+      render
+    end
+
+    context "when the lead provider has exceeded their band capacity" do
+      let(:band_capacity_exceeded) { true }
+
+      it "displays the banner" do
+        expect(rendered).to have_css(".govuk-notification-banner__heading", text: "Band capacity exceeded")
+        expect(rendered).to have_css(".govuk-notification-banner", text: "Some LP has exceeded their band capacity for the #{framework_agreement.contract_period.year} contract period")
+      end
+    end
+
+    context "when the lead provider is within their band capacity" do
+      let(:band_capacity_exceeded) { false }
+
+      it "does not display the banner" do
+        expect(rendered).not_to have_css(".govuk-notification-banner")
+      end
+    end
+  end
 end

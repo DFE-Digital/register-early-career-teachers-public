@@ -79,6 +79,13 @@ RSpec.describe PaymentCalculator::Banded::Outputs do
     end
   end
 
+  describe "#unpaid_declarations_count" do
+    it "counts the billable declarations that do not fit within the bands" do
+      # 7x billable/started declarations across 3 bands of capacity 2
+      expect(outputs.unpaid_declarations_count).to eq(1)
+    end
+  end
+
   context "with no declarations" do
     before { Declaration.delete_all }
 
@@ -86,6 +93,10 @@ RSpec.describe PaymentCalculator::Banded::Outputs do
       expect(outputs.total_billable_amount).to eq(0.0)
       expect(outputs.total_refundable_amount).to eq(0.0)
       expect(outputs.total_net_amount).to eq(0.0)
+    end
+
+    it "has no unpaid declarations" do
+      expect(outputs.unpaid_declarations_count).to eq(0)
     end
 
     it "returns declaration type outputs with zero amounts" do

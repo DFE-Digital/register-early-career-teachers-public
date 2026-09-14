@@ -403,4 +403,54 @@ describe Statement do
       end
     end
   end
+
+  describe "#band_capacity_exceeded?" do
+    subject { statement.band_capacity_exceeded? }
+
+    let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
+    let(:band) { FactoryBot.create(:framework_agreement_band, framework_agreement:, capacity: 1) }
+    let(:banded_fee_structure) do
+      FactoryBot.build(:contract_banded_fee_structure,
+                       band_terms: [FactoryBot.build(:contract_banded_fee_structure_band_term, band:)])
+    end
+    let(:contract) { FactoryBot.create(:contract, :for_ittecf_ectp, framework_agreement:, banded_fee_structure:) }
+    let(:statement) { FactoryBot.create(:statement, :payable, contract:) }
+
+    def create_declaration(role, count)
+      count.times do
+        training_period = FactoryBot.create(:training_period, role, :with_framework_agreement, framework_agreement:)
+        FactoryBot.create(:declaration, :payable, declaration_type: :started, training_period:, payment_statement: statement)
+      end
+    end
+
+    context "when there are no declarations" do
+      it { is_expected.to be(false) }
+    end
+
+    context "when the ECT declarations fit within the bands" do
+      before { create_declaration(:for_ect, 1) }
+
+      it { is_expected.to be(false) }
+    end
+
+    context "when the ECT declarations exceed the bands" do
+      before { create_declaration(:for_ect, 2) }
+
+      it { is_expected.to be(true) }
+    end
+
+    context "when the statement is a service fee statement" do
+      let(:statement) { FactoryBot.create(:statement, :payable, :service_fee, contract:) }
+
+      before { create_declaration(:for_ect, 2) }
+
+      it { is_expected.to be(false) }
+    end
+
+    context "when only mentor declarations exceed the band capacity" do
+      before { create_declaration(:for_mentor, 2) }
+
+      it { is_expected.to be(false) }
+    end
+  end
 end
