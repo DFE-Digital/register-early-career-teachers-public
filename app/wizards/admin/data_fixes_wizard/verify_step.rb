@@ -35,8 +35,21 @@ module Admin::DataFixesWizard
         body: note,
         zendesk_ticket_id:,
         modifications: change.fetch(:changes),
-        metadata: change
+        metadata: change,
+        **association_attribute(change)
       )
+    end
+
+    def association_attribute(change)
+      record_from_change = GlobalID::Locator.fetch(change.fetch(:gid))
+      belongs_to_association_name = record_from_change.model_name.singular
+      if Event.reflect_on_association(belongs_to_association_name)
+        { belongs_to_association_name.to_sym => record_from_change }
+      else
+        {}
+      end
+    rescue GlobalID::Locator::Error
+      {}
     end
 
     def changes
