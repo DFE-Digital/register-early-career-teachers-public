@@ -12,6 +12,7 @@ namespace :admin do
 
   resources :users do
     member do
+      get :remove
       patch :unlock_otp_sign_in, path: "unlock-otp-sign-in"
     end
   end
