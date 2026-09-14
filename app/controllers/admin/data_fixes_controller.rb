@@ -10,8 +10,7 @@ module Admin
                   unless: -> { wizard_class.step?(@current_step) }
 
     before_action -> { @wizard.reset },
-                  if: -> { @current_step == :csv },
-                  unless: -> { wizard_class.step?(@previous_step) },
+                  if: -> { @current_step == :csv && starting_afresh? },
                   only: :new
 
     around_action :wrap_in_transaction,
@@ -32,7 +31,11 @@ module Admin
 
   private
 
-    def authorised? = current_user&.dfe_user? && current_user.product_team?
+    def authorised? = super && current_user.product_team?
+
+    def starting_afresh?
+      !wizard_class.step?(@previous_step) || @previous_step == :confirmation
+    end
 
     def set_steps
       @current_step = request.path.split("/").last.underscore.to_sym

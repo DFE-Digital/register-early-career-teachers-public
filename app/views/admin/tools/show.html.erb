@@ -1,0 +1,23 @@
+<% page_data(title: "Tools") %>
+
+<% if Rails.application.config.enable_admin_data_fixes %>
+  <%= render Admin::ToolComponent.new(name: "Data fixes", href: admin_data_fixes_csv_path) do %>
+    Fix records in bulk by entering the changes in CSV format, previewing them
+    and confirming.
+  <% end %>
+
+  <%= govuk_section_break(visible: true, size: "l") %>
+<% end %>
+
+<% if Rails.application.config.enable_blazer %>
+  <%= render Admin::ToolComponent.new(name: "Blazer", href: admin_blazer_path) do %>
+    Run SQL queries against the database and share the results.
+  <% end %>
+
+  <%= govuk_section_break(visible: true, size: "l") %>
+<% end %>
+
+<%= render Admin::ToolComponent.new(name: "Background jobs", href: admin_mission_control_jobs_path) do %>
+  Monitor queued, in progress and failed background jobs, and retry or discard
+  failed ones.
+<% end %>

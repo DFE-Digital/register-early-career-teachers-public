@@ -7,7 +7,8 @@ RSpec.describe "Product team users can paste inline CSV to fix data" do
 
   it "validates CSV and redirects to preview step" do
     given_i_am_signed_in_as_a_product_team_user
-    when_i_visit_the_admin_data_fixes_csv_page
+    when_i_open_the_tools_tab
+    and_i_choose_data_fixes
     then_i_see_the_csv_form
 
     and_i_continue
@@ -49,6 +50,10 @@ RSpec.describe "Product team users can paste inline CSV to fix data" do
     and_i_verify_the_changes
     then_i_am_taken_to_the_confirmation_step
     and_confirmed_changes_are_displayed
+
+    given_i_choose_to_fix_more_data
+    then_i_am_taken_to_the_csv_step
+    and_the_csv_form_is_empty
   end
 
 private
@@ -66,8 +71,14 @@ private
     sign_in_as_dfe_user(role: :product_team)
   end
 
-  def when_i_visit_the_admin_data_fixes_csv_page
-    page.goto("/admin/data_fixes/csv")
+  def when_i_open_the_tools_tab
+    page.goto("/admin")
+    page.get_by_role("link", name: "Tools", exact: true).click
+    expect(page).to have_path("/admin/tools")
+  end
+
+  def and_i_choose_data_fixes
+    page.get_by_role("link", name: "Data fixes", exact: true).click
   end
 
   def then_i_see_the_csv_form
@@ -210,4 +221,12 @@ private
   end
 
   alias_method :and_confirmed_changes_are_displayed, :and_proposed_processed_changes_are_displayed
+
+  def given_i_choose_to_fix_more_data
+    page.get_by_role("link", name: "Fix more data", exact: true).click
+  end
+
+  def and_the_csv_form_is_empty
+    expect(csv_input.input_value).to eq("")
+  end
 end

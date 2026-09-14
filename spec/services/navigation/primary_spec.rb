@@ -53,6 +53,13 @@ describe Navigation::Primary, type: :component do
           }
         end
 
+        let(:expected_product_team_visible_items) do
+          {
+            **expected_finance_visible_items,
+            "Tools" => "/admin/tools"
+          }
+        end
+
         context "when the user is a regular admin" do
           let(:current_user) { FactoryBot.build(:dfe_user, role: :admin) }
 
@@ -69,6 +76,12 @@ describe Navigation::Primary, type: :component do
           let(:current_user) { FactoryBot.build(:dfe_user, role: :finance) }
 
           it { is_expected.to eql(expected_finance_visible_items) }
+        end
+
+        context "when the user is a product team member" do
+          let(:current_user) { FactoryBot.build(:dfe_user, role: :product_team) }
+
+          it { is_expected.to eql(expected_product_team_visible_items) }
         end
       end
 
@@ -132,7 +145,8 @@ describe Navigation::Primary, type: :component do
                 { text: "Schools", href: "/admin/schools", active_when: "/admin/schools" },
                 { text: "Organisations", href: "/admin/organisations", active_when: "/admin/organisations" },
                 { text: "Finance", href: "/admin/finance", active_when: "/admin/finance", if: :can_see_finance? },
-                { text: "Users", href: "/admin/users", active_when: "/admin/users", if: :can_manage_users? }
+                { text: "Users", href: "/admin/users", active_when: "/admin/users", if: :can_manage_users? },
+                { text: "Tools", href: "/admin/tools", active_when: "/admin/tools", if: :can_see_tools? }
               ]
             )
           end

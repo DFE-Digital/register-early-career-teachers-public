@@ -34,6 +34,35 @@ RSpec.describe "Admin::DataFixesController" do
         include_context "sign in as product_team DfE user"
 
         it { is_expected.to have_http_status(:ok) }
+
+        context "when a CSV has already been entered" do
+          let(:csv_string) do
+            <<~ROWS
+              object_type,object_id,action,attributes
+              Teacher,1,update,"trn,345678"
+            ROWS
+          end
+
+          before { post path_for_step("csv"), params: { csv: { csv_string: } } }
+
+          it "keeps the CSV when coming back from the preview step" do
+            get path_for_step("csv"), headers: { "HTTP_REFERER" => path_for_step("preview") }
+
+            expect(response.body).to include("Teacher,1,update")
+          end
+
+          it "clears the CSV when starting again from the confirmation step" do
+            get path_for_step("csv"), headers: { "HTTP_REFERER" => path_for_step("confirmation") }
+
+            expect(response.body).not_to include("Teacher,1,update")
+          end
+
+          it "clears the CSV when arriving from outside the wizard" do
+            get path_for_step("csv"), headers: { "HTTP_REFERER" => "/admin/tools" }
+
+            expect(response.body).not_to include("Teacher,1,update")
+          end
+        end
       end
     end
 

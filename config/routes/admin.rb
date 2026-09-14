@@ -16,6 +16,7 @@ namespace :admin do
     end
   end
   resources :batches, only: %i[index], path: "bulk" # all activity
+  resource :tools, only: :show, controller: :tools
 
   constraints -> { Rails.application.config.enable_admin_data_fixes } do
     namespace :data_fixes do

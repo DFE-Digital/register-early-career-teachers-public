@@ -1,3 +1,9 @@
 <% page_data(title: "Data fix processed successfully") %>
 
 <%= govuk_list(@wizard.current_step.confirmed_changes, type: :bullet) %>
+
+<%= govuk_button_link_to("Fix more data", admin_data_fixes_csv_path) %>
+
+<p class="govuk-body">
+  <%= govuk_link_to("Return to tools", admin_tools_path) %>
+</p>
