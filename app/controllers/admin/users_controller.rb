@@ -41,6 +41,21 @@ module Admin
       end
     end
 
+    def remove
+      @user = User.find(params[:id])
+    end
+
+    def destroy
+      dfe_users = DfEUsers.new(author: current_user)
+      user = User.find(params[:id])
+      user_name = user.name
+
+      dfe_users.remove_user(user.id)
+
+      redirect_to admin_users_path,
+                  notice: "#{user_name} has been removed as a user and no longer has access to the admin console"
+    end
+
     def unlock_otp_sign_in
       user = User.find(params[:id])
 
