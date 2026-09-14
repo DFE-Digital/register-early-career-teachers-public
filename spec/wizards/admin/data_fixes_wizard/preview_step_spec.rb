@@ -46,7 +46,7 @@ RSpec.describe Admin::DataFixesWizard::PreviewStep do
       let(:fake_changes) do
         instance_double(
           Admin::DataFixes::Changes,
-          process: [{ record_identifier: "Teacher(#1)", action: "destroy" }]
+          process: [{ gid: "gid://app/teacher/1", action: "delete", changes: nil }]
         )
       end
 
@@ -56,7 +56,7 @@ RSpec.describe Admin::DataFixesWizard::PreviewStep do
         expect { save! }
           .to change { current_step.store.processed_changes }
           .from(nil)
-          .to([{ record_identifier: "Teacher(#1)", action: "destroy" }])
+          .to([{ gid: "gid://app/teacher/1", action: "delete", changes: nil }])
       end
     end
 
@@ -74,7 +74,7 @@ RSpec.describe Admin::DataFixesWizard::PreviewStep do
       context "but there were processed changes already in the store" do
         let(:store) { FactoryBot.build(:session_repository, processed_changes:) }
         let(:processed_changes) do
-          [{ record_identifier: "Teacher(#1)", action: "destroy" }]
+          [{ gid: "gid://app/teacher/1", action: "delete", changes: nil }]
         end
 
         it { is_expected.to be_falsey }
@@ -82,7 +82,7 @@ RSpec.describe Admin::DataFixesWizard::PreviewStep do
         it "clears the existing processed changes from the store" do
           expect { save! }
             .to change { current_step.store.processed_changes }
-            .from([{ record_identifier: "Teacher(#1)", action: "destroy" }])
+            .from([{ gid: "gid://app/teacher/1", action: "delete", changes: nil }])
             .to(nil)
         end
       end

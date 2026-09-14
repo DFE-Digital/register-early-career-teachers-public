@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_01_162714) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_07_093816) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -1098,8 +1098,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_01_162714) do
   add_foreign_key "statement_audit_notes", "statements"
   add_foreign_key "statements", "contracts"
   add_foreign_key "teacher_id_changes", "teachers"
-  add_foreign_key "teacher_id_changes", "teachers", column: "api_from_teacher_id", primary_key: "api_id"
-  add_foreign_key "teacher_id_changes", "teachers", column: "api_to_teacher_id", primary_key: "api_id"
   add_foreign_key "teachers", "contract_periods", column: "ect_payments_frozen_year", primary_key: "year"
   add_foreign_key "teachers", "contract_periods", column: "mentor_payments_frozen_year", primary_key: "year"
   add_foreign_key "training_periods", "ect_at_school_periods"

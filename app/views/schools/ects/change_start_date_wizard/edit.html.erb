@@ -1,0 +1,43 @@
+<% page_data(
+  title: "Change school start date for #{@wizard.teacher_full_name}",
+  error: @wizard.current_step.errors.present?,
+  backlink_href: schools_ect_path(@wizard.ect_at_school_period)
+) %>
+
+<%= form_with(
+      model: @wizard.current_step,
+      url: @wizard.current_step_path
+    ) do |form| %>
+  <%= content_for(:error_summary) do %>
+    <%= form.govuk_error_summary %>
+  <% end %>
+
+  <p class="govuk-hint">
+    For example, 27 9 2024
+  </p>
+
+  <p class="govuk-body">
+    This is the date <%= @wizard.teacher_full_name %> started as an ECT at your
+    school. Not, for example, if they previously started as a teaching
+    assistant. This can be a future date.
+  </p>
+
+  <%= form.govuk_date_field(
+        :start_date,
+        width: "two-thirds",
+        legend: {
+          text: "School start date",
+          hidden: true
+        }
+      ) %>
+
+  <%= form.govuk_submit "Continue" %>
+
+  <p class="govuk-body">
+    <%= govuk_link_to(
+          "Cancel and go back to #{@wizard.teacher_full_name}’s details",
+          schools_ect_path(@wizard.ect_at_school_period),
+          no_visited_state: true
+        ) %>
+  </p>
+<% end %>

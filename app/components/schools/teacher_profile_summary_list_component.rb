@@ -23,6 +23,12 @@ module Schools
       withdrawn? || deferred?
     end
 
+    def change_school_start_date_eligible?
+      ECTAtSchoolPeriods::ChangeStartDate::Eligibility
+        .new(ect_at_school_period: @ect)
+        .eligible?
+    end
+
     def withdrawn_or_deferred_tag
       return unless withdrawn? || deferred?
 

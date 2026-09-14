@@ -49,9 +49,6 @@ Rails.application.configure do
     appenders.add(io: $stdout, formatter: :color, level: :info)
   end
 
-  # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
-
   # GOVUK Notify
   if ENV.key?("GOVUK_NOTIFY_API_KEY")
     config.action_mailer.delivery_method = :notify

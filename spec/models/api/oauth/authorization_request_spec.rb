@@ -116,15 +116,24 @@ describe API::OAuth::AuthorizationRequest do
       authorization_request.validate
     end
 
+    it "appends the code and state to the redirect URI, keeping the existing query string" do
+      expect(authorization_request.successful_redirect_uri(code: "abc123")).to eq(
+        "https://vendor.example.com/callback" \
+        "?tenant=1" \
+        "&code=abc123" \
+        "&state=xyz"
+      )
+    end
+
     it "appends the error and state to the redirect URI, keeping the existing query string" do
-      expect(authorization_request.redirect_uri_with_params(error: :invalid_request)).to eq(
+      expect(authorization_request.unsuccessful_redirect_uri(error: :invalid_request)).to eq(
         "https://vendor.example.com/callback" \
         "?tenant=1" \
         "&error=invalid_request" \
         "&error_description=Appropriate+body+period+does+not+match+the+logged-in+Appropriate+Body" \
         "&state=xyz"
       )
-      expect(authorization_request.redirect_uri_with_params(error: :access_denied)).to eq(
+      expect(authorization_request.unsuccessful_redirect_uri(error: :access_denied)).to eq(
         "https://vendor.example.com/callback" \
         "?tenant=1" \
         "&error=access_denied" \
@@ -132,7 +141,7 @@ describe API::OAuth::AuthorizationRequest do
         "&state=xyz"
       )
       expect(
-        authorization_request.redirect_uri_with_params(
+        authorization_request.unsuccessful_redirect_uri(
           error: :access_denied, error_description: "banana"
         )
       ).to eq(
@@ -148,7 +157,12 @@ describe API::OAuth::AuthorizationRequest do
       before { authorization_request.state = nil }
 
       it "omits the state from the redirect URI" do
-        expect(authorization_request.redirect_uri_with_params(error: :access_denied)).to eq(
+        expect(authorization_request.successful_redirect_uri(code: "abc123")).to eq(
+          "https://vendor.example.com/callback" \
+          "?tenant=1" \
+          "&code=abc123"
+        )
+        expect(authorization_request.unsuccessful_redirect_uri(error: :access_denied)).to eq(
           "https://vendor.example.com/callback" \
           "?tenant=1" \
           "&error=access_denied" \

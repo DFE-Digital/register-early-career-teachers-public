@@ -99,7 +99,7 @@ RSpec.describe Admin::DataFixes::Changes do
         expect(process).to match(
           [
             {
-              record_identifier: "Teacher(##{teacher.id})",
+              gid: teacher.to_global_id.to_s,
               action: "update",
               changes: hash_including(
                 "trn" => [teacher.trn.to_s, "123456"],
@@ -107,7 +107,7 @@ RSpec.describe Admin::DataFixes::Changes do
               )
             },
             {
-              record_identifier: "ECTAtSchoolPeriod(##{ect_at_school_period.id})",
+              gid: ect_at_school_period.to_global_id.to_s,
               action: "delete",
               changes: {}
             }

@@ -1,0 +1,24 @@
+<% page_data(
+  title: "School start date updated for #{@wizard.teacher_full_name}",
+  header: false
+) %>
+
+<%= govuk_panel(
+      title_text:
+        "You’ve changed #{@wizard.teacher_full_name}’s school start date " \
+        "to #{@wizard.current_step.new_start_date.to_fs(:govuk)}"
+    ) %>
+
+<h2 class="govuk-heading-m">What happens next</h2>
+
+<p class="govuk-body">
+  We’ve updated <%= @wizard.teacher_full_name %>’s school start date.
+</p>
+
+<p class="govuk-body">
+  <%= govuk_link_to(
+        "Back to #{@wizard.teacher_full_name}’s details",
+        schools_ect_path(@wizard.ect_at_school_period),
+        no_visited_state: true
+      ) %>
+</p>

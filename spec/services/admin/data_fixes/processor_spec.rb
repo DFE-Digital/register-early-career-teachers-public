@@ -94,6 +94,23 @@ describe Admin::DataFixes::Processor do
           processor.process!(data_change:)
         }.to change(TrainingPeriod, :count).by(-1)
       end
+
+      context "and the record cannot be destroyed" do
+        let!(:declaration) do
+          FactoryBot.create(
+            :declaration,
+            :payable,
+            training_period: target_object
+          )
+        end
+
+        it "returns the error in the result" do
+          result = processor.process!(data_change:)
+
+          expect(result.success?).to be(false)
+          expect(result.error).to be_a(ActiveRecord::RecordNotDestroyed)
+        end
+      end
     end
 
     context "when the action is unknown" do

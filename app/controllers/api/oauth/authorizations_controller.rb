@@ -1,33 +1,46 @@
 module API
   module OAuth
     class AuthorizationsController < ::AppropriateBodiesController
-      def new
-        @authorization_request = AuthorizationRequest.build(authorization_request_params)
-        return render(:invalid_request, status: :bad_request) unless @authorization_request.redirectable?
+      before_action :build_authorization_request, only: :new
+      before_action :resume_authorization_request, only: %i[create destroy]
+      before_action :stop_unless_redirectable
 
+      def new
         if @authorization_request.valid?
           @authorization_request.store_in(session)
         else
           AuthorizationRequest.clear_from(session)
           redirect_to(
-            @authorization_request.redirect_uri_with_params,
+            @authorization_request.unsuccessful_redirect_uri,
             allow_other_host: true
           )
         end
       end
 
       def create
-        @authorization_request = AuthorizationRequest.from(session)
-        render json: @authorization_request
+        @authorization = Authorizations::Create.new(authorization_request: @authorization_request, author: current_user).call
+
+        if @authorization.persisted?
+          AuthorizationRequest.clear_from(session)
+          redirect_to(
+            @authorization_request.successful_redirect_uri(code: @authorization.code),
+            allow_other_host: true
+          )
+        else
+          redirect_to(
+            @authorization_request.unsuccessful_redirect_uri(
+              error: :invalid_request,
+              error_description: @authorization.error_messages_description
+            ),
+            allow_other_host: true
+          )
+        end
       end
 
       def destroy
-        @authorization_request = AuthorizationRequest.from(session)
-        return render(:invalid_request, status: :bad_request) unless @authorization_request&.redirectable?
-
         AuthorizationRequest.clear_from(session)
         redirect_to(
-          @authorization_request.redirect_uri_with_params(
+          @authorization_request.unsuccessful_redirect_uri(
             error: :access_denied, error_description: "User refused connection"
           ),
           allow_other_host: true
@@ -35,6 +48,18 @@ module API
       end
 
     private
+
+      def build_authorization_request
+        @authorization_request = AuthorizationRequest.build(authorization_request_params)
+      end
+
+      def resume_authorization_request
+        @authorization_request = AuthorizationRequest.from(session)
+      end
+
+      def stop_unless_redirectable
+        render(:invalid_request, status: :bad_request) unless @authorization_request&.redirectable?
+      end
 
       def authorization_request_params
         params.permit(

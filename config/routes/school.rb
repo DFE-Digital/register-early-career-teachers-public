@@ -32,6 +32,10 @@ namespace :schools, path: :school do
       concerns :wizardable, wizard: Schools::ECTs::ChangeWorkingPatternWizard
     end
 
+    namespace :change_start_date_wizard, path: "change-school-start-date" do
+      concerns :wizardable, wizard: Schools::ECTs::ChangeStartDateWizard
+    end
+
     namespace :change_training_programme_wizard, path: "change-training-programme" do
       concerns :wizardable, wizard: Schools::ECTs::ChangeTrainingProgrammeWizard
     end

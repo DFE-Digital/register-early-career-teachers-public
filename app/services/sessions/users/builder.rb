@@ -38,6 +38,8 @@ module Sessions
       # @return [Sessions::Users::SchoolPersona]
       def session_user
         if dfe_sign_in?
+          migrate_appropriate_bodies!
+
           return school_user if school_user?
           return appropriate_body_user if appropriate_body_user?
           return dfe_user if dfe_user? # TODO: deprecate OTP
@@ -84,8 +86,6 @@ module Sessions
         if organisation.id.present? &&
             ::AppropriateBodyPeriod.exists?(dfe_sign_in_organisation_id: organisation.id) &&
             dfe_sign_in_roles.include?("AppropriateBodyUser")
-
-          migrate_appropriate_bodies! if Rails.application.config.enable_teaching_school_hubs
           true
         else
           false
@@ -160,7 +160,11 @@ module Sessions
       #
       # Create new TSHs and NB records from existing AppropriateBody records as needed
       def migrate_appropriate_bodies!
-        AppropriateBodyMigrator.new(organisation).call unless School.count.zero?
+        return unless Rails.application.config.enable_teaching_school_hubs
+        return unless appropriate_body_user?
+        return unless School.exists?
+
+        AppropriateBodyMigrator.new(organisation).call
       end
 
       # @return [Sessions::Users::SchoolPersona]

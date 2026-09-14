@@ -1,7 +1,7 @@
 <% page_data(
     title: "Enter data fixes in CSV format",
     header: false,
-    error: @wizard.current_step.errors.present?,
+    error: @wizard.current_step.errors.any?,
     backlink_href: admin_path,
 ) %>
 

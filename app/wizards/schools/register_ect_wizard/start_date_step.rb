@@ -1,6 +1,7 @@
 module Schools
   module RegisterECTWizard
     class StartDateStep < Step
+      include Schools::StartDateStepHelpers
       attr_accessor :start_date
 
       validates :start_date, ect_start_date: true
@@ -80,37 +81,12 @@ module Schools
       end
 
       def start_date_formatted
-        @start_date_formatted ||= start_date_obj.formatted_date
-      end
-
-      def start_date_as_date
-        @start_date_as_date ||= start_date_obj.value_as_date
+        @start_date_formatted ||= start_date_input.formatted_date
       end
 
       def past_start_date?
         start_date_as_date < Date.current
       end
-
-      def start_date_contract_period
-        @start_date_contract_period ||= ContractPeriod.containing_date(start_date_as_date)
-      end
-
-      def start_date_obj
-        @start_date_obj ||= Schools::Validation::ECTStartDate.new(date_as_hash: start_date)
-      end
-
-      def start_date_boundary_validator
-        @start_date_boundary_validator ||= Schools::Validation::PeriodBoundary.new(
-          input_period: previous_period,
-          input_date: start_date_as_date
-        )
-      end
-
-      delegate :type,
-               :started_on_formatted,
-               to: :start_date_boundary_validator,
-               prefix: :invalid_period
-      delegate :earliest_valid_input_date_formatted, to: :start_date_boundary_validator
     end
   end
 end

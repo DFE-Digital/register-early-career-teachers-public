@@ -2,6 +2,7 @@ class Event < ApplicationRecord
   EVENT_TYPES = %w[
     active_lead_provider_created
     active_lead_provider_deleted
+    admin_data_fix
     bulk_upload_completed
     bulk_upload_started
     delivery_partner_created
@@ -16,6 +17,7 @@ class Event < ApplicationRecord
     induction_period_opened
     induction_period_reopened
     induction_period_updated
+    oauth_authorization_created
     otp_account_locked
     otp_account_unlocked
     lead_provider_api_token_created
@@ -38,6 +40,7 @@ class Event < ApplicationRecord
     statement_adjustment_updated
     teacher_email_address_updated
     teacher_working_pattern_updated
+    teacher_school_start_date_updated
     teacher_training_programme_updated
     teacher_training_lead_provider_updated
     teacher_fails_induction
@@ -62,6 +65,7 @@ class Event < ApplicationRecord
     teacher_finishes_training_period
     teacher_finishes_being_mentored
     teacher_finishes_mentoring
+    teacher_mentorship_period_removed
     teacher_trs_attributes_updated
     teacher_trs_deactivated
     teacher_trs_not_found

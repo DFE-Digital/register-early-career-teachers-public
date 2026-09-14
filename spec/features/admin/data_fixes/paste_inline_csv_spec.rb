@@ -40,11 +40,15 @@ RSpec.describe "Product team users can paste inline CSV to fix data" do
 
     given_i_preview_the_changes
     then_i_am_taken_to_the_verify_step
-    then_the_proposed_processed_changes_are_displayed
+    and_proposed_processed_changes_are_displayed
 
-    given_i_verify_the_changes
+    when_i_verify_the_changes
+    then_i_see_an_error("Add a note or enter the Zendesk ticket number")
+
+    given_i_enter_a_reason_for_the_changes
+    and_i_verify_the_changes
     then_i_am_taken_to_the_confirmation_step
-    and_the_confirmed_changes_are_displayed
+    and_confirmed_changes_are_displayed
   end
 
 private
@@ -174,16 +178,16 @@ private
     expect(page).to have_path("/admin/data_fixes/verify")
   end
 
-  def then_the_proposed_processed_changes_are_displayed
+  def and_proposed_processed_changes_are_displayed
     proposed_row1 = <<~TXT.squish
-      {"record_identifier" => "Teacher(##{@teacher.id})",
+      {"gid" => "#{@teacher.to_global_id}",
       "action" => "update",
       "changes" => {"trn" => ["#{@teacher.trn}", "1234567"]}
     TXT
     row1 = page.locator("li", hasText: proposed_row1)
     expect(row1).to be_visible
     proposed_row2 = <<~TXT.squish
-      {"record_identifier" => "ECTAtSchoolPeriod(##{@ect_at_school_period.id})",
+      {"gid" => "#{@ect_at_school_period.to_global_id}",
       "action" => "delete",
       "changes" => {}}
     TXT
@@ -191,13 +195,19 @@ private
     expect(row2).to be_visible
   end
 
-  def given_i_verify_the_changes
+  def when_i_verify_the_changes
     page.get_by_role("button", name: "Confirm changes", exact: true).click
+  end
+  alias_method :and_i_verify_the_changes, :when_i_verify_the_changes
+
+  def given_i_enter_a_reason_for_the_changes
+    input = page.get_by_label("Add a note to explain why you're making this change")
+    input.fill("This is a test reason")
   end
 
   def then_i_am_taken_to_the_confirmation_step
     expect(page).to have_path("/admin/data_fixes/confirmation")
   end
 
-  alias_method :and_the_confirmed_changes_are_displayed, :then_the_proposed_processed_changes_are_displayed
+  alias_method :and_confirmed_changes_are_displayed, :and_proposed_processed_changes_are_displayed
 end
