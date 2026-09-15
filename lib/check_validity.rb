@@ -3,11 +3,7 @@ class CheckValidity
 
   TABLES = %w[
     teachers
-    appropriate_body_periods
     induction_periods
-    induction_extensions
-    training_periods
-    declarations
   ].freeze
 
   def call(tables: TABLES, batch_size: 1_000)

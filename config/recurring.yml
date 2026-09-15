@@ -50,7 +50,7 @@ migration:
   check_validity:
     class: CheckValidityJob
     queue: check_validity
-    schedule: every day at 3am
+    schedule: every day at 7pm
 
 sandbox:
   clear_solid_queue_finished_jobs:
@@ -76,12 +76,12 @@ staging:
   clear_solid_queue_finished_jobs:
     command: "SolidQueue::Job.clear_finished_in_batches(sleep_between_batches: 0.3)"
     schedule: every hour at minute 12
-    
+
   refresh_all_metadata_job:
     class: RefreshAllMetadataJob
     queue: metadata
     schedule: every day at 1am
-  
+
   touch_school_partnership_for_participants_currently_training_job:
     class: TouchSchoolPartnershipForParticipantsCurrentlyTrainingJob
     queue: default
