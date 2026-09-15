@@ -316,22 +316,14 @@ RSpec.describe "Admin::Users" do
       end
 
       context "when the confirmation is not checked" do
-        let(:unconfirmed_params) do
-          {
-            admin_users_remove_user_form: {
-              confirmed: "0"
-            }
-          }
-        end
-
         it "does not remove the user" do
           expect {
-            delete admin_user_path(user_record), params: unconfirmed_params
+            delete admin_user_path(user_record)
           }.not_to change(User, :count)
         end
 
         it "returns bad request and shows the validation error" do
-          delete admin_user_path(user_record), params: unconfirmed_params
+          delete admin_user_path(user_record)
 
           aggregate_failures do
             expect(response).to have_http_status(:bad_request)
@@ -342,7 +334,7 @@ RSpec.describe "Admin::Users" do
         end
 
         it "does not record a deletion event" do
-          delete admin_user_path(user_record), params: unconfirmed_params
+          delete admin_user_path(user_record)
 
           expect(Events::Record)
             .not_to have_received(:record_dfe_user_deleted_event!)

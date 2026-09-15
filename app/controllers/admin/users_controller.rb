@@ -93,7 +93,7 @@ module Admin
     end
 
     def remove_user_params
-      params.expect(admin_users_remove_user_form: [:confirmed])
+      params.fetch(:admin_users_remove_user_form, {}).permit(:confirmed)
     end
 
     def require_user_manager!
