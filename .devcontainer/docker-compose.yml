@@ -15,7 +15,7 @@ services:
       ENCRYPTION_DETERMINISTIC_KEY: local_deterministic_key
       ENCRYPTION_DERIVATION_SALT: local_derivation_salt
   postgres:
-    image: postgres:15-alpine
+    image: postgres:18-alpine
     restart: unless-stopped
     volumes:
       - postgres-data:/var/lib/postgresql/data
