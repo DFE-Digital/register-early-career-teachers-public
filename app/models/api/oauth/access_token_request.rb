@@ -1,6 +1,6 @@
 module API
   module OAuth
-    class AuthorizationTokenRequest
+    class AccessTokenRequest
       include ActiveModel::Model
       include ActiveModel::Attributes
 

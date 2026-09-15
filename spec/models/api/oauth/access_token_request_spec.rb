@@ -1,4 +1,4 @@
-RSpec.describe API::OAuth::AuthorizationTokenRequest, type: :model do
+RSpec.describe API::OAuth::AccessTokenRequest, type: :model do
   subject(:instance) do
     described_class.new(
       client:,

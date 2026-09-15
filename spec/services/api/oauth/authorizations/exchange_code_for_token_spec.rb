@@ -1,7 +1,7 @@
 describe API::OAuth::Authorizations::ExchangeCodeForToken do
   include ActiveJob::TestHelper
 
-  subject(:service) { described_class.new(authorization_token_request:) }
+  subject(:service) { described_class.new(access_token_request:) }
 
   let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let(:client) { FactoryBot.create(:api_oauth_client) }
@@ -10,8 +10,8 @@ describe API::OAuth::Authorizations::ExchangeCodeForToken do
   let(:code_verifier) { "code-verifier" }
   let(:author) { Events::OAuthClientAuthor.new(client:) }
 
-  let(:authorization_token_request) do
-    API::OAuth::AuthorizationTokenRequest.new(
+  let(:access_token_request) do
+    API::OAuth::AccessTokenRequest.new(
       client:,
       redirect_uri: client.redirect_uris.sample,
       grant_type:,
