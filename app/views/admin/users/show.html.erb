@@ -42,5 +42,16 @@
 <% end %>
 
 <p class="govuk-body">
-  <%= govuk_button_link_to 'Edit', edit_admin_user_path(@user), visually_hidden_suffix: @user.name, secondary: true %>
+  <%= govuk_button_link_to "Edit",
+        edit_admin_user_path(@user),
+        visually_hidden_suffix: @user.name,
+        secondary: true %>
 </p>
+
+<% if current_user.user_manager? %>
+  <p class="govuk-body">
+    <%= govuk_link_to "Remove user",
+          remove_admin_user_path(@user),
+          no_visited_state: true %>
+  </p>
+<% end %>
