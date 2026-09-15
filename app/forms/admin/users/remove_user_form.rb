@@ -7,9 +7,11 @@ module Admin
       attribute :confirmed, :boolean
       attribute :user_name, :string
 
-      validates :confirmed, acceptance: {
-        message: ->(object, _) { "Confirm you want to remove #{object.user_name} as a user" }
-      }
+      validates :confirmed,
+                acceptance: {
+                  message: ->(form, _) { "Confirm you want to remove #{form.user_name} as a user" }
+                },
+                allow_nil: false
     end
   end
 end
