@@ -1,14 +1,13 @@
 module API::OAuth::Authorizations
   class Revoke
-    attr_reader :client, :token
+    attr_reader :authorization
 
-    def initialize(client:, token:)
-      @client = client
-      @token = token
+    def initialize(authorization:)
+      @authorization = authorization
     end
 
     def revoke!
-      return if token.blank? || client.blank? || authorization.blank? || authorization.revoked?
+      return if authorization.blank? || authorization.revoked?
 
       ActiveRecord::Base.transaction do
         authorization.revoke!
@@ -19,16 +18,8 @@ module API::OAuth::Authorizations
 
   private
 
-    def authorization
-      @authorization ||= client.authorizations.find_by(token_digest:)
-    end
-
-    def token_digest
-      Digest::SHA256.hexdigest(token)
-    end
-
     def author
-      @author ||= Events::OAuthClientAuthor.new(client:)
+      @author ||= Events::OAuthClientAuthor.new(client: authorization.client)
     end
   end
 end

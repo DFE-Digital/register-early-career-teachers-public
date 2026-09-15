@@ -1,5 +1,5 @@
 describe API::OAuth::Authorizations::Revoke do
-  subject(:service) { described_class.new(client:, token:) }
+  subject(:service) { described_class.new(authorization:) }
 
   let(:client) { FactoryBot.create(:api_oauth_client) }
   let!(:authorization) do
@@ -60,20 +60,6 @@ describe API::OAuth::Authorizations::Revoke do
         expect {
           service.revoke!
         }.not_to change(authorization, :revoked_at)
-      end
-    end
-
-    context "when the authorization is not found for the client" do
-      let!(:authorization_2) do
-        FactoryBot.create(:api_oauth_authorization, code_verifier: "apples").tap { it.exchange_code_for_token!(code_verifier: "apples") }
-      end
-
-      let(:token) { authorization_2.token }
-
-      it "does not change the authorization" do
-        expect {
-          service.revoke!
-        }.to not_change(authorization_2, :revoked_at).and not_change(authorization, :revoked_at)
       end
     end
   end

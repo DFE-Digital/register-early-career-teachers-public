@@ -152,6 +152,28 @@ describe API::OAuth::Client do
     end
   end
 
+  describe "authorization_for_token" do
+    let(:client) { FactoryBot.create(:api_oauth_client) }
+    let!(:authorization_1) do
+      FactoryBot.create(:api_oauth_authorization, client:, code_verifier:).tap { it.exchange_code_for_token!(code_verifier:) }
+    end
+
+    let(:code_verifier) { "secret" }
+    let(:token) { authorization_1.token }
+
+    let!(:authorization_2) { FactoryBot.create(:api_oauth_authorization, client:) }
+
+    it "returns the authorization record matching the code" do
+      expect(client.authorization_for_token(token:)).to eq authorization_1
+    end
+
+    context "when the code does not match any authorizations" do
+      it "returns nil" do
+        expect(client.authorization_for_token(token: "wrong-code")).to be_nil
+      end
+    end
+  end
+
   context "when there is unexpected whitespace" do
     subject(:client) do
       described_class.new(
