@@ -10,7 +10,7 @@ flowchart TD
 
   C -- School-led --> SL1{Already school-led?}
   SL1 -- Yes --> SLErr[Error: IncorrectTrainingProgrammeError]
-  SL1 -- No --> SL2{started_on today OR date_of_transition future OR no school_partnership?}
+  SL1 -- No --> SL2{started_on today OR date_of_transition future?}
   SL2 -- Yes --> SL3[Destroy training period]
   SL2 -- No --> SL4[Finish training period]
   SL3 --> SL5[Create school-led training period for ECT]

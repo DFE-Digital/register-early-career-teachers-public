@@ -69,11 +69,13 @@ module ECTAtSchoolPeriods
             )
           end
 
-          it "removes the existing training period" do
+          it "finishes the existing training period" do
+            freeze_time
+
             SwitchTraining.to_school_led(ect_at_school_period, author:)
 
-            expect { training_period.reload }
-              .to raise_error(ActiveRecord::RecordNotFound)
+            expect { training_period.reload }.not_to raise_error
+            expect(training_period.finished_on).to eq(Date.yesterday)
           end
 
           it "creates a new school-led training period" do
@@ -1236,6 +1238,99 @@ module ECTAtSchoolPeriods
             SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
           end
         end
+      end
+    end
+
+    describe "switching to school-led and back to provider-led" do
+      let(:previous_contract_period) { FactoryBot.create(:contract_period, :with_schedules, :previous) }
+      let!(:current_contract_period) { FactoryBot.create(:contract_period, :with_schedules, :current) }
+      let(:lead_provider) { FactoryBot.create(:lead_provider) }
+
+      let!(:previous_framework_agreement) do
+        FactoryBot.create(:framework_agreement, lead_provider:, contract_period: previous_contract_period)
+      end
+
+      let!(:current_framework_agreement) do
+        FactoryBot.create(:framework_agreement, lead_provider:, contract_period: current_contract_period)
+      end
+
+      let(:ect_at_school_period) do
+        FactoryBot.create(:ect_at_school_period, :unfinished, started_on: previous_contract_period.started_on)
+      end
+
+      let!(:training_period) do
+        FactoryBot.create(
+          :training_period,
+          :for_ect,
+          :unfinished,
+          :provider_led,
+          :with_only_expression_of_interest,
+          ect_at_school_period:,
+          expression_of_interest: previous_framework_agreement,
+          started_on: ect_at_school_period.started_on
+        )
+      end
+
+      shared_examples "preserves the contract period" do
+        it "keeps the ECT in their original contract period" do
+          SwitchTraining.to_school_led(ect_at_school_period, author:)
+          SwitchTraining.to_provider_led(ect_at_school_period.reload, lead_provider:, author:)
+
+          new_training_period = ect_at_school_period.reload.training_periods.latest_first.first
+
+          expect(new_training_period.schedule.contract_period).to eq(previous_contract_period)
+        end
+      end
+
+      context "when the training period has only an expression of interest" do
+        it_behaves_like "preserves the contract period"
+      end
+
+      context "when the training period has a confirmed school partnership" do
+        let!(:training_period) do
+          FactoryBot.create(
+            :training_period,
+            :for_ect,
+            :unfinished,
+            :provider_led,
+            :with_framework_agreement,
+            ect_at_school_period:,
+            framework_agreement: previous_framework_agreement,
+            started_on: ect_at_school_period.started_on
+          )
+        end
+
+        it_behaves_like "preserves the contract period"
+      end
+
+      context "when the ECT has since moved to another school" do
+        let(:ect_at_school_period) do
+          FactoryBot.create(:ect_at_school_period, :unfinished, started_on: 1.month.from_now.to_date)
+        end
+
+        let(:former_ect_at_school_period) do
+          FactoryBot.create(
+            :ect_at_school_period,
+            teacher: ect_at_school_period.teacher,
+            started_on: previous_contract_period.started_on,
+            finished_on: ect_at_school_period.started_on - 1.day
+          )
+        end
+
+        let!(:former_training_period) do
+          FactoryBot.create(
+            :training_period,
+            :for_ect,
+            :provider_led,
+            :with_only_expression_of_interest,
+            ect_at_school_period: former_ect_at_school_period,
+            expression_of_interest: previous_framework_agreement,
+            started_on: former_ect_at_school_period.started_on,
+            finished_on: former_ect_at_school_period.finished_on
+          )
+        end
+
+        it_behaves_like "preserves the contract period"
       end
     end
   end
