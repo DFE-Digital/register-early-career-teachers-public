@@ -1,0 +1,42 @@
+<%
+  page_data(
+    title: "Remove #{@user.name} as a user",
+    error: @remove_user.errors.any?,
+    backlink_href: admin_user_path(@user)
+  )
+%>
+
+<p class="govuk-body">
+  If you remove this user, they will lose access to the admin console immediately.
+</p>
+
+<%= form_with(
+      model: @remove_user,
+      url: admin_user_path(@user),
+      method: :delete
+    ) do |form| %>
+
+  <%= content_for(:error_summary) { form.govuk_error_summary } %>
+
+  <%= form.govuk_check_boxes_fieldset :confirmed, multiple: false, legend: nil do %>
+    <%= form.govuk_check_box(
+          :confirmed,
+          "1",
+          false,
+          link_errors: true,
+          multiple: false,
+          label: {
+            text: "I confirm I want to remove #{@user.name} as a user"
+          }
+        ) %>
+  <% end %>
+
+  <%= form.govuk_submit "Confirm", warning: true %>
+<% end %>
+
+<p class="govuk-body">
+  <%= govuk_link_to(
+        "Cancel and go back to #{@user.name}’s details",
+        admin_user_path(@user)
+      ) %>
+</p>
