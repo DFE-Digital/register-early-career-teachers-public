@@ -1,1 +1,1 @@
-FROM mcr.microsoft.com/vscode/devcontainers/base:ubuntu-24.04
+FROM ruby:4.0.6-slim
