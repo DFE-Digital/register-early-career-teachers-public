@@ -3,27 +3,19 @@ require "swagger_helper"
 RSpec.describe "Delivery partners endpoint", :with_metadata, openapi_spec: "v3/swagger.yaml", type: :request do
   include_context "with authorization for api doc request"
 
-  let(:delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:) }
-  let(:resource) { delivery_partnership.delivery_partner }
+  before { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:) }
 
-  it_behaves_like "an API index endpoint documentation",
-                  {
-                    url: "/api/v3/delivery-partners",
-                    tag: "Delivery Partners",
-                    resource_description: "Retrieve multiple delivery partners",
-                    response_description: "A list of delivery partners",
-                    response_schema_ref: "#/components/schemas/DeliveryPartnersResponse",
-                    filter_schema_ref: "#/components/schemas/DeliveryPartnersFilter",
-                    sorting_schema_ref: "#/components/schemas/SortingTimestamps",
-                  }
+  document_api(get: "/api/v3/delivery-partners") do
+    described_as "Retrieve multiple delivery partners"
+    tagged_as "Delivery Partners"
 
-  it_behaves_like "an API show endpoint documentation",
-                  {
-                    url: "/api/v3/delivery-partners/{id}",
-                    tag: "Delivery Partners",
-                    resource_description: "Retrieve a single delivery partner",
-                    response_description: "A single delivery partner",
-                    response_schema_ref: "#/components/schemas/DeliveryPartnerResponse",
-                  } do
+    with_query_parameters_serialized_using(
+      API::PaginationSerializer,
+      API::DeliveryPartners::FilterSerializer
+    )
+
+    responds_with 200, "A list of delivery partners" do
+      a_list_serialized_using API::DeliveryPartnerSerializer
+    end
   end
 end
