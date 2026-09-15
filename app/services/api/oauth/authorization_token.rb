@@ -25,7 +25,7 @@ module API
         ActiveRecord::Base.transaction do
           authorization.exchange_code_for_token!(code_verifier:)
 
-          Events::Record.record_api_oauth_authorization_code_exchanged(author:, authorization:)
+          Events::Record.record_api_oauth_authorization_code_exchanged_event!(author:, authorization:)
 
           authorization
         end

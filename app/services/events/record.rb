@@ -1530,11 +1530,26 @@ module Events
       ).record_event!
     end
 
-    def self.record_api_oauth_authorization_code_exchanged(author:, authorization:)
+    def self.record_api_oauth_authorization_code_exchanged_event!(author:, authorization:)
       event_type = :api_oauth_authorization_code_exchanged
       heading = "Authorization code exchanged by client '#{authorization.client.name}' for '#{authorization.appropriate_body_period.name}'"
       appropriate_body_period = authorization.appropriate_body_period
       happened_at = authorization.code_exchanged_at
+
+      new(
+        event_type:,
+        author:,
+        heading:,
+        appropriate_body_period:,
+        happened_at:
+      ).record_event!
+    end
+
+    def self.record_api_oauth_authorization_revoked_event!(author:, authorization:)
+      event_type = :api_oauth_authorization_revoked
+      heading = "Authorization revoked by client '#{authorization.client.name}' for '#{authorization.appropriate_body_period.name}'"
+      appropriate_body_period = authorization.appropriate_body_period
+      happened_at = authorization.revoked_at
 
       new(
         event_type:,
