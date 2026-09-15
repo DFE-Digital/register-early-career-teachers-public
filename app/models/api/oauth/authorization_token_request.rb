@@ -1,6 +1,6 @@
 module API
   module OAuth
-    class AuthorizationToken
+    class AuthorizationTokenRequest
       include ActiveModel::Model
       include ActiveModel::Attributes
 
@@ -19,16 +19,8 @@ module API
 
       delegate :code_exchangable?, to: :authorization, prefix: true, allow_nil: true
 
-      def exchange_code_for_token
-        return unless valid?
-
-        ActiveRecord::Base.transaction do
-          authorization.exchange_code_for_token!(code_verifier:)
-
-          Events::Record.record_api_oauth_authorization_code_exchanged(author:, authorization:)
-
-          authorization
-        end
+      def authorization
+        @authorization ||= client&.authorization_for(code:)
       end
 
     private
@@ -59,14 +51,6 @@ module API
 
         errors.add(:redirect_uri, "invalid_grant") unless redirect_uri.present? &&
           ActiveSupport::SecurityUtils.secure_compare(redirect_uri, authorization.redirect_uri)
-      end
-
-      def authorization
-        @authorization ||= client&.authorization_for(code:)
-      end
-
-      def author
-        @author ||= Events::OAuthClientAuthor.new(client:)
       end
     end
   end

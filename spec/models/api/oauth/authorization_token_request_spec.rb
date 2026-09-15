@@ -1,4 +1,4 @@
-RSpec.describe API::OAuth::AuthorizationToken, type: :model do
+RSpec.describe API::OAuth::AuthorizationTokenRequest, type: :model do
   subject(:instance) do
     described_class.new(
       client:,
@@ -74,41 +74,15 @@ RSpec.describe API::OAuth::AuthorizationToken, type: :model do
     end
   end
 
-  describe "#exchange_code_for_token" do
-    subject(:result) { instance.exchange_code_for_token }
+  describe "#authorization" do
+    subject { instance.authorization }
 
-    it "marks the authorization as exchanged" do
-      result
-      expect(authorization.reload.code_exchanged_at).to be_within(1.second).of Time.zone.now
-    end
+    it { is_expected.to eq(authorization) }
 
-    it "generates an event" do
-      freeze_time do
-        expect {
-          result
-        }.to have_enqueued_job(RecordEventJob).with(
-          author_name: authorization.client.name,
-          author_type: :oauth_client,
-          event_type: :api_oauth_authorization_code_exchanged,
-          happened_at: Time.zone.now,
-          appropriate_body_period:,
-          heading: "Authorization code exchanged by client '#{client.name}' for '#{appropriate_body_period.name}'"
-        )
-      end
-    end
+    context "when the authorization does not exist" do
+      let(:code_digest) { Digest::SHA256.hexdigest("different code") }
 
-    it "the queued job adds an event record when performed" do
-      expect {
-        perform_enqueued_jobs { result }
-      }.to change(Event, :count).by(1)
-
-      expect(Event.first.event_type).to eq "api_oauth_authorization_code_exchanged"
-    end
-
-    it "creates a token and returns the relevant authorization" do
-      authorization = result
-      expect(Digest::SHA256.hexdigest(authorization.token)).to eq authorization.reload.token_digest
-      expect(authorization.seconds_to_token_expiration).to be_within(1.second).of(365.days.to_i)
+      it { is_expected.to be_nil }
     end
   end
 end

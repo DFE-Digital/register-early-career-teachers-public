@@ -4,12 +4,14 @@ module API
       include API::OAuth::ClientAuthenticable
 
       def create
-        service = API::OAuth::AuthorizationToken.new(client: current_client, **authorization_token_params)
+        authorization_token_request = AuthorizationTokenRequest.new(client: current_client, **authorization_token_params)
 
-        if service.valid? && (authorization = service.exchange_code_for_token)
+        if authorization_token_request.valid?
+          authorization = Authorizations::ExchangeCodeForToken.new(authorization_token_request:).call
+
           render json: token_payload_for(authorization).to_json, status: :created
         else
-          render json: error_message(service).to_json, status: :bad_request
+          render json: error_message(authorization_token_request).to_json, status: :bad_request
         end
       end
 
