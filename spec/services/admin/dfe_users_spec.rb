@@ -46,5 +46,14 @@ RSpec.describe Admin::DfEUsers do
       expect(Event.exists?(event.id)).to be(true)
       expect(event.reload.user_id).to be_nil
     end
+
+    it "preserves events authored by the removed user" do
+      event = FactoryBot.create(:event, author_id: user.id)
+
+      remove_user
+
+      expect(Event.exists?(event.id)).to be(true)
+      expect(event.reload.author_id).to be_nil
+    end
   end
 end
