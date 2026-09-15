@@ -107,15 +107,17 @@ RSpec.describe Admin::DataFixesWizard::VerifyStep do
     end
 
     context "when the step is valid and changes are processed successfully" do
+      let!(:deleted_teacher) { FactoryBot.create(:teacher) }
+      let!(:updated_teacher) { FactoryBot.create(:teacher) }
       let(:saved_changes) do
         [
           {
-            gid: "gid://app/teacher/1",
+            gid: deleted_teacher.to_global_id.to_s,
             action: "delete",
             changes: nil
           },
           {
-            gid: "gid://app/teacher/2",
+            gid: updated_teacher.to_global_id.to_s,
             action: "update",
             changes: { "something" => %w[old_value new_value] }
           },
@@ -145,10 +147,14 @@ RSpec.describe Admin::DataFixesWizard::VerifyStep do
             zendesk_ticket_id:,
             modifications: nil,
             metadata: {
-              gid: "gid://app/teacher/1",
+              gid: deleted_teacher.to_global_id.to_s,
               action: "delete",
               changes: nil
-            }
+            },
+            # Because we're stubbing the `Changes`, the teacher record is not
+            # actually deleted, and the association can be retrieved from the
+            # gid without error and ends up in the event.
+            teacher: deleted_teacher
           )
         expect(Events::Record)
           .to have_received(:record_admin_data_fix_event!)
@@ -158,10 +164,11 @@ RSpec.describe Admin::DataFixesWizard::VerifyStep do
             zendesk_ticket_id:,
             modifications: { "something" => %w[old_value new_value] },
             metadata: {
-              gid: "gid://app/teacher/2",
+              gid: updated_teacher.to_global_id.to_s,
               action: "update",
               changes: { "something" => %w[old_value new_value] }
-            }
+            },
+            teacher: updated_teacher
           )
       end
     end

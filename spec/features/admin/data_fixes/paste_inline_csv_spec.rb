@@ -1,4 +1,6 @@
 RSpec.describe "Product team users can paste inline CSV to fix data" do
+  include ActiveJob::TestHelper
+
   before do
     freeze_time
     enable_admin_data_fixes_feature_flag
@@ -47,7 +49,7 @@ RSpec.describe "Product team users can paste inline CSV to fix data" do
     then_i_see_an_error("Add a note or enter the Zendesk ticket number")
 
     given_i_enter_a_reason_for_the_changes
-    and_i_verify_the_changes
+    perform_enqueued_jobs { and_i_verify_the_changes }
     then_i_am_taken_to_the_confirmation_step
     and_confirmed_changes_are_displayed
 
