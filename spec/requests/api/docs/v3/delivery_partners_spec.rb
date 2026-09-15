@@ -5,18 +5,17 @@ RSpec.describe "Delivery partners endpoint", :with_metadata, openapi_spec: "v3/s
 
   before { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:) }
 
-  it_behaves_like "an open API index endpoint documentation",
-                  {
-                    url: "/api/v3/delivery-partners",
-                    tag: "Delivery Partners",
-                    resource_description: "Retrieve multiple delivery partners",
-                    response_description: "A list of delivery partners",
+  document_api(get: "/api/v3/delivery-partners") do
+    described_as "Retrieve multiple delivery partners"
+    tagged_as "Delivery Partners"
 
-                    response_schema: API::DeliveryPartnerSerializer,
+    with_query_parameters_serialized_using(
+      API::PaginationSerializer,
+      API::DeliveryPartners::FilterSerializer
+    )
 
-                    parameter_schemas: [
-                      API::PaginationSerializer,
-                      API::DeliveryPartners::FilterSerializer,
-                    ],
-                  }
+    responds_with 200, "A list of delivery partners" do
+      a_list_serialized_using API::DeliveryPartnerSerializer
+    end
+  end
 end
