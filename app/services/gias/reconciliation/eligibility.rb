@@ -39,6 +39,20 @@ module GIAS::Reconciliation
         has_one_open_successor?
     end
 
+    def can_be_split?
+      open_status? &&
+        school.blank? &&
+        split_successor?
+    end
+
+    def can_be_closed_after_split?
+      closed_status? &&
+        closed_on_or_before_today? &&
+        school.present? &&
+        !school_closed_event_recorded? &&
+        school_being_split?
+    end
+
   private
 
     attr_reader :gias_school
@@ -63,6 +77,10 @@ module GIAS::Reconciliation
       gias_school.successor_links.where(link_type: GIAS::SchoolLink::SUCCESSOR).exists?
     end
 
+    def school_being_split?
+      gias_school.successor_links.where(link_type: GIAS::SchoolLink::SUCCESSOR_SPLIT).exists?
+    end
+
     def has_one_open_successor?
       successors.one? && successor.open_status?
     end
@@ -77,6 +95,10 @@ module GIAS::Reconciliation
 
     def no_predecessors?
       !gias_school.predecessors.exists?
+    end
+
+    def split_successor?
+      GIAS::SchoolLink.where(to_gias_school: gias_school, link_type: GIAS::SchoolLink::SUCCESSOR_SPLIT).exists?
     end
 
     def not_a_successor?

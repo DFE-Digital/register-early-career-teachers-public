@@ -309,4 +309,88 @@ RSpec.describe GIAS::Reconciliation::Eligibility do
       it { is_expected.to be false }
     end
   end
+
+  describe "#can_be_split?" do
+    subject { eligibility.can_be_split? }
+
+    let(:gias_school) { FactoryBot.create(:gias_school, status: "open") }
+
+    context "when the school is not a split successor" do
+      it { is_expected.to be false }
+    end
+
+    context "when the school is a split successor" do
+      let(:predecessor) { FactoryBot.create(:gias_school, :with_school) }
+
+      before do
+        FactoryBot.create(:gias_school_link, :successor_split, from_gias_school: predecessor, to_gias_school: gias_school)
+      end
+
+      it { is_expected.to be true }
+
+      context "when the school record already exists" do
+        let(:gias_school) { FactoryBot.create(:gias_school, :with_school, status: "open") }
+
+        it { is_expected.to be false }
+      end
+
+      context "when the school is proposed_to_open" do
+        let(:gias_school) { FactoryBot.create(:gias_school, status: "proposed_to_open") }
+
+        it { is_expected.to be false }
+      end
+    end
+  end
+
+  describe "#can_be_closed_after_split?" do
+    subject { eligibility.can_be_closed_after_split? }
+
+    let(:gias_school) { FactoryBot.create(:gias_school, :with_school, status: :closed, closed_on: Time.zone.today) }
+
+    context "when the school does not have a split successor" do
+      it { is_expected.to be false }
+    end
+
+    context "when the school has a split successor" do
+      let(:successor) { FactoryBot.create(:gias_school, status: "open") }
+
+      before do
+        FactoryBot.create(:gias_school_link, :successor_split, from_gias_school: gias_school, to_gias_school: successor)
+      end
+
+      it { is_expected.to be true }
+
+      context "when the school is not closed" do
+        let(:gias_school) { FactoryBot.create(:gias_school, :with_school, status: :open) }
+
+        it { is_expected.to be false }
+      end
+
+      context "when the school closes in the future" do
+        let(:gias_school) { FactoryBot.create(:gias_school, :with_school, status: :closed, closed_on: Time.zone.today + 1.day) }
+
+        it { is_expected.to be false }
+      end
+
+      context "when the school closed in the past" do
+        let(:gias_school) { FactoryBot.create(:gias_school, :with_school, status: :closed, closed_on: Time.zone.today - 1.day) }
+
+        it { is_expected.to be true }
+      end
+
+      context "when there is no associated school record" do
+        let(:gias_school) { FactoryBot.create(:gias_school, status: :closed, closed_on: Time.zone.today) }
+
+        it { is_expected.to be false }
+      end
+
+      context "when a school closure event has already been recorded" do
+        before do
+          FactoryBot.create(:event, event_type: :school_closed, school: gias_school.school)
+        end
+
+        it { is_expected.to be false }
+      end
+    end
+  end
 end

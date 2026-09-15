@@ -129,6 +129,48 @@ RSpec.describe GIAS::Reconcile, type: :service do
         end
       end
 
+      context "when a school is being split into two successors and closed" do
+        let(:urns) { [20_004, 20_006, 20_007] }
+        let!(:split_gias_school) { FactoryBot.create(:gias_school, :closed, closed_on: Date.current, urn: 20_004) }
+
+        before do
+          FactoryBot.create(:gias_school_link, :successor_split, from_gias_school: split_gias_school, to_gias_school: successor_gias_school_1)
+          FactoryBot.create(:gias_school_link, :successor_split, from_gias_school: split_gias_school, to_gias_school: successor_gias_school_2)
+
+          allow(GIAS::Reconciliation::Open).to receive(:open!).and_call_original
+          allow(GIAS::Reconciliation::Close).to receive(:close!).with(split_gias_school).and_return(true)
+        end
+
+        it "closes the split school and opens the successors" do
+          expect(GIAS::Reconciliation::Close).to receive(:close!).with(split_gias_school)
+          expect(GIAS::Reconciliation::Open).to receive(:open!).with(successor_gias_school_1)
+          expect(GIAS::Reconciliation::Open).to receive(:open!).with(successor_gias_school_2)
+
+          service
+          expect(successor_gias_school_1.reload.school).to be_present
+          expect(successor_gias_school_2.reload.school).to be_present
+        end
+      end
+
+      context "when a successor is being split off a school, which isn't being closed" do
+        let(:urns) { [20_004, 20_006] }
+        let!(:split_gias_school) { FactoryBot.create(:gias_school, :with_school, status: :open, urn: 20_004) }
+
+        before do
+          FactoryBot.create(:gias_school_link, :successor_split, from_gias_school: split_gias_school, to_gias_school: successor_gias_school_1)
+
+          allow(GIAS::Reconciliation::Open).to receive(:open!).and_call_original
+          allow(GIAS::Reconciliation::Close).to receive(:close!).and_call_original
+        end
+
+        it "opens the successor school and leaves the existing school unchanged" do
+          expect(GIAS::Reconciliation::Open).to receive(:open!).with(successor_gias_school_1)
+
+          expect { service }.not_to(change(split_gias_school, :reload))
+          expect(successor_gias_school_1.reload.school).to be_present
+        end
+      end
+
       context "when there are schools that cannot be reconciled" do
         let(:urns) { [20_001, 20_002, 20_003, 20_004, 20_005, 20_006, 20_007] }
         let(:split_gias_school) { FactoryBot.create(:gias_school, :closed, closed_on: Date.current, urn: 20_004) }
