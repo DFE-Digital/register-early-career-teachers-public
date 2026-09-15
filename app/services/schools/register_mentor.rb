@@ -48,7 +48,7 @@ module Schools
         finish_periods_at_all_schools! if mentoring_at_new_school_only?
         start_at_school!
         create_training_period! unless mentoring_at_several_schools?
-        set_eligibility_for_funding!
+        set_eligibility_for_funding! unless training_period
         record_event!
       end
 

@@ -83,12 +83,19 @@ RSpec.describe Schools::AssignExistingMentorWizard::ReviewMentorEligibilityStep 
       expect(training_period.schedule.identifier).to eq("ecf-standard-september")
     end
 
+    it "sets the mentors funding eligibility" do
+      expect { step.save! }
+        .to change { mentor_at_school_period.teacher.reload.mentor_first_became_eligible_for_training_at }
+        .from(nil).to(Time.zone.now)
+    end
+
     it "records training and mentoring events" do
       step.save!
 
       events = Event.where(teacher: [mentor_at_school_period.teacher, ect_at_school_period.teacher])
       expect(events.pluck(:event_type)).to contain_exactly(
         "teacher_schedule_assigned_to_training_period",
+        "teacher_funding_eligibility_set",
         "teacher_starts_training_period",
         "teacher_starts_mentoring",
         "teacher_starts_being_mentored"
