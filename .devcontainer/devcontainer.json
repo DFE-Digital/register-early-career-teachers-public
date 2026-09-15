@@ -1,0 +1,14 @@
+{
+  "name": "ECF 2.0",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "remoteUser": "vscode",
+  "features": {
+    "ghcr.io/devcontainers/features/node:2": {
+      "version": "22.14.0"
+    }
+  },
+  "forwardPorts": [3000, 6379],
+  "postCreateCommand": "bin/setup"
+}

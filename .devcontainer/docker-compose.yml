@@ -1,0 +1,38 @@
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+    volumes:
+      - ..:/workspaces/${localWorkspaceFolderBasename}:cached
+    command: sleep infinity
+    environment:
+      ENABLE_PERSONAS: "true"
+      ECF_DATABASE_URL: postgres://postgres:postgres@postgres:5432/ecf_development
+      ENCRYPTION_PRIMARY_KEY: local_primary_key
+      ENCRYPTION_DETERMINISTIC_KEY: local_deterministic_key
+      ENCRYPTION_DERIVATION_SALT: local_derivation_salt
+      REDIS_CACHE_URL: redis://redis:6379
+    depends_on:
+      - postgres
+      - redis
+
+  postgres:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ecf_development
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:alpine
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data
+
+volumes:
+  postgres-data:
+  redis-data:
