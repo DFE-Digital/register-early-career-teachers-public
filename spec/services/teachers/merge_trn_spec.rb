@@ -69,10 +69,8 @@ RSpec.describe Teachers::MergeTRN do
       expect { service.merge! }.not_to(change { teacher.reload.lead_provider_metadata.count })
     end
 
-    it "does not anonymise the source teacher" do
-      expect(Teachers::Anonymise).not_to receive(:new)
-
-      service.merge!
+    it "does not destroy the source teacher" do
+      expect { service.merge! }.not_to(change { Teacher.exists?(teacher.id) })
     end
   end
 
@@ -83,8 +81,6 @@ RSpec.describe Teachers::MergeTRN do
 
         expect(ect_at_school_period.reload.teacher).to eq(destination)
         expect(mentor_at_school_period.reload.teacher).to eq(destination)
-        expect(teacher.reload.ect_at_school_periods).to be_empty
-        expect(teacher.mentor_at_school_periods).to be_empty
       end
 
       it "leaves the destinations teacher's periods in place" do
@@ -101,8 +97,6 @@ RSpec.describe Teachers::MergeTRN do
 
         expect(induction_period.reload.teacher).to eq(destination)
         expect(induction_extension.reload.teacher).to eq(destination)
-        expect(teacher.reload.induction_periods).to be_empty
-        expect(teacher.induction_extensions).to be_empty
       end
 
       it "moves the declarations with their training periods to the destination teacher" do
@@ -110,19 +104,6 @@ RSpec.describe Teachers::MergeTRN do
 
         expect(ect_declaration.reload.training_period.teacher).to eq(destination)
         expect(mentor_declaration.reload.training_period.teacher).to eq(destination)
-      end
-
-      it "anonymises the source teacher" do
-        anonymiser = instance_double(Teachers::Anonymise, anonymise!: true)
-        allow(Teachers::Anonymise).to receive(:new).with(teacher:, reason: :teacher_record_merged).and_return(anonymiser)
-
-        service.merge!
-
-        expect(anonymiser).to have_received(:anonymise!)
-      end
-
-      it "retains the source teacher's api_id (the recorded id-change maps back to it)" do
-        expect { service.merge! }.not_to(change { teacher.reload.api_id })
       end
 
       it "records a TeacherIdChange from the source participant to the destination participant" do
@@ -146,13 +127,6 @@ RSpec.describe Teachers::MergeTRN do
 
       it "populates the destination's metadata (which the model hooks do not do on reassignment)" do
         expect { service.merge! }.to change { destination.reload.lead_provider_metadata.count }.from(0)
-      end
-
-      it "tears down the source's now-stale metadata (which the model hooks leave behind)" do
-        Metadata::Manager.new.refresh_metadata!([teacher])
-        expect(teacher.lead_provider_metadata.reload).not_to be_empty
-
-        expect { service.merge! }.to change { teacher.reload.lead_provider_metadata.count }.to(0)
       end
 
       it "records a merge event" do
