@@ -4,12 +4,16 @@ module API
       include API::OAuth::ClientAuthenticable
 
       def revoke
-        API::OAuth::Authorizations::Revoke.new(client: current_client, token:).revoke!
+        API::OAuth::Authorizations::Revoke.new(authorization:).revoke!
 
         render status: :ok
       end
 
     private
+
+      def authorization
+        current_client.authorization_for_token(token:)
+      end
 
       def token
         params.permit(:token)[:token]
