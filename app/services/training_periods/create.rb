@@ -27,6 +27,7 @@ module TrainingPeriods
     def call
       @new_training_period = create!
       record_event!
+      set_mentor_funding_eligibility!
       @new_training_period
     end
 
@@ -62,6 +63,15 @@ module TrainingPeriods
         author: @author,
         happened_at: Time.current
       )
+    end
+
+    def set_mentor_funding_eligibility!
+      return unless @new_training_period.for_mentor?
+
+      Teachers::SetMentorFundingEligibility.new(
+        teacher: @period.teacher,
+        author: @author
+      ).set!
     end
 
     # TODO: Remove this once a presence validation can be added to TrainingPeriod model

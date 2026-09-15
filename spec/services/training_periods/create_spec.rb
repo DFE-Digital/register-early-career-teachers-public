@@ -67,6 +67,14 @@ RSpec.describe TrainingPeriods::Create do
       )
     end
 
+    it "does not set mentor funding eligibility" do
+      allow(Teachers::SetMentorFundingEligibility).to receive(:new).and_call_original
+
+      result
+
+      expect(Teachers::SetMentorFundingEligibility).not_to have_received(:new)
+    end
+
     context "when a specific schedule is provided" do
       let(:result_with_schedule) do
         described_class.new(
@@ -124,6 +132,12 @@ RSpec.describe TrainingPeriods::Create do
         author:,
         happened_at: Time.current
       )
+    end
+
+    it "sets mentors funding eligibility after creating the training period" do
+      expect { result }
+        .to change { teacher.reload.mentor_first_became_eligible_for_training_at }
+        .from(nil).to(Time.zone.now)
     end
 
     context "when a specific schedule is provided" do

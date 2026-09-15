@@ -128,6 +128,12 @@ RSpec.describe Schools::RegisterMentor do
               it "does not create a new training period" do
                 expect { service.register! }.not_to change(TrainingPeriod, :count)
               end
+
+              it "sets the mentors funding eligibility using the existing training period" do
+                expect { service.register! }
+                  .to change { teacher.reload.mentor_first_became_eligible_for_training_at }
+                  .from(nil).to(Time.zone.now)
+              end
             end
 
             context "when the existing mentor_at_school_period finishes in the future" do
@@ -302,7 +308,7 @@ RSpec.describe Schools::RegisterMentor do
 
         service.register!
 
-        expect(Teachers::SetMentorFundingEligibility).to have_received(:new).with(teacher:, author:)
+        expect(Teachers::SetMentorFundingEligibility).to have_received(:new).with(teacher:, author:).at_least(:once)
       end
     end
 
