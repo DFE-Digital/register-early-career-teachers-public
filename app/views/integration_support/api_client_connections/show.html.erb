@@ -1,0 +1,84 @@
+<% page_data(title: "Exchange authorization code", backlink_href: new_integration_support_api_client_connection_path) %>
+
+<% if @api_client_connection.authorization_denied? %>
+  <%= govuk_summary_card(title: "Redirected with errors", classes: "app-summary-card--red") do %>
+    <%= govuk_warning_text(text: "The authorization server did not return a code.") %>
+
+    <%= govuk_summary_list do |summary_list|
+          summary_list.with_row do |row|
+            row.with_key(text: "Error")
+            row.with_value(text: @api_client_connection.error)
+          end
+
+          summary_list.with_row do |row|
+            row.with_key(text: "Error description")
+            row.with_value(text: @api_client_connection.error_description)
+          end
+        end %>
+  <% end %>
+
+  <p class="govuk-body">
+    <%= govuk_link_to("Start a new authorization request", new_integration_support_api_client_connection_path) %>
+  </p>
+<% else %>
+  <% if @api_client_connection.code.present? %>
+    <%= govuk_summary_card(title: "Successfully redirected", classes: "app-summary-card--green") do %>
+      <%= govuk_summary_list do |summary_list|
+            summary_list.with_row do |row|
+              row.with_key(text: "Code")
+              row.with_value(text: @api_client_connection.code)
+            end
+
+            summary_list.with_row do |row|
+              row.with_key(text: "State")
+              row.with_value(text: @api_client_connection.returned_state)
+            end
+          end %>
+
+      <% if @api_client_connection.state_mismatch? %>
+        <%= govuk_warning_text(text: "The returned state does not match the state sent with the authorization request.") %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <p class="govuk-body">
+    Configure the parameters for the POST /oauth/token request and exchange the authorization code for an access token.
+  </p>
+
+  <%= form_with(model: @api_client_connection, url: integration_support_api_client_connection_path, method: :patch) do |form| %>
+    <%= govuk_summary_card(title: "API client") do %>
+      <%= form.govuk_text_field(:client_id,
+                                label: { text: "Client ID" },
+                                hint: { text: "The client identifier issued to the API client." }) %>
+
+      <%= form.govuk_text_field(:client_secret,
+                                label: { text: "Client secret" },
+                                hint: { text: "The client secret issued to the API client." }) %>
+
+      <%= form.govuk_text_field(:redirect_uri,
+                                label: { text: "Redirect URI" },
+                                hint: { text: "The URI used in the authorization request." }) %>
+    <% end %>
+
+    <%= govuk_summary_card(title: "Authorization code for token") do %>
+      <%= form.govuk_text_field(:code,
+                                label: { text: "Code" },
+                                hint: { text: "The authorization code returned by the authorization server." }) %>
+
+      <%= form.govuk_collection_select(:grant_type,
+                                       API::OAuth::Client::GRANT_TYPES,
+                                       :to_s,
+                                       :to_s,
+                                       label: { text: "Grant type" },
+                                       hint: { text: "The OAuth grant type." }) %>
+    <% end %>
+
+    <%= govuk_summary_card(title: "PKCE") do %>
+      <%= form.govuk_text_field(:code_verifier,
+                                label: { text: "Code verifier (PKCE)" },
+                                hint: { text: "The same code verifier used in the authorization request." }) %>
+    <% end %>
+
+    <%= form.govuk_submit("Exchange code for token") %>
+  <% end %>
+<% end %>

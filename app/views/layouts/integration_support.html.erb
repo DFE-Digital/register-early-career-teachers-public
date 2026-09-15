@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<%= govuk_html_element do %>
+  <% content_for(:head) do %>
+    <style nonce="<%= content_security_policy_nonce %>">
+      .app-test-client::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        border: 10px solid #8eb8dc;
+        pointer-events: none;
+        z-index: 1000;
+      }
+
+      .app-summary-card--green {
+        border-color: #0f7a52;
+      }
+
+      .app-summary-card--green .govuk-summary-card__title-wrapper {
+        background-color: #cfe4dc;
+      }
+
+      .app-summary-card--green .govuk-summary-card__title {
+        color: #083d29;
+      }
+
+      .app-summary-card--red {
+        border-color: #ca3535;
+      }
+
+      .app-summary-card--red .govuk-summary-card__title-wrapper {
+        background-color: #f4d7d7;
+      }
+
+      .app-summary-card--red .govuk-summary-card__title {
+        color: #651b1b;
+      }
+    </style>
+  <% end %>
+
+  <%= render partial: "layouts/shared/head" %>
+
+  <%= govuk_body_element(classes: "app-test-client") do %>
+    <div class="govuk-!-display-none-print">
+      <%= render partial: "layouts/shared/js_enabled" %>
+
+      <%= govuk_header(full_width_border: true, html_attributes: { class: ["app-header", environment_specific_header_colour_class] }) do |header| %>
+        <% if authenticated? %>
+          <div class="app-header__item">
+            <%= govuk_link_to("Sign out", current_user.sign_out_path, inverse: true, no_underline: true) %>
+          </div>
+        <% end %>
+
+        <% header.with_service_navigation(service_name: "OAuth Test Client for Register early career teachers", service_url: "/") %>
+        <% phase_banner = environment_specific_phase_banner_arguments %>
+        <% header.with_phase_banner(**phase_banner.merge(text: safe_join([phase_banner[:text], "OAuth Test Client"], " – "))) %>
+      <% end %>
+    </div>
+
+    <div class="govuk-width-container">
+      <div class="govuk-!-display-none-print">
+        <%= yield(:backlink_or_breadcrumb) %>
+      </div>
+
+      <main class="govuk-main-wrapper" id="main-content">
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-two-thirds">
+            <%= yield(:page_header) %>
+
+            <%= yield %>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <div class="govuk-!-display-none-print">
+      <%= render partial: "layouts/shared/footer" %>
+    </div>
+  <% end %>
+<% end %>

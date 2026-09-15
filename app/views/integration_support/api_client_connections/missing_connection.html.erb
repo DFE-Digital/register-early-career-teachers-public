@@ -1,0 +1,9 @@
+<% page_data(title: "No API client connection in progress") %>
+
+<p class="govuk-body">
+  There is no API client connection stored in your session, so this request cannot be processed.
+</p>
+
+<p class="govuk-body">
+  <%= govuk_link_to("Start a new authorization request", new_integration_support_api_client_connection_path) %>
+</p>

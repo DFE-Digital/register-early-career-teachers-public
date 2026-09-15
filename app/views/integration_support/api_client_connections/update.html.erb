@@ -1,0 +1,19 @@
+<% page_data(title: "Exchange authorization code", backlink_href: new_integration_support_api_client_connection_path) %>
+
+<%= govuk_summary_card(title: "Response", classes: (@response&.success? ? "app-summary-card--green" : "app-summary-card--red")) do %>
+  <% if @request_error %>
+    <%= govuk_warning_text(text: @request_error) %>
+  <% else %>
+    <p class="govuk-body">
+      HTTP <%= @response.status %> <%= Rack::Utils::HTTP_STATUS_CODES[@response.status] %>
+    </p>
+
+    <% if @response.body.is_a?(Hash) %>
+      <pre><%= JSON.pretty_generate(@response.body) %></pre>
+    <% else %>
+      <%= govuk_details(summary_text: "Raw response body") do %>
+        <pre><%= @response.body %></pre>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>
