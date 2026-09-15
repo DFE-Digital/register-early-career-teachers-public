@@ -1,21 +1,23 @@
 module API
   module OAuth
-    class AuthorizationTokenController < ActionController::API
+    class AccessTokensController < ActionController::API
       include API::OAuth::ClientAuthenticable
 
       def create
-        service = API::OAuth::AuthorizationToken.new(client: current_client, **authorization_token_params)
+        access_token_request = AccessTokenRequest.new(client: current_client, **access_token_params)
 
-        if service.valid? && (authorization = service.exchange_code_for_token)
+        if access_token_request.valid?
+          authorization = Authorizations::ExchangeCodeForToken.new(access_token_request:).call
+
           render json: token_payload_for(authorization).to_json, status: :created
         else
-          render json: error_message(service).to_json, status: :bad_request
+          render json: error_message(access_token_request).to_json, status: :bad_request
         end
       end
 
     private
 
-      def authorization_token_params
+      def access_token_params
         params.permit(:grant_type, :code, :code_verifier, :redirect_uri)
       end
 
