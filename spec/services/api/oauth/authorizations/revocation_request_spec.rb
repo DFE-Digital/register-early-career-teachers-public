@@ -7,7 +7,6 @@ describe API::OAuth::Authorizations::RevocationRequest do
   end
 
   let(:code_verifier) { "secret" }
-  let(:token) { authorization.token }
   let(:appropriate_body_period) { authorization.appropriate_body_period }
 
   describe "#revoke!" do
@@ -32,10 +31,10 @@ describe API::OAuth::Authorizations::RevocationRequest do
         }.to have_enqueued_job(RecordEventJob).with(
           author_name: authorization.client.name,
           author_type: :oauth_client,
-          event_type: :api_oauth_authorization_revoked,
+          event_type: :api_oauth_access_token_revoked,
           happened_at: Time.zone.now,
           appropriate_body_period:,
-          heading: "Authorization revoked by client '#{client.name}' for '#{appropriate_body_period.name}'"
+          heading: "Access token revoked by client '#{client.name}' for '#{appropriate_body_period.name}'"
         )
       end
     end
@@ -45,7 +44,7 @@ describe API::OAuth::Authorizations::RevocationRequest do
         perform_enqueued_jobs { service.revoke! }
       }.to change(Event, :count).by(1)
 
-      expect(Event.first.event_type).to eq "api_oauth_authorization_revoked"
+      expect(Event.first.event_type).to eq "api_oauth_access_token_revoked"
     end
 
     context "when the authorization is already revoked" do

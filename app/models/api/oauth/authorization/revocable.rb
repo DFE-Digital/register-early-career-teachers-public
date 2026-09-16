@@ -1,10 +1,10 @@
-module API::OAuth::Authorization::Revokable
+module API::OAuth::Authorization::Revocable
   extend ActiveSupport::Concern
 
   def revoked? = revoked_at.present?
   def revokable? = !revoked?
 
   def revoke!
-    update!(revoked_at: Time.zone.now)
+    touch(:revoked_at) unless revoked?
   end
 end

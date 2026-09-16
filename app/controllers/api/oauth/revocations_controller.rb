@@ -8,13 +8,13 @@ module API
       def create
         API::OAuth::Authorizations::RevocationRequest.new(authorization: @authorization).revoke!
 
-        render status: :ok
+        head :ok
       end
 
     private
 
       def set_authorization
-        @authorization = current_client.authorization_for_token(token: params.permit(:token)[:token])
+        @authorization = current_client.authorization_for_token(token: params.require(:token))
       end
     end
   end
