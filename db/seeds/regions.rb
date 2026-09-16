@@ -1,48 +1,119 @@
-def describe_region(name, region)
-  print_seed_info("#{Colourize.text(name, :yellow)} (#{region.code}): #{region.districts}", indent: 2)
+def describe_region(region)
+  code = Colourize.text(region.code, :yellow)
+  districts = Colourize.text(region.districts.to_sentence, :magenta)
+  count = region.districts.size
+  print_seed_info("#{code}: #{districts} (#{count})", indent: 2)
 end
 
-# rubocop:disable Style/WordArray
-{
-  "North West" => ["Blackburn with Darwen", "Blackpool", "Bolton", "Bury"],
-  # "Cheshire East", "Cheshire West and Chester", "Cumbria", "Halton", "Knowsley", "Lancashire", "Liverpool", "Manchester",
-  # "Oldham", "Rochdale", "Salford", "Sefton", "St. Helens", "Stockport", "Tameside", "Trafford", "Warrington", "Wigan", "Wirral",
+# Teaching School Hub (TSH) regions equate to one or more Local Authority Districts (LAD)
+[
+  # East of England
+  ["EE1", "Chelmsford, Braintree, Uttlesford, Epping Forest, Harlow"],
+  ["EE2", "Colchester, Tendring, Ipswich, Babergh"],
+  ["EE3", "Cambridge, South Cambridgeshire, Huntingdonshire, Peterborough, Fenland, East Cambridgeshire"],
+  # ["EE4", "North Norfolk, King's Lynn and West Norfolk, Norwich, Broadland"],
+  # ["EE5", "Southend-on-Sea, Basildon, Maldon, Castle Point, Rochford, Brentwood, Thurrock"],
+  # ["EE6", "East Suffolk S., Mid Suffolk, West Suffolk"],
+  # ["EE7", "St Albans, Welwyn Hatfield, Dacorum, Watford, Three Rivers, Hertsmere"],
+  # ["EE8", "Luton, North Hertfordshire, Broxbourne, Stevenage, East Hertfordshire"],
+  # ["EE9", "Bedford, Central Bedfordshire, Milton Keynes"],
+  # ["EE10", "Breckland, East Suffolk N, Great Yarmouth, South Norfolk"],
 
-  "North East" => ["Darlington", "Durham", "Gateshead", "Hartlepool"],
-  # "Middlesbrough", "Newcastle upon Tyne", "North Tyneside", "Northumberland", "Redcar and Cleveland", "South Tyneside",
-  # "Stockton-on-Tees", "Sunderland",
+  # East Midlands
+  ["EM1", "Charnwood, North West Leicestershire, Melton, Hinckley and Bosworth, Rutland"],
+  ["EM2", "Gedling, Bassetlaw, Newark and Sherwood"],
+  ["EM3", "High Peak, Amber Valley, Derbyshire Dales, Bolsover, North East Derbyshire, Chesterfield"],
+  # ["EM4", "Ashfield, Nottingham, Mansfield, Broxtowe, Rushcliffe"],
+  # ["EM5", "Harborough, Blaby, Oadby and Wigston, Leicester"],
+  # ["EM6", "South Kesteven, Lincoln, North Kesteven, South Holland, Boston, East Lindsey, West Lindsey"],
+  # ["EM7", "Derby, South Derbyshire, Erewash"],
+  # ["EM8", "North Northamptonshire, West Northamptonshire"],
 
-  "Yorkshire and the Humber" => ["Barnsley", "Bradford", "Calderdale", "Doncaster"],
-  # "East Riding of Yorkshire", "Kingston upon Hull, City of", "Kirklees", "Leeds", "North East Lincolnshire", "North Lincolnshire",
-  # "North Yorkshire", "Rotherham", "Sheffield", "Wakefield", "York"
+  # London
+  ["L1", "Hackney, Tower Hamlets"],
+  ["L2", "Newham, Barking and Dagenham, Havering"],
+  ["L3", "Haringey, Redbridge, Waltham Forest"],
+  # ["L4", "Barnet, Enfield, Brent"],
+  # ["L5", "Ealing, Harrow, Hillingdon, Hounslow"],
+  # ["L6", "City of London, Camden, Hammersmith and Fulham, Islington, Kensington and Chelsea, Westminster"],
+  # ["L7", "Wandsworth, Kingston upon Thames, Merton, Richmond upon Thames"],
+  # ["L8", "Croydon, Sutton, Epsom and Ewell"],
+  # ["L9", "Lambeth, Southwark, Lewisham"],
+  # ["L10", "Greenwich, Bexley, Bromley"],
 
-  "East Midlands" => ["Derby", "Derbyshire", "Leicester", "Leicestershire"],
-  # "Lincolnshire", "North Northamptonshire", "Nottingham", "Nottinghamshire", "Rutland", "West Northamptonshire"
+  # North East
+  ["NE1", "Northumberland, Newcastle upon Tyne, North Tyneside"],
+  ["NE2", "Stockton-on-Tees, Redcar and Cleveland, Middlesbrough, Hartlepool, Darlington"],
+  ["NE3", "Gateshead, South Tyneside, Sunderland"],
+  # ["NE4", "County Durham"],
 
-  "West Midlands" => ["Birmingham", "Coventry", "Dudley", "Herefordshire, County of"],
-  # "Sandwell", "Shropshire", "Solihull", "Staffordshire", "Stoke-on-Trent", "Telford and Wrekin", "Walsall", "Warwickshire",
-  # "Wolverhampton", "Worcestershire"
+  # North West
+  ["NW1", "Wirral, Liverpool"],
+  ["NW2", "Wigan, Halton, Warrington"],
+  ["NW3", "Bolton, Bury, Rochdale"],
+  # ["NW4", "Blackpool, Preston, Lancaster, Wyre"],
+  # ["NW5", "Hyndburn, Burnley, Pendle, Blackburn with Darwen, Ribble Valley, Rossendale"],
+  # ["NW6", "Chorley, West Lancashire, South Ribble, Fylde"],
+  # ["NW7", "Manchester, Stockport"],
+  # ["NW8", "Knowsley, St. Helens, Sefton"],
+  # ["NW9", "Salford, Trafford"],
+  # ["NW10", "Oldham, Tameside"],
+  # ["NW11", "Cumberland, Westmorland and Furness"],
+  # ["NW12", "Cheshire East, Cheshire West and Chester"],
 
-  "East of England" => ["Bedford", "Cambridgeshire", "Central Bedfordshire", "Essex"],
-  # "Hertfordshire", "Luton", "Norfolk", "Peterborough", "Southend-on-Sea", "Suffolk", "Thurrock"
+  # South East
+  ["SE1", "Wealden, Lewes, Brighton and Hove, Rother, Hastings, Eastbourne"],
+  ["SE2", "Ashford, Canterbury, Dover, Folkestone and Hythe, Swale, Thanet"],
+  ["SE3", "Havant, Gosport, Eastleigh, Fareham, Portsmouth, Isle of Wight"],
+  # ["SE4", "Arun, Chichester, Horsham, Adur, Crawley, Worthing, Mid Sussex"],
+  # ["SE5", "Runnymede, Mole Valley, Reigate and Banstead, Elmbridge, Tandridge, Surrey Heath, Woking, Spelthorne"],
+  # ["SE6", "Buckinghamshire"],
+  # ["SE7", "Southampton, Test Valley, New Forest, Winchester"],
+  # ["SE8", "Sevenoaks, Tunbridge Wells, Tonbridge and Malling, Maidstone"],
+  # ["SE9", "Oxford, South Oxfordshire, West Oxfordshire, Cherwell, Vale of White Horse"],
+  # ["SE10", "Wokingham, Reading, Windsor and Maidenhead, West Berkshire, Slough, Bracknell Forest"],
+  # ["SE11", "Rushmoor, East Hampshire, Basingstoke and Deane, Hart, Waverley, Guildford"],
+  # ["SE12", "Gravesham, Dartford, Medway"],
 
-  "London" => ["Barking and Dagenham", "Barnet", "Bexley", "Brent"],
-  # "Bromley", "Camden", "City of London", "Croydon", "Ealing", "Enfield", "Greenwich", "Hackney", "Hammersmith and Fulham", "Haringey",
-  # "Harrow", "Havering", "Hillingdon", "Hounslow", "Islington", "Kensington and Chelsea", "Kingston upon Thames", "Lambeth", "Lewisham",
-  # "Merton", "Newham", "Redbridge", "Richmond upon Thames", "Southwark", "Sutton", "Tower Hamlets", "Waltham Forest", "Wandsworth",
-  # "Westminster"
+  # South West
+  ["SW1", "Bournemouth, Christchurch and Poole, Dorset"],
+  ["SW2", "Gloucester, Tewkesbury, Forest of Dean"],
+  ["SW3", "Exeter, Plymouth, South Hams, Teignbridge, Torbay, West Devon"],
+  # ["SW4", "Mid Devon, East Devon, Torridge, North Devon"],
+  # ["SW5", "Somerset"],
+  # ["SW6", "Bath and North East Somerset, South Gloucestershire"],
+  # ["SW7", "Swindon, Wiltshire"],
+  # ["SW8", "Cornwall, Isles of Scilly"],
+  # ["SW9", "Bristol, North Somerset"],
+  # ["SW10", "Stroud, Cotswold, Cheltenham"],
+  # ["SW11", "Cornwall"],
 
-  "South East" => ["Bracknell Forest", "Brighton and Hove", "Buckinghamshire", "East Sussex"],
-  # "Hampshire", "Isle of Wight", "Kent", "Medway", "Milton Keynes", "Oxfordshire", "Portsmouth", "Reading", "Slough", "Southampton",
-  # "Surrey", "West Berkshire", "West Sussex", "Windsor and Maidenhead", "Wokingham",
+  # West Midlands
+  ["WM1", "Herefordshire, Wychavon, Malvern Hills, Worcester, Wyre Forest"],
+  ["WM2", "Telford and Wrekin, Shropshire"],
+  ["WM3", "Cannock Chase, East Staffordshire, Lichfield, Tamworth, North Warwickshire, Nuneaton and Bedworth"],
+  # ["WM4", "Solihull, Bromsgrove, Redditch, Stratford-on-Avon"],
+  # ["WM5", "Newcastle-under-Lyme, Stoke-on-Trent, Staffordshire Moorlands, Stafford"],
+  # ["WM6", "Coventry, Warwick, Rugby"],
+  # ["WM7", "Sandwell, Dudley"],
+  # ["WM8", "Walsall, Wolverhampton, South Staffordshire"],
+  # ["WM9", "Birmingham North"],
+  # ["WM10", "Birmingham South"],
 
-  "South West" => ["Bath and North East Somerset", "Bournemouth, Christchurch and Poole", "Bristol, City of", "Cornwall"]
-  # "Devon", "Dorset", "Gloucestershire", "Isles Of Scilly", "North Somerset", "Plymouth", "Somerset", "South Gloucestershire",
-  # "Swindon", "Torbay", "Wiltshire"
+  # Yorkshire & Humber
+  ["YH1", "Barnsley, Doncaster"],
+  ["YH2", "Rotherham, Sheffield"],
+  ["YH3", "North Yorkshire E., York"],
+  # ["YH4", "North East Lincolnshire, North Lincolnshire"],
+  # ["YH5", "Kingston upon Hull, East Riding of Yorkshire"],
+  # ["YH6", "Bradford"],
+  # ["YH7", "Calderdale, Kirklees"],
+  # ["YH8", "North Yorkshire S., Wakefield"],
+  # ["YH9", "Leeds"],
+  # ["YH10", "North Yorkshire W."],
 
-}.each do |region_name, districts|
-  FactoryBot.create(:region, districts:).tap do |region|
-    describe_region(region_name, region)
+].each do |code, districts|
+  FactoryBot.create(:region, code:, districts: districts.split(", ")).tap do |region|
+    describe_region(region)
   end
 end
-# rubocop:enable Style/WordArray
