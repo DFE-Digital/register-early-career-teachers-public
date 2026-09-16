@@ -21,7 +21,38 @@
 #
 #     **bold** and _italic_ text
 
-- title: Added new participant attribute 'most_recent_induction_period_end_date'
+- title: Improved handling of teacher reference number (TRN) corrections  
+  date: 2026-09-16
+  tags:
+    - data update
+    - production-release
+
+  body: |
+  
+    We've improved how RECT handles cases where a teacher's reference number (TRN) needs correcting or updating. This allows records to be updated more quickly and ensures the most up-to-date participant information is reflected in API responses. 
+    
+    This is **not a change to the API**. No endpoints, request formats or response fields have changed.
+
+    ## What this means for lead providers
+
+    In rare cases, a participant's TRN may need to be corrected after they have already been registered. When this happens, RECT will now automatically update participant records and any related data so that records remain associated with the correct TRN. 
+
+    Depending on the circumstances, you may see either: 
+
+    - a participant's teacher_reference_number update on an existing participant record, or 
+    - participant records being merged where duplicate records exist. If participant records are merged, the existing participant_id_changes field can be used to identify participant ID changes. Providers will not be able to see the previous record associated with the incorrect TRN and will receive an error message if they call the old participant_id.
+
+    ## What you need to do
+    
+    No action is required. 
+    
+    Lead providers should continue to:
+
+    - use the updated_at field to identify records that have changed 
+    - use the participant_id_changes field to identify replacement participant IDs where records have been merged
+
+
+- title: Added new participant attribute 'most_recent_induction_period_end_date' 
   date: 2026-06-23
   tags:
     - new-feature
