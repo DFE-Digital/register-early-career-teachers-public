@@ -206,7 +206,7 @@ RSpec.describe Events::Record do
         hash_including(
           teacher: source,
           event_type: :teacher_merged,
-          heading: "Teacher record was merged into #{Teachers::Name.new(destination).full_name} and anonymised",
+          heading: "Teacher record was merged into #{Teachers::Name.new(destination).full_name} and deleted",
           body: a_string_including(destination.api_id)
         )
       )
