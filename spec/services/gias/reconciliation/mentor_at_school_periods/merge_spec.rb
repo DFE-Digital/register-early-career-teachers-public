@@ -8,7 +8,7 @@ RSpec.describe GIAS::Reconciliation::MentorAtSchoolPeriods::Merge do
   end
 
   let(:author) { Events::SystemAuthor.new }
-  let(:predecessor_gias_school) { FactoryBot.create(:gias_school, :with_school) }
+  let(:predecessor_gias_school) { FactoryBot.create(:gias_school, :with_school, :closed, closed_on: Date.yesterday) }
   let(:gias_school) { FactoryBot.create(:gias_school, :with_school) }
   let(:predecessor_school) { predecessor_gias_school.school }
   let(:successor_school) { gias_school.school }

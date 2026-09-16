@@ -1,6 +1,4 @@
 RSpec.describe "Create adjustment for statement" do
-  include ActiveJob::TestHelper
-
   before { sign_in_as_dfe_user(role: :finance) }
 
   scenario "Add new adjustment" do
@@ -50,9 +48,7 @@ RSpec.describe "Create adjustment for statement" do
   alias_method :and_i_fill_in, :when_i_fill_in
 
   def and_i_click_button(name)
-    perform_enqueued_jobs do
-      page.get_by_role("button", name:).click
-    end
+    page.get_by_role("button", name:).click
   end
 
   def and_i_see_adjustment_values

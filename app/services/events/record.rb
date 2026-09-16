@@ -101,7 +101,7 @@ module Events
 
     def record_event!
       check_relationship_attributes_are_persisted
-      RecordEventJob.perform_later(**attributes)
+      Event.create!(**attributes)
     end
 
     # Induction Period Events

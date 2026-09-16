@@ -2,7 +2,6 @@ RSpec.describe Schools::AssignExistingMentorWizard::ReviewMentorEligibilityStep 
   subject(:step) { described_class.new(wizard:) }
 
   include_context "safe_schedules"
-  include ActiveJob::TestHelper
 
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
   let(:school) { FactoryBot.create(:school) }
@@ -46,10 +45,6 @@ RSpec.describe Schools::AssignExistingMentorWizard::ReviewMentorEligibilityStep 
     end
 
     let(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, :current) }
-
-    around do |example|
-      perform_enqueued_jobs { example.run }
-    end
 
     before do
       framework_agreement = FactoryBot.create(:framework_agreement, lead_provider:, contract_period:)

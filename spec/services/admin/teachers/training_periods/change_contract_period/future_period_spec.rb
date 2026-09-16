@@ -1,6 +1,4 @@
 RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::FuturePeriod do
-  include ActiveJob::TestHelper
-
   subject(:service_call) do
     described_class.new(
       training_period:,
@@ -86,7 +84,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::FuturePer
   end
 
   around do |example|
-    travel_to(today) { perform_enqueued_jobs { example.run } }
+    travel_to(today) { example.run }
   end
 
   it "updates the future training period in place" do

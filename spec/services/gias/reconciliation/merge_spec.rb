@@ -1,7 +1,7 @@
 RSpec.describe GIAS::Reconciliation::Merge do
   subject(:service) { described_class.new(gias_school) }
 
-  let(:gias_school) { FactoryBot.create(:gias_school, :with_school, :closed) }
+  let(:gias_school) { FactoryBot.create(:gias_school, :with_school, :closed, closed_on: Date.yesterday) }
   let(:successor_gias_school) { FactoryBot.create(:gias_school, :with_school, :open) }
   let(:predecessor_school) { gias_school.school }
   let(:successor_school) { successor_gias_school.school }

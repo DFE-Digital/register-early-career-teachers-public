@@ -1,6 +1,4 @@
 describe MentorshipPeriods::Finish do
-  include ActiveJob::TestHelper
-
   subject { MentorshipPeriods::Finish.new(mentorship_period:, finished_on:, author:) }
 
   let(:started_on) { 1.year.ago.to_date }
@@ -43,7 +41,6 @@ describe MentorshipPeriods::Finish do
 
       expect {
         subject.finish!
-        perform_enqueued_jobs
       }.to change(Event, :count).by(2)
 
       mentorship_period.reload
@@ -66,7 +63,6 @@ describe MentorshipPeriods::Finish do
 
       expect {
         subject.finish!
-        perform_enqueued_jobs
       }.to change(Event, :count).by(2)
 
       mentorship_period.reload
@@ -93,7 +89,6 @@ describe MentorshipPeriods::Finish do
 
         expect {
           subject.finish!
-          perform_enqueued_jobs
         }.not_to change(Event, :count)
 
         mentorship_period.reload

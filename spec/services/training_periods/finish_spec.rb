@@ -1,6 +1,4 @@
 describe "TrainingPeriods::Finish" do
-  include ActiveJob::TestHelper
-
   let(:finished_on) { Date.yesterday.to_date }
 
   describe ".ect_training" do
@@ -83,7 +81,6 @@ describe "TrainingPeriods::Finish" do
 
         expect {
           subject.finish!
-          perform_enqueued_jobs
         }.to change(Event, :count).by(1)
 
         training_period.reload
@@ -107,7 +104,6 @@ describe "TrainingPeriods::Finish" do
 
           expect {
             subject.finish!
-            perform_enqueued_jobs
           }.not_to change(Event, :count)
 
           training_period.reload
@@ -137,7 +133,6 @@ describe "TrainingPeriods::Finish" do
 
         expect {
           subject.finish!
-          perform_enqueued_jobs
         }.to change(Event, :count).by(1)
 
         training_period.reload

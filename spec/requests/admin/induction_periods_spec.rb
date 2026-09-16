@@ -679,9 +679,7 @@ RSpec.describe "Admin::InductionPeriodsController", type: :request do
 
       it "creates a deletion event" do
         expect {
-          perform_enqueued_jobs do
-            delete admin_teacher_induction_period_path(teacher, induction_period), params:
-          end
+          delete admin_teacher_induction_period_path(teacher, induction_period), params:
         }.to change(Event, :count).by(2)
 
         expect(Event.all.map(&:event_type)).to match_array(%w[
@@ -703,9 +701,7 @@ RSpec.describe "Admin::InductionPeriodsController", type: :request do
 
       it "deletes only the specified induction period" do
         expect {
-          perform_enqueued_jobs do
-            delete admin_teacher_induction_period_path(teacher, induction_period1), params:
-          end
+          delete admin_teacher_induction_period_path(teacher, induction_period1), params:
         }.to change(InductionPeriod, :count).by(-1)
 
         expect(response).to redirect_to(admin_teacher_induction_path(teacher))

@@ -1,6 +1,4 @@
 describe ContractPeriods::Create do
-  include ActiveJob::TestHelper
-
   subject(:service) { described_class.new(author:, params:) }
 
   let(:params) do
@@ -40,7 +38,6 @@ describe ContractPeriods::Create do
       it "records a `contract_period_added` event" do
         subject.create!
         expect(seed_service).to have_received(:schedule!)
-        perform_enqueued_jobs
         expect(Event.all.map(&:event_type)).to match_array(%w[contract_period_added])
       end
 
@@ -48,8 +45,6 @@ describe ContractPeriods::Create do
         freeze_time
 
         subject.create!
-
-        perform_enqueued_jobs
 
         contract_period = Event.find_by(event_type: "contract_period_added").contract_period
 

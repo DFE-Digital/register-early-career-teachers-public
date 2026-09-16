@@ -82,27 +82,19 @@ RSpec.describe API::OAuth::AuthorizationToken, type: :model do
       expect(authorization.reload.code_exchanged_at).to be_within(1.second).of Time.zone.now
     end
 
-    it "generates an event" do
+    it "records an event" do
       freeze_time do
-        expect {
-          result
-        }.to have_enqueued_job(RecordEventJob).with(
+        result
+
+        expect(Event.sole).to have_attributes(
           author_name: authorization.client.name,
-          author_type: :oauth_client,
-          event_type: :api_oauth_authorization_code_exchanged,
+          author_type: "oauth_client",
+          event_type: "api_oauth_authorization_code_exchanged",
           happened_at: Time.zone.now,
           appropriate_body_period:,
           heading: "Authorization code exchanged by client '#{client.name}' for '#{appropriate_body_period.name}'"
         )
       end
-    end
-
-    it "the queued job adds an event record when performed" do
-      expect {
-        perform_enqueued_jobs { result }
-      }.to change(Event, :count).by(1)
-
-      expect(Event.first.event_type).to eq "api_oauth_authorization_code_exchanged"
     end
 
     it "creates a token and returns the relevant authorization" do
