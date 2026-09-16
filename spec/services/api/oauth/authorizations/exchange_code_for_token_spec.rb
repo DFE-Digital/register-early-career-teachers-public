@@ -5,9 +5,10 @@ describe API::OAuth::Authorizations::ExchangeCodeForToken do
 
   let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let(:client) { FactoryBot.create(:api_oauth_client) }
+  let(:redirect_uri) { client.redirect_uris.first }
 
   let(:code_verifier) { "code-verifier" }
-  let(:authorization) { FactoryBot.create(:api_oauth_authorization, appropriate_body_period:, client:, code_verifier:) }
+  let(:authorization) { FactoryBot.create(:api_oauth_authorization, appropriate_body_period:, client:, code_verifier:, redirect_uri:) }
   let(:author) { Events::OAuthClientAuthor.new(client:) }
 
   context "when valid" do
@@ -25,6 +26,37 @@ describe API::OAuth::Authorizations::ExchangeCodeForToken do
       expect(authorization.token_expires_at).to eq(1.year.from_now)
       expect(authorization.token_digest).to be_present
       expect(authorization.code_exchanged_at).to eq(Time.zone.now)
+    end
+
+    context "when there are other active matching authorizations" do
+      let!(:authorization_2) do
+        FactoryBot.create(:api_oauth_authorization, :with_token, client:, appropriate_body_period:, redirect_uri:)
+      end
+
+      let!(:authorization_3) do
+        FactoryBot.create(:api_oauth_authorization, :with_expired_token, client:, appropriate_body_period:, redirect_uri:)
+      end
+
+      let!(:authorization_4) do
+        FactoryBot.create(:api_oauth_authorization, :revoked, client:, appropriate_body_period:, redirect_uri:)
+      end
+
+      it "revokes the matching active authorizations" do
+        service.call
+        expect(authorization_2.reload).to be_revoked
+      end
+
+      it "does not change matching expired authorizations" do
+        expect {
+          service.call
+        }.to not_change(authorization_3, :revoked_at)
+      end
+
+      it "does not change matching revoked authorizations" do
+        expect {
+          service.call
+        }.to not_change(authorization_4, :revoked_at)
+      end
     end
   end
 
