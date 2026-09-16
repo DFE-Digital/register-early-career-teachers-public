@@ -69,17 +69,19 @@ private
       page.get_by_label("I confirm I want to remove #{user.name} as a user")
     ).to be_visible
 
-    expect(page.get_by_role("button", name: "Confirm")).to be_visible
-
-    expect(page.get_by_role("link", name: "Back"))
-  .to have_attribute("href", admin_user_path(user))
+    expect(
+      page.get_by_role("link", name: "Back", exact: true)
+    ).to have_attribute("href", admin_user_path(user))
 
     expect(
       page.get_by_role(
         "link",
-        name: "Cancel and go back to #{user.name}’s details"
+        name: "Cancel and go back to #{user.name}’s details",
+        exact: true
       )
     ).to have_attribute("href", admin_user_path(user))
+
+    expect(page.get_by_role("button", name: "Confirm")).to be_visible
   end
 
   def when_i_confirm_without_checking_the_confirmation
