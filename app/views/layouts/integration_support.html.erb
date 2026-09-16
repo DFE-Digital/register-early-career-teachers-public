@@ -50,7 +50,7 @@
           </div>
         <% end %>
 
-        <% header.with_service_navigation(service_name: "OAuth Test Client for Register early career teachers", service_url: "/") %>
+        <% header.with_service_navigation(service_name: "OAuth Test Client for Register early career teachers", service_url: root_path) %>
         <% phase_banner = environment_specific_phase_banner_arguments %>
         <% header.with_phase_banner(**phase_banner.merge(text: safe_join([phase_banner[:text], "OAuth Test Client"], " – "))) %>
       <% end %>
