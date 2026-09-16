@@ -6,7 +6,6 @@ describe API::OAuth::Authorizations::ExchangeCodeForToken do
   let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let(:client) { FactoryBot.create(:api_oauth_client) }
 
-  let(:grant_type) { client.grant_types.first }
   let(:code_verifier) { "code-verifier" }
   let(:author) { Events::OAuthClientAuthor.new(client:) }
 
@@ -14,7 +13,7 @@ describe API::OAuth::Authorizations::ExchangeCodeForToken do
     API::OAuth::AccessTokenRequest.new(
       client:,
       redirect_uri: client.redirect_uris.sample,
-      grant_type:,
+      grant_type: client.grant_types.first,
       code: authorization.code,
       code_verifier:
     )
@@ -41,13 +40,14 @@ describe API::OAuth::Authorizations::ExchangeCodeForToken do
   end
 
   context "when invalid" do
-    let(:grant_type) { "incorrect-grant-type" }
+    before { authorization.update!(code_challenge: "something-else") }
 
-    it "returns the authorization without a token and records no event" do
-      authorization = service.call
+    it "raises an error without setting token or recording an event" do
+      expect { service.call }.to raise_error(API::OAuth::Authorization::ExpirableCredentials::CodeNotExchangedError)
 
       expect { perform_enqueued_jobs }.not_to change(Event, :count)
 
+      authorization.reload
       expect(authorization.token_expires_at).to be_nil
       expect(authorization.token_digest).to be_nil
       expect(authorization.code_exchanged_at).to be_nil
