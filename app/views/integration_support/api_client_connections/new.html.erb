@@ -7,7 +7,7 @@
 <%= form_with(model: @api_client_connection, url: integration_support_api_client_connection_path) do |form| %>
   <%= govuk_summary_card(title: "Appropriate body") do %>
     <%= form.govuk_collection_select(:appropriate_body_period_id,
-                                     AppropriateBodyPeriod.order(:name),
+                                     @appropriate_body_periods,
                                      :id,
                                      :name,
                                      label: { text: "Appropriate body period ID" },
@@ -21,7 +21,7 @@
 
   <%= govuk_summary_card(title: "API client") do %>
     <%= form.govuk_select(:client_id,
-                          [*API::OAuth::Client.order(:name).pluck(:name, :client_id), ["Unknown client", "unknown-client-id"], ["Blank client", ""]],
+                          [*@clients.pluck(:name, :client_id), ["Unknown client", "unknown-client-id"], ["Blank client", ""]],
                           label: { text: "Client ID" },
                           hint: { text: "The client identifier issued to the API client." }) %>
 

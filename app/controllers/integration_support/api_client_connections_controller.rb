@@ -6,6 +6,8 @@ module IntegrationSupport
 
     def new
       @api_client_connection = APIClientConnection.new(redirect_uri: integration_support_api_client_connection_url)
+      @appropriate_body_periods = AppropriateBodyPeriod.order(:name)
+      @clients = API::OAuth::Client.order(:name)
     end
 
     def create
