@@ -1,0 +1,27 @@
+<% page_data(
+  title: "Undo a registration and close school periods for #{@wizard.teacher_name}",
+  backlink_href: admin_teacher_school_path(@teacher)
+) %>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <p class="govuk-body">
+      Undo a registration for <%= @wizard.teacher_name %> and close the related
+      school periods if the registration was made in error.
+    </p>
+
+    <%= govuk_warning_text do %>
+      Only continue if the registration was made in error.
+    <% end %>
+
+    <%= govuk_button_link_to "Continue", @wizard.next_step_path %>
+
+    <p class="govuk-body">
+      <%= govuk_link_to(
+            "Cancel and go back to #{@wizard.teacher_name}",
+            admin_teacher_path(@teacher),
+            no_visited_state: true
+          ) %>
+    </p>
+  </div>
+</div>
