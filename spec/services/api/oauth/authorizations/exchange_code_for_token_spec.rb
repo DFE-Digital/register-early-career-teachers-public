@@ -1,25 +1,14 @@
 describe API::OAuth::Authorizations::ExchangeCodeForToken do
   include ActiveJob::TestHelper
 
-  subject(:service) { described_class.new(access_token_request:) }
+  subject(:service) { described_class.new(authorization:, code_verifier:) }
 
   let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let(:client) { FactoryBot.create(:api_oauth_client) }
 
   let(:code_verifier) { "code-verifier" }
-  let(:author) { Events::OAuthClientAuthor.new(client:) }
-
-  let(:access_token_request) do
-    API::OAuth::AccessTokenRequest.new(
-      client:,
-      redirect_uri: client.redirect_uris.sample,
-      grant_type: client.grant_types.first,
-      code: authorization.code,
-      code_verifier:
-    )
-  end
-
   let(:authorization) { FactoryBot.create(:api_oauth_authorization, appropriate_body_period:, client:, code_verifier:) }
+  let(:author) { Events::OAuthClientAuthor.new(client:) }
 
   context "when valid" do
     it "returns an authorization with a token and emits an event" do

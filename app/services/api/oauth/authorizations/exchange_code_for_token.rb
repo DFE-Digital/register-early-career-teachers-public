@@ -3,13 +3,12 @@ module API::OAuth::Authorizations
     include ActiveModel::Model
     include ActiveModel::Attributes
 
-    attribute :access_token_request
+    attribute :authorization
+    attribute :code_verifier
 
     def call
       ActiveRecord::Base.transaction do
-        authorization = access_token_request.authorization
-
-        authorization.exchange_code_for_token!(code_verifier: access_token_request.code_verifier)
+        authorization.exchange_code_for_token!(code_verifier:)
         author = Events::OAuthClientAuthor.new(client: authorization.client)
         Events::Record.record_api_oauth_authorization_code_exchanged(author:, authorization:)
 

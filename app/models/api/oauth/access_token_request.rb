@@ -4,6 +4,8 @@ module API
       include ActiveModel::Model
       include ActiveModel::Attributes
 
+      class RequestNotExchangeableError < StandardError; end
+
       attribute :client
       attribute :grant_type
       attribute :code
@@ -19,11 +21,35 @@ module API
 
       delegate :code_exchangable?, to: :authorization, prefix: true, allow_nil: true
 
-      def authorization
-        @authorization ||= client&.authorization_for(code:)
+      def exchange_code_for_token!
+        raise RequestNotExchangeableError, "Request is not exchangeable" unless valid?
+
+        Authorizations::ExchangeCodeForToken.new(authorization:, code_verifier:).call
+      end
+
+      def access_token
+        return nil unless authorization.token
+
+        {
+          access_token: authorization.token,
+          expires_in: authorization.seconds_to_token_expiration,
+          token_type: "Bearer",
+        }
+      end
+
+      def error_message
+        return nil unless errors.any?
+
+        {
+          error: errors.first.message
+        }
       end
 
     private
+
+      def authorization
+        @authorization ||= client&.authorization_for(code:)
+      end
 
       def code_can_be_exchanged
         return if errors.any?
