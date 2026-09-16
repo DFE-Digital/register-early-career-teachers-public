@@ -1,9 +1,8 @@
 RSpec.describe API::OAuth::AccessTokenRequest, type: :model do
   subject(:instance) do
     described_class.new(
-      client:,
+      authorization:,
       grant_type:,
-      code:,
       code_verifier:,
       redirect_uri:
     )
@@ -18,23 +17,18 @@ RSpec.describe API::OAuth::AccessTokenRequest, type: :model do
   let(:code_challenge) { Base64.urlsafe_encode64(Digest::SHA256.digest(challenge), padding: false) }
 
   let(:grant_type) { client.grant_types.first }
-  let(:code) { "secret code" }
   let(:code_verifier) { challenge }
   let(:redirect_uri) { client.redirect_uris.first }
-  let(:code_digest) { Digest::SHA256.hexdigest(code) }
   let(:code_expires_at) { 1.day.from_now }
   let(:code_exchanged_at) { nil }
   let(:appropriate_body_period) { authorization.appropriate_body_period }
 
-  before do
-    authorization.update!(code_digest:, code_expires_at:, code_exchanged_at:)
-  end
+  before { authorization.update!(code_expires_at:, code_exchanged_at:) }
 
   describe "validations" do
     it { is_expected.to be_valid }
-    it { is_expected.to validate_presence_of(:client).with_message("invalid_client") }
+    it { is_expected.to validate_presence_of(:authorization).with_message("invalid_grant") }
     it { is_expected.to validate_presence_of(:grant_type).with_message("invalid_request") }
-    it { is_expected.to validate_presence_of(:code).with_message("invalid_grant") }
     it { is_expected.to validate_presence_of(:code_verifier).with_message("invalid_grant") }
     it { is_expected.to validate_presence_of(:redirect_uri).with_message("invalid_grant") }
 
@@ -91,8 +85,8 @@ RSpec.describe API::OAuth::AccessTokenRequest, type: :model do
       })
     end
 
-    context "when the authorization does not exist" do
-      let(:code_digest) { Digest::SHA256.hexdigest("different code") }
+    context "when the code cannot be exchanged" do
+      let(:code_expires_at) { 1.day.ago }
 
       it { expect { exchange_code_for_token! }.to raise_error(API::OAuth::AccessTokenRequest::RequestNotExchangeableError, "Request is not exchangeable") }
     end

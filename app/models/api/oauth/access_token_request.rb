@@ -6,19 +6,18 @@ module API
 
       class RequestNotExchangeableError < StandardError; end
 
-      attribute :client
+      attribute :authorization
       attribute :grant_type
-      attribute :code
       attribute :code_verifier
       attribute :redirect_uri
 
-      validates :client, presence: { message: "invalid_client" }
-
+      validates :authorization, presence: { message: "invalid_grant" }
       validate :grant_type_is_supported_by_client
       validate :code_can_be_exchanged
       validate :code_verifier_is_valid
       validate :redirect_uri_matches_authorization
 
+      delegate :client, to: :authorization
       delegate :code_exchangable?, to: :authorization, prefix: true, allow_nil: true
 
       def exchange_code_for_token!
@@ -47,14 +46,10 @@ module API
 
     private
 
-      def authorization
-        @authorization ||= client&.authorization_for(code:)
-      end
-
       def code_can_be_exchanged
         return if errors.any?
 
-        errors.add(:code, "invalid_grant") unless code.present? && authorization_code_exchangable?
+        errors.add(:code, "invalid_grant") unless authorization_code_exchangable?
       end
 
       def code_verifier_is_valid

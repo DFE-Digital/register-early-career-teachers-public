@@ -4,7 +4,8 @@ module API
       include API::OAuth::ClientAuthenticable
 
       def create
-        access_token_request = AccessTokenRequest.new(client: current_client, **access_token_params)
+        authorization = current_client.authorization_for(code: params[:code])
+        access_token_request = AccessTokenRequest.new(authorization:, **access_token_params)
 
         if access_token_request.valid?
           access_token_request.exchange_code_for_token!
@@ -18,7 +19,7 @@ module API
     private
 
       def access_token_params
-        params.permit(:grant_type, :code, :code_verifier, :redirect_uri)
+        params.permit(:grant_type, :code_verifier, :redirect_uri)
       end
     end
   end
