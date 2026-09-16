@@ -1,4 +1,4 @@
-describe API::OAuth::Authorizations::Revoke do
+describe API::OAuth::Authorizations::RevocationRequest do
   subject(:service) { described_class.new(authorization:) }
 
   let(:client) { FactoryBot.create(:api_oauth_client) }

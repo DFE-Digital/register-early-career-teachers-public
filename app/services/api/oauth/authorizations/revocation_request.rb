@@ -1,5 +1,5 @@
 module API::OAuth::Authorizations
-  class Revoke
+  class RevocationRequest
     attr_reader :authorization
 
     def initialize(authorization:)
@@ -7,7 +7,7 @@ module API::OAuth::Authorizations
     end
 
     def revoke!
-      return if authorization.blank? || authorization.revoked?
+      return unless authorization&.revokable?
 
       ActiveRecord::Base.transaction do
         authorization.revoke!
