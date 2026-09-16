@@ -309,7 +309,7 @@ RSpec.describe "Admin::Users" do
 
         aggregate_failures do
           expect(response).to redirect_to(admin_users_path)
-          expect(flash[:notice]).to eq(
+          expect(flash[:alert]).to eq(
             "Daphne Blake has been removed as a user and no longer has access to the admin console"
           )
         end

@@ -68,7 +68,7 @@ module Admin
       dfe_users.remove_user(@user.id)
 
       redirect_to admin_users_path,
-                  notice: "#{user_name} has been removed as a user and no longer has access to the admin console"
+                  alert: "#{user_name} has been removed as a user and no longer has access to the admin console"
     end
 
     def unlock_otp_sign_in

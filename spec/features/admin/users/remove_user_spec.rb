@@ -112,12 +112,14 @@ private
   end
 
   def and_i_should_see_the_success_message
-    expect(
-      page.get_by_text(
-        "#{user.name} has been removed as a user and no longer has access to the admin console"
-      )
-    ).to be_visible
-  end
+  expect(page.get_by_text("Success", exact: true)).to be_visible
+
+  expect(
+    page.get_by_text(
+      "#{user.name} has been removed as a user and no longer has access to the admin console"
+    )
+  ).to be_visible
+end
 
   def and_the_user_should_be_removed
     expect(User.exists?(user.id)).to be false
