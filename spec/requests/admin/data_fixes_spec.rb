@@ -1,94 +1,58 @@
 RSpec.describe "Admin::DataFixesController" do
-  before do
-    allow(Rails.application.config)
-      .to receive(:enable_admin_data_fixes)
-      .and_return(enable_admin_data_fixes)
-  end
-
   describe "GET #new" do
     subject do
       get path_for_step("csv")
       response
     end
 
-    context "when `enable_admin_data_fixes` is true" do
-      let(:enable_admin_data_fixes) { true }
-
-      context "when not signed in" do
-        it { is_expected.to redirect_to(sign_in_path) }
-      end
-
-      context "when signed in as a non-DfE user" do
-        include_context "sign in as non-DfE user"
-
-        it { is_expected.to have_http_status(:unauthorized) }
-      end
-
-      context "when signed in as a non-product DfE user" do
-        include_context "sign in as DfE user"
-
-        it { is_expected.to have_http_status(:unauthorized) }
-      end
-
-      context "when signed in as a product team user" do
-        include_context "sign in as product_team DfE user"
-
-        it { is_expected.to have_http_status(:ok) }
-
-        context "when a CSV has already been entered" do
-          let(:csv_string) do
-            <<~ROWS
-              object_type,object_id,action,attributes
-              Teacher,1,update,"trn,345678"
-            ROWS
-          end
-
-          before { post path_for_step("csv"), params: { csv: { csv_string: } } }
-
-          it "keeps the CSV when coming back from the preview step" do
-            get path_for_step("csv"), headers: { "HTTP_REFERER" => path_for_step("preview") }
-
-            expect(response.body).to include("Teacher,1,update")
-          end
-
-          it "clears the CSV when starting again from the confirmation step" do
-            get path_for_step("csv"), headers: { "HTTP_REFERER" => path_for_step("confirmation") }
-
-            expect(response.body).not_to include("Teacher,1,update")
-          end
-
-          it "clears the CSV when arriving from outside the wizard" do
-            get path_for_step("csv"), headers: { "HTTP_REFERER" => "/admin/tools" }
-
-            expect(response.body).not_to include("Teacher,1,update")
-          end
-        end
-      end
+    context "when not signed in" do
+      it { is_expected.to redirect_to(sign_in_path) }
     end
 
-    context "when `enable_admin_data_fixes` is false" do
-      let(:enable_admin_data_fixes) { false }
+    context "when signed in as a non-DfE user" do
+      include_context "sign in as non-DfE user"
 
-      context "when not signed in" do
-        it { is_expected.to have_http_status(:not_found) }
-      end
+      it { is_expected.to have_http_status(:unauthorized) }
+    end
 
-      context "when signed in as a non-DfE user" do
-        include_context "sign in as non-DfE user"
+    context "when signed in as a non-product DfE user" do
+      include_context "sign in as DfE user"
 
-        it { is_expected.to have_http_status(:not_found) }
-      end
+      it { is_expected.to have_http_status(:unauthorized) }
+    end
 
-      context "when signed in as a non-product DfE user" do
-        include_context "sign in as DfE user"
+    context "when signed in as a product team user" do
+      include_context "sign in as product_team DfE user"
 
-        it { is_expected.to have_http_status(:not_found) }
-      end
+      it { is_expected.to have_http_status(:ok) }
 
-      context "when signed in as a product team user" do
-        include_context "sign in as product_team DfE user"
+      context "when a CSV has already been entered" do
+        let(:csv_string) do
+          <<~ROWS
+            object_type,object_id,action,attributes
+            Teacher,1,update,"trn,345678"
+          ROWS
+        end
 
-        it { is_expected.to have_http_status(:not_found) }
+        before { post path_for_step("csv"), params: { csv: { csv_string: } } }
+
+        it "keeps the CSV when coming back from the preview step" do
+          get path_for_step("csv"), headers: { "HTTP_REFERER" => path_for_step("preview") }
+
+          expect(response.body).to include("Teacher,1,update")
+        end
+
+        it "clears the CSV when starting again from the confirmation step" do
+          get path_for_step("csv"), headers: { "HTTP_REFERER" => path_for_step("confirmation") }
+
+          expect(response.body).not_to include("Teacher,1,update")
+        end
+
+        it "clears the CSV when arriving from outside the wizard" do
+          get path_for_step("csv"), headers: { "HTTP_REFERER" => "/admin/tools" }
+
+          expect(response.body).not_to include("Teacher,1,update")
+        end
       end
     end
   end
@@ -108,53 +72,72 @@ RSpec.describe "Admin::DataFixesController" do
       ROWS
     end
 
-    context "when `enable_admin_data_fixes` is true" do
-      let(:enable_admin_data_fixes) { true }
+    context "when not signed in" do
+      it { is_expected.to redirect_to(sign_in_path) }
+    end
 
-      context "when not signed in" do
-        it { is_expected.to redirect_to(sign_in_path) }
+    context "when signed in as a non-DfE user" do
+      include_context "sign in as non-DfE user"
+
+      it { is_expected.to have_http_status(:unauthorized) }
+    end
+
+    context "when signed in as a non-product DfE user" do
+      include_context "sign in as DfE user"
+
+      it { is_expected.to have_http_status(:unauthorized) }
+    end
+
+    context "when signed in as a product team user" do
+      include_context "sign in as product_team DfE user"
+
+      let(:teacher) { FactoryBot.create(:teacher, trn: "123456") }
+      let(:ect_at_school_period) do
+        FactoryBot.create(
+          :ect_at_school_period,
+          :unfinished,
+          started_on: 2.years.ago
+        )
       end
+      let(:other_teacher) { FactoryBot.create(:teacher) }
 
-      context "when signed in as a non-DfE user" do
-        include_context "sign in as non-DfE user"
-
-        it { is_expected.to have_http_status(:unauthorized) }
-      end
-
-      context "when signed in as a non-product DfE user" do
-        include_context "sign in as DfE user"
-
-        it { is_expected.to have_http_status(:unauthorized) }
-      end
-
-      context "when signed in as a product team user" do
-        include_context "sign in as product_team DfE user"
-
-        let(:teacher) { FactoryBot.create(:teacher, trn: "123456") }
-        let(:ect_at_school_period) do
-          FactoryBot.create(
-            :ect_at_school_period,
-            :unfinished,
-            started_on: 2.years.ago
-          )
+      context "when the CSV is valid and changes can be processed" do
+        let(:csv_string) do
+          <<~ROWS
+            object_type,object_id,action,attributes
+            Teacher,#{teacher.id},update,"trn,345678"
+            Teacher,#{other_teacher.id},delete,""
+            ECTAtSchoolPeriod,#{ect_at_school_period.id},update,"started_on,#{Date.yesterday}"
+          ROWS
         end
-        let(:other_teacher) { FactoryBot.create(:teacher) }
+        let(:verify_params) do
+          { verify: { note: "This is a test note explaining the change" } }
+        end
 
-        context "when the CSV is valid and changes can be processed" do
-          let(:csv_string) do
-            <<~ROWS
-              object_type,object_id,action,attributes
-              Teacher,#{teacher.id},update,"trn,345678"
-              Teacher,#{other_teacher.id},delete,""
-              ECTAtSchoolPeriod,#{ect_at_school_period.id},update,"started_on,#{Date.yesterday}"
-            ROWS
-          end
-          let(:verify_params) do
-            { verify: { note: "This is a test note explaining the change" } }
-          end
+        it "redirects to preview step, then redirects to verify step " \
+           "and persists changes after verification" do
+          expect(subject).to redirect_to(path_for_step("preview"))
+          follow_redirect!
 
-          it "redirects to preview step, then redirects to verify step " \
-             "and persists changes after verification" do
+          expect { post path_for_step("preview") }
+            .to not_change { teacher.reload.trn }
+            .and(not_change { ect_at_school_period.reload.started_on })
+          expect { other_teacher.reload }.not_to raise_error
+
+          expect(response).to redirect_to(path_for_step("verify"))
+          follow_redirect!
+
+          expect { post path_for_step("verify"), params: verify_params }
+            .to change { teacher.reload.trn }
+            .from("123456").to("345678")
+            .and change { ect_at_school_period.reload.started_on }
+            .from(2.years.ago.to_date).to(Date.yesterday)
+          expect { other_teacher.reload }.to raise_error(ActiveRecord::RecordNotFound)
+        end
+
+        context "but there are errors in the verify step" do
+          it "redirects to preview step, then redirects to verify step and " \
+             "returns unprocessable_content" do
             expect(subject).to redirect_to(path_for_step("preview"))
             follow_redirect!
 
@@ -166,153 +149,104 @@ RSpec.describe "Admin::DataFixesController" do
             expect(response).to redirect_to(path_for_step("verify"))
             follow_redirect!
 
+            # Invalidate the changes
+            FactoryBot.create(:ect_at_school_period, teacher: other_teacher)
+            ect_at_school_period.finish!(2.days.ago)
+
             expect { post path_for_step("verify"), params: verify_params }
-              .to change { teacher.reload.trn }
-              .from("123456").to("345678")
-              .and change { ect_at_school_period.reload.started_on }
-              .from(2.years.ago.to_date).to(Date.yesterday)
-            expect { other_teacher.reload }.to raise_error(ActiveRecord::RecordNotFound)
-          end
+              .to not_change { teacher.reload.trn }
+              .and(not_change { ect_at_school_period.reload.started_on })
+            expect { other_teacher.reload }.not_to raise_error
 
-          context "but there are errors in the verify step" do
-            it "redirects to preview step, then redirects to verify step and " \
-               "returns unprocessable_content" do
-              expect(subject).to redirect_to(path_for_step("preview"))
-              follow_redirect!
-
-              expect { post path_for_step("preview") }
-                .to not_change { teacher.reload.trn }
-                .and(not_change { ect_at_school_period.reload.started_on })
-              expect { other_teacher.reload }.not_to raise_error
-
-              expect(response).to redirect_to(path_for_step("verify"))
-              follow_redirect!
-
-              # Invalidate the changes
-              FactoryBot.create(:ect_at_school_period, teacher: other_teacher)
-              ect_at_school_period.finish!(2.days.ago)
-
-              expect { post path_for_step("verify"), params: verify_params }
-                .to not_change { teacher.reload.trn }
-                .and(not_change { ect_at_school_period.reload.started_on })
-              expect { other_teacher.reload }.not_to raise_error
-
-              expect(response).to have_http_status(:unprocessable_content)
-              page = Capybara.string(response.body)
-              error_summary = page.find(".govuk-error-summary")
-              expect(error_summary)
-                .to have_text("Row 2: PG::ForeignKeyViolation")
-                .and have_text("Row 3: PG::InFailedSqlTransaction")
-            end
-          end
-
-          context "but there is an unexpected error in the preview step" do
-            before do
-              processor = Admin::DataFixes::Processor.new
-              allow(Admin::DataFixes::Processor)
-                .to receive(:new)
-                .and_return(processor)
-              allow(processor)
-                .to receive(:process!)
-                .with(data_change: {
-                  "object_type" => "Teacher",
-                  "object_id" => teacher.id.to_s,
-                  "action" => "update",
-                  "attributes" => "trn,345678"
-                })
-                .and_call_original
-              allow(processor)
-                .to receive(:process!)
-                .with(data_change: {
-                  "object_type" => "Teacher",
-                  "object_id" => other_teacher.id.to_s,
-                  "action" => "delete",
-                  "attributes" => ""
-                })
-                .and_raise(StandardError, "oops")
-              allow(processor)
-                .to receive(:process!)
-                .with(data_change: {
-                  "object_type" => "ECTAtSchoolPeriod",
-                  "object_id" => ect_at_school_period.id.to_s,
-                  "action" => "update",
-                  "attributes" => "started_on,#{Date.yesterday}"
-                })
-                .and_call_original
-            end
-
-            it "redirects to preview step, then raises the unexpected error " \
-               "without persisting any changes" do
-              expect(subject).to redirect_to(path_for_step("preview"))
-
-              follow_redirect!
-
-              expect { post path_for_step("preview") }
-                .to raise_error(StandardError, "oops")
-                .and not_change { teacher.reload.trn }
-                .and(not_change { other_teacher.reload.trn })
-                .and(not_change { ect_at_school_period.reload.started_on })
-            end
+            expect(response).to have_http_status(:unprocessable_content)
+            page = Capybara.string(response.body)
+            error_summary = page.find(".govuk-error-summary")
+            expect(error_summary)
+              .to have_text("Row 2: PG::ForeignKeyViolation")
+              .and have_text("Row 3: PG::InFailedSqlTransaction")
           end
         end
 
-        context "when the CSV is valid but the changes cannot be processed" do
-          let(:csv_string) do
-            <<~ROWS
-              object_type,object_id,action,attributes
-              Teacher,#{teacher.id},update,"trn,123"
-            ROWS
+        context "but there is an unexpected error in the preview step" do
+          before do
+            processor = Admin::DataFixes::Processor.new
+            allow(Admin::DataFixes::Processor)
+              .to receive(:new)
+              .and_return(processor)
+            allow(processor)
+              .to receive(:process!)
+              .with(data_change: {
+                "object_type" => "Teacher",
+                "object_id" => teacher.id.to_s,
+                "action" => "update",
+                "attributes" => "trn,345678"
+              })
+              .and_call_original
+            allow(processor)
+              .to receive(:process!)
+              .with(data_change: {
+                "object_type" => "Teacher",
+                "object_id" => other_teacher.id.to_s,
+                "action" => "delete",
+                "attributes" => ""
+              })
+              .and_raise(StandardError, "oops")
+            allow(processor)
+              .to receive(:process!)
+              .with(data_change: {
+                "object_type" => "ECTAtSchoolPeriod",
+                "object_id" => ect_at_school_period.id.to_s,
+                "action" => "update",
+                "attributes" => "started_on,#{Date.yesterday}"
+              })
+              .and_call_original
           end
 
-          it "redirects to preview step, then returns unprocessable_content" do
+          it "redirects to preview step, then raises the unexpected error " \
+             "without persisting any changes" do
             expect(subject).to redirect_to(path_for_step("preview"))
 
             follow_redirect!
 
             expect { post path_for_step("preview") }
-              .not_to(change { teacher.reload.trn })
-
-            expect(response).to have_http_status(:unprocessable_content)
+              .to raise_error(StandardError, "oops")
+              .and not_change { teacher.reload.trn }
+              .and(not_change { other_teacher.reload.trn })
+              .and(not_change { ect_at_school_period.reload.started_on })
           end
         end
+      end
 
-        context "when the CSV is invalid" do
-          let(:csv_string) do
-            <<~ROWS
-              object_type,object_id,attributes
-              something,1,create,"attribute1,value1,attribute2,value2"
-              another_thing,2,destroy,""
-            ROWS
-          end
+      context "when the CSV is valid but the changes cannot be processed" do
+        let(:csv_string) do
+          <<~ROWS
+            object_type,object_id,action,attributes
+            Teacher,#{teacher.id},update,"trn,123"
+          ROWS
+        end
 
-          it { is_expected.to have_http_status(:unprocessable_content) }
+        it "redirects to preview step, then returns unprocessable_content" do
+          expect(subject).to redirect_to(path_for_step("preview"))
+
+          follow_redirect!
+
+          expect { post path_for_step("preview") }
+            .not_to(change { teacher.reload.trn })
+
+          expect(response).to have_http_status(:unprocessable_content)
         end
       end
-    end
 
-    context "when `enable_admin_data_fixes` is false" do
-      let(:enable_admin_data_fixes) { false }
+      context "when the CSV is invalid" do
+        let(:csv_string) do
+          <<~ROWS
+            object_type,object_id,attributes
+            something,1,create,"attribute1,value1,attribute2,value2"
+            another_thing,2,destroy,""
+          ROWS
+        end
 
-      context "when not signed in" do
-        it { is_expected.to have_http_status(:not_found) }
-      end
-
-      context "when signed in as a non-DfE user" do
-        include_context "sign in as non-DfE user"
-
-        it { is_expected.to have_http_status(:not_found) }
-      end
-
-      context "when signed in as a non-product DfE user" do
-        include_context "sign in as DfE user"
-
-        it { is_expected.to have_http_status(:not_found) }
-      end
-
-      context "when signed in as a product team user" do
-        include_context "sign in as product_team DfE user"
-
-        it { is_expected.to have_http_status(:not_found) }
+        it { is_expected.to have_http_status(:unprocessable_content) }
       end
     end
   end
