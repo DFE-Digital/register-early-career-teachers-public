@@ -11,7 +11,6 @@ FactoryBot.define do
       dfe_sign_in_organisation_id { nil }
     end
 
-    # Once data migration has started
     trait :active do
       association :dfe_sign_in_organisation
     end
@@ -39,7 +38,6 @@ FactoryBot.define do
     trait :local_authority do
       inactive
       body_type { "local_authority" }
-      dqt_id { Faker::Internet.uuid }
     end
   end
 end

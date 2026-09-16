@@ -6,7 +6,6 @@ shared:
     - created_at
     - updated_at
     - dfe_sign_in_organisation_id
-    - dqt_id
   :induction_extensions:
     - id
     - teacher_id

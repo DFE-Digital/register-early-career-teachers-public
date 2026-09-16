@@ -7,13 +7,12 @@ class AppropriateBodyMigrator
     @authenticated_at = Time.zone.now
   end
 
-  delegate :name, :dqt_id, to: :appropriate_body_period
+  delegate :name, to: :appropriate_body_period
   delegate :school, to: :dfe_sign_in_organisation, prefix: :lead
 
   def call
     ActiveRecord::Base.transaction do
       dfe_sign_in_organisation
-      legacy_appropriate_body
 
       appropriate_body_period.update!(appropriate_body:) if appropriate_body_period.appropriate_body.blank?
 
@@ -27,13 +26,6 @@ private
   def appropriate_body_period
     @appropriate_body_period ||=
       AppropriateBodyPeriod.find_by(dfe_sign_in_organisation_id: organisation.id)
-  end
-
-  # @return [LegacyAppropriateBody]
-  def legacy_appropriate_body
-    @legacy_appropriate_body ||=
-      LegacyAppropriateBody.create_with(dqt_id:, appropriate_body_period:)
-        .find_or_create_by(name:)
   end
 
   # @return [DfESignInOrganisation]
