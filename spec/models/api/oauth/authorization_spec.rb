@@ -137,22 +137,22 @@ describe API::OAuth::Authorization do
     end
   end
 
-  describe "#revokable?" do
+  describe "#revocable?" do
     context "when revoked_at has a value" do
       subject(:authorization) { FactoryBot.build(:api_oauth_authorization, revoked_at: 1.day.ago) }
 
-      it { is_expected.not_to be_revokable }
+      it { is_expected.not_to be_revocable }
     end
 
     context "when revoked_at is blank" do
       subject(:authorization) { FactoryBot.build(:api_oauth_authorization) }
 
-      it { is_expected.to be_revokable }
+      it { is_expected.to be_revocable }
     end
   end
 
   describe "#revoke!" do
-    subject(:authorization) { FactoryBot.build(:api_oauth_authorization) }
+    subject(:authorization) { FactoryBot.create(:api_oauth_authorization) }
 
     it "sets the revoked_at to the current date and time" do
       freeze_time do
