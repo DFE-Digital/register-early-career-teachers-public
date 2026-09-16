@@ -4,12 +4,12 @@ RSpec.describe GIAS::Reconciliation::Open do
 
     let!(:gias_school) { FactoryBot.create(:gias_school, status: :open) }
     let(:gias_school_can_be_opened?) { true }
-    let(:gias_school_can_be_split?) { false }
+    let(:gias_school_can_be_opened_after_split?) { false }
     let(:eligibility) do
       instance_double(
         GIAS::Reconciliation::Eligibility,
         can_be_opened?: gias_school_can_be_opened?,
-        can_be_split?: gias_school_can_be_split?
+        can_be_opened_after_split?: gias_school_can_be_opened_after_split?
       )
     end
 
@@ -46,7 +46,7 @@ RSpec.describe GIAS::Reconciliation::Open do
     end
 
     context "when the school can be split" do
-      let(:gias_school_can_be_split?) { true }
+      let(:gias_school_can_be_opened_after_split?) { true }
       let(:gias_school_can_be_opened?) { false }
 
       it { is_expected.to be_truthy }

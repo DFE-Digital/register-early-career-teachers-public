@@ -310,8 +310,8 @@ RSpec.describe GIAS::Reconciliation::Eligibility do
     end
   end
 
-  describe "#can_be_split?" do
-    subject { eligibility.can_be_split? }
+  describe "#can_be_opened_after_split?" do
+    subject { eligibility.can_be_opened_after_split? }
 
     let(:gias_school) { FactoryBot.create(:gias_school, status: "open") }
 

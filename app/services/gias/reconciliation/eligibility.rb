@@ -39,7 +39,7 @@ module GIAS::Reconciliation
         has_one_open_successor?
     end
 
-    def can_be_split?
+    def can_be_opened_after_split?
       open_status? &&
         school.blank? &&
         split_successor?
