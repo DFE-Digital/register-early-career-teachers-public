@@ -13,6 +13,8 @@ module API::OAuth::Authorization::ExpirableCredentials
     validates :code_expires_at, presence: true
     validates :token_digest, uniqueness: true, allow_nil: true
     validates :token_expires_at, presence: true, if: :token_digest
+
+    scope :unexpired_token, -> { where(token_expires_at: Time.zone.now..) }
   end
 
   def code_expired? = code_expires_at&.past?

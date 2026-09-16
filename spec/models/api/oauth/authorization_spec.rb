@@ -15,6 +15,32 @@ describe API::OAuth::Authorization do
     }
   end
 
+  describe "scopes" do
+    let(:client) { FactoryBot.create(:api_oauth_client) }
+    let!(:authorization_1) { FactoryBot.create(:api_oauth_authorization, :with_token, client:) }
+    let!(:authorization_2) { FactoryBot.create(:api_oauth_authorization, :with_expired_token, client:) }
+    let!(:authorization_3) { FactoryBot.create(:api_oauth_authorization, :with_token, :revoked, client:) }
+    let!(:authorization_4) { FactoryBot.create(:api_oauth_authorization, client:) }
+
+    describe "active" do
+      it "returns unrevoked authorizations that have a token that is not expired" do
+        expect(client.authorizations.active).to eq [authorization_1]
+      end
+    end
+
+    describe "unrevoked" do
+      it "returns unrevoked authorizations" do
+        expect(client.authorizations.unrevoked).to match_array [authorization_1, authorization_2, authorization_4]
+      end
+    end
+
+    describe "unexpired_token" do
+      it "returns authorizations that have a token that has not expired" do
+        expect(client.authorizations.unexpired_token).to match_array [authorization_1, authorization_3]
+      end
+    end
+  end
+
   describe "validations" do
     subject(:authorization) { FactoryBot.build(:api_oauth_authorization) }
 

@@ -11,5 +11,7 @@ class API::OAuth::Authorization < ApplicationRecord
   validates :redirect_uri, presence: true, inclusion: { in: -> { it.client.redirect_uris }, allow_blank: true, if: :client, on: :create }
   validates :code_challenge, presence: true
 
+  scope :active, -> { unrevoked.unexpired_token }
+
   def error_messages_description = errors.full_messages.join(", ")
 end

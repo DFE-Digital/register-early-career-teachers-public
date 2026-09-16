@@ -46,6 +46,18 @@ module API
 
     private
 
+      def revoke_active_authorizations_matching!(authorization:)
+        client
+          .authorizations
+          .active
+          .where(appropriate_body_period: authorization.appropriate_body_period,
+                 redirect_uri: authorization.redirect_uri)
+          .where.not(id: authorization.id)
+          .find_each do |authorization_to_be_revoked|
+            API::OAuth::Authorization::Revoke.new(authorization: authorization_to_be_revoked).revoke!
+          end
+      end
+
       def code_can_be_exchanged
         return if errors.any?
 
