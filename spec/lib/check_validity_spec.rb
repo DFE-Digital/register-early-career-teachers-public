@@ -10,8 +10,33 @@ RSpec.describe CheckValidity do
       expect { described_class.new.call(tables: []) }.to raise_error(ArgumentError, "No tables specified")
     end
 
-    it "returns the numbder of invalid records" do
+    it "returns the number of invalid records" do
       expect(described_class.new.call(tables: %w[teachers])).to eq(0)
+    end
+
+    it "checks induction periods before teachers" do
+      expect(described_class::TABLES).to eq(%w[induction_periods teachers])
+    end
+
+    describe "EAGER_LOAD" do
+      it "has an entry for induction_periods preloading the teacher and their periods" do
+        expect(described_class::EAGER_LOAD.fetch(:induction_periods)).to eq([{ teacher: :induction_periods }])
+      end
+
+      it "preloads nothing for tables without association-traversal validations" do
+        expect(described_class::EAGER_LOAD.fetch(:teachers)).to eq([])
+      end
+
+      it "eager loads the declared associations on the scanned relation" do
+        relation = double(ActiveRecord::Relation)
+        allow(InductionPeriod).to receive(:includes).with({ teacher: :induction_periods }).and_return(relation)
+        allow(relation).to receive(:find_in_batches).and_yield(InductionPeriod.none)
+
+        described_class.new.call(tables: %w[induction_periods], batch_size: 10)
+
+        expect(InductionPeriod).to have_received(:includes).with({ teacher: :induction_periods })
+        expect(relation).to have_received(:find_in_batches)
+      end
     end
 
     describe "when a table contains invalid records" do
@@ -67,6 +92,15 @@ RSpec.describe CheckValidity do
         expect(invalid_record.error_messages).to include("reason why the mentor became ineligible for funding")
 
         expect(InvalidRecord.where(table_name: "teachers", record_id: invalid_teacher.id).count).to eq(1)
+      end
+
+      it "does not purge invalid records from other tables during a scan" do
+        described_class.new.call(tables: %w[teachers])
+        expect(InvalidRecord.where(table_name: "teachers", record_id: invalid_teacher.id)).to exist
+
+        described_class.new.call(tables: %w[induction_periods])
+
+        expect(InvalidRecord.where(table_name: "teachers", record_id: invalid_teacher.id)).to exist
       end
 
       it "removes records that have become valid on a subsequent run" do
