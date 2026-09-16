@@ -30,13 +30,13 @@ describe API::OAuth::Authorization do
 
     describe "unrevoked" do
       it "returns unrevoked authorizations" do
-        expect(client.authorizations.unrevoked).to match_array [authorization_1, authorization_2, authorization_4]
+        expect(client.authorizations.unrevoked).to contain_exactly(authorization_1, authorization_2, authorization_4)
       end
     end
 
     describe "unexpired_token" do
       it "returns authorizations that have a token that has not expired" do
-        expect(client.authorizations.unexpired_token).to match_array [authorization_1, authorization_3]
+        expect(client.authorizations.unexpired_token).to contain_exactly(authorization_1, authorization_3)
       end
     end
   end
