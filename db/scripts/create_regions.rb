@@ -101,8 +101,6 @@ regions = [
 ]
 
 ActiveRecord::Base.transaction do
-  Region.delete_all
-
   regions.each do |code, districts|
     districts = districts.split(", ")
 
