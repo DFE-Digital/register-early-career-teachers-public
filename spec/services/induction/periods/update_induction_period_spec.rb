@@ -219,7 +219,6 @@ describe Induction::Periods::UpdateInductionPeriod do
 
       before do
         allow(BeginECTInductionJob).to receive(:perform_later)
-        allow(Events::Record).to receive(:record_teacher_trs_induction_start_date_updated_event!)
       end
 
       context "when induction period has no outcome and no end date" do
@@ -243,11 +242,10 @@ describe Induction::Periods::UpdateInductionPeriod do
             start_date: Date.parse("2023-01-01")
           )
 
-          expect(Events::Record).to have_received(:record_teacher_trs_induction_start_date_updated_event!).with(
-            author:,
-            teacher:,
-            appropriate_body_period:,
-            induction_period:
+          expect(Event.where(event_type: "teacher_trs_induction_start_date_updated").sole).to have_attributes(
+            teacher_id: teacher.id,
+            appropriate_body_period_id: appropriate_body_period.id,
+            induction_period_id: induction_period.id
           )
         end
       end
@@ -273,8 +271,6 @@ describe Induction::Periods::UpdateInductionPeriod do
 
         before do
           allow(PassECTInductionJob).to receive(:perform_later)
-          allow(Events::Record).to receive(:record_teacher_trs_induction_start_date_updated_event!)
-          allow(Events::Record).to receive(:record_teacher_trs_induction_end_date_updated_event!)
         end
 
         it "sends pass notification and records both events" do
@@ -286,18 +282,16 @@ describe Induction::Periods::UpdateInductionPeriod do
             completed_date: Date.parse("2024-01-31")
           )
 
-          expect(Events::Record).to have_received(:record_teacher_trs_induction_start_date_updated_event!).with(
-            author:,
-            teacher:,
-            appropriate_body_period:,
-            induction_period:
+          expect(Event.where(event_type: "teacher_trs_induction_start_date_updated").sole).to have_attributes(
+            teacher_id: teacher.id,
+            appropriate_body_period_id: appropriate_body_period.id,
+            induction_period_id: induction_period.id
           )
 
-          expect(Events::Record).to have_received(:record_teacher_trs_induction_end_date_updated_event!).with(
-            author:,
-            teacher:,
-            appropriate_body_period:,
-            induction_period:
+          expect(Event.where(event_type: "teacher_trs_induction_end_date_updated").sole).to have_attributes(
+            teacher_id: teacher.id,
+            appropriate_body_period_id: appropriate_body_period.id,
+            induction_period_id: induction_period.id
           )
         end
       end
@@ -319,7 +313,6 @@ describe Induction::Periods::UpdateInductionPeriod do
 
       before do
         allow(PassECTInductionJob).to receive(:perform_later)
-        allow(Events::Record).to receive(:record_teacher_trs_induction_end_date_updated_event!)
       end
 
       it "sends pass notification and records end date event" do
@@ -331,11 +324,10 @@ describe Induction::Periods::UpdateInductionPeriod do
           completed_date: Date.parse("2024-01-31")
         )
 
-        expect(Events::Record).to have_received(:record_teacher_trs_induction_end_date_updated_event!).with(
-          author:,
-          teacher:,
-          appropriate_body_period:,
-          induction_period:
+        expect(Event.where(event_type: "teacher_trs_induction_end_date_updated").sole).to have_attributes(
+          teacher_id: teacher.id,
+          appropriate_body_period_id: appropriate_body_period.id,
+          induction_period_id: induction_period.id
         )
       end
     end

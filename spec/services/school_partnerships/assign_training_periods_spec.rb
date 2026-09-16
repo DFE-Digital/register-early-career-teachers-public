@@ -1,6 +1,4 @@
 RSpec.describe SchoolPartnerships::AssignTrainingPeriods do
-  include ActiveJob::TestHelper
-
   describe "#call" do
     subject(:service) do
       described_class.new(
@@ -107,11 +105,9 @@ RSpec.describe SchoolPartnerships::AssignTrainingPeriods do
     end
 
     it "records a training_period_assigned_to_school_partnership event for each newly linked training period" do
-      perform_enqueued_jobs do
-        expect {
-          service.call
-        }.to change { Event.where(event_type: "training_period_assigned_to_school_partnership").count }.by(1)
-      end
+      expect {
+        service.call
+      }.to change { Event.where(event_type: "training_period_assigned_to_school_partnership").count }.by(1)
 
       expect(Event.last).to have_attributes(
         event_type: "training_period_assigned_to_school_partnership",

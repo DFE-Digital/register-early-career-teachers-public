@@ -22,10 +22,11 @@ RSpec.describe Teachers::UndoRegistration do
       end
 
       it "records an undo registration event" do
-        expect(Events::Record).to receive(:record_undo_registration_event!)
-          .with(author:, teacher: at_school_period.teacher, reason: :registered_in_error)
-
         undo_registration
+
+        event = Event.where(event_type: "teacher_registration_undone").sole
+        expect(event.teacher_id).to eq(at_school_period.teacher.id)
+        expect(event.body).to include("registered_in_error")
       end
     end
 
@@ -182,10 +183,11 @@ RSpec.describe Teachers::UndoRegistration do
         end
 
         it "records an undo registration event" do
-          expect(Events::Record).to receive(:record_undo_registration_event!)
-            .with(author:, teacher: ect_at_school_period.teacher, reason: :registered_in_error)
-
           undo_registration
+
+          event = Event.where(event_type: "teacher_registration_undone").sole
+          expect(event.teacher_id).to eq(ect_at_school_period.teacher.id)
+          expect(event.body).to include("registered_in_error")
         end
       end
 

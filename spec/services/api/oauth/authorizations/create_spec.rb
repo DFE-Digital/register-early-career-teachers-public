@@ -1,6 +1,4 @@
 describe API::OAuth::Authorizations::Create do
-  include ActiveJob::TestHelper
-
   subject(:service) { described_class.new(authorization_request:, author:) }
 
   let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
@@ -27,7 +25,6 @@ describe API::OAuth::Authorizations::Create do
 
     it "creates an authorization for the request and records an event" do
       authorization = service.call
-      expect { perform_enqueued_jobs }.to change(Event, :count).by(1)
       event = Event.with_event_type(:oauth_authorization_created).sole
       expect(authorization).to be_a(API::OAuth::Authorization).and(be_persisted)
       expect(authorization.client).to eq(client)
@@ -47,7 +44,7 @@ describe API::OAuth::Authorizations::Create do
 
     it "returns the unsaved authorization and records no event" do
       authorization = service.call
-      expect { perform_enqueued_jobs }.not_to change(Event, :count)
+      expect(Event.all).to be_empty
       expect(authorization).not_to be_persisted
       expect(authorization.errors[:redirect_uri]).to include("is not included in the list")
     end

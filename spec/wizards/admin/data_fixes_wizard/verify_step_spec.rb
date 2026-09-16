@@ -100,11 +100,9 @@ RSpec.describe Admin::DataFixesWizard::VerifyStep do
       end
 
       it "does not record any events" do
-        allow(Events::Record).to receive(:record_admin_data_fix_event!)
-
         save!
 
-        expect(Events::Record).not_to have_received(:record_admin_data_fix_event!)
+        expect(Event.where(event_type: "admin_data_fix")).to be_empty
       end
     end
 
@@ -158,38 +156,28 @@ RSpec.describe Admin::DataFixesWizard::VerifyStep do
       end
 
       it "records an event for each confirmed change" do
-        allow(Events::Record).to receive(:record_admin_data_fix_event!)
-
         save!
 
-        expect(Events::Record)
-          .to have_received(:record_admin_data_fix_event!)
-          .with(
-            author:,
-            body: note,
-            zendesk_ticket_id:,
-            modifications: {},
-            metadata: {
-              gid: deleted_teacher.to_global_id.to_s,
-              action: "delete",
-              changes: {}
-            },
-            record: deleted_teacher
-          )
-        expect(Events::Record)
-          .to have_received(:record_admin_data_fix_event!)
-          .with(
-            author:,
-            body: note,
-            zendesk_ticket_id:,
-            modifications: { "something" => %w[old_value new_value] },
-            metadata: {
-              gid: updated_teacher.to_global_id.to_s,
-              action: "update",
-              changes: { "something" => %w[old_value new_value] }
-            },
-            record: updated_teacher
-          )
+        events = Event.where(event_type: "admin_data_fix").order(:id)
+        expect(events.count).to eq(2)
+        expect(events.map(&:body).uniq).to eq([note])
+
+        expect(events.first).to have_attributes(
+          teacher_id: deleted_teacher.id,
+          metadata: {
+            gid: deleted_teacher.to_global_id.to_s,
+            action: "delete",
+            changes: {}
+          }.as_json
+        )
+        expect(events.second).to have_attributes(
+          teacher_id: updated_teacher.id,
+          metadata: {
+            gid: updated_teacher.to_global_id.to_s,
+            action: "update",
+            changes: { "something" => %w[old_value new_value] }
+          }.as_json
+        )
       end
     end
 
@@ -246,11 +234,9 @@ RSpec.describe Admin::DataFixesWizard::VerifyStep do
       end
 
       it "does not record any events" do
-        allow(Events::Record).to receive(:record_admin_data_fix_event!)
-
         save!
 
-        expect(Events::Record).not_to have_received(:record_admin_data_fix_event!)
+        expect(Event.where(event_type: "admin_data_fix")).to be_empty
       end
 
       context "but there were confirmed changes already in the store" do

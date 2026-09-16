@@ -7,10 +7,6 @@ RSpec.describe Milestones::Destroy do
   let!(:milestone) { FactoryBot.create(:milestone, schedule:) }
 
   describe "#destroy!" do
-    before do
-      allow(Events::Record).to receive(:record_milestone_deleted_event!)
-    end
-
     it "destroys the milestone" do
       expect { service.destroy! }.to change(Milestone, :count).by(-1)
     end
@@ -18,10 +14,9 @@ RSpec.describe Milestones::Destroy do
     it "records a milestone_deleted event" do
       service.destroy!
 
-      expect(Events::Record).to have_received(:record_milestone_deleted_event!).with(
-        author:,
-        milestone:
-      )
+      event = Event.where(event_type: "milestone_deleted").sole
+      expect(event.contract_period_id).to eq(schedule.contract_period.id)
+      expect(event.heading).to include(milestone.declaration_type.titleize, schedule.description)
     end
   end
 end

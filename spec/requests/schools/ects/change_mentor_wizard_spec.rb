@@ -203,17 +203,13 @@ describe "Schools::ECTs::ChangeMentorWizardController" do
         end
 
         it "records the relevant events only after confirmation" do
-          allow(Events::Record).to receive(:record_teacher_starts_training_period_event!)
-          allow(Events::Record).to receive(:record_teacher_starts_being_mentored_event!)
-          allow(Events::Record).to receive(:record_teacher_starts_mentoring_event!)
-
           subject
           follow_redirect!
           post(path_for_step("check-answers"))
 
-          expect(Events::Record).not_to have_received(:record_teacher_starts_training_period_event!)
-          expect(Events::Record).to have_received(:record_teacher_starts_being_mentored_event!)
-          expect(Events::Record).to have_received(:record_teacher_starts_mentoring_event!)
+          expect(Event.where(event_type: "teacher_starts_training_period")).to be_empty
+          expect(Event.where(event_type: "teacher_starts_being_mentored")).to be_present
+          expect(Event.where(event_type: "teacher_starts_mentoring")).to be_present
 
           expect(response).to redirect_to(path_for_step("confirmation"))
         end
@@ -267,17 +263,13 @@ describe "Schools::ECTs::ChangeMentorWizardController" do
           end
 
           it "records the relevant events only after confirmation" do
-            allow(Events::Record).to receive(:record_teacher_starts_training_period_event!)
-            allow(Events::Record).to receive(:record_teacher_starts_being_mentored_event!)
-            allow(Events::Record).to receive(:record_teacher_starts_mentoring_event!)
-
             subject
             follow_redirect!
             post(path_for_step("check-answers"))
 
-            expect(Events::Record).not_to have_received(:record_teacher_starts_training_period_event!)
-            expect(Events::Record).to have_received(:record_teacher_starts_being_mentored_event!)
-            expect(Events::Record).to have_received(:record_teacher_starts_mentoring_event!)
+            expect(Event.where(event_type: "teacher_starts_training_period")).to be_empty
+            expect(Event.where(event_type: "teacher_starts_being_mentored")).to be_present
+            expect(Event.where(event_type: "teacher_starts_mentoring")).to be_present
 
             expect(response).to redirect_to(path_for_step("confirmation"))
           end
@@ -308,17 +300,13 @@ describe "Schools::ECTs::ChangeMentorWizardController" do
           end
 
           it "records the relevant events only after confirmation" do
-            allow(Events::Record).to receive(:record_teacher_starts_training_period_event!)
-            allow(Events::Record).to receive(:record_teacher_starts_being_mentored_event!)
-            allow(Events::Record).to receive(:record_teacher_starts_mentoring_event!)
-
             subject
             follow_redirect!
             post(path_for_step("check-answers"))
 
-            expect(Events::Record).not_to have_received(:record_teacher_starts_training_period_event!)
-            expect(Events::Record).to have_received(:record_teacher_starts_being_mentored_event!)
-            expect(Events::Record).to have_received(:record_teacher_starts_mentoring_event!)
+            expect(Event.where(event_type: "teacher_starts_training_period")).to be_empty
+            expect(Event.where(event_type: "teacher_starts_being_mentored")).to be_present
+            expect(Event.where(event_type: "teacher_starts_mentoring")).to be_present
 
             expect(response).to redirect_to(path_for_step("confirmation"))
           end
@@ -357,10 +345,6 @@ describe "Schools::ECTs::ChangeMentorWizardController" do
             end
 
             it "records the relevant events only after confirmation" do
-              allow(Events::Record).to receive(:record_teacher_starts_training_period_event!)
-              allow(Events::Record).to receive(:record_teacher_starts_being_mentored_event!)
-              allow(Events::Record).to receive(:record_teacher_starts_mentoring_event!)
-
               subject
               follow_redirect!
               review_mentor_eligibility_params = { review_mentor_eligibility: { accepting_current_lead_provider: true } }
@@ -368,9 +352,9 @@ describe "Schools::ECTs::ChangeMentorWizardController" do
               follow_redirect!
               post(path_for_step("check-answers"))
 
-              expect(Events::Record).to have_received(:record_teacher_starts_training_period_event!)
-              expect(Events::Record).to have_received(:record_teacher_starts_being_mentored_event!)
-              expect(Events::Record).to have_received(:record_teacher_starts_mentoring_event!)
+              expect(Event.where(event_type: "teacher_starts_training_period")).to be_present
+              expect(Event.where(event_type: "teacher_starts_being_mentored")).to be_present
+              expect(Event.where(event_type: "teacher_starts_mentoring")).to be_present
 
               expect(response).to redirect_to(path_for_step("confirmation"))
             end
@@ -417,10 +401,6 @@ describe "Schools::ECTs::ChangeMentorWizardController" do
             end
 
             it "records the relevant events only after confirmation" do
-              allow(Events::Record).to receive(:record_teacher_starts_training_period_event!)
-              allow(Events::Record).to receive(:record_teacher_starts_being_mentored_event!)
-              allow(Events::Record).to receive(:record_teacher_starts_mentoring_event!)
-
               subject
               follow_redirect!
               lead_provider_params = {
@@ -430,9 +410,9 @@ describe "Schools::ECTs::ChangeMentorWizardController" do
               follow_redirect!
               post(path_for_step("check-answers"))
 
-              expect(Events::Record).to have_received(:record_teacher_starts_training_period_event!)
-              expect(Events::Record).to have_received(:record_teacher_starts_being_mentored_event!)
-              expect(Events::Record).to have_received(:record_teacher_starts_mentoring_event!)
+              expect(Event.where(event_type: "teacher_starts_training_period")).to be_present
+              expect(Event.where(event_type: "teacher_starts_being_mentored")).to be_present
+              expect(Event.where(event_type: "teacher_starts_mentoring")).to be_present
 
               expect(response).to redirect_to(path_for_step("confirmation"))
             end

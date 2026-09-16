@@ -181,22 +181,19 @@ RSpec.describe ECTAtSchoolPeriods::ChangeStartDate do
 
         shared_examples "records the mentorship period removal event" do
           it "records the removal on the mentor's timeline" do
-            expect(Events::Record)
-              .to receive(
-                :record_teacher_mentorship_period_removed_event!
-              )
-              .with(
-                author:,
-                mentor: mentor_at_school_period.teacher,
-                mentee: teacher,
-                mentor_at_school_period:,
-                school:,
-                old_ect_start_date: current_started_on,
-                new_ect_start_date: new_started_on,
-                happened_at: Time.current
-              )
-
             change_start_date
+
+            event = Event.where(event_type: "teacher_mentorship_period_removed").sole
+            expect(event).to have_attributes(
+              mentor_at_school_period_id: mentor_at_school_period.id,
+              teacher_id: mentor_at_school_period.teacher_id,
+              school_id: school.id,
+              happened_at: Time.current
+            )
+            expect(event.metadata).to include(
+              "mentor_id" => mentor_at_school_period.teacher_id,
+              "mentee_id" => teacher.id
+            )
           end
         end
 
@@ -350,21 +347,16 @@ RSpec.describe ECTAtSchoolPeriods::ChangeStartDate do
       let(:new_started_on) { Date.new(2026, 10, 1) }
 
       it "records a school start-date change event" do
-        expect(Events::Record)
-          .to receive(
-            :record_teacher_school_start_date_updated_event!
-          )
-          .with(
-            old_start_date: current_started_on,
-            new_start_date: new_started_on,
-            author:,
-            ect_at_school_period:,
-            school:,
-            teacher:,
-            happened_at: Time.current
-          )
-
         change_start_date
+
+        event = Event.where(event_type: "teacher_school_start_date_updated").sole
+        expect(event).to have_attributes(
+          ect_at_school_period_id: ect_at_school_period.id,
+          school_id: school.id,
+          teacher_id: teacher.id,
+          happened_at: Time.current
+        )
+        expect(event.heading).to include(current_started_on.to_fs(:govuk), new_started_on.to_fs(:govuk))
       end
     end
 
@@ -421,13 +413,10 @@ RSpec.describe ECTAtSchoolPeriods::ChangeStartDate do
       end
 
       it "does not record the school start-date change event" do
-        expect(Events::Record)
-          .not_to receive(
-            :record_teacher_school_start_date_updated_event!
-          )
-
         expect { change_start_date }
           .to raise_error(ActiveRecord::RecordInvalid)
+
+        expect(Event.where(event_type: "teacher_school_start_date_updated")).to be_empty
       end
     end
   end

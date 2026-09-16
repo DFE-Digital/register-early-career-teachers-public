@@ -16,14 +16,11 @@ RSpec.describe Teachers::ReplaceTRN do
       end
 
       it "records a teacher_trn_replaced event" do
-        expect(Events::Record).to receive(:record_teacher_trn_replaced_event!).with(
-          author: an_instance_of(Events::SystemAuthor),
-          teacher:,
-          old_trn:,
-          new_trn:
-        )
-
         subject
+
+        event = Event.where(event_type: "teacher_trn_replaced").sole
+        expect(event.teacher_id).to eq(teacher.id)
+        expect(event.metadata).to eq("old_trn" => old_trn, "new_trn" => new_trn)
       end
 
       it "calls the SyncTeacherWithTRSJob to refresh the teacher's TRS attributes" do
@@ -52,9 +49,9 @@ RSpec.describe Teachers::ReplaceTRN do
         end
 
         it "does not record a teacher_trn_replaced event" do
-          expect(Events::Record).not_to receive(:record_teacher_trn_replaced_event!)
-
           expect { subject }.to raise_error(ActiveRecord::RecordInvalid)
+
+          expect(Event.where(event_type: "teacher_trn_replaced")).to be_empty
         end
       end
 
@@ -78,9 +75,9 @@ RSpec.describe Teachers::ReplaceTRN do
         end
 
         it "does not record a teacher_trn_replaced event" do
-          expect(Events::Record).not_to receive(:record_teacher_trn_replaced_event!)
-
           subject
+
+          expect(Event.where(event_type: "teacher_trn_replaced")).to be_empty
         end
       end
     end
@@ -103,9 +100,9 @@ RSpec.describe Teachers::ReplaceTRN do
       end
 
       it "does not record a teacher_trn_replaced event" do
-        expect(Events::Record).not_to receive(:record_teacher_trn_replaced_event!)
-
         subject
+
+        expect(Event.where(event_type: "teacher_trn_replaced")).to be_empty
       end
     end
 
@@ -127,9 +124,9 @@ RSpec.describe Teachers::ReplaceTRN do
       end
 
       it "does not record a teacher_trn_replaced event" do
-        expect(Events::Record).not_to receive(:record_teacher_trn_replaced_event!)
-
         subject
+
+        expect(Event.where(event_type: "teacher_trn_replaced")).to be_empty
       end
     end
   end

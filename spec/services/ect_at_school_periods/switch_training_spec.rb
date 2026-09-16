@@ -1006,22 +1006,16 @@ module ECTAtSchoolPeriods
             it "records a `new_training_period_for_mentor` event" do
               freeze_time
 
-              allow(Events::Record).to receive(:record_teacher_starts_training_period_event!)
-
               SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
 
               new_training_period = mentor_at_school_period.reload.training_periods.last
 
-              expect(Events::Record)
-                .to have_received(:record_teacher_starts_training_period_event!)
-                .with(
-                  school: ect_at_school_period.school,
-                  teacher: mentor_at_school_period.teacher,
-                  training_period: new_training_period,
-                  mentor_at_school_period:,
-                  ect_at_school_period: nil,
-                  author:,
-                  happened_at: Time.current
+              expect(Event.where(event_type: "teacher_starts_training_period", mentor_at_school_period:).sole)
+                .to have_attributes(
+                  school_id: ect_at_school_period.school_id,
+                  teacher_id: mentor_at_school_period.teacher_id,
+                  training_period_id: new_training_period.id,
+                  ect_at_school_period_id: nil
                 )
             end
 
@@ -1186,10 +1180,9 @@ module ECTAtSchoolPeriods
           end
 
           it "does not record a `new_training_period_for_mentor` event" do
-            expect(Events::Record)
-              .not_to receive(:record_teacher_starts_training_period_event!)
-
             SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+            expect(Event.where(event_type: "teacher_starts_training_period", mentor_at_school_period:)).to be_empty
           end
         end
 
@@ -1212,10 +1205,9 @@ module ECTAtSchoolPeriods
           end
 
           it "does not record a `new_training_period_for_mentor` event" do
-            expect(Events::Record)
-              .not_to receive(:record_teacher_starts_training_period_event!)
-
             SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+            expect(Event.where(event_type: "teacher_starts_training_period", mentor_at_school_period:)).to be_empty
           end
         end
 
@@ -1230,10 +1222,9 @@ module ECTAtSchoolPeriods
           end
 
           it "does not record a `new_training_period_for_mentor` event" do
-            expect(Events::Record)
-              .not_to receive(:record_teacher_starts_training_period_event!)
-
             SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+            expect(Event.where(event_type: "teacher_starts_training_period", mentor_at_school_period:)).to be_empty
           end
         end
       end

@@ -44,19 +44,20 @@ RSpec.describe Admin::RecordFail do
     end
 
     it "records an induction failed event" do
-      expect(Events::Record).to receive(:record_teacher_fails_induction_event!).with(
-        appropriate_body_period:,
-        teacher:,
-        induction_period:,
-        ect_at_school_period:,
-        mentorship_period:,
-        training_period:,
-        author:,
+      expected_periods = {
+        appropriate_body_period_id: appropriate_body_period.id,
+        teacher_id: teacher.id,
+        induction_period_id: induction_period.id,
+        ect_at_school_period_id: ect_at_school_period&.id,
+        mentorship_period_id: mentorship_period&.id,
+        training_period_id: training_period&.id,
         body: note,
-        zendesk_ticket_id: "123456"
-      )
+        zendesk_ticket_id: 123_456
+      }
 
       service_call
+
+      expect(Event.where(event_type: "teacher_fails_induction").sole).to have_attributes(**expected_periods)
     end
 
     it "sends tra failed notification email" do
@@ -67,19 +68,18 @@ RSpec.describe Admin::RecordFail do
       let(:finished_on) { 2.days.ago }
 
       it "assigns the period to the event" do
-        expect(Events::Record).to receive(:record_teacher_fails_induction_event!).with(
-          teacher:,
-          appropriate_body_period:,
-          induction_period:,
-          ect_at_school_period:,
-          mentorship_period:,
-          training_period:,
-          author:,
-          body: note,
-          zendesk_ticket_id: "123456"
-        )
+        expected_periods = {
+          teacher_id: teacher.id,
+          appropriate_body_period_id: appropriate_body_period.id,
+          induction_period_id: induction_period.id,
+          ect_at_school_period_id: ect_at_school_period&.id,
+          mentorship_period_id: mentorship_period&.id,
+          training_period_id: training_period&.id
+        }
 
         service_call
+
+        expect(Event.where(event_type: "teacher_fails_induction").sole).to have_attributes(**expected_periods)
       end
     end
 

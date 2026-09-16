@@ -64,18 +64,12 @@ RSpec.describe Declarations::Actions::MarkDeclarationsEligible do
     end
 
     it "records an event for each successful declaration" do
-      declarations.each do |declaration|
-        expect(Events::Record)
-        .to receive(:record_teacher_declaration_eligible!)
-          .with(
-            author:,
-            teacher: declaration.training_period.teacher,
-            training_period: declaration.training_period,
-            declaration:
-          )
-      end
-
       mark
+
+      events = Event.where(event_type: "teacher_declaration_eligible")
+      expect(events.map(&:declaration_id)).to match_array(declarations.map(&:id))
+      expect(events.map(&:training_period_id))
+        .to match_array(declarations.map { it.training_period.id })
     end
 
     context "when there's a missing payment statement" do
@@ -107,9 +101,9 @@ RSpec.describe Declarations::Actions::MarkDeclarationsEligible do
       end
 
       it "does not record an event for it" do
-        expect(Events::Record).not_to receive(:record_teacher_declaration_eligible!)
-
         expect { mark }.to raise_error(StateMachines::InvalidTransition)
+
+        expect(Event.where(event_type: "teacher_declaration_eligible")).to be_empty
       end
     end
   end

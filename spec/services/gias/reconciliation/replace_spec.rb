@@ -27,15 +27,19 @@ RSpec.describe GIAS::Reconciliation::Replace do
       end
 
       it "records a school changed event" do
-        expect(Events::Record).to receive(:record_school_changed_event!).with(
-          school: gias_school.school,
-          new_gias_school: successor_gias_school,
-          old_gias_school: gias_school,
-          happened_at: closed_on,
-          author: an_instance_of(Events::SystemAuthor)
-        ).once
+        school = gias_school.school
 
         subject
+
+        event = Event.where(event_type: "school_changed").sole
+        expect(event.school_id).to eq(school.id)
+        expect(event.metadata).to eq(
+          "old_gias_school_urn" => gias_school.urn,
+          "old_gias_school_name" => gias_school.name,
+          "new_gias_school_urn" => successor_gias_school.urn,
+          "new_gias_school_name" => successor_gias_school.name
+        )
+        expect(event.happened_at.to_date).to eq(closed_on)
       end
 
       context "when there are ECTs at the school" do
@@ -46,20 +50,14 @@ RSpec.describe GIAS::Reconciliation::Replace do
         end
 
         it "records an event for each ECT moved" do
-          allow(Events::Record).to receive(:record_teacher_ect_at_school_period_moved_school!)
+          moved_periods = gias_school.school.ect_at_school_periods.to_a
 
           subject
 
-          gias_school.school.ect_at_school_periods.each do |ect|
-            expect(Events::Record).to have_received(:record_teacher_ect_at_school_period_moved_school!).with(
-              teacher: ect.teacher,
-              ect_at_school_period: ect,
-              new_school: successor_gias_school.school,
-              old_school_name_and_urn: Schools::Name.new(gias_school).name_and_urn,
-              happened_at: closed_on,
-              author: an_instance_of(Events::SystemAuthor)
-            ).once
-          end
+          events = Event.where(event_type: "teacher_ect_at_school_period_moved_school")
+          expect(events.map(&:ect_at_school_period_id)).to match_array(moved_periods.map(&:id))
+          expect(events.map(&:school_id).uniq).to eq([successor_gias_school.school.id])
+          expect(events.map { |e| e.metadata["old_school_name_and_urn"] }.uniq).to eq([old_school_name])
         end
       end
 
@@ -71,20 +69,14 @@ RSpec.describe GIAS::Reconciliation::Replace do
         end
 
         it "records an event for each Mentor moved" do
-          allow(Events::Record).to receive(:record_teacher_mentor_at_school_period_moved_school!)
+          moved_periods = gias_school.school.mentor_at_school_periods.to_a
 
           subject
 
-          gias_school.school.mentor_at_school_periods.each do |mentor|
-            expect(Events::Record).to have_received(:record_teacher_mentor_at_school_period_moved_school!).with(
-              teacher: mentor.teacher,
-              mentor_at_school_period: mentor,
-              new_school: successor_gias_school.school,
-              old_school_name_and_urn: Schools::Name.new(gias_school).name_and_urn,
-              happened_at: closed_on,
-              author: an_instance_of(Events::SystemAuthor)
-            ).once
-          end
+          events = Event.where(event_type: "teacher_mentor_at_school_period_moved_school")
+          expect(events.map(&:mentor_at_school_period_id)).to match_array(moved_periods.map(&:id))
+          expect(events.map(&:school_id).uniq).to eq([successor_gias_school.school.id])
+          expect(events.map { |e| e.metadata["old_school_name_and_urn"] }.uniq).to eq([old_school_name])
         end
       end
     end
@@ -99,9 +91,9 @@ RSpec.describe GIAS::Reconciliation::Replace do
       end
 
       it "does not record a school changed event" do
-        expect(Events::Record).not_to receive(:record_school_changed_event!)
-
         subject
+
+        expect(Event.where(event_type: "school_changed")).to be_empty
       end
 
       context "when there are ECTs at the school" do
@@ -110,9 +102,9 @@ RSpec.describe GIAS::Reconciliation::Replace do
         end
 
         it "does not record an event for each ECT moved" do
-          expect(Events::Record).not_to receive(:record_teacher_ect_at_school_period_moved_school!)
-
           subject
+
+          expect(Event.where(event_type: "teacher_ect_at_school_period_moved_school")).to be_empty
         end
       end
 
@@ -122,9 +114,9 @@ RSpec.describe GIAS::Reconciliation::Replace do
         end
 
         it "does not record an event for each Mentor moved" do
-          expect(Events::Record).not_to receive(:record_teacher_mentor_at_school_period_moved_school!)
-
           subject
+
+          expect(Event.where(event_type: "teacher_mentor_at_school_period_moved_school")).to be_empty
         end
       end
     end

@@ -13,10 +13,6 @@ RSpec.describe Milestones::Create do
   end
 
   describe "#create!" do
-    before do
-      allow(Events::Record).to receive(:record_milestone_added_event!)
-    end
-
     context "with valid params" do
       it "saves the milestone" do
         expect { service.create! }.to change(Milestone, :count).by(1)
@@ -33,10 +29,9 @@ RSpec.describe Milestones::Create do
       it "records a milestone_added event" do
         service.create!
 
-        expect(Events::Record).to have_received(:record_milestone_added_event!).with(
-          author:,
-          milestone: service.milestone
-        )
+        event = Event.where(event_type: "milestone_added").sole
+        expect(event.contract_period_id).to eq(contract_period.id)
+        expect(event.heading).to include(service.milestone.declaration_type.titleize, schedule.description)
       end
     end
 
@@ -51,7 +46,7 @@ RSpec.describe Milestones::Create do
 
       it "raises an error" do
         expect { service.create! }.to raise_error(/Declaration type Choose a valid declaration type/)
-        expect(Events::Record).not_to have_received(:record_milestone_added_event!)
+        expect(Event.where(event_type: "milestone_added")).to be_empty
       end
     end
 
@@ -62,7 +57,7 @@ RSpec.describe Milestones::Create do
 
       it "raises an error" do
         expect { service.create! }.to raise_error(/Declaration type Can be used once per schedule/)
-        expect(Events::Record).not_to have_received(:record_milestone_added_event!)
+        expect(Event.where(event_type: "milestone_added")).to be_empty
       end
     end
 
@@ -77,7 +72,7 @@ RSpec.describe Milestones::Create do
 
       it "raises an error" do
         expect { service.create! }.to raise_error(/Milestone date Milestone date must be after the start date/)
-        expect(Events::Record).not_to have_received(:record_milestone_added_event!)
+        expect(Event.where(event_type: "milestone_added")).to be_empty
       end
     end
   end

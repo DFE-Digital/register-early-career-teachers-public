@@ -9,10 +9,6 @@ describe FrameworkAgreements::Bands::Destroy do
   let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
 
   describe "#destroy!" do
-    before do
-      allow(Events::Record).to receive(:record_framework_agreement_band_deleted_event!)
-    end
-
     it "destroys the band" do
       expect { service.destroy! }.to change(FrameworkAgreement::Band, :count).by(-1)
     end
@@ -20,11 +16,13 @@ describe FrameworkAgreements::Bands::Destroy do
     it "records a schedule_deleted event" do
       service.destroy!
 
-      expect(Events::Record).to have_received(:record_framework_agreement_band_deleted_event!).with(
-        author:,
-        framework_agreement:,
-        band_letter: band.letter
+      event = Event.where(event_type: "band_deleted").sole
+      expect(event).to have_attributes(
+        framework_agreement_id: framework_agreement.id,
+        lead_provider_id: framework_agreement.lead_provider_id,
+        contract_period_id: framework_agreement.contract_period.id
       )
+      expect(event.heading).to include("Band #{band.letter}")
     end
 
     context "when the band is not the last in the allocation order" do

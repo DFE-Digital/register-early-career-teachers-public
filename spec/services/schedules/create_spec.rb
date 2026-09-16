@@ -16,10 +16,6 @@ RSpec.describe Schedules::Create do
   end
 
   describe "#create!" do
-    before do
-      allow(Events::Record).to receive(:record_schedule_added_event!)
-    end
-
     context "with valid params" do
       it "saves the schedule" do
         expect { service.create! }.to change(Schedule, :count).by(1)
@@ -36,10 +32,9 @@ RSpec.describe Schedules::Create do
       it "records a schedule_added event" do
         service.create!
 
-        expect(Events::Record).to have_received(:record_schedule_added_event!).with(
-          author:,
-          schedule: service.schedule
-        )
+        event = Event.where(event_type: "schedule_added").sole
+        expect(event.contract_period_id).to eq(service.schedule.contract_period.id)
+        expect(event.heading).to include(service.schedule.description)
       end
     end
 
@@ -48,7 +43,7 @@ RSpec.describe Schedules::Create do
 
       it "raises an error" do
         expect { service.create! }.to raise_error("Validation failed: Identifier Choose an identifier from the list")
-        expect(Events::Record).not_to have_received(:record_schedule_added_event!)
+        expect(Event.where(event_type: "schedule_added")).to be_empty
       end
     end
 
@@ -59,7 +54,7 @@ RSpec.describe Schedules::Create do
 
       it "raises an error" do
         expect { service.create! }.to raise_error("Validation failed: Identifier Can be used once per contract period")
-        expect(Events::Record).not_to have_received(:record_schedule_added_event!)
+        expect(Event.where(event_type: "schedule_added")).to be_empty
       end
     end
   end

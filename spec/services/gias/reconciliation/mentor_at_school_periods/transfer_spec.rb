@@ -1,6 +1,6 @@
 RSpec.describe GIAS::Reconciliation::MentorAtSchoolPeriods::Transfer do
   let(:author) { Events::SystemAuthor.new }
-  let(:predecessor_gias_school) { FactoryBot.create(:gias_school, :with_school) }
+  let(:predecessor_gias_school) { FactoryBot.create(:gias_school, :with_school, :closed, closed_on: Date.yesterday) }
   let(:gias_school) { FactoryBot.create(:gias_school, :with_school) }
   let(:predecessor_school) { predecessor_gias_school.school }
   let(:successor_school) { gias_school.school }
@@ -19,16 +19,18 @@ RSpec.describe GIAS::Reconciliation::MentorAtSchoolPeriods::Transfer do
     end
 
     it "records an event for the mentor_at_school_period being moved to the successor school" do
-      expect(Events::Record).to receive(:record_teacher_mentor_at_school_period_moved_school!).with(
-        teacher: mentor_at_school_period.teacher,
-        mentor_at_school_period:,
-        old_school_name_and_urn: Schools::Name.new(predecessor_school).name_and_urn,
-        new_school: successor_school,
-        happened_at: predecessor_gias_school.closed_on,
-        author: an_instance_of(Events::SystemAuthor)
-      )
+      old_school_name_and_urn = Schools::Name.new(predecessor_school).name_and_urn
 
       subject
+
+      event = Event.where(event_type: "teacher_mentor_at_school_period_moved_school").sole
+      expect(event).to have_attributes(
+        teacher_id: mentor_at_school_period.teacher_id,
+        mentor_at_school_period_id: mentor_at_school_period.id,
+        school_id: successor_school.id
+      )
+      expect(event.metadata).to eq("old_school_name_and_urn" => old_school_name_and_urn)
+      expect(event.happened_at.to_date).to eq(predecessor_gias_school.closed_on)
     end
 
     context "when the mentor_at_school_period has associated training periods" do

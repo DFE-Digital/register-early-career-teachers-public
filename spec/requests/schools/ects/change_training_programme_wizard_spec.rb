@@ -170,18 +170,16 @@ describe "Schools::ECTs::ChangeTrainingProgrammeWizardController" do
         end
 
         it "creates an event only after confirmation" do
-          allow(Events::Record).to receive(:record_teacher_training_programme_updated_event!)
-
           subject
 
-          expect(Events::Record).not_to have_received(:record_teacher_training_programme_updated_event!)
+          expect(Event.where(event_type: "teacher_training_programme_updated")).to be_empty
           expect(response).to redirect_to(path_for_step("check-answers"))
 
           follow_redirect!
 
           post path_for_step("check-answers")
 
-          expect(Events::Record).to have_received(:record_teacher_training_programme_updated_event!)
+          expect(Event.where(event_type: "teacher_training_programme_updated")).to be_present
           expect(response).to redirect_to(path_for_step("confirmation"))
         end
       end
@@ -229,25 +227,23 @@ describe "Schools::ECTs::ChangeTrainingProgrammeWizardController" do
         end
 
         it "creates an event only after confirmation" do
-          allow(Events::Record).to receive(:record_teacher_training_programme_updated_event!)
-
           subject
 
-          expect(Events::Record).not_to have_received(:record_teacher_training_programme_updated_event!)
+          expect(Event.where(event_type: "teacher_training_programme_updated")).to be_empty
           expect(response).to redirect_to(path_for_step("lead-provider"))
 
           follow_redirect!
 
           post(path_for_step("lead-provider"), params: lead_provider_params)
 
-          expect(Events::Record).not_to have_received(:record_teacher_training_programme_updated_event!)
+          expect(Event.where(event_type: "teacher_training_programme_updated")).to be_empty
           expect(response).to redirect_to(path_for_step("check-answers"))
 
           follow_redirect!
 
           post path_for_step("check-answers")
 
-          expect(Events::Record).to have_received(:record_teacher_training_programme_updated_event!)
+          expect(Event.where(event_type: "teacher_training_programme_updated")).to be_present
           expect(response).to redirect_to(path_for_step("confirmation"))
         end
       end

@@ -28,11 +28,13 @@ RSpec.describe Statements::AuthorisePayment do
       end
 
       it "marks all payable declarations as paid and records events" do
-        expect(Events::Record).to receive(:record_teacher_declaration_paid!).exactly(3).times
-
         subject.authorise!
 
         expect(declarations.each(&:reload)).to all(be_paid)
+
+        events = Event.where(event_type: "teacher_declaration_paid")
+        expect(events.count).to eq(3)
+        expect(events.map(&:declaration_id)).to match_array(declarations.map(&:id))
       end
 
       it "marks the statement as paid" do
@@ -45,12 +47,15 @@ RSpec.describe Statements::AuthorisePayment do
       end
 
       it "records a statement authorised for payment event" do
-        expect(Events::Record).to receive(:record_statement_authorised_for_payment_event!).with(
-          statement:,
-          author:
-        )
-
         subject.authorise!
+
+        event = Event.where(event_type: "statement_authorised_for_payment").sole
+        expect(event).to have_attributes(
+          statement_id: statement.id,
+          framework_agreement_id: statement.framework_agreement.id,
+          lead_provider_id: statement.lead_provider.id
+        )
+        expect(event.metadata).to eq("contract_period_year" => statement.framework_agreement.contract_period_year)
       end
 
       context "when there are declarations awaiting clawback" do
@@ -63,12 +68,14 @@ RSpec.describe Statements::AuthorisePayment do
         end
 
         it "marks declarations awaiting clawback as clawed back and records events" do
-          expect(Events::Record).to receive(:record_teacher_declaration_clawed_back!).twice
-
           subject.authorise!
 
           expect(declarations.each(&:reload)).to all(be_paid)
           expect(declarations_awaiting_clawback.each(&:reload)).to all(be_clawed_back)
+
+          events = Event.where(event_type: "teacher_declaration_clawed_back")
+          expect(events.count).to eq(2)
+          expect(events.map(&:declaration_id)).to match_array(declarations_awaiting_clawback.map(&:id))
         end
       end
     end

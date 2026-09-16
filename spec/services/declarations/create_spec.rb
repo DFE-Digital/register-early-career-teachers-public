@@ -132,22 +132,12 @@ RSpec.describe Declarations::Create do
         end
 
         it "records a declaration created event" do
-          allow(Events::Record).to receive(:record_declaration_created_event!).once.and_call_original
-
           declaration = create_declaration
 
-          expect(Events::Record).to have_received(:record_declaration_created_event!).once.with(
-            hash_including(
-              {
-                author: an_object_having_attributes(
-                  class: Events::LeadProviderAPIAuthor,
-                  lead_provider:
-                ),
-                teacher:,
-                lead_provider:,
-                declaration:
-              }
-            )
+          expect(Event.where(event_type: "teacher_declaration_created").sole).to have_attributes(
+            teacher_id: teacher.id,
+            lead_provider_id: lead_provider.id,
+            declaration_id: declaration.id
           )
         end
 

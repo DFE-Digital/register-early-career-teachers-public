@@ -11,16 +11,10 @@ RSpec.describe Admin::RevertClaim do
   include_context "test TRS API returns a teacher"
   include ActiveJob::TestHelper
 
-  before do
-    allow(Events::Record).to receive_messages(
-      record_teacher_induction_status_reset_event!: true,
-      record_induction_period_deleted_event!: true
-    )
-  end
-
   let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let(:teacher) { FactoryBot.create(:teacher) }
-  let(:author) { FactoryBot.create(:user) }
+  let(:user) { FactoryBot.create(:user, :admin) }
+  let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
   let!(:induction_period) { FactoryBot.create(:induction_period, teacher:, appropriate_body_period:, started_on: 1.year.ago) }
 
   describe "#revert_claim" do
@@ -36,12 +30,12 @@ RSpec.describe Admin::RevertClaim do
       end
 
       it "records an event with the correct parameters" do
-        expect(Events::Record).to receive(:record_teacher_induction_status_reset_event!).with(
-          author:,
-          appropriate_body_period:,
-          teacher:
-        )
         service.revert_claim
+
+        expect(Event.where(event_type: "teacher_induction_status_reset").sole).to have_attributes(
+          appropriate_body_period_id: appropriate_body_period.id,
+          teacher_id: teacher.id
+        )
       end
     end
 
@@ -55,8 +49,9 @@ RSpec.describe Admin::RevertClaim do
       end
 
       it "does not record a revert event" do
-        expect(Events::Record).not_to receive(:record_teacher_induction_status_reset_event!)
         service.revert_claim
+
+        expect(Event.where(event_type: "teacher_induction_status_reset")).to be_empty
       end
     end
   end

@@ -110,14 +110,14 @@ RSpec.describe Teachers::SetMentorFundingEligibility do
           mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:)
           FactoryBot.create(:training_period, :for_mentor, :unfinished, mentor_at_school_period:)
 
-          expect(Events::Record).to receive(:record_teacher_set_funding_eligibility_event!)
-            .with(author:,
-                  teacher:,
-                  teacher_type: "Mentor",
-                  happened_at: Time.zone.now,
-                  modifications: hash_including("mentor_first_became_eligible_for_training_at" => [nil, Time.zone.now]))
-
           service.set!
+
+          event = Event.where(event_type: "teacher_funding_eligibility_set").sole
+          expect(event.teacher_id).to eq(teacher.id)
+          expect(event.heading).to include("Mentor")
+          expect(event.metadata).to include(
+            "mentor_first_became_eligible_for_training_at" => [nil, Time.zone.now.as_json]
+          )
         end
       end
     end
@@ -128,9 +128,9 @@ RSpec.describe Teachers::SetMentorFundingEligibility do
       end
 
       it "does not record a teacher set funding eligibility event" do
-        expect(Events::Record).not_to receive(:record_teacher_set_funding_eligibility_event!)
-
         service.set!
+
+        expect(Event.where(event_type: "teacher_funding_eligibility_set")).to be_empty
       end
     end
 

@@ -100,10 +100,6 @@ RSpec.describe Sessions::OneTimePassword do
       let(:code) { service.generate }
       let(:invalid_code) { ((code.to_i + 1) % 1_000_000).to_s.rjust(6, "0") }
 
-      before do
-        allow(Events::Record).to receive(:record_otp_account_locked_event!)
-      end
-
       it "increments failed attempts" do
         expect { service.verify(code: invalid_code) }.to change { user.reload.otp_failed_attempts }.from(0).to(1)
       end
@@ -111,7 +107,7 @@ RSpec.describe Sessions::OneTimePassword do
       it "does not record a locked event before the 10th failed attempt" do
         service.verify(code: invalid_code)
 
-        expect(Events::Record).not_to have_received(:record_otp_account_locked_event!)
+        expect(Event.where(event_type: "otp_account_locked")).to be_empty
       end
 
       it "locks the account on the 10th failed attempt" do
@@ -133,12 +129,11 @@ RSpec.describe Sessions::OneTimePassword do
         freeze_time do
           service.verify(code: invalid_code)
 
-          expect(Events::Record).to have_received(:record_otp_account_locked_event!).with(
-            user:,
-            modifications: {
-              "otp_failed_attempts" => [9, 10],
-              "otp_locked_at" => [nil, Time.zone.now],
-            }
+          event = Event.where(event_type: "otp_account_locked").sole
+          expect(event.user_id).to eq(user.id)
+          expect(event.metadata).to eq(
+            "otp_failed_attempts" => [9, 10],
+            "otp_locked_at" => [nil, Time.zone.now.as_json]
           )
         end
       end

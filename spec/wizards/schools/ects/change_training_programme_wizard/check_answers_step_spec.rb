@@ -125,7 +125,6 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::CheckAnswersStep do
         allow(ECTAtSchoolPeriods::SwitchTraining)
           .to receive(:to_provider_led)
           .with(ect_at_school_period, author: anything, lead_provider:)
-        allow(Events::Record).to receive(:record_teacher_training_programme_updated_event!)
       end
 
       it "switches the training programme to provider led" do
@@ -139,19 +138,15 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::CheckAnswersStep do
       it "records a `teacher_training_programme_updated` event" do
         freeze_time
 
-        expect(Events::Record)
-          .to receive(:record_teacher_training_programme_updated_event!)
-          .with(hash_including(
-                  old_training_programme: "school_led",
-                  new_training_programme: "provider_led",
-                  author:,
-                  ect_at_school_period:,
-                  school:,
-                  teacher: ect_at_school_period.teacher,
-                  happened_at: Time.current
-                ))
-
         current_step.save!
+
+        event = Event.where(event_type: "teacher_training_programme_updated").sole
+        expect(event).to have_attributes(
+          ect_at_school_period_id: ect_at_school_period.id,
+          school_id: school.id,
+          teacher_id: ect_at_school_period.teacher.id
+        )
+        expect(event.heading).to include("school led", "provider led")
       end
 
       it "is truthy" do
@@ -169,7 +164,6 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::CheckAnswersStep do
         allow(ECTAtSchoolPeriods::SwitchTraining)
           .to receive(:to_school_led)
           .with(ect_at_school_period, author: anything)
-        allow(Events::Record).to receive(:record_teacher_training_programme_updated_event!)
       end
 
       it "switches the training programme to school led" do
@@ -183,19 +177,15 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::CheckAnswersStep do
       it "records a `teacher_training_programme_updated` event" do
         freeze_time
 
-        expect(Events::Record)
-          .to receive(:record_teacher_training_programme_updated_event!)
-          .with(hash_including(
-                  old_training_programme: "provider_led",
-                  new_training_programme: "school_led",
-                  author:,
-                  ect_at_school_period:,
-                  school:,
-                  teacher: ect_at_school_period.teacher,
-                  happened_at: Time.current
-                ))
-
         current_step.save!
+
+        event = Event.where(event_type: "teacher_training_programme_updated").sole
+        expect(event).to have_attributes(
+          ect_at_school_period_id: ect_at_school_period.id,
+          school_id: school.id,
+          teacher_id: ect_at_school_period.teacher.id
+        )
+        expect(event.heading).to include("provider led", "school led")
       end
 
       it "is truthy" do
@@ -213,18 +203,15 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::CheckAnswersStep do
         allow(ECTAtSchoolPeriods::SwitchTraining)
           .to receive(:to_school_led)
           .with(ect_at_school_period, author: anything)
-
-        allow(Events::Record).to receive(:record_teacher_training_programme_updated_event!)
       end
 
       it "records the old programme from the latest training period" do
         freeze_time
 
-        expect(Events::Record)
-          .to receive(:record_teacher_training_programme_updated_event!)
-          .with(hash_including(old_training_programme: "provider_led"))
-
         current_step.save!
+
+        expect(Event.where(event_type: "teacher_training_programme_updated").sole.heading)
+          .to include("provider led")
       end
     end
   end

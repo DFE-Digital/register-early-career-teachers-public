@@ -72,37 +72,33 @@ RSpec.describe Teachers::Manage do
     end
 
     context "when name has changed" do
-      before { allow(RecordEventJob).to receive(:perform_later).and_return(true) }
-
       it "records a name change event" do
         freeze_time do
           service.update_name!(trs_first_name: "John", trs_last_name: "Doe")
 
-          expect(RecordEventJob).to have_received(:perform_later).with(
+          expect(Event.sole).to have_attributes(
             appropriate_body_period:,
             author_email: "christopher.biggins@education.gov.uk",
             author_id: author.id,
             author_name: "Christopher Biggins",
-            author_type: :dfe_staff_user,
-            event_type: :teacher_name_updated_by_trs,
+            author_type: "dfe_staff_user",
+            event_type: "teacher_name_updated_by_trs",
             happened_at: Time.zone.now,
             heading: "Name changed from 'Barry Allen' to 'John Doe'",
             teacher:,
-            metadata: { old_name: "Barry Allen", new_name: "John Doe" }
+            metadata: { old_name: "Barry Allen", new_name: "John Doe" }.as_json
           )
         end
       end
     end
 
     context "when only whitespace differs" do
-      before { allow(RecordEventJob).to receive(:perform_later).and_return(true) }
-
       it "does not record a name change event and does not bump api_updated_at", :with_touches do
         original_api_updated_at = teacher.api_updated_at
 
         service.update_name!(trs_first_name: "Barry", trs_last_name: "Allen ")
 
-        expect(RecordEventJob).not_to have_received(:perform_later)
+        expect(Event.all).to be_empty
         expect(teacher.reload.api_updated_at).to eq(original_api_updated_at)
         expect(teacher.trs_last_name).to eq("Allen")
       end
@@ -110,8 +106,6 @@ RSpec.describe Teachers::Manage do
   end
 
   describe "#update_trs_attributes!" do
-    before { allow(RecordEventJob).to receive(:perform_later).and_return(true) }
-
     let(:trs_qts_status_description) { "QTS status description" }
     let(:trs_qts_awarded_on) { 3.years.ago.to_date }
     let(:trs_initial_teacher_training_provider_name) { "ITT provider" }
@@ -138,12 +132,12 @@ RSpec.describe Teachers::Manage do
         freeze_time do
           service.update_trs_attributes!(trs_qts_status_description:, trs_qts_awarded_on:, trs_initial_teacher_training_provider_name:, trs_initial_teacher_training_end_date:, trs_data_last_refreshed_at:)
 
-          expect(RecordEventJob).to have_received(:perform_later).with(
+          expect(Event.sole).to have_attributes(
             author_email: "christopher.biggins@education.gov.uk",
             author_id: author.id,
             author_name: "Christopher Biggins",
-            author_type: :dfe_staff_user,
-            event_type: :teacher_trs_attributes_updated,
+            author_type: "dfe_staff_user",
+            event_type: "teacher_trs_attributes_updated",
             happened_at: Time.zone.now,
             heading: "TRS attributes updated",
             teacher:,
@@ -152,7 +146,7 @@ RSpec.describe Teachers::Manage do
               trs_initial_teacher_training_provider_name: [nil, "ITT provider"],
               trs_qts_awarded_on: [nil, 3.years.ago.to_date],
               trs_qts_status_description: [nil, "QTS status description"]
-            }.with_indifferent_access,
+            }.as_json,
             modifications: contain_exactly(
               "TRS initial teacher training end date set to '#{2.years.ago.to_date.to_fs(:govuk_short)}'",
               "TRS initial teacher training provider name set to 'ITT provider'",
@@ -196,7 +190,7 @@ RSpec.describe Teachers::Manage do
 
         service.update_trs_attributes!(**attrs)
 
-        expect(RecordEventJob).not_to have_received(:perform_later)
+        expect(Event.all).to be_empty
       end
 
       it "does update the trs_data_last_refreshed_at on the teacher" do
@@ -212,8 +206,6 @@ RSpec.describe Teachers::Manage do
 
   describe "#update_trs_induction_status!" do
     # TODO: record induction date events
-    before { allow(RecordEventJob).to receive(:perform_later).and_return(true) }
-
     context "when the new induction status is different" do
       it "updates the teacher record" do
         service.update_trs_induction_status!(
@@ -234,12 +226,12 @@ RSpec.describe Teachers::Manage do
             trs_induction_start_date: nil
           )
 
-          expect(RecordEventJob).to have_received(:perform_later).with(
+          expect(Event.sole).to have_attributes(
             author_email: "christopher.biggins@education.gov.uk",
             author_id: author.id,
             author_name: "Christopher Biggins",
-            author_type: :dfe_staff_user,
-            event_type: :teacher_trs_induction_status_updated,
+            author_type: "dfe_staff_user",
+            event_type: "teacher_trs_induction_status_updated",
             appropriate_body_period:,
             teacher:,
             happened_at: Time.zone.now,
@@ -308,7 +300,7 @@ RSpec.describe Teachers::Manage do
           trs_induction_start_date: nil
         )
 
-        expect(RecordEventJob).not_to have_received(:perform_later)
+        expect(Event.all).to be_empty
       end
     end
   end

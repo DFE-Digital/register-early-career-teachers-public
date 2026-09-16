@@ -61,10 +61,8 @@ RSpec.describe "Admin::Teachers::TrainingPartnerships", type: :request do
     it "updates the partnership for a future training period and records an event" do
       training_period.update!(started_on: 2.weeks.from_now.to_date)
       expect {
-        perform_enqueued_jobs do
-          post admin_teacher_training_period_partnership_path(teacher, training_period),
-               params: { admin_teachers_change_training_partnership_form: { school_partnership_id: other_school_partnership.id } }
-        end
+        post admin_teacher_training_period_partnership_path(teacher, training_period),
+             params: { admin_teachers_change_training_partnership_form: { school_partnership_id: other_school_partnership.id } }
       }.to change { Event.where(event_type: "training_period_assigned_to_school_partnership").count }.by(1)
       expect(response).to redirect_to(admin_teacher_training_path(teacher))
       expect(flash[:alert]).to eq("Partnership updated")
@@ -77,10 +75,8 @@ RSpec.describe "Admin::Teachers::TrainingPartnerships", type: :request do
       training_period.update!(started_on: 2.days.ago.to_date)
 
       expect {
-        perform_enqueued_jobs do
-          post admin_teacher_training_period_partnership_path(teacher, training_period),
-               params: { admin_teachers_change_training_partnership_form: { school_partnership_id: other_school_partnership.id } }
-        end
+        post admin_teacher_training_period_partnership_path(teacher, training_period),
+             params: { admin_teachers_change_training_partnership_form: { school_partnership_id: other_school_partnership.id } }
       }.to change(TrainingPeriod, :count).by(1)
          .and change { Event.where(event_type: "training_period_assigned_to_school_partnership").count }.by(1)
          .and change { Event.where(event_type: "teacher_finishes_training_period").count }.by(1)
@@ -101,10 +97,8 @@ RSpec.describe "Admin::Teachers::TrainingPartnerships", type: :request do
     it "updates a training period that starts today without creating a new one" do
       training_period.update!(started_on: Date.current)
       expect {
-        perform_enqueued_jobs do
-          post admin_teacher_training_period_partnership_path(teacher, training_period),
-               params: { admin_teachers_change_training_partnership_form: { school_partnership_id: other_school_partnership.id } }
-        end
+        post admin_teacher_training_period_partnership_path(teacher, training_period),
+             params: { admin_teachers_change_training_partnership_form: { school_partnership_id: other_school_partnership.id } }
       }.to not_change(TrainingPeriod, :count)
          .and change { Event.where(event_type: "training_period_assigned_to_school_partnership").count }.by(1)
 

@@ -8,7 +8,7 @@ RSpec.describe GIAS::Reconciliation::MentorAtSchoolPeriods::Merge do
   end
 
   let(:author) { Events::SystemAuthor.new }
-  let(:predecessor_gias_school) { FactoryBot.create(:gias_school, :with_school) }
+  let(:predecessor_gias_school) { FactoryBot.create(:gias_school, :with_school, :closed, closed_on: Date.yesterday) }
   let(:gias_school) { FactoryBot.create(:gias_school, :with_school) }
   let(:predecessor_school) { predecessor_gias_school.school }
   let(:successor_school) { gias_school.school }
@@ -513,15 +513,14 @@ RSpec.describe GIAS::Reconciliation::MentorAtSchoolPeriods::Merge do
     end
 
     it "records an event for the periods being merged" do
-      expect(Events::Record).to receive(:record_teacher_mentor_at_school_periods_merged!).with(
-        author: an_instance_of(Events::SystemAuthor),
-        teacher: successor_period.teacher,
-        successor_period:,
-        mentor_at_school_periods: periods,
-        happened_at: predecessor_school.gias_school.closed_on
-      )
+      merged_period_ids = periods.map(&:id)
 
       service
+
+      event = Event.where(event_type: "teacher_mentor_at_school_periods_merged").sole
+      expect(event.teacher_id).to eq(successor_period.teacher_id)
+      expect(event.metadata["periods"].map { |p| p["id"] }).to match_array(merged_period_ids)
+      expect(event.happened_at.to_date).to eq(predecessor_school.gias_school.closed_on)
     end
   end
 end

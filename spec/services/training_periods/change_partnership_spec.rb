@@ -1,6 +1,4 @@
 RSpec.describe TrainingPeriods::ChangePartnership do
-  include ActiveJob::TestHelper
-
   subject(:service_call) do
     described_class.new(training_period:, school_partnership: other_school_partnership, author:).call
   end
@@ -24,7 +22,7 @@ RSpec.describe TrainingPeriods::ChangePartnership do
 
     it "finishes the current period and creates a new one" do
       travel_to(today) do
-        expect { perform_enqueued_jobs { service_call } }
+        expect { service_call }
           .to change(TrainingPeriod, :count).by(1)
           .and change { Event.where(event_type: "teacher_finishes_training_period").count }.by(1)
           .and change { Event.where(event_type: "training_period_assigned_to_school_partnership").count }.by(1)
@@ -46,7 +44,7 @@ RSpec.describe TrainingPeriods::ChangePartnership do
 
     it "updates the training period in place" do
       travel_to(today) do
-        expect { perform_enqueued_jobs { service_call } }
+        expect { service_call }
           .to not_change(TrainingPeriod, :count)
           .and change { Event.where(event_type: "training_period_assigned_to_school_partnership").count }.by(1)
         expect(training_period.reload.school_partnership).to eq(other_school_partnership)

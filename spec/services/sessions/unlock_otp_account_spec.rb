@@ -5,10 +5,6 @@ RSpec.describe Sessions::UnlockOTPAccount do
   let(:author) { Sessions::Users::DfEUser.new(email: author_user.email) }
   let(:locked_user) { FactoryBot.create(:user, otp_failed_attempts: 10, otp_locked_at: Time.zone.now) }
 
-  before do
-    allow(Events::Record).to receive(:record_otp_account_unlocked_event!).with(any_args).and_call_original
-  end
-
   describe "#unlock" do
     it "resets failed attempts" do
       expect { service.unlock }.to change { locked_user.reload.otp_failed_attempts }.from(10).to(0)
@@ -22,13 +18,11 @@ RSpec.describe Sessions::UnlockOTPAccount do
       freeze_time do
         service.unlock
 
-        expect(Events::Record).to have_received(:record_otp_account_unlocked_event!).with(
-          author:,
-          user: locked_user,
-          modifications: {
-            "otp_failed_attempts" => [10, 0],
-            "otp_locked_at" => [Time.zone.now, nil],
-          }
+        event = Event.where(event_type: "otp_account_unlocked").sole
+        expect(event.user_id).to eq(locked_user.id)
+        expect(event.metadata).to eq(
+          "otp_failed_attempts" => [10, 0],
+          "otp_locked_at" => [Time.zone.now.as_json, nil]
         )
       end
     end

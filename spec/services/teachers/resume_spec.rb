@@ -158,12 +158,15 @@ RSpec.describe Teachers::Resume do
 
           it "records a teacher resumes training period event" do
             freeze_time do
-              allow(Events::Record).to receive(:record_teacher_training_period_resumed_event!)
-
               service.resume
 
-              expect(Events::Record).to have_received(:record_teacher_training_period_resumed_event!)
-                .with(author:, teacher:, lead_provider:, training_period:, metadata: { new_training_period_id: TrainingPeriod.last.id })
+              event = Event.where(event_type: "teacher_resumes_training_period").sole
+              expect(event).to have_attributes(
+                teacher_id: teacher.id,
+                lead_provider_id: lead_provider.id,
+                training_period_id: training_period.id
+              )
+              expect(event.metadata).to eq("new_training_period_id" => TrainingPeriod.last.id)
             end
           end
         end

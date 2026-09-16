@@ -92,36 +92,31 @@ RSpec.describe Schools::RegisterECT do
         end
 
         it "records a teacher_registered_as_ect event" do
-          allow(Events::Record)
-            .to receive(:record_teacher_registered_as_ect_event!)
-            .with(any_args)
-            .and_call_original
-
           service.register!
 
-          expect(Events::Record)
-            .to have_received(:record_teacher_registered_as_ect_event!)
-            .with(
-              hash_including(author:, ect_at_school_period:, teacher:, school:)
-            )
+          expect(Event.where(event_type: "teacher_registered_as_ect").sole).to have_attributes(
+            ect_at_school_period_id: ect_at_school_period.id,
+            teacher_id: teacher.id,
+            school_id: school.id
+          )
         end
 
         it "records a teacher_name_updated_by_user event when a corrected name is provided" do
-          expect(Events::Record).to receive(:teacher_name_updated_by_user_event!).with(
-            old_name: "#{trs_first_name} #{trs_last_name}",
-            new_name: "Randy Marsh",
-            author:,
-            teacher: anything
-          )
           service.register!
+
+          expect(Event.where(event_type: "teacher_name_updated_by_user").sole.metadata).to eq(
+            "old_name" => "#{trs_first_name} #{trs_last_name}",
+            "new_name" => "Randy Marsh"
+          )
         end
 
         context "when no corrected name is provided" do
           let(:corrected_name) { nil }
 
           it "does not record a teacher_name_updated_by_user event" do
-            expect(Events::Record).not_to receive(:teacher_name_updated_by_user_event!)
             service.register!
+
+            expect(Event.where(event_type: "teacher_name_updated_by_user")).to be_empty
           end
         end
 
@@ -719,19 +714,15 @@ RSpec.describe Schools::RegisterECT do
       end
 
       it "records a teacher_left_school_as_ect event for the previous school period" do
-        allow(Events::Record).to receive(:record_teacher_left_school_as_ect!).and_call_original
-
         service.register!
 
-        expect(Events::Record).to have_received(:record_teacher_left_school_as_ect!).with(
-          hash_including(
-            author:,
-            ect_at_school_period: existing_period,
-            school: other_school,
-            teacher:,
-            happened_at: expected_finished_on
-          )
+        event = Event.where(event_type: "teacher_left_school_as_ect").sole
+        expect(event).to have_attributes(
+          ect_at_school_period_id: existing_period.id,
+          school_id: other_school.id,
+          teacher_id: teacher.id
         )
+        expect(event.happened_at.to_date).to eq(expected_finished_on)
       end
 
       context "when transfer happens today" do
@@ -826,25 +817,19 @@ RSpec.describe Schools::RegisterECT do
       end
 
       it "records a leaving event for the previous school period" do
-        allow(Events::Record).to receive(:record_teacher_left_school_as_ect!).and_call_original
-
         service.register!
 
-        expect(Events::Record).to have_received(:record_teacher_left_school_as_ect!).with(
-          hash_including(
-            author:,
-            ect_at_school_period: existing_period,
-            school: other_school,
-            teacher:,
-            happened_at: expected_finished_on
-          )
+        event = Event.where(event_type: "teacher_left_school_as_ect").sole
+        expect(event).to have_attributes(
+          ect_at_school_period_id: existing_period.id,
+          school_id: other_school.id,
+          teacher_id: teacher.id
         )
+        expect(event.happened_at.to_date).to eq(expected_finished_on)
       end
 
       it "persists the leaving and registration events" do
-        perform_enqueued_jobs do
-          service.register!
-        end
+        service.register!
 
         event_types = Event.where(teacher:).pluck(:event_type)
 

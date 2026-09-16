@@ -23,16 +23,7 @@ RSpec.describe "Appropriate Body bulk actions confirmation", type: :request do
       end
 
       it "records an upload completed event" do
-        allow(Events::Record).to receive(:record_bulk_upload_completed_event!).and_call_original
-
         put ab_batch_action_path(batch)
-
-        expect(Events::Record).to have_received(:record_bulk_upload_completed_event!).with(
-          batch:,
-          author: an_instance_of(Sessions::Users::AppropriateBodyPersona)
-        )
-
-        perform_enqueued_jobs
 
         expect(Event.last.event_type).to eq("bulk_upload_completed")
         expect(Event.last.pending_induction_submission_batch.id).to eq(batch.id)

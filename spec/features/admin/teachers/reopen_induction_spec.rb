@@ -1,6 +1,4 @@
 describe "Admin reopening an induction" do
-  include ActiveJob::TestHelper
-
   let(:teacher) { FactoryBot.create(:teacher) }
 
   before do
@@ -21,7 +19,6 @@ describe "Admin reopening an induction" do
       when_i_add_a_zendesk_ticket_id("#123456")
       and_i_add_a_note("This is a test reason for reopening the induction")
       and_i_am_sure_i_want_to_reopen_the_induction
-      and_event_background_jobs_are_executed
       then_the_induction_is_reopened
       and_there_is_a_current_induction_period
 
@@ -39,7 +36,6 @@ describe "Admin reopening an induction" do
       when_i_reopen_the_induction
       when_i_add_a_zendesk_ticket_id("123456")
       and_i_am_sure_i_want_to_reopen_the_induction
-      and_event_background_jobs_are_executed
       then_the_induction_is_reopened
       and_there_is_a_current_induction_period
 
@@ -98,10 +94,6 @@ private
       .to have_text("Are you sure you want to reopen this induction?")
 
     page.get_by_role("button", name: "Reopen induction").click
-  end
-
-  def and_event_background_jobs_are_executed
-    perform_enqueued_jobs(queue: :events)
   end
 
   def then_the_induction_is_reopened

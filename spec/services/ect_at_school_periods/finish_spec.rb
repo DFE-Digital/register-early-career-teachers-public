@@ -57,24 +57,25 @@ describe ECTAtSchoolPeriods::Finish do
     end
 
     it "records an event" do
-      allow(Events::Record).to receive(:record_teacher_left_school_as_ect!).and_return(true)
-
       subject.finish!
 
-      expect(Events::Record).to have_received(:record_teacher_left_school_as_ect!).once.with(
-        hash_including(author:, ect_at_school_period:, school:, teacher:, training_period:, happened_at: finished_on)
+      event = Event.where(event_type: "teacher_left_school_as_ect").sole
+      expect(event).to have_attributes(
+        ect_at_school_period_id: ect_at_school_period.id,
+        school_id: school.id,
+        teacher_id: teacher.id,
+        training_period_id: training_period.id
       )
+      expect(event.happened_at.to_date).to eq(finished_on)
     end
 
     context "when record_event is false" do
       subject { ECTAtSchoolPeriods::Finish.new(ect_at_school_period:, finished_on:, author:, reported_by_school_id:, record_event: false) }
 
       it "does not record an event" do
-        allow(Events::Record).to receive(:record_teacher_left_school_as_ect!).and_return(true)
-
         subject.finish!
 
-        expect(Events::Record).not_to have_received(:record_teacher_left_school_as_ect!)
+        expect(Event.where(event_type: "teacher_left_school_as_ect")).to be_empty
       end
     end
 
@@ -253,12 +254,13 @@ describe ECTAtSchoolPeriods::Finish do
         end
 
         it "records an event which is not linked to a training period" do
-          allow(Events::Record).to receive(:record_teacher_left_school_as_ect!).and_return(true)
-
           subject.finish!
 
-          expect(Events::Record).to have_received(:record_teacher_left_school_as_ect!).once.with(
-            hash_including(author:, ect_at_school_period:, school:, teacher:, training_period: nil, happened_at: finished_on)
+          expect(Event.where(event_type: "teacher_left_school_as_ect").sole).to have_attributes(
+            ect_at_school_period_id: ect_at_school_period.id,
+            school_id: school.id,
+            teacher_id: teacher.id,
+            training_period_id: nil
           )
         end
       end

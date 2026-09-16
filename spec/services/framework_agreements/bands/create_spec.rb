@@ -7,16 +7,15 @@ describe FrameworkAgreements::Bands::Create do
   let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
   let(:capacity) { 750 }
 
-  before do
-    allow(Events::Record).to receive(:record_framework_agreement_band_added_event!)
-  end
-
   context "with a valid capacity" do
     it "creates the band and records the created event" do
       result = nil
       expect { result = service.create! }.to change(FrameworkAgreement::Band, :count).by(1)
       expect(result).to have_attributes(framework_agreement:, capacity:)
-      expect(Events::Record).to have_received(:record_framework_agreement_band_added_event!).with(author:, band: result)
+      expect(Event.where(event_type: "band_added").sole).to have_attributes(
+        framework_agreement_id: framework_agreement.id,
+        lead_provider_id: framework_agreement.lead_provider_id
+      )
     end
   end
 
@@ -25,7 +24,7 @@ describe FrameworkAgreements::Bands::Create do
 
     it "raises an error and does not save or record an event" do
       expect { service.create! }.to raise_error(ActiveRecord::RecordInvalid)
-      expect(Events::Record).not_to have_received(:record_framework_agreement_band_added_event!)
+      expect(Event.where(event_type: "band_added")).to be_empty
     end
   end
 end

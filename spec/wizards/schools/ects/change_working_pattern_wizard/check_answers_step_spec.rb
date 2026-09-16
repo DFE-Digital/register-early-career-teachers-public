@@ -52,19 +52,16 @@ describe Schools::ECTs::ChangeWorkingPatternWizard::CheckAnswersStep, type: :mod
     it "records a `teacher_working_pattern_updated` event" do
       freeze_time
 
-      expect(Events::Record)
-        .to receive(:record_teacher_working_pattern_updated_event!)
-        .with(
-          old_working_pattern: "full_time",
-          new_working_pattern: "part_time",
-          author:,
-          ect_at_school_period:,
-          school:,
-          teacher: ect_at_school_period.teacher,
-          happened_at: Time.current
-        )
-
       current_step.save!
+
+      event = Event.where(event_type: "teacher_working_pattern_updated").sole
+      expect(event).to have_attributes(
+        ect_at_school_period_id: ect_at_school_period.id,
+        school_id: school.id,
+        teacher_id: ect_at_school_period.teacher_id,
+        happened_at: Time.current
+      )
+      expect(event.heading).to include("full time", "part time")
     end
 
     it "is truthy" do

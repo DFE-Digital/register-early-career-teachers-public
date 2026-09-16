@@ -1,6 +1,4 @@
 RSpec.describe "Admin finance framework agreement statements", type: :request do
-  include ActiveJob::TestHelper
-
   let(:contract_period) { FactoryBot.create(:contract_period, :next) }
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Lead Provider 1") }
   let(:framework_agreement) { FactoryBot.create(:framework_agreement, contract_period:, lead_provider:) }
@@ -98,7 +96,7 @@ RSpec.describe "Admin finance framework agreement statements", type: :request do
 
       it "creates a statement and redirects to it" do
         expect {
-          perform_enqueued_jobs { post index_path, params: { statement: params } }
+          post index_path, params: { statement: params }
         }.to change(Statement, :count).by(1)
 
         statement = Statement.last
@@ -135,7 +133,7 @@ RSpec.describe "Admin finance framework agreement statements", type: :request do
 
         it "allows the create" do
           expect {
-            perform_enqueued_jobs { post index_path, params: { statement: params } }
+            post index_path, params: { statement: params }
           }.to change(Statement, :count).by(1)
         end
       end
@@ -222,9 +220,7 @@ RSpec.describe "Admin finance framework agreement statements", type: :request do
       include_context "sign in as finance DfE user"
 
       it "updates the statement and redirects to it" do
-        perform_enqueued_jobs do
-          patch statement_path, params: { statement: { payment_date: Date.new(contract_period.year, 12, 26) } }
-        end
+        patch statement_path, params: { statement: { payment_date: Date.new(contract_period.year, 12, 26) } }
 
         expect(response).to redirect_to(statement_path)
         expect(statement.reload.payment_date).to eq(Date.new(contract_period.year, 12, 26))
@@ -314,7 +310,7 @@ RSpec.describe "Admin finance framework agreement statements", type: :request do
 
       it "destroys the statement and redirects to the index" do
         expect {
-          perform_enqueued_jobs { delete statement_path }
+          delete statement_path
         }.to change(Statement, :count).by(-1)
         expect(response).to redirect_to(index_path)
       end

@@ -107,23 +107,25 @@ RSpec.describe Statements::MarkAsPayable do
         payment_statement: statement
       )
 
-      expect(Events::Record).to receive(:record_teacher_declaration_payable!).with(
-        author: instance_of(Events::SystemAuthor),
-        teacher: declaration.training_period.teacher,
-        training_period: declaration.training_period,
-        declaration:
-      )
-
       subject.mark!
+
+      expect(Event.where(event_type: "teacher_declaration_payable").sole).to have_attributes(
+        teacher_id: declaration.training_period.teacher.id,
+        training_period_id: declaration.training_period.id,
+        declaration_id: declaration.id
+      )
     end
 
     it "records a statement marked payable event" do
-      expect(Events::Record).to receive(:record_statement_marked_payable!).with(
-        author: instance_of(Events::SystemAuthor),
-        statement:
-      )
-
       subject.mark!
+
+      event = Event.where(event_type: "statement_marked_payable").sole
+      expect(event).to have_attributes(
+        statement_id: statement.id,
+        framework_agreement_id: framework_agreement.id,
+        lead_provider_id: framework_agreement.lead_provider_id
+      )
+      expect(event.metadata).to eq("contract_period_year" => framework_agreement.contract_period_year)
     end
 
     it "rolls back all changes if an error occurs" do

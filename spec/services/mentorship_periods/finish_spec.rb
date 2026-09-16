@@ -1,6 +1,4 @@
 describe MentorshipPeriods::Finish do
-  include ActiveJob::TestHelper
-
   subject { MentorshipPeriods::Finish.new(mentorship_period:, finished_on:, author:) }
 
   let(:started_on) { 1.year.ago.to_date }
@@ -39,67 +37,52 @@ describe MentorshipPeriods::Finish do
     end
 
     it "records an event for the mentor" do
-      allow(Events::Record).to receive(:record_teacher_finishes_mentoring_event!).and_call_original
-
       expect {
         subject.finish!
-        perform_enqueued_jobs
       }.to change(Event, :count).by(2)
 
-      mentorship_period.reload
-
-      expect(Events::Record).to have_received(:record_teacher_finishes_mentoring_event!).with(
-        hash_including(
-          author:,
-          mentorship_period:,
-          mentor_at_school_period:,
-          happened_at: finished_on,
-          school: mentor_at_school_period.school,
-          mentor: mentor_at_school_period.teacher,
-          mentee: ect_at_school_period.teacher
-        )
+      event = Event.where(event_type: "teacher_finishes_mentoring").sole
+      expect(event).to have_attributes(
+        mentorship_period_id: mentorship_period.id,
+        mentor_at_school_period_id: mentor_at_school_period.id,
+        teacher_id: mentor_at_school_period.teacher_id,
+        school_id: mentor_at_school_period.school_id
       )
+      expect(event.metadata).to eq(
+        "mentor_id" => mentor_at_school_period.teacher_id,
+        "mentee_id" => ect_at_school_period.teacher_id
+      )
+      expect(event.happened_at.to_date).to eq(finished_on)
     end
 
     it "records an event for the ECT" do
-      allow(Events::Record).to receive(:record_teacher_finishes_being_mentored_event!).and_call_original
-
       expect {
         subject.finish!
-        perform_enqueued_jobs
       }.to change(Event, :count).by(2)
 
-      mentorship_period.reload
-
-      expect(Events::Record).to have_received(:record_teacher_finishes_being_mentored_event!).with(
-        hash_including(
-          author:,
-          mentorship_period:,
-          ect_at_school_period:,
-          happened_at: finished_on,
-          school: ect_at_school_period.school,
-          mentor: mentor_at_school_period.teacher,
-          mentee: ect_at_school_period.teacher
-        )
+      event = Event.where(event_type: "teacher_finishes_being_mentored").sole
+      expect(event).to have_attributes(
+        mentorship_period_id: mentorship_period.id,
+        ect_at_school_period_id: ect_at_school_period.id,
+        teacher_id: ect_at_school_period.teacher_id,
+        school_id: ect_at_school_period.school_id
       )
+      expect(event.metadata).to eq(
+        "mentor_id" => mentor_at_school_period.teacher_id,
+        "mentee_id" => ect_at_school_period.teacher_id
+      )
+      expect(event.happened_at.to_date).to eq(finished_on)
     end
 
     context "when record_event is false" do
       subject { MentorshipPeriods::Finish.new(mentorship_period:, finished_on:, author:, record_event: false) }
 
       it "does not record any events" do
-        allow(Events::Record).to receive(:record_teacher_finishes_mentoring_event!).and_call_original
-        allow(Events::Record).to receive(:record_teacher_finishes_being_mentored_event!).and_call_original
-
         expect {
           subject.finish!
-          perform_enqueued_jobs
         }.not_to change(Event, :count)
 
-        mentorship_period.reload
-
-        expect(Events::Record).not_to have_received(:record_teacher_finishes_mentoring_event!)
-        expect(Events::Record).not_to have_received(:record_teacher_finishes_being_mentored_event!)
+        expect(Event.where(event_type: %w[teacher_finishes_mentoring teacher_finishes_being_mentored])).to be_empty
       end
     end
   end

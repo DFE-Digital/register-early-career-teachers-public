@@ -97,20 +97,17 @@ module ECTAtSchoolPeriods
           freeze_time
           old_lead_provider = training_period.lead_provider
 
-          expect(Events::Record)
-            .to receive(:record_teacher_training_lead_provider_updated_event!)
-            .with(
-              old_lead_provider_name: old_lead_provider.name,
-              new_lead_provider_name: lead_provider.name,
-              author:,
-              ect_at_school_period:,
-              mentor_at_school_period: nil,
-              school: ect_at_school_period.school,
-              teacher: ect_at_school_period.teacher,
-              happened_at: Time.current
-            )
-
           change_lead_provider
+
+          event = Event.where(event_type: "teacher_training_lead_provider_updated").sole
+          expect(event).to have_attributes(
+            ect_at_school_period_id: ect_at_school_period.id,
+            mentor_at_school_period_id: nil,
+            school_id: ect_at_school_period.school_id,
+            teacher_id: ect_at_school_period.teacher_id,
+            happened_at: Time.current
+          )
+          expect(event.heading).to include(old_lead_provider.name, lead_provider.name)
         end
       end
 
@@ -227,20 +224,17 @@ module ECTAtSchoolPeriods
           freeze_time
           old_lead_provider = training_period.lead_provider
 
-          expect(Events::Record)
-            .to receive(:record_teacher_training_lead_provider_updated_event!)
-            .with(
-              old_lead_provider_name: old_lead_provider.name,
-              new_lead_provider_name: lead_provider.name,
-              author:,
-              ect_at_school_period:,
-              mentor_at_school_period: nil,
-              school: ect_at_school_period.school,
-              teacher: ect_at_school_period.teacher,
-              happened_at: Time.current
-            )
-
           change_lead_provider
+
+          event = Event.where(event_type: "teacher_training_lead_provider_updated").sole
+          expect(event).to have_attributes(
+            ect_at_school_period_id: ect_at_school_period.id,
+            mentor_at_school_period_id: nil,
+            school_id: ect_at_school_period.school_id,
+            teacher_id: ect_at_school_period.teacher_id,
+            happened_at: Time.current
+          )
+          expect(event.heading).to include(old_lead_provider.name, lead_provider.name)
         end
       end
 
@@ -300,20 +294,17 @@ module ECTAtSchoolPeriods
           freeze_time
           old_lead_provider = training_period.lead_provider
 
-          expect(Events::Record)
-            .to receive(:record_teacher_training_lead_provider_updated_event!)
-            .with(
-              old_lead_provider_name: old_lead_provider.name,
-              new_lead_provider_name: lead_provider.name,
-              author:,
-              ect_at_school_period:,
-              mentor_at_school_period: nil,
-              school: ect_at_school_period.school,
-              teacher: ect_at_school_period.teacher,
-              happened_at: Time.current
-            )
-
           change_lead_provider
+
+          event = Event.where(event_type: "teacher_training_lead_provider_updated").sole
+          expect(event).to have_attributes(
+            ect_at_school_period_id: ect_at_school_period.id,
+            mentor_at_school_period_id: nil,
+            school_id: ect_at_school_period.school_id,
+            teacher_id: ect_at_school_period.teacher_id,
+            happened_at: Time.current
+          )
+          expect(event.heading).to include(old_lead_provider.name, lead_provider.name)
         end
       end
 
@@ -345,20 +336,17 @@ module ECTAtSchoolPeriods
           freeze_time
           old_lead_provider = training_period.lead_provider
 
-          expect(Events::Record)
-            .to receive(:record_teacher_training_lead_provider_updated_event!)
-            .with(
-              old_lead_provider_name: old_lead_provider.name,
-              new_lead_provider_name: lead_provider.name,
-              author:,
-              ect_at_school_period:,
-              mentor_at_school_period: nil,
-              school: ect_at_school_period.school,
-              teacher: ect_at_school_period.teacher,
-              happened_at: Time.current
-            )
-
           change_lead_provider
+
+          event = Event.where(event_type: "teacher_training_lead_provider_updated").sole
+          expect(event).to have_attributes(
+            ect_at_school_period_id: ect_at_school_period.id,
+            mentor_at_school_period_id: nil,
+            school_id: ect_at_school_period.school_id,
+            teacher_id: ect_at_school_period.teacher_id,
+            happened_at: Time.current
+          )
+          expect(event.heading).to include(old_lead_provider.name, lead_provider.name)
         end
       end
     end
@@ -399,20 +387,17 @@ module ECTAtSchoolPeriods
           freeze_time
           old_lead_provider = training_period.expression_of_interest.lead_provider
 
-          expect(Events::Record)
-            .to receive(:record_teacher_training_lead_provider_updated_event!)
-            .with(
-              old_lead_provider_name: old_lead_provider.name,
-              new_lead_provider_name: lead_provider.name,
-              author:,
-              ect_at_school_period:,
-              mentor_at_school_period: nil,
-              school: ect_at_school_period.school,
-              teacher: ect_at_school_period.teacher,
-              happened_at: Time.current
-            )
-
           change_lead_provider
+
+          event = Event.where(event_type: "teacher_training_lead_provider_updated").sole
+          expect(event).to have_attributes(
+            ect_at_school_period_id: ect_at_school_period.id,
+            mentor_at_school_period_id: nil,
+            school_id: ect_at_school_period.school_id,
+            teacher_id: ect_at_school_period.teacher_id,
+            happened_at: Time.current
+          )
+          expect(event.heading).to include(old_lead_provider.name, lead_provider.name)
         end
       end
 
@@ -439,20 +424,17 @@ module ECTAtSchoolPeriods
           freeze_time
           old_lead_provider = training_period.expression_of_interest.lead_provider
 
-          expect(Events::Record)
-            .to receive(:record_teacher_training_lead_provider_updated_event!)
-            .with(
-              old_lead_provider_name: old_lead_provider.name,
-              new_lead_provider_name: lead_provider.name,
-              author:,
-              ect_at_school_period:,
-              mentor_at_school_period: nil,
-              school: ect_at_school_period.school,
-              teacher: ect_at_school_period.teacher,
-              happened_at: Time.current
-            )
-
           change_lead_provider
+
+          event = Event.where(event_type: "teacher_training_lead_provider_updated").sole
+          expect(event).to have_attributes(
+            ect_at_school_period_id: ect_at_school_period.id,
+            mentor_at_school_period_id: nil,
+            school_id: ect_at_school_period.school_id,
+            teacher_id: ect_at_school_period.teacher_id,
+            happened_at: Time.current
+          )
+          expect(event.heading).to include(old_lead_provider.name, lead_provider.name)
         end
       end
 
@@ -531,20 +513,17 @@ module ECTAtSchoolPeriods
           freeze_time
           old_lead_provider = training_period.expression_of_interest.lead_provider
 
-          expect(Events::Record)
-            .to receive(:record_teacher_training_lead_provider_updated_event!)
-            .with(
-              old_lead_provider_name: old_lead_provider.name,
-              new_lead_provider_name: lead_provider.name,
-              author:,
-              ect_at_school_period:,
-              mentor_at_school_period: nil,
-              school: ect_at_school_period.school,
-              teacher: ect_at_school_period.teacher,
-              happened_at: Time.current
-            )
-
           change_lead_provider
+
+          event = Event.where(event_type: "teacher_training_lead_provider_updated").sole
+          expect(event).to have_attributes(
+            ect_at_school_period_id: ect_at_school_period.id,
+            mentor_at_school_period_id: nil,
+            school_id: ect_at_school_period.school_id,
+            teacher_id: ect_at_school_period.teacher_id,
+            happened_at: Time.current
+          )
+          expect(event.heading).to include(old_lead_provider.name, lead_provider.name)
         end
       end
 
@@ -576,20 +555,17 @@ module ECTAtSchoolPeriods
           freeze_time
           old_lead_provider = training_period.expression_of_interest.lead_provider
 
-          expect(Events::Record)
-            .to receive(:record_teacher_training_lead_provider_updated_event!)
-            .with(
-              old_lead_provider_name: old_lead_provider.name,
-              new_lead_provider_name: lead_provider.name,
-              author:,
-              ect_at_school_period:,
-              mentor_at_school_period: nil,
-              school: ect_at_school_period.school,
-              teacher: ect_at_school_period.teacher,
-              happened_at: Time.current
-            )
-
           change_lead_provider
+
+          event = Event.where(event_type: "teacher_training_lead_provider_updated").sole
+          expect(event).to have_attributes(
+            ect_at_school_period_id: ect_at_school_period.id,
+            mentor_at_school_period_id: nil,
+            school_id: ect_at_school_period.school_id,
+            teacher_id: ect_at_school_period.teacher_id,
+            happened_at: Time.current
+          )
+          expect(event.heading).to include(old_lead_provider.name, lead_provider.name)
         end
       end
 

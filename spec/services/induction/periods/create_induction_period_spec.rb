@@ -200,19 +200,11 @@ describe Induction::Periods::CreateInductionPeriod do
     end
 
     context "when the induction period is invalid" do
-      before do
-        allow(Events::Record)
-          .to receive(:record_induction_period_opened_event!)
-          .and_call_original
-      end
-
       let(:started_on) { 3.weeks.from_now.to_date }
 
       it "raises error and does not record event" do
         expect { subject.create_induction_period! }
           .to raise_error(ActiveRecord::RecordInvalid)
-
-        perform_enqueued_jobs
 
         expect(Event.count).to be_zero
       end

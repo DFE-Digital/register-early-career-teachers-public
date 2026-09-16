@@ -42,15 +42,12 @@ describe ECTAtSchoolPeriods::Destroy do
       end
 
       it "records an event for the deletion of the unstarted ECT at school period" do
-        expect(Events::Record).to receive(:record_teacher_ect_at_school_period_deleted!).with(
-          author:,
-          teacher:,
-          school:,
-          started_on:,
-          happened_at: Date.current
-        )
-
         subject
+
+        event = Event.where(event_type: "teacher_ect_at_school_period_deleted").sole
+        expect(event).to have_attributes(teacher_id: teacher.id, school_id: school.id)
+        expect(event.heading).to include(started_on.to_s, school.name)
+        expect(event.happened_at.to_date).to eq(Date.current)
       end
 
       context "with associated mentorship periods" do
@@ -95,15 +92,12 @@ describe ECTAtSchoolPeriods::Destroy do
       end
 
       it "records an event for the deletion of the unstarted ECT at school period" do
-        expect(Events::Record).to receive(:record_teacher_ect_at_school_period_deleted!).with(
-          author:,
-          teacher:,
-          school:,
-          started_on:,
-          happened_at: Date.current
-        )
-
         subject
+
+        event = Event.where(event_type: "teacher_ect_at_school_period_deleted").sole
+        expect(event).to have_attributes(teacher_id: teacher.id, school_id: school.id)
+        expect(event.heading).to include(started_on.to_s, school.name)
+        expect(event.happened_at.to_date).to eq(Date.current)
       end
 
       context "with associated mentorship periods" do
@@ -189,15 +183,12 @@ describe ECTAtSchoolPeriods::Destroy do
         end
 
         it "records an event for the deletion of the unstarted ECT at school period" do
-          expect(Events::Record).to receive(:record_teacher_ect_at_school_period_deleted!).with(
-            author:,
-            teacher:,
-            school:,
-            started_on:,
-            happened_at: Date.yesterday
-          )
-
           subject
+
+          event = Event.where(event_type: "teacher_ect_at_school_period_deleted").sole
+          expect(event).to have_attributes(teacher_id: teacher.id, school_id: school.id)
+          expect(event.heading).to include(started_on.to_s, school.name)
+          expect(event.happened_at.to_date).to eq(Date.yesterday)
         end
 
         context "with associated mentorship periods" do
@@ -280,15 +271,12 @@ describe ECTAtSchoolPeriods::Destroy do
         end
 
         it "records an event for the deletion of the unstarted ECT at school period" do
-          expect(Events::Record).to receive(:record_teacher_ect_at_school_period_deleted!).with(
-            author:,
-            teacher:,
-            school:,
-            started_on:,
-            happened_at: Date.yesterday
-          )
-
           subject
+
+          event = Event.where(event_type: "teacher_ect_at_school_period_deleted").sole
+          expect(event).to have_attributes(teacher_id: teacher.id, school_id: school.id)
+          expect(event.heading).to include(started_on.to_s, school.name)
+          expect(event.happened_at.to_date).to eq(Date.yesterday)
         end
 
         context "with associated mentorship periods" do

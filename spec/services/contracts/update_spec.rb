@@ -43,8 +43,6 @@ RSpec.describe Contracts::Update do
     }
   end
 
-  before { allow(Events::Record).to receive(:record_contract_updated_event!) }
-
   it "updates the contract, fee structure, and band term, then records the event" do
     original_recruitment_target = banded_fee_structure.recruitment_target
     original_fee_per_declaration = band_term.fee_per_declaration
@@ -61,18 +59,17 @@ RSpec.describe Contracts::Update do
     expect(band_term.output_fee_ratio).to eq(0.80)
     expect(band_term.service_fee_ratio).to eq(0.20)
 
-    expect(Events::Record).to have_received(:record_contract_updated_event!).with(
-      hash_including(
-        author:,
-        contract:,
-        modifications: hash_including(
-          "vat_rate" => [original_vat_rate, 0.1],
-          "banded_recruitment_target" => [original_recruitment_target, 9_999],
-          "band_A_fee_per_declaration" => [original_fee_per_declaration, 9_999],
-          "band_A_output_fee_ratio" => [original_output_fee_ratio, 0.80],
-          "band_A_service_fee_ratio" => [original_service_fee_ratio, 0.20]
-        )
-      )
+    event = Event.where(event_type: "contract_updated").sole
+    expect(event).to have_attributes(
+      framework_agreement_id: contract.framework_agreement_id,
+      lead_provider_id: contract.framework_agreement.lead_provider_id
+    )
+    expect(event.metadata).to include(
+      "vat_rate" => [original_vat_rate.to_f.to_s, "0.1"],
+      "banded_recruitment_target" => [original_recruitment_target, 9_999],
+      "band_A_fee_per_declaration" => [original_fee_per_declaration.to_f.to_s, "9999.0"],
+      "band_A_output_fee_ratio" => [original_output_fee_ratio.to_f.to_s, "0.8"],
+      "band_A_service_fee_ratio" => [original_service_fee_ratio.to_f.to_s, "0.2"]
     )
   end
 
@@ -101,24 +98,15 @@ RSpec.describe Contracts::Update do
 
       service.call
 
-      expect(Events::Record).to have_received(:record_contract_updated_event!).with(
-        hash_including(
-          author:,
-          contract:,
-          modifications: hash_including(
-            "vat_rate" => [original_vat_rate, 0.1],
-            "banded_recruitment_target" => [original_recruitment_target, 9_999]
-          )
-        )
+      metadata = Event.where(event_type: "contract_updated").sole.metadata
+      expect(metadata).to include(
+        "vat_rate" => [original_vat_rate.to_f.to_s, "0.1"],
+        "banded_recruitment_target" => [original_recruitment_target, 9_999]
       )
-      expect(Events::Record).to have_received(:record_contract_updated_event!).with(
-        hash_including(
-          modifications: hash_not_including(
-            "band_A_fee_per_declaration",
-            "band_A_output_fee_ratio",
-            "band_A_service_fee_ratio"
-          )
-        )
+      expect(metadata.keys).not_to include(
+        "band_A_fee_per_declaration",
+        "band_A_output_fee_ratio",
+        "band_A_service_fee_ratio"
       )
     end
   end
@@ -128,7 +116,7 @@ RSpec.describe Contracts::Update do
 
     it "does not update the contract or create an event" do
       expect { service.call }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Banded fee structure band terms output fee percentage Output fee percentage must be between 0 and 100")
-      expect(Events::Record).not_to have_received(:record_contract_updated_event!)
+      expect(Event.where(event_type: "contract_updated")).to be_empty
     end
   end
 end

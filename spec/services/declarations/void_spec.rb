@@ -33,16 +33,14 @@ RSpec.describe Declarations::Void do
     end
 
     it "records an event" do
-      expect(Events::Record)
-        .to receive(:record_teacher_declaration_voided!)
-        .with(
-          author:,
-          teacher: declaration.training_period.teacher,
-          training_period: declaration.training_period,
-          declaration:
-        )
-
       void
+
+      expect(Event.where(event_type: "teacher_declaration_voided").sole)
+        .to have_attributes(
+          teacher_id: declaration.training_period.teacher.id,
+          training_period_id: declaration.training_period.id,
+          declaration_id: declaration.id
+        )
     end
 
     context "when there is a voided_by_user_id" do

@@ -264,20 +264,17 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
     it "records an event" do
       freeze_time
 
-      expect(Events::Record)
-        .to receive(:record_teacher_training_lead_provider_updated_event!)
-        .with(
-          old_lead_provider_name: old_lead_provider.name,
-          new_lead_provider_name: new_lead_provider.name,
-          author:,
-          ect_at_school_period: nil,
-          mentor_at_school_period:,
-          school:,
-          teacher:,
-          happened_at: Time.current
-        )
-
       subject
+
+      event = Event.where(event_type: "teacher_training_lead_provider_updated").sole
+      expect(event).to have_attributes(
+        ect_at_school_period_id: nil,
+        mentor_at_school_period_id: mentor_at_school_period.id,
+        school_id: school.id,
+        teacher_id: teacher.id,
+        happened_at: Time.current
+      )
+      expect(event.heading).to include(old_lead_provider.name, new_lead_provider.name)
     end
   end
 end

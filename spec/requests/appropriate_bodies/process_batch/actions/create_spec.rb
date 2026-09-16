@@ -25,18 +25,9 @@ RSpec.describe "Appropriate Body bulk actions upload", type: :request do
     end
 
     it "records an upload started event" do
-      allow(Events::Record).to receive(:record_bulk_upload_started_event!).and_call_original
-
       post ab_batch_actions_path, params: {
         pending_induction_submission_batch: { csv_file: }
       }
-
-      expect(Events::Record).to have_received(:record_bulk_upload_started_event!).with(
-        batch: an_instance_of(PendingInductionSubmissionBatch),
-        author: an_instance_of(Sessions::Users::AppropriateBodyPersona)
-      )
-
-      perform_enqueued_jobs
 
       expect(Event.last.event_type).to eq("bulk_upload_started")
       expect(Event.last.pending_induction_submission_batch.id).to eq(batch.id)

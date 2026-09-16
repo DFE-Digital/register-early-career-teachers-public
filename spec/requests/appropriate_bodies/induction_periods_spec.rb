@@ -48,25 +48,19 @@ RSpec.describe "AppropriateBodies::InductionPeriodsController", type: :request d
       end
 
       it "records an induction period updated event" do
-        allow(Events::Record).to receive(:record_induction_period_updated_event!).once.and_call_original
-
         induction_period.assign_attributes(params[:induction_period])
 
         expected_modifications = induction_period.changes
 
         patch(ab_teacher_induction_period_path(induction_period.teacher, induction_period), params:)
 
-        expect(Events::Record).to have_received(:record_induction_period_updated_event!).once.with(
-          hash_including(
-            {
-              induction_period:,
-              teacher: induction_period.teacher,
-              appropriate_body_period: induction_period.appropriate_body_period,
-              modifications: expected_modifications,
-              author: kind_of(Sessions::User),
-            }
-          )
+        event = Event.where(event_type: "induction_period_updated").sole
+        expect(event).to have_attributes(
+          induction_period_id: induction_period.id,
+          teacher_id: induction_period.teacher_id,
+          appropriate_body_period_id: induction_period.appropriate_body_period_id
         )
+        expect(event.metadata.keys).to match_array(expected_modifications.keys)
       end
 
       context "when ne programme types are enabled" do

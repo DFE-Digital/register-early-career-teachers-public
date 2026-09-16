@@ -109,9 +109,9 @@ RSpec.describe "Admin finance milestones", type: :request do
       end
 
       it "records an event" do
-        allow(Events::Record).to receive(:record_milestone_added_event!).once.and_call_original
         post(index_path, params:)
-        expect(Events::Record).to have_received(:record_milestone_added_event!).once
+
+        expect(Event.where(event_type: "milestone_added").count).to eq(1)
       end
 
       context "and the contract period has started" do

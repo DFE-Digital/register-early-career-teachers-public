@@ -10,15 +10,14 @@ describe Statements::Update do
   let(:params) { { payment_date: new_payment_date } }
 
   context "when the update is valid" do
-    before { allow(Events::Record).to receive(:record_statement_updated_event!).and_call_original }
-
     it "updates and records an event" do
       subject.call
 
       expect(statement.reload.payment_date).to eq(new_payment_date)
-      expect(Events::Record).to have_received(:record_statement_updated_event!).with(
-        author:, statement:, modifications: hash_including("payment_date")
-      )
+
+      event = Event.where(event_type: "statement_updated").sole
+      expect(event.statement_id).to eq(statement.id)
+      expect(event.metadata.keys).to include("payment_date")
     end
 
     context "when updating to an output fee month" do

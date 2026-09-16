@@ -276,18 +276,16 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController" do
         end
 
         it "creates an event only after confirmation" do
-          allow(Events::Record).to receive(:record_teacher_training_lead_provider_updated_event!)
-
           subject
 
-          expect(Events::Record).not_to have_received(:record_teacher_training_lead_provider_updated_event!)
+          expect(Event.where(event_type: "teacher_training_lead_provider_updated")).to be_empty
           expect(response).to redirect_to(path_for_step("check-answers"))
 
           follow_redirect!
 
           post path_for_step("check-answers")
 
-          expect(Events::Record).to have_received(:record_teacher_training_lead_provider_updated_event!)
+          expect(Event.where(event_type: "teacher_training_lead_provider_updated")).to be_present
           expect(response).to redirect_to(path_for_step("confirmation"))
         end
       end
@@ -321,17 +319,12 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController" do
         end
 
         it "records the previous lead provider on the event" do
-          allow(Events::Record).to receive(:record_teacher_training_lead_provider_updated_event!)
-
           subject
           follow_redirect!
           post(path_for_step("check-answers"))
 
-          expect(Events::Record).to have_received(:record_teacher_training_lead_provider_updated_event!)
-            .with(hash_including(
-                    old_lead_provider_name: lead_provider.name,
-                    new_lead_provider_name: other_lead_provider.name
-                  ))
+          expect(Event.where(event_type: "teacher_training_lead_provider_updated").sole.heading)
+            .to include(lead_provider.name, other_lead_provider.name)
         end
       end
 

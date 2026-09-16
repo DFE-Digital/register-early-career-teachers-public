@@ -28,13 +28,13 @@ RSpec.describe Schools::ECTs::ChangeNameWizard::CheckAnswersStep, type: :model d
     end
 
     it "records a teacher_name_updated_by_user event" do
-      expect(Events::Record).to receive(:teacher_name_updated_by_user_event!).with(
-        old_name: anything,
-        new_name: "Terry Pratchett",
-        author:,
-        teacher: ect_at_school_period.teacher
-      )
+      teacher = ect_at_school_period.teacher
+
       current_step.save!
+
+      event = Event.where(event_type: "teacher_name_updated_by_user").sole
+      expect(event.teacher_id).to eq(teacher.id)
+      expect(event.metadata["new_name"]).to eq("Terry Pratchett")
     end
   end
 end

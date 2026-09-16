@@ -119,14 +119,14 @@ RSpec.describe Teachers::SetECTFundingEligibility do
           FactoryBot.create(:induction_period, :unfinished, teacher:)
           FactoryBot.create(:ect_at_school_period, :unfinished, teacher:)
 
-          expect(Events::Record).to receive(:record_teacher_set_funding_eligibility_event!)
-            .with(author:,
-                  teacher:,
-                  teacher_type: "ECT",
-                  happened_at: Time.zone.now,
-                  modifications: hash_including("ect_first_became_eligible_for_training_at" => [nil, Time.zone.now]))
-
           service.set!
+
+          event = Event.where(event_type: "teacher_funding_eligibility_set").sole
+          expect(event.teacher_id).to eq(teacher.id)
+          expect(event.heading).to include("ECT")
+          expect(event.metadata).to include(
+            "ect_first_became_eligible_for_training_at" => [nil, Time.zone.now.as_json]
+          )
         end
       end
     end
@@ -137,9 +137,9 @@ RSpec.describe Teachers::SetECTFundingEligibility do
       end
 
       it "does not record a teacher set funding eligibility event" do
-        expect(Events::Record).not_to receive(:record_teacher_set_funding_eligibility_event!)
-
         service.set!
+
+        expect(Event.where(event_type: "teacher_funding_eligibility_set")).to be_empty
       end
     end
 

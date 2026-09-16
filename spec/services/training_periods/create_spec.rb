@@ -56,14 +56,12 @@ RSpec.describe TrainingPeriods::Create do
     end
 
     it "records an event for assigning the schedule to the training period" do
-      allow(Events::Record).to receive(:record_teacher_schedule_assigned_to_training_period!)
       training_period = result
-      expect(Events::Record).to have_received(:record_teacher_schedule_assigned_to_training_period!).with(
-        training_period:,
-        teacher: period.teacher,
-        schedule: training_period.schedule,
-        author:,
-        happened_at: Time.current
+
+      expect(Event.where(event_type: "teacher_schedule_assigned_to_training_period").sole).to have_attributes(
+        training_period_id: training_period.id,
+        teacher_id: period.teacher.id,
+        schedule_id: training_period.schedule.id
       )
     end
 
@@ -123,14 +121,12 @@ RSpec.describe TrainingPeriods::Create do
     end
 
     it "records an event for assigning the schedule to the training period" do
-      allow(Events::Record).to receive(:record_teacher_schedule_assigned_to_training_period!)
       training_period = result
-      expect(Events::Record).to have_received(:record_teacher_schedule_assigned_to_training_period!).with(
-        training_period:,
-        teacher: period.teacher,
-        schedule: training_period.schedule,
-        author:,
-        happened_at: Time.current
+
+      expect(Event.where(event_type: "teacher_schedule_assigned_to_training_period").sole).to have_attributes(
+        training_period_id: training_period.id,
+        teacher_id: period.teacher.id,
+        schedule_id: training_period.schedule.id
       )
     end
 
@@ -200,7 +196,7 @@ RSpec.describe TrainingPeriods::Create do
 
       TrainingPeriods::Create.school_led(period:, started_on:)
 
-      expect(Events::Record).not_to receive(:record_teacher_schedule_assigned_to_training_period!)
+      expect(Event.where(event_type: "teacher_schedule_assigned_to_training_period")).to be_empty
     end
   end
 

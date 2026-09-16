@@ -116,20 +116,10 @@ RSpec.describe "Admin finance contract periods", type: :request do
       end
 
       it "records a 'contract period created' event" do
-        allow(Events::Record).to receive(:record_contract_period_added_event!).once.and_call_original
-
         post(admin_contract_periods_path, params:)
 
-        expect(Events::Record).to have_received(:record_contract_period_added_event!)
-        .once
-        .with(
-          hash_including(
-            {
-              author: kind_of(Sessions::User),
-              contract_period: kind_of(ContractPeriod),
-            }
-          )
-        )
+        expect(Event.where(event_type: "contract_period_added").sole.contract_period_id)
+          .to eq(ContractPeriod.order(:created_at).last.id)
       end
 
       it "creates the contract period with correct attributes" do
@@ -366,22 +356,14 @@ RSpec.describe "Admin finance contract periods", type: :request do
       end
 
       it "records a contract period updated event" do
-        allow(Events::Record).to receive(:record_contract_period_updated_event!).once.and_call_original
-
         contract_period.assign_attributes(params[:contract_period])
         expected_modifications = contract_period.changes
 
         patch(admin_contract_period_path(contract_period.id), params:)
 
-        expect(Events::Record).to have_received(:record_contract_period_updated_event!).once.with(
-          hash_including(
-            {
-              contract_period:,
-              author: kind_of(Sessions::User),
-              modifications: hash_including(expected_modifications),
-            }
-          )
-        )
+        event = Event.where(event_type: "contract_period_updated").sole
+        expect(event.contract_period_id).to eq(contract_period.id)
+        expect(event.metadata.keys).to include(*expected_modifications.keys)
       end
     end
 

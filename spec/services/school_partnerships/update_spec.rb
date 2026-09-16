@@ -21,24 +21,16 @@ RSpec.describe SchoolPartnerships::Update do
     end
 
     it "records a school partnership updated event" do
-      allow(Events::Record).to receive(:record_school_partnership_updated_event!).once.and_call_original
-
       previous_delivery_partner = school_partnership.delivery_partner
       school_partnership = update_school_partnership
 
-      expect(Events::Record).to have_received(:record_school_partnership_updated_event!).once.with(
-        hash_including(
-          {
-            school_partnership:,
-            author: an_object_having_attributes(
-              class: Events::LeadProviderAPIAuthor,
-              lead_provider: school_partnership.lead_provider
-            ),
-            previous_delivery_partner:,
-            modifications: school_partnership.saved_changes
-          }
-        )
+      event = Event.where(event_type: "school_partnership_updated").sole
+      expect(event).to have_attributes(
+        school_partnership_id: school_partnership.id,
+        delivery_partner_id: school_partnership.delivery_partner.id,
+        lead_provider_id: school_partnership.lead_provider.id
       )
+      expect(event.heading).to include(previous_delivery_partner.name, school_partnership.delivery_partner.name)
     end
   end
 end

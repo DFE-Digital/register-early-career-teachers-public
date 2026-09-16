@@ -47,42 +47,37 @@ describe Induction::Periods::DeleteInductionPeriod do
     end
 
     it "records a delete event with the correct parameters" do
-      expect(Events::Record)
-        .to receive(:record_induction_period_deleted_event!)
-        .with(
-          author:,
-          body: note,
-          zendesk_ticket_id: "123456",
-          modifications: hash_including("id" => [induction_period.id, nil]),
-          teacher:,
-          appropriate_body_period:,
-          happened_at: instance_of(ActiveSupport::TimeWithZone)
-        )
+      deleted_id = induction_period.id
 
       service.delete_induction_period!
+
+      event = Event.where(event_type: "induction_period_deleted").sole
+      expect(event).to have_attributes(
+        body: note,
+        zendesk_ticket_id: 123_456,
+        teacher_id: teacher.id,
+        appropriate_body_period_id: appropriate_body_period.id
+      )
+      expect(event.metadata).to include("id" => [deleted_id, nil])
     end
 
     it "does not record a TRS induction start date updated event" do
-      expect(Events::Record)
-        .not_to receive(:record_teacher_trs_induction_start_date_updated_event!)
-
       service.delete_induction_period!
+
+      expect(Event.where(event_type: "teacher_trs_induction_start_date_updated")).to be_empty
     end
 
     context "when the induction period has an outcome" do
       before { induction_period.update!(outcome: "pass", finished_on: 1.month.ago, number_of_terms: 3) }
 
       it "raises ActiveRecord::RecordInvalid and does not delete or fire events" do
+        expect(trs_client).not_to receive(:reset_teacher_induction!)
+        expect(trs_client).not_to receive(:begin_induction!)
+
         expect { service.delete_induction_period! }
           .to raise_error(ActiveRecord::RecordInvalid)
           .and(not_change(InductionPeriod, :count))
-
-        expect(Events::Record)
-          .not_to receive(:record_induction_period_deleted_event!)
-        expect(Events::Record)
-          .not_to receive(:record_teacher_trs_induction_start_date_updated_event!)
-        expect(trs_client).not_to receive(:reset_teacher_induction!)
-        expect(trs_client).not_to receive(:begin_induction!)
+          .and(not_change(Event, :count))
       end
     end
   end
@@ -138,32 +133,29 @@ describe Induction::Periods::DeleteInductionPeriod do
       end
 
       it "records a TRS induction start date updated event with the correct parameters" do
-        expect(Events::Record)
-          .to receive(:record_teacher_trs_induction_start_date_updated_event!)
-          .with(
-            author:,
-            teacher:,
-            appropriate_body_period:,
-            induction_period: later_period
-          )
-
         service.delete_induction_period!
+
+        expect(Event.where(event_type: "teacher_trs_induction_start_date_updated").sole)
+          .to have_attributes(
+            teacher_id: teacher.id,
+            appropriate_body_period_id: appropriate_body_period.id,
+            induction_period_id: later_period.id
+          )
       end
 
       it "records a delete event with the correct parameters" do
-        expect(Events::Record)
-          .to receive(:record_induction_period_deleted_event!)
-          .with(
-            author:,
-            body: note,
-            zendesk_ticket_id: "123456",
-            modifications: hash_including("id" => [earliest_period.id, nil]),
-            teacher:,
-            appropriate_body_period:,
-            happened_at: instance_of(ActiveSupport::TimeWithZone)
-          )
+        deleted_id = earliest_period.id
 
         service.delete_induction_period!
+
+        event = Event.where(event_type: "induction_period_deleted").sole
+        expect(event).to have_attributes(
+          body: note,
+          zendesk_ticket_id: 123_456,
+          teacher_id: teacher.id,
+          appropriate_body_period_id: appropriate_body_period.id
+        )
+        expect(event.metadata).to include("id" => [deleted_id, nil])
       end
     end
 
@@ -186,24 +178,24 @@ describe Induction::Periods::DeleteInductionPeriod do
       end
 
       it "does not record a TRS induction start date updated event" do
-        expect(Events::Record).not_to receive(:record_teacher_trs_induction_start_date_updated_event!)
         service.delete_induction_period!
+
+        expect(Event.where(event_type: "teacher_trs_induction_start_date_updated")).to be_empty
       end
 
       it "records a delete event with the correct parameters" do
-        expect(Events::Record)
-          .to receive(:record_induction_period_deleted_event!)
-          .with(
-            author:,
-            body: note,
-            zendesk_ticket_id: "123456",
-            modifications: hash_including("id" => [later_period.id, nil]),
-            teacher:,
-            appropriate_body_period:,
-            happened_at: instance_of(ActiveSupport::TimeWithZone)
-          )
+        deleted_id = later_period.id
 
         service.delete_induction_period!
+
+        event = Event.where(event_type: "induction_period_deleted").sole
+        expect(event).to have_attributes(
+          body: note,
+          zendesk_ticket_id: 123_456,
+          teacher_id: teacher.id,
+          appropriate_body_period_id: appropriate_body_period.id
+        )
+        expect(event.metadata).to include("id" => [deleted_id, nil])
       end
     end
 

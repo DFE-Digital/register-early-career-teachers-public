@@ -79,18 +79,16 @@ describe Schools::InductionTutor::ConfirmExistingInductionTutorWizard::CheckAnsw
       end
 
       it "records an event" do
-        expect(Events::Record)
-          .to receive(:record_school_induction_tutor_updated_event!)
-          .with(
-            author:,
-            school:,
-            old_name: school.induction_tutor_name,
-            new_name: induction_tutor_name,
-            new_email: induction_tutor_email,
-            contract_period_year: current_contract_period.year
-          )
-
         current_step.save!
+
+        event = Event.where(event_type: "school_induction_tutor_updated").sole
+        expect(event.school_id).to eq(school.id)
+        expect(event.metadata).to eq(
+          "contract_period_year" => current_contract_period.year,
+          "name" => induction_tutor_name,
+          "email" => induction_tutor_email
+        )
+        expect(event.heading).to include(induction_tutor_name.to_s)
       end
 
       it "is truthy" do
@@ -148,18 +146,16 @@ describe Schools::InductionTutor::ConfirmExistingInductionTutorWizard::CheckAnsw
       end
 
       it "records an event" do
-        expect(Events::Record)
-          .to receive(:record_school_induction_tutor_updated_event!)
-          .with(
-            author:,
-            school:,
-            old_name: school.induction_tutor_name,
-            new_name: induction_tutor_name,
-            new_email: induction_tutor_email,
-            contract_period_year: upcoming_contract_period.year
-          )
-
         current_step.save!
+
+        event = Event.where(event_type: "school_induction_tutor_updated").sole
+        expect(event.school_id).to eq(school.id)
+        expect(event.metadata).to eq(
+          "contract_period_year" => upcoming_contract_period.year,
+          "name" => induction_tutor_name,
+          "email" => induction_tutor_email
+        )
+        expect(event.heading).to include(induction_tutor_name.to_s)
       end
 
       it "is truthy" do
@@ -198,18 +194,15 @@ describe Schools::InductionTutor::ConfirmExistingInductionTutorWizard::CheckAnsw
       end
 
       it "records an event" do
-        expect(Events::Record)
-          .to receive(:record_school_induction_tutor_updated_event!)
-          .with(
-            author:,
-            school:,
-            old_name: school.induction_tutor_name,
-            new_name: induction_tutor_name,
-            new_email: induction_tutor_email,
-            contract_period_year: nil
-          )
-
         current_step.save!
+
+        event = Event.where(event_type: "school_induction_tutor_updated").sole
+        expect(event.school_id).to eq(school.id)
+        expect(event.metadata).to eq(
+          "contract_period_year" => nil,
+          "name" => induction_tutor_name,
+          "email" => induction_tutor_email
+        )
       end
 
       it "is truthy" do

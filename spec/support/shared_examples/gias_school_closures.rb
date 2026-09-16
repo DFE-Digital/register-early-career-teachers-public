@@ -68,13 +68,16 @@ end
 
 RSpec.shared_examples "records a school closed event" do
   it "records a school closed event" do
-    expect(Events::Record).to receive(:record_school_closed_event!)
-    .once
-    .with(school: gias_school.school,
-          gias_school:,
-          happened_at: gias_school.closed_on,
-          author: an_instance_of(Events::SystemAuthor))
+    school = gias_school.school
 
     subject
+
+    event = Event.where(event_type: "school_closed").sole
+    expect(event.school_id).to eq(school.id)
+    expect(event.metadata).to eq(
+      "gias_school_urn" => gias_school.urn,
+      "gias_school_name" => gias_school.name
+    )
+    expect(event.happened_at.to_date).to eq(gias_school.closed_on)
   end
 end

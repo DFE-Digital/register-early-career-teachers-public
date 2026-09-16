@@ -1,6 +1,4 @@
 RSpec.describe "Admin deleting an induction" do
-  include ActiveJob::TestHelper
-
   include_context "test TRS API returns a teacher"
 
   let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
@@ -167,9 +165,7 @@ private
   end
 
   def and_i_confirm_deletion
-    perform_enqueued_jobs do
-      page.get_by_role("button", name: "Delete induction period").click
-    end
+    page.get_by_role("button", name: "Delete induction period").click
   end
 
   def then_i_should_be_on_the_success_page

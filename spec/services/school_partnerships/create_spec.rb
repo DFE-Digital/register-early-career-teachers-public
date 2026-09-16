@@ -29,21 +29,15 @@ RSpec.describe SchoolPartnerships::Create do
     end
 
     it "records a school partnership created event" do
-      allow(Events::Record).to receive(:record_school_partnership_created_event!).once.and_call_original
-
       school_partnership = create_school_partnership
 
-      expect(Events::Record).to have_received(:record_school_partnership_created_event!).once.with(
-        hash_including(
-          {
-            school_partnership:,
-            author: an_object_having_attributes(
-              class: Events::LeadProviderAPIAuthor,
-              lead_provider:
-            ),
-          }
-        )
+      event = Event.where(event_type: "school_partnership_created").sole
+      expect(event).to have_attributes(
+        school_partnership_id: school_partnership.id,
+        school_id: school_partnership.school_id,
+        lead_provider_id: lead_provider.id
       )
+      expect(event.metadata).to eq("contract_period_year" => school_partnership.contract_period.year)
     end
 
     it "links eligible training periods to the new school partnership" do

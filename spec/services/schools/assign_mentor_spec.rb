@@ -228,39 +228,35 @@ RSpec.describe Schools::AssignMentor do
 
     describe "recording events" do
       it "records a `teacher_starts_being_mentored` event" do
-        allow(Events::Record)
-          .to receive(:record_teacher_starts_being_mentored_event!)
-
         assign!
 
-        expect(Events::Record)
-          .to have_received(:record_teacher_starts_being_mentored_event!)
-          .with(
-            school: mentee.school,
-            mentee: mentee.teacher,
-            mentor: new_mentor.teacher,
-            ect_at_school_period: mentee,
-            mentorship_period: MentorshipPeriod.last,
-            author:
-          )
+        event = Event.where(event_type: "teacher_starts_being_mentored").sole
+        expect(event).to have_attributes(
+          school_id: mentee.school_id,
+          teacher_id: mentee.teacher_id,
+          ect_at_school_period_id: mentee.id,
+          mentorship_period_id: MentorshipPeriod.last.id
+        )
+        expect(event.metadata).to eq(
+          "mentor_id" => new_mentor.teacher_id,
+          "mentee_id" => mentee.teacher_id
+        )
       end
 
       it "records a `teacher_starts_mentoring` event" do
-        allow(Events::Record)
-          .to receive(:record_teacher_starts_mentoring_event!)
-
         assign!
 
-        expect(Events::Record)
-          .to have_received(:record_teacher_starts_mentoring_event!)
-          .with(
-            school: new_mentor.school,
-            mentee: mentee.teacher,
-            mentor: new_mentor.teacher,
-            mentor_at_school_period: new_mentor,
-            mentorship_period: MentorshipPeriod.last,
-            author:
-          )
+        event = Event.where(event_type: "teacher_starts_mentoring").sole
+        expect(event).to have_attributes(
+          school_id: new_mentor.school_id,
+          teacher_id: new_mentor.teacher_id,
+          mentor_at_school_period_id: new_mentor.id,
+          mentorship_period_id: MentorshipPeriod.last.id
+        )
+        expect(event.metadata).to eq(
+          "mentor_id" => new_mentor.teacher_id,
+          "mentee_id" => mentee.teacher_id
+        )
       end
     end
   end

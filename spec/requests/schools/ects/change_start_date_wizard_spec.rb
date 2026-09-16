@@ -371,11 +371,6 @@ RSpec.describe "Schools::ECTs::ChangeStartDateWizardController" do
         .with(new_start_date)
         .and_return(contract_period)
 
-      allow(Events::Record)
-        .to receive(
-          :record_teacher_school_start_date_updated_event!
-        )
-
       post path_for_step("edit"), params: edit_params
     end
 
@@ -390,18 +385,11 @@ RSpec.describe "Schools::ECTs::ChangeStartDateWizardController" do
     end
 
     it "records the event only after confirmation" do
-      expect(Events::Record)
-        .not_to have_received(
-          :record_teacher_school_start_date_updated_event!
-        )
+      expect(Event.where(event_type: "teacher_school_start_date_updated")).to be_empty
 
       post_check_answers
 
-      expect(Events::Record)
-        .to have_received(
-          :record_teacher_school_start_date_updated_event!
-        )
-        .once
+      expect(Event.where(event_type: "teacher_school_start_date_updated").count).to eq(1)
     end
 
     it "redirects to the confirmation page" do

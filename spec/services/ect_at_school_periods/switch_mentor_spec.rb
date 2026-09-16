@@ -78,13 +78,9 @@ module ECTAtSchoolPeriods
         end
 
         it "does not record a `teacher_starts_training_period` event" do
-          allow(Events::Record)
-            .to receive(:record_teacher_starts_training_period_event!)
-
           switch_mentor
 
-          expect(Events::Record)
-            .not_to have_received(:record_teacher_starts_training_period_event!)
+          expect(Event.where(event_type: "teacher_starts_training_period")).to be_empty
         end
       end
 
@@ -147,13 +143,9 @@ module ECTAtSchoolPeriods
           end
 
           it "does not record a `teacher_starts_training_period` event" do
-            allow(Events::Record)
-              .to receive(:record_teacher_starts_training_period_event!)
-
             switch_mentor
 
-            expect(Events::Record)
-              .not_to have_received(:record_teacher_starts_training_period_event!)
+            expect(Event.where(event_type: "teacher_starts_training_period")).to be_empty
           end
         end
 
@@ -174,13 +166,9 @@ module ECTAtSchoolPeriods
           end
 
           it "does not record a `teacher_starts_training_period` event" do
-            allow(Events::Record)
-              .to receive(:record_teacher_starts_training_period_event!)
-
             switch_mentor
 
-            expect(Events::Record)
-              .not_to have_received(:record_teacher_starts_training_period_event!)
+            expect(Event.where(event_type: "teacher_starts_training_period")).to be_empty
           end
         end
 
@@ -194,13 +182,9 @@ module ECTAtSchoolPeriods
           end
 
           it "does not record a `teacher_starts_training_period` event" do
-            allow(Events::Record)
-              .to receive(:record_teacher_starts_training_period_event!)
-
             switch_mentor
 
-            expect(Events::Record)
-              .not_to have_received(:record_teacher_starts_training_period_event!)
+            expect(Event.where(event_type: "teacher_starts_training_period")).to be_empty
           end
         end
 
@@ -255,13 +239,10 @@ module ECTAtSchoolPeriods
           end
 
           it "records a `teacher_starts_training_period` event" do
-            allow(Events::Record)
-              .to receive(:record_teacher_starts_training_period_event!)
-
             switch_mentor
 
-            expect(Events::Record)
-              .to have_received(:record_teacher_starts_training_period_event!)
+            event = Event.where(event_type: "teacher_starts_training_period").sole
+            expect(event.teacher_id).to eq(selected_mentor_teacher.id)
           end
         end
 
@@ -275,13 +256,9 @@ module ECTAtSchoolPeriods
           end
 
           it "does not record a `teacher_starts_training_period` event" do
-            allow(Events::Record)
-              .to receive(:record_teacher_starts_training_period_event!)
-
             switch_mentor
 
-            expect(Events::Record)
-              .not_to have_received(:record_teacher_starts_training_period_event!)
+            expect(Event.where(event_type: "teacher_starts_training_period")).to be_empty
           end
         end
 
