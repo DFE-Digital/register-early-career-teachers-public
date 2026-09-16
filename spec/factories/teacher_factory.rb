@@ -43,6 +43,7 @@ FactoryBot.define do
     trait :merged_in_trs do
       trs_response { :permanent_redirect }
       trs_redirected_to { APISeedData::Helpers::TRNGenerator.next }
+      trs_data_last_refreshed_at { Time.zone.now }
     end
 
     trait :early_roll_out_mentor do
