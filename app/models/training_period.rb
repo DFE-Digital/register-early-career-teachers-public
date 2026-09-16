@@ -96,6 +96,7 @@ class TrainingPeriod < ApplicationRecord
     validates :deferred_at, absence: true
     validates :deferral_reason, absence: true
   end
+  validate :lead_provider_cannot_change_with_billable_declarations
 
   # Callbacks
   before_destroy :destroy_non_billable_declarations
@@ -198,6 +199,14 @@ class TrainingPeriod < ApplicationRecord
   end
 
 private
+
+  def lead_provider_cannot_change_with_billable_declarations
+    return unless will_save_change_to_school_partnership_id? ||
+      will_save_change_to_expression_of_interest_id?
+    return unless declarations.billable.exists?
+
+    errors.add(:base, "Cannot change the lead provider for a training period with billable declarations")
+  end
 
   def destroy_non_billable_declarations
     if declarations.billable.exists?

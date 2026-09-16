@@ -50,6 +50,29 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
         expect(new_training_period.schedule.identifier).to eq("ecf-standard-september")
         expect(new_training_period.schedule.contract_period_year).to eq(Time.zone.now.year)
       end
+
+      context "when the training period starts in the future" do
+        let(:started_on) { 1.month.from_now }
+
+        context "when the training period has a billable declaration" do
+          before do
+            FactoryBot.create(:declaration, :paid, training_period:)
+          end
+
+          it "raises and does not change the lead provider" do
+            expect {
+              expect { subject }
+                .to raise_error(ActiveRecord::RecordInvalid)
+            }.not_to change(TrainingPeriod, :count)
+
+            training_period.reload
+
+            expect(training_period.school_partnership).to eq(old_school_partnership)
+            expect(training_period.expression_of_interest).to be_nil
+            expect(training_period.lead_provider).to eq(old_lead_provider)
+          end
+        end
+      end
     end
 
     context "when there is a school partnership with the new lead provider" do
@@ -88,6 +111,55 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
             training_period.reload
             expect(training_period.finished_on).to be_nil
             expect(training_period.school_partnership).to eq(school_partnership)
+          end
+
+          context "when the training period has a billable declaration" do
+            before do
+              FactoryBot.create(:declaration, :paid, training_period:)
+            end
+
+            it "does not change the lead provider" do
+              expect {
+                expect { subject }
+                  .to raise_error(ActiveRecord::RecordInvalid)
+              }.not_to change(TrainingPeriod, :count)
+
+              training_period.reload
+
+              expect(training_period.school_partnership).to eq(old_school_partnership)
+              expect(training_period.lead_provider).to eq(old_lead_provider)
+            end
+          end
+        end
+
+        context "when the training period starts in the future" do
+          let(:started_on) { 1.month.from_now }
+
+          it "updates the training period in place" do
+            expect { subject }.not_to change(TrainingPeriod, :count)
+
+            training_period.reload
+            expect(training_period.finished_on).to be_nil
+            expect(training_period.school_partnership).to eq(school_partnership)
+          end
+
+          context "when the training period has a billable declaration" do
+            before do
+              FactoryBot.create(:declaration, :paid, training_period:)
+            end
+
+            it "raises and does not change the lead provider" do
+              expect {
+                expect { subject }
+                  .to raise_error(ActiveRecord::RecordInvalid)
+              }.not_to change(TrainingPeriod, :count)
+
+              training_period.reload
+
+              expect(training_period.school_partnership).to eq(old_school_partnership)
+              expect(training_period.school_partnership).not_to eq(school_partnership)
+              expect(training_period.lead_provider).to eq(old_lead_provider)
+            end
           end
         end
       end
