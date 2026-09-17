@@ -1,34 +1,47 @@
 module API
   module OAuth
-    class AuthorizationToken
+    class AccessTokenRequest
       include ActiveModel::Model
       include ActiveModel::Attributes
 
-      attribute :client
+      class RequestNotExchangeableError < StandardError; end
+
+      attribute :authorization
       attribute :grant_type
-      attribute :code
       attribute :code_verifier
       attribute :redirect_uri
 
-      validates :client, presence: { message: "invalid_client" }
-
+      validates :authorization, presence: { message: "invalid_grant" }
       validate :grant_type_is_supported_by_client
       validate :code_can_be_exchanged
       validate :code_verifier_is_valid
       validate :redirect_uri_matches_authorization
 
+      delegate :client, to: :authorization
       delegate :code_exchangable?, to: :authorization, prefix: true, allow_nil: true
 
-      def exchange_code_for_token
-        return unless valid?
+      def exchange_code_for_token!
+        raise RequestNotExchangeableError, "Request is not exchangeable" unless valid?
 
-        ActiveRecord::Base.transaction do
-          authorization.exchange_code_for_token!(code_verifier:)
+        Authorizations::ExchangeCodeForToken.new(authorization:, code_verifier:).call
+      end
 
-          Events::Record.record_api_oauth_authorization_code_exchanged(author:, authorization:)
+      def access_token
+        return nil unless authorization.token
 
-          authorization
-        end
+        {
+          access_token: authorization.token,
+          expires_in: authorization.seconds_to_token_expiration,
+          token_type: "Bearer",
+        }
+      end
+
+      def error_message
+        return nil unless errors.any?
+
+        {
+          error: errors.first.message
+        }
       end
 
     private
@@ -36,7 +49,7 @@ module API
       def code_can_be_exchanged
         return if errors.any?
 
-        errors.add(:code, "invalid_grant") unless code.present? && authorization_code_exchangable?
+        errors.add(:code, "invalid_grant") unless authorization_code_exchangable?
       end
 
       def code_verifier_is_valid
@@ -59,14 +72,6 @@ module API
 
         errors.add(:redirect_uri, "invalid_grant") unless redirect_uri.present? &&
           ActiveSupport::SecurityUtils.secure_compare(redirect_uri, authorization.redirect_uri)
-      end
-
-      def authorization
-        @authorization ||= client&.authorization_for(code:)
-      end
-
-      def author
-        @author ||= Events::OAuthClientAuthor.new(client:)
       end
     end
   end

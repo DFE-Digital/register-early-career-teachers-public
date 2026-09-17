@@ -1,9 +1,8 @@
-RSpec.describe API::OAuth::AuthorizationToken, type: :model do
+RSpec.describe API::OAuth::AccessTokenRequest, type: :model do
   subject(:instance) do
     described_class.new(
-      client:,
+      authorization:,
       grant_type:,
-      code:,
       code_verifier:,
       redirect_uri:
     )
@@ -18,23 +17,18 @@ RSpec.describe API::OAuth::AuthorizationToken, type: :model do
   let(:code_challenge) { Base64.urlsafe_encode64(Digest::SHA256.digest(challenge), padding: false) }
 
   let(:grant_type) { client.grant_types.first }
-  let(:code) { "secret code" }
   let(:code_verifier) { challenge }
   let(:redirect_uri) { client.redirect_uris.first }
-  let(:code_digest) { Digest::SHA256.hexdigest(code) }
   let(:code_expires_at) { 1.day.from_now }
   let(:code_exchanged_at) { nil }
   let(:appropriate_body_period) { authorization.appropriate_body_period }
 
-  before do
-    authorization.update!(code_digest:, code_expires_at:, code_exchanged_at:)
-  end
+  before { authorization.update!(code_expires_at:, code_exchanged_at:) }
 
   describe "validations" do
     it { is_expected.to be_valid }
-    it { is_expected.to validate_presence_of(:client).with_message("invalid_client") }
+    it { is_expected.to validate_presence_of(:authorization).with_message("invalid_grant") }
     it { is_expected.to validate_presence_of(:grant_type).with_message("invalid_request") }
-    it { is_expected.to validate_presence_of(:code).with_message("invalid_grant") }
     it { is_expected.to validate_presence_of(:code_verifier).with_message("invalid_grant") }
     it { is_expected.to validate_presence_of(:redirect_uri).with_message("invalid_grant") }
 
@@ -74,41 +68,63 @@ RSpec.describe API::OAuth::AuthorizationToken, type: :model do
     end
   end
 
-  describe "#exchange_code_for_token" do
-    subject(:result) { instance.exchange_code_for_token }
+  describe "#exchange_code_for_token!" do
+    subject(:exchange_code_for_token!) { instance.exchange_code_for_token! }
 
-    it "marks the authorization as exchanged" do
-      result
-      expect(authorization.reload.code_exchanged_at).to be_within(1.second).of Time.zone.now
+    it { is_expected.to eq(authorization) }
+
+    it "sets the token attributes" do
+      freeze_time
+
+      exchange_code_for_token!
+
+      expect(authorization.reload).to have_attributes({
+        token_expires_at: 1.year.from_now,
+        token_digest: be_present,
+        code_exchanged_at: Time.zone.now,
+      })
     end
 
-    it "generates an event" do
-      freeze_time do
-        expect {
-          result
-        }.to have_enqueued_job(RecordEventJob).with(
-          author_name: authorization.client.name,
-          author_type: :oauth_client,
-          event_type: :api_oauth_authorization_code_exchanged,
-          happened_at: Time.zone.now,
-          appropriate_body_period:,
-          heading: "Authorization code exchanged by client '#{client.name}' for '#{appropriate_body_period.name}'"
-        )
+    context "when the code cannot be exchanged" do
+      let(:code_expires_at) { 1.day.ago }
+
+      it { expect { exchange_code_for_token! }.to raise_error(API::OAuth::AccessTokenRequest::RequestNotExchangeableError, "Request is not exchangeable") }
+    end
+  end
+
+  describe "#access_token" do
+    subject(:access_token) { instance.access_token }
+
+    it "returns nil when the code has not been exchanged" do
+      expect(access_token).to be_nil
+    end
+
+    it "returns the access token when the code has been exchanged" do
+      freeze_time
+      authorization = instance.exchange_code_for_token!
+      expect(access_token).to eq({
+        access_token: authorization.token,
+        expires_in: authorization.seconds_to_token_expiration,
+        token_type: "Bearer",
+      })
+    end
+  end
+
+  describe "#error_message" do
+    subject(:error_message) { instance.error_message }
+
+    it "returns nil when there are no errors" do
+      expect(error_message).to be_nil
+    end
+
+    context "when there are errors" do
+      let(:grant_type) { "froot" }
+      let(:code_expires_at) { 1.hour.ago }
+
+      it "returns the first error message when there are errors" do
+        expect(instance).to be_invalid
+        expect(error_message).to eq({ error: instance.errors.first.message })
       end
-    end
-
-    it "the queued job adds an event record when performed" do
-      expect {
-        perform_enqueued_jobs { result }
-      }.to change(Event, :count).by(1)
-
-      expect(Event.first.event_type).to eq "api_oauth_authorization_code_exchanged"
-    end
-
-    it "creates a token and returns the relevant authorization" do
-      authorization = result
-      expect(Digest::SHA256.hexdigest(authorization.token)).to eq authorization.reload.token_digest
-      expect(authorization.seconds_to_token_expiration).to be_within(1.second).of(365.days.to_i)
     end
   end
 end

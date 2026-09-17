@@ -1,0 +1,55 @@
+describe API::OAuth::Authorizations::ExchangeCodeForToken do
+  include ActiveJob::TestHelper
+
+  subject(:service) { described_class.new(authorization:, code_verifier:) }
+
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
+  let(:client) { FactoryBot.create(:api_oauth_client) }
+
+  let(:code_verifier) { "code-verifier" }
+  let(:authorization) { FactoryBot.create(:api_oauth_authorization, appropriate_body_period:, client:, code_verifier:) }
+  let(:author) { Events::OAuthClientAuthor.new(client:) }
+
+  context "when valid" do
+    it "returns an authorization with a token and emits an event" do
+      freeze_time
+
+      authorization = service.call
+      expect { perform_enqueued_jobs }.to change(Event, :count).by(1)
+
+      event = Event.with_event_type(:api_oauth_authorization_code_exchanged).sole
+      expect(event.appropriate_body_period).to eq(appropriate_body_period)
+      expect(event.author_type).to eq("oauth_client")
+      expect(event.author_name).to eq(client.name)
+
+      expect(authorization.token_expires_at).to eq(1.year.from_now)
+      expect(authorization.token_digest).to be_present
+      expect(authorization.code_exchanged_at).to eq(Time.zone.now)
+    end
+  end
+
+  shared_examples "an unsuccessful token exchange" do |error_message|
+    it "raises an error without setting a token or recording an event" do
+      expect { service.call }.to raise_error(described_class::CodeNotExchangeableError, error_message)
+
+      expect { perform_enqueued_jobs }.not_to change(Event, :count)
+
+      authorization.reload
+      expect(authorization.token_expires_at).to be_nil
+      expect(authorization.token_digest).to be_nil
+      expect(authorization.code_exchanged_at).to be_nil
+    end
+  end
+
+  context "when the code_verifier does not match the code_challenge" do
+    before { authorization.update!(code_challenge: "something-else") }
+
+    it_behaves_like "an unsuccessful token exchange", "Code verifier is invalid"
+  end
+
+  context "when the code cannot be exchanged" do
+    before { authorization.update!(code_expires_at: 1.hour.ago) }
+
+    it_behaves_like "an unsuccessful token exchange", "Code cannot be exchanged"
+  end
+end

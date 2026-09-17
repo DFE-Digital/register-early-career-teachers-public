@@ -9,5 +9,9 @@ FactoryBot.define do
     redirect_uri { client.redirect_uris.first }
     code_challenge { Base64.urlsafe_encode64(Digest::SHA256.digest(code_verifier), padding: false) }
     code_challenge_method { :s256 }
+
+    trait :with_token do
+      after(:build, &:assign_token)
+    end
   end
 end
