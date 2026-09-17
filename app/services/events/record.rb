@@ -4,6 +4,30 @@ module Events
   class NoInductionPeriod < StandardError; end
 
   class Record
+    RELATIONSHIPS = %i[
+      user
+      teacher
+      school
+      appropriate_body_period
+      framework_agreement
+      lead_provider
+      delivery_partner
+      lead_provider_delivery_partnership
+      school_partnership
+      schedule
+      induction_extension
+      ect_at_school_period
+      induction_period
+      mentor_at_school_period
+      mentorship_period
+      training_period
+      contract_period
+      statement
+      statement_adjustment
+      pending_induction_submission_batch
+      declaration
+    ].freeze
+
     attr_reader :author,
                 :event_type,
                 :heading,
@@ -1245,10 +1269,20 @@ module Events
       new(event_type:, author:, user:, heading:, modifications:, happened_at:).record_event!
     end
 
-    def self.record_admin_data_fix_event!(author:, body:, zendesk_ticket_id:, modifications:, metadata:, happened_at: Time.zone.now)
+    def self.record_admin_data_fix_event!(author:, body:, zendesk_ticket_id:, modifications:, metadata:, record:, happened_at: Time.zone.now)
       event_type = :admin_data_fix
       heading = "Admin data fix: #{metadata[:gid]} (#{metadata[:action]})"
-      new(event_type:, author:, heading:, body:, zendesk_ticket_id:, modifications:, metadata:, happened_at:).record_event!
+      new(
+        event_type:,
+        author:,
+        heading:,
+        body:,
+        zendesk_ticket_id:,
+        modifications:,
+        metadata:,
+        happened_at:,
+        **relationship_for(record)
+      ).record_event!
     end
 
     # Declarations events
@@ -1545,6 +1579,16 @@ module Events
       ).record_event!
     end
 
+    def self.relationship_for(record)
+      return {} unless record.persisted?
+
+      name = record.model_name.singular.to_sym
+      relationships = RELATIONSHIPS.include?(name) ? { name => record } : {}
+      relationships[:teacher] ||= record.teacher if record.respond_to?(:teacher)
+      relationships.compact
+    end
+    private_class_method :relationship_for
+
   private
 
     def attributes
@@ -1580,29 +1624,7 @@ module Events
     end
 
     def relationship_attributes
-      {
-        school:,
-        induction_period:,
-        teacher:,
-        appropriate_body_period:,
-        induction_extension:,
-        ect_at_school_period:,
-        mentor_at_school_period:,
-        training_period:,
-        schedule:,
-        mentorship_period:,
-        school_partnership:,
-        lead_provider:,
-        delivery_partner:,
-        framework_agreement:,
-        lead_provider_delivery_partnership:,
-        statement:,
-        statement_adjustment:,
-        declaration:,
-        user:,
-        pending_induction_submission_batch:,
-        contract_period:
-      }.compact
+      RELATIONSHIPS.index_with { public_send(it) }.compact
     end
 
     def changelog_attributes

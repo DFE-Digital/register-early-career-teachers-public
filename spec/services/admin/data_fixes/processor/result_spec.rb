@@ -1,7 +1,7 @@
 describe Admin::DataFixes::Processor::Result do
-  subject(:result) { described_class.new(data_change:, target_object:, error:) }
+  subject(:result) { described_class.new(action:, target_object:, error:) }
 
-  let(:data_change) { { action: "update" } }
+  let(:action) { "update" }
   let(:target_object) do
     FactoryBot.create(:teacher, corrected_name: "Jane Smith").tap do |teacher|
       teacher.update!(corrected_name: "Jane Doe")

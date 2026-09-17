@@ -15,7 +15,7 @@ module Admin::DataFixesWizard
         store.confirmed_changes = confirmed_changes.presence || nil
 
         if confirmed_changes
-          confirmed_changes.each { record_event!(it) }
+          changes.results.each { record_event!(it) }
         else
           changes.errors.add(:base, "There was an error processing changes. All changes have been reverted.")
           errors.merge!(changes.errors)
@@ -29,13 +29,15 @@ module Admin::DataFixesWizard
 
   private
 
-    def record_event!(change)
+    def record_event!(result)
+      saved_change = result.saved_change
       Events::Record.record_admin_data_fix_event!(
         author:,
         body: note,
         zendesk_ticket_id:,
-        modifications: change.fetch(:changes),
-        metadata: change
+        modifications: saved_change&.fetch(:changes),
+        metadata: saved_change,
+        record: result.target_object
       )
     end
 
