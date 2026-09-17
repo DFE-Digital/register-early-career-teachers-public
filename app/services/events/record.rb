@@ -165,7 +165,7 @@ module Events
         heading: "Records were merged into #{destination_name} from #{source_name}",
         body: <<~BODY.squish
           Records were merged in from #{source_name}
-          (participant #{source.api_id}, teacher #{source.id}), which was then anonymised.
+          (participant #{source.api_id}, teacher #{source.id}), which was then deleted.
           Destination: #{destination_name} (TRN #{destination.trn}, participant #{destination.api_id}, teacher #{destination.id}).
         BODY
       ).record_event!
@@ -173,10 +173,10 @@ module Events
       new(
         **common,
         teacher: source,
-        heading: "Teacher record was merged into #{destination_name} and anonymised",
+        heading: "Teacher record was merged into #{destination_name} and deleted",
         body: <<~BODY.squish
           This record was merged into
-          #{destination_name} (TRN #{destination.trn}, participant #{destination.api_id}, teacher #{destination.id}) and anonymised.
+          #{destination_name} (TRN #{destination.trn}, participant #{destination.api_id}, teacher #{destination.id}) and deleted.
         BODY
       ).record_event!
     end
