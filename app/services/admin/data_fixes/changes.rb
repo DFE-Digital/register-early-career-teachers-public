@@ -14,9 +14,9 @@ module Admin::DataFixes
       results.map(&:saved_change)
     end
 
-  private
-
     def results = @results ||= parsed_rows.map { process_row(it) }
+
+  private
 
     def process_row(row)
       Processor.new.process!(data_change: row.with_indifferent_access)
