@@ -1,42 +1,5 @@
 <!DOCTYPE html>
 <%= govuk_html_element do %>
-  <% content_for(:head) do %>
-    <style nonce="<%= content_security_policy_nonce %>">
-      .app-test-client::after {
-        content: "";
-        position: fixed;
-        inset: 0;
-        border: 10px solid #8eb8dc;
-        pointer-events: none;
-        z-index: 1000;
-      }
-
-      .app-summary-card--green {
-        border-color: #0f7a52;
-      }
-
-      .app-summary-card--green .govuk-summary-card__title-wrapper {
-        background-color: #cfe4dc;
-      }
-
-      .app-summary-card--green .govuk-summary-card__title {
-        color: #083d29;
-      }
-
-      .app-summary-card--red {
-        border-color: #ca3535;
-      }
-
-      .app-summary-card--red .govuk-summary-card__title-wrapper {
-        background-color: #f4d7d7;
-      }
-
-      .app-summary-card--red .govuk-summary-card__title {
-        color: #651b1b;
-      }
-    </style>
-  <% end %>
-
   <%= render partial: "layouts/shared/head" %>
 
   <%= govuk_body_element(classes: "app-test-client") do %>
