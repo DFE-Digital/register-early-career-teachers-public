@@ -2649,37 +2649,184 @@ RSpec.describe Events::Record do
   end
 
   describe ".record_admin_data_fix_event!" do
-    it "queues a RecordEventJob with the correct values" do
-      freeze_time
+    before { freeze_time }
 
-      Events::Record.record_admin_data_fix_event!(
-        author:,
-        body: "A test reason for the change",
-        zendesk_ticket_id: "123456",
-        modifications: { "trs_first_name" => ["Old Name", "New Name"] },
-        metadata: {
-          gid: "gid://app/Teacher/1",
-          action: "update",
-          changes: { "trs_first_name" => ["Old Name", "New Name"] }
-        }
-      )
+    context "when the record is a teacher" do
+      let(:teacher) { FactoryBot.create(:teacher, corrected_name: "Test") }
 
-      expect(RecordEventJob).to have_received(:perform_later).with(
-        hash_including(
-          event_type: :admin_data_fix,
-          heading: "Admin data fix: gid://app/Teacher/1 (update)",
+      it "queues a RecordEventJob with the correct values" do
+        Events::Record.record_admin_data_fix_event!(
+          author:,
           body: "A test reason for the change",
           zendesk_ticket_id: "123456",
-          modifications: ["TRS first name changed from 'Old Name' to 'New Name'"],
+          modifications: { "corrected_name" => ["Test", "Test Person"] },
           metadata: {
-            gid: "gid://app/Teacher/1",
+            gid: teacher.to_global_id.to_s,
             action: "update",
-            changes: { "trs_first_name" => ["Old Name", "New Name"] }
+            changes: { "corrected_name" => ["Test", "Test Person"] }
+          },
+          record: teacher
+        )
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          event_type: :admin_data_fix,
+          heading: "Admin data fix: #{teacher.to_global_id} (update)",
+          body: "A test reason for the change",
+          zendesk_ticket_id: "123456",
+          modifications: ["Corrected name changed from 'Test' to 'Test Person'"],
+          metadata: {
+            gid: teacher.to_global_id.to_s,
+            action: "update",
+            changes: { "corrected_name" => ["Test", "Test Person"] }
+          },
+          teacher:,
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      end
+    end
+
+    context "when the record belongs to a teacher" do
+      let(:ect_at_school_period) do
+        FactoryBot.create(:ect_at_school_period, :unfinished, started_on: Date.yesterday)
+      end
+
+      it "queues a RecordEventJob with the correct values" do
+        Events::Record.record_admin_data_fix_event!(
+          author:,
+          body: "A test reason for the change",
+          zendesk_ticket_id: "123456",
+          modifications: { "started_on" => [Date.yesterday, Date.current] },
+          metadata: {
+            gid: ect_at_school_period.to_global_id.to_s,
+            action: "update",
+            changes: { "started_on" => [Date.yesterday, Date.current] }
+          },
+          record: ect_at_school_period
+        )
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          event_type: :admin_data_fix,
+          heading: "Admin data fix: #{ect_at_school_period.to_global_id} (update)",
+          body: "A test reason for the change",
+          zendesk_ticket_id: "123456",
+          modifications: ["Started on changed from '#{Date.yesterday.to_fs(:govuk_short)}' to '#{Date.current.to_fs(:govuk_short)}'"],
+          metadata: {
+            gid: ect_at_school_period.to_global_id.to_s,
+            action: "update",
+            changes: { "started_on" => [Date.yesterday, Date.current] }
+          },
+          ect_at_school_period:,
+          teacher: ect_at_school_period.teacher,
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      end
+    end
+
+    context "when the record does not belong to a teacher" do
+      let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Test Provider") }
+
+      it "queues a RecordEventJob with the correct values" do
+        Events::Record.record_admin_data_fix_event!(
+          author:,
+          body: "A test reason for the change",
+          zendesk_ticket_id: "123456",
+          modifications: { "name" => ["Test Provider", "Provider A"] },
+          metadata: {
+            gid: lead_provider.to_global_id.to_s,
+            action: "update",
+            changes: { "name" => ["Test Provider", "Provider A"] }
+          },
+          record: lead_provider
+        )
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          event_type: :admin_data_fix,
+          heading: "Admin data fix: #{lead_provider.to_global_id} (update)",
+          body: "A test reason for the change",
+          zendesk_ticket_id: "123456",
+          modifications: ["Name changed from 'Test Provider' to 'Provider A'"],
+          metadata: {
+            gid: lead_provider.to_global_id.to_s,
+            action: "update",
+            changes: { "name" => ["Test Provider", "Provider A"] }
+          },
+          lead_provider:,
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      end
+    end
+
+    context "when the record is not defined as an association on `Event`" do
+      let(:contract) { FactoryBot.create(:contract, vat_rate: 0.2) }
+
+      it "queues a RecordEventJob with the correct values" do
+        Events::Record.record_admin_data_fix_event!(
+          author:,
+          body: "A test reason for the change",
+          zendesk_ticket_id: "123456",
+          modifications: { "vat_rate" => [0.2, 0.125] },
+          metadata: {
+            gid: contract.to_global_id.to_s,
+            action: "update",
+            changes: { "vat_rate" => [0.2, 0.125] }
+          },
+          record: contract
+        )
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          event_type: :admin_data_fix,
+          heading: "Admin data fix: #{contract.to_global_id} (update)",
+          body: "A test reason for the change",
+          zendesk_ticket_id: "123456",
+          modifications: ["VAT rate changed from '0.2' to '0.125'"],
+          metadata: {
+            gid: contract.to_global_id.to_s,
+            action: "update",
+            changes: { "vat_rate" => [0.2, 0.125] }
           },
           happened_at: Time.zone.now,
           **author_params
         )
-      )
+      end
+    end
+
+    context "when the record has been destroyed" do
+      let(:teacher) { FactoryBot.create(:teacher) }
+
+      before { teacher.destroy! }
+
+      it "queues a RecordEventJob with the correct values" do
+        Events::Record.record_admin_data_fix_event!(
+          author:,
+          body: "A test reason for the change",
+          zendesk_ticket_id: "123456",
+          modifications: {},
+          metadata: {
+            gid: teacher.to_global_id.to_s,
+            action: "delete",
+            changes: {}
+          },
+          record: teacher
+        )
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          event_type: :admin_data_fix,
+          heading: "Admin data fix: #{teacher.to_global_id} (delete)",
+          body: "A test reason for the change",
+          zendesk_ticket_id: "123456",
+          modifications: [],
+          metadata: {
+            gid: teacher.to_global_id.to_s,
+            action: "delete",
+            changes: {}
+          },
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      end
     end
   end
 
