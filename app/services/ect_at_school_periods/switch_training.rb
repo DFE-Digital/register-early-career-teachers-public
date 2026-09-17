@@ -139,14 +139,29 @@ module ECTAtSchoolPeriods
       return if mentor_ineligible_for_funding?
       return if previous_provider_led_training_periods_for_mentor?
 
+      school_partnership = mentor_school_partnership
+      expression_of_interest = mentor_framework_agreement unless school_partnership
+      return unless school_partnership || expression_of_interest
+
       TrainingPeriods::Create.provider_led(
         period: @mentor_at_school_period,
         started_on: date_of_transition,
         finished_on: @mentor_at_school_period.finished_on,
-        school_partnership: earliest_matching_school_partnership,
+        school_partnership:,
         expression_of_interest:,
+        contract_period: contract_period_at_transition,
         author: @author
       ).call
+    end
+
+    def mentor_school_partnership
+      SchoolPartnerships::Search.new(school:, lead_provider:, contract_period: contract_period_at_transition)
+        .school_partnerships
+        .first
+    end
+
+    def mentor_framework_agreement
+      FrameworkAgreement.find_by(lead_provider:, contract_period: contract_period_at_transition)
     end
 
     def record_new_training_period_for_mentor_event!

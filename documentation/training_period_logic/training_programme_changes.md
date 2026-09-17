@@ -25,7 +25,9 @@ flowchart TD
   PL3 --> PL5[Create provider-led training period for ECT]
   PL4 --> PL5
   PL5 --> PL6{Mentor_at_school_period present, eligible, and no previous provider-led?}
-  PL6 -- Yes --> PL7[Create provider-led training period for mentor]
+  PL6 -- Yes --> PL6a{Lead provider has a school partnership or framework agreement in the contract period at transition?}
+  PL6a -- Yes --> PL7[Create provider-led training period for mentor in the contract period at transition]
+  PL6a -- No --> PL8
   PL6 -- No --> PL8[Skip creating provider-led training period for mentor]
   PL7 --> PL9[Record mentor starts training period event]
   PL8 --> PLDone[Done]
