@@ -16,33 +16,37 @@ class API::MentorshipPeriodsSerializer < Blueprinter::Base
     field(:finished_on)
     field(:updated_at)
 
-    field(:school_urn) do |mentorship_period|
-      mentorship_period.mentee.school.urn
-    end
+    field(:school_urn) { "123456" }
 
-    field(:ect_participant_id) do |mentorship_period|
-      mentorship_period.mentee.teacher.api_ect_training_record_id
-    end
+    field(:ect_participant_id) { SecureRandom.uuid }
 
-    field(:mentor_participant_id) do |mentorship_period|
-      mentorship_period.mentor.teacher.api_mentor_training_record_id
-    end
+    field(:mentor_participant_id) { SecureRandom.uuid }
 
-    field(:mentor_email) do |mentorship_period|
-      mentorship_period.mentor.email
-    end
+    field(:mentor_email) { Faker::Internet.email }
 
-    field(:mentor_full_name) { |mentorship_period| Teachers::Name.new(mentorship_period.mentor.teacher).full_name }
+    field(:mentor_full_name) { Faker::Name.name }
 
     field(:mentorship_status) do |mentorship_period, options|
-      API::MentorshipPeriods::MentorshipStatus.new(
+      mentorship_status(mentorship_period, options).first
+    end
+
+    field(:mentorship_status_reason) do |mentorship_period, options|
+      mentorship_status(mentorship_period, options).last
+    end
+
+    def self.mentorship_status(mentorship_period, options)
+      options[:mentorship_statuses] ||= {}
+
+      options[:mentorship_statuses][mentorship_period.id] ||= API::MentorshipPeriods::MentorshipStatus.new(
         mentorship_period:,
         lead_provider_id: options[:lead_provider_id]
       ).status
     end
   end
 
-  identifier :api_id, name: :id
+  identifier :uuid do |_object|
+    SecureRandom.uuid
+  end
   field(:type) { "mentorship-periods" }
 
   association :attributes, blueprint: AttributesSerializer do |mentorship_period|
