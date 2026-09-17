@@ -4,8 +4,7 @@ module IntegrationSupport
     include ActiveModel::Attributes
 
     SESSION_KEY = :api_client_connection
-    SEED_CLIENT_ID = "test-client-id"
-    SEED_CLIENT_SECRET = "test-client-secret"
+    DEFAULT_CLIENT_SECRET = "clientSecret-integration-test"
     TOKEN_REQUEST_TIMEOUT = 5
 
     AUTHORIZE_PARAMS = %i[
@@ -21,8 +20,8 @@ module IntegrationSupport
     attribute :response_type, :string, default: -> { API::OAuth::AuthorizationRequest::RESPONSE_TYPE }
     attribute :appropriate_body_period_id, :integer
     attribute :redirect_uri, :string
-    attribute :client_id, :string, default: SEED_CLIENT_ID
-    attribute :client_secret, :string, default: SEED_CLIENT_SECRET
+    attribute :client_id, :string
+    attribute :client_secret, :string, default: DEFAULT_CLIENT_SECRET
     attribute :code_verifier, :string, default: -> { SecureRandom.base58(64) }
     attribute :code_challenge, :string
     attribute :code_challenge_method, :string, default: -> { API::OAuth::Authorization.code_challenge_methods.values.first }

@@ -5,9 +5,13 @@ module IntegrationSupport
     before_action :resume_api_client_connection, only: %i[show update]
 
     def new
-      @api_client_connection = APIClientConnection.new(redirect_uri: integration_support_api_client_connection_url)
       @appropriate_body_periods = AppropriateBodyPeriod.order(:name)
       @clients = API::OAuth::Client.order(:name)
+      client = @clients.find_by(client_id: params[:client_id]) || @clients.first
+      @api_client_connection = APIClientConnection.new(
+        client_id: client&.client_id,
+        redirect_uri: client&.redirect_uris&.first || integration_support_api_client_connection_url
+      )
     end
 
     def create
@@ -26,7 +30,7 @@ module IntegrationSupport
       @api_client_connection.assign_attributes(api_client_connections_update_params)
       @api_client_connection.store_in(session)
 
-      @response = @api_client_connection.exchange_code_for_token(oauth_authorization_token_url)
+      @response = @api_client_connection.exchange_code_for_token(oauth_access_token_url)
     rescue Faraday::Error => e
       @request_error = e.message
     end

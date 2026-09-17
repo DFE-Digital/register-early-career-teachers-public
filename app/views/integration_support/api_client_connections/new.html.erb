@@ -1,5 +1,13 @@
 <% page_data(title: "New OAuth authorization request") %>
 
+<% if authenticated? && !current_user.appropriate_body_user? %>
+  <%= govuk_warning_text do %>
+    You are signed in as <%= current_user.name %> (<%= current_user.dfe_user? ? "DfE #{role_name(current_user.role)}" : current_user.organisation_name %>).
+    You must be signed in as an appropriate body user to start an authorization request.
+    <%= govuk_link_to("Sign out", current_user.sign_out_path) %>
+  <% end %>
+<% end %>
+
 <p class="govuk-body">
   Set the parameters for the GET /oauth/authorize request and start the OAuth journey.
 </p>
@@ -23,6 +31,10 @@
                           [*@clients.pluck(:name, :client_id), ["Unknown client", "unknown-client-id"], ["Blank client", ""]],
                           label: { text: "Client ID" },
                           hint: { text: "The client identifier issued to the API client." }) %>
+
+    <p class="govuk-body">
+      <%= govuk_link_to("Create a test client", new_integration_support_api_client_path) %>
+    </p>
 
     <%= form.govuk_text_field(:redirect_uri,
                               label: { text: "Redirect URI" },

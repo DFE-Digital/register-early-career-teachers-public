@@ -10,8 +10,8 @@ RSpec.describe IntegrationSupport::APIClientConnection, type: :model do
       response_type: API::OAuth::AuthorizationRequest::RESPONSE_TYPE,
       code_challenge_method: API::OAuth::Authorization.code_challenge_methods.values.first,
       grant_type: API::OAuth::Client::GRANT_TYPES.first,
-      client_id: described_class::SEED_CLIENT_ID,
-      client_secret: described_class::SEED_CLIENT_SECRET
+      client_id: nil,
+      client_secret: "clientSecret-integration-test"
     )
     expect(connection.state).to be_present
     expect(connection.code_verifier).not_to eq(described_class.new.code_verifier)

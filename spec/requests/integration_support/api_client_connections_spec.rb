@@ -37,9 +37,48 @@ RSpec.describe "API client connections", type: :request do
       page = Capybara.string(response.body)
       expect(response).to have_http_status(:ok)
       expect(page).to have_select("Appropriate body period ID", with_options: [appropriate_body_period.name])
-      expect(page).to have_select("Client ID", with_options: [client.name, "Unknown client", "Blank client"])
-      expect(page).to have_field("Redirect URI", with: redirect_uri)
+      expect(page).to have_select("Client ID", selected: client.name, with_options: [client.name, "Unknown client", "Blank client"])
+      expect(page).to have_link("Create a test client", href: new_integration_support_api_client_path)
+      expect(page).to have_field("Redirect URI", with: "https://vendor.com/oauth/callback")
       expect(page).to have_button("Start authorization request")
+      expect(page).to have_no_css(".govuk-warning-text")
+    end
+
+    it "warns users who are not appropriate body users" do
+      sign_in_as(:dfe_user, user: FactoryBot.create(:user, :admin, name: "Norville Rogers"))
+      get(new_integration_support_api_client_connection_path)
+
+      page = Capybara.string(response.body)
+      expect(page).to have_css(".govuk-warning-text", text: "You are signed in as Norville Rogers (DfE Admin). You must be signed in as an appropriate body user to start an authorization request.", normalize_ws: true)
+      expect(page).to have_css(".govuk-warning-text a[href='/sign-out']", text: "Sign out")
+
+      school = FactoryBot.create(:school)
+      sign_in_as(:school_user, school:, first_name: "Jane", last_name: "Smith")
+      get(new_integration_support_api_client_connection_path)
+
+      expect(Capybara.string(response.body)).to have_css(".govuk-warning-text", text: "You are signed in as Jane Smith (#{school.name}).")
+
+      sign_in_as(:appropriate_body_user, appropriate_body: FactoryBot.create(:appropriate_body_period))
+      get(new_integration_support_api_client_connection_path)
+
+      expect(Capybara.string(response.body)).to have_no_css(".govuk-warning-text")
+    end
+
+    it "selects the requested client and defaults to its redirect URI" do
+      FactoryBot.create(:api_oauth_client, name: "Vendor A")
+      client = FactoryBot.create(:api_oauth_client, name: "Vendor B", redirect_uris: [redirect_uri])
+
+      get(new_integration_support_api_client_connection_path(client_id: client.client_id))
+
+      page = Capybara.string(response.body)
+      expect(page).to have_select("Client ID", selected: "Vendor B")
+      expect(page).to have_field("Redirect URI", with: redirect_uri)
+    end
+
+    it "defaults to the test client redirect URI when there are no clients" do
+      get(new_integration_support_api_client_connection_path)
+
+      expect(Capybara.string(response.body)).to have_field("Redirect URI", with: redirect_uri)
     end
   end
 
