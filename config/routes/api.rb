@@ -36,5 +36,5 @@ namespace :oauth, module: "api/oauth" do
   get "authorize", to: "authorizations#new", as: :authorization
   post "authorize", to: "authorizations#create"
   delete "authorize", to: "authorizations#destroy"
-  post "token", to: "access_tokens#create", as: :access_token
+  post "token", to: "authorizations/access_tokens#create", as: :access_token
 end

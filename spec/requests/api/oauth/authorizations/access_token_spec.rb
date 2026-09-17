@@ -15,7 +15,7 @@ RSpec.shared_examples "a request that generates an error response" do |http_stat
   end
 end
 
-RSpec.describe "API OAuth code for token exchange", type: :request do
+RSpec.describe "API OAuth authorization access tokens", type: :request do
   let(:params) do
     {
       grant_type:,
