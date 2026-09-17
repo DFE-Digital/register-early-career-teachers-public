@@ -14,9 +14,6 @@
   </head>
 
   <body class="govuk-template__body">
-    <script>
-      document.body.className += ' js-enabled' + ('noModule' in HTMLScriptElement.prototype ? ' govuk-frontend-supported' : '');
-    </script>
     <a href="#main-content" class="govuk-skip-link" data-module="govuk-skip-link">Skip to main content</a>
     <header class="govuk-template__header">
       <div class="govuk-header">
@@ -112,12 +109,5 @@
         </div>
       </div>
     </footer>
-    <script type="module" src="/javascripts/govuk-frontend.min.js"></script>
-    <script type="module">
-      import {
-        initAll
-      } from '/javascripts/govuk-frontend.min.js'
-      initAll()
-    </script>
   </body>
 </html>
