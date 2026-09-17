@@ -28,11 +28,9 @@ describe API::OAuth::Authorizations::ExchangeCodeForToken do
     end
   end
 
-  context "when invalid" do
-    before { authorization.update!(code_challenge: "something-else") }
-
-    it "raises an error without setting token or recording an event" do
-      expect { service.call }.to raise_error(API::OAuth::Authorization::ExpirableCredentials::CodeNotExchangedError)
+  shared_examples "an unsuccessful token exchange" do |error_message|
+    it "raises an error without setting a token or recording an event" do
+      expect { service.call }.to raise_error(described_class::CodeNotExchangeableError, error_message)
 
       expect { perform_enqueued_jobs }.not_to change(Event, :count)
 
@@ -41,5 +39,17 @@ describe API::OAuth::Authorizations::ExchangeCodeForToken do
       expect(authorization.token_digest).to be_nil
       expect(authorization.code_exchanged_at).to be_nil
     end
+  end
+
+  context "when the code_verifier does not match the code_challenge" do
+    before { authorization.update!(code_challenge: "something-else") }
+
+    it_behaves_like "an unsuccessful token exchange", "Code verifier is invalid"
+  end
+
+  context "when the code cannot be exchanged" do
+    before { authorization.update!(code_expires_at: 1.hour.ago) }
+
+    it_behaves_like "an unsuccessful token exchange", "Code cannot be exchanged"
   end
 end
