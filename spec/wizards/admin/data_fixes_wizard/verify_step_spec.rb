@@ -76,7 +76,8 @@ RSpec.describe Admin::DataFixesWizard::VerifyStep do
     let(:fake_changes) do
       instance_double(
         Admin::DataFixes::Changes,
-        process: saved_changes,
+        process: confirmed_changes,
+        results: changes_results,
         errors: changes_errors
       )
     end
@@ -88,7 +89,8 @@ RSpec.describe Admin::DataFixesWizard::VerifyStep do
     context "when the step is invalid" do
       let(:note) { "" }
       let(:zendesk_ticket_id) { "" }
-      let(:saved_changes) { nil }
+      let(:confirmed_changes) { false }
+      let(:changes_results) { [] }
       let(:changes_errors) { [] }
 
       it { is_expected.to be_falsey }
@@ -107,18 +109,41 @@ RSpec.describe Admin::DataFixesWizard::VerifyStep do
     end
 
     context "when the step is valid and changes are processed successfully" do
-      let(:saved_changes) do
+      let!(:deleted_teacher) { FactoryBot.create(:teacher) }
+      let!(:updated_teacher) { FactoryBot.create(:teacher) }
+      let(:deleted_teacher_change) do
+        {
+          gid: deleted_teacher.to_global_id.to_s,
+          action: "delete",
+          changes: {}
+        }
+      end
+      let(:updated_teacher_change) do
+        {
+          gid: updated_teacher.to_global_id.to_s,
+          action: "update",
+          changes: { "something" => %w[old_value new_value] }
+        }
+      end
+      let(:confirmed_changes) { [deleted_teacher_change, updated_teacher_change] }
+      let(:changes_results) do
         [
-          {
-            gid: "gid://app/teacher/1",
+          instance_double(
+            Admin::DataFixes::Processor::Result,
+            target_object: deleted_teacher,
             action: "delete",
-            changes: nil
-          },
-          {
-            gid: "gid://app/teacher/2",
+            error: nil,
+            success?: true,
+            saved_change: deleted_teacher_change
+          ),
+          instance_double(
+            Admin::DataFixes::Processor::Result,
+            target_object: updated_teacher,
             action: "update",
-            changes: { "something" => %w[old_value new_value] }
-          },
+            error: nil,
+            success?: true,
+            saved_change: updated_teacher_change
+          ),
         ]
       end
       let(:changes_errors) { [] }
@@ -129,7 +154,7 @@ RSpec.describe Admin::DataFixesWizard::VerifyStep do
         expect { save! }
           .to change { current_step.store.confirmed_changes }
           .from(nil)
-          .to(saved_changes)
+          .to(confirmed_changes)
       end
 
       it "records an event for each confirmed change" do
@@ -143,12 +168,13 @@ RSpec.describe Admin::DataFixesWizard::VerifyStep do
             author:,
             body: note,
             zendesk_ticket_id:,
-            modifications: nil,
+            modifications: {},
             metadata: {
-              gid: "gid://app/teacher/1",
+              gid: deleted_teacher.to_global_id.to_s,
               action: "delete",
-              changes: nil
-            }
+              changes: {}
+            },
+            record: deleted_teacher
           )
         expect(Events::Record)
           .to have_received(:record_admin_data_fix_event!)
@@ -158,16 +184,47 @@ RSpec.describe Admin::DataFixesWizard::VerifyStep do
             zendesk_ticket_id:,
             modifications: { "something" => %w[old_value new_value] },
             metadata: {
-              gid: "gid://app/teacher/2",
+              gid: updated_teacher.to_global_id.to_s,
               action: "update",
               changes: { "something" => %w[old_value new_value] }
-            }
+            },
+            record: updated_teacher
           )
       end
     end
 
     context "when the step is valid but changes are not processed successfully" do
-      let(:saved_changes) { false }
+      let!(:deleted_teacher) { FactoryBot.create(:teacher) }
+      let!(:updated_teacher) { FactoryBot.create(:teacher) }
+      let(:deleted_teacher_change) do
+        {
+          gid: deleted_teacher.to_global_id.to_s,
+          action: "delete",
+          changes: {}
+        }
+      end
+      let(:updated_teacher_change) { nil }
+      let(:confirmed_changes) { false }
+      let(:changes_results) do
+        [
+          instance_double(
+            Admin::DataFixes::Processor::Result,
+            target_object: deleted_teacher,
+            action: "delete",
+            error: nil,
+            success?: true,
+            saved_change: deleted_teacher_change
+          ),
+          instance_double(
+            Admin::DataFixes::Processor::Result,
+            target_object: updated_teacher,
+            action: "update",
+            error: "There was an error",
+            success?: false,
+            saved_change: updated_teacher_change
+          ),
+        ]
+      end
       let(:changes_errors) do
         ActiveModel::Errors.new(instance_double(Admin::DataFixes::Changes)).tap do |errors|
           errors.add(:base, "Some changes could not be processed")
@@ -197,9 +254,11 @@ RSpec.describe Admin::DataFixesWizard::VerifyStep do
       end
 
       context "but there were confirmed changes already in the store" do
-        let(:store) { FactoryBot.build(:session_repository, confirmed_changes:) }
-        let(:confirmed_changes) do
-          [{ gid: "gid://app/teacher/1", action: "destroy", changes: nil }]
+        let(:store) do
+          FactoryBot.build(
+            :session_repository,
+            confirmed_changes: [{ gid: "gid://app/teacher/1", action: "delete", changes: {} }]
+          )
         end
 
         it { is_expected.to be_falsey }
@@ -207,7 +266,7 @@ RSpec.describe Admin::DataFixesWizard::VerifyStep do
         it "clears the existing processed changes from the store" do
           expect { save! }
             .to change { current_step.store.confirmed_changes }
-            .from([{ gid: "gid://app/teacher/1", action: "destroy", changes: nil }])
+            .from([{ gid: "gid://app/teacher/1", action: "delete", changes: {} }])
             .to(nil)
         end
       end
