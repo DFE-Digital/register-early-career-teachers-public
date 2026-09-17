@@ -1,5 +1,5 @@
 class Admin::DataFixes::Processor
-  Result = Data.define(:data_change, :target_object, :error) do
+  Result = Data.define(:target_object, :action, :error) do
     def success? = error.nil?
 
     def saved_change
@@ -7,7 +7,7 @@ class Admin::DataFixes::Processor
 
       {
         gid: target_object.to_global_id.to_s,
-        action: data_change[:action],
+        action:,
         changes: target_object.saved_changes
       }
     end
@@ -21,7 +21,7 @@ class Admin::DataFixes::Processor
   end
 
   def process!(data_change: {})
-    return Result.new(data_change:, target_object: nil, error: nil) if data_change.blank?
+    return Result.new(target_object: nil, action: nil, error: nil) if data_change.blank?
 
     object_type = data_change[:object_type].camelcase.constantize
     object_id = data_change[:object_id]
@@ -44,9 +44,9 @@ class Admin::DataFixes::Processor
       raise ArgumentError, "Unknown action '#{action}'"
     end
 
-    Result.new(data_change:, target_object:, error: nil)
+    Result.new(target_object:, action:, error: nil)
   rescue StandardError => e
-    Result.new(data_change:, target_object: nil, error: e)
+    Result.new(target_object: nil, action:, error: e)
   end
 
 private
