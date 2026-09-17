@@ -2,6 +2,7 @@ RSpec.describe "API client connections", type: :request do
   let(:connection_params) do
     {
       integration_support_api_client_connection: {
+        response_type: "token",
         appropriate_body_period_id: "3",
         redirect_uri: "http://www.example.com/integration-support/api-client-connection",
         client_id: "test-client-id",
@@ -29,7 +30,7 @@ RSpec.describe "API client connections", type: :request do
     uri = URI.parse(response.location)
     expect(uri.path).to eq(oauth_authorization_path)
     expect(URI.decode_www_form(uri.query).to_h).to eq(
-      "response_type" => "code",
+      "response_type" => "token",
       "client_id" => "test-client-id",
       "appropriate_body_period_id" => "3",
       "redirect_uri" => "http://www.example.com/integration-support/api-client-connection",

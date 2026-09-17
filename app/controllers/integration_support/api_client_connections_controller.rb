@@ -42,6 +42,7 @@ module IntegrationSupport
     def api_client_connection_params
       params.expect(
         integration_support_api_client_connection: %i[
+          response_type
           appropriate_body_period_id
           redirect_uri
           client_id
