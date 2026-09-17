@@ -11,12 +11,25 @@ RSpec.describe IntegrationSupport::APIClientConnection, type: :model do
       code_challenge_method: API::OAuth::Authorization.code_challenge_methods.values.first,
       grant_type: API::OAuth::Client::GRANT_TYPES.first,
       client_id: described_class::SEED_CLIENT_ID,
-      client_secret: described_class::SEED_CLIENT_SECRET,
-      code_challenge: Base64.urlsafe_encode64(Digest::SHA256.digest(connection.code_verifier), padding: false)
+      client_secret: described_class::SEED_CLIENT_SECRET
     )
     expect(connection.state).to be_present
     expect(connection.code_verifier).not_to eq(described_class.new.code_verifier)
-    expect(described_class.new(code_challenge: "tampered").code_challenge).to eq("tampered")
+  end
+
+  describe "#code_challenge" do
+    it "hashes the code verifier" do
+      expect(described_class.new(code_verifier: "the-verifier").code_challenge).to eq("sP6XQ2T7IHwj7eBkdcI9xyC8WxEik0RMQk0tVGDKZPI")
+      expect(described_class.new(code_verifier: "the-verifier", code_challenge: "tampered").code_challenge).to eq("tampered")
+    end
+  end
+
+  describe "#state_mismatch?" do
+    it "detects a tampered state" do
+      expect(described_class.new(state: "state-123", returned_state: "state-123")).not_to be_state_mismatch
+      expect(described_class.new(state: "state-123", returned_state: "tampered")).to be_state_mismatch
+      expect(described_class.new(state: "state-123")).not_to be_state_mismatch
+    end
   end
 
   describe "#exchange_code_for_token" do
