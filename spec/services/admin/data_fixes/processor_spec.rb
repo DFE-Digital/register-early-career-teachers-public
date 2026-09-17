@@ -131,8 +131,8 @@ describe Admin::DataFixes::Processor do
 
         expect(result).to be_a(Admin::DataFixes::Processor::Result)
         expect(result).to be_success
-        expect(result.data_change).to eq({})
         expect(result.target_object).to be_nil
+        expect(result.action).to be_nil
         expect(result.error).to be_nil
       end
     end
