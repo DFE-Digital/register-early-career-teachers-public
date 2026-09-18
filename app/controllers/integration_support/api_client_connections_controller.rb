@@ -27,7 +27,7 @@ module IntegrationSupport
     end
 
     def update
-      @api_client_connection.assign_attributes(api_client_connections_update_params)
+      @api_client_connection.assign_attributes(api_client_connection_update_params)
       @api_client_connection.store_in(session)
 
       @response = @api_client_connection.exchange_code_for_token(oauth_access_token_url)
@@ -59,7 +59,7 @@ module IntegrationSupport
       )
     end
 
-    def api_client_connections_update_params
+    def api_client_connection_update_params
       params.expect(
         integration_support_api_client_connection: %i[client_id client_secret grant_type code code_verifier redirect_uri]
       )

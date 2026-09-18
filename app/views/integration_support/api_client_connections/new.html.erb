@@ -4,10 +4,9 @@
   <%= govuk_warning_text do %>
     You are signed in as <%= current_user.name %> (<%= current_user.dfe_user? ? "DfE #{role_name(current_user.role)}" : current_user.organisation_name %>).
     You must be signed in as an appropriate body user to start an authorization request.
-    <%= govuk_link_to("Sign out", current_user.sign_out_path) %>
+    <%= govuk_link_to("Sign out", current_user.sign_out_path, new_tab: true) %>
   <% end %>
-<% end %>
-
+<% else %>
 <p class="govuk-body">
   Set the parameters for the GET /oauth/authorize request and start the OAuth journey.
 </p>
@@ -61,4 +60,5 @@
                               hint: { text: "Computed using SHA-256 and base64url encoding. You can override this to test invalid values." }) %>  <% end %>
 
   <%= form.govuk_submit("Start authorization request") %>
+<% end %>
 <% end %>

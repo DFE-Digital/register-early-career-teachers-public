@@ -1,4 +1,5 @@
-@use "govuk-frontend/dist/govuk" as *;
+@use "govuk-frontend/dist/govuk/settings" as *;
+@use "govuk-frontend/dist/govuk/helpers" as *;
 
 // A fixed frame around the OAuth test client, so nobody mistakes it for the service.
 .app-test-client::after {
