@@ -87,6 +87,18 @@ RSpec.describe Schools::AssignMentor do
             expect { current_mentorship_period.reload }
               .to raise_error(ActiveRecord::RecordNotFound)
           end
+
+          it "retains events associated with the current mentorship period" do
+            event_one = FactoryBot.create(:event, mentorship_period: current_mentorship_period)
+            event_two = FactoryBot.create(:event, mentorship_period: current_mentorship_period)
+
+            assign!
+
+            expect(event_one.reload.mentorship_period_id).to be_nil
+            expect(event_two.reload.mentorship_period_id).to be_nil
+            expect(Event.exists?(event_one.id)).to be true
+            expect(Event.exists?(event_two.id)).to be true
+          end
         end
 
         context "and the earliest possible start is when the current mentorship started" do
