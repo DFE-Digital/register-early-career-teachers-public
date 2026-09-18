@@ -32,7 +32,6 @@ appropriate_body_periods = [
   {
     name: AppropriateBody::ISTIP,
     body_type: "national",
-    dqt_id: Faker::Internet.uuid,
     dfe_sign_in: {
       test: "e38652da-b01f-4d14-af2a-d2f55e4fcf7b",
       pp: "99424c22-b0c0-4307-bdf7-fabfe7cac252",
@@ -42,7 +41,6 @@ appropriate_body_periods = [
   {
     name: AppropriateBody::ESP,
     body_type: "national",
-    dqt_id: Faker::Internet.uuid,
     dfe_sign_in: {
       test: "722ebb41-42f6-4ba3-81b6-61af055246a5",
       pp: "b98cb613-192f-400e-9b50-fd7eea9882a1",
@@ -55,7 +53,6 @@ appropriate_body_periods = [
   {
     name: "Bright Futures Teaching School Hub (Salford & Trafford)",
     body_type: "teaching_school_hub",
-    dqt_id: Faker::Internet.uuid,
     regions: [
       { code: "NW7", districts: "Manchester, Stockport", },
       { code: "NW9", districts: "Salford, Trafford", },
@@ -76,7 +73,6 @@ appropriate_body_periods = [
   {
     name: "Five Counties Teaching School Hubs Alliance (Somerset)",
     body_type: "teaching_school_hub",
-    dqt_id: Faker::Internet.uuid,
     regions: [
       { code: "SW5", districts: "Somerset", },
       { code: "SW9", districts: "Bristol, North Somerset", },
@@ -94,7 +90,6 @@ appropriate_body_periods = [
   {
     name: "Five Counties Teaching School Hubs Alliance (South Glos/BANES)",
     body_type: "teaching_school_hub",
-    dqt_id: Faker::Internet.uuid,
     regions: [
       { code: "SW6", districts: "Bath and North East Somerset, South Gloucestershire", }
     ],
@@ -115,7 +110,6 @@ appropriate_body_periods = [
   {
     name: "Star Teaching School Hub Birmingham South",
     body_type: "teaching_school_hub",
-    dqt_id: Faker::Internet.uuid,
     regions: [
       { code: "WM10", districts: "Birmingham South", }
     ],
@@ -132,7 +126,6 @@ appropriate_body_periods = [
   {
     name: "Star Teaching School Hub Pennine Lancashire",
     body_type: "teaching_school_hub",
-    dqt_id: Faker::Internet.uuid,
     regions: [
       { code: "NW3", districts: "Bolton, Bury, Rochdale", },
       { code: "NW4", districts: "Blackpool, Preston, Lancaster, Wyre", },
@@ -153,7 +146,6 @@ appropriate_body_periods = [
   {
     name: "STEP Ahead Teaching School Hub",
     body_type: "teaching_school_hub",
-    dqt_id: Faker::Internet.uuid,
     regions: [
       { code: "WM2", districts: "Telford and Wrekin, Shropshire", }
     ],
@@ -173,27 +165,22 @@ appropriate_body_periods = [
   {
     name: "Canvas Teaching School Hub",
     body_type: "teaching_school_hub",
-    dqt_id: Faker::Internet.uuid,
   },
   {
     name: "South Yorkshire Studio Hub",
     body_type: "teaching_school_hub",
-    dqt_id: Faker::Internet.uuid,
   },
   {
     name: "Ochre Education Partnership",
     body_type: "teaching_school_hub",
-    dqt_id: Faker::Internet.uuid,
   },
   {
     name: "Umber Teaching School Hub",
     body_type: "teaching_school_hub",
-    dqt_id: Faker::Internet.uuid,
   },
   {
     name: "Golden Leaf Teaching School Hub",
     body_type: "teaching_school_hub",
-    dqt_id: Faker::Internet.uuid,
   },
   # Fake Inactive Teaching School Hubs (joined since launch)
   # ----------------------------------------------------------------------------
@@ -215,35 +202,22 @@ appropriate_body_periods = [
   {
     name: "Oldshire Local Authority",
     body_type: "local_authority",
-    dqt_id: Faker::Internet.uuid,
   },
   {
     name: "Ancient County Council",
     body_type: "local_authority",
-    dqt_id: Faker::Internet.uuid,
   }
 ]
 
 appropriate_body_periods.each do |data|
   name = data[:name]
-  dqt_id = data[:dqt_id]
   body_type = data[:body_type]
   dfe_sign_in_organisation_id = data.dig(:dfe_sign_in, dfe_sign_in_env)
 
   appropriate_body_period = FactoryBot.create(:appropriate_body_period,
                                               name:,
                                               body_type:,
-                                              dqt_id:,
                                               dfe_sign_in_organisation_id:)
-
-  # Legacy Appropriate Body
-  if dfe_sign_in_organisation_id.present?
-    FactoryBot.create(:legacy_appropriate_body,
-                      appropriate_body_period:,
-                      dqt_id:,
-                      name:,
-                      body_type:)
-  end
 
   # Skip ABs who can't log in
   next if dfe_sign_in_organisation_id.blank?

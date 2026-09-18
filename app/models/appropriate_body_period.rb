@@ -15,8 +15,6 @@ class AppropriateBodyPeriod < ApplicationRecord
   # include Interval
 
   # Associations
-  has_one :legacy_appropriate_body, inverse_of: :appropriate_body_period
-
   # TODO: remove UUID once linked to DfESignInOrganisation
   belongs_to :dfe_sign_in_organisation, primary_key: :uuid, inverse_of: :appropriate_body_period
   belongs_to :appropriate_body
@@ -36,10 +34,8 @@ class AppropriateBodyPeriod < ApplicationRecord
   # Scopes
   scope :active, -> { where.not(dfe_sign_in_organisation_id: nil) }
   scope :inactive, -> { where(dfe_sign_in_organisation_id: nil) }
-  scope :legacy, -> { where.not(dqt_id: nil) }
 
   # Validations
-  # TODO: remove name once value is available from LegacyAppropriateBody or AppropriateBody
   validates :name, presence: true, uniqueness: true
 
   # Normalizations

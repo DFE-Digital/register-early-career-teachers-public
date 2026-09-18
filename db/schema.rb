@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_11_145719) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_16_170809) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -128,7 +128,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_11_145719) do
     t.enum "body_type", default: "teaching_school_hub", enum_type: "appropriate_body_type"
     t.datetime "created_at", null: false
     t.uuid "dfe_sign_in_organisation_id"
-    t.uuid "dqt_id"
     t.string "name", null: false
     t.datetime "updated_at", null: false
     t.index ["appropriate_body_id"], name: "index_appropriate_body_periods_on_appropriate_body_id"
@@ -501,18 +500,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_11_145719) do
     t.boolean "vat_registered", default: true, null: false
     t.index ["ecf_id"], name: "index_lead_providers_on_ecf_id", unique: true
     t.index ["name"], name: "index_lead_providers_on_name", unique: true
-  end
-
-  create_table "legacy_appropriate_bodies", force: :cascade do |t|
-    t.bigint "appropriate_body_period_id", null: false
-    t.enum "body_type", null: false, enum_type: "appropriate_body_type"
-    t.datetime "created_at", null: false
-    t.uuid "dqt_id", null: false
-    t.string "name", null: false
-    t.datetime "updated_at", null: false
-    t.index ["appropriate_body_period_id"], name: "index_legacy_appropriate_bodies_on_appropriate_body_period_id", unique: true
-    t.index ["dqt_id"], name: "index_legacy_appropriate_bodies_on_dqt_id", unique: true
-    t.index ["name"], name: "index_legacy_appropriate_bodies_on_name", unique: true
   end
 
   create_table "mentor_at_school_periods", force: :cascade do |t|
@@ -1056,7 +1043,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_11_145719) do
   add_foreign_key "induction_periods", "teachers"
   add_foreign_key "lead_provider_delivery_partnerships", "delivery_partners"
   add_foreign_key "lead_provider_delivery_partnerships", "framework_agreements"
-  add_foreign_key "legacy_appropriate_bodies", "appropriate_body_periods"
   add_foreign_key "mentor_at_school_periods", "schools"
   add_foreign_key "mentor_at_school_periods", "schools", column: "reported_leaving_by_school_id"
   add_foreign_key "mentor_at_school_periods", "teachers"
