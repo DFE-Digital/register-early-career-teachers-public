@@ -24,7 +24,11 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::Wizard do
     subject { wizard.allowed_steps }
 
     context "when the teacher has no at school periods" do
-      it { is_expected.to eq([:start]) }
+      it "does not allow the undo registration journey" do
+        expect(wizard.allowed_steps).to be_empty
+        expect(wizard.allowed_step_path)
+          .to eq(Rails.application.routes.url_helpers.admin_teacher_school_path(teacher))
+      end
     end
 
     context "when the teacher has one ECT at school period" do
