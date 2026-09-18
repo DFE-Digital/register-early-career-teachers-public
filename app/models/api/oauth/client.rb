@@ -35,6 +35,11 @@ class API::OAuth::Client < ApplicationRecord
     authorizations.find_by(code_digest:)
   end
 
+  def authorization_for_token(token:)
+    token_digest = Digest::SHA256.hexdigest(token)
+    authorizations.find_by(token_digest:)
+  end
+
 private
 
   def assign_client_secret

@@ -1,5 +1,6 @@
 class API::OAuth::Authorization < ApplicationRecord
   include ExpirableCredentials
+  include Revocable
 
   enum :code_challenge_method, { s256: "S256" }, validate: true
 
