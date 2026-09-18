@@ -1,0 +1,30 @@
+<%= govuk_summary_card(title: school_period.school.name, heading_level: 4) do |card| %>
+  <%= card.with_summary_list(actions: false) do |list| %>
+    <% list.with_row do |row| %>
+      <% row.with_key(text: "School period type") %>
+      <% row.with_value(text: school_period_type) %>
+    <% end %>
+
+    <% list.with_row do |row| %>
+      <% row.with_key(text: "School URN") %>
+      <% row.with_value(text: school_period.school.urn) %>
+    <% end %>
+
+    <% if ect_school_period? %>
+      <% list.with_row do |row| %>
+        <% row.with_key(text: "Appropriate body") %>
+        <% row.with_value(text: school_period.school_reported_appropriate_body_name.presence || "Not available") %>
+      <% end %>
+    <% end %>
+
+    <% list.with_row do |row| %>
+      <% row.with_key(text: "School start date") %>
+      <% row.with_value(text: school_period.started_on.to_fs(:govuk)) %>
+    <% end %>
+
+    <% list.with_row do |row| %>
+      <% row.with_key(text: "End date") %>
+      <% row.with_value(text: end_date&.to_fs(:govuk) || "No end date recorded") %>
+    <% end %>
+  <% end %>
+<% end %>
