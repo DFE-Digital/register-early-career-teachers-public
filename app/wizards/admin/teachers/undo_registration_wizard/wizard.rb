@@ -52,6 +52,28 @@ module Admin
           at_school_periods.first if at_school_periods.one?
         end
 
+        def periods_will_be_closed?
+          return @periods_will_be_closed if defined?(@periods_will_be_closed)
+
+          @periods_will_be_closed = undo_registration.periods_will_be_closed?
+        end
+
+        delegate :finish_date_for, to: :undo_registration
+
+        def undo_registration!
+          undo_registration.undo!
+        end
+
+        def affected_training_periods
+          @affected_training_periods ||= periods_affected(at_school_period.training_periods).to_a
+        end
+
+        def affected_mentorship_periods
+          @affected_mentorship_periods ||= periods_affected(
+            at_school_period.mentorship_periods.includes(mentor: :teacher, mentee: :teacher)
+          ).to_a
+        end
+
         def current_step_path
           step_path(current_step_name)
         end
@@ -68,6 +90,18 @@ module Admin
 
         def teacher_school_path
           Rails.application.routes.url_helpers.admin_teacher_school_path(teacher)
+        end
+
+        def undo_registration
+          @undo_registration ||= ::Teachers::UndoRegistration.new(
+            author:,
+            at_school_period:,
+            reason: :registered_in_error
+          )
+        end
+
+        def periods_affected(periods)
+          periods_will_be_closed? ? periods.where(finished_on: nil) : periods
         end
 
         def step_path(step_name)

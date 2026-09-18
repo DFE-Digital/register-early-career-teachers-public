@@ -26,6 +26,12 @@ module Teachers
       API::Teachers::Query.new.teacher_by_id(teacher.id)
     end
 
+    def periods_will_be_closed? = billable_or_refundable_declarations_exist?
+
+    def finish_date_for(period)
+      [period.started_on, Date.current].max
+    end
+
   private
 
     def anonymiser
@@ -42,10 +48,6 @@ module Teachers
       mentorship_periods.where(finished_on: nil).find_each { |period| period.finish!(finish_date_for(period)) }
       training_periods.where(finished_on: nil).find_each { |period| period.finish!(finish_date_for(period)) }
       at_school_period.finish!(finish_date_for(at_school_period)) if at_school_period.finished_on.nil?
-    end
-
-    def finish_date_for(period)
-      [period.started_on, Date.current].max
     end
 
     def delete_periods!
