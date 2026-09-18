@@ -49,6 +49,19 @@ RSpec.describe Teachers::UndoRegistration do
         end
 
         include_examples "finishes periods without anonymising the teacher"
+
+        context "when the expected action is delete" do
+          it "does not undo the registration" do
+            expect(Events::Record).not_to receive(:record_undo_registration_event!)
+
+            expect { undo_registration_service.undo!(expected_action: "delete") }
+              .to raise_error(described_class::UndoOutcomeChangedError)
+
+            expect(ect_at_school_period.reload.finished_on).to be_nil
+            expect(training_period.reload.finished_on).to be_nil
+            expect(mentorship_period.reload.finished_on).to be_nil
+          end
+        end
       end
 
       context "with a payable declaration" do

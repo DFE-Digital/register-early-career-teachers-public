@@ -1,7 +1,8 @@
 RSpec.describe Admin::Teachers::UndoRegistrationWizard::ConfirmStep do
-  subject(:step) { described_class.new(confirmed:, wizard:) }
+  subject(:step) { described_class.new(confirmed:, expected_action:, wizard:) }
 
   let(:confirmed) { "1" }
+  let(:expected_action) { "close" }
   let(:periods_will_be_closed) { true }
   let(:store) { FactoryBot.build(:session_repository) }
   let(:wizard) do
@@ -27,7 +28,7 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::ConfirmStep do
 
   describe "#save!" do
     it "undoes the registration" do
-      expect(wizard).to receive(:undo_registration!)
+      expect(wizard).to receive(:undo_registration!).with(expected_action:)
 
       expect(step.save!).to be(true)
     end

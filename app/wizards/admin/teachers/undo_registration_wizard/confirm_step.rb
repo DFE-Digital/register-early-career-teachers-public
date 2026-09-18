@@ -3,6 +3,7 @@ module Admin
     module UndoRegistrationWizard
       class ConfirmStep < Step
         attribute :confirmed, :boolean
+        attribute :expected_action, :string
 
         validates :confirmed,
                   acceptance: {
@@ -14,7 +15,7 @@ module Admin
                     allow_nil: false
                   }
 
-        def self.permitted_params = %i[confirmed]
+        def self.permitted_params = %i[confirmed expected_action]
 
         def previous_step = :start
 
@@ -23,7 +24,7 @@ module Admin
         def save!
           return false unless valid?
 
-          wizard.undo_registration!
+          wizard.undo_registration!(expected_action:)
           store.registration_undone = true
           true
         end
