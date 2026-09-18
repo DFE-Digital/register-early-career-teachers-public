@@ -1,6 +1,7 @@
 module Teachers
   class UndoRegistration
     class NoPeriodsToCloseError < StandardError; end
+    class UndoOutcomeChangedError < StandardError; end
 
     attr_reader :author, :at_school_period, :reason, :teacher
 
@@ -13,11 +14,15 @@ module Teachers
       @teacher = at_school_period.teacher
     end
 
-    def undo!
+    def undo!(expected_action: nil)
       ActiveRecord::Base.transaction do
         at_school_period.lock!
 
-        if billable_or_refundable_declarations_exist?
+        action = periods_will_be_closed? ? "close" : "delete"
+
+        raise UndoOutcomeChangedError if expected_action.present? && expected_action != action
+
+        if action == "close"
           raise NoPeriodsToCloseError, "No open periods to close" unless periods_to_close?
 
           finish_periods!

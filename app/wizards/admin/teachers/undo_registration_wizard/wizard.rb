@@ -63,8 +63,8 @@ module Admin
 
         delegate :finish_date_for, :undoable?, to: :undo_registration
 
-        def undo_registration!
-          undo_registration.undo!
+        def undo_registration!(expected_action:)
+          undo_registration.undo!(expected_action:)
         end
 
         def affected_training_periods
