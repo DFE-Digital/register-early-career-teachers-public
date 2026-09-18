@@ -65,7 +65,17 @@ module Admin
         end
 
         def affected_training_periods
-          @affected_training_periods ||= periods_affected(at_school_period.training_periods).to_a
+          @affected_training_periods ||= periods_affected(
+            at_school_period.training_periods.includes(
+              :schedule,
+              :school_partnership,
+              :lead_provider,
+              :delivery_partner,
+              :contract_period,
+              :expression_of_interest_lead_provider,
+              :expression_of_interest_contract_period
+            )
+          ).to_a
         end
 
         def affected_mentorship_periods

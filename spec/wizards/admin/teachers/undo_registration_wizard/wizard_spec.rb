@@ -178,6 +178,22 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::Wizard do
       it "includes every associated period" do
         expect(wizard.affected_training_periods).to contain_exactly(finished_training_period, unfinished_training_period)
       end
+
+      it "preloads associations used by the training period summary" do
+        training_period = wizard.affected_training_periods.first
+
+        %i[
+          schedule
+          school_partnership
+          lead_provider
+          delivery_partner
+          contract_period
+          expression_of_interest_lead_provider
+          expression_of_interest_contract_period
+        ].each do |association|
+          expect(training_period.association(association)).to be_loaded
+        end
+      end
     end
   end
 
