@@ -20,7 +20,9 @@ RSpec.describe "Admin::Teachers::UndoRegistrationWizardController", type: :reque
     )
   end
 
-  before { FactoryBot.create(:declaration, :eligible, training_period:) }
+  let(:declaration) { FactoryBot.create(:declaration, :eligible, training_period:) }
+
+  before { declaration }
 
   describe "GET start" do
     it "redirects to school history with an explanation" do
@@ -76,6 +78,68 @@ RSpec.describe "Admin::Teachers::UndoRegistrationWizardController", type: :reque
 
         expect(response).to redirect_to(admin_teacher_undo_registration_wizard_confirmation_path(teacher))
         expect(Events::Record).to have_received(:record_undo_registration_event!).once
+      end
+    end
+
+    context "when undoing an ECT registration without declarations" do
+      let(:at_school_period) do
+        FactoryBot.create(:ect_at_school_period, :unfinished, teacher:)
+      end
+      let(:training_period) do
+        FactoryBot.create(:training_period, :for_ect, :unfinished, ect_at_school_period: at_school_period)
+      end
+      let(:declaration) { nil }
+
+      it "deletes the registration and shows the delete confirmation" do
+        post admin_teacher_undo_registration_wizard_confirm_path(teacher),
+             params: {
+               confirm: {
+                 confirmed: "1",
+                 expected_action: "delete",
+                 expected_training_period_ids: training_period.id.to_s,
+                 expected_mentorship_period_ids: ""
+               }
+             }
+
+        expect(response).to redirect_to(admin_teacher_undo_registration_wizard_confirmation_path(teacher))
+        expect { at_school_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+        expect { training_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+        expect(teacher.reload.anonymised_at).to be_present
+
+        get admin_teacher_undo_registration_wizard_confirmation_path(teacher)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("Associated school, training, and mentorship periods have been deleted.")
+      end
+    end
+
+    context "when undoing a mentor registration with declarations" do
+      let(:at_school_period) do
+        FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:)
+      end
+      let(:training_period) do
+        FactoryBot.create(:training_period, :for_mentor, :unfinished, mentor_at_school_period: at_school_period)
+      end
+
+      it "closes the registration and shows the close confirmation" do
+        post admin_teacher_undo_registration_wizard_confirm_path(teacher),
+             params: {
+               confirm: {
+                 confirmed: "1",
+                 expected_action: "close",
+                 expected_training_period_ids: training_period.id.to_s,
+                 expected_mentorship_period_ids: ""
+               }
+             }
+
+        expect(response).to redirect_to(admin_teacher_undo_registration_wizard_confirmation_path(teacher))
+        expect(at_school_period.reload.finished_on).to eq(Date.current)
+        expect(training_period.reload.finished_on).to eq(Date.current)
+
+        get admin_teacher_undo_registration_wizard_confirmation_path(teacher)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("Associated school, training, and mentorship periods have been closed.")
       end
     end
 
