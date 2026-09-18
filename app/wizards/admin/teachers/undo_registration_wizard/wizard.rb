@@ -16,12 +16,15 @@ module Admin
 
         def allowed_steps
           return [:confirmation] if store.registration_undone
+          return [] if at_school_periods.empty?
           return [:start] unless at_school_period
 
           %i[start confirm]
         end
 
         def allowed_step_path
+          return teacher_school_path if allowed_steps.empty?
+
           step_path(allowed_steps.last)
         end
 
@@ -62,6 +65,10 @@ module Admin
         end
 
       private
+
+        def teacher_school_path
+          Rails.application.routes.url_helpers.admin_teacher_school_path(teacher)
+        end
 
         def step_path(step_name)
           return if step_name.blank?
