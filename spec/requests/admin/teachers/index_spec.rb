@@ -265,6 +265,36 @@ RSpec.describe "Admin teachers index", type: :request do
           expect(response.body).not_to include("Teacher00 Alpha")
         end
       end
+
+      context "when there are no failed TRN merges" do
+        it "does not show the failed TRN merges banner" do
+          get "/admin/teachers"
+
+          expect(response.status).to eq(200)
+
+          page = Capybara.string(response.body)
+
+          expect(page).not_to have_text("An automated merge of teacher records has failed.")
+          expect(page).not_to have_link("View the failed merges", href: admin_failed_trn_merges_path)
+        end
+      end
+
+      context "when there are failed TRN merges" do
+        before do
+          FactoryBot.create(:teacher, trs_response: :permanent_redirect)
+        end
+
+        it "shows the failed TRN merges banner" do
+          get "/admin/teachers"
+
+          expect(response.status).to eq(200)
+
+          page = Capybara.string(response.body)
+
+          expect(page).to have_text("An automated merge of teacher records has failed.")
+          expect(page).to have_link("View the failed merges", href: admin_failed_trn_merges_path)
+        end
+      end
     end
   end
 end

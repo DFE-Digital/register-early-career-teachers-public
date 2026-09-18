@@ -1,6 +1,6 @@
 namespace :product_review do
   desc "Set up a teacher with a TRN merged into another in TRS at Abbey Grove for review (#4423)"
-  task "4423" => :environment do
+  task "4381" => :environment do
     if Teacher.exists?(trn: "0000081")
       puts "Scenario already set up — Nina Patel (TRN 0000081) exists. Aborting."
       next
@@ -42,6 +42,15 @@ namespace :product_review do
       trs_data_last_refreshed_at: Time.zone.now,
       redirected_to:,
       event_body: "TRN #{nina.trn} redirects to TRN #{redirected_to}"
+    )
+
+    extra_teacher = Teacher.find_by_trn("9000000")
+    redirected_to = "9000001"
+
+    Teachers::Manage.system_update(teacher: extra_teacher).mark_teacher_as_merged!(
+      trs_data_last_refreshed_at: Time.zone.now,
+      redirected_to:,
+      event_body: "TRN #{extra_teacher.trn} redirects to TRN #{redirected_to}"
     )
   end
 end

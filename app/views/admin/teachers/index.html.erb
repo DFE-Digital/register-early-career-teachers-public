@@ -1,3 +1,10 @@
+<% if @show_failed_trn_merges_banner %>
+  <%= govuk_notification_banner(title_text: "Important") do |banner| %>
+    <% banner.with_heading(text: "An automated merge of teacher records has failed.") %>
+    <%= govuk_link_to("View the failed merges", admin_failed_trn_merges_path) %>
+  <% end %>
+<% end %>
+
 <% page_data(title: "Teachers") %>
 
 <%= render Admin::Teachers::SearchComponent.new(
