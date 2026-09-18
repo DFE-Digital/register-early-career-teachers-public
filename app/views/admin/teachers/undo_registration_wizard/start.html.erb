@@ -1,12 +1,16 @@
-<% page_data(
-  title: "Undo a registration and close school periods for #{@wizard.teacher_name}",
-  backlink_href: admin_teacher_school_path(@teacher)
-) %>
+<%
+  action_verb = @wizard.periods_will_be_closed? ? "close" : "delete"
+
+  page_data(
+    title: "Undo a registration and #{action_verb} school periods for #{@wizard.teacher_name}",
+    backlink_href: admin_teacher_school_path(@teacher)
+  )
+%>
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <p class="govuk-body">
-      Undo a registration for <%= @wizard.teacher_name %> and close the related
+      Undo a registration for <%= @wizard.teacher_name %> and <%= action_verb %> the related
       school periods if the registration was made in error.
     </p>
 
