@@ -3,11 +3,11 @@ module API::OAuth::Authorization::Revocable
 
   included do
     scope :revoked, -> { where.not(revoked_at: nil) }
-    scope :unrevoked, -> { where(revoked_at: nil) }
+    scope :not_revoked, -> { where(revoked_at: nil) }
   end
 
   def revoked? = revoked_at.present?
-  def revocable? = !revoked?
+  def not_revoked? = !revoked?
 
   def revoke!
     touch(:revoked_at) unless revoked?

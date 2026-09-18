@@ -12,16 +12,10 @@ module API::OAuth::Authorizations
 
     def call
       ActiveRecord::Base.transaction do
-        raise(CodeNotExchangeableError, "Code cannot be exchanged") unless code_exchangable?
-        raise(CodeNotExchangeableError, "Code verifier is invalid") unless code_challenge_verified?(code_verifier:)
-
-        revoke_active_authorizations_matching!(authorization:)
-
-        authorization.assign_token
-        authorization.update!(code_exchanged_at: Time.zone.now)
-
-        author = Events::OAuthClientAuthor.new(client: authorization.client)
-        Events::Record.record_api_oauth_authorization_code_exchanged_event!(author:, authorization:)
+        validate_code!
+        revoke_active_predecessor!
+        exchange_code!
+        record_event!
 
         authorization
       end
@@ -29,16 +23,26 @@ module API::OAuth::Authorizations
 
   private
 
-    def revoke_active_authorizations_matching!(authorization:)
-      authorization.client
-        .authorizations
-        .active
-        .where(appropriate_body_period: authorization.appropriate_body_period,
-               redirect_uri: authorization.redirect_uri)
-        .where.not(id: authorization.id)
-        .find_each do |authorization_to_be_revoked|
-          API::OAuth::Authorizations::RevocationRequest.new(authorization: authorization_to_be_revoked).revoke!
-        end
+    def validate_code!
+      raise(CodeNotExchangeableError, "Code cannot be exchanged") unless code_exchangable?
+      raise(CodeNotExchangeableError, "Code verifier is invalid") unless code_challenge_verified?(code_verifier:)
+    end
+
+    def revoke_active_predecessor!
+      predecessor = authorization.active_predecessor
+      return if predecessor.blank?
+
+      API::OAuth::Authorizations::RevocationRequest.new(authorization: predecessor).revoke!
+    end
+
+    def exchange_code!
+      authorization.assign_token
+      authorization.update!(code_exchanged_at: Time.zone.now)
+    end
+
+    def record_event!
+      author = Events::OAuthClientAuthor.new(client: authorization.client)
+      Events::Record.record_api_oauth_authorization_code_exchanged_event!(author:, authorization:)
     end
   end
 end
