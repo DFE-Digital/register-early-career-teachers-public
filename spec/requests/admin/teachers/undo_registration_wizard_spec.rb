@@ -215,5 +215,41 @@ RSpec.describe "Admin::Teachers::UndoRegistrationWizardController", type: :reque
         )
       end
     end
+
+    context "when the registration has already been undone" do
+      let(:at_school_period) do
+        FactoryBot.create(:ect_at_school_period, :unfinished, teacher:)
+      end
+      let(:training_period) do
+        FactoryBot.create(:training_period, :for_ect, :unfinished, ect_at_school_period: at_school_period)
+      end
+      let(:undo_registration_service) do
+        instance_double(
+          ::Teachers::UndoRegistration,
+          undoable?: true
+        )
+      end
+
+      before do
+        allow(::Teachers::UndoRegistration).to receive(:new).and_return(undo_registration_service)
+        allow(undo_registration_service).to receive(:undo!)
+          .and_raise(::Teachers::UndoRegistration::RegistrationAlreadyUndoneError)
+      end
+
+      it "redirects to school history with an explanation" do
+        post admin_teacher_undo_registration_wizard_confirm_path(teacher),
+             params: {
+               confirm: {
+                 confirmed: "1",
+                 expected_action: "close",
+                 expected_training_period_ids: training_period.id.to_s,
+                 expected_mentorship_period_ids: ""
+               }
+             }
+
+        expect(response).to redirect_to(admin_teacher_school_path(teacher))
+        expect(flash[:error]).to eq("This registration has already been undone.")
+      end
+    end
   end
 end

@@ -262,6 +262,13 @@ RSpec.describe Teachers::UndoRegistration do
           expect(undo_registration).to eq("delete")
         end
 
+        it "raises when the registration has already been undone" do
+          undo_registration
+
+          expect { undo_registration_service.undo! }
+            .to raise_error(described_class::RegistrationAlreadyUndoneError)
+        end
+
         it "deletes the relevant periods" do
           expect_periods_to_be_deleted(ect_at_school_period:, training_period:, mentorship_period:)
         end

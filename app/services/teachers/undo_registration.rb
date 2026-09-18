@@ -3,6 +3,7 @@ module Teachers
     class NoPeriodsToCloseError < StandardError; end
     class UndoOutcomeChangedError < StandardError; end
     class AffectedPeriodsChangedError < StandardError; end
+    class RegistrationAlreadyUndoneError < StandardError; end
 
     attr_reader :author, :at_school_period, :reason, :teacher
 
@@ -21,7 +22,7 @@ module Teachers
       expected_mentorship_period_ids: nil
     )
       ActiveRecord::Base.transaction do
-        at_school_period.lock!
+        lock_at_school_period!
 
         action = periods_will_be_closed? ? "close" : "delete"
 
@@ -58,6 +59,13 @@ module Teachers
 
     def anonymiser
       @anonymiser ||= Teachers::Anonymise.new(teacher:, reason:)
+    end
+
+    def lock_at_school_period!
+      # Reload the school period so we can catch if another undo has deleted it.
+      @at_school_period = at_school_period.class.lock.find(at_school_period.id)
+    rescue ActiveRecord::RecordNotFound
+      raise RegistrationAlreadyUndoneError
     end
 
     def billable_or_refundable_declarations_exist?

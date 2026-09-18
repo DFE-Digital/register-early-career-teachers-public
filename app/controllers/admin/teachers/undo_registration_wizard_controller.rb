@@ -13,6 +13,8 @@ module Admin
                   with: :redirect_undo_outcome_changed
       rescue_from ::Teachers::UndoRegistration::AffectedPeriodsChangedError,
                   with: :redirect_affected_periods_changed
+      rescue_from ::Teachers::UndoRegistration::RegistrationAlreadyUndoneError,
+                  with: :redirect_registration_already_undone
 
       before_action :set_teacher
       before_action :reset_store_on_entry
@@ -57,6 +59,11 @@ module Admin
       def redirect_affected_periods_changed
         redirect_to @wizard.current_step_path,
                     flash: { error: "The periods for this registration have changed. Review the updated periods before continuing." }
+      end
+
+      def redirect_registration_already_undone
+        redirect_to admin_teacher_school_path(@teacher),
+                    flash: { error: "This registration has already been undone." }
       end
 
       def store
