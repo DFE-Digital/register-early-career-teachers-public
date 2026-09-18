@@ -1,8 +1,18 @@
 RSpec.describe Admin::Teachers::UndoRegistrationWizard::ConfirmStep do
-  subject(:step) { described_class.new(confirmed:, expected_action:, wizard:) }
+  subject(:step) do
+    described_class.new(
+      confirmed:,
+      expected_action:,
+      expected_training_period_ids:,
+      expected_mentorship_period_ids:,
+      wizard:
+    )
+  end
 
   let(:confirmed) { "1" }
   let(:expected_action) { "close" }
+  let(:expected_training_period_ids) { "1" }
+  let(:expected_mentorship_period_ids) { "2" }
   let(:undo_action) { "close" }
   let(:periods_will_be_closed) { true }
   let(:store) { FactoryBot.build(:session_repository) }
@@ -29,7 +39,11 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::ConfirmStep do
 
   describe "#save!" do
     it "undoes the registration" do
-      expect(wizard).to receive(:undo_registration!).with(expected_action:)
+      expect(wizard).to receive(:undo_registration!).with(
+        expected_action:,
+        expected_training_period_ids: [1],
+        expected_mentorship_period_ids: [2]
+      )
 
       expect(step.save!).to be(true)
     end
@@ -101,6 +115,16 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::ConfirmStep do
 
     context "when the expected action is missing" do
       let(:expected_action) { nil }
+
+      it "does not undo the registration" do
+        expect(wizard).not_to receive(:undo_registration!)
+
+        expect(step.save!).to be(false)
+      end
+    end
+
+    context "when the reviewed period IDs are missing" do
+      let(:expected_training_period_ids) { nil }
 
       it "does not undo the registration" do
         expect(wizard).not_to receive(:undo_registration!)

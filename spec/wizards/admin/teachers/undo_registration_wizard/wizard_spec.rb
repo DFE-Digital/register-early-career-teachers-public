@@ -151,9 +151,17 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::Wizard do
     end
 
     it "undoes the registration for the selected school period" do
-      expect(undo_registration).to receive(:undo!).with(expected_action: "close")
+      expect(undo_registration).to receive(:undo!).with(
+        expected_action: "close",
+        expected_training_period_ids: [1],
+        expected_mentorship_period_ids: [2]
+      )
 
-      wizard.undo_registration!(expected_action: "close")
+      wizard.undo_registration!(
+        expected_action: "close",
+        expected_training_period_ids: [1],
+        expected_mentorship_period_ids: [2]
+      )
     end
   end
 
