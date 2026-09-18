@@ -351,7 +351,7 @@ GEM
       activesupport (>= 6.0.0)
       railties (>= 6.0.0)
     inflection (1.0.0)
-    io-console (0.9.3)
+    io-console (0.9.4)
     io-endpoint (0.18.0)
       openssl (>= 3.3.0)
     io-event (1.21.1)
@@ -766,10 +766,10 @@ GEM
     securerandom (0.4.1)
     semantic_logger (5.1.0)
       concurrent-ruby (~> 1.0)
-    sentry-rails (6.7.0)
+    sentry-rails (7.0.0)
       railties (>= 5.2.0)
-      sentry-ruby (~> 6.7.0)
-    sentry-ruby (6.7.0)
+      sentry-ruby (~> 7.0.0)
+    sentry-ruby (7.0.0)
       bigdecimal
       concurrent-ruby (~> 1.0, >= 1.0.2)
       logger
