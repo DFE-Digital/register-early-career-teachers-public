@@ -33,9 +33,10 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::ConfirmStep do
       expect(step.save!).to be(true)
     end
 
-    it "records that the registration has been undone" do
+    it "records the undo action and marks the registration as undone" do
       step.save!
 
+      expect(store.undo_action).to eq("close")
       expect(store.registration_undone).to be(true)
     end
 
@@ -47,6 +48,7 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::ConfirmStep do
       it "does not record that the registration has been undone" do
         expect { step.save! }.to raise_error(RuntimeError, "Unable to undo registration")
 
+        expect(store.undo_action).to be_nil
         expect(store.registration_undone).to be_nil
       end
     end
