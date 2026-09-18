@@ -6,7 +6,11 @@ module Admin
 
         validates :confirmed,
                   acceptance: {
-                    message: "Confirm you want to undo this registration and close this school period",
+                    message: ->(step, _) {
+                      action = step.wizard.periods_will_be_closed? ? "close" : "delete"
+
+                      "Confirm you want to undo this registration and #{action} this school period"
+                    },
                     allow_nil: false
                   }
 
@@ -19,19 +23,9 @@ module Admin
         def save!
           return false unless valid?
 
-          undo_registration.undo!
+          wizard.undo_registration!
           store.registration_undone = true
           true
-        end
-
-      private
-
-        def undo_registration
-          @undo_registration ||= ::Teachers::UndoRegistration.new(
-            author: wizard.author,
-            at_school_period: wizard.at_school_period,
-            reason: :registered_in_error
-          )
         end
       end
     end
