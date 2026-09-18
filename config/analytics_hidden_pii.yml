@@ -35,3 +35,8 @@ shared:
   :gias_schools:
     - primary_contact_email
     - secondary_contact_email
+  :events:
+    - metadata
+    - modifications
+    - author_name
+    - author_email
