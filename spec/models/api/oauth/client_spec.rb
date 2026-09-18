@@ -155,10 +155,9 @@ describe API::OAuth::Client do
   describe "authorization_for_token" do
     let(:client) { FactoryBot.create(:api_oauth_client) }
     let!(:authorization_1) do
-      FactoryBot.create(:api_oauth_authorization, client:, code_verifier:).tap { it.exchange_code_for_token!(code_verifier:) }
+      FactoryBot.create(:api_oauth_authorization, :with_token, client:)
     end
 
-    let(:code_verifier) { "secret" }
     let(:token) { authorization_1.token }
 
     let!(:authorization_2) { FactoryBot.create(:api_oauth_authorization, client:) }

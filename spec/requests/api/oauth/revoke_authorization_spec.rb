@@ -10,11 +10,7 @@ RSpec.describe "API OAuth Authorization revoked by client", type: :request do
     }
   end
 
-  let!(:authorization) do
-    FactoryBot.create(:api_oauth_authorization, client:, code_verifier:).tap { it.exchange_code_for_token!(code_verifier:) }
-  end
-
-  let(:code_verifier) { "secret" }
+  let!(:authorization) { FactoryBot.create(:api_oauth_authorization, :with_token, client:) }
   let(:token) { authorization.token }
 
   let(:params) do

@@ -19,7 +19,7 @@ module API::OAuth::Authorizations
         authorization.update!(code_exchanged_at: Time.zone.now)
 
         author = Events::OAuthClientAuthor.new(client: authorization.client)
-        Events::Record.record_api_oauth_authorization_code_exchanged(author:, authorization:)
+        Events::Record.record_api_oauth_authorization_code_exchanged_event!(author:, authorization:)
 
         authorization
       end

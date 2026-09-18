@@ -3,10 +3,9 @@ describe API::OAuth::Authorizations::RevocationRequest do
 
   let(:client) { FactoryBot.create(:api_oauth_client) }
   let!(:authorization) do
-    FactoryBot.create(:api_oauth_authorization, client:, code_verifier:).tap { it.exchange_code_for_token!(code_verifier:) }
+    FactoryBot.create(:api_oauth_authorization, :with_token, client:)
   end
 
-  let(:code_verifier) { "secret" }
   let(:appropriate_body_period) { authorization.appropriate_body_period }
 
   describe "#revoke!" do
