@@ -1,0 +1,20 @@
+<% page_data(title: "Create a test client", error: @client.errors.any?, backlink_href: new_integration_support_api_client_connection_path) %>
+
+<%= form_with(model: @client, url: integration_support_api_clients_path) do |form| %>
+  <%= content_for(:error_summary) { form.govuk_error_summary } %>
+
+  <%= form.govuk_text_field(:name,
+                            label: { text: "Name" },
+                            hint: { text: "A unique name for the API client." }) %>
+
+  <%= form.govuk_text_field(:client_id,
+                            label: { text: "Client ID" },
+                            hint: { text: "The client identifier issued to the API client." }) %>
+
+  <%= form.govuk_text_field(:client_secret,
+                            value: @client_secret,
+                            label: { text: "Client secret" },
+                            hint: { text: "The client secret issued to the API client." }) %>
+
+  <%= form.govuk_submit("Create client") %>
+<% end %>

@@ -52,4 +52,5 @@ Rails.application.routes.draw do
   draw :appropriate_body
   draw :school
   draw :api
+  draw :integration_support
 end

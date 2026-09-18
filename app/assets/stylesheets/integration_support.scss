@@ -1,0 +1,37 @@
+@use "govuk-frontend/dist/govuk/settings" as *;
+@use "govuk-frontend/dist/govuk/helpers" as *;
+
+// A fixed frame around the OAuth test client, so nobody mistakes it for the service.
+.app-test-client::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  border: 10px solid govuk-colour("blue", $variant: "tint-50");
+  pointer-events: none;
+  z-index: 1000;
+}
+
+// Summary cards coloured by outcome: green for a response that worked, red for one that did not.
+.app-summary-card--green {
+  border-color: govuk-colour("green");
+
+  .govuk-summary-card__title-wrapper {
+    background-color: govuk-colour("green", $variant: "tint-80");
+  }
+
+  .govuk-summary-card__title {
+    color: govuk-colour("green", $variant: "shade-50");
+  }
+}
+
+.app-summary-card--red {
+  border-color: govuk-colour("red");
+
+  .govuk-summary-card__title-wrapper {
+    background-color: govuk-colour("red", $variant: "tint-80");
+  }
+
+  .govuk-summary-card__title {
+    color: govuk-colour("red", $variant: "shade-50");
+  }
+}
