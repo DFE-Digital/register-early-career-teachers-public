@@ -32,6 +32,7 @@ module Teachers
         end
 
         record_undo_registration_event!
+        action
       end
     end
 

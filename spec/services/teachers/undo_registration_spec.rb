@@ -40,6 +40,10 @@ RSpec.describe Teachers::UndoRegistration do
       context "with an eligible declaration" do
         let!(:declaration) { FactoryBot.create(:declaration, :eligible, training_period:) }
 
+        it "returns close" do
+          expect(undo_registration).to eq("close")
+        end
+
         it "finishes the relevant periods" do
           expect_periods_to_be_finished(ect_at_school_period:, training_period:, mentorship_period:)
         end
@@ -214,6 +218,10 @@ RSpec.describe Teachers::UndoRegistration do
       let!(:mentorship_period) { FactoryBot.create(:mentorship_period, mentee: ect_at_school_period, mentor: mentor_at_school_period, started_on: ect_at_school_period.started_on, finished_on: nil) }
 
       context "with no declarations" do
+        it "returns delete" do
+          expect(undo_registration).to eq("delete")
+        end
+
         it "deletes the relevant periods" do
           expect_periods_to_be_deleted(ect_at_school_period:, training_period:, mentorship_period:)
         end

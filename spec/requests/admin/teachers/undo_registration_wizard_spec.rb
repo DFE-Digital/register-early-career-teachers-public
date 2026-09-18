@@ -65,6 +65,24 @@ RSpec.describe "Admin::Teachers::UndoRegistrationWizardController", type: :reque
       end
     end
 
+    context "when the expected action is blank" do
+      let(:at_school_period) do
+        FactoryBot.create(:ect_at_school_period, :unfinished, teacher:)
+      end
+      let(:training_period) do
+        FactoryBot.create(:training_period, :for_ect, :unfinished, ect_at_school_period: at_school_period)
+      end
+
+      it "does not undo the registration" do
+        post admin_teacher_undo_registration_wizard_confirm_path(teacher),
+             params: { confirm: { confirmed: "1", expected_action: "" } }
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(at_school_period.reload.finished_on).to be_nil
+        expect(training_period.reload.finished_on).to be_nil
+      end
+    end
+
     context "when the service finds no open periods to close" do
       let(:at_school_period) do
         FactoryBot.create(:ect_at_school_period, :unfinished, teacher:)
