@@ -94,6 +94,7 @@ class Event < ApplicationRecord
     training_period_assigned_to_school_partnership
     dfe_user_created
     dfe_user_updated
+    dfe_user_deleted
     statement_authorised_for_payment
     statement_marked_payable
     contract_period_added
