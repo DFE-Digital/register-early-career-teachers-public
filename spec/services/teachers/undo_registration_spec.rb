@@ -1,14 +1,15 @@
 RSpec.describe Teachers::UndoRegistration do
   let(:author) { Events::SystemAuthor.new }
+  let(:undo_registration_service) do
+    described_class.new(
+      author:,
+      at_school_period:,
+      reason: :registered_in_error
+    )
+  end
 
   describe "#undo!" do
-    subject(:undo_registration) do
-      described_class.new(
-        author:,
-        at_school_period:,
-        reason: :registered_in_error
-      ).undo!
-    end
+    subject(:undo_registration) { undo_registration_service.undo! }
 
     shared_examples "finishes periods without anonymising the teacher" do
       it "does not anonymise the teacher" do
@@ -39,6 +40,49 @@ RSpec.describe Teachers::UndoRegistration do
       context "with an eligible declaration" do
         let!(:declaration) { FactoryBot.create(:declaration, :eligible, training_period:) }
 
+        it "returns close" do
+          expect(undo_registration).to eq("close")
+        end
+
+        context "when the affected periods have changed" do
+          let(:finished_mentorship_on) { ect_at_school_period.started_on + 1.month }
+          let!(:mentorship_period) do
+            FactoryBot.create(
+              :mentorship_period,
+              mentee: ect_at_school_period,
+              mentor: mentor_at_school_period,
+              started_on: ect_at_school_period.started_on,
+              finished_on: finished_mentorship_on
+            )
+          end
+          let!(:new_mentorship_period) do
+            FactoryBot.create(
+              :mentorship_period,
+              :unfinished,
+              mentee: ect_at_school_period,
+              mentor: mentor_at_school_period,
+              started_on: finished_mentorship_on + 1.day
+            )
+          end
+
+          it "does not undo the registration" do
+            expect(Events::Record).not_to receive(:record_undo_registration_event!)
+
+            expect {
+              undo_registration_service.undo!(
+                expected_action: "close",
+                expected_training_period_ids: [training_period.id],
+                expected_mentorship_period_ids: []
+              )
+            }.to raise_error(described_class::AffectedPeriodsChangedError)
+
+            expect(ect_at_school_period.reload.finished_on).to be_nil
+            expect(training_period.reload.finished_on).to be_nil
+            expect(mentorship_period.reload.finished_on).to eq(finished_mentorship_on)
+            expect(new_mentorship_period.reload.finished_on).to be_nil
+          end
+        end
+
         it "finishes the relevant periods" do
           expect_periods_to_be_finished(ect_at_school_period:, training_period:, mentorship_period:)
         end
@@ -48,6 +92,19 @@ RSpec.describe Teachers::UndoRegistration do
         end
 
         include_examples "finishes periods without anonymising the teacher"
+
+        context "when the expected action is delete" do
+          it "does not undo the registration" do
+            expect(Events::Record).not_to receive(:record_undo_registration_event!)
+
+            expect { undo_registration_service.undo!(expected_action: "delete") }
+              .to raise_error(described_class::UndoOutcomeChangedError)
+
+            expect(ect_at_school_period.reload.finished_on).to be_nil
+            expect(training_period.reload.finished_on).to be_nil
+            expect(mentorship_period.reload.finished_on).to be_nil
+          end
+        end
       end
 
       context "with a payable declaration" do
@@ -131,6 +188,29 @@ RSpec.describe Teachers::UndoRegistration do
           expect(finished_training_period.reload.finished_on).to eq(original_finished_on)
         end
       end
+
+      context "when the registration has already been undone" do
+        let!(:declaration) { FactoryBot.create(:declaration, :eligible, training_period:) }
+
+        before do
+          allow(Events::Record)
+            .to receive(:record_undo_registration_event!)
+            .and_call_original
+        end
+
+        it "cannot be undone again" do
+          expect(undo_registration_service).to be_undoable
+          undo_registration
+          expect(undo_registration_service).not_to be_undoable
+
+          expect { undo_registration_service.undo! }
+            .to raise_error(described_class::NoPeriodsToCloseError, "No open periods to close")
+
+          expect(Events::Record)
+            .to have_received(:record_undo_registration_event!)
+            .once
+        end
+      end
     end
 
     context "when the participant has refundable declarations" do
@@ -177,6 +257,17 @@ RSpec.describe Teachers::UndoRegistration do
       let!(:mentorship_period) { FactoryBot.create(:mentorship_period, mentee: ect_at_school_period, mentor: mentor_at_school_period, started_on: ect_at_school_period.started_on, finished_on: nil) }
 
       context "with no declarations" do
+        it "returns delete" do
+          expect(undo_registration).to eq("delete")
+        end
+
+        it "raises when the registration has already been undone" do
+          undo_registration
+
+          expect { undo_registration_service.undo! }
+            .to raise_error(described_class::RegistrationAlreadyUndoneError)
+        end
+
         it "deletes the relevant periods" do
           expect_periods_to_be_deleted(ect_at_school_period:, training_period:, mentorship_period:)
         end

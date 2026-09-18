@@ -7,6 +7,15 @@ module Admin
 
       include WizardStoreRescuable
 
+      rescue_from ::Teachers::UndoRegistration::NoPeriodsToCloseError,
+                  with: :redirect_no_periods_to_close
+      rescue_from ::Teachers::UndoRegistration::UndoOutcomeChangedError,
+                  with: :redirect_undo_outcome_changed
+      rescue_from ::Teachers::UndoRegistration::AffectedPeriodsChangedError,
+                  with: :redirect_affected_periods_changed
+      rescue_from ::Teachers::UndoRegistration::RegistrationAlreadyUndoneError,
+                  with: :redirect_registration_already_undone
+
       before_action :set_teacher
       before_action :reset_store_on_entry
       before_action :initialize_wizard
@@ -31,7 +40,30 @@ module Admin
       end
 
       def check_allowed_step
-        redirect_to @wizard.allowed_step_path unless @wizard.allowed_step?
+        return if @wizard.allowed_step?
+        return redirect_no_periods_to_close if @wizard.allowed_steps.empty?
+
+        redirect_to @wizard.allowed_step_path
+      end
+
+      def redirect_no_periods_to_close
+        redirect_to admin_teacher_school_path(@teacher),
+                    flash: { error: "There are no open periods to close for this registration." }
+      end
+
+      def redirect_undo_outcome_changed
+        redirect_to @wizard.current_step_path,
+                    flash: { error: "The declarations for this registration have changed. Review the updated outcome before continuing." }
+      end
+
+      def redirect_affected_periods_changed
+        redirect_to @wizard.current_step_path,
+                    flash: { error: "The periods for this registration have changed. Review the updated periods before continuing." }
+      end
+
+      def redirect_registration_already_undone
+        redirect_to admin_teacher_school_path(@teacher),
+                    flash: { error: "This registration has already been undone." }
       end
 
       def store
