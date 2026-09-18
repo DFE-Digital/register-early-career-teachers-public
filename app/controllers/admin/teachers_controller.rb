@@ -15,7 +15,7 @@ module Admin
 
       @pagy, teachers = pagy(teacher_search.teacher_scope)
       @teacher_rows = rows.rows(teachers)
-      @show_failed_trn_merges_banner = Teacher.trs_response_permanent_redirect.exists?
+      @show_failed_trn_merges_banner = current_user.product_team? && Teacher.trs_response_permanent_redirect.exists?
     end
 
     def show
