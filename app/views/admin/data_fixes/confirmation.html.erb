@@ -1,6 +1,6 @@
 <% page_data(title: "Data fix processed successfully") %>
 
-<%= govuk_list(@wizard.current_step.confirmed_changes, type: :bullet) %>
+<%= render Admin::DataFixes::ProcessedChangesComponent.new(@wizard.current_step.confirmed_changes) %>
 
 <%= govuk_button_link_to("Fix more data", admin_data_fixes_csv_path) %>
 

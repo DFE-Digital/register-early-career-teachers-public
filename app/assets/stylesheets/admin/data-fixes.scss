@@ -1,0 +1,11 @@
+@use "govuk-frontend/dist/govuk" as *;
+
+.data-fixes {
+  del {
+    background-color: govuk-colour("red", $variant: "tint-80");
+  }
+
+  ins {
+    background-color: govuk-colour("green", $variant: "tint-80");
+  }
+}

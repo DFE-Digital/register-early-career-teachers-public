@@ -1,5 +1,7 @@
 module Admin
   class DataFixesController < AdminController
+    layout "full"
+
     include WizardStoreRescuable
 
     before_action :set_steps,
