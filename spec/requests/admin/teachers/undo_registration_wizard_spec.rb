@@ -46,7 +46,14 @@ RSpec.describe "Admin::Teachers::UndoRegistrationWizardController", type: :reque
           .and_call_original
 
         post admin_teacher_undo_registration_wizard_confirm_path(teacher),
-             params: { confirm: { confirmed: "1", expected_action: "close" } }
+             params: {
+               confirm: {
+                 confirmed: "1",
+                 expected_action: "close",
+                 expected_training_period_ids: training_period.id.to_s,
+                 expected_mentorship_period_ids: ""
+               }
+             }
 
         expect(response).to redirect_to(admin_teacher_undo_registration_wizard_confirmation_path(teacher))
         expect(at_school_period.reload.finished_on).to eq(Date.current)
@@ -58,7 +65,14 @@ RSpec.describe "Admin::Teachers::UndoRegistrationWizardController", type: :reque
         expect(response.body).to include("Associated school, training, and mentorship periods have been closed.")
 
         post admin_teacher_undo_registration_wizard_confirm_path(teacher),
-             params: { confirm: { confirmed: "1", expected_action: "close" } }
+             params: {
+               confirm: {
+                 confirmed: "1",
+                 expected_action: "close",
+                 expected_training_period_ids: training_period.id.to_s,
+                 expected_mentorship_period_ids: ""
+               }
+             }
 
         expect(response).to redirect_to(admin_teacher_undo_registration_wizard_confirmation_path(teacher))
         expect(Events::Record).to have_received(:record_undo_registration_event!).once
@@ -75,7 +89,14 @@ RSpec.describe "Admin::Teachers::UndoRegistrationWizardController", type: :reque
 
       it "does not undo the registration" do
         post admin_teacher_undo_registration_wizard_confirm_path(teacher),
-             params: { confirm: { confirmed: "1", expected_action: "" } }
+             params: {
+               confirm: {
+                 confirmed: "1",
+                 expected_action: "",
+                 expected_training_period_ids: training_period.id.to_s,
+                 expected_mentorship_period_ids: ""
+               }
+             }
 
         expect(response).to have_http_status(:unprocessable_content)
         expect(at_school_period.reload.finished_on).to be_nil
@@ -105,7 +126,14 @@ RSpec.describe "Admin::Teachers::UndoRegistrationWizardController", type: :reque
 
       it "redirects to school history with an explanation" do
         post admin_teacher_undo_registration_wizard_confirm_path(teacher),
-             params: { confirm: { confirmed: "1", expected_action: "close" } }
+             params: {
+               confirm: {
+                 confirmed: "1",
+                 expected_action: "close",
+                 expected_training_period_ids: training_period.id.to_s,
+                 expected_mentorship_period_ids: ""
+               }
+             }
 
         expect(response).to redirect_to(admin_teacher_school_path(teacher))
         expect(flash[:error]).to eq("There are no open periods to close for this registration.")
@@ -134,11 +162,56 @@ RSpec.describe "Admin::Teachers::UndoRegistrationWizardController", type: :reque
 
       it "redirects to confirmation so the updated outcome can be reviewed" do
         post admin_teacher_undo_registration_wizard_confirm_path(teacher),
-             params: { confirm: { confirmed: "1", expected_action: "delete" } }
+             params: {
+               confirm: {
+                 confirmed: "1",
+                 expected_action: "delete",
+                 expected_training_period_ids: training_period.id.to_s,
+                 expected_mentorship_period_ids: ""
+               }
+             }
 
         expect(response).to redirect_to(admin_teacher_undo_registration_wizard_confirm_path(teacher))
         expect(flash[:error]).to eq(
           "The declarations for this registration have changed. Review the updated outcome before continuing."
+        )
+      end
+    end
+
+    context "when the affected periods have changed" do
+      let(:at_school_period) do
+        FactoryBot.create(:ect_at_school_period, :unfinished, teacher:)
+      end
+      let(:training_period) do
+        FactoryBot.create(:training_period, :for_ect, :unfinished, ect_at_school_period: at_school_period)
+      end
+      let(:undo_registration_service) do
+        instance_double(
+          ::Teachers::UndoRegistration,
+          undoable?: true
+        )
+      end
+
+      before do
+        allow(::Teachers::UndoRegistration).to receive(:new).and_return(undo_registration_service)
+        allow(undo_registration_service).to receive(:undo!)
+          .and_raise(::Teachers::UndoRegistration::AffectedPeriodsChangedError)
+      end
+
+      it "redirects to confirmation so the updated periods can be reviewed" do
+        post admin_teacher_undo_registration_wizard_confirm_path(teacher),
+             params: {
+               confirm: {
+                 confirmed: "1",
+                 expected_action: "close",
+                 expected_training_period_ids: training_period.id.to_s,
+                 expected_mentorship_period_ids: ""
+               }
+             }
+
+        expect(response).to redirect_to(admin_teacher_undo_registration_wizard_confirm_path(teacher))
+        expect(flash[:error]).to eq(
+          "The periods for this registration have changed. Review the updated periods before continuing."
         )
       end
     end

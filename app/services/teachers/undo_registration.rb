@@ -2,6 +2,7 @@ module Teachers
   class UndoRegistration
     class NoPeriodsToCloseError < StandardError; end
     class UndoOutcomeChangedError < StandardError; end
+    class AffectedPeriodsChangedError < StandardError; end
 
     attr_reader :author, :at_school_period, :reason, :teacher
 
@@ -14,13 +15,22 @@ module Teachers
       @teacher = at_school_period.teacher
     end
 
-    def undo!(expected_action: nil)
+    def undo!(
+      expected_action: nil,
+      expected_training_period_ids: nil,
+      expected_mentorship_period_ids: nil
+    )
       ActiveRecord::Base.transaction do
         at_school_period.lock!
 
         action = periods_will_be_closed? ? "close" : "delete"
 
         raise UndoOutcomeChangedError if expected_action.present? && expected_action != action
+        raise AffectedPeriodsChangedError unless affected_periods_match?(
+          action:,
+          expected_training_period_ids:,
+          expected_mentorship_period_ids:
+        )
 
         if action == "close"
           raise NoPeriodsToCloseError, "No open periods to close" unless periods_to_close?
@@ -60,6 +70,20 @@ module Teachers
       at_school_period.unfinished? ||
         training_periods.unfinished.exists? ||
         mentorship_periods.unfinished.exists?
+    end
+
+    def affected_periods_match?(action:, expected_training_period_ids:, expected_mentorship_period_ids:)
+      return true if expected_training_period_ids.nil? && expected_mentorship_period_ids.nil?
+      return false if expected_training_period_ids.nil? || expected_mentorship_period_ids.nil?
+
+      affected_period_ids(training_periods, action:) == expected_training_period_ids.sort &&
+        affected_period_ids(mentorship_periods, action:) == expected_mentorship_period_ids.sort
+    end
+
+    def affected_period_ids(periods, action:)
+      periods = periods.where(finished_on: nil) if action == "close"
+
+      periods.ids.sort
     end
 
     def finish_periods!

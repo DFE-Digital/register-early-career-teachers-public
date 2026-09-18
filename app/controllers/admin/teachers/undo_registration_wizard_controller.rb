@@ -11,6 +11,8 @@ module Admin
                   with: :redirect_no_periods_to_close
       rescue_from ::Teachers::UndoRegistration::UndoOutcomeChangedError,
                   with: :redirect_undo_outcome_changed
+      rescue_from ::Teachers::UndoRegistration::AffectedPeriodsChangedError,
+                  with: :redirect_affected_periods_changed
 
       before_action :set_teacher
       before_action :reset_store_on_entry
@@ -50,6 +52,11 @@ module Admin
       def redirect_undo_outcome_changed
         redirect_to @wizard.current_step_path,
                     flash: { error: "The declarations for this registration have changed. Review the updated outcome before continuing." }
+      end
+
+      def redirect_affected_periods_changed
+        redirect_to @wizard.current_step_path,
+                    flash: { error: "The periods for this registration have changed. Review the updated periods before continuing." }
       end
 
       def store

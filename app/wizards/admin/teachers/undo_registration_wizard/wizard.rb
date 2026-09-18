@@ -63,8 +63,12 @@ module Admin
 
         delegate :finish_date_for, :undoable?, to: :undo_registration
 
-        def undo_registration!(expected_action:)
-          undo_registration.undo!(expected_action:)
+        def undo_registration!(
+          expected_action:,
+          expected_training_period_ids:,
+          expected_mentorship_period_ids:
+        )
+          undo_registration.undo!(expected_action:, expected_training_period_ids:, expected_mentorship_period_ids:)
         end
 
         delegate :undo_action, to: :store
@@ -117,10 +121,6 @@ module Admin
 
         def periods_affected(periods)
           periods_will_be_closed? ? periods.unfinished : periods
-        end
-
-        def teacher_school_path
-          Rails.application.routes.url_helpers.admin_teacher_school_path(teacher)
         end
 
         def step_path(step_name)

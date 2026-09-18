@@ -45,6 +45,45 @@ RSpec.describe Teachers::UndoRegistration do
           expect(undo_registration).to eq("close")
         end
 
+        context "when the affected periods have changed" do
+          let(:finished_mentorship_on) { ect_at_school_period.started_on + 1.month }
+          let!(:mentorship_period) do
+            FactoryBot.create(
+              :mentorship_period,
+              mentee: ect_at_school_period,
+              mentor: mentor_at_school_period,
+              started_on: ect_at_school_period.started_on,
+              finished_on: finished_mentorship_on
+            )
+          end
+          let!(:new_mentorship_period) do
+            FactoryBot.create(
+              :mentorship_period,
+              :unfinished,
+              mentee: ect_at_school_period,
+              mentor: mentor_at_school_period,
+              started_on: finished_mentorship_on + 1.day
+            )
+          end
+
+          it "does not undo the registration" do
+            expect(Events::Record).not_to receive(:record_undo_registration_event!)
+
+            expect {
+              undo_registration_service.undo!(
+                expected_action: "close",
+                expected_training_period_ids: [training_period.id],
+                expected_mentorship_period_ids: []
+              )
+            }.to raise_error(described_class::AffectedPeriodsChangedError)
+
+            expect(ect_at_school_period.reload.finished_on).to be_nil
+            expect(training_period.reload.finished_on).to be_nil
+            expect(mentorship_period.reload.finished_on).to eq(finished_mentorship_on)
+            expect(new_mentorship_period.reload.finished_on).to be_nil
+          end
+        end
+
         it "finishes the relevant periods" do
           expect_periods_to_be_finished(ect_at_school_period:, training_period:, mentorship_period:)
         end

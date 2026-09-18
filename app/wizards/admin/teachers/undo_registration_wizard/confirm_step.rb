@@ -4,6 +4,8 @@ module Admin
       class ConfirmStep < Step
         attribute :confirmed, :boolean
         attribute :expected_action, :string
+        attribute :expected_training_period_ids, :string
+        attribute :expected_mentorship_period_ids, :string
 
         validates :confirmed,
                   acceptance: {
@@ -18,7 +20,14 @@ module Admin
         validates :expected_action,
                   inclusion: { in: %w[close delete] }
 
-        def self.permitted_params = %i[confirmed expected_action]
+        validate :reviewed_period_ids_present
+
+        def self.permitted_params = %i[
+          confirmed
+          expected_action
+          expected_training_period_ids
+          expected_mentorship_period_ids
+        ]
 
         def previous_step = :start
 
@@ -27,10 +36,25 @@ module Admin
         def save!
           return false unless valid?
 
-          action = wizard.undo_registration!(expected_action:)
+          action = wizard.undo_registration!(expected_action:, **expected_period_ids)
           store.undo_action = action
           store.registration_undone = true
           true
+        end
+
+      private
+
+        def expected_period_ids
+          {
+            expected_training_period_ids: expected_training_period_ids.split(",").map(&:to_i),
+            expected_mentorship_period_ids: expected_mentorship_period_ids.split(",").map(&:to_i)
+          }
+        end
+
+        def reviewed_period_ids_present
+          return if expected_training_period_ids && expected_mentorship_period_ids
+
+          errors.add(:base, "Review the periods to undo before confirming")
         end
       end
     end
