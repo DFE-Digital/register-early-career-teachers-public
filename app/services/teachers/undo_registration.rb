@@ -33,8 +33,6 @@ module Teachers
 
         record_undo_registration_event!
       end
-
-      API::Teachers::Query.new.teacher_by_id(teacher.id)
     end
 
     def periods_will_be_closed? = billable_or_refundable_declarations_exist?
