@@ -3,13 +3,14 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::ConfirmStep do
 
   let(:confirmed) { "1" }
   let(:expected_action) { "close" }
+  let(:undo_action) { "close" }
   let(:periods_will_be_closed) { true }
   let(:store) { FactoryBot.build(:session_repository) }
   let(:wizard) do
     instance_double(
       Admin::Teachers::UndoRegistrationWizard::Wizard,
       periods_will_be_closed?: periods_will_be_closed,
-      undo_registration!: true,
+      undo_registration!: undo_action,
       store:
     )
   end
@@ -36,8 +37,19 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::ConfirmStep do
     it "records the undo action and marks the registration as undone" do
       step.save!
 
-      expect(store.undo_action).to eq("close")
+      expect(store.undo_action).to eq(undo_action)
       expect(store.registration_undone).to be(true)
+    end
+
+    context "when the service reports that periods were deleted" do
+      let(:expected_action) { "delete" }
+      let(:undo_action) { "delete" }
+
+      it "records delete as the undo action" do
+        step.save!
+
+        expect(store.undo_action).to eq("delete")
+      end
     end
 
     context "when undoing the registration fails" do
@@ -84,6 +96,16 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::ConfirmStep do
         step.save!
 
         expect(store.registration_undone).to be_nil
+      end
+    end
+
+    context "when the expected action is missing" do
+      let(:expected_action) { nil }
+
+      it "does not undo the registration" do
+        expect(wizard).not_to receive(:undo_registration!)
+
+        expect(step.save!).to be(false)
       end
     end
   end
