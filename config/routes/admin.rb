@@ -73,6 +73,13 @@ namespace :admin do
       resource :school, only: %i[show]
       resource :training, only: %i[show]
       resources :declarations, only: %i[index]
+
+      namespace :undo_registration_wizard,
+                path: "undo-registration",
+                controller: "/admin/teachers/undo_registration_wizard" do
+        concerns :wizardable, wizard: Admin::Teachers::UndoRegistrationWizard
+      end
+
       resources :training_periods, only: [], path: "training-periods" do
         resource :partnership, only: %i[new create], controller: :training_partnerships do
           get :no_other_partnerships, path: "no-other-partnerships"
