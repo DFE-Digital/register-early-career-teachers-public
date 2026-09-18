@@ -32,6 +32,34 @@ RSpec.describe "Admin::Teachers::UndoRegistrationWizardController", type: :reque
   end
 
   describe "POST confirm" do
+    context "when undoing the registration succeeds" do
+      let(:at_school_period) do
+        FactoryBot.create(:ect_at_school_period, :unfinished, teacher:)
+      end
+      let(:training_period) do
+        FactoryBot.create(:training_period, :for_ect, :unfinished, ect_at_school_period: at_school_period)
+      end
+
+      it "prevents a repeated submission" do
+        allow(Events::Record)
+          .to receive(:record_undo_registration_event!)
+          .and_call_original
+
+        post admin_teacher_undo_registration_wizard_confirm_path(teacher),
+             params: { confirm: { confirmed: "1", expected_action: "close" } }
+
+        expect(response).to redirect_to(admin_teacher_undo_registration_wizard_confirmation_path(teacher))
+        expect(at_school_period.reload.finished_on).to eq(Date.current)
+        expect(training_period.reload.finished_on).to eq(Date.current)
+
+        post admin_teacher_undo_registration_wizard_confirm_path(teacher),
+             params: { confirm: { confirmed: "1", expected_action: "close" } }
+
+        expect(response).to redirect_to(admin_teacher_undo_registration_wizard_confirmation_path(teacher))
+        expect(Events::Record).to have_received(:record_undo_registration_event!).once
+      end
+    end
+
     context "when the service finds no open periods to close" do
       let(:at_school_period) do
         FactoryBot.create(:ect_at_school_period, :unfinished, teacher:)
