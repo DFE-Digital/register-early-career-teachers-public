@@ -84,6 +84,7 @@ private
   def and_i_continue
     page.get_by_role("button", name: "Continue", exact: true).click
   end
+  alias_method :given_i_preview_the_changes, :and_i_continue
 
   def then_i_see_an_error(error_message)
     error_summary = page.locator(".govuk-error-summary")
@@ -92,10 +93,6 @@ private
 
   def then_i_am_taken_to_the_preview_step
     expect(page).to have_path("/admin/data_fixes/preview")
-  end
-
-  def given_i_preview_the_changes
-    page.get_by_role("button", name: "Preview", exact: true).click
   end
 
   def then_i_see_an_error_for_each_invalid_row
@@ -143,41 +140,39 @@ private
   end
 
   def and_parsed_valid_rows_are_displayed
-    parsed_row1 = <<~TXT.squish
-      {"object_type" => "teacher",
-      "object_id" => "#{@teacher.id}",
-      "action" => "update",
-      "attributes" => "trn,1"}
-    TXT
-    row1 = page.locator("li", hasText: parsed_row1)
-    expect(row1).to be_visible
-    parsed_row2 = <<~TXT.squish
-      {"object_type" => "ect_at_school_period",
-      "object_id" => "#{@ect_at_school_period.id}",
-      "action" => "destroy",
-      "attributes" => ""}
-    TXT
-    row2 = page.locator("li", hasText: parsed_row2)
-    expect(row2).to be_visible
+    and_table_is_displayed(
+      "Parsed rows",
+      header: %w[object_type object_id action attributes],
+      rows: [
+        ["teacher", @teacher.id.to_s, "update", "trn,1"],
+        ["ect_at_school_period", @ect_at_school_period.id.to_s, "destroy", ""]
+      ]
+    )
   end
 
   def and_parsed_processable_rows_are_displayed
-    parsed_row1 = <<~TXT.squish
-      {"object_type" => "teacher",
-      "object_id" => "#{@teacher.id}",
-      "action" => "update",
-      "attributes" => "trn,1234567"}
-    TXT
-    row1 = page.locator("li", hasText: parsed_row1)
-    expect(row1).to be_visible
-    parsed_row2 = <<~TXT.squish
-      {"object_type" => "ect_at_school_period",
-      "object_id" => "#{@ect_at_school_period.id}",
-      "action" => "delete",
-      "attributes" => ""}
-    TXT
-    row2 = page.locator("li", hasText: parsed_row2)
-    expect(row2).to be_visible
+    and_table_is_displayed(
+      "Parsed rows",
+      header: %w[object_type object_id action attributes],
+      rows: [
+        ["teacher", @teacher.id.to_s, "update", "trn,1234567"],
+        ["ect_at_school_period", @ect_at_school_period.id.to_s, "delete", ""]
+      ]
+    )
+  end
+
+  def and_table_is_displayed(caption, header:, rows:)
+    table = page.get_by_role("table", name: caption)
+    header.each.with_index do |th, index|
+      expect(table.locator("th").nth(index)).to have_text(th)
+    end
+    expect(table.locator("tbody tr")).to have_count(rows.size)
+    rows.each.with_index do |row, row_index|
+      row.each.with_index do |cell, cell_index|
+        td = table.locator("tbody tr").nth(row_index).locator("td").nth(cell_index)
+        expect(td).to have_text(cell)
+      end
+    end
   end
 
   def then_i_am_taken_to_the_verify_step
@@ -185,20 +180,30 @@ private
   end
 
   def and_proposed_processed_changes_are_displayed
-    proposed_row1 = <<~TXT.squish
-      {"gid" => "#{@teacher.to_global_id}",
-      "action" => "update",
-      "changes" => {"trn" => ["#{@teacher.trn}", "1234567"]}
-    TXT
-    row1 = page.locator("li", hasText: proposed_row1)
-    expect(row1).to be_visible
-    proposed_row2 = <<~TXT.squish
-      {"gid" => "#{@ect_at_school_period.to_global_id}",
-      "action" => "delete",
-      "changes" => {}}
-    TXT
-    row2 = page.locator("li", hasText: proposed_row2)
-    expect(row2).to be_visible
+    and_summary_card_is_displayed(
+      @teacher.to_global_id,
+      rows: { "Action" => "update", "trn" => [@teacher.trn, "1234567"] }
+    )
+    and_summary_card_is_displayed(
+      @ect_at_school_period.to_global_id,
+      rows: { "Action" => "delete" }
+    )
+  end
+
+  def and_summary_card_is_displayed(heading, rows:)
+    summary_card = page.locator(".govuk-summary-card", hasText: heading)
+    expect(summary_card.locator("dl div.govuk-summary-list__row")).to have_count(rows.size)
+    rows.each_with_index do |(key, value), index|
+      summary_list_row = summary_card.locator("dl div.govuk-summary-list__row").nth(index)
+      expect(summary_list_row.locator("dt")).to have_text(key)
+      summary_list_row_value = summary_list_row.locator("dd")
+      if value.is_a?(Array)
+        expect(summary_list_row_value.locator("del")).to have_text(value.first)
+        expect(summary_list_row_value.locator("ins")).to have_text(value.second)
+      else
+        expect(summary_list_row_value).to have_text(value)
+      end
+    end
   end
 
   def when_i_verify_the_changes
