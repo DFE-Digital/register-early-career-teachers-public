@@ -18,14 +18,17 @@ module Admin
           return [:confirmation] if store.registration_undone
           return [] if at_school_periods.empty?
           return [:start] unless at_school_period
+          return [] unless undoable?
 
           %i[start confirm]
         end
 
         def allowed_step_path
-          return teacher_school_path if allowed_steps.empty?
+          allowed_step = allowed_steps.last
 
-          step_path(allowed_steps.last)
+          return teacher_school_path unless allowed_step
+
+          step_path(allowed_step)
         end
 
         def teacher
@@ -58,7 +61,7 @@ module Admin
           @periods_will_be_closed = undo_registration.periods_will_be_closed?
         end
 
-        delegate :finish_date_for, to: :undo_registration
+        delegate :finish_date_for, :undoable?, to: :undo_registration
 
         def undo_registration!
           undo_registration.undo!
@@ -112,6 +115,10 @@ module Admin
 
         def periods_affected(periods)
           periods_will_be_closed? ? periods.where(finished_on: nil) : periods
+        end
+
+        def teacher_school_path
+          Rails.application.routes.url_helpers.admin_teacher_school_path(teacher)
         end
 
         def step_path(step_name)

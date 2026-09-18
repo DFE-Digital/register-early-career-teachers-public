@@ -1,5 +1,7 @@
 module Teachers
   class UndoRegistration
+    class NoPeriodsToCloseError < StandardError; end
+
     attr_reader :author, :at_school_period, :reason, :teacher
 
     delegate :training_periods, :mentorship_periods, to: :at_school_period
@@ -13,7 +15,11 @@ module Teachers
 
     def undo!
       ActiveRecord::Base.transaction do
+        at_school_period.lock!
+
         if billable_or_refundable_declarations_exist?
+          raise NoPeriodsToCloseError, "No open periods to close" unless periods_to_close?
+
           finish_periods!
         else
           delete_periods!
@@ -27,6 +33,8 @@ module Teachers
     end
 
     def periods_will_be_closed? = billable_or_refundable_declarations_exist?
+
+    def undoable? = !periods_will_be_closed? || periods_to_close?
 
     def finish_date_for(period)
       [period.started_on, Date.current].max
@@ -42,6 +50,12 @@ module Teachers
       Declaration.where(training_period: training_periods)
         .merge(Declaration.billable.or(Declaration.refundable))
         .exists?
+    end
+
+    def periods_to_close?
+      at_school_period.unfinished? ||
+        training_periods.unfinished.exists? ||
+        mentorship_periods.unfinished.exists?
     end
 
     def finish_periods!
