@@ -2,14 +2,13 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::ConfirmStep do
   subject(:step) { described_class.new(confirmed:, wizard:) }
 
   let(:confirmed) { "1" }
+  let(:periods_will_be_closed) { true }
   let(:store) { FactoryBot.build(:session_repository) }
-  let(:author) { instance_double(User) }
-  let(:at_school_period) { instance_double(ECTAtSchoolPeriod) }
   let(:wizard) do
     instance_double(
       Admin::Teachers::UndoRegistrationWizard::Wizard,
-      author:,
-      at_school_period:,
+      periods_will_be_closed?: periods_will_be_closed,
+      undo_registration!: true,
       store:
     )
   end
@@ -27,18 +26,8 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::ConfirmStep do
   end
 
   describe "#save!" do
-    let(:undo_registration) { instance_double(::Teachers::UndoRegistration, undo!: true) }
-
-    before do
-      allow(::Teachers::UndoRegistration).to receive(:new).with(
-        author:,
-        at_school_period:,
-        reason: :registered_in_error
-      ).and_return(undo_registration)
-    end
-
     it "undoes the registration" do
-      expect(undo_registration).to receive(:undo!)
+      expect(wizard).to receive(:undo_registration!)
 
       expect(step.save!).to be(true)
     end
@@ -51,7 +40,7 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::ConfirmStep do
 
     context "when undoing the registration fails" do
       before do
-        allow(undo_registration).to receive(:undo!).and_raise("Unable to undo registration")
+        allow(wizard).to receive(:undo_registration!).and_raise("Unable to undo registration")
       end
 
       it "does not record that the registration has been undone" do
@@ -65,15 +54,27 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::ConfirmStep do
       let(:confirmed) { "0" }
 
       it "does not undo the registration" do
-        expect(::Teachers::UndoRegistration).not_to receive(:new)
+        expect(wizard).not_to receive(:undo_registration!)
 
         expect(step.save!).to be(false)
       end
 
-      it "adds a validation error" do
-        step.save!
+      context "when the periods would be closed" do
+        it "adds a validation error" do
+          step.save!
 
-        expect(step.errors[:confirmed]).to contain_exactly("Confirm you want to undo this registration and close this school period")
+          expect(step.errors[:confirmed]).to contain_exactly("Confirm you want to undo this registration and close this school period")
+        end
+      end
+
+      context "when the periods would be deleted" do
+        let(:periods_will_be_closed) { false }
+
+        it "adds a validation error" do
+          step.save!
+
+          expect(step.errors[:confirmed]).to contain_exactly("Confirm you want to undo this registration and delete this school period")
+        end
       end
 
       it "does not record that the registration has been undone" do
