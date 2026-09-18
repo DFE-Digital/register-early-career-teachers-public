@@ -1,14 +1,15 @@
 RSpec.describe Teachers::UndoRegistration do
   let(:author) { Events::SystemAuthor.new }
+  let(:undo_registration_service) do
+    described_class.new(
+      author:,
+      at_school_period:,
+      reason: :registered_in_error
+    )
+  end
 
   describe "#undo!" do
-    subject(:undo_registration) do
-      described_class.new(
-        author:,
-        at_school_period:,
-        reason: :registered_in_error
-      ).undo!
-    end
+    subject(:undo_registration) { undo_registration_service.undo! }
 
     shared_examples "finishes periods without anonymising the teacher" do
       it "does not anonymise the teacher" do
@@ -130,6 +131,29 @@ RSpec.describe Teachers::UndoRegistration do
           undo_registration
 
           expect(finished_training_period.reload.finished_on).to eq(original_finished_on)
+        end
+      end
+
+      context "when the registration has already been undone" do
+        let!(:declaration) { FactoryBot.create(:declaration, :eligible, training_period:) }
+
+        before do
+          allow(Events::Record)
+            .to receive(:record_undo_registration_event!)
+            .and_call_original
+        end
+
+        it "cannot be undone again" do
+          expect(undo_registration_service).to be_undoable
+          undo_registration
+          expect(undo_registration_service).not_to be_undoable
+
+          expect { undo_registration_service.undo! }
+            .to raise_error(described_class::NoPeriodsToCloseError, "No open periods to close")
+
+          expect(Events::Record)
+            .to have_received(:record_undo_registration_event!)
+            .once
         end
       end
     end
