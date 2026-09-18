@@ -25,6 +25,7 @@ module Admin
           return false unless valid?
 
           wizard.undo_registration!(expected_action:)
+          store.undo_action = expected_action
           store.registration_undone = true
           true
         end

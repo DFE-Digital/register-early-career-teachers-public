@@ -52,6 +52,11 @@ RSpec.describe "Admin::Teachers::UndoRegistrationWizardController", type: :reque
         expect(at_school_period.reload.finished_on).to eq(Date.current)
         expect(training_period.reload.finished_on).to eq(Date.current)
 
+        get admin_teacher_undo_registration_wizard_confirmation_path(teacher)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("Associated school, training, and mentorship periods have been closed.")
+
         post admin_teacher_undo_registration_wizard_confirm_path(teacher),
              params: { confirm: { confirmed: "1", expected_action: "close" } }
 

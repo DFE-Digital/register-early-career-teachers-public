@@ -67,6 +67,8 @@ module Admin
           undo_registration.undo!(expected_action:)
         end
 
+        delegate :undo_action, to: :store
+
         def affected_training_periods
           @affected_training_periods ||= periods_affected(
             at_school_period.training_periods.includes(
