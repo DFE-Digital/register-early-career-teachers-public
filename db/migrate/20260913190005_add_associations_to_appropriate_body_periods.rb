@@ -1,4 +1,4 @@
-class AddAssociationsToAppropriateBodyPeriods < ActiveRecord::Migration[8.0]
+class AddAssociationsToAppropriateBodyPeriods < ActiveRecord::Migration[8.1]
   def up
     add_reference :appropriate_body_periods, :teaching_school_hub, foreign_key: true
     add_reference :appropriate_body_periods, :school, foreign_key: true

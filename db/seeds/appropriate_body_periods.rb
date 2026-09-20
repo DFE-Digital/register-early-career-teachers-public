@@ -13,17 +13,14 @@ def describe_appropriate_body_period(appropriate_body_period)
   uuid = Colourize.text(appropriate_body_period.dfe_sign_in_organisation_id, :magenta)
   ab_text = "#{appropriate_body_period.name} (#{type}) #{uuid}"
 
+  # Teaching Schools & Teaching School Hubs
   print_seed_info(ab_text, indent: 2)
-  describe_lead_school(appropriate_body_period.lead_school) if appropriate_body_period.lead_school.present?
+  describe_lead_school(appropriate_body_period.provisioning_school) if appropriate_body_period.provisioning_school.present?
 end
 
 # DfE Sign-In environment domain prefix
 def dfe_sign_in_env
   Rails.application.config.dfe_sign_in_issuer.include?("test") ? :test : :pp
-end
-
-def seed_appropriate_body_with_dsi?
-  ActiveModel::Type::Boolean.new.cast(ENV.fetch("SEED_DFE_SIGN_IN_ORG", false))
 end
 
 appropriate_body_periods = [
@@ -32,6 +29,8 @@ appropriate_body_periods = [
   {
     name: AppropriateBody::ISTIP,
     body_type: "national",
+    # started_on: Date.new(2011, 8, 31),
+    # finished_on: nil,
     dfe_sign_in: {
       test: "e38652da-b01f-4d14-af2a-d2f55e4fcf7b",
       pp: "99424c22-b0c0-4307-bdf7-fabfe7cac252",
@@ -41,21 +40,39 @@ appropriate_body_periods = [
   {
     name: AppropriateBody::ESP,
     body_type: "national",
+    # started_on: Date.new(2024, 4, 1),
+    # finished_on: nil,
     dfe_sign_in: {
       test: "722ebb41-42f6-4ba3-81b6-61af055246a5",
       pp: "b98cb613-192f-400e-9b50-fd7eea9882a1",
       # prod: "dbb5d311-3154-42c5-a8bb-183b39775da6"
     }
   },
+  {
+    name: "National Teacher Accreditation", # formerly NIPT
+    body_type: "national",
+    # started_on: Date.new(2013, 8, 31),
+    # finished_on: Date.new(2024, 9, 1),
+    dfe_sign_in: nil
+  },
 
   # Bright Futures Teaching School Hub
   # ----------------------------------------------------------------------------
   {
     name: "Bright Futures Teaching School Hub (Salford & Trafford)",
+    tsh_name: "Bright Futures TSH",
     body_type: "teaching_school_hub",
     regions: [
-      { code: "NW7", districts: "Manchester, Stockport", },
-      { code: "NW9", districts: "Salford, Trafford", },
+      {
+        urn: 137_289,
+        code: "NW7",
+        districts: "Manchester, Stockport",
+      },
+      {
+        urn: 137_289,
+        code: "NW9",
+        districts: "Salford, Trafford",
+      },
     ],
     lead_school: {
       urn: 137_289,
@@ -72,10 +89,19 @@ appropriate_body_periods = [
   # ----------------------------------------------------------------------------
   {
     name: "Five Counties Teaching School Hubs Alliance (Somerset)",
+    tsh_name: "Five Counties TSH",
     body_type: "teaching_school_hub",
     regions: [
-      { code: "SW5", districts: "Somerset", },
-      { code: "SW9", districts: "Bristol, North Somerset", },
+      {
+        urn: 135_959,
+        code: "SW5",
+        districts: "Somerset",
+      },
+      {
+        urn: 135_959,
+        code: "SW9",
+        districts: "Bristol, North Somerset",
+      },
     ],
     lead_school: {
       urn: 135_959,
@@ -89,9 +115,14 @@ appropriate_body_periods = [
   },
   {
     name: "Five Counties Teaching School Hubs Alliance (South Glos/BANES)",
+    tsh_name: "Five Counties TSH",
     body_type: "teaching_school_hub",
     regions: [
-      { code: "SW6", districts: "Bath and North East Somerset, South Gloucestershire", }
+      {
+        urn: 149_948,
+        code: "SW6",
+        districts: "Bath and North East Somerset, South Gloucestershire",
+      }
     ],
     lead_school: {
       urn: 149_948,
@@ -109,9 +140,14 @@ appropriate_body_periods = [
   # ----------------------------------------------------------------------------
   {
     name: "Star Teaching School Hub Birmingham South",
+    tsh_name: "Star TSH",
     body_type: "teaching_school_hub",
     regions: [
-      { code: "WM10", districts: "Birmingham South", }
+      {
+        urn: 141_969,
+        code: "WM10",
+        districts: "Birmingham South",
+      }
     ],
     lead_school: {
       urn: 141_969,
@@ -124,12 +160,29 @@ appropriate_body_periods = [
     },
   },
   {
+
     name: "Star Teaching School Hub Pennine Lancashire",
+    tsh_name: "Star TSH",
     body_type: "teaching_school_hub",
     regions: [
-      { code: "NW3", districts: "Bolton, Bury, Rochdale", },
-      { code: "NW4", districts: "Blackpool, Preston, Lancaster, Wyre", },
-      { code: "NW5", districts: "Hyndburn, Burnley, Pendle, Blackburn with Darwen, Ribble Valley, Rossendale", },
+      # Eden Boys' (provisioning lead school)
+      {
+        urn: 140_959,
+        code: "NW3",
+        districts: "Bolton, Bury, Rochdale",
+      },
+      # Tauheedul Boys'
+      {
+        urn: 138_220,
+        code: "NW4",
+        districts: "Blackpool, Preston, Lancaster, Wyre",
+      },
+      # Tauheedul Girls'
+      {
+        urn: 141_565,
+        code: "NW5",
+        districts: "Hyndburn, Burnley, Pendle, Blackburn with Darwen, Ribble Valley, Rossendale",
+      },
     ],
     lead_school: {
       urn: 140_959,
@@ -145,9 +198,19 @@ appropriate_body_periods = [
   # ----------------------------------------------------------------------------
   {
     name: "STEP Ahead Teaching School Hub",
+    tsh_name: "STEP Ahead TSH",
     body_type: "teaching_school_hub",
     regions: [
-      { code: "WM2", districts: "Telford and Wrekin, Shropshire", }
+      # {
+      #   urn: 141_666,
+      #   code: "WM2",
+      #   districts: "Telford and Wrekin, Shropshire",
+      # }
+      {
+        urn: 141_666,
+        code: "SE1",
+        districts: "Wealden, Lewes, Brighton and Hove, Rother, Hastings, Eastbourne",
+      },
     ],
     lead_school: {
       urn: 141_666,
@@ -157,6 +220,78 @@ appropriate_body_periods = [
       test: "83173e6f-ba28-4654-a3df-8279d573ab09",
       pp: "62fafd5e-2c25-4214-91ad-1de69262820a",
       # prod: "7bb6e826-6322-4686-8775-3be78f980d70"
+    },
+  },
+
+  # Kent Teaching School Hub
+  # ----------------------------------------------------------------------------
+  {
+    name: "Kent Teaching School Hub",
+    tsh_name: "Kent TSH",
+    body_type: "teaching_school_hub",
+    regions: [
+      {
+        urn: 136_603,
+        code: "SE2",
+        districts: "Ashford, Canterbury, Dover, Folkestone and Hythe, Swale, Thanet",
+      },
+      {
+        urn: 136_603,
+        code: "SE8",
+        districts: "Sevenoaks, Tunbridge Wells, Tonbridge and Malling, Maidstone",
+      },
+    ],
+    lead_school: {
+      urn: 136_603,
+      name: "Bennett Memorial Diocesan School",
+    },
+  },
+
+  # Unity Teaching School Hub
+  # ----------------------------------------------------------------------------
+  {
+    name: "Unity Teaching School Hub",
+    tsh_name: "Unity TSH",
+    body_type: "teaching_school_hub",
+    regions: [
+      {
+        urn: 139_732,
+        code: "EE2",
+        districts: "Colchester, Tendring, Ipswich, Babergh",
+      },
+      {
+        urn: 139_732,
+        code: "EE6",
+        districts: "East Suffolk S., Mid Suffolk, West Suffolk",
+      },
+    ],
+    lead_school: {
+      urn: 139_732,
+      name: "Churchill Special Free School",
+    },
+  },
+
+  # Chiltern Teaching School Hub
+  # ----------------------------------------------------------------------------
+  {
+    name: "Chiltern Teaching School Hub",
+    tsh_name: "Chiltern TSH",
+    body_type: "teaching_school_hub",
+    regions: [
+      {
+        urn: 136_319,
+        code: "EE8",
+        districts: "Luton, North Hertfordshire, Broxbourne, Stevenage, East Hertfordshire",
+      },
+      {
+        urn: 136_319,
+        code: "EE9",
+        districts: "Bedford, Central Bedfordshire, Milton Keynes",
+      },
+    ],
+    lead_school: {
+      urn: 136_319,
+      name: "Denbigh High School",
     },
   },
 
@@ -177,11 +312,34 @@ appropriate_body_periods = [
   {
     name: "Umber Teaching School Hub",
     body_type: "teaching_school_hub",
+    regions: [
+      {
+        urn: 141_777,
+        code: "EE7",
+        districts: "St Albans, Welwyn Hatfield, Dacorum, Watford, Three Rivers, Hertsmere",
+      }
+    ],
+    lead_school: {
+      urn: 141_777,
+      name: "Umber LS",
+    },
   },
   {
     name: "Golden Leaf Teaching School Hub",
     body_type: "teaching_school_hub",
+    regions: [
+      {
+        urn: 141_888,
+        code: "YH9",
+        districts: "Leeds",
+      }
+    ],
+    lead_school: {
+      urn: 141_888,
+      name: "Golden Leaf LS",
+    },
   },
+
   # Fake Inactive Teaching School Hubs (joined since launch)
   # ----------------------------------------------------------------------------
   {
@@ -210,63 +368,101 @@ appropriate_body_periods = [
 ]
 
 appropriate_body_periods.each do |data|
-  name = data[:name]
+  ab_name = data[:name]
   body_type = data[:body_type]
   dfe_sign_in_organisation_id = data.dig(:dfe_sign_in, dfe_sign_in_env)
 
-  appropriate_body_period = FactoryBot.create(:appropriate_body_period,
-                                              name:,
-                                              body_type:,
-                                              dfe_sign_in_organisation_id:)
+  appropriate_body_period = FactoryBot.build(:appropriate_body_period,
+                                             name: ab_name,
+                                             body_type:,
+                                             dfe_sign_in_organisation_id:)
 
-  # Skip ABs who can't log in
-  next if dfe_sign_in_organisation_id.blank?
+  # 1. Local Authorities
+  if body_type == "local_authority"
+    local_authority = FactoryBot.create(:local_authority,
+                                        name: ab_name)
 
-  # Teaching School Hubs
-  if appropriate_body_period.teaching_school_hub?
+    appropriate_body_period.update!(
+      local_authority:
+      # started_on: Date.new(2012, 8, 31),
+      # finished_on: Date.new(2023, 9, 1)
+    )
+
+  end
+
+  # 2. Teaching School Hubs with Lead schools
+  if body_type == "teaching_school_hub"
+    tsh_name = data[:tsh_name] || data[:name]
     school_name = data.dig(:lead_school, :name)
     urn = data.dig(:lead_school, :urn)
     regions = data[:regions]
 
-    gias_school = FactoryBot.create(:gias_school, :eligible_type, :in_england,
-                                    name: school_name,
-                                    urn:)
+    teaching_school_hub = FactoryBot.create(:teaching_school_hub,
+                                            name: tsh_name)
 
-    if seed_appropriate_body_with_dsi?
-      school = FactoryBot.create(:school, :eligible, :with_dsi,
-                                 urn:,
-                                 gias_school:)
+    # Link hubs to body
+    appropriate_body_period.update!(
+      teaching_school_hub:
+      # started_on: Date.new(2021, 9, 1),
+      # finished_on: nil
+    )
 
-      appropriate_body = FactoryBot.create(:appropriate_body,
-                                           name:,
-                                           dfe_sign_in_organisation: school.dfe_sign_in_organisation)
+    # If the seed has a school we can link further
+    if urn.present?
+      gias_school = FactoryBot.create(:gias_school, :eligible_type, :in_england,
+                                      urn:,
+                                      name: school_name)
 
-      regions.each do |region|
-        FactoryBot.create(:region,
-                          code: region[:code],
-                          districts: region[:districts].split(", "),
-                          appropriate_body:)
+      provisioning_school = FactoryBot.create(:school, :eligible, :with_dsi,
+                                              urn:,
+                                              gias_school:)
+
+      # Link hubs to lead schools through the body pairing
+      # Any seeds above without a URN will not have a lead school
+      appropriate_body_period.update!(provisioning_school:)
+
+      # Before 2021 when the same school was called a "Teaching School"
+      # Backdated second closed ABP for Teaching School i.e. no TSH link
+      FactoryBot.create(:appropriate_body_period,
+                        name: ab_name + " (closed)",      # idempotent factory needs different name
+                        body_type:,                       # this would be "school" if we updated the enum
+                        # dfe_sign_in_organisation_id:,     # unique constraint prevents this for now
+                        # started_on: Date.new(1999, 9, 1),
+                        # finished_on: Date.new(2021, 8, 31)
+                        provisioning_school:,
+                        teaching_school_hub: nil)
+
+      # Create regions and assign lead schools for an AB
+      Array(regions).each do |region_data|
+        region = FactoryBot.create(:region,
+                                   code: region_data[:code],
+                                   districts: region_data[:districts].split(", "))
+
+        lead_school = FactoryBot.create(:school, :eligible,
+                                        urn: region_data[:urn])
+
+        FactoryBot.create(:teaching_school_hub_lead_school,
+                          region:,
+                          school: lead_school,
+                          appropriate_body: appropriate_body_period)
+
+        # Populate GIAS regional data
+        lead_school.gias_school.update!(administrative_district_name: region.districts.sample)
       end
 
-      appropriate_body_period.update!(appropriate_body:)
-
-    else
-      FactoryBot.create(:school, :eligible,
-                        urn:,
-                        gias_school:)
-
     end
-
-    # Delivery Partner role for TSH
-    FactoryBot.create(:delivery_partner,
-                      name:)
   end
 
-  # National Bodies
-  if appropriate_body_period.national? && seed_appropriate_body_with_dsi?
-    appropriate_body = FactoryBot.create(:appropriate_body, :with_dsi,
-                                         name:)
-    appropriate_body_period.update!(appropriate_body:)
+  # 3. National Bodies
+  if appropriate_body_period.national?
+    national_body = FactoryBot.create(:national_body,
+                                      name: ab_name)
+
+    appropriate_body_period.update!(
+      national_body:
+      # started_on: data[:started_on],
+      # finished_on: data[:finished_on]
+    )
   end
 
   describe_appropriate_body_period(appropriate_body_period)

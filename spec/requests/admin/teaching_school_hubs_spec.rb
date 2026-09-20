@@ -1,16 +1,32 @@
 RSpec.describe "Admin::TeachingSchoolHubsController", type: :request do
-  let(:teaching_school_hub) do
-    FactoryBot.create(:appropriate_body, name: "Hub Name")
+  let(:teaching_school_hub) { FactoryBot.create(:teaching_school_hub) }
+  let(:provisioning_lead_school) { FactoryBot.create(:school, :eligible) }
+  let(:lead_school) { FactoryBot.create(:school, :eligible) }
+
+  let(:appropriate_body) do
+    FactoryBot.create(:appropriate_body_period, :teaching_school_hub,
+                      teaching_school_hub:,
+                      provisioning_school: provisioning_lead_school,
+                      name: teaching_school_hub.name)
   end
 
   before do
-    urn = teaching_school_hub.dfe_sign_in_organisation.urn
-    name = teaching_school_hub.dfe_sign_in_organisation.name
-    gias_school = FactoryBot.create(:gias_school, :eligible_type, :in_england, name:, urn:)
-    FactoryBot.create(:school, :eligible, urn:, gias_school:)
+    region_1 = FactoryBot.create(:region, code: "R1", districts: %w[West East])
+    region_2 = FactoryBot.create(:region, code: "R2", districts: %w[North])
+    region_3 = FactoryBot.create(:region, code: "R3", districts: %w[South])
 
-    FactoryBot.create(:region, districts: %w[West East], appropriate_body: teaching_school_hub)
-    FactoryBot.create(:region, districts: %w[North], appropriate_body: teaching_school_hub)
+    FactoryBot.create(:teaching_school_hub_lead_school,
+                      appropriate_body:,
+                      region: region_1,
+                      school: provisioning_lead_school)
+    FactoryBot.create(:teaching_school_hub_lead_school,
+                      appropriate_body:,
+                      region: region_2,
+                      school: lead_school)
+    FactoryBot.create(:teaching_school_hub_lead_school,
+                      appropriate_body:,
+                      region: region_3,
+                      school: lead_school)
   end
 
   describe "GET /index" do
@@ -20,7 +36,7 @@ RSpec.describe "Admin::TeachingSchoolHubsController", type: :request do
       it "returns http success" do
         get "/admin/organisations/teaching-school-hubs"
         expect(response).to have_http_status(:success)
-        expect(response.body).to include("Hub Name")
+        expect(response.body).to include(appropriate_body.name)
       end
     end
 
@@ -48,8 +64,10 @@ RSpec.describe "Admin::TeachingSchoolHubsController", type: :request do
       it "returns http success" do
         get "/admin/organisations/teaching-school-hubs/#{teaching_school_hub.id}"
         expect(response).to have_http_status(:success)
-        expect(response.body).to include("Hub Name")
-        expect(response.body).to include("West, East, and North")
+        expect(response.body).to include(appropriate_body.name)
+        expect(response.body).to include(provisioning_lead_school.name)
+        expect(response.body).to include(lead_school.name)
+        expect(response.body).to include("West and East")
       end
     end
 

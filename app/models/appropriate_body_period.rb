@@ -11,13 +11,34 @@ class AppropriateBodyPeriod < ApplicationRecord
     message: "Must be local authority, national or teaching school hub"
   }
 
-  # TODO: make this a period
   # include Interval
+  belongs_to :appropriate_body, optional: true
 
   # Associations
-  # TODO: remove UUID once linked to DfESignInOrganisation
   belongs_to :dfe_sign_in_organisation, primary_key: :uuid, inverse_of: :appropriate_body_period
-  belongs_to :appropriate_body
+
+  # The "Teaching School" or the one "TSH LS with responsibility"
+  belongs_to :provisioning_school,
+             optional: true,
+             class_name: "School",
+             foreign_key: :school_id
+
+  belongs_to :teaching_school_hub, optional: true
+  belongs_to :national_body, optional: true
+  belongs_to :local_authority, optional: true
+
+  # AB -> School & Region
+  has_many :teaching_school_hub_lead_schools,
+           class_name: "TeachingSchoolHub::LeadSchool",
+           foreign_key: :appropriate_body_id,
+           inverse_of: :appropriate_body,
+           dependent: :destroy
+
+  # region.code : NW3, NW4, NW5
+  has_many :regions, through: :teaching_school_hub_lead_schools
+  # school.urn :  140_959, 138_220, 141_565
+  has_many :lead_schools, -> { distinct }, through: :teaching_school_hub_lead_schools, source: :school
+
   has_many :pending_induction_submissions
   has_many :induction_periods, inverse_of: :appropriate_body_period
   has_many :events
@@ -41,10 +62,13 @@ class AppropriateBodyPeriod < ApplicationRecord
   # Normalizations
   normalizes :name, with: -> { it.squish }
 
-  # TODO: consider removing once view components accept the new AB object not the ABP
-  # @return [School]
-  delegate :lead_school, to: :appropriate_body, allow_nil: true
-
   # Predicates
   def active? = dfe_sign_in_organisation_id.present?
+
+  # TODO: remove override once populated
+  def provisioning_school
+    dfe_sign_in_organisation&.school || super
+  end
+
+  alias_method :lead_school, :provisioning_school
 end
