@@ -21,6 +21,21 @@
     - lead_school_id
     - created_at
     - updated_at
+  :teaching_school_hubs:
+    - id
+    - name
+    - created_at
+    - updated_at
+  :national_bodies:
+    - id
+    - name
+    - created_at
+    - updated_at
+  :local_authorities:
+    - id
+    - name
+    - created_at
+    - updated_at
   :regions:
     - id
     - code
@@ -31,6 +46,10 @@
   :appropriate_body_periods:
     - body_type
     - appropriate_body_id
+    - local_authority_id
+    - national_body_id
+    - school_id
+    - teaching_school_hub_id
   :blazer_queries:
     - id
     - creator_id
