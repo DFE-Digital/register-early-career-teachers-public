@@ -18,6 +18,9 @@ describe AppropriateBodyPeriod do
     it { is_expected.to have_many(:events) }
     it { is_expected.to have_many(:oauth_authorizations).class_name("API::OAuth::Authorization").dependent(:destroy) }
     it { is_expected.to have_many(:unclaimed_ect_at_school_periods).class_name("ECTAtSchoolPeriod").with_foreign_key(:school_reported_appropriate_body_id) }
+    it { is_expected.to have_many(:region_awards).class_name("Region::Award").dependent(:destroy) }
+    it { is_expected.to have_many(:regions).through(:region_awards) }
+    it { is_expected.to have_many(:lead_schools).through(:region_awards).source(:school) }
   end
 
   describe "scopes" do

@@ -1,6 +1,3 @@
-#
-# NB: The purpose of this record is changing. "name" will eventually be stored in different tables.
-#
 class AppropriateBodyPeriod < ApplicationRecord
   # Enums
   enum :body_type, {
@@ -11,13 +8,25 @@ class AppropriateBodyPeriod < ApplicationRecord
     message: "Must be local authority, national or teaching school hub"
   }
 
-  # TODO: make this a period
   # include Interval
 
   # Associations
-  # TODO: remove UUID once linked to DfESignInOrganisation
+  belongs_to :appropriate_body, optional: true
   belongs_to :dfe_sign_in_organisation, primary_key: :uuid, inverse_of: :appropriate_body_period
-  belongs_to :appropriate_body
+  belongs_to :provisioning_school,
+             optional: true,
+             class_name: "School",
+             foreign_key: :school_id
+  belongs_to :teaching_school_hub, optional: true
+  belongs_to :national_body, optional: true
+  belongs_to :local_authority, optional: true
+
+  has_many :region_awards,
+           class_name: "Region::Award",
+           inverse_of: :appropriate_body_period,
+           dependent: :destroy
+  has_many :regions, through: :region_awards
+  has_many :lead_schools, -> { distinct }, through: :region_awards, source: :school
   has_many :pending_induction_submissions
   has_many :induction_periods, inverse_of: :appropriate_body_period
   has_many :events
@@ -40,10 +49,6 @@ class AppropriateBodyPeriod < ApplicationRecord
 
   # Normalizations
   normalizes :name, with: -> { it.squish }
-
-  # TODO: consider removing once view components accept the new AB object not the ABP
-  # @return [School]
-  delegate :lead_school, to: :appropriate_body, allow_nil: true
 
   # Predicates
   def active? = dfe_sign_in_organisation_id.present?
