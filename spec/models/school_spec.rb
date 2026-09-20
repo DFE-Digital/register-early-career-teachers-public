@@ -85,6 +85,9 @@ RSpec.describe School do
     it { is_expected.to have_many(:lead_provider_contract_period_metadata).class_name("Metadata::SchoolLeadProviderContractPeriod").dependent(:delete_all) }
     it { is_expected.to have_many(:training_periods).through(:school_partnerships) }
     it { is_expected.to have_many(:school_funding_eligibilities).through(:gias_school) }
+    it { is_expected.to have_many(:region_awards).class_name("Region::Award").dependent(:destroy) }
+    it { is_expected.to have_many(:awarded_regions).through(:region_awards).source(:region) }
+    it { is_expected.to have_many(:appropriate_body_periods).through(:region_awards).source(:appropriate_body_period) }
   end
 
   describe "delegation" do

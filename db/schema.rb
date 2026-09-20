@@ -673,13 +673,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_091136) do
     t.index ["trn"], name: "index_pending_induction_submissions_on_trn"
   end
 
+  create_table "region_awards", force: :cascade do |t|
+    t.bigint "appropriate_body_period_id", null: false
+    t.bigint "school_id", null: false
+    t.bigint "region_id", null: false
+    t.datetime "deactivated_at"
+    t.string "deactivation_reason"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["appropriate_body_period_id", "region_id"], name: "index_region_awards_on_appropriate_body_period_and_region", unique: true, where: "(deactivated_at IS NULL)"
+    t.index ["appropriate_body_period_id"], name: "index_region_awards_on_appropriate_body_period_id"
+    t.index ["region_id"], name: "index_region_awards_on_active_region", unique: true, where: "(deactivated_at IS NULL)"
+    t.index ["region_id"], name: "index_region_awards_on_region_id"
+    t.index ["school_id"], name: "index_region_awards_on_school_id"
+  end
+
   create_table "regions", force: :cascade do |t|
-    t.bigint "appropriate_body_id"
     t.string "code", null: false
     t.datetime "created_at", null: false
     t.string "districts", null: false, array: true
     t.datetime "updated_at", null: false
-    t.index ["appropriate_body_id"], name: "index_regions_on_appropriate_body_id"
     t.index ["code"], name: "index_regions_on_code", unique: true
     t.index ["districts"], name: "index_regions_on_districts", using: :gin
   end
@@ -1093,7 +1106,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_091136) do
   add_foreign_key "pending_induction_submission_batches", "appropriate_body_periods"
   add_foreign_key "pending_induction_submissions", "appropriate_body_periods"
   add_foreign_key "pending_induction_submissions", "pending_induction_submission_batches"
-  add_foreign_key "regions", "appropriate_bodies"
+  add_foreign_key "region_awards", "appropriate_body_periods"
+  add_foreign_key "region_awards", "regions"
+  add_foreign_key "region_awards", "schools"
   add_foreign_key "schedules", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "school_funding_eligibilities", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "school_funding_eligibilities", "gias_schools", column: "gias_school_urn", primary_key: "urn"

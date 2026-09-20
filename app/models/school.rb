@@ -13,7 +13,7 @@ class School < ApplicationRecord
   # Associations
   belongs_to :dfe_sign_in_organisation, foreign_key: :urn, primary_key: :urn, inverse_of: :school
   belongs_to :gias_school, class_name: "GIAS::School", foreign_key: :urn, inverse_of: :school
-  belongs_to :last_chosen_appropriate_body, class_name: "AppropriateBodyPeriod" # NB or TSH through: :appropriate_body_period
+  belongs_to :last_chosen_appropriate_body, class_name: "AppropriateBodyPeriod"
   belongs_to :last_chosen_lead_provider, class_name: "LeadProvider"
   belongs_to :induction_tutor_last_nominated_in, class_name: "ContractPeriod", primary_key: "year", foreign_key: "induction_tutor_last_nominated_in", optional: true
 
@@ -27,6 +27,9 @@ class School < ApplicationRecord
   has_many :contract_period_metadata, class_name: "Metadata::SchoolContractPeriod", dependent: :delete_all
   has_many :training_periods, through: :school_partnerships
   has_many :school_funding_eligibilities, through: :gias_school
+  has_many :region_awards, class_name: "Region::Award", inverse_of: :school, dependent: :destroy
+  has_many :awarded_regions, through: :region_awards, source: :region
+  has_many :appropriate_body_periods, -> { distinct }, through: :region_awards, source: :appropriate_body_period
 
   touch -> { contract_period_metadata }, when_changing: %i[urn induction_tutor_name induction_tutor_email], timestamp_attribute: :api_updated_at
   touch -> { school_partnerships }, when_changing: %i[urn induction_tutor_name induction_tutor_email], timestamp_attribute: :api_updated_at
