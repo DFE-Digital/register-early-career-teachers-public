@@ -107,4 +107,13 @@ describe Event do
       end
     end
   end
+
+  describe "EVENT_TYPES" do
+    it "declares every event type that Events::Record emits" do
+      recorded_event_types = Rails.root.join("app/services/events/record.rb").read.scan(/event_type\s*[:=]\s*:(\w+)/).flatten
+
+      expect(recorded_event_types).not_to be_empty
+      expect(recorded_event_types - Event::EVENT_TYPES).to be_empty
+    end
+  end
 end
