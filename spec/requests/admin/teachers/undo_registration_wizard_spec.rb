@@ -2,29 +2,30 @@ RSpec.describe "Admin::Teachers::UndoRegistrationWizardController", type: :reque
   include_context "sign in as DfE user"
 
   let(:teacher) { FactoryBot.create(:teacher) }
-  let!(:at_school_period) do
-    FactoryBot.create(
-      :ect_at_school_period,
-      teacher:,
-      started_on: 2.years.ago.to_date,
-      finished_on: 1.year.ago.to_date
-    )
-  end
-  let!(:training_period) do
-    FactoryBot.create(
-      :training_period,
-      :for_ect,
-      ect_at_school_period: at_school_period,
-      started_on: 18.months.ago.to_date,
-      finished_on: 1.year.ago.to_date
-    )
-  end
-
-  let(:declaration) { FactoryBot.create(:declaration, :eligible, training_period:) }
-
-  before { declaration }
 
   describe "GET start" do
+    let!(:at_school_period) do
+      FactoryBot.create(
+        :ect_at_school_period,
+        teacher:,
+        started_on: 2.years.ago.to_date,
+        finished_on: 1.year.ago.to_date
+      )
+    end
+    let!(:training_period) do
+      FactoryBot.create(
+        :training_period,
+        :for_ect,
+        ect_at_school_period: at_school_period,
+        started_on: 18.months.ago.to_date,
+        finished_on: 1.year.ago.to_date
+      )
+    end
+
+    before do
+      FactoryBot.create(:declaration, :eligible, training_period:)
+    end
+
     it "redirects to school history with an explanation" do
       get admin_teacher_undo_registration_wizard_start_path(teacher)
 
@@ -33,7 +34,46 @@ RSpec.describe "Admin::Teachers::UndoRegistrationWizardController", type: :reque
     end
   end
 
+  describe "POST select school period" do
+    context "when the teacher has multiple school periods" do
+      let!(:at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher:) }
+      let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:) }
+
+      context "when an ECT school period is selected" do
+        it "redirects to the confirm step" do
+          post admin_teacher_undo_registration_wizard_select_school_period_path(teacher),
+               params: { select_school_period: { school_period: "ect:#{at_school_period.id}" } }
+
+          expect(response).to redirect_to(admin_teacher_undo_registration_wizard_confirm_path(teacher))
+        end
+      end
+
+      context "when a mentor school period is selected" do
+        it "redirects to the confirm step" do
+          post admin_teacher_undo_registration_wizard_select_school_period_path(teacher),
+               params: { select_school_period: { school_period: "mentor:#{mentor_at_school_period.id}" } }
+
+          expect(response).to redirect_to(admin_teacher_undo_registration_wizard_confirm_path(teacher))
+        end
+      end
+
+      context "when a school period belonging to another teacher is selected" do
+        let!(:other_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished) }
+
+        it "shows a validation error" do
+          post admin_teacher_undo_registration_wizard_select_school_period_path(teacher),
+               params: { select_school_period: { school_period: "ect:#{other_school_period.id}" } }
+
+          expect(response).to have_http_status(:unprocessable_content)
+          expect(response.body).to include("Select a school period to undo for #{Teachers::Name.new(teacher).full_name}")
+        end
+      end
+    end
+  end
+
   describe "POST confirm" do
+    let!(:declaration) { FactoryBot.create(:declaration, :eligible, training_period:) }
+
     context "when undoing the registration succeeds" do
       let(:at_school_period) do
         FactoryBot.create(:ect_at_school_period, :unfinished, teacher:)
