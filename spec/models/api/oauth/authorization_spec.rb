@@ -17,26 +17,26 @@ describe API::OAuth::Authorization do
 
   describe "scopes" do
     let(:client) { FactoryBot.create(:api_oauth_client) }
-    let!(:authorization_1) { FactoryBot.create(:api_oauth_authorization, :with_token, client:) }
-    let!(:authorization_2) { FactoryBot.create(:api_oauth_authorization, :with_expired_token, client:) }
-    let!(:authorization_3) { FactoryBot.create(:api_oauth_authorization, :with_token, :revoked, client:) }
-    let!(:authorization_4) { FactoryBot.create(:api_oauth_authorization, client:) }
+    let!(:authorization_with_token) { FactoryBot.create(:api_oauth_authorization, :with_token, client:) }
+    let!(:authorization_with_expired_token) { FactoryBot.create(:api_oauth_authorization, :with_expired_token, client:) }
+    let!(:authorization_with_revoked_token) { FactoryBot.create(:api_oauth_authorization, :with_token, :revoked, client:) }
+    let!(:authorization_without_token) { FactoryBot.create(:api_oauth_authorization, client:) }
 
     describe "active" do
       it "returns unrevoked authorizations that have a token that is not expired" do
-        expect(client.authorizations.active).to eq [authorization_1]
+        expect(client.authorizations.active).to eq [authorization_with_token]
       end
     end
 
     describe "not_revoked" do
       it "returns unrevoked authorizations" do
-        expect(client.authorizations.not_revoked).to contain_exactly(authorization_1, authorization_2, authorization_4)
+        expect(client.authorizations.not_revoked).to contain_exactly(authorization_with_token, authorization_with_expired_token, authorization_without_token)
       end
     end
 
     describe "active_token" do
       it "returns authorizations that have a token that has not expired" do
-        expect(client.authorizations.active_token).to contain_exactly(authorization_1, authorization_3)
+        expect(client.authorizations.active_token).to contain_exactly(authorization_with_token, authorization_with_revoked_token)
       end
     end
   end

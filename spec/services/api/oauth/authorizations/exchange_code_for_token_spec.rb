@@ -29,33 +29,33 @@ describe API::OAuth::Authorizations::ExchangeCodeForToken do
     end
 
     context "when there are other active matching authorizations" do
-      let!(:authorization_2) do
+      let!(:authorization_with_token) do
         FactoryBot.create(:api_oauth_authorization, :with_token, client:, appropriate_body_period:, redirect_uri:)
       end
 
-      let!(:authorization_3) do
+      let!(:authorization_with_expired_token) do
         FactoryBot.create(:api_oauth_authorization, :with_expired_token, client:, appropriate_body_period:, redirect_uri:)
       end
 
-      let!(:authorization_4) do
+      let!(:authorization_with_revoked_token) do
         FactoryBot.create(:api_oauth_authorization, :revoked, client:, appropriate_body_period:, redirect_uri:)
       end
 
       it "revokes the matching active authorizations" do
         service.call
-        expect(authorization_2.reload).to be_revoked
+        expect(authorization_with_token.reload).to be_revoked
       end
 
       it "does not change matching expired authorizations" do
         expect {
           service.call
-        }.to not_change(authorization_3, :revoked_at)
+        }.to not_change(authorization_with_expired_token, :revoked_at)
       end
 
       it "does not change matching revoked authorizations" do
         expect {
           service.call
-        }.to not_change(authorization_4, :revoked_at)
+        }.to not_change(authorization_with_revoked_token, :revoked_at)
       end
     end
   end
