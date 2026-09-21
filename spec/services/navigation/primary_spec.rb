@@ -115,13 +115,13 @@ describe Navigation::Primary, type: :component do
       end
 
       context "when looking at the API guidance" do
-        let(:current_path) { "/api/guidance" }
+        let(:current_path) { "/api/docs/lead-provider/guidance" }
         let(:expected_visible_items) do
           {
-            "Home" => "/api/guidance",
-            "Swagger API documentation" => "/api/docs/v3",
-            "Release notes" => "/api/guidance/release-notes",
-            "Guidance" => "/api/guidance/guidance-for-lead-providers"
+            "Home" => "/api/docs/lead-provider/guidance",
+            "Swagger API documentation" => "/api/docs/lead-provider/v3",
+            "Release notes" => "/api/docs/lead-provider/guidance/release-notes",
+            "Guidance" => "/api/docs/lead-provider/guidance/guidance-for-lead-providers"
           }
         end
 
@@ -167,15 +167,15 @@ describe Navigation::Primary, type: :component do
         end
 
         describe "api guidance" do
-          subject { instance.send(:items_by_area).fetch(:api_guidance) }
+          subject { instance.send(:items_by_area).fetch(:lead_provider_api_guidance) }
 
           it "has the correct nodes and paths" do
             expect(subject).to eql(
               [
-                { text: "Home", href: "/api/guidance" },
-                { text: "Swagger API documentation", href: "/api/docs/v3", active_when: "/api/docs" },
-                { text: "Release notes", href: "/api/guidance/release-notes", active_when: "/api/guidance/release-notes" },
-                { text: "Guidance", href: "/api/guidance/guidance-for-lead-providers", active_when: "/api/guidance/guidance-for-lead-providers" },
+                { text: "Home", href: "/api/docs/lead-provider/guidance" },
+                { text: "Swagger API documentation", href: "/api/docs/lead-provider/v3", active_when: "/api/docs/lead-provider/v3" },
+                { text: "Release notes", href: "/api/docs/lead-provider/guidance/release-notes", active_when: "/api/docs/lead-provider/guidance/release-notes" },
+                { text: "Guidance", href: "/api/docs/lead-provider/guidance/guidance-for-lead-providers", active_when: "/api/docs/lead-provider/guidance/guidance-for-lead-providers" },
               ]
             )
           end
