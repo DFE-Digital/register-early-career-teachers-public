@@ -17,12 +17,14 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::ConfirmStep do
   let(:expected_at_school_period_gid) { "gid://app/ECTAtSchoolPeriod/5" }
   let(:undo_action) { "close" }
   let(:periods_will_be_closed) { true }
+  let(:at_school_periods) { [instance_double(ECTAtSchoolPeriod)] }
   let(:store) { FactoryBot.build(:session_repository) }
   let(:wizard) do
     instance_double(
       Admin::Teachers::UndoRegistrationWizard::Wizard,
       periods_will_be_closed?: periods_will_be_closed,
       undo_registration!: undo_action,
+      at_school_periods:,
       store:
     )
   end
@@ -30,6 +32,14 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::ConfirmStep do
   describe "#previous_step" do
     it "returns the start step" do
       expect(step.previous_step).to eq(:start)
+    end
+
+    context "when the teacher has multiple school periods" do
+      let(:at_school_periods) { [instance_double(ECTAtSchoolPeriod), instance_double(MentorAtSchoolPeriod)] }
+
+      it "returns the school period selection step" do
+        expect(step.previous_step).to eq(:select_school_period)
+      end
     end
   end
 
