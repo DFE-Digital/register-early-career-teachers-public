@@ -75,13 +75,13 @@ module Admin
               :expression_of_interest_lead_provider,
               :expression_of_interest_contract_period
             )
-          ).to_a
+          )
         end
 
         def affected_mentorship_periods
           @affected_mentorship_periods ||= periods_affected(
             at_school_period.mentorship_periods.includes(mentor: :teacher, mentee: :teacher)
-          ).to_a
+          )
         end
 
         def current_step_path
