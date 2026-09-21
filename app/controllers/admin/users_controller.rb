@@ -60,7 +60,7 @@ module Admin
 
       if Declaration.exists?(voided_by_user_id: @user.id)
         redirect_to admin_user_path(@user),
-              notice: "This user cannot be removed because they are referenced by historical declaration records"
+                    notice: "This user cannot be removed because they are referenced by historical declaration records"
         return
       end
 
