@@ -44,14 +44,14 @@ module Induction::Periods
     delegate :teacher, to: :induction_period
 
     def update_trs_start_date(next_earliest_period)
-      TRS::APIClient.build.begin_induction!(
+      BeginECTInductionJob.perform_later(
         trn: teacher.trn,
         start_date: next_earliest_period.started_on
       )
     end
 
     def reset_trs_status
-      TRS::APIClient.build.reset_teacher_induction!(trn: teacher.trn)
+      ResetInductionJob.perform_later(trn: teacher.trn)
     end
 
     def record_teacher_trs_induction_start_date_updated_event(appropriate_body_period, induction_period)

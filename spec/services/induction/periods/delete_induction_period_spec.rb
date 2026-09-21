@@ -37,13 +37,13 @@ describe Induction::Periods::DeleteInductionPeriod do
         .to receive(:reset_teacher_induction!)
         .with(trn: teacher.trn)
 
-      service.delete_induction_period!
+      perform_enqueued_jobs { service.delete_induction_period! }
     end
 
     it "does not update the TRS start date" do
       expect(trs_client).not_to receive(:begin_induction!)
 
-      service.delete_induction_period!
+      perform_enqueued_jobs { service.delete_induction_period! }
     end
 
     it "records a delete event with the correct parameters" do
@@ -123,13 +123,13 @@ describe Induction::Periods::DeleteInductionPeriod do
             start_date: later_period.started_on
           )
 
-        service.delete_induction_period!
+        perform_enqueued_jobs { service.delete_induction_period! }
       end
 
       it "does not reset the TRS status" do
         expect(trs_client).not_to receive(:reset_teacher_induction!)
 
-        service.delete_induction_period!
+        perform_enqueued_jobs { service.delete_induction_period! }
       end
 
       it "records a TRS induction start date updated event with the correct parameters" do
@@ -169,12 +169,12 @@ describe Induction::Periods::DeleteInductionPeriod do
 
       it "does not update the TRS start date" do
         expect(trs_client).not_to receive(:begin_induction!)
-        service.delete_induction_period!
+        perform_enqueued_jobs { service.delete_induction_period! }
       end
 
       it "does not reset the TRS status" do
         expect(trs_client).not_to receive(:reset_teacher_induction!)
-        service.delete_induction_period!
+        perform_enqueued_jobs { service.delete_induction_period! }
       end
 
       it "does not record a TRS induction start date updated event" do
