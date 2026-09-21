@@ -48,7 +48,7 @@
         secondary: true %>
 </p>
 
-<% if current_user.user_manager? %>
+<% if current_user.can_manage_users? && current_user.id != @user.id %>
   <p class="govuk-body">
     <%= govuk_link_to "Remove user",
           remove_admin_user_path(@user),

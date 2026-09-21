@@ -47,10 +47,18 @@ describe User do
   end
 
   describe "#can_manage_users?" do
-    it "allows product team users to manage users" do
-      user = FactoryBot.build(:user, :product_team)
+    %i[user_manager finance product_team].each do |role|
+      it "allows #{role} users to manage users" do
+        user = FactoryBot.build(:user, role)
 
-      expect(user.can_manage_users?).to be(true)
+        expect(user.can_manage_users?).to be(true)
+      end
+    end
+
+    it "does not allow admin users to manage users" do
+      user = FactoryBot.build(:user, :admin)
+
+      expect(user.can_manage_users?).to be(false)
     end
   end
 

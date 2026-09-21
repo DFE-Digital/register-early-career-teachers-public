@@ -1,7 +1,6 @@
 module Admin
   class UsersController < AdminController
     before_action :require_users_access!
-    before_action :require_user_manager!, only: %i[remove destroy]
 
     def index
       @users = User.alphabetical
@@ -53,6 +52,18 @@ module Admin
     def destroy
       @user = User.find(params[:id])
 
+      if @user.id == current_user.id
+        redirect_to admin_user_path(@user),
+                    notice: "You cannot remove your own user account"
+        return
+      end
+
+      if Declaration.exists?(voided_by_user_id: @user.id)
+        redirect_to admin_user_path(@user),
+              notice: "This user cannot be removed because they are referenced by historical declaration records"
+        return
+      end
+
       @remove_user = Admin::Users::RemoveUserForm.new(
         remove_user_params.merge(user_name: @user.name)
       )
@@ -94,13 +105,6 @@ module Admin
 
     def remove_user_params
       params.fetch(:admin_users_remove_user_form, {}).permit(:confirmed)
-    end
-
-    def require_user_manager!
-      return if current_user&.dfe_user? && current_user.user_manager?
-
-      @unauthorised_context = :users
-      render "errors/unauthorised", status: :unauthorized
     end
   end
 end
