@@ -111,7 +111,7 @@ module Admin
         end
 
         def periods_affected(periods)
-          periods_will_be_closed? ? periods.where(finished_on: nil) : periods
+          periods_will_be_closed? ? periods.unfinished : periods
         end
 
         def step_path(step_name)
