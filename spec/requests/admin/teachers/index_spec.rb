@@ -1,3 +1,267 @@
+RSpec.shared_examples "common teacher index behavior" do
+  context "when a teacher has both ECT and mentor roles" do
+    let!(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Naruto", trs_last_name: "Uzumaki") }
+    let!(:ect_contract_period) { FactoryBot.create(:contract_period, year: 2024) }
+    let!(:mentor_contract_period) { FactoryBot.create(:contract_period, year: 2025) }
+    let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, :with_training_period, teacher:, contract_period: ect_contract_period) }
+    let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, :with_training_period, teacher:, contract_period: mentor_contract_period) }
+
+    it "renders role based rows with contract periods" do
+      get "/admin/teachers"
+
+      expect(response.status).to eq(200)
+      expect(response.body.scan("Naruto Uzumaki").size).to eq(2)
+      expect(response.body).to include("Early career teacher")
+      expect(response.body).to include("Mentor")
+      expect(response.body).to include("2024")
+      expect(response.body).to include("2025")
+    end
+  end
+
+  context "when a mentor has periods at different schools with the same start date" do
+    let!(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Rock", trs_last_name: "Lee") }
+    let(:started_on) { 1.year.ago.to_date }
+    let(:first_school) { FactoryBot.create(:school) }
+    let(:last_school) { FactoryBot.create(:school) }
+    let!(:first_mentor_at_school_period) do
+      FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:, school: first_school, started_on:)
+    end
+    let!(:last_mentor_at_school_period) do
+      FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:, school: last_school, started_on:)
+    end
+    let(:mentor_at_school_period_with_schedule) { first_mentor_at_school_period }
+
+    before do
+      school_partnership = FactoryBot.create(
+        :school_partnership,
+        :for_year,
+        school: mentor_at_school_period_with_schedule.school,
+        year: 2025
+      )
+      schedule = FactoryBot.create(:schedule, contract_period: school_partnership.contract_period)
+
+      FactoryBot.create(
+        :training_period,
+        :for_mentor,
+        :unfinished,
+        mentor_at_school_period: mentor_at_school_period_with_schedule,
+        school_partnership:,
+        schedule:
+      )
+    end
+
+    it "matches when the higher ID period has no schedule" do
+      get "/admin/teachers", params: { role: "mentor", contract_period: "not_available" }
+
+      expect(response.status).to eq(200)
+      teacher_row = Capybara.string(response.body).find("tbody tr", text: "Rock Lee")
+      expect(teacher_row).to have_text("Mentor")
+      expect(teacher_row).to have_text("Not available")
+    end
+
+    context "when the higher ID period has a schedule" do
+      let(:mentor_at_school_period_with_schedule) { last_mentor_at_school_period }
+
+      it "does not match the unavailable contract period" do
+        get "/admin/teachers", params: { role: "mentor", contract_period: "not_available" }
+
+        expect(response.status).to eq(200)
+        expect(response.body).not_to include("Rock Lee")
+      end
+    end
+  end
+
+  context "when a teacher has no role history" do
+    let!(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Naruto", trs_last_name: "Uzumaki", trn: "1234567") }
+
+    it "renders no role assigned with an unavailable contract period" do
+      get "/admin/teachers"
+
+      expect(response.status).to eq(200)
+      expect(response.body).to include("Naruto Uzumaki")
+      expect(response.body).to include("1234567")
+      expect(response.body).to include("No role assigned")
+      expect(Capybara.string(response.body).find("tbody tr", text: "Naruto Uzumaki")).to have_text("Not available")
+    end
+  end
+
+  context "with a search query" do
+    context "when searching by name" do
+      it "filters teachers by name" do
+        teacher = FactoryBot.create(:teacher, trs_first_name: "Naruto", trs_last_name: "Uzumaki")
+        other_teacher = FactoryBot.create(:teacher, trs_first_name: "Sasuke", trs_last_name: "Uchiha")
+
+        FactoryBot.create(:induction_period, teacher:)
+        FactoryBot.create(:induction_period, teacher: other_teacher)
+
+        get "/admin/teachers", params: { q: "Naruto Uzumaki" }
+
+        expect(response.status).to eq(200)
+        expect(response.body).to include("Naruto Uzumaki")
+        expect(response.body).not_to include("Sasuke Uchiha")
+      end
+    end
+
+    context "when searching by TRN" do
+      it "filters teachers by TRN" do
+        teacher = FactoryBot.create(:teacher, trn: "1234567")
+        other_teacher = FactoryBot.create(:teacher, trn: "7654321")
+
+        FactoryBot.create(:induction_period, teacher:)
+        FactoryBot.create(:induction_period, teacher: other_teacher)
+
+        get "/admin/teachers", params: { q: "1234567" }
+
+        expect(response.status).to eq(200)
+        expect(response.body).to include("1234567")
+        expect(response.body).not_to include("7654321")
+      end
+    end
+
+    context "when searching by API participant ID" do
+      let!(:teacher) { FactoryBot.create(:teacher, api_id: "123e4567-e89b-12d3-a456-426614174000") }
+      let!(:other_teacher) { FactoryBot.create(:teacher, api_id: "999e4567-e89b-12d3-a456-426614174999") }
+      let!(:teacher_contract_period) { FactoryBot.create(:contract_period, year: 2024) }
+      let!(:other_teacher_contract_period) { FactoryBot.create(:contract_period, year: 2024) }
+      let!(:teacher_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, :with_training_period, teacher:, contract_period: teacher_contract_period) }
+      let!(:other_teacher_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, :with_training_period, teacher: other_teacher, contract_period: other_teacher_contract_period) }
+
+      it "filters teachers by API participant ID" do
+        get "/admin/teachers", params: { q: "123e4567-e89b-12d3-a456-426614174000" }
+
+        expect(response.status).to eq(200)
+        expect(response.body).to include(teacher.trn)
+        expect(response.body).not_to include(other_teacher.trn)
+      end
+    end
+
+    context "when searching by API ECT training record ID" do
+      let!(:teacher) { FactoryBot.create(:teacher, api_ect_training_record_id: "123e4567-e89b-12d3-a456-576614174000") }
+      let!(:other_teacher) { FactoryBot.create(:teacher, api_ect_training_record_id: "999e4567-e89b-12d3-a456-426614174999") }
+
+      it "filters teachers by API ECT training record ID" do
+        get "/admin/teachers", params: { q: "123e4567-e89b-12d3-a456-576614174000" }
+
+        expect(response.status).to eq(200)
+        expect(response.body).to include(teacher.trn)
+        expect(response.body).not_to include(other_teacher.trn)
+      end
+    end
+
+    context "when searching by API mentor training record ID" do
+      let!(:teacher) { FactoryBot.create(:teacher, api_mentor_training_record_id: "123e4567-e89b-12d3-a456-576614174000") }
+      let!(:other_teacher) { FactoryBot.create(:teacher, api_mentor_training_record_id: "999e4567-e89b-12d3-a456-426614174999") }
+
+      it "filters teachers by API mentor training record ID" do
+        get "/admin/teachers", params: { q: "123e4567-e89b-12d3-a456-576614174000" }
+
+        expect(response.status).to eq(200)
+        expect(response.body).to include(teacher.trn)
+        expect(response.body).not_to include(other_teacher.trn)
+      end
+    end
+
+    context "when the query generates an invalid tsquery" do
+      it "returns successfully" do
+        get "/admin/teachers", params: { q: "<?'" }
+
+        expect(response.status).to eq(200)
+        expect(response.body).to include("Teachers")
+        expect(response.body).to include("There are no teachers that match your search.")
+      end
+    end
+
+    context "when the search returns no teachers" do
+      it "renders an empty state message" do
+        get "/admin/teachers", params: { q: "No matches here" }
+
+        expect(response.status).to eq(200)
+        expect(response.body).to include("There are no teachers that match your search.")
+      end
+    end
+  end
+
+  context "when filtering by contract period" do
+    before do
+      non_matching_contract_period = FactoryBot.create(:contract_period, year: 2025)
+      matching_contract_period = FactoryBot.create(:contract_period, year: 2024)
+
+      20.times do |index|
+        teacher = FactoryBot.create(
+          :teacher,
+          trs_first_name: sprintf("Teacher%02d", index),
+          trs_last_name: "Alpha"
+        )
+
+        ect_at_school_period = FactoryBot.create(
+          :ect_at_school_period,
+          :unfinished,
+          teacher:
+        )
+
+        school_partnership = FactoryBot.create(
+          :school_partnership,
+          :with_framework_agreement,
+          framework_agreement: FactoryBot.create(:framework_agreement, contract_period: non_matching_contract_period),
+          school: ect_at_school_period.school
+        )
+
+        FactoryBot.create(
+          :training_period,
+          :for_ect,
+          :unfinished,
+          ect_at_school_period:,
+          school_partnership:
+        )
+      end
+
+      matching_teacher = FactoryBot.create(:teacher, trs_first_name: "Zis", trs_last_name: "Matches")
+
+      matching_ect_at_school_period = FactoryBot.create(
+        :ect_at_school_period,
+        :unfinished,
+        teacher: matching_teacher
+      )
+
+      matching_school_partnership = FactoryBot.create(
+        :school_partnership,
+        :with_framework_agreement,
+        framework_agreement: FactoryBot.create(:framework_agreement, contract_period: matching_contract_period),
+        school: matching_ect_at_school_period.school
+      )
+
+      FactoryBot.create(
+        :training_period,
+        :for_ect,
+        :unfinished,
+        ect_at_school_period: matching_ect_at_school_period,
+        school_partnership: matching_school_partnership
+      )
+    end
+
+    it "filters across the whole dataset before pagination" do
+      get "/admin/teachers", params: { contract_period: "2024" }
+
+      expect(response.status).to eq(200)
+      expect(response.body).to include("Zis Matches")
+      expect(response.body).not_to include("Teacher00 Alpha")
+    end
+  end
+end
+
+RSpec.shared_examples "does not show the failed TRN merges banner" do
+  it "does not show the failed TRN merges banner" do
+    get "/admin/teachers"
+
+    expect(response.status).to eq(200)
+
+    page = Capybara.string(response.body)
+
+    expect(page).not_to have_text("An automated merge of teacher records has failed.")
+    expect(page).not_to have_link("View the failed merges", href: admin_failed_trn_merges_path)
+  end
+end
+
 RSpec.describe "Admin teachers index", type: :request do
   describe "GET /admin/teachers" do
     it "redirects to sign in path" do
@@ -14,269 +278,27 @@ RSpec.describe "Admin teachers index", type: :request do
       end
     end
 
-    context "with an authenticated DfE user" do
+    context "with an authenticated as a non-product DfE user" do
       include_context "sign in as DfE user"
 
-      context "when a teacher has both ECT and mentor roles" do
-        let!(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Naruto", trs_last_name: "Uzumaki") }
-        let!(:ect_contract_period) { FactoryBot.create(:contract_period, year: 2024) }
-        let!(:mentor_contract_period) { FactoryBot.create(:contract_period, year: 2025) }
-        let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, :with_training_period, teacher:, contract_period: ect_contract_period) }
-        let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, :with_training_period, teacher:, contract_period: mentor_contract_period) }
+      include_examples "common teacher index behavior"
 
-        it "renders role based rows with contract periods" do
-          get "/admin/teachers"
-
-          expect(response.status).to eq(200)
-          expect(response.body.scan("Naruto Uzumaki").size).to eq(2)
-          expect(response.body).to include("Early career teacher")
-          expect(response.body).to include("Mentor")
-          expect(response.body).to include("2024")
-          expect(response.body).to include("2025")
-        end
-      end
-
-      context "when a mentor has periods at different schools with the same start date" do
-        let!(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Rock", trs_last_name: "Lee") }
-        let(:started_on) { 1.year.ago.to_date }
-        let(:first_school) { FactoryBot.create(:school) }
-        let(:last_school) { FactoryBot.create(:school) }
-        let!(:first_mentor_at_school_period) do
-          FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:, school: first_school, started_on:)
-        end
-        let!(:last_mentor_at_school_period) do
-          FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:, school: last_school, started_on:)
-        end
-        let(:mentor_at_school_period_with_schedule) { first_mentor_at_school_period }
-
+      context "when there are failed TRN merges" do
         before do
-          school_partnership = FactoryBot.create(
-            :school_partnership,
-            :for_year,
-            school: mentor_at_school_period_with_schedule.school,
-            year: 2025
-          )
-          schedule = FactoryBot.create(:schedule, contract_period: school_partnership.contract_period)
-
-          FactoryBot.create(
-            :training_period,
-            :for_mentor,
-            :unfinished,
-            mentor_at_school_period: mentor_at_school_period_with_schedule,
-            school_partnership:,
-            schedule:
-          )
+          FactoryBot.create(:teacher, trs_response: :permanent_redirect)
         end
 
-        it "matches when the higher ID period has no schedule" do
-          get "/admin/teachers", params: { role: "mentor", contract_period: "not_available" }
-
-          expect(response.status).to eq(200)
-          teacher_row = Capybara.string(response.body).find("tbody tr", text: "Rock Lee")
-          expect(teacher_row).to have_text("Mentor")
-          expect(teacher_row).to have_text("Not available")
-        end
-
-        context "when the higher ID period has a schedule" do
-          let(:mentor_at_school_period_with_schedule) { last_mentor_at_school_period }
-
-          it "does not match the unavailable contract period" do
-            get "/admin/teachers", params: { role: "mentor", contract_period: "not_available" }
-
-            expect(response.status).to eq(200)
-            expect(response.body).not_to include("Rock Lee")
-          end
-        end
+        it_behaves_like "does not show the failed TRN merges banner"
       end
+    end
 
-      context "when a teacher has no role history" do
-        let!(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Naruto", trs_last_name: "Uzumaki", trn: "1234567") }
+    context "with an authenticated product team user" do
+      include_context "sign in as product_team DfE user"
 
-        it "renders no role assigned with an unavailable contract period" do
-          get "/admin/teachers"
-
-          expect(response.status).to eq(200)
-          expect(response.body).to include("Naruto Uzumaki")
-          expect(response.body).to include("1234567")
-          expect(response.body).to include("No role assigned")
-          expect(Capybara.string(response.body).find("tbody tr", text: "Naruto Uzumaki")).to have_text("Not available")
-        end
-      end
-
-      context "with a search query" do
-        context "when searching by name" do
-          it "filters teachers by name" do
-            teacher = FactoryBot.create(:teacher, trs_first_name: "Naruto", trs_last_name: "Uzumaki")
-            other_teacher = FactoryBot.create(:teacher, trs_first_name: "Sasuke", trs_last_name: "Uchiha")
-
-            FactoryBot.create(:induction_period, teacher:)
-            FactoryBot.create(:induction_period, teacher: other_teacher)
-
-            get "/admin/teachers", params: { q: "Naruto Uzumaki" }
-
-            expect(response.status).to eq(200)
-            expect(response.body).to include("Naruto Uzumaki")
-            expect(response.body).not_to include("Sasuke Uchiha")
-          end
-        end
-
-        context "when searching by TRN" do
-          it "filters teachers by TRN" do
-            teacher = FactoryBot.create(:teacher, trn: "1234567")
-            other_teacher = FactoryBot.create(:teacher, trn: "7654321")
-
-            FactoryBot.create(:induction_period, teacher:)
-            FactoryBot.create(:induction_period, teacher: other_teacher)
-
-            get "/admin/teachers", params: { q: "1234567" }
-
-            expect(response.status).to eq(200)
-            expect(response.body).to include("1234567")
-            expect(response.body).not_to include("7654321")
-          end
-        end
-
-        context "when searching by API participant ID" do
-          let!(:teacher) { FactoryBot.create(:teacher, api_id: "123e4567-e89b-12d3-a456-426614174000") }
-          let!(:other_teacher) { FactoryBot.create(:teacher, api_id: "999e4567-e89b-12d3-a456-426614174999") }
-          let!(:teacher_contract_period) { FactoryBot.create(:contract_period, year: 2024) }
-          let!(:other_teacher_contract_period) { FactoryBot.create(:contract_period, year: 2024) }
-          let!(:teacher_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, :with_training_period, teacher:, contract_period: teacher_contract_period) }
-          let!(:other_teacher_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, :with_training_period, teacher: other_teacher, contract_period: other_teacher_contract_period) }
-
-          it "filters teachers by API participant ID" do
-            get "/admin/teachers", params: { q: "123e4567-e89b-12d3-a456-426614174000" }
-
-            expect(response.status).to eq(200)
-            expect(response.body).to include(teacher.trn)
-            expect(response.body).not_to include(other_teacher.trn)
-          end
-        end
-
-        context "when searching by API ECT training record ID" do
-          let!(:teacher) { FactoryBot.create(:teacher, api_ect_training_record_id: "123e4567-e89b-12d3-a456-576614174000") }
-          let!(:other_teacher) { FactoryBot.create(:teacher, api_ect_training_record_id: "999e4567-e89b-12d3-a456-426614174999") }
-
-          it "filters teachers by API ECT training record ID" do
-            get "/admin/teachers", params: { q: "123e4567-e89b-12d3-a456-576614174000" }
-
-            expect(response.status).to eq(200)
-            expect(response.body).to include(teacher.trn)
-            expect(response.body).not_to include(other_teacher.trn)
-          end
-        end
-
-        context "when searching by API mentor training record ID" do
-          let!(:teacher) { FactoryBot.create(:teacher, api_mentor_training_record_id: "123e4567-e89b-12d3-a456-576614174000") }
-          let!(:other_teacher) { FactoryBot.create(:teacher, api_mentor_training_record_id: "999e4567-e89b-12d3-a456-426614174999") }
-
-          it "filters teachers by API mentor training record ID" do
-            get "/admin/teachers", params: { q: "123e4567-e89b-12d3-a456-576614174000" }
-
-            expect(response.status).to eq(200)
-            expect(response.body).to include(teacher.trn)
-            expect(response.body).not_to include(other_teacher.trn)
-          end
-        end
-
-        context "when the query generates an invalid tsquery" do
-          it "returns successfully" do
-            get "/admin/teachers", params: { q: "<?'" }
-
-            expect(response.status).to eq(200)
-            expect(response.body).to include("Teachers")
-            expect(response.body).to include("There are no teachers that match your search.")
-          end
-        end
-
-        context "when the search returns no teachers" do
-          it "renders an empty state message" do
-            get "/admin/teachers", params: { q: "No matches here" }
-
-            expect(response.status).to eq(200)
-            expect(response.body).to include("There are no teachers that match your search.")
-          end
-        end
-      end
-
-      context "when filtering by contract period" do
-        before do
-          non_matching_contract_period = FactoryBot.create(:contract_period, year: 2025)
-          matching_contract_period = FactoryBot.create(:contract_period, year: 2024)
-
-          20.times do |index|
-            teacher = FactoryBot.create(
-              :teacher,
-              trs_first_name: sprintf("Teacher%02d", index),
-              trs_last_name: "Alpha"
-            )
-
-            ect_at_school_period = FactoryBot.create(
-              :ect_at_school_period,
-              :unfinished,
-              teacher:
-            )
-
-            school_partnership = FactoryBot.create(
-              :school_partnership,
-              :with_framework_agreement,
-              framework_agreement: FactoryBot.create(:framework_agreement, contract_period: non_matching_contract_period),
-              school: ect_at_school_period.school
-            )
-
-            FactoryBot.create(
-              :training_period,
-              :for_ect,
-              :unfinished,
-              ect_at_school_period:,
-              school_partnership:
-            )
-          end
-
-          matching_teacher = FactoryBot.create(:teacher, trs_first_name: "Zis", trs_last_name: "Matches")
-
-          matching_ect_at_school_period = FactoryBot.create(
-            :ect_at_school_period,
-            :unfinished,
-            teacher: matching_teacher
-          )
-
-          matching_school_partnership = FactoryBot.create(
-            :school_partnership,
-            :with_framework_agreement,
-            framework_agreement: FactoryBot.create(:framework_agreement, contract_period: matching_contract_period),
-            school: matching_ect_at_school_period.school
-          )
-
-          FactoryBot.create(
-            :training_period,
-            :for_ect,
-            :unfinished,
-            ect_at_school_period: matching_ect_at_school_period,
-            school_partnership: matching_school_partnership
-          )
-        end
-
-        it "filters across the whole dataset before pagination" do
-          get "/admin/teachers", params: { contract_period: "2024" }
-
-          expect(response.status).to eq(200)
-          expect(response.body).to include("Zis Matches")
-          expect(response.body).not_to include("Teacher00 Alpha")
-        end
-      end
+      include_examples "common teacher index behavior"
 
       context "when there are no failed TRN merges" do
-        it "does not show the failed TRN merges banner" do
-          get "/admin/teachers"
-
-          expect(response.status).to eq(200)
-
-          page = Capybara.string(response.body)
-
-          expect(page).not_to have_text("An automated merge of teacher records has failed.")
-          expect(page).not_to have_link("View the failed merges", href: admin_failed_trn_merges_path)
-        end
+        it_behaves_like "does not show the failed TRN merges banner"
       end
 
       context "when there are failed TRN merges" do
