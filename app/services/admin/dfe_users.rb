@@ -35,14 +35,14 @@ module Admin
       @user = User.find(id)
 
       User.transaction do
+        user.destroy!
+
         Events::Record.record_dfe_user_deleted_event!(
           author:,
           user_name: user.name,
           user_email: user.email,
           user_role: user.role
         )
-
-        user.destroy!
       end
     end
   end
