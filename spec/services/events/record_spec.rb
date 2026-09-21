@@ -2277,10 +2277,6 @@ RSpec.describe Events::Record do
     let(:delivery_partner) { FactoryBot.create(:delivery_partner, name: "DP") }
     let(:lead_provider) { FactoryBot.create(:lead_provider, name: "LP") }
     let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
-    let(:framework_agreement) { FactoryBot.create(:framework_agreement, lead_provider:, contract_period:) }
-    let(:lead_provider_delivery_partnership) do
-      FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner:, framework_agreement:)
-    end
 
     it "records an event with the correct values" do
       freeze_time do
@@ -2288,14 +2284,12 @@ RSpec.describe Events::Record do
           author:,
           delivery_partner:,
           lead_provider:,
-          contract_period:,
-          lead_provider_delivery_partnership:
+          contract_period:
         )
 
         expect(Event.sole).to have_attributes(
           delivery_partner:,
           lead_provider:,
-          lead_provider_delivery_partnership:,
           heading: "LP partnership with DP for 2025 removed",
           event_type: "lead_provider_delivery_partnership_removed",
           happened_at: Time.zone.now,

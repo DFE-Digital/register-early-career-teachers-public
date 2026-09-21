@@ -9,17 +9,19 @@ describe LeadProviderDeliveryPartnerships::Destroy do
     it "destroys the partnership and records a removed event" do
       delivery_partner = lead_provider_delivery_partnership.delivery_partner
       lead_provider = lead_provider_delivery_partnership.lead_provider
-      partnership_id = lead_provider_delivery_partnership.id
+      contract_period = lead_provider_delivery_partnership.contract_period
 
       result = nil
       expect { result = service.call }.to change(LeadProviderDeliveryPartnership, :count).by(-1)
 
       expect(result).to be(true)
-      expect(Event.where(event_type: "lead_provider_delivery_partnership_removed").sole).to have_attributes(
+
+      event = Event.where(event_type: "lead_provider_delivery_partnership_removed").sole
+      expect(event).to have_attributes(
         delivery_partner_id: delivery_partner.id,
-        lead_provider_id: lead_provider.id,
-        lead_provider_delivery_partnership_id: partnership_id
+        lead_provider_id: lead_provider.id
       )
+      expect(event.heading).to include(lead_provider.name, delivery_partner.name, contract_period.year.to_s)
     end
   end
 

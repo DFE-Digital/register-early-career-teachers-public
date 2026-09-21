@@ -104,13 +104,18 @@ RSpec.describe DeliveryPartners::UpdateLeadProviderPairings do
         let(:new_framework_agreement_ids) { [framework_agreement_1.id] }
 
         it "removes unchecked partnerships and records a removal event" do
+          removed_lead_provider = existing_partnership_2.lead_provider
+
           expect { service.update! }.to change(LeadProviderDeliveryPartnership, :count).by(-1)
 
           partnerships = delivery_partner.lead_provider_delivery_partnerships.reload
           expect(partnerships.map(&:framework_agreement_id)).to contain_exactly(framework_agreement_1.id)
 
           event = Event.where(event_type: "lead_provider_delivery_partnership_removed").sole
-          expect(event.lead_provider_delivery_partnership_id).to eq(existing_partnership_2.id)
+          expect(event).to have_attributes(
+            delivery_partner_id: delivery_partner.id,
+            lead_provider_id: removed_lead_provider.id
+          )
         end
       end
 
