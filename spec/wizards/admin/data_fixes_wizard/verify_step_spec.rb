@@ -156,27 +156,24 @@ RSpec.describe Admin::DataFixesWizard::VerifyStep do
       end
 
       it "records an event for each confirmed change" do
+        deleted_teacher.destroy!
+
         save!
 
         events = Event.where(event_type: "admin_data_fix").order(:id)
         expect(events.count).to eq(2)
         expect(events.map(&:body).uniq).to eq([note])
+        expect(events.map(&:zendesk_ticket_id).uniq).to eq([zendesk_ticket_id.to_i])
 
         expect(events.first).to have_attributes(
-          teacher_id: deleted_teacher.id,
-          metadata: {
-            gid: deleted_teacher.to_global_id.to_s,
-            action: "delete",
-            changes: {}
-          }.as_json
+          teacher_id: nil,
+          modifications: [],
+          metadata: deleted_teacher_change.as_json
         )
         expect(events.second).to have_attributes(
           teacher_id: updated_teacher.id,
-          metadata: {
-            gid: updated_teacher.to_global_id.to_s,
-            action: "update",
-            changes: { "something" => %w[old_value new_value] }
-          }.as_json
+          modifications: ["Something changed from 'old_value' to 'new_value'"],
+          metadata: updated_teacher_change.as_json
         )
       end
     end
