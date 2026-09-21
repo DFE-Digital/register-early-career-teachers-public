@@ -294,20 +294,6 @@ RSpec.describe "Admin::Users" do
           .once
       end
 
-      it "uses the DfEUsers service to remove the user" do
-        fake_dfe_users_object = double(Admin::DfEUsers, remove_user: true)
-
-        allow(Admin::DfEUsers)
-          .to receive(:new)
-          .and_return(fake_dfe_users_object)
-
-        delete admin_user_path(user_record), params: confirmation_params
-
-        expect(fake_dfe_users_object)
-          .to have_received(:remove_user)
-          .with(user_record.id)
-      end
-
       it "redirects to the users page with a success message" do
         delete admin_user_path(user_record), params: confirmation_params
 

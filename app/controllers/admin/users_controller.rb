@@ -44,9 +44,7 @@ module Admin
 
     def remove
       @user = User.find(params[:id])
-      @remove_user = Admin::Users::RemoveUserForm.new(
-        user_name: @user.name
-      )
+      @remove_user = Admin::Users::RemoveUserForm.new(user: @user)
     end
 
     def destroy
@@ -65,21 +63,18 @@ module Admin
       end
 
       @remove_user = Admin::Users::RemoveUserForm.new(
-        remove_user_params.merge(user_name: @user.name)
+        remove_user_params.merge(
+          user: @user,
+          author: current_user
+        )
       )
 
-      unless @remove_user.valid?
+      if @remove_user.save
+        redirect_to admin_users_path,
+                    alert: "#{@user.name} has been removed as a user and no longer has access to the admin console"
+      else
         render :remove, status: :bad_request
-        return
       end
-
-      user_name = @user.name
-
-      dfe_users = DfEUsers.new(author: current_user)
-      dfe_users.remove_user(@user.id)
-
-      redirect_to admin_users_path,
-                  alert: "#{user_name} has been removed as a user and no longer has access to the admin console"
     end
 
     def unlock_otp_sign_in

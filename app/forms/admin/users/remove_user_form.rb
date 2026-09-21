@@ -5,13 +5,20 @@ module Admin
       include ActiveModel::Attributes
 
       attribute :confirmed, :boolean
-      attribute :user_name, :string
+      attr_accessor :user, :author
 
       validates :confirmed,
                 acceptance: {
-                  message: ->(form, _) { "Confirm you want to remove #{form.user_name} as a user" }
+                  message: ->(form, _) { "Confirm you want to remove #{form.user.name} as a user" }
                 },
                 allow_nil: false
+
+      def save
+        return false unless valid?
+
+        Admin::DfEUsers.new(author:).remove_user(user.id)
+        true
+      end
     end
   end
 end
