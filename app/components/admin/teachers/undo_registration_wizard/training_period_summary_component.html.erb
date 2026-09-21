@@ -1,0 +1,35 @@
+<%= govuk_summary_card(title: card_title, heading_level: 4) do |card| %>
+  <%= card.with_summary_list(actions: false) do |list| %>
+    <% if training_period.provider_led_training_programme? %>
+      <% list.with_row do |row| %>
+        <% row.with_key(text: "Lead provider") %>
+        <% row.with_value(text: lead_provider_name || "Not available") %>
+      <% end %>
+
+      <% list.with_row do |row| %>
+        <% row.with_key(text: "Delivery partner") %>
+        <% row.with_value(text: delivery_partner_name) %>
+      <% end %>
+
+      <% list.with_row do |row| %>
+        <% row.with_key(text: "Contract period") %>
+        <% row.with_value(text: contract_period_year || "Not available") %>
+      <% end %>
+
+      <% list.with_row do |row| %>
+        <% row.with_key(text: "Schedule") %>
+        <% row.with_value(text: training_period.schedule&.identifier || "Not available") %>
+      <% end %>
+    <% end %>
+
+    <% list.with_row do |row| %>
+      <% row.with_key(text: "Start date") %>
+      <% row.with_value(text: training_period.started_on.to_fs(:govuk)) %>
+    <% end %>
+
+    <% list.with_row do |row| %>
+      <% row.with_key(text: "End date") %>
+      <% row.with_value(text: end_date&.to_fs(:govuk) || "No end date recorded") %>
+    <% end %>
+  <% end %>
+<% end %>
