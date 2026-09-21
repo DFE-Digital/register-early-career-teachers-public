@@ -86,7 +86,11 @@ RSpec.describe "Admin::Users" do
       user_record = FactoryBot.create(:user)
 
       expect {
-        delete admin_user_path(user_record)
+        delete admin_user_path(user_record), params: {
+          admin_users_remove_user_form: {
+            confirmed: "1"
+          }
+        }
       }.not_to change(User, :count)
 
       aggregate_failures do
@@ -340,6 +344,82 @@ RSpec.describe "Admin::Users" do
             .not_to have_received(:record_dfe_user_deleted_event!)
         end
       end
+
+      context "when the user tries to remove themselves" do
+        it "does not remove the user" do
+          expect {
+            delete admin_user_path(user), params: confirmation_params
+          }.not_to change(User, :count)
+        end
+
+        it "redirects back to their details with a message" do
+          delete admin_user_path(user), params: confirmation_params
+
+          aggregate_failures do
+            expect(response).to redirect_to(admin_user_path(user))
+            expect(flash[:notice]).to eq("You cannot remove your own user account")
+          end
+        end
+
+        it "does not record a deletion event" do
+          delete admin_user_path(user), params: confirmation_params
+
+          expect(Events::Record)
+            .not_to have_received(:record_dfe_user_deleted_event!)
+        end
+      end
+
+      context "when an admin user is referenced by a declaration" do
+        before do
+          FactoryBot.create(
+            :declaration,
+            :voided_by_user,
+            voided_by_user: user_record
+          )
+        end
+
+        it "does not remove the user" do
+          expect {
+            delete admin_user_path(user_record), params: confirmation_params
+          }.not_to change(User, :count)
+        end
+
+        it "redirects back to their details with a message" do
+          delete admin_user_path(user_record), params: confirmation_params
+
+          aggregate_failures do
+            expect(response).to redirect_to(admin_user_path(user_record))
+            expect(flash[:notice]).to eq(
+              "This user cannot be removed because they are referenced by historical declaration records"
+            )
+          end
+        end
+
+        it "does not record a deletion event" do
+          delete admin_user_path(user_record), params: confirmation_params
+
+          expect(Events::Record)
+            .not_to have_received(:record_dfe_user_deleted_event!)
+        end
+      end
+    end
+
+    describe "removing users with different roles" do
+      %i[admin user_manager finance product_team].each do |role|
+        it "allows a user with the #{role} role to be removed" do
+          user_record = FactoryBot.create(:user, role)
+
+          expect {
+            delete admin_user_path(user_record), params: {
+              admin_users_remove_user_form: {
+                confirmed: "1"
+              }
+            }
+          }.to change(User, :count).by(-1)
+
+          expect(User.exists?(user_record.id)).to be(false)
+        end
+      end
     end
   end
 
@@ -360,22 +440,24 @@ RSpec.describe "Admin::Users" do
       expect(response).to be_successful
     end
 
-    it "does not allow GET /admin/users/:id/remove" do
+    it "allows GET /admin/users/:id/remove" do
       user_record = FactoryBot.create(:user)
 
       get remove_admin_user_path(user_record)
 
-      expect(response).to have_http_status(:unauthorized)
+      expect(response).to be_successful
     end
 
-    it "does not allow DELETE /admin/users/:id" do
+    it "allows finance users to remove another user" do
       user_record = FactoryBot.create(:user)
 
       expect {
-        delete admin_user_path(user_record)
-      }.not_to change(User, :count)
-
-      expect(response).to have_http_status(:unauthorized)
+        delete admin_user_path(user_record), params: {
+          admin_users_remove_user_form: {
+            confirmed: "1"
+          }
+        }
+      }.to change(User, :count).by(-1)
     end
   end
 
@@ -392,22 +474,24 @@ RSpec.describe "Admin::Users" do
       expect(response).to be_successful
     end
 
-    it "does not allow GET /admin/users/:id/remove" do
+    it "allows GET /admin/users/:id/remove" do
       user_record = FactoryBot.create(:user)
 
       get remove_admin_user_path(user_record)
 
-      expect(response).to have_http_status(:unauthorized)
+      expect(response).to be_successful
     end
 
-    it "does not allow DELETE /admin/users/:id" do
+    it "allows product team users to remove another user" do
       user_record = FactoryBot.create(:user)
 
       expect {
-        delete admin_user_path(user_record)
-      }.not_to change(User, :count)
-
-      expect(response).to have_http_status(:unauthorized)
+        delete admin_user_path(user_record), params: {
+          admin_users_remove_user_form: {
+            confirmed: "1"
+          }
+        }
+      }.to change(User, :count).by(-1)
     end
   end
 end
