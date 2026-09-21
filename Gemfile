@@ -64,7 +64,6 @@ gem "turbo-rails"
 gem "blueprinter"
 gem "oj"
 
-gem "async-http-faraday"
 gem "with_advisory_lock"
 
 gem "diffy"
