@@ -57,6 +57,20 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::Wizard do
       it { is_expected.to eq([:start]) }
     end
 
+    context "when the teacher has multiple mentor at school periods" do
+      before do
+        FactoryBot.create(
+          :mentor_at_school_period,
+          teacher:,
+          started_on: 2.years.ago.to_date,
+          finished_on: 1.year.ago.to_date
+        )
+        FactoryBot.create(:mentor_at_school_period, teacher:, started_on: 6.months.ago.to_date, finished_on: nil)
+      end
+
+      it { is_expected.to eq([:start]) }
+    end
+
     context "when the teacher has both ECT and mentor at school periods" do
       before do
         FactoryBot.create(:ect_at_school_period, teacher:)
