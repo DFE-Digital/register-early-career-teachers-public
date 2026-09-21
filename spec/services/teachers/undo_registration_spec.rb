@@ -456,4 +456,56 @@ RSpec.describe Teachers::UndoRegistration do
       expect { mentorship_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
+
+  describe "#finish_date_for" do
+    subject(:finish_date_for) { undo_registration_service.finish_date_for(period) }
+
+    let(:at_school_period) { FactoryBot.build(:ect_at_school_period) }
+    let(:undo_registration_service) do
+      described_class.new(
+        author:,
+        at_school_period:,
+        reason: :registered_in_error
+      )
+    end
+
+    context "when the period started in the past" do
+      let(:period) { FactoryBot.build(:ect_at_school_period, started_on: 1.week.ago.to_date) }
+
+      it { is_expected.to eq(Date.current) }
+    end
+
+    context "when the period starts in the future" do
+      let(:period) { FactoryBot.build(:ect_at_school_period, started_on: 1.week.from_now.to_date) }
+
+      it { is_expected.to eq(period.started_on) }
+    end
+  end
+
+  describe "#periods_will_be_closed?" do
+    subject(:periods_will_be_closed) { undo_registration_service.periods_will_be_closed? }
+
+    let(:at_school_period) { FactoryBot.create(:ect_at_school_period) }
+    let(:undo_registration_service) do
+      described_class.new(
+        author:,
+        at_school_period:,
+        reason: :registered_in_error
+      )
+    end
+
+    context "when the registration has billable declarations" do
+      let(:training_period) do
+        FactoryBot.create(:training_period, :for_ect, ect_at_school_period: at_school_period)
+      end
+
+      before { FactoryBot.create(:declaration, :eligible, training_period:) }
+
+      it { is_expected.to be(true) }
+    end
+
+    context "when the registration has no billable or refundable declarations" do
+      it { is_expected.to be(false) }
+    end
+  end
 end
