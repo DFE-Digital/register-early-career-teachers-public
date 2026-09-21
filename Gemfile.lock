@@ -109,7 +109,7 @@ GEM
       base64
       gyoku (>= 0.4.0)
       nokogiri
-    amazing_print (2.0.0)
+    amazing_print (3.0.0)
     anyway_config (2.8.1)
       ruby-next-core (~> 1.0)
     asciidoctor (2.0.26)
