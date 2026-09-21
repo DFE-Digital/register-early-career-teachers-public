@@ -4,13 +4,11 @@ We document the API using the [OpenAPI specification](https://swagger.io/specifi
 
 ## Versioning
 
-We have a class `API::Version` that defines the available API versions. If you add a new version it will automatically generate a new `yaml` file, for example v5 would end up in `/public/api/docs/v5/swagger.yaml`.
+~~We have a class `API::Version` that defines the available API versions. If you add a new version it will automatically generate a new `yaml` file, for example v5 would end up in `/public/api/docs/v5/swagger.yaml`.~~
 
-You may need to add/configure schemas for the new version in `/spec/swagger_schemas`. You should be able to see the version-specific schemas in the `swagger_helper.rb`:
+~~You may need to add/configure schemas for the new version in `/spec/swagger_schemas`. You should be able to see the version-specific schemas in the `swagger_helper.rb`.~~
 
-```
-StatementsResponse: STATEMENTS_RESPONSE[version]
-```
+This is no longer relevant; we are going to revisit how we version APIs going forward for the training API (LP API v4) and upcoming induction API (RIAB API). We have hard-coded the documentation for the LP API to v3 for now.
 
 ## Documenting
 
