@@ -136,4 +136,15 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::MentorshipPeriodsSummary
       expect(rendered).to have_css("td", text: "Present")
     end
   end
+
+  context "with an unexpected school period" do
+    let(:school_period) { double("school period") }
+
+    it "raises when an unexpected period type is supplied" do
+      component = described_class.new(mentorship_periods: [], school_period:, end_date_for:)
+
+      expect { component.send(:related_teacher, double("mentorship period")) }
+        .to raise_error(described_class::UnexpectedSchoolPeriodError)
+    end
+  end
 end

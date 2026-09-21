@@ -4,6 +4,8 @@ module Admin
       class MentorshipPeriodsSummaryComponent < ApplicationComponent
         include TeacherHelper
 
+        class UnexpectedSchoolPeriodError < StandardError; end
+
         attr_reader :mentorship_periods, :school_period
 
         def initialize(mentorship_periods:, school_period:, end_date_for:)
@@ -46,7 +48,7 @@ module Admin
           when MentorAtSchoolPeriod
             mentorship_period.mentee.teacher
           else
-            raise ArgumentError, "Unsupported school period: #{school_period.class.name}"
+            raise UnexpectedSchoolPeriodError, "Unexpected school period: #{school_period.class.name}"
           end
         end
 
