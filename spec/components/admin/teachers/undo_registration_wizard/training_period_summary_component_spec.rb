@@ -1,5 +1,8 @@
 RSpec.describe Admin::Teachers::UndoRegistrationWizard::TrainingPeriodSummaryComponent, type: :component do
-  subject(:rendered) { render_inline(described_class.new(training_period:, end_date:)) }
+  subject(:rendered) do
+    render_inline(described_class.new(training_period:, end_date:))
+    page
+  end
 
   let(:end_date) { Date.new(2026, 9, 17) }
   let(:started_on) { Date.new(2025, 9, 1) }
@@ -24,33 +27,27 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::TrainingPeriodSummaryCom
     end
 
     it "shows the lead provider" do
-      expect(rendered).to have_css("dt", text: "Lead provider")
-      expect(rendered).to have_css("dd", text: training_period.lead_provider_name)
+      expect(rendered).to have_summary_list_row("Lead provider", value: training_period.lead_provider_name)
     end
 
     it "shows the delivery partner" do
-      expect(rendered).to have_css("dt", text: "Delivery partner")
-      expect(rendered).to have_css("dd", text: training_period.delivery_partner_name)
+      expect(rendered).to have_summary_list_row("Delivery partner", value: training_period.delivery_partner_name)
     end
 
     it "shows the contract period" do
-      expect(rendered).to have_css("dt", text: "Contract period")
-      expect(rendered).to have_css("dd", exact_text: training_period.contract_period.year.to_s)
+      expect(rendered).to have_summary_list_row("Contract period", value: training_period.contract_period.year.to_s)
     end
 
     it "shows the schedule" do
-      expect(rendered).to have_css("dt", text: "Schedule")
-      expect(rendered).to have_css("dd", text: training_period.schedule.identifier)
+      expect(rendered).to have_summary_list_row("Schedule", value: training_period.schedule.identifier)
     end
 
     it "shows the start date" do
-      expect(rendered).to have_css("dt", text: "Start date")
-      expect(rendered).to have_css("dd", text: started_on.to_fs(:govuk))
+      expect(rendered).to have_summary_list_row("Start date", value: started_on.to_fs(:govuk))
     end
 
     it "shows the end date" do
-      expect(rendered).to have_css("dt", text: "End date")
-      expect(rendered).to have_css("dd", text: end_date.to_fs(:govuk))
+      expect(rendered).to have_summary_list_row("End date", value: end_date.to_fs(:govuk))
     end
 
     it "does not show actions" do
@@ -78,18 +75,21 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::TrainingPeriodSummaryCom
     end
 
     it "shows the expression of interest lead provider" do
-      expect(rendered).to have_css("dt", text: "Lead provider")
-      expect(rendered).to have_css("dd", text: training_period.expression_of_interest_lead_provider.name)
+      expect(rendered).to have_summary_list_row(
+        "Lead provider",
+        value: training_period.expression_of_interest_lead_provider.name
+      )
     end
 
     it "shows that there is no confirmed delivery partner" do
-      expect(rendered).to have_css("dt", text: "Delivery partner")
-      expect(rendered).to have_css("dd", text: "No delivery partner confirmed")
+      expect(rendered).to have_summary_list_row("Delivery partner", value: "No delivery partner confirmed")
     end
 
     it "shows the expression of interest contract period" do
-      expect(rendered).to have_css("dt", text: "Contract period")
-      expect(rendered).to have_css("dd", exact_text: training_period.expression_of_interest_contract_period.year.to_s)
+      expect(rendered).to have_summary_list_row(
+        "Contract period",
+        value: training_period.expression_of_interest_contract_period.year.to_s
+      )
     end
   end
 
@@ -112,17 +112,15 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::TrainingPeriodSummaryCom
     end
 
     it "shows the start date" do
-      expect(rendered).to have_css("dt", text: "Start date")
-      expect(rendered).to have_css("dd", text: started_on.to_fs(:govuk))
+      expect(rendered).to have_summary_list_row("Start date", value: started_on.to_fs(:govuk))
     end
 
     it "shows the end date" do
-      expect(rendered).to have_css("dt", text: "End date")
-      expect(rendered).to have_css("dd", text: end_date.to_fs(:govuk))
+      expect(rendered).to have_summary_list_row("End date", value: end_date.to_fs(:govuk))
     end
 
     it "does not show provider details" do
-      expect(rendered).not_to have_css("dt", text: "Lead provider")
+      expect(rendered).not_to have_summary_list_row("Lead provider")
     end
   end
 
@@ -140,8 +138,7 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::TrainingPeriodSummaryCom
     let(:end_date) { nil }
 
     it "shows that no end date is recorded" do
-      expect(rendered).to have_css("dt", text: "End date")
-      expect(rendered).to have_css("dd", text: "No end date recorded")
+      expect(rendered).to have_summary_list_row("End date", value: "No end date recorded")
     end
   end
 end
