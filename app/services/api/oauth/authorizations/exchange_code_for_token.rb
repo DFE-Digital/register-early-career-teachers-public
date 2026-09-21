@@ -28,11 +28,11 @@ module API::OAuth::Authorizations
       raise(CodeNotExchangeableError, "Code verifier is invalid") unless code_challenge_verified?(code_verifier:)
     end
 
-    def revoke_active_predecessor!
-      predecessor = authorization.active_predecessor
-      return if predecessor.blank?
+    def revoke_existing_active_authorization!
+      existing_authorization = authorization.existing_active_authorization
+      return if existing_authorization.blank?
 
-      API::OAuth::Authorizations::RevocationRequest.new(authorization: predecessor).revoke!
+      API::OAuth::Authorizations::RevocationRequest.new(authorization: existing_authorization).revoke!
     end
 
     def exchange_code!

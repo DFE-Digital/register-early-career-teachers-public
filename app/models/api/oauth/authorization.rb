@@ -10,12 +10,18 @@ class API::OAuth::Authorization < ApplicationRecord
   validates :client, :appropriate_body_period, presence: true
   validates :redirect_uri, presence: true, inclusion: { in: -> { it.client.redirect_uris }, allow_blank: true, if: :client, on: :create }
   validates :code_challenge, presence: true
+  validates :client_id,
+            uniqueness: {
+              scope: %i[appropriate_body_period_id redirect_uri],
+              message: "Only one active authorization permitted for the same client, appropriate body and redirect URI"
+            },
+            if: :active?
 
   scope :active, -> { active_token.not_revoked }
 
-  def active? = active_token? && not_revoked?
+  def active? = token_active? && not_revoked?
 
-  def active_predecessor
+  def existing_active_authorization
     client
       .authorizations
       .active

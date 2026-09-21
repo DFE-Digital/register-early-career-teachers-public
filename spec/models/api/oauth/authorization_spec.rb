@@ -80,6 +80,20 @@ describe API::OAuth::Authorization do
         expect(authorization.reload).to be_valid
       end
     end
+
+    context "allows only 1 active authorization per client/AB/redirect_uri" do
+      subject(:authorization) { FactoryBot.build(:api_oauth_authorization, :with_token, client:, appropriate_body_period:, redirect_uri:) }
+
+      let(:client) { FactoryBot.create(:api_oauth_client) }
+      let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
+      let(:redirect_uri) { client.redirect_uris.first }
+      let!(:existing_authorization) { FactoryBot.create(:api_oauth_authorization, :with_token, client:, appropriate_body_period:, redirect_uri:) }
+
+      it "permits only 1 active authorization" do
+        expect(authorization).not_to be_valid
+        expect(authorization.errors[:client_id]).to include("Only one active authorization permitted for the same client, appropriate body and redirect URI")
+      end
+    end
   end
 
   context "when a code is assigned" do
@@ -211,17 +225,17 @@ describe API::OAuth::Authorization do
     end
   end
 
-  describe "#active_token?" do
+  describe "#token_active?" do
     context "when the token has not expired" do
       subject(:authorization) { FactoryBot.build(:api_oauth_authorization, :with_token) }
 
-      it { is_expected.to be_active_token }
+      it { is_expected.to be_token_active }
     end
 
     context "when the token has expired" do
       subject(:authorization) { FactoryBot.build(:api_oauth_authorization, :with_token).tap { it.token_expires_at = 1.day.ago } }
 
-      it { is_expected.not_to be_active_token }
+      it { is_expected.not_to be_token_active }
     end
   end
 end

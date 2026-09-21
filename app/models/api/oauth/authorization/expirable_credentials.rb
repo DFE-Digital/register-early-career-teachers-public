@@ -19,7 +19,7 @@ module API::OAuth::Authorization::ExpirableCredentials
 
   def code_expired? = code_expires_at&.past?
   def token_expired? = token_expires_at&.past?
-  def active_token? = token_expires_at.present? && !token_expired?
+  def token_active? = token_expires_at&.future?
 
   def seconds_to_token_expiration
     return if token_expires_at.blank?
