@@ -55,5 +55,32 @@ RSpec.describe Admin::DfEUsers do
       expect(Event.exists?(event.id)).to be(true)
       expect(event.reload.author_id).to be_nil
     end
+
+    context "when the user cannot be destroyed" do
+      before do
+        allow(User).to receive(:find).with(user.id).and_return(user)
+        allow(user).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed)
+      end
+
+      it "does not remove the user" do
+        expect {
+          begin
+            remove_user
+          rescue ActiveRecord::RecordNotDestroyed
+            nil
+          end
+        }.not_to change(User, :count)
+      end
+
+      it "does not record a deletion event" do
+        expect {
+          begin
+            remove_user
+          rescue ActiveRecord::RecordNotDestroyed
+            nil
+          end
+        }.not_to change(Event, :count)
+      end
+    end
   end
 end
