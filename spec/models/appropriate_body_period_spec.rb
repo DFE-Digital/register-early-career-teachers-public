@@ -13,8 +13,6 @@ describe AppropriateBodyPeriod do
   describe "associations" do
     it { is_expected.to belong_to(:dfe_sign_in_organisation) }
     it { is_expected.to belong_to(:appropriate_body) }
-
-    it { is_expected.to have_one(:legacy_appropriate_body) }
     it { is_expected.to have_many(:induction_periods) }
     it { is_expected.to have_many(:pending_induction_submissions) }
     it { is_expected.to have_many(:events) }
@@ -34,7 +32,6 @@ describe AppropriateBodyPeriod do
       expect(described_class.national.count).to be(1)
       expect(described_class.teaching_school_hub.count).to be(2)
       expect(described_class.local_authority.count).to be(1)
-      expect(described_class.legacy.count).to be(1)
       expect(described_class.active.count).to be(2)
       expect(described_class.inactive.count).to be(2)
     end

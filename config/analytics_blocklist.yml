@@ -28,14 +28,6 @@
     - appropriate_body_id
     - created_at
     - updated_at
-  :legacy_appropriate_bodies:
-    - id
-    - dqt_id
-    - name
-    - body_type
-    - appropriate_body_period_id
-    - created_at
-    - updated_at
   :appropriate_body_periods:
     - body_type
     - appropriate_body_id

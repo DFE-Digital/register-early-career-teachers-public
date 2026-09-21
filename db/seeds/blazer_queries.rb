@@ -39,11 +39,6 @@ end
     description: "new data model migrating from appropriate_body_periods",
   },
   {
-    name: "Legacy appropriate bodies",
-    statement: "SELECT * FROM legacy_appropriate_bodies;",
-    description: "new data model extracted from appropriate_body_periods",
-  },
-  {
     name: "DfE Sign-In Organisations",
     statement: "SELECT * FROM dfe_sign_in_organisations;",
     description: "new data model persisted during migration",

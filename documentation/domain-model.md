@@ -293,16 +293,6 @@ erDiagram
   }
   MentorAtSchoolPeriod }o--|| School : belongs_to
   MentorAtSchoolPeriod }o--|| Teacher : belongs_to
-  LegacyAppropriateBody {
-    integer id
-    integer appropriate_body_period_id
-    enum body_type
-    datetime created_at
-    uuid dqt_id
-    string name
-    datetime updated_at
-  }
-  LegacyAppropriateBody }o--|| AppropriateBodyPeriod : belongs_to
   LeadProviderDeliveryPartnership {
     integer id
     datetime created_at
@@ -453,7 +443,6 @@ erDiagram
     enum body_type
     datetime created_at
     uuid dfe_sign_in_organisation_id
-    uuid dqt_id
     string name
     datetime updated_at
   }
