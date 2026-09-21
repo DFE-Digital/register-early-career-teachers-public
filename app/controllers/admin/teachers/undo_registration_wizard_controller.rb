@@ -17,11 +17,11 @@ module Admin
       end
 
       def create
-        unless @wizard.valid_step? && @wizard.current_step.save!
-          return render current_step, status: :unprocessable_content
+        if @wizard.valid_step? && @wizard.current_step.save!
+          redirect_to @wizard.next_step_path
+        else
+          render current_step, status: :unprocessable_content
         end
-
-        redirect_to @wizard.next_step_path
       end
 
     private
