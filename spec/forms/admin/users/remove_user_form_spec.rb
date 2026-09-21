@@ -13,9 +13,9 @@ RSpec.describe Admin::Users::RemoveUserForm do
   let(:confirmed) { true }
 
   describe "#save" do
-    it "removes the user when confirmed" do
+    it "removes the user and returns true when confirmed" do
       expect {
-        form.save
+        expect(form.save).to be(true)
       }.to change(User, :count).by(-1)
 
       expect(User.exists?(user.id)).to be(false)
@@ -58,7 +58,7 @@ RSpec.describe Admin::Users::RemoveUserForm do
       it "does not call the removal service" do
         allow(Admin::DfEUsers).to receive(:new)
 
-        form.save
+        form.save!
 
         expect(Admin::DfEUsers).not_to have_received(:new)
       end
