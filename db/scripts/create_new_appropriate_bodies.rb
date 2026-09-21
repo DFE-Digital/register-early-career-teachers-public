@@ -1,7 +1,3 @@
-#
-# If NTA's type is fixed then NB and LA can be created by type,
-# whereas TSHs need to be collated.
-#
 class CreateNewAppropriateBodies
   TSH_NAMES = [
     "Alban Teaching School Hub",
@@ -89,6 +85,7 @@ class CreateNewAppropriateBodies
 
   def call
     ActiveRecord::Base.transaction do
+      update_nta_type
       create_national_bodies
       create_local_authorities
       create_teaching_school_hubs
@@ -97,14 +94,16 @@ class CreateNewAppropriateBodies
 
 private
 
-  # 2 correctly typed but should be 3
+  def update_nta_type
+    AppropriateBodyPeriod.find_by(name: "National Teacher Accreditation")&.update!(body_type: "national")
+  end
+
   def create_national_bodies
     AppropriateBodyPeriod.national.each do |ab|
       NationalBody.find_or_create_by!(name: ab.name)
     end
   end
 
-  # Should all be typed correctly
   def create_local_authorities
     AppropriateBodyPeriod.local_authority.each do |ab|
       LocalAuthority.find_or_create_by!(name: ab.name)
