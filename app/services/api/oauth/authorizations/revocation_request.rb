@@ -7,7 +7,7 @@ module API::OAuth::Authorizations
     end
 
     def revoke!
-      return unless authorization&.revocable?
+      return unless authorization&.active?
 
       ActiveRecord::Base.transaction do
         authorization.revoke!
