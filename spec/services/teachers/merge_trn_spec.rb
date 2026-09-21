@@ -203,6 +203,55 @@ RSpec.describe Teachers::MergeTRN do
         end
       end
 
+      context "frozen payment data" do
+        let(:frozen_contract_period_1) { FactoryBot.create(:contract_period, :with_payments_frozen, year: 2023) }
+        let(:frozen_contract_period_2) { FactoryBot.create(:contract_period, :with_payments_frozen, year: 2024) }
+
+        context "when the teacher is a mentor with frozen payment data" do
+          let(:teacher) do
+            FactoryBot.create(:teacher,
+                              :merged_in_trs,
+                              mentor_payments_frozen_year: frozen_contract_period_1.year,
+                              trn: source_trn,
+                              trs_redirected_to: destination_trn)
+          end
+
+          let!(:destination) do
+            FactoryBot.create(:teacher,
+                              mentor_payments_frozen_year: frozen_contract_period_2.year,
+                              trn: destination_trn)
+          end
+
+          it "moves the earliest frozen payment years to the destination" do
+            service.merge!
+
+            expect(destination.reload.mentor_payments_frozen_year).to eq(2023)
+          end
+        end
+
+        context "when the teacher is an ECT with frozen payment data" do
+          let(:teacher) do
+            FactoryBot.create(:teacher,
+                              :merged_in_trs,
+                              ect_payments_frozen_year: frozen_contract_period_1.year,
+                              trn: source_trn,
+                              trs_redirected_to: destination_trn)
+          end
+
+          let!(:destination) do
+            FactoryBot.create(:teacher,
+                              ect_payments_frozen_year: frozen_contract_period_2.year,
+                              trn: destination_trn)
+          end
+
+          it "moves the earliest frozen payment years to the destination" do
+            service.merge!
+
+            expect(destination.reload.ect_payments_frozen_year).to eq(2023)
+          end
+        end
+      end
+
       it "destroys the source teacher" do
         expect { service.merge! }.to(change { Teacher.exists?(teacher.id) }.from(true).to(false))
       end

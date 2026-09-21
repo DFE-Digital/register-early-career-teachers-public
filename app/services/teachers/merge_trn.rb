@@ -13,8 +13,8 @@ module Teachers
         move_school_periods
         move_induction_records
         move_teacher_id_changes
-        update_eligibility_data
-        update_mentor_ineligibility_data
+        move_data
+        move_mentor_ineligibility_data
         record_teacher_id_change
         refresh_metadata
         record_merge_events
@@ -74,15 +74,17 @@ module Teachers
       teacher.teacher_id_changes.find_each { |change| change.update!(teacher: destination) }
     end
 
-    def update_eligibility_data
+    def move_data
       destination.update_columns(
         ect_first_became_eligible_for_training_at: earliest_date(:ect_first_became_eligible_for_training_at),
         ect_became_ineligible_for_funding_on: earliest_date(:ect_became_ineligible_for_funding_on),
-        mentor_first_became_eligible_for_training_at: earliest_date(:mentor_first_became_eligible_for_training_at)
+        mentor_first_became_eligible_for_training_at: earliest_date(:mentor_first_became_eligible_for_training_at),
+        ect_payments_frozen_year: earliest_date(:ect_payments_frozen_year),
+        mentor_payments_frozen_year: earliest_date(:mentor_payments_frozen_year)
       )
     end
 
-    def update_mentor_ineligibility_data
+    def move_mentor_ineligibility_data
       source_date = teacher.mentor_became_ineligible_for_funding_on
       destination_date = destination.mentor_became_ineligible_for_funding_on
 
