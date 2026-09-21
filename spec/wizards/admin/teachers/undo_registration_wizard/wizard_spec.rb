@@ -180,6 +180,32 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::Wizard do
     end
   end
 
+  describe "#at_school_periods" do
+    let!(:older_ect_at_school_period) do
+      FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2023, 9, 1))
+    end
+    let!(:newer_ect_at_school_period) do
+      FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2024, 9, 1))
+    end
+    let!(:older_mentor_at_school_period) do
+      FactoryBot.create(:mentor_at_school_period, teacher:, started_on: Date.new(2023, 9, 1))
+    end
+    let!(:newer_mentor_at_school_period) do
+      FactoryBot.create(:mentor_at_school_period, teacher:, started_on: Date.new(2024, 9, 1))
+    end
+
+    it "returns school periods by type and most recent start date" do
+      expect(wizard.at_school_periods).to eq(
+        [
+          newer_ect_at_school_period,
+          older_ect_at_school_period,
+          newer_mentor_at_school_period,
+          older_mentor_at_school_period
+        ]
+      )
+    end
+  end
+
   describe "#teacher_name" do
     it "returns the teachers full name" do
       expect(wizard.teacher_name).to eq(::Teachers::Name.new(teacher).full_name)
