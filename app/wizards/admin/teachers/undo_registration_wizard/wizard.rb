@@ -7,6 +7,7 @@ module Admin
         steps do
           [{
             start: StartStep,
+            select_school_period: SelectSchoolPeriodStep,
             confirm: ConfirmStep,
             confirmation: ConfirmationStep
           }]
@@ -17,10 +18,17 @@ module Admin
         def allowed_steps
           return [:confirmation] if store.registration_undone
           return [] if at_school_periods.empty?
-          return [:start] unless at_school_period
+
+          steps = [:start]
+
+          if at_school_periods.many?
+            steps << :select_school_period
+            return steps if selected_school_period.blank?
+          end
+
           return [] unless undoable?
 
-          %i[start confirm]
+          steps << :confirm
         end
 
         def allowed_step_path
@@ -41,10 +49,14 @@ module Admin
 
         def ect_at_school_periods
           @ect_at_school_periods ||= teacher.ect_at_school_periods
+            .includes(:school, :school_reported_appropriate_body)
+            .order(started_on: :desc)
         end
 
         def mentor_at_school_periods
           @mentor_at_school_periods ||= teacher.mentor_at_school_periods
+            .includes(:school)
+            .order(started_on: :desc)
         end
 
         def at_school_periods
@@ -52,7 +64,20 @@ module Admin
         end
 
         def at_school_period
+          return selected_school_period if selected_school_period
+
           at_school_periods.first if at_school_periods.one?
+        end
+
+        def school_period_from_selection(selection)
+          period_type, period_id = selection.to_s.split(":", 2)
+
+          case period_type
+          when "ect"
+            ect_at_school_periods.find_by(id: period_id)
+          when "mentor"
+            mentor_at_school_periods.find_by(id: period_id)
+          end
         end
 
         def periods_will_be_closed?
@@ -123,6 +148,10 @@ module Admin
             at_school_period:,
             reason: :registered_in_error
           )
+        end
+
+        def selected_school_period
+          @selected_school_period ||= school_period_from_selection(store.school_period)
         end
 
         def periods_affected(periods)

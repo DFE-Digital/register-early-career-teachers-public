@@ -1,0 +1,72 @@
+<%
+  page_data(
+    title: "Select a school period to undo for #{@wizard.teacher_name}",
+    error: @wizard.current_step.errors.present?,
+    backlink_href: @wizard.previous_step_path
+  )
+%>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <p class="govuk-body">
+      <%= @wizard.teacher_name %> has more than one school period. Select the period to undo.
+    </p>
+
+    <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |form| %>
+      <%= content_for(:error_summary) { form.govuk_error_summary } %>
+
+      <%= form.govuk_radio_buttons_fieldset(
+        :school_period,
+        legend: { text: "Select a school period to undo", hidden: true }
+      ) do %>
+        <% if @wizard.ect_at_school_periods.any? %>
+          <h2 class="govuk-heading-m">ECT school periods</h2>
+
+          <% @wizard.ect_at_school_periods.each do |school_period| %>
+            <%= form.govuk_radio_button(
+              :school_period,
+              "ect:#{school_period.id}",
+              label: { text: school_period.school.name },
+              hint: -> {
+                safe_join(
+                  [
+                    school_period.school_reported_appropriate_body_name.presence,
+                    "#{school_period.started_on.to_fs(:govuk)} to #{school_period.finished_on&.to_fs(:govuk) || "present"}"
+                  ].compact,
+                  tag.br
+                )
+              },
+              link_errors: school_period == @wizard.at_school_periods.first
+            ) %>
+          <% end %>
+        <% end %>
+
+        <% if @wizard.mentor_at_school_periods.any? %>
+          <h2 class="govuk-heading-m">Mentor school periods</h2>
+
+          <% @wizard.mentor_at_school_periods.each do |school_period| %>
+            <%= form.govuk_radio_button(
+              :school_period,
+              "mentor:#{school_period.id}",
+              label: { text: school_period.school.name },
+              hint: {
+                text: "#{school_period.started_on.to_fs(:govuk)} to #{school_period.finished_on&.to_fs(:govuk) || "present"}"
+              },
+              link_errors: school_period == @wizard.at_school_periods.first
+            ) %>
+          <% end %>
+        <% end %>
+      <% end %>
+
+      <%= form.govuk_submit "Continue" %>
+    <% end %>
+
+    <p class="govuk-body">
+      <%= govuk_link_to(
+            "Cancel and go back to #{@wizard.teacher_name}",
+            admin_teacher_path(@teacher),
+            no_visited_state: true
+          ) %>
+    </p>
+  </div>
+</div>
