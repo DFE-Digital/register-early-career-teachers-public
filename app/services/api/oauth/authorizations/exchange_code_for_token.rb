@@ -13,7 +13,7 @@ module API::OAuth::Authorizations
     def call
       ActiveRecord::Base.transaction do
         validate_code!
-        revoke_active_predecessor!
+        revoke_existing_active_authorization!
         exchange_code!
         record_event!
 
