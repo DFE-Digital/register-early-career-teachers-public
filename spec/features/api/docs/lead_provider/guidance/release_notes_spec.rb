@@ -1,7 +1,7 @@
 RSpec.describe "Lead provider release notes" do
   let(:release_notes) do
     YAML.load_file(
-      Rails.root.join("app/views/api/docs/lead_provider/release_notes/release_notes.yml"),
+      Rails.root.join("app/views/api/documentation/lead_provider/release_notes/release_notes.yml"),
       permitted_classes: [Date]
     ).map { API::ReleaseNote.new(**it.symbolize_keys) }
   end

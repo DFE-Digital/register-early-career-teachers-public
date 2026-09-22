@@ -41,7 +41,7 @@ namespace :api do
     end
   end
 
-  namespace :docs do
+  namespace :docs, module: :documentation do
     scope "lead-provider", module: :lead_provider do
       get "guidance", to: "guidance#show"
 
