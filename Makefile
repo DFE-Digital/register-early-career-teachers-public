@@ -232,3 +232,64 @@ enable-maintenance: maintenance-image-push maintenance-fail-over
 disable-maintenance: get-cluster-credentials
 	$(eval export CONFIG)
 	./maintenance_page/scripts/failback.sh
+
+##@ Postgres upgrade commands
+
+set-pgserver:
+	$(eval SERVERNAME=${AZURE_RESOURCE_PREFIX}-${SERVICE_SHORT}-${CONFIG_SHORT}-pg)
+
+# make staging list-pglogs
+list-pglogs: composed-variables set-pgserver set-azure-account
+	az postgres flexible-server server-logs list --resource-group ${RESOURCE_GROUP_NAME} --server-name ${SERVERNAME} --query '[].{Name:name, "Size (KB)":sizeInKb}' -o table
+
+# make staging download-pglogs LOG_NAME=postgresql_2026_09_28_15_00_00.log
+download-pglogs: composed-variables set-pgserver set-azure-account
+	$(if $(LOG_NAME), , $(error Please specify a LOG_NAME for download))
+	az postgres flexible-server server-logs download --name ${LOG_NAME} --resource-group ${RESOURCE_GROUP_NAME} --server-name ${SERVERNAME}
+	ls -l $(LOG_NAME)*
+
+# make staging enable-pglogs
+enable-pglogs: composed-variables set-pgserver set-azure-account
+	@printf "Enabling server logs for PostgreSQL server ${SERVERNAME}\n"
+	@printf "Current Value: "
+	@az postgres flexible-server parameter show --resource-group ${RESOURCE_GROUP_NAME} --server-name ${SERVERNAME} --name logfiles.download_enable --query value
+	@printf "Setting Value...\n"
+	@az postgres flexible-server parameter set --resource-group ${RESOURCE_GROUP_NAME} --server-name ${SERVERNAME} --name logfiles.download_enable --value on >/dev/null
+	@printf "New Value: "
+	@az postgres flexible-server parameter show --resource-group ${RESOURCE_GROUP_NAME} --server-name ${SERVERNAME} --name logfiles.download_enable --query value
+
+# make staging disable-pglogs
+disable-pglogs: composed-variables set-pgserver set-azure-account
+	@printf "Disabling server logs for PostgreSQL server ${SERVERNAME}\n"
+	@printf "Current Value: "
+	@az postgres flexible-server parameter show --resource-group ${RESOURCE_GROUP_NAME} --server-name ${SERVERNAME} --name logfiles.download_enable --query value
+	@printf "Setting Value...\n"
+	@az postgres flexible-server parameter set --resource-group ${RESOURCE_GROUP_NAME} --server-name ${SERVERNAME} --name logfiles.download_enable --value off >/dev/null
+	@printf "New Value: "
+	@az postgres flexible-server parameter show --resource-group ${RESOURCE_GROUP_NAME} --server-name ${SERVERNAME} --name logfiles.download_enable --query value
+
+##@ Kubernetes scaling commands
+
+# make staging show-service
+show-service: get-cluster-credentials
+	$(if $(PULL_REQUEST_NUMBER), $(eval export DSUFFIX="-pr-${PULL_REQUEST_NUMBER}"), $(eval export DSUFFIX="-${CONFIG}") )
+	$(eval NAMESPACE=$(shell jq -r '.namespace' config/terraform/application/config/$(CONFIG).tfvars.json))
+	@printf "Show service deployments\n"
+	kubectl -n ${NAMESPACE} get deployment/${SERVICE_NAME}${DSUFFIX}-web
+	kubectl -n ${NAMESPACE} get deployment/${SERVICE_NAME}${DSUFFIX}-worker
+
+# make staging scale-app REPLICAS=0
+scale-app: get-cluster-credentials
+	$(if $(PULL_REQUEST_NUMBER), $(eval export DSUFFIX="-pr-${PULL_REQUEST_NUMBER}"), $(eval export DSUFFIX="-${CONFIG}") )
+	$(if $(REPLICAS),,$(error Missing REPLICAS))
+	$(eval NAMESPACE=$(shell jq -r '.namespace' config/terraform/application/config/$(CONFIG).tfvars.json))
+	@printf "Scaling app to ${REPLICAS}\n"
+	kubectl -n ${NAMESPACE} scale deployment/${SERVICE_NAME}${DSUFFIX}-web --replicas ${REPLICAS}
+
+# make staging scale-worker REPLICAS=0
+scale-worker: get-cluster-credentials
+	$(if $(PR_NUPULL_REQUEST_NUMBERMBER), $(eval export DSUFFIX="-pr-${PULL_REQUEST_NUMBER}"), $(eval export DSUFFIX="-${CONFIG}") )
+	$(if $(REPLICAS),,$(error Missing REPLICAS))
+	$(eval NAMESPACE=$(shell jq -r '.namespace' config/terraform/application/config/$(CONFIG).tfvars.json))
+	@printf "Scaling worker to ${REPLICAS}\n"
+	kubectl -n ${NAMESPACE} scale deployment/${SERVICE_NAME}${DSUFFIX}-worker --replicas ${REPLICAS}
