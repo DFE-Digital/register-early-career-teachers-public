@@ -39,10 +39,12 @@ namespace :api do
       resource :client, only: :show
       resource :user, only: :show
     end
+
+    get "docs", to: "documentation#show", as: :documentation
   end
 
   namespace :docs, module: :documentation do
-    scope "training", module: :training do
+    scope "training", module: :training, as: :training do
       get "guidance", to: "guidance#show"
 
       scope "guidance" do

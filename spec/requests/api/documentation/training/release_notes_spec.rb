@@ -1,7 +1,7 @@
 RSpec.describe "Release Notes" do
   describe "GET /api/docs/training/release-notes" do
     it "renders valid notes" do
-      expect { get(api_docs_guidance_release_notes_path) }.not_to raise_error
+      expect { get(api_docs_training_guidance_release_notes_path) }.not_to raise_error
       expect(response).to be_successful
       expect(response.body).to include("Release notes")
     end
@@ -21,7 +21,7 @@ RSpec.describe "Release Notes" do
       let(:note) { api_release_notes.find { it.slug == slug } }
 
       it "renders the note" do
-        get(api_docs_guidance_release_note_path(note.slug))
+        get(api_docs_training_guidance_release_note_path(note.slug))
 
         expect(response).to be_successful
         expect(response.body).to include(note.title)
@@ -33,7 +33,7 @@ RSpec.describe "Release Notes" do
 
     context "with unknown slug" do
       it "returns 404" do
-        get(api_docs_guidance_release_note_path("non-existent-slug"))
+        get(api_docs_training_guidance_release_note_path("non-existent-slug"))
 
         expect(response).to have_http_status(:not_found)
       end

@@ -18,13 +18,13 @@
         <% if @latest_release_note.present? %>
           <h3 class="govuk-heading-m">
             <span class="govuk-caption-m"><%= @latest_release_note.date %></span>
-            <%= link_to @latest_release_note.title, api_docs_guidance_release_note_path(@latest_release_note.slug) %>
+            <%= link_to @latest_release_note.title, api_docs_training_guidance_release_note_path(@latest_release_note.slug) %>
           </h3>
           <p>
             <%= render API::Documentation::Training::Guidance::ReleaseNotes::TagsComponent.new(tags: @latest_release_note.tags) %>
           </p>
           <p class="govuk-body">
-            <%= govuk_link_to("View all release notes", api_docs_guidance_release_notes_path) %>
+            <%= govuk_link_to("View all release notes", api_docs_training_guidance_release_notes_path) %>
           </p>
         <% end %>
       </div>
@@ -39,7 +39,7 @@
       <p>
         These instructions and reference materials explain how to use our API, including its endpoints, data formats, and authentication.
       </p>
-      <p><%= govuk_link_to("View our swagger API documentation", api_docs_documentation_path(:v3)) %></p>
+      <p><%= govuk_link_to("View our swagger API documentation", api_docs_training_documentation_path(:v3)) %></p>
     </div>
 
     <div class="govuk-grid-column-one-half">
@@ -47,7 +47,7 @@
       <p>
         Find out what data lead providers need to submit to DfE, how to keep it up to date, and when to report changes about early career teachers and their mentors.
       </p>
-      <p><%= govuk_link_to("View our guidance for lead providers", api_docs_guidance_page_path("guidance-for-lead-providers")) %></p>
+      <p><%= govuk_link_to("View our guidance for lead providers", api_docs_training_guidance_page_path("guidance-for-lead-providers")) %></p>
     </div>
   </div>
 </div>
