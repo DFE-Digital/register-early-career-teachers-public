@@ -48,6 +48,7 @@ module RegisterEarlyCareerTeachers
     config.enable_test_guidance = ActiveModel::Type::Boolean.new.cast(ENV.fetch("TEST_GUIDANCE", false))
     config.enable_fake_trs_api = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_FAKE_TRS_API", false))
     config.enable_personas = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_PERSONAS", false))
+    config.enable_apis_under_development = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_APIS_UNDER_DEVELOPMENT", false))
     config.enable_persona_avatars = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_PERSONA_AVATARS", true))
     config.enable_direct_school_dfe_sign_in = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_DIRECT_SCHOOL_DFE_SIGN_IN", false))
     config.enable_teaching_school_hubs = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_HUBS", false))

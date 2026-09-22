@@ -33,8 +33,12 @@ namespace :api do
     resources :unfunded_mentors, only: %i[index show], path: "unfunded-mentors", param: :api_id
   end
 
+  constraints -> { Rails.application.config.enable_apis_under_development } do
+    get "docs", to: "documentation#show", as: :documentation
+  end
+
   namespace :docs, module: :documentation do
-    scope "training", module: :training do
+    scope "training", module: :training, as: :training do
       get "guidance", to: "guidance#show"
 
       scope "guidance" do
