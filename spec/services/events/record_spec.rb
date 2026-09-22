@@ -338,6 +338,32 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe ".record_teacher_ect_first_became_eligible_for_training_reset_event!" do
+    let(:ect_first_became_eligible_for_training_at) { 1.year.ago }
+    let(:teacher) { FactoryBot.create(:teacher, ect_first_became_eligible_for_training_at:) }
+    let(:teacher_name) { Teachers::Name.new(teacher).full_name }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        teacher.ect_first_became_eligible_for_training_at = nil
+        modifications = teacher.changes
+        teacher.save!(validate: false)
+
+        Events::Record.record_teacher_ect_first_became_eligible_for_training_reset_event!(author:, teacher:, modifications:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          teacher:,
+          heading: "ECT #{teacher_name}’s first became eligible for training timestamp was reset",
+          event_type: :teacher_ect_first_became_eligible_for_training_reset,
+          happened_at: Time.zone.now,
+          modifications: ["ECT first became eligible for training at '#{ect_first_became_eligible_for_training_at}' removed"],
+          metadata: modifications,
+          **author_params
+        )
+      end
+    end
+  end
+
   describe ".record_induction_extension_created_event!" do
     let(:induction_extension) { FactoryBot.build(:induction_extension) }
 

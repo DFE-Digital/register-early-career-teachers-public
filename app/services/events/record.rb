@@ -335,6 +335,14 @@ module Events
       new(event_type:, author:, appropriate_body_period:, teacher:, induction_period:, heading:, happened_at:).record_event!
     end
 
+    def self.record_teacher_ect_first_became_eligible_for_training_reset_event!(author:, teacher:, modifications:, happened_at: Time.zone.now)
+      event_type = :teacher_ect_first_became_eligible_for_training_reset
+      teacher_name = Teachers::Name.new(teacher).full_name
+      heading = "ECT #{teacher_name}’s first became eligible for training timestamp was reset"
+
+      new(event_type:, author:, teacher:, heading:, modifications:, happened_at:).record_event!
+    end
+
     # Induction Extension Events
 
     def self.record_induction_extension_created_event!(author:, appropriate_body_period:, teacher:, induction_extension:, modifications:, happened_at: Time.zone.now)
