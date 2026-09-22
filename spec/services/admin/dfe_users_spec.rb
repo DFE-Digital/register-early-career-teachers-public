@@ -56,6 +56,50 @@ RSpec.describe Admin::DfEUsers do
       expect(event.reload.author_id).to be_nil
     end
 
+    context "when the author tries to remove themselves" do
+      let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
+
+      it "does not remove the user" do
+        expect {
+          expect { remove_user }
+            .to raise_error(Admin::DfEUsers::CannotRemoveSelf)
+        }.not_to change(User, :count)
+      end
+
+      it "does not record a deletion event" do
+        expect { remove_user }
+          .to raise_error(Admin::DfEUsers::CannotRemoveSelf)
+
+        expect(Events::Record)
+          .not_to have_received(:record_dfe_user_deleted_event!)
+      end
+    end
+
+    context "when the user is referenced by a declaration" do
+      before do
+        FactoryBot.create(
+          :declaration,
+          :voided_by_user,
+          voided_by_user: user
+        )
+      end
+
+      it "does not remove the user" do
+        expect {
+          expect { remove_user }
+            .to raise_error(Admin::DfEUsers::UserReferencedByDeclaration)
+        }.not_to change(User, :count)
+      end
+
+      it "does not record a deletion event" do
+        expect { remove_user }
+          .to raise_error(Admin::DfEUsers::UserReferencedByDeclaration)
+
+        expect(Events::Record)
+          .not_to have_received(:record_dfe_user_deleted_event!)
+      end
+    end
+
     context "when the user cannot be destroyed" do
       before do
         allow(User).to receive(:find).with(user.id).and_return(user)
@@ -64,22 +108,17 @@ RSpec.describe Admin::DfEUsers do
 
       it "does not remove the user" do
         expect {
-          begin
-            remove_user
-          rescue ActiveRecord::RecordNotDestroyed
-            nil
-          end
+          expect { remove_user }
+            .to raise_error(ActiveRecord::RecordNotDestroyed)
         }.not_to change(User, :count)
       end
 
       it "does not record a deletion event" do
-        expect {
-          begin
-            remove_user
-          rescue ActiveRecord::RecordNotDestroyed
-            nil
-          end
-        }.not_to change(Event, :count)
+        expect { remove_user }
+          .to raise_error(ActiveRecord::RecordNotDestroyed)
+
+        expect(Events::Record)
+          .not_to have_received(:record_dfe_user_deleted_event!)
       end
     end
   end

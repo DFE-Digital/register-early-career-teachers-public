@@ -50,18 +50,6 @@ module Admin
     def destroy
       @user = User.find(params[:id])
 
-      if @user.id == current_user.id
-        redirect_to admin_user_path(@user),
-                    notice: "You cannot remove your own user account"
-        return
-      end
-
-      if Declaration.exists?(voided_by_user_id: @user.id)
-        redirect_to admin_user_path(@user),
-                    notice: "This user cannot be removed because they are referenced by historical declaration records"
-        return
-      end
-
       @remove_user = Admin::Users::RemoveUserForm.new(
         remove_user_params.merge(
           user: @user,
@@ -75,6 +63,12 @@ module Admin
       else
         render :remove, status: :bad_request
       end
+    rescue DfEUsers::CannotRemoveSelf
+      redirect_to admin_user_path(@user),
+                  notice: "You cannot remove your own user account"
+    rescue DfEUsers::UserReferencedByDeclaration
+      redirect_to admin_user_path(@user),
+                  notice: "This user cannot be removed because they are referenced by historical declaration records"
     end
 
     def unlock_otp_sign_in

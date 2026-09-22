@@ -252,18 +252,13 @@ RSpec.describe "Admin::Users" do
     describe "GET /admin/users/:id/remove" do
       let!(:user_record) { FactoryBot.create(:user) }
 
-      before { allow(User).to receive(:find).and_call_original }
-
-      it "finds the requested user" do
+      it "shows the remove user page for the requested user" do
         get remove_admin_user_path(user_record)
 
-        expect(User).to have_received(:find).with(user_record.id.to_s)
-      end
-
-      it "shows the remove user page" do
-        get remove_admin_user_path(user_record)
-
-        expect(response.body).to include("Remove #{user_record.name} as a user")
+        aggregate_failures do
+          expect(response).to be_successful
+          expect(response.body).to include("Remove #{user_record.name} as a user")
+        end
       end
     end
 
@@ -306,14 +301,22 @@ RSpec.describe "Admin::Users" do
       end
 
       context "when the confirmation is not checked" do
+        let(:unchecked_confirmation_params) do
+          {
+            admin_users_remove_user_form: {
+              confirmed: "false"
+            }
+          }
+        end
+
         it "does not remove the user" do
           expect {
-            delete admin_user_path(user_record)
+            delete admin_user_path(user_record), params: unchecked_confirmation_params
           }.not_to change(User, :count)
         end
 
         it "returns bad request and shows the validation error" do
-          delete admin_user_path(user_record)
+          delete admin_user_path(user_record), params: unchecked_confirmation_params
 
           aggregate_failures do
             expect(response).to have_http_status(:bad_request)
@@ -324,7 +327,7 @@ RSpec.describe "Admin::Users" do
         end
 
         it "does not record a deletion event" do
-          delete admin_user_path(user_record)
+          delete admin_user_path(user_record), params: unchecked_confirmation_params
 
           expect(Events::Record)
             .not_to have_received(:record_dfe_user_deleted_event!)

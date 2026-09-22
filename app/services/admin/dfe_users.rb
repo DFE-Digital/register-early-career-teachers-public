@@ -1,5 +1,8 @@
 module Admin
   class DfEUsers
+    class CannotRemoveSelf < StandardError; end
+    class UserReferencedByDeclaration < StandardError; end
+
     attr_reader :author, :user
 
     def initialize(author:)
@@ -33,6 +36,12 @@ module Admin
 
     def remove_user(id)
       @user = User.find(id)
+
+      raise CannotRemoveSelf if user.id == author.id
+
+      if Declaration.exists?(voided_by_user_id: user.id)
+        raise UserReferencedByDeclaration
+      end
 
       User.transaction do
         user.destroy!
