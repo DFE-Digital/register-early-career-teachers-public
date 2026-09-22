@@ -38,6 +38,13 @@ RSpec.describe "Admin::Teachers::Schools", type: :request do
           expect(response.body).to include("ECT history")
           expect(response.body).to include(ect_period.school.name)
         end
+
+        it "links to undo the registration" do
+          get admin_teacher_school_path(teacher)
+
+          expect(response.body).to include("Undo a registration for #{Teachers::Name.new(teacher).full_name}")
+          expect(response.body).to include(admin_teacher_undo_registration_wizard_start_path(teacher))
+        end
       end
 
       context "when the teacher has a mentor school period" do
@@ -49,6 +56,13 @@ RSpec.describe "Admin::Teachers::Schools", type: :request do
           expect(response.body).to include("Mentor history")
           expect(response.body).to include(mentor_period.school.name)
         end
+
+        it "links to undo the registration" do
+          get admin_teacher_school_path(teacher)
+
+          expect(response.body).to include("Undo a registration for #{Teachers::Name.new(teacher).full_name}")
+          expect(response.body).to include(admin_teacher_undo_registration_wizard_start_path(teacher))
+        end
       end
 
       context "when the teacher has no school periods" do
@@ -57,6 +71,7 @@ RSpec.describe "Admin::Teachers::Schools", type: :request do
         it "shows the empty state message" do
           get admin_teacher_school_path(teacher)
           expect(response.body).to include("There is no school history recorded for this teacher.")
+          expect(response.body).not_to include("Undo a registration")
         end
       end
 

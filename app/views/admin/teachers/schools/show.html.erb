@@ -26,4 +26,11 @@
 
 <% if @ect_at_school_periods.blank? && @mentor_at_school_periods.blank? %>
   <p class="govuk-body">There is no school history recorded for this teacher.</p>
+<% else %>
+  <p class="govuk-body">
+    <%= govuk_link_to(
+      "Undo a registration for #{teacher_full_name(@teacher)}",
+      admin_teacher_undo_registration_wizard_start_path(@teacher)
+    ) %>
+  </p>
 <% end %>
