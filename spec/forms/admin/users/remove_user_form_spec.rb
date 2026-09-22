@@ -58,7 +58,7 @@ RSpec.describe Admin::Users::RemoveUserForm do
       it "does not call the removal service" do
         allow(Admin::DfEUsers).to receive(:new)
 
-        form.save!
+        expect(form.save).to be(false)
 
         expect(Admin::DfEUsers).not_to have_received(:new)
       end
