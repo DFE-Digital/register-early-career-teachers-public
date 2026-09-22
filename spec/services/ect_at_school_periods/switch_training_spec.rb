@@ -1049,6 +1049,110 @@ module ECTAtSchoolPeriods
             end
           end
 
+          context "when the ECT had provider-led training in an earlier contract period" do
+            let(:previous_contract_period) { FactoryBot.create(:contract_period, :with_schedules, :previous) }
+
+            let(:ect_at_school_period) do
+              FactoryBot.create(:ect_at_school_period, :unfinished, started_on: previous_contract_period.started_on)
+            end
+
+            let!(:mentorship_period) do
+              FactoryBot.create(:mentorship_period, :unfinished, mentee: ect_at_school_period, mentor: mentor_at_school_period)
+            end
+
+            let!(:previous_school_partnership) do
+              FactoryBot.create(
+                :school_partnership,
+                :for_year,
+                year: previous_contract_period.year,
+                lead_provider:,
+                school: ect_at_school_period.school
+              )
+            end
+
+            let!(:previous_training_period) do
+              FactoryBot.create(
+                :training_period,
+                :for_ect,
+                :provider_led,
+                ect_at_school_period:,
+                school_partnership: previous_school_partnership,
+                started_on: ect_at_school_period.started_on,
+                finished_on: contract_period.started_on - 1.day
+              )
+            end
+
+            let!(:training_period) do
+              FactoryBot.create(
+                :training_period,
+                :for_ect,
+                :unfinished,
+                :school_led,
+                ect_at_school_period:,
+                started_on: contract_period.started_on
+              )
+            end
+
+            it "keeps the ECT in the earlier contract period" do
+              SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+              new_training_period = ect_at_school_period.reload.latest_training_period
+              expect(new_training_period.school_partnership).to eq(previous_school_partnership)
+              expect(new_training_period.schedule.contract_period).to eq(previous_contract_period)
+            end
+
+            context "when the school has a partnership with the lead provider in the current contract period" do
+              let!(:current_school_partnership) do
+                FactoryBot.create(
+                  :school_partnership,
+                  :for_year,
+                  year: contract_period.year,
+                  lead_provider:,
+                  school: ect_at_school_period.school
+                )
+              end
+
+              it "creates the mentor's training period with the current partnership and schedule" do
+                expect { SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:) }
+                  .to change(TrainingPeriod, :count).by(2)
+
+                new_training_period = mentor_at_school_period.reload.training_periods.last
+                expect(new_training_period.school_partnership).to eq(current_school_partnership)
+                expect(new_training_period.expression_of_interest).to be_nil
+                expect(new_training_period.schedule.contract_period).to eq(contract_period)
+              end
+            end
+
+            context "when the school has no partnership with the lead provider in the current contract period" do
+              it "creates the mentor's training period with a current expression of interest and schedule" do
+                expect { SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:) }
+                  .to change(TrainingPeriod, :count).by(2)
+
+                new_training_period = mentor_at_school_period.reload.training_periods.last
+                expect(new_training_period.school_partnership).to be_nil
+                expect(new_training_period.expression_of_interest).to eq(framework_agreement)
+                expect(new_training_period.schedule.contract_period).to eq(contract_period)
+              end
+            end
+
+            context "when the lead provider has no framework agreement in the current contract period" do
+              let(:framework_agreement) { nil }
+
+              it "does not create a training period for the mentor" do
+                expect { SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:) }
+                  .to change(TrainingPeriod, :count).by(1)
+
+                expect(mentor_at_school_period.reload.training_periods).to be_empty
+              end
+
+              it "does not record a `new_training_period_for_mentor` event" do
+                expect(Events::Record).not_to receive(:record_teacher_starts_training_period_event!)
+
+                SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+              end
+            end
+          end
+
           context "when there is a confirmed school partnership" do
             let!(:lead_provider_delivery_partnership) do
               FactoryBot.create(
