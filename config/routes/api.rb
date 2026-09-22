@@ -33,7 +33,7 @@ namespace :api do
     resources :unfunded_mentors, only: %i[index show], path: "unfunded-mentors", param: :api_id
   end
 
-  namespace :docs do
+  namespace :docs, module: :documentation do
     scope "lead-provider", module: :lead_provider do
       get "guidance", to: "guidance#show"
 

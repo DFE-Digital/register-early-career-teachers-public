@@ -42,14 +42,14 @@ You know its ready when the `PORTS` tab contains a port of `3000`:
 
 ## Navigate to/create the Markdown file for the guidance page
 
-In order to create/edit a guidance page you have to navigate to the folder that contains the Markdown files that make up each page. Navigate to the `app/views/api/docs/lead_provider/guidance` in the file explorer:
+In order to create/edit a guidance page you have to navigate to the folder that contains the Markdown files that make up each page. Navigate to the `app/views/api/documentation/lead_provider/guidance` in the file explorer:
 
 <a href="../images/api-guidance-dir.png" target="blank"><img src="../images/api-guidance-dir.png" width="300"/></a>
 
 Here, you can either find the existing file you want to edit or create a new `.md` file to add a guidance page. The folder structure will mimic the final URL given to the page, for example:
 
-- `app/views/api/docs/lead_provider/page-1.md` will be available at `/api/docs/lead-provider/page-1`
-- `app/views/api/docs/lead_provider/nested/page-2.md` will be available at `/api/docs/lead-provider/nested/page-2`
+- `app/views/api/documentation/lead_provider/page-1.md` will be available at `/api/docs/lead-provider/page-1`
+- `app/views/api/documentation/lead_provider/nested/page-2.md` will be available at `/api/docs/lead-provider/nested/page-2`
 
 ## Construct the page/contents using supported Markdown syntax
 
@@ -82,21 +82,21 @@ To add a new page to the **Guidance** section:
 
 1. The URL must begin with:
    `/api/docs/lead-provider/guidance-for-lead-providers/`
-2. The page must be be added to the list in `API::Docs::LeadProvider::Guidance::SidebarComponent`.
+2. The page must be be added to the list in `API::Documentation::LeadProvider::Guidance::SidebarComponent`.
 
 ### 1. Create the Guidance Page
 
 1. Write the page content in **Markdown**.
 2. Save the file in folder:
-   `app/views/api/docs/lead_provider/guidance_for_lead_providers/`
+   `app/views/api/documentation/lead_provider/guidance_for_lead_providers/`
 
 **Example:**
-`app/views/api/docs/lead_provider/guidance_for_lead_providers/api_data_states.md`
+`app/views/api/documentation/lead_provider/guidance_for_lead_providers/api_data_states.md`
 
 ### 2. Add the Page to `SidebarComponent`
 
 1. Edit the component file:
-   `app/components/api/docs/lead-provider/sidebar_component.rb`
+   `app/components/api/documentation/lead-provider/sidebar_component.rb`
 2. Update the `GUIDANCE_PAGES` constant to include the new page:
 
 <pre><code>GUIDANCE_PAGES = [
