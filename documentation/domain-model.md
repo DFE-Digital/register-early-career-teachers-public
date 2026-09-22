@@ -80,6 +80,12 @@ erDiagram
   TrainingPeriod }o--|| SchoolPartnership : belongs_to
   TrainingPeriod }o--|| Schedule : belongs_to
   TrainingPeriod }o--|| FrameworkAgreement : belongs_to
+  TeachingSchoolHub {
+    integer id
+    datetime created_at
+    string name
+    datetime updated_at
+  }
   TeacherIdChange {
     integer id
     uuid api_from_teacher_id
@@ -253,6 +259,12 @@ erDiagram
   }
   PendingInductionSubmission }o--|| AppropriateBodyPeriod : belongs_to
   PendingInductionSubmission }o--|| PendingInductionSubmissionBatch : belongs_to
+  NationalBody {
+    integer id
+    datetime created_at
+    string name
+    datetime updated_at
+  }
   Milestone {
     integer id
     datetime created_at
@@ -293,6 +305,12 @@ erDiagram
   }
   MentorAtSchoolPeriod }o--|| School : belongs_to
   MentorAtSchoolPeriod }o--|| Teacher : belongs_to
+  LocalAuthority {
+    integer id
+    datetime created_at
+    string name
+    datetime updated_at
+  }
   LeadProviderDeliveryPartnership {
     integer id
     datetime created_at
@@ -443,7 +461,11 @@ erDiagram
     enum body_type
     datetime created_at
     uuid dfe_sign_in_organisation_id
+    integer local_authority_id
     string name
+    integer national_body_id
+    integer school_id
+    integer teaching_school_hub_id
     datetime updated_at
   }
   AppropriateBodyPeriod }o--|| DfESignInOrganisation : belongs_to
