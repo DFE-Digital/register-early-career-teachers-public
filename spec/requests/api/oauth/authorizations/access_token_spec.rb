@@ -48,6 +48,13 @@ RSpec.describe "API OAuth authorization access tokens", type: :request do
   let(:code_verifier) { challenge }
   let(:redirect_uri) { client.redirect_uris.first }
 
+  let(:enable_apis_under_development) { true }
+
+  before do
+    allow(Rails.application.config)
+      .to receive(:enable_apis_under_development) { enable_apis_under_development }
+  end
+
   describe "POST /oauth/token" do
     before do
       authorization.update!(code_digest:, code_expires_at:)
@@ -132,6 +139,16 @@ RSpec.describe "API OAuth authorization access tokens", type: :request do
       let(:grant_type) { nil }
 
       it_behaves_like "a request that generates an error response", :bad_request, "invalid_request"
+    end
+
+    context "when enable_apis_under_development is false" do
+      let(:enable_apis_under_development) { false }
+
+      it "returns 404 response" do
+        post("/oauth/token", params:, headers: basic_auth)
+
+        expect(response).to have_http_status(:not_found)
+      end
     end
   end
 end

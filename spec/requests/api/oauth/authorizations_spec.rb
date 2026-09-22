@@ -17,6 +17,13 @@ RSpec.describe "API OAuth authorizations", type: :request do
     }
   end
 
+  let(:enable_apis_under_development) { true }
+
+  before do
+    allow(Rails.application.config)
+      .to receive(:enable_apis_under_development) { enable_apis_under_development }
+  end
+
   describe "GET /oauth/authorize" do
     context "when not signed in" do
       it "redirects to the root page, keeping the whole authorize URL to return to" do
@@ -53,6 +60,16 @@ RSpec.describe "API OAuth authorizations", type: :request do
         expect(response).to redirect_to(
           "#{redirect_uri}?error=unsupported_response_type&error_description=Response+type+is+not+included+in+the+list&state=xyz"
         )
+      end
+    end
+
+    context "when enable_apis_under_development is false" do
+      let(:enable_apis_under_development) { false }
+
+      it "returns 404 response" do
+        get("/oauth/authorize", params:)
+
+        expect(response).to have_http_status(:not_found)
       end
     end
   end
@@ -100,6 +117,16 @@ RSpec.describe "API OAuth authorizations", type: :request do
         end
       end
     end
+
+    context "when enable_apis_under_development is false" do
+      let(:enable_apis_under_development) { false }
+
+      it "returns 404 response" do
+        get("/oauth/authorize", params:)
+
+        expect(response).to have_http_status(:not_found)
+      end
+    end
   end
 
   describe "DELETE /oauth/authorize" do
@@ -118,6 +145,16 @@ RSpec.describe "API OAuth authorizations", type: :request do
       delete("/oauth/authorize")
 
       expect(response).to have_http_status(:bad_request)
+    end
+
+    context "when enable_apis_under_development is false" do
+      let(:enable_apis_under_development) { false }
+
+      it "returns 404 response" do
+        delete("/oauth/authorize")
+
+        expect(response).to have_http_status(:not_found)
+      end
     end
   end
 end
