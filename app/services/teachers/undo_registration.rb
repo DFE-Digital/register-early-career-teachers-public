@@ -19,7 +19,8 @@ module Teachers
     def undo!(
       expected_action: nil,
       expected_training_period_ids: nil,
-      expected_mentorship_period_ids: nil
+      expected_mentorship_period_ids: nil,
+      expected_at_school_period_gid: nil
     )
       ActiveRecord::Base.transaction do
         lock_at_school_period!
@@ -29,6 +30,7 @@ module Teachers
         raise UndoOutcomeChangedError if expected_action.present? && expected_action != action
         raise AffectedPeriodsChangedError unless affected_periods_match?(
           action:,
+          expected_at_school_period_gid:,
           expected_training_period_ids:,
           expected_mentorship_period_ids:
         )
@@ -80,7 +82,15 @@ module Teachers
         mentorship_periods.unfinished.exists?
     end
 
-    def affected_periods_match?(action:, expected_training_period_ids:, expected_mentorship_period_ids:)
+    def affected_periods_match?(
+      action:,
+      expected_at_school_period_gid:,
+      expected_training_period_ids:,
+      expected_mentorship_period_ids:
+    )
+      return false if expected_at_school_period_gid &&
+        at_school_period.to_global_id.to_s != expected_at_school_period_gid
+
       return true if expected_training_period_ids.nil? && expected_mentorship_period_ids.nil?
       return false if expected_training_period_ids.nil? || expected_mentorship_period_ids.nil?
 

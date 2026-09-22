@@ -79,9 +79,10 @@ RSpec.describe "admin/teachers/undo_registration_wizard/confirm.html.erb" do
       )
     end
 
-    it "includes the reviewed period IDs" do
+    it "includes the reviewed period identities" do
       expect(rendered).to have_field("confirm_expected_training_period_ids", type: "hidden", with: training_period.id.to_s)
       expect(rendered).to have_field("confirm_expected_mentorship_period_ids", type: "hidden", with: mentorship_period.id.to_s)
+      expect(rendered).to have_field("confirm_expected_at_school_period_gid", type: "hidden", with: at_school_period.to_global_id.to_s)
     end
 
     context "when affected periods start in the future" do

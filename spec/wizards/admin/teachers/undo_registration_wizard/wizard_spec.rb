@@ -168,13 +168,15 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::Wizard do
       expect(undo_registration).to receive(:undo!).with(
         expected_action: "close",
         expected_training_period_ids: [1],
-        expected_mentorship_period_ids: [2]
+        expected_mentorship_period_ids: [2],
+        expected_at_school_period_gid: at_school_period.to_global_id.to_s
       )
 
       wizard.undo_registration!(
         expected_action: "close",
         expected_training_period_ids: [1],
-        expected_mentorship_period_ids: [2]
+        expected_mentorship_period_ids: [2],
+        expected_at_school_period_gid: at_school_period.to_global_id.to_s
       )
     end
   end

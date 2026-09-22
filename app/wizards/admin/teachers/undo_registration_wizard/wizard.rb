@@ -66,9 +66,15 @@ module Admin
         def undo_registration!(
           expected_action:,
           expected_training_period_ids:,
-          expected_mentorship_period_ids:
+          expected_mentorship_period_ids:,
+          expected_at_school_period_gid:
         )
-          undo_registration.undo!(expected_action:, expected_training_period_ids:, expected_mentorship_period_ids:)
+          undo_registration.undo!(
+            expected_action:,
+            expected_training_period_ids:,
+            expected_mentorship_period_ids:,
+            expected_at_school_period_gid:
+          )
         end
 
         delegate :undo_action, to: :store
