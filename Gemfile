@@ -9,7 +9,7 @@ gem "bootsnap", require: false
 gem "cssbundling-rails"
 gem "csv"
 gem "dfe-analytics", github: "DFE-Digital/dfe-analytics", tag: "v1.15.17"
-gem "dfe-wizard", github: "DFE-Digital/dfe-wizard"
+gem "dfe-wizard", require: "dfe/wizard", github: "DFE-Digital/dfe-wizard", tag: "v1.0.0"
 gem "faraday"
 gem "jsbundling-rails"
 gem "pg", "~> 1.6"
