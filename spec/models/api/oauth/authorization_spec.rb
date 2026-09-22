@@ -15,6 +15,32 @@ describe API::OAuth::Authorization do
     }
   end
 
+  describe "scopes" do
+    let(:client) { FactoryBot.create(:api_oauth_client) }
+    let!(:authorization_with_token) { FactoryBot.create(:api_oauth_authorization, :with_token, client:) }
+    let!(:authorization_with_expired_token) { FactoryBot.create(:api_oauth_authorization, :with_expired_token, client:) }
+    let!(:authorization_with_revoked_token) { FactoryBot.create(:api_oauth_authorization, :with_token, :revoked, client:) }
+    let!(:authorization_without_token) { FactoryBot.create(:api_oauth_authorization, client:) }
+
+    describe "active" do
+      it "returns unrevoked authorizations that have a token that is not expired" do
+        expect(client.authorizations.active).to eq [authorization_with_token]
+      end
+    end
+
+    describe "not_revoked" do
+      it "returns unrevoked authorizations" do
+        expect(client.authorizations.not_revoked).to contain_exactly(authorization_with_token, authorization_with_expired_token, authorization_without_token)
+      end
+    end
+
+    describe "active_token" do
+      it "returns authorizations that have a token that has not expired" do
+        expect(client.authorizations.active_token).to contain_exactly(authorization_with_token, authorization_with_revoked_token)
+      end
+    end
+  end
+
   describe "validations" do
     subject(:authorization) { FactoryBot.build(:api_oauth_authorization) }
 
@@ -52,6 +78,20 @@ describe API::OAuth::Authorization do
 
       it "remains valid" do
         expect(authorization.reload).to be_valid
+      end
+    end
+
+    context "allows only 1 active authorization per client/AB/redirect_uri" do
+      subject(:authorization) { FactoryBot.build(:api_oauth_authorization, :with_token, client:, appropriate_body_period:, redirect_uri:) }
+
+      let(:client) { FactoryBot.create(:api_oauth_client) }
+      let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
+      let(:redirect_uri) { client.redirect_uris.first }
+      let!(:existing_authorization) { FactoryBot.create(:api_oauth_authorization, :with_token, client:, appropriate_body_period:, redirect_uri:) }
+
+      it "permits only 1 active authorization" do
+        expect(authorization).not_to be_valid
+        expect(authorization.errors[:client_id]).to include("Only one active authorization permitted for the same client, appropriate body and redirect URI")
       end
     end
   end
@@ -137,17 +177,17 @@ describe API::OAuth::Authorization do
     end
   end
 
-  describe "#revocable?" do
+  describe "#not_revoked?" do
     context "when revoked_at has a value" do
       subject(:authorization) { FactoryBot.build(:api_oauth_authorization, revoked_at: 1.day.ago) }
 
-      it { is_expected.not_to be_revocable }
+      it { is_expected.not_to be_not_revoked }
     end
 
     context "when revoked_at is blank" do
       subject(:authorization) { FactoryBot.build(:api_oauth_authorization) }
 
-      it { is_expected.to be_revocable }
+      it { is_expected.to be_not_revoked }
     end
   end
 
@@ -160,6 +200,42 @@ describe API::OAuth::Authorization do
           authorization.revoke!
         }.to change(authorization, :revoked_at).to(Time.zone.now)
       end
+    end
+  end
+
+  describe "#active?" do
+    context "when the token has not expired" do
+      context "when the authorization has not been revoked" do
+        subject(:authorization) { FactoryBot.build(:api_oauth_authorization, :with_token) }
+
+        it { is_expected.to be_active }
+      end
+
+      context "when the authorization has been revoked" do
+        subject(:authorization) { FactoryBot.build(:api_oauth_authorization, :with_token, :revoked) }
+
+        it { is_expected.not_to be_active }
+      end
+    end
+
+    context "when the token has expired" do
+      subject(:authorization) { FactoryBot.build(:api_oauth_authorization, :with_token).tap { it.token_expires_at = 1.day.ago } }
+
+      it { is_expected.not_to be_active }
+    end
+  end
+
+  describe "#token_active?" do
+    context "when the token has not expired" do
+      subject(:authorization) { FactoryBot.build(:api_oauth_authorization, :with_token) }
+
+      it { is_expected.to be_token_active }
+    end
+
+    context "when the token has expired" do
+      subject(:authorization) { FactoryBot.build(:api_oauth_authorization, :with_token).tap { it.token_expires_at = 1.day.ago } }
+
+      it { is_expected.not_to be_token_active }
     end
   end
 end

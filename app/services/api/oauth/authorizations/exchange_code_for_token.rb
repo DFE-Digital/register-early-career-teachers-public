@@ -12,17 +12,37 @@ module API::OAuth::Authorizations
 
     def call
       ActiveRecord::Base.transaction do
-        raise(CodeNotExchangeableError, "Code cannot be exchanged") unless code_exchangable?
-        raise(CodeNotExchangeableError, "Code verifier is invalid") unless code_challenge_verified?(code_verifier:)
-
-        authorization.assign_token
-        authorization.update!(code_exchanged_at: Time.zone.now)
-
-        author = Events::OAuthClientAuthor.new(client: authorization.client)
-        Events::Record.record_api_oauth_authorization_code_exchanged_event!(author:, authorization:)
+        validate_code!
+        revoke_existing_active_authorization!
+        exchange_code!
+        record_event!
 
         authorization
       end
+    end
+
+  private
+
+    def validate_code!
+      raise(CodeNotExchangeableError, "Code cannot be exchanged") unless code_exchangable?
+      raise(CodeNotExchangeableError, "Code verifier is invalid") unless code_challenge_verified?(code_verifier:)
+    end
+
+    def revoke_existing_active_authorization!
+      existing_authorization = authorization.existing_active_authorization
+      return if existing_authorization.blank?
+
+      API::OAuth::Authorizations::RevocationRequest.new(authorization: existing_authorization).revoke!
+    end
+
+    def exchange_code!
+      authorization.assign_token
+      authorization.update!(code_exchanged_at: Time.zone.now)
+    end
+
+    def record_event!
+      author = Events::OAuthClientAuthor.new(client: authorization.client)
+      Events::Record.record_api_oauth_authorization_code_exchanged_event!(author:, authorization:)
     end
   end
 end
