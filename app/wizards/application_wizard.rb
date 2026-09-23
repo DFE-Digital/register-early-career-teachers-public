@@ -1,4 +1,9 @@
-class ApplicationWizard < DfE::Wizard::Base
+class ApplicationWizard
+  include DfE::Wizard
+
+  # So we can boot the application without error
+  def self.steps(&) = [{}]
+
   def allowed_steps = raise NotImplementedError
 
   def allowed_step? = allowed_steps.include?(current_step_name)
