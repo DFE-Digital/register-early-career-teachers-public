@@ -1,6 +1,6 @@
 module Schools
   module AssignExistingMentorWizard
-    class Wizard < DfE::Wizard::Base
+    class Wizard < ApplicationWizard
       attr_accessor :store, :ect_id, :mentor_period_id, :author
 
       steps do
