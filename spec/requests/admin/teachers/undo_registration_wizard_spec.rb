@@ -35,38 +35,37 @@ RSpec.describe "Admin::Teachers::UndoRegistrationWizardController", type: :reque
   end
 
   describe "POST select school period" do
-    context "when the teacher has multiple school periods" do
-      let!(:at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher:) }
-      let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:) }
+    # This step is only available when the teacher has multiple school periods.
+    let!(:at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher:) }
+    let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:) }
 
-      context "when an ECT school period is selected" do
-        it "redirects to the confirm step" do
-          post admin_teacher_undo_registration_wizard_select_school_period_path(teacher),
-               params: { select_school_period: { school_period_gid: at_school_period.to_global_id.to_s } }
+    context "when an ECT school period is selected" do
+      it "redirects to the confirm step" do
+        post admin_teacher_undo_registration_wizard_select_school_period_path(teacher),
+             params: { select_school_period: { school_period_gid: at_school_period.to_global_id.to_s } }
 
-          expect(response).to redirect_to(admin_teacher_undo_registration_wizard_confirm_path(teacher))
-        end
+        expect(response).to redirect_to(admin_teacher_undo_registration_wizard_confirm_path(teacher))
       end
+    end
 
-      context "when a mentor school period is selected" do
-        it "redirects to the confirm step" do
-          post admin_teacher_undo_registration_wizard_select_school_period_path(teacher),
-               params: { select_school_period: { school_period_gid: mentor_at_school_period.to_global_id.to_s } }
+    context "when a mentor school period is selected" do
+      it "redirects to the confirm step" do
+        post admin_teacher_undo_registration_wizard_select_school_period_path(teacher),
+             params: { select_school_period: { school_period_gid: mentor_at_school_period.to_global_id.to_s } }
 
-          expect(response).to redirect_to(admin_teacher_undo_registration_wizard_confirm_path(teacher))
-        end
+        expect(response).to redirect_to(admin_teacher_undo_registration_wizard_confirm_path(teacher))
       end
+    end
 
-      context "when a school period belonging to another teacher is selected" do
-        let!(:other_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished) }
+    context "when a school period belonging to another teacher is selected" do
+      let!(:other_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished) }
 
-        it "shows a validation error" do
-          post admin_teacher_undo_registration_wizard_select_school_period_path(teacher),
-               params: { select_school_period: { school_period_gid: other_school_period.to_global_id.to_s } }
+      it "shows a validation error" do
+        post admin_teacher_undo_registration_wizard_select_school_period_path(teacher),
+             params: { select_school_period: { school_period_gid: other_school_period.to_global_id.to_s } }
 
-          expect(response).to have_http_status(:unprocessable_content)
-          expect(response.body).to include("Select a school period to undo for #{Teachers::Name.new(teacher).full_name}")
-        end
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(response.body).to include("Select a school period to undo for #{Teachers::Name.new(teacher).full_name}")
       end
     end
   end
