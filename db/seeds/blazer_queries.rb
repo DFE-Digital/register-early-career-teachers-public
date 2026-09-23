@@ -15,8 +15,8 @@ end
 [
   {
     name: "Users",
-    statement: "SELECT * FROM users;",
-    description: nil,
+    statement: "SELECT * FROM users",
+    description: "All users",
   },
   {
     name: "Events",
@@ -25,33 +25,43 @@ end
   },
   {
     name: "Jobs",
-    statement: "SELECT * FROM solid_queue_jobs;",
+    statement: "SELECT * FROM solid_queue_jobs",
     description: "SolidQueue activity",
   },
   {
     name: "Schools",
     statement: "SELECT urn::text FROM schools",
-    description: "all schools",
-  },
-  {
-    name: "Appropriate bodies",
-    statement: "SELECT * FROM appropriate_bodies;",
-    description: "new data model migrating from appropriate_body_periods",
+    description: "All schools",
   },
   {
     name: "DfE Sign-In Organisations",
-    statement: "SELECT * FROM dfe_sign_in_organisations;",
-    description: "new data model persisted during migration",
+    statement: "SELECT * FROM dfe_sign_in_organisations",
+    description: "Authentication responses",
   },
   {
     name: "Regions",
-    statement: "SELECT * FROM regions;",
-    description: "new data model",
+    statement: "SELECT id, code, districts FROM regions",
+    description: "Teaching school hub regions",
   },
   {
-    name: "Appropriate body periods",
-    statement: "SELECT * FROM appropriate_body_periods;",
-    description: "old data model decommisioning and moving fields to other tables",
+    name: "Teaching School Hubs",
+    statement: "SELECT id, name FROM teaching_school_hubs",
+    description: "Regional appropriate bodies",
+  },
+  {
+    name: "National Bodies",
+    statement: "SELECT id, name FROM national_bodies",
+    description: "National appropriate bodies",
+  },
+  {
+    name: "Local Authorities",
+    statement: "SELECT id, name FROM local_authorities",
+    description: "Former appropriate bodies",
+  },
+  {
+    name: "Appropriate bodies",
+    statement: "SELECT id AS appropriate_body_id, id AS appropriate_body_period FROM appropriate_body_periods",
+    description: "Time bound role for TSs, TSHs, NBs and LAs",
   },
   {
     name: "TRS name changes",
@@ -76,7 +86,7 @@ end
   {
     name: "Active lead provider bands",
     statement: "SELECT * FROM framework_agreement_bands ORDER BY framework_agreement_id, allocation_order",
-    description: "new data model"
+    description: ""
   }
 ].each do |query|
   create_query(creator: user_manager, **query)
