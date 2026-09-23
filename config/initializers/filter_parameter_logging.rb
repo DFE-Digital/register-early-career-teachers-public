@@ -30,12 +30,17 @@ unless Rails.application.config.bypass_filter_parameter_logging
     salt
     secret
     ssn
-    token
     trn
     trs_email_address
     trs_first_name
     trs_last_name
     trs_date_of_birth
     trs_national_insurance_number
+    code_digest
+    code_verifier
+    token_digest
+    token
+    client_secret_digest
+    client_secret
   ]
 end
