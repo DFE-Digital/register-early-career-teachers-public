@@ -49,7 +49,7 @@ RSpec.describe "admin/teachers/undo_registration_wizard/select_school_period.htm
     expect(rendered).to have_field(
       ect_at_school_period.school.name,
       type: "radio",
-      with: "ect:#{ect_at_school_period.id}"
+      with: ect_at_school_period.to_global_id.to_s
     )
     expect(rendered).to have_text(appropriate_body.name)
     expect(rendered).to have_text("25 September 2024 to present")
@@ -60,9 +60,14 @@ RSpec.describe "admin/teachers/undo_registration_wizard/select_school_period.htm
     expect(rendered).to have_field(
       mentor_at_school_period.school.name,
       type: "radio",
-      with: "mentor:#{mentor_at_school_period.id}"
+      with: mentor_at_school_period.to_global_id.to_s
     )
     expect(rendered).to have_text("25 September 2023 to 24 September 2024")
+  end
+
+  it "uses one radio group for both school period types" do
+    expect(rendered).to have_css('input[type="radio"]', count: 2)
+    expect(rendered).to have_css('input[type="radio"][name="select_school_period[school_period_gid]"]', count: 2)
   end
 
   context "when the teacher has no ECT school periods" do

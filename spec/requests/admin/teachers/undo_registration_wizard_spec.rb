@@ -42,7 +42,7 @@ RSpec.describe "Admin::Teachers::UndoRegistrationWizardController", type: :reque
       context "when an ECT school period is selected" do
         it "redirects to the confirm step" do
           post admin_teacher_undo_registration_wizard_select_school_period_path(teacher),
-               params: { select_school_period: { school_period: "ect:#{at_school_period.id}" } }
+               params: { select_school_period: { school_period_gid: at_school_period.to_global_id.to_s } }
 
           expect(response).to redirect_to(admin_teacher_undo_registration_wizard_confirm_path(teacher))
         end
@@ -51,7 +51,7 @@ RSpec.describe "Admin::Teachers::UndoRegistrationWizardController", type: :reque
       context "when a mentor school period is selected" do
         it "redirects to the confirm step" do
           post admin_teacher_undo_registration_wizard_select_school_period_path(teacher),
-               params: { select_school_period: { school_period: "mentor:#{mentor_at_school_period.id}" } }
+               params: { select_school_period: { school_period_gid: mentor_at_school_period.to_global_id.to_s } }
 
           expect(response).to redirect_to(admin_teacher_undo_registration_wizard_confirm_path(teacher))
         end
@@ -62,7 +62,7 @@ RSpec.describe "Admin::Teachers::UndoRegistrationWizardController", type: :reque
 
         it "shows a validation error" do
           post admin_teacher_undo_registration_wizard_select_school_period_path(teacher),
-               params: { select_school_period: { school_period: "ect:#{other_school_period.id}" } }
+               params: { select_school_period: { school_period_gid: other_school_period.to_global_id.to_s } }
 
           expect(response).to have_http_status(:unprocessable_content)
           expect(response.body).to include("Select a school period to undo for #{Teachers::Name.new(teacher).full_name}")

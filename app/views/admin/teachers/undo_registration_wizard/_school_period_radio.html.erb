@@ -1,0 +1,15 @@
+<%= form.govuk_radio_button(
+  :school_period_gid,
+  school_period.to_global_id.to_s,
+  label: { text: school_period.school.name },
+  hint: -> {
+    safe_join(
+      [
+        appropriate_body_name.presence,
+        "#{school_period.started_on.to_fs(:govuk)} to #{school_period.finished_on&.to_fs(:govuk) || "present"}"
+      ].compact,
+      tag.br
+    )
+  },
+  link_errors:
+) %>

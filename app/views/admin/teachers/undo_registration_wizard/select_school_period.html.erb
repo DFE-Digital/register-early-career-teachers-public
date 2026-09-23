@@ -16,26 +16,18 @@
       <%= content_for(:error_summary) { form.govuk_error_summary } %>
 
       <%= form.govuk_radio_buttons_fieldset(
-        :school_period,
+        :school_period_gid,
         legend: { text: "Select a school period to undo", hidden: true }
       ) do %>
         <% if @wizard.ect_at_school_periods.any? %>
           <h2 class="govuk-heading-m">ECT school periods</h2>
 
           <% @wizard.ect_at_school_periods.each do |school_period| %>
-            <%= form.govuk_radio_button(
-              :school_period,
-              "ect:#{school_period.id}",
-              label: { text: school_period.school.name },
-              hint: -> {
-                safe_join(
-                  [
-                    school_period.school_reported_appropriate_body_name.presence,
-                    "#{school_period.started_on.to_fs(:govuk)} to #{school_period.finished_on&.to_fs(:govuk) || "present"}"
-                  ].compact,
-                  tag.br
-                )
-              },
+            <%= render(
+              "school_period_radio",
+              form:,
+              school_period:,
+              appropriate_body_name: school_period.school_reported_appropriate_body_name,
               link_errors: school_period == @wizard.at_school_periods.first
             ) %>
           <% end %>
@@ -45,13 +37,11 @@
           <h2 class="govuk-heading-m">Mentor school periods</h2>
 
           <% @wizard.mentor_at_school_periods.each do |school_period| %>
-            <%= form.govuk_radio_button(
-              :school_period,
-              "mentor:#{school_period.id}",
-              label: { text: school_period.school.name },
-              hint: {
-                text: "#{school_period.started_on.to_fs(:govuk)} to #{school_period.finished_on&.to_fs(:govuk) || "present"}"
-              },
+            <%= render(
+              "school_period_radio",
+              form:,
+              school_period:,
+              appropriate_body_name: nil,
               link_errors: school_period == @wizard.at_school_periods.first
             ) %>
           <% end %>

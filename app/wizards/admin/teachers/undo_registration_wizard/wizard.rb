@@ -69,15 +69,8 @@ module Admin
           at_school_periods.first if at_school_periods.one?
         end
 
-        def school_period_from_selection(selection)
-          period_type, period_id = selection.to_s.split(":", 2)
-
-          case period_type
-          when "ect"
-            ect_at_school_periods.find_by(id: period_id)
-          when "mentor"
-            mentor_at_school_periods.find_by(id: period_id)
-          end
+        def school_period_from_gid(school_period_gid)
+          at_school_periods.find { |school_period| school_period.to_global_id.to_s == school_period_gid }
         end
 
         def periods_will_be_closed?
@@ -151,7 +144,7 @@ module Admin
         end
 
         def selected_school_period
-          @selected_school_period ||= school_period_from_selection(store.school_period)
+          @selected_school_period ||= school_period_from_gid(store.school_period_gid)
         end
 
         def periods_affected(periods)
