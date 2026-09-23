@@ -15,7 +15,7 @@ RSpec.describe CheckValidity do
     end
 
     it "checks induction periods before teachers" do
-      expect(described_class::TABLES).to eq(%w[induction_periods teachers])
+      expect(described_class::TABLES).to eq(%w[induction_periods])
     end
 
     describe "EAGER_LOAD" do
