@@ -10,11 +10,10 @@
 class CheckValidity
   class ProductionGuardError < StandardError; end
 
-  BATCH_SIZE = 10_000
+  BATCH_SIZE = 5_000
 
   TABLES = %w[
     induction_periods
-    teachers
   ].freeze
 
   EAGER_LOAD = {
