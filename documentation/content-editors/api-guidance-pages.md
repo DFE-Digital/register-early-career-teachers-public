@@ -42,14 +42,14 @@ You know its ready when the `PORTS` tab contains a port of `3000`:
 
 ## Navigate to/create the Markdown file for the guidance page
 
-In order to create/edit a guidance page you have to navigate to the folder that contains the Markdown files that make up each page. Navigate to the `app/views/api/documentation/lead_provider/guidance` in the file explorer:
+In order to create/edit a guidance page you have to navigate to the folder that contains the Markdown files that make up each page. Navigate to the `app/views/api/documentation/training/guidance` in the file explorer:
 
 <a href="../images/api-guidance-dir.png" target="blank"><img src="../images/api-guidance-dir.png" width="300"/></a>
 
 Here, you can either find the existing file you want to edit or create a new `.md` file to add a guidance page. The folder structure will mimic the final URL given to the page, for example:
 
-- `app/views/api/documentation/lead_provider/page-1.md` will be available at `/api/docs/lead-provider/page-1`
-- `app/views/api/documentation/lead_provider/nested/page-2.md` will be available at `/api/docs/lead-provider/nested/page-2`
+- `app/views/api/documentation/training/page-1.md` will be available at `/api/docs/training/page-1`
+- `app/views/api/documentation/training/nested/page-2.md` will be available at `/api/docs/training/nested/page-2`
 
 ## Construct the page/contents using supported Markdown syntax
 
@@ -81,17 +81,17 @@ The sub-headings (any second-level heading) will appear as a link in the sidebar
 To add a new page to the **Guidance** section:
 
 1. The URL must begin with:
-   `/api/docs/lead-provider/guidance-for-lead-providers/`
-2. The page must be be added to the list in `API::Documentation::LeadProvider::Guidance::SidebarComponent`.
+   `/api/docs/training/guidance-for-lead-providers/`
+2. The page must be be added to the list in `API::Documentation::Training::Guidance::SidebarComponent`.
 
 ### 1. Create the Guidance Page
 
 1. Write the page content in **Markdown**.
 2. Save the file in folder:
-   `app/views/api/documentation/lead_provider/guidance_for_lead_providers/`
+   `app/views/api/documentation/training/guidance_for_lead_providers/`
 
 **Example:**
-`app/views/api/documentation/lead_provider/guidance_for_lead_providers/api_data_states.md`
+`app/views/api/documentation/training/guidance_for_lead_providers/api_data_states.md`
 
 ### 2. Add the Page to `SidebarComponent`
 
@@ -109,10 +109,10 @@ To add a new page to the **Guidance** section:
 Field definitions:
 
 - `title` — The page title shown in the left menu.
-- `path` — The part of the URL after `/api/docs/lead-provider/guidance-for-lead-providers/`.
+- `path` — The part of the URL after `/api/docs/training/guidance-for-lead-providers/`.
 
 **Example:**
-For the URL: `/api/docs/lead-provider/guidance-for-lead-providers/new-api-guidance-page`
+For the URL: `/api/docs/training/guidance-for-lead-providers/new-api-guidance-page`
 the path is: `new-api-guidance-page`
 
 ## Preview your changes

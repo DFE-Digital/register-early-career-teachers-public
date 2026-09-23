@@ -1,11 +1,11 @@
 namespace :api do
   # legacy documentation routes, can be removed with LP API v3
-  get "guidance", to: redirect("/api/docs/lead-provider/guidance")
-  get "guidance/release-notes", to: redirect("/api/docs/lead-provider/guidance/release-notes")
-  get "guidance/release-notes/:slug", to: redirect("/api/docs/lead-provider/guidance/release-notes/%{slug}")
-  get "guidance/swagger-api-documentation", to: redirect("/api/docs/lead-provider/v3")
-  get "guidance/*page", to: redirect("/api/docs/lead-provider/guidance/%{page}")
-  get "docs/:version", to: redirect("/api/docs/lead-provider/%{version}")
+  get "guidance", to: redirect("/api/docs/training/guidance")
+  get "guidance/release-notes", to: redirect("/api/docs/training/guidance/release-notes")
+  get "guidance/release-notes/:slug", to: redirect("/api/docs/training/guidance/release-notes/%{slug}")
+  get "guidance/swagger-api-documentation", to: redirect("/api/docs/training/v3")
+  get "guidance/*page", to: redirect("/api/docs/training/guidance/%{page}")
+  get "docs/:version", to: redirect("/api/docs/training/%{version}")
 
   namespace :v3 do
     resources :participants, only: %i[index show], param: :api_id do
@@ -34,7 +34,7 @@ namespace :api do
   end
 
   namespace :docs, module: :documentation do
-    scope "lead-provider", module: :lead_provider do
+    scope "training", module: :training do
       get "guidance", to: "guidance#show"
 
       scope "guidance" do
