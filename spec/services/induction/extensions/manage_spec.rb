@@ -16,8 +16,6 @@ describe Induction::Extensions::Manage do
   let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Golden Leaf Teaching School Hub") }
 
   describe "#create_or_update!" do
-    before { allow(RecordEventJob).to receive(:perform_later).and_return(true) }
-
     context "when adding an extension" do
       it "records a create event" do
         freeze_time do
@@ -26,12 +24,12 @@ describe Induction::Extensions::Manage do
           expect(teacher.induction_extensions.count).to eq(1)
           expect(teacher.induction_extensions.last.number_of_terms).to eq(1)
 
-          expect(RecordEventJob).to have_received(:perform_later).with(
+          expect(Event.sole).to have_attributes(
             appropriate_body_period:,
             author_email: "christopher.biggins@education.gov.uk",
             author_name: "Christopher Biggins",
-            author_type: :appropriate_body_user,
-            event_type: :induction_extension_created,
+            author_type: "appropriate_body_user",
+            event_type: "induction_extension_created",
             happened_at: Time.zone.now,
             heading: "Andy Zaltzman’s induction extended by 1.0 terms by Golden Leaf Teaching School Hub",
             teacher:,
@@ -52,12 +50,12 @@ describe Induction::Extensions::Manage do
 
           expect(induction_extension.reload.number_of_terms).to eq(4.6)
 
-          expect(RecordEventJob).to have_received(:perform_later).with(
+          expect(Event.sole).to have_attributes(
             appropriate_body_period:,
             author_email: "christopher.biggins@education.gov.uk",
             author_name: "Christopher Biggins",
-            author_type: :appropriate_body_user,
-            event_type: :induction_extension_updated,
+            author_type: "appropriate_body_user",
+            event_type: "induction_extension_updated",
             happened_at: Time.zone.now,
             heading: "Andy Zaltzman’s induction extended by 4.6 terms by Golden Leaf Teaching School Hub",
             teacher:,
@@ -71,8 +69,6 @@ describe Induction::Extensions::Manage do
   end
 
   describe "#delete!" do
-    before { allow(RecordEventJob).to receive(:perform_later).and_return(true) }
-
     context "when deleting an extension" do
       let!(:induction_extension) { FactoryBot.create(:induction_extension, teacher:, number_of_terms: 2.5) }
 
@@ -82,12 +78,12 @@ describe Induction::Extensions::Manage do
             service.delete!(id: induction_extension.id)
           }.to change(InductionExtension, :count).by(-1)
 
-          expect(RecordEventJob).to have_received(:perform_later).with(
+          expect(Event.sole).to have_attributes(
             appropriate_body_period:,
             author_email: "christopher.biggins@education.gov.uk",
             author_name: "Christopher Biggins",
-            author_type: :appropriate_body_user,
-            event_type: :induction_extension_deleted,
+            author_type: "appropriate_body_user",
+            event_type: "induction_extension_deleted",
             happened_at: Time.zone.now,
             heading: "Andy Zaltzman’s induction extension of 2.5 terms was deleted by Golden Leaf Teaching School Hub",
             teacher:

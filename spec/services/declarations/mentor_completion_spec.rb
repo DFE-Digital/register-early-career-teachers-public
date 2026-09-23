@@ -95,18 +95,20 @@ RSpec.describe Declarations::MentorCompletion, :with_metadata do
         end
 
         it "records a mentor completion status change event" do
-          expect(Events::Record).to receive(:record_mentor_completion_status_change!).with(
-            author:,
-            teacher:,
-            training_period:,
-            declaration:,
-            modifications: hash_including(
-              mentor_became_ineligible_for_funding_on: [nil, declaration.evidenced_at.to_date],
-              mentor_became_ineligible_for_funding_reason: [nil, "completed_declaration_received"]
-            )
-          )
+          evidenced_on = declaration.evidenced_at.to_date
 
           service.perform
+
+          event = Event.where(event_type: "mentor_completion_status_change").sole
+          expect(event).to have_attributes(
+            teacher_id: teacher.id,
+            training_period_id: training_period.id,
+            declaration_id: declaration.id
+          )
+          expect(event.metadata).to include(
+            "mentor_became_ineligible_for_funding_on" => [nil, evidenced_on.as_json],
+            "mentor_became_ineligible_for_funding_reason" => [nil, "completed_declaration_received"]
+          )
         end
       end
 
@@ -144,18 +146,21 @@ RSpec.describe Declarations::MentorCompletion, :with_metadata do
         end
 
         it "records a mentor completion status change event" do
-          expect(Events::Record).to receive(:record_mentor_completion_status_change!).with(
-            author:,
-            teacher:,
-            training_period:,
-            declaration:,
-            modifications: hash_including(
-              mentor_became_ineligible_for_funding_on: [teacher.mentor_became_ineligible_for_funding_on, nil],
-              mentor_became_ineligible_for_funding_reason: [teacher.mentor_became_ineligible_for_funding_reason, nil]
-            )
-          )
+          previous_on = teacher.mentor_became_ineligible_for_funding_on
+          previous_reason = teacher.mentor_became_ineligible_for_funding_reason
 
           service.perform
+
+          event = Event.where(event_type: "mentor_completion_status_change").sole
+          expect(event).to have_attributes(
+            teacher_id: teacher.id,
+            training_period_id: training_period.id,
+            declaration_id: declaration.id
+          )
+          expect(event.metadata).to include(
+            "mentor_became_ineligible_for_funding_on" => [previous_on.as_json, nil],
+            "mentor_became_ineligible_for_funding_reason" => [previous_reason, nil]
+          )
         end
       end
     end
@@ -164,8 +169,9 @@ RSpec.describe Declarations::MentorCompletion, :with_metadata do
       let(:declaration) { FactoryBot.create(:declaration, :eligible, declaration_type: "started") }
 
       it "returns false without action" do
-        expect(Events::Record).not_to receive(:record_mentor_completion_status_change!)
         expect(service.perform).to be(false)
+
+        expect(Event.where(event_type: "mentor_completion_status_change")).to be_empty
       end
     end
 
@@ -175,8 +181,9 @@ RSpec.describe Declarations::MentorCompletion, :with_metadata do
       let(:declaration) { FactoryBot.create(:declaration, :eligible, declaration_type: "completed", training_period:) }
 
       it "returns false without action" do
-        expect(Events::Record).not_to receive(:record_mentor_completion_status_change!)
         expect(service.perform).to be(false)
+
+        expect(Event.where(event_type: "mentor_completion_status_change")).to be_empty
       end
     end
   end

@@ -88,19 +88,22 @@ RSpec.describe Teachers::Defer do
 
           it "records a teacher defers training period event" do
             freeze_time do
-              expect(Events::Record).to receive(:record_teacher_training_period_deferred_event!)
-                .with(author:,
-                      teacher:,
-                      lead_provider:,
-                      training_period:,
-                      modifications: {
-                        finished_on: [nil, Time.zone.today],
-                        updated_at: [training_period.updated_at, Time.zone.now],
-                        deferral_reason: [nil, reason.underscore],
-                        deferred_at: [nil, Time.zone.now]
-                      })
+              previous_updated_at = training_period.updated_at
 
               service.defer
+
+              event = Event.where(event_type: "teacher_defers_training_period").sole
+              expect(event).to have_attributes(
+                teacher_id: teacher.id,
+                lead_provider_id: lead_provider.id,
+                training_period_id: training_period.id
+              )
+              expect(event.metadata).to eq(
+                "finished_on" => [nil, Time.zone.today.as_json],
+                "updated_at" => [previous_updated_at.as_json, Time.zone.now.as_json],
+                "deferral_reason" => [nil, reason.underscore],
+                "deferred_at" => [nil, Time.zone.now.as_json]
+              )
             end
           end
         end

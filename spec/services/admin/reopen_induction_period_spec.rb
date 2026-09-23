@@ -31,26 +31,19 @@ RSpec.describe Admin::ReopenInductionPeriod do
     end
 
     it "adds an event" do
-      induction_period.finished_on = nil
-      induction_period.outcome = nil
-      induction_period.number_of_terms = nil
-      modifications = induction_period.changes
       appropriate_body_period = induction_period.appropriate_body_period
-      induction_period.reload
-
-      expect(Events::Record)
-        .to receive(:record_induction_period_reopened_event!)
-        .with(
-          author:,
-          body: note,
-          zendesk_ticket_id: "123456",
-          induction_period:,
-          modifications:,
-          teacher:,
-          appropriate_body_period:
-        )
 
       service.reopen_induction_period!
+
+      event = Event.where(event_type: "induction_period_reopened").sole
+      expect(event).to have_attributes(
+        body: note,
+        zendesk_ticket_id: 123_456,
+        induction_period_id: induction_period.id,
+        teacher_id: teacher.id,
+        appropriate_body_period_id: appropriate_body_period.id
+      )
+      expect(event.metadata.keys).to include("finished_on", "outcome", "number_of_terms")
     end
 
     it "removes the outcome" do

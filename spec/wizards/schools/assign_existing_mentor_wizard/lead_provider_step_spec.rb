@@ -2,7 +2,6 @@ RSpec.describe Schools::AssignExistingMentorWizard::LeadProviderStep do
   subject(:step) { described_class.new(wizard:, lead_provider_id:) }
 
   include_context "safe_schedules"
-  include ActiveJob::TestHelper
 
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
   let(:lead_provider_id) { lead_provider.id }
@@ -67,10 +66,6 @@ RSpec.describe Schools::AssignExistingMentorWizard::LeadProviderStep do
         store:,
         valid_step?: true
       )
-    end
-
-    around do |example|
-      perform_enqueued_jobs { example.run }
     end
 
     it "persists the selected lead_provider_id to the store" do

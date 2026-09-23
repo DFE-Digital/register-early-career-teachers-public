@@ -54,19 +54,16 @@ describe Schools::Mentors::ChangeEmailAddressWizard::CheckAnswersStep, type: :mo
     it "records a `teacher_email_updated` event" do
       freeze_time
 
-      expect(Events::Record)
-        .to receive(:record_teacher_email_updated_event!)
-        .with(
-          old_email: "old@example.com",
-          new_email: "new@example.com",
-          author:,
-          mentor_at_school_period:,
-          school:,
-          teacher: mentor_at_school_period.teacher,
-          happened_at: Time.current
-        )
-
       current_step.save!
+
+      event = Event.where(event_type: "teacher_email_address_updated").sole
+      expect(event).to have_attributes(
+        mentor_at_school_period_id: mentor_at_school_period.id,
+        school_id: school.id,
+        teacher_id: mentor_at_school_period.teacher_id,
+        happened_at: Time.current
+      )
+      expect(event.heading).to include("old@example.com", "new@example.com")
     end
 
     it "is truthy" do

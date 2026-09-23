@@ -15,8 +15,8 @@ describe API::OAuth::Authorizations::ExchangeCodeForToken do
     it "returns an authorization with a token and emits an event" do
       freeze_time
 
-      authorization = service.call
-      expect { perform_enqueued_jobs }.to change(Event, :count).by(1)
+      authorization = nil
+      expect { authorization = service.call }.to change(Event, :count).by(1)
 
       event = Event.with_event_type(:api_oauth_authorization_code_exchanged).sole
       expect(event.appropriate_body_period).to eq(appropriate_body_period)
@@ -64,7 +64,7 @@ describe API::OAuth::Authorizations::ExchangeCodeForToken do
     it "raises an error without setting a token or recording an event" do
       expect { service.call }.to raise_error(described_class::CodeNotExchangeableError, error_message)
 
-      expect { perform_enqueued_jobs }.not_to change(Event, :count)
+      expect(Event.with_event_type(:api_oauth_authorization_code_exchanged)).to be_empty
 
       authorization.reload
       expect(authorization.token_expires_at).to be_nil

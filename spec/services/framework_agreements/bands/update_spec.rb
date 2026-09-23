@@ -12,19 +12,19 @@ RSpec.describe FrameworkAgreements::Bands::Update do
     context "with valid capacity" do
       let(:capacity) { 750 }
 
-      before do
-        allow(Events::Record).to receive(:record_framework_agreement_band_updated_event!)
-      end
-
       it "updates the record" do
         expect { service.update! }.to change { band.reload.capacity }.to(capacity)
       end
 
       it "records an `framework_agreement_band_updated` event" do
         service.update!
-        modifications = { "capacity" => [500, 750] }
 
-        expect(Events::Record).to have_received(:record_framework_agreement_band_updated_event!).with(author:, band:, modifications:)
+        event = Event.where(event_type: "band_updated").sole
+        expect(event).to have_attributes(
+          framework_agreement_id: band.framework_agreement_id,
+          lead_provider_id: band.framework_agreement.lead_provider_id
+        )
+        expect(event.metadata).to eq("capacity" => [500, 750])
       end
     end
   end
@@ -32,13 +32,9 @@ RSpec.describe FrameworkAgreements::Bands::Update do
   context "with invalid params" do
     let(:capacity) { "banana" }
 
-    before do
-      allow(Events::Record).to receive(:record_framework_agreement_band_updated_event!)
-    end
-
     it "raises an error" do
       expect { service.update! }.to raise_error(ActiveRecord::RecordInvalid).with_message(/Capacity must be a number greater than zero/)
-      expect(Events::Record).not_to have_received(:record_framework_agreement_band_updated_event!)
+      expect(Event.where(event_type: "band_updated")).to be_empty
     end
   end
 end

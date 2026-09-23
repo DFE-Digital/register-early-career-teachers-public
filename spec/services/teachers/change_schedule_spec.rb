@@ -139,17 +139,22 @@ RSpec.describe Teachers::ChangeSchedule do
         context "event recording" do
           it "records a teacher changes schedule training period event" do
             freeze_time do
-              allow(Events::Record).to receive(:record_teacher_schedule_changed_event!)
+              original_schedule = training_period.schedule
 
               service.change_schedule
 
-              expect(Events::Record).to have_received(:record_teacher_schedule_changed_event!)
-                .with(author:,
-                      teacher:,
-                      lead_provider:,
-                      original_training_period: training_period,
-                      original_schedule: training_period.schedule,
-                      new_training_period: TrainingPeriod.last)
+              event = Event.where(event_type: "teacher_changes_schedule_training_period").sole
+              expect(event).to have_attributes(
+                teacher_id: teacher.id,
+                lead_provider_id: lead_provider.id,
+                training_period_id: training_period.id,
+                schedule_id: original_schedule.id
+              )
+              expect(event.metadata).to eq(
+                "training_period_id" => TrainingPeriod.last.id,
+                "from_schedule_id" => original_schedule.id,
+                "to_schedule_id" => TrainingPeriod.last.schedule_id
+              )
             end
           end
         end

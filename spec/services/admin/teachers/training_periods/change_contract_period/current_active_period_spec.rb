@@ -1,6 +1,4 @@
 RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::CurrentActivePeriod do
-  include ActiveJob::TestHelper
-
   subject(:service_call) do
     described_class.new(
       training_period:,
@@ -45,7 +43,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::CurrentAc
   end
 
   around do |example|
-    travel_to(today) { perform_enqueued_jobs { example.run } }
+    travel_to(today) { example.run }
   end
 
   it "ends the current training period and creates a replacement in the selected contract period" do

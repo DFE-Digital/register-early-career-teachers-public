@@ -11,14 +11,11 @@ describe API::TokenManager do
     it { is_expected.to have_attributes(lead_provider:, token:, description:) }
 
     it "records an event" do
-      allow(Events::Record).to receive(:record_lead_provider_api_token_created_event!).once.and_call_original
-
       api_token = create_token
 
-      expect(Events::Record).to have_received(:record_lead_provider_api_token_created_event!).with(
-        author: an_instance_of(Events::SystemAuthor),
-        api_token:
-      )
+      event = Event.where(event_type: "lead_provider_api_token_created").sole
+      expect(event.lead_provider_id).to eq(lead_provider.id)
+      expect(event.metadata).to eq("description" => api_token.description)
     end
 
     context "when the description is nil" do
@@ -45,14 +42,13 @@ describe API::TokenManager do
     end
 
     it "records an event" do
-      allow(Events::Record).to receive(:record_lead_provider_api_token_revoked_event!).once.and_call_original
+      description = api_token.description
 
       revoke_token
 
-      expect(Events::Record).to have_received(:record_lead_provider_api_token_revoked_event!).with(
-        author: an_instance_of(Events::SystemAuthor),
-        api_token:
-      )
+      event = Event.where(event_type: "lead_provider_api_token_revoked").sole
+      expect(event.lead_provider_id).to eq(api_token.lead_provider_id)
+      expect(event.metadata).to eq("description" => description)
     end
   end
 

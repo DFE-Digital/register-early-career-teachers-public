@@ -40,16 +40,12 @@ RSpec.describe AppropriateBodies::ProcessBatch::RecordReleaseJob, type: :job do
   end
 
   it "creates a closed induction event by the author" do
-    allow(Events::Record).to receive(:record_induction_period_closed_event!).and_call_original
-
     perform_record_release_job
-    perform_enqueued_jobs
 
-    expect(Events::Record).to have_received(:record_induction_period_closed_event!).with(
-      appropriate_body_period:,
-      teacher:,
-      induction_period:,
-      author: an_instance_of(::Events::AppropriateBodyBatchAuthor)
+    expect(Event.where(event_type: "induction_period_closed").sole).to have_attributes(
+      appropriate_body_period_id: appropriate_body_period.id,
+      teacher_id: teacher.id,
+      induction_period_id: induction_period.id
     )
   end
 end

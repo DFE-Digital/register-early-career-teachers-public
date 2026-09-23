@@ -125,7 +125,7 @@ module Events
 
     def record_event!
       check_relationship_attributes_are_persisted
-      RecordEventJob.perform_later(**attributes)
+      Event.create!(**attributes)
     end
 
     # Induction Period Events
@@ -1146,7 +1146,7 @@ module Events
       ).record_event!
     end
 
-    def self.record_lead_provider_delivery_partnership_removed_event!(author:, delivery_partner:, lead_provider:, contract_period:, lead_provider_delivery_partnership:)
+    def self.record_lead_provider_delivery_partnership_removed_event!(author:, delivery_partner:, lead_provider:, contract_period:)
       event_type = :lead_provider_delivery_partnership_removed
       heading = "#{lead_provider.name} partnership with #{delivery_partner.name} for #{contract_period.year} removed"
 
@@ -1156,7 +1156,6 @@ module Events
         heading:,
         delivery_partner:,
         lead_provider:,
-        lead_provider_delivery_partnership:,
         happened_at: Time.zone.now
       ).record_event!
     end

@@ -17,15 +17,12 @@ RSpec.describe AppropriateBodies::RecordRelease do
     end
 
     it "records an induction closed event" do
-      allow(Events::Record).to receive(:record_induction_period_closed_event!).and_call_original
-
       service_call
 
-      expect(Events::Record).to have_received(:record_induction_period_closed_event!).with(
-        appropriate_body_period:,
-        teacher:,
-        induction_period:,
-        author:
+      expect(Event.where(event_type: "induction_period_closed").sole).to have_attributes(
+        appropriate_body_period_id: appropriate_body_period.id,
+        teacher_id: teacher.id,
+        induction_period_id: induction_period.id
       )
     end
   end

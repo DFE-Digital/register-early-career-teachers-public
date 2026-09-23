@@ -6,7 +6,6 @@ RSpec.describe Admin::ImportECT::RegisterECT do
   include_context "test TRS API returns a teacher"
 
   before do
-    allow(Events::Record).to receive(:new).and_call_original
     allow(author).to receive(:is_a?).with(Sessions::User).and_return(true)
     allow(author).to receive(:is_a?).with(any_args).and_call_original
   end

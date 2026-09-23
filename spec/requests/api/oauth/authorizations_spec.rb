@@ -1,6 +1,4 @@
 RSpec.describe "API OAuth authorizations", type: :request do
-  include ActiveJob::TestHelper
-
   let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let(:client) { FactoryBot.create(:api_oauth_client) }
   let(:redirect_uri) { client.redirect_uris.first }
@@ -72,7 +70,7 @@ RSpec.describe "API OAuth authorizations", type: :request do
         before { get("/oauth/authorize", params:) }
 
         it "issues a code, records an event and redirects to the vendor with the code" do
-          expect { perform_enqueued_jobs { post("/oauth/authorize") } }.to change(client.authorizations, :count).by(1)
+          expect { post("/oauth/authorize") }.to change(client.authorizations, :count).by(1)
 
           authorization = client.authorizations.last
           code = URI.decode_www_form(URI.parse(response.location).query).to_h["code"]

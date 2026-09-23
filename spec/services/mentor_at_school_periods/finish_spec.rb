@@ -163,15 +163,15 @@ describe MentorAtSchoolPeriods::Finish do
     end
 
     it "records an event for closing down the mentor at school period" do
-      expect(Events::Record).to receive(:record_teacher_left_school_as_mentor!).with(
-        author:,
-        mentor_at_school_period:,
-        teacher:,
-        school: mentor_at_school_period.school,
-        happened_at: finished_on
-      )
-
       subject.finish_periods_at_all_schools!
+
+      event = Event.where(event_type: "teacher_left_school_as_mentor").sole
+      expect(event).to have_attributes(
+        mentor_at_school_period_id: mentor_at_school_period.id,
+        teacher_id: teacher.id,
+        school_id: mentor_at_school_period.school_id
+      )
+      expect(event.happened_at.to_date).to eq(finished_on)
     end
 
     context "when reported_by_school_id is provided" do
@@ -207,9 +207,9 @@ describe MentorAtSchoolPeriods::Finish do
       let(:author) { FactoryBot.create(:school_user, school_urn: school.urn) }
 
       it "does not record any events when there are no ongoing periods to finish" do
-        expect(Events::Record).not_to receive(:record_teacher_left_school_as_mentor!)
-
         subject.finish_periods_at_all_schools!
+
+        expect(Event.where(event_type: "teacher_left_school_as_mentor")).to be_empty
       end
 
       it "does not call any finishing services when there are no ongoing periods" do
@@ -240,23 +240,12 @@ describe MentorAtSchoolPeriods::Finish do
       end
 
       it "records events for each school" do
-        expect(Events::Record).to receive(:record_teacher_left_school_as_mentor!).with(
-          author:,
-          mentor_at_school_period:,
-          teacher:,
-          school: mentor_at_school_period.school,
-          happened_at: finished_on
-        ).once
-
-        expect(Events::Record).to receive(:record_teacher_left_school_as_mentor!).with(
-          author:,
-          mentor_at_school_period: other_mentor_at_school_period,
-          teacher:,
-          school: other_school,
-          happened_at: finished_on
-        ).once
-
         subject.finish_periods_at_all_schools!
+
+        events = Event.where(event_type: "teacher_left_school_as_mentor")
+        expect(events.count).to eq(2)
+        expect(events.map(&:mentor_at_school_period_id)).to contain_exactly(mentor_at_school_period.id, other_mentor_at_school_period.id)
+        expect(events.map(&:school_id)).to contain_exactly(mentor_at_school_period.school_id, other_school.id)
       end
 
       context "when the mentor has already finished at the other school" do
@@ -312,15 +301,14 @@ describe MentorAtSchoolPeriods::Finish do
       end
 
       it "only records an event at the reported school" do
-        expect(Events::Record).to receive(:record_teacher_left_school_as_mentor!).with(
-          author:,
-          mentor_at_school_period:,
-          teacher:,
-          school: mentor_at_school_period.school,
-          happened_at: finished_on
-        ).once
-
         subject.finish_periods_at_reported_school!
+
+        event = Event.where(event_type: "teacher_left_school_as_mentor").sole
+        expect(event).to have_attributes(
+          mentor_at_school_period_id: mentor_at_school_period.id,
+          teacher_id: teacher.id,
+          school_id: mentor_at_school_period.school_id
+        )
       end
 
       context "when the mentor is training at another school" do

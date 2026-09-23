@@ -42,17 +42,17 @@ RSpec.describe AppropriateBodies::ProcessBatch::RecordPassJob, type: :job do
   end
 
   it "creates a pass induction event by the author" do
-    expect(Events::Record).to receive(:record_teacher_passes_induction_event!).with(
-      appropriate_body_period:,
-      teacher:,
-      induction_period:,
-      ect_at_school_period:,
-      mentorship_period: nil,
-      training_period: nil,
-      author: an_instance_of(::Events::AppropriateBodyBatchAuthor)
-    )
+    expected_ect_at_school_period_id = ect_at_school_period.id
 
     perform_record_pass_job
-    perform_enqueued_jobs
+
+    expect(Event.where(event_type: "teacher_passes_induction").sole).to have_attributes(
+      appropriate_body_period_id: appropriate_body_period.id,
+      teacher_id: teacher.id,
+      induction_period_id: induction_period.id,
+      ect_at_school_period_id: expected_ect_at_school_period_id,
+      mentorship_period_id: nil,
+      training_period_id: nil
+    )
   end
 end

@@ -11,6 +11,7 @@ class Event < ApplicationRecord
     framework_agreement_deleted
     import_from_dqt
     induction_extension_created
+    induction_extension_deleted
     induction_extension_updated
     induction_period_closed
     induction_period_deleted
@@ -23,6 +24,7 @@ class Event < ApplicationRecord
     lead_provider_api_token_created
     lead_provider_api_token_revoked
     lead_provider_delivery_partnership_added
+    lead_provider_delivery_partnership_removed
     school_partnership_created
     school_partnership_reused
     school_partnership_updated

@@ -20,8 +20,6 @@ describe Statements::Create do
   end
 
   context "when the statement is valid" do
-    before { allow(Events::Record).to receive(:record_statement_created_event!).and_call_original }
-
     it "creates and records an event" do
       statement = subject.call
 
@@ -29,7 +27,12 @@ describe Statements::Create do
       expect(statement).to be_persisted
       expect(statement.contract).to eq(contract)
       expect(statement).to be_status_open
-      expect(Events::Record).to have_received(:record_statement_created_event!).with(author:, statement:)
+
+      expect(Event.where(event_type: "statement_created").sole).to have_attributes(
+        statement_id: statement.id,
+        framework_agreement_id: statement.framework_agreement.id,
+        lead_provider_id: statement.lead_provider.id
+      )
     end
 
     it "sets fee_type to output for an output fee month" do

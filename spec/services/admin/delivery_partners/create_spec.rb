@@ -5,10 +5,6 @@ RSpec.describe Admin::DeliveryPartners::Create do
   let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
   let(:name)   { "Ambition Institute" }
 
-  before do
-    allow(Events::Record).to receive(:record_delivery_partner_created_event!)
-  end
-
   describe "#create!" do
     context "when name is valid" do
       it "creates a delivery partner" do
@@ -31,8 +27,8 @@ RSpec.describe Admin::DeliveryPartners::Create do
 
       it "records a delivery_partner_created event" do
         service.create!
-        expect(Events::Record).to have_received(:record_delivery_partner_created_event!)
-          .with(delivery_partner: instance_of(DeliveryPartner), author:)
+        expect(Event.where(event_type: "delivery_partner_created").sole.delivery_partner_id)
+          .to eq(DeliveryPartner.sole.id)
       end
     end
 

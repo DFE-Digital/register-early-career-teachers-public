@@ -134,12 +134,14 @@ RSpec.describe Teachers::MergeTRN do
       end
 
       it "records a merge event" do
-        allow(Events::Record).to receive(:record_teacher_trn_merged_events!).and_call_original
+        source_api_id = teacher.api_id
 
         service.merge!
 
-        expect(Events::Record).to have_received(:record_teacher_trn_merged_events!)
-          .with(author: an_instance_of(Events::SystemAuthor), source: teacher, destination:)
+        events = Event.where(event_type: "teacher_merged")
+        expect(events.count).to eq(2)
+        expect(events.pluck(:teacher_id).compact).to eq([destination.id])
+        expect(events.map(&:body).join).to include(source_api_id, destination.api_id)
       end
 
       it "calls a sync with TRS" do
@@ -155,9 +157,9 @@ RSpec.describe Teachers::MergeTRN do
       it_behaves_like "does not move or change any data"
 
       it "does not record a merge event" do
-        expect(Events::Record).not_to receive(:record_teacher_trn_merged_events!)
-
         service.merge!
+
+        expect(Event.where(event_type: "teacher_merged")).to be_empty
       end
 
       it "does not resync with TRS" do
@@ -173,8 +175,9 @@ RSpec.describe Teachers::MergeTRN do
       it_behaves_like "does not move or change any data"
 
       it "does not record a merge event" do
-        expect(Events::Record).not_to receive(:record_teacher_trn_merged_events!)
         service.merge!
+
+        expect(Event.where(event_type: "teacher_merged")).to be_empty
       end
 
       it "does not resync with TRS" do
@@ -190,9 +193,9 @@ RSpec.describe Teachers::MergeTRN do
       it_behaves_like "does not move or change any data"
 
       it "does not record a merge event" do
-        expect(Events::Record).not_to receive(:record_teacher_trn_merged_events!)
-
         service.merge!
+
+        expect(Event.where(event_type: "teacher_merged")).to be_empty
       end
 
       it "does not resync with TRS" do

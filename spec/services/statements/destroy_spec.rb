@@ -8,18 +8,21 @@ describe Statements::Destroy do
   let(:statement) { FactoryBot.create(:statement, :open) }
 
   context "when the statement has no declarations" do
-    before { allow(Events::Record).to receive(:record_statement_deleted_event!).and_call_original }
-
     it "destroys the statement and its adjustments and records an event" do
       adjustment = FactoryBot.create(:statement_adjustment, statement:)
+      framework_agreement = statement.framework_agreement
 
       subject.call
 
       expect(Statement.exists?(statement.id)).to be(false)
       expect(Statement::Adjustment.exists?(adjustment.id)).to be(false)
-      expect(Events::Record).to have_received(:record_statement_deleted_event!).with(
-        hash_including(author:, framework_agreement: an_instance_of(FrameworkAgreement))
+
+      event = Event.where(event_type: "statement_deleted").sole
+      expect(event).to have_attributes(
+        framework_agreement_id: framework_agreement.id,
+        lead_provider_id: framework_agreement.lead_provider_id
       )
+      expect(event.modifications).to be_present
     end
   end
 

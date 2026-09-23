@@ -1,6 +1,4 @@
 describe "TrainingPeriods::Finish" do
-  include ActiveJob::TestHelper
-
   let(:finished_on) { Date.yesterday.to_date }
 
   describe ".ect_training" do
@@ -79,40 +77,29 @@ describe "TrainingPeriods::Finish" do
       end
 
       it "records an event" do
-        allow(Events::Record).to receive(:record_teacher_finishes_training_period_event!).and_call_original
-
         expect {
           subject.finish!
-          perform_enqueued_jobs
         }.to change(Event, :count).by(1)
 
-        training_period.reload
-
-        expect(Events::Record).to have_received(:record_teacher_finishes_training_period_event!).with(
-          hash_including(
-            author:,
-            training_period:,
-            ect_at_school_period:,
-            happened_at: finished_on,
-            school: ect_at_school_period.school
-          )
+        event = Event.where(event_type: "teacher_finishes_training_period").sole
+        expect(event).to have_attributes(
+          training_period_id: training_period.id,
+          ect_at_school_period_id: ect_at_school_period.id,
+          school_id: ect_at_school_period.school_id
         )
+        expect(event.heading).to include("ECT")
+        expect(event.happened_at.to_date).to eq(finished_on)
       end
 
       context "when record_event is false" do
         subject { TrainingPeriods::Finish.ect_training(training_period:, finished_on:, author:, ect_at_school_period:, record_event: false) }
 
         it "does not record an event" do
-          allow(Events::Record).to receive(:record_teacher_finishes_training_period_event!).and_call_original
-
           expect {
             subject.finish!
-            perform_enqueued_jobs
           }.not_to change(Event, :count)
 
-          training_period.reload
-
-          expect(Events::Record).not_to have_received(:record_teacher_finishes_training_period_event!)
+          expect(Event.where(event_type: "teacher_finishes_training_period")).to be_empty
         end
       end
     end
@@ -133,24 +120,18 @@ describe "TrainingPeriods::Finish" do
       end
 
       it "records an event" do
-        allow(Events::Record).to receive(:record_teacher_finishes_training_period_event!).and_call_original
-
         expect {
           subject.finish!
-          perform_enqueued_jobs
         }.to change(Event, :count).by(1)
 
-        training_period.reload
-
-        expect(Events::Record).to have_received(:record_teacher_finishes_training_period_event!).with(
-          hash_including(
-            author:,
-            training_period:,
-            mentor_at_school_period:,
-            happened_at: finished_on,
-            school: mentor_at_school_period.school
-          )
+        event = Event.where(event_type: "teacher_finishes_training_period").sole
+        expect(event).to have_attributes(
+          training_period_id: training_period.id,
+          mentor_at_school_period_id: mentor_at_school_period.id,
+          school_id: mentor_at_school_period.school_id
         )
+        expect(event.heading).to include("mentor")
+        expect(event.happened_at.to_date).to eq(finished_on)
       end
     end
   end

@@ -11,10 +11,6 @@ RSpec.describe Admin::DeliveryPartners::ChangeName do
   let(:user)             { FactoryBot.create(:user, :admin) }
   let(:author)           { Sessions::Users::DfEPersona.new(email: user.email) }
 
-  before do
-    allow(Events::Record).to receive(:record_delivery_partner_name_changed_event!)
-  end
-
   describe "#rename!" do
     context "when the proposed name is valid" do
       let(:proposed_name) { "Beta" }
@@ -23,8 +19,10 @@ RSpec.describe Admin::DeliveryPartners::ChangeName do
         result = service.rename!
 
         expect(result).to be(delivery_partner)
-        expect(Events::Record).to have_received(:record_delivery_partner_name_changed_event!)
-          .with(delivery_partner:, author:, from: "Alpha", to: "Beta")
+
+        event = Event.where(event_type: "delivery_partner_name_changed").sole
+        expect(event.delivery_partner_id).to eq(delivery_partner.id)
+        expect(event.metadata).to eq("name" => %w[Alpha Beta])
       end
     end
 
@@ -38,8 +36,9 @@ RSpec.describe Admin::DeliveryPartners::ChangeName do
         expect(result.name).to eq("A Alpha")
         expect(delivery_partner.reload.name).to eq("A Alpha")
 
-        expect(Events::Record).to have_received(:record_delivery_partner_name_changed_event!)
-          .with(delivery_partner:, author:, from: "Alpha", to: "A Alpha")
+        event = Event.where(event_type: "delivery_partner_name_changed").sole
+        expect(event.delivery_partner_id).to eq(delivery_partner.id)
+        expect(event.metadata).to eq("name" => ["Alpha", "A Alpha"])
       end
     end
 
@@ -52,7 +51,7 @@ RSpec.describe Admin::DeliveryPartners::ChangeName do
         expect(result).to be(delivery_partner)
         expect(result.name).to eq("Alpha")
         expect(delivery_partner.reload.name).to eq("Alpha")
-        expect(Events::Record).not_to have_received(:record_delivery_partner_name_changed_event!)
+        expect(Event.where(event_type: "delivery_partner_name_changed")).to be_empty
       end
     end
 
@@ -64,7 +63,7 @@ RSpec.describe Admin::DeliveryPartners::ChangeName do
 
         expect(delivery_partner.errors.added?(:name, :blank)).to be(true)
         expect(delivery_partner.reload.name).to eq("Alpha")
-        expect(Events::Record).not_to have_received(:record_delivery_partner_name_changed_event!)
+        expect(Event.where(event_type: "delivery_partner_name_changed")).to be_empty
       end
     end
 
@@ -78,7 +77,7 @@ RSpec.describe Admin::DeliveryPartners::ChangeName do
         expect(delivery_partner.errors[:name])
           .to include("A delivery partner with this name already exists")
         expect(delivery_partner.reload.name).to eq("Alpha")
-        expect(Events::Record).not_to have_received(:record_delivery_partner_name_changed_event!)
+        expect(Event.where(event_type: "delivery_partner_name_changed")).to be_empty
       end
     end
 
@@ -93,7 +92,7 @@ RSpec.describe Admin::DeliveryPartners::ChangeName do
       it "raises and does not change the record or record an event" do
         expect { service.rename! }.to raise_error(ActiveRecord::RecordInvalid)
         expect(delivery_partner.reload.name).to eq("Alpha")
-        expect(Events::Record).not_to have_received(:record_delivery_partner_name_changed_event!)
+        expect(Event.where(event_type: "delivery_partner_name_changed")).to be_empty
       end
     end
 

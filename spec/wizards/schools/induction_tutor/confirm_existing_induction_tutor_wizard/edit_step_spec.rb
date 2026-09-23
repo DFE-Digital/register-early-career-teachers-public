@@ -208,17 +208,15 @@ describe Schools::InductionTutor::ConfirmExistingInductionTutorWizard::EditStep 
         it "records a confirmation event" do
           freeze_time
 
-          expect(Events::Record)
-            .to receive(:record_school_induction_tutor_confirmed_event!)
-            .with(
-              author:,
-              school:,
-              name: induction_tutor_name,
-              email: induction_tutor_email,
-              contract_period_year: current_contract_period.year
-            )
-
           current_step.save!
+
+          event = Event.where(event_type: "school_induction_tutor_confirmed").sole
+          expect(event.school_id).to eq(school.id)
+          expect(event.metadata).to eq(
+            "contract_period_year" => current_contract_period.year,
+            "name" => induction_tutor_name,
+            "email" => induction_tutor_email
+          )
         end
       end
 
@@ -265,17 +263,15 @@ describe Schools::InductionTutor::ConfirmExistingInductionTutorWizard::EditStep 
         it "records a confirmation event" do
           freeze_time
 
-          expect(Events::Record)
-            .to receive(:record_school_induction_tutor_confirmed_event!)
-            .with(
-              author:,
-              school:,
-              name: induction_tutor_name,
-              email: induction_tutor_email,
-              contract_period_year: upcoming_contract_period.year
-            )
-
           current_step.save!
+
+          event = Event.where(event_type: "school_induction_tutor_confirmed").sole
+          expect(event.school_id).to eq(school.id)
+          expect(event.metadata).to eq(
+            "contract_period_year" => upcoming_contract_period.year,
+            "name" => induction_tutor_name,
+            "email" => induction_tutor_email
+          )
         end
       end
     end
@@ -296,8 +292,9 @@ describe Schools::InductionTutor::ConfirmExistingInductionTutorWizard::EditStep 
       end
 
       it "does not record any events" do
-        expect(Events::Record).not_to receive(:record_school_induction_tutor_confirmed_event!)
         current_step.save!
+
+        expect(Event.where(event_type: "school_induction_tutor_confirmed")).to be_empty
       end
     end
 
@@ -315,8 +312,9 @@ describe Schools::InductionTutor::ConfirmExistingInductionTutorWizard::EditStep 
       end
 
       it "does not record any events" do
-        expect(Events::Record).not_to receive(:record_school_induction_tutor_confirmed_event!)
         current_step.save!
+
+        expect(Event.where(event_type: "school_induction_tutor_confirmed")).to be_empty
       end
     end
   end

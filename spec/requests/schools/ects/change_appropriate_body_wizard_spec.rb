@@ -138,19 +138,17 @@ describe "Schools::ECTs::ChangeAppropriateBodyWizardController" do
         end
 
         it "records an event when the appropriate body is changed" do
-          allow(Events::Record).to receive(:record_teacher_appropriate_body_changed!)
-
           subject
 
           expect(response).to redirect_to(path_for_step("check-answers"))
-          expect(Events::Record).not_to have_received(:record_teacher_appropriate_body_changed!)
+          expect(Event.where(event_type: "teacher_appropriate_body_changed")).to be_empty
 
           follow_redirect!
 
           post path_for_step("check-answers")
 
           expect(response).to redirect_to(path_for_step("confirmation"))
-          expect(Events::Record).to have_received(:record_teacher_appropriate_body_changed!)
+          expect(Event.where(event_type: "teacher_appropriate_body_changed")).to be_present
         end
       end
     end

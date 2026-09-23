@@ -19,15 +19,12 @@ RSpec.describe Teachers::ImportEarlyRolloutMentor do
     end
 
     it "records an import_from_dqt event" do
-      expect { service.call }
-        .to have_enqueued_job(RecordEventJob)
-        .with(
-          hash_including(
-            event_type: :import_from_dqt,
-            body: "Teacher created with Early Roll-out mentor attributes during the import"
-          )
-        )
-        .exactly(:once)
+      service.call
+
+      expect(Event.sole).to have_attributes(
+        event_type: "import_from_dqt",
+        body: "Teacher created with Early Roll-out mentor attributes during the import"
+      )
     end
 
     it "queues a TRS attribute refresh" do
@@ -48,15 +45,12 @@ RSpec.describe Teachers::ImportEarlyRolloutMentor do
       end
 
       it "records an import_from_dqt event" do
-        expect { service.call }
-          .to have_enqueued_job(RecordEventJob)
-          .with(
-            hash_including(
-              event_type: :import_from_dqt,
-              body: "Teacher updated with Early Roll-out mentor attributes during the import"
-            )
-          )
-          .exactly(:once)
+        service.call
+
+        expect(Event.sole).to have_attributes(
+          event_type: "import_from_dqt",
+          body: "Teacher updated with Early Roll-out mentor attributes during the import"
+        )
       end
 
       it "queues a TRS attribute refresh" do

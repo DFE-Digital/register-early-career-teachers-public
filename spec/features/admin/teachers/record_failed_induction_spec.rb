@@ -1,6 +1,4 @@
 RSpec.describe "Admin recording a failed induction" do
-  include ActiveJob::TestHelper
-
   let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let!(:induction_period) { FactoryBot.create(:induction_period, :unfinished, teacher:, appropriate_body_period:) }
   let(:teacher) { FactoryBot.create(:teacher, :with_name) }
@@ -21,7 +19,6 @@ RSpec.describe "Admin recording a failed induction" do
       and_i_add_a_note("This is a test reason for failing the induction")
 
       and_i_click_submit
-      and_event_background_jobs_are_executed
 
       then_i_should_be_on_the_success_page
       and_the_induction_is_failed
@@ -90,10 +87,6 @@ private
     expect(induction_period.outcome).to eql("fail")
     expect(induction_period.number_of_terms).to eq(3.5)
     expect(induction_period.finished_on).to eql(today)
-  end
-
-  def and_event_background_jobs_are_executed
-    perform_enqueued_jobs(queue: :events)
   end
 
   def when_i_add_a_zendesk_ticket_id(ticket)

@@ -76,8 +76,6 @@ RSpec.describe "Admin::Users" do
 
     before do
       sign_in_as(:dfe_user, user:)
-      allow(Events::Record).to receive(:record_dfe_user_created_event!).with(any_args).and_call_original
-      allow(Events::Record).to receive(:record_dfe_user_updated_event!).with(any_args).and_call_original
     end
 
     describe "GET /admin/users" do
@@ -113,7 +111,7 @@ RSpec.describe "Admin::Users" do
 
         aggregate_failures do
           expect(User.where(email: user_params.fetch(:email))).to exist
-          expect(Events::Record).to have_received(:record_dfe_user_created_event!).once
+          expect(Event.where(event_type: "dfe_user_created").count).to eq(1)
         end
       end
 
@@ -128,7 +126,7 @@ RSpec.describe "Admin::Users" do
         it "does not creates a new user record and does not try to create an event" do
           post admin_users_path, params: { user: user_params.except(:email) }
           expect(response).to be_bad_request
-          expect(Events::Record).not_to have_received(:record_dfe_user_created_event!)
+          expect(Event.where(event_type: "dfe_user_created")).to be_empty
         end
       end
     end
@@ -195,7 +193,7 @@ RSpec.describe "Admin::Users" do
 
         aggregate_failures do
           expect(User.where(email: new_email_address)).to exist
-          expect(Events::Record).to have_received(:record_dfe_user_updated_event!).once
+          expect(Event.where(event_type: "dfe_user_updated").count).to eq(1)
         end
       end
 
@@ -212,7 +210,7 @@ RSpec.describe "Admin::Users" do
 
           aggregate_failures do
             expect(response).to be_bad_request
-            expect(Events::Record).not_to have_received(:record_dfe_user_updated_event!)
+            expect(Event.where(event_type: "dfe_user_updated")).to be_empty
           end
         end
       end
@@ -224,8 +222,6 @@ RSpec.describe "Admin::Users" do
 
     before do
       sign_in_as(:dfe_user, user:)
-      allow(Events::Record).to receive(:record_dfe_user_created_event!).with(any_args).and_call_original
-      allow(Events::Record).to receive(:record_dfe_user_updated_event!).with(any_args).and_call_original
     end
 
     it "allows finance users to access the Users admin area" do

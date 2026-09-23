@@ -17,8 +17,6 @@ describe FrameworkAgreements::CascadeDelete do
   let(:user) { FactoryBot.create(:user, :admin) }
   let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
 
-  before { allow(Events::Record).to receive(:record_framework_agreement_deleted_event!) }
-
   it "destroys the framework agreement with its contracts, fee structures, bands, statements, adjustments and partnerships, leaving delivery partners intact, and records the deleted event" do
     flat_rate_fee_structure_id = flat_rate_fee_structure.id
     banded_fee_structure_id = banded_fee_structure.id
@@ -40,7 +38,9 @@ describe FrameworkAgreements::CascadeDelete do
     expect(Statement::Adjustment).not_to exist(statement_adjustment.id)
     expect(LeadProviderDeliveryPartnership).not_to exist(lead_provider_delivery_partnership.id)
     expect(DeliveryPartner).to exist(delivery_partner.id)
-    expect(Events::Record).to have_received(:record_framework_agreement_deleted_event!).with(author:, lead_provider:, contract_period:)
+    event = Event.where(event_type: "framework_agreement_deleted").sole
+    expect(event.lead_provider_id).to eq(lead_provider.id)
+    expect(event.heading).to include(lead_provider.name, contract_period.year.to_s)
   end
 
   it "wraps the deletions in a transaction" do
@@ -51,7 +51,7 @@ describe FrameworkAgreements::CascadeDelete do
     expect(Contract).to exist(contract.id)
     expect(Statement).to exist(statement.id)
     expect(LeadProviderDeliveryPartnership).to exist(lead_provider_delivery_partnership.id)
-    expect(Events::Record).not_to have_received(:record_framework_agreement_deleted_event!)
+    expect(Event.where(event_type: "framework_agreement_deleted")).to be_empty
   end
 
   describe "raising an exception when usage data is present" do

@@ -31,18 +31,13 @@ RSpec.describe GIAS::Reconciliation::Open do
     end
 
     it "records a school opened event with the current date" do
-      allow(Events::Record).to receive(:record_school_opened_event!)
-
       service
 
       school = gias_school.reload.school
-
-      expect(Events::Record).to have_received(:record_school_opened_event!).with(
-        school:,
-        gias_school:,
-        happened_at: Date.current,
-        author: an_instance_of(Events::SystemAuthor)
-      ).once
+      event = Event.where(event_type: "school_opened").sole
+      expect(event.school_id).to eq(school.id)
+      expect(event.metadata).to eq("gias_school_urn" => gias_school.urn, "gias_school_name" => gias_school.name)
+      expect(event.happened_at.to_date).to eq(Date.current)
     end
 
     context "when the school can be split" do
@@ -67,18 +62,12 @@ RSpec.describe GIAS::Reconciliation::Open do
       let!(:gias_school) { FactoryBot.create(:gias_school, status: :open, opened_on: Date.yesterday) }
 
       it "records a school opened event with the provided date" do
-        allow(Events::Record).to receive(:record_school_opened_event!)
-
         service
 
         school = gias_school.reload.school
-
-        expect(Events::Record).to have_received(:record_school_opened_event!).with(
-          school:,
-          gias_school:,
-          happened_at: Date.yesterday,
-          author: an_instance_of(Events::SystemAuthor)
-        ).once
+        event = Event.where(event_type: "school_opened").sole
+        expect(event.school_id).to eq(school.id)
+        expect(event.happened_at.to_date).to eq(Date.yesterday)
       end
     end
 
@@ -99,11 +88,9 @@ RSpec.describe GIAS::Reconciliation::Open do
       end
 
       it "does not record an event" do
-        allow(Events::Record).to receive(:record_school_opened_event!)
-
         service
 
-        expect(Events::Record).not_to have_received(:record_school_opened_event!)
+        expect(Event.where(event_type: "school_opened")).to be_empty
       end
     end
   end

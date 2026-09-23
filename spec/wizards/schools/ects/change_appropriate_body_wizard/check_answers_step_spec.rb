@@ -70,14 +70,15 @@ describe Schools::ECTs::ChangeAppropriateBodyWizard::CheckAnswersStep do
     end
 
     it "records an event" do
-      expect(::Events::Record).to receive(:record_teacher_appropriate_body_changed!).with(
-        old_appropriate_body_period:,
-        new_appropriate_body_period:,
-        author:,
-        ect_at_school_period:
-      )
-
       current_step.save!
+
+      event = Event.where(event_type: "teacher_appropriate_body_changed").sole
+      expect(event).to have_attributes(
+        teacher_id: ect_at_school_period.teacher_id,
+        ect_at_school_period_id: ect_at_school_period.id,
+        appropriate_body_period_id: new_appropriate_body_period.id
+      )
+      expect(event.heading).to include(old_appropriate_body_period.name, new_appropriate_body_period.name)
     end
   end
 end

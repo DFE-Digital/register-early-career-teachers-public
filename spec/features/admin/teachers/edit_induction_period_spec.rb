@@ -1,6 +1,4 @@
 RSpec.describe "Admin editing an induction" do
-  include ActiveJob::TestHelper
-
   let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let(:teacher) { FactoryBot.create(:teacher) }
 
@@ -135,8 +133,6 @@ private
   end
 
   def and_an_event_should_have_been_recorded(*expected_modification)
-    perform_enqueued_jobs
-
     event = Event.last
     expect(event.event_type).to eq("induction_period_updated")
     expect(event.author_type).to eq("dfe_staff_user")

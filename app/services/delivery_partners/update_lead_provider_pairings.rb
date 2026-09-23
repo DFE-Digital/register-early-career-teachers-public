@@ -61,18 +61,17 @@ module DeliveryPartners
 
         framework_agreement = partnership.framework_agreement
 
-        record_partnership_removed_event(framework_agreement, partnership)
         partnership.destroy!
+        record_partnership_removed_event(framework_agreement)
       end
     end
 
-    def record_partnership_removed_event(framework_agreement, removed_partnership)
+    def record_partnership_removed_event(framework_agreement)
       Events::Record.record_lead_provider_delivery_partnership_removed_event!(
         delivery_partner:,
         lead_provider: framework_agreement.lead_provider,
         contract_period:,
-        author:,
-        lead_provider_delivery_partnership: removed_partnership
+        author:
       )
     end
   end

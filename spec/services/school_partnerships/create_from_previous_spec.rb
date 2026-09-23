@@ -3,7 +3,8 @@ RSpec.describe SchoolPartnerships::CreateFromPrevious do
 
   subject(:service) { described_class.new }
 
-  let(:author)           { FactoryBot.create(:user) }
+  let(:user)             { FactoryBot.create(:user, :admin) }
+  let(:author)           { Sessions::Users::DfEPersona.new(email: user.email) }
   let(:school)           { FactoryBot.create(:school) }
   let(:lead_provider)    { FactoryBot.create(:lead_provider) }
   let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
@@ -35,13 +36,6 @@ RSpec.describe SchoolPartnerships::CreateFromPrevious do
   end
 
   describe "#call" do
-    before do
-      allow(Events::Record).to receive_messages(
-        record_school_partnership_created_event!: true,
-        record_school_partnership_reused_event!: true
-      )
-    end
-
     context "when the previous partnership does not exist" do
       it "returns nil and records no reuse event" do
         result = service.call(
@@ -52,7 +46,7 @@ RSpec.describe SchoolPartnerships::CreateFromPrevious do
         )
 
         expect(result).to be_nil
-        expect(Events::Record).not_to have_received(:record_school_partnership_reused_event!)
+        expect(Event.where(event_type: "school_partnership_reused")).to be_empty
       end
     end
 
@@ -66,7 +60,7 @@ RSpec.describe SchoolPartnerships::CreateFromPrevious do
         )
 
         expect(result).to be_nil
-        expect(Events::Record).not_to have_received(:record_school_partnership_reused_event!)
+        expect(Event.where(event_type: "school_partnership_reused")).to be_empty
       end
     end
 
@@ -84,7 +78,7 @@ RSpec.describe SchoolPartnerships::CreateFromPrevious do
         )
 
         expect(result).to be_nil
-        expect(Events::Record).not_to have_received(:record_school_partnership_reused_event!)
+        expect(Event.where(event_type: "school_partnership_reused")).to be_empty
       end
     end
 
@@ -117,13 +111,16 @@ RSpec.describe SchoolPartnerships::CreateFromPrevious do
         expect(result.school).to eq(school)
         expect(result.lead_provider_delivery_partnership).to eq(lpdp_current_year)
 
-        expect(Events::Record)
-          .to have_received(:record_school_partnership_reused_event!)
-          .with(hash_including(
-                  school_partnership: result,
-                  previous_school_partnership_id: previous_partnership.id,
-                  happened_at: kind_of(ActiveSupport::TimeWithZone)
-                ))
+        event = Event.where(event_type: "school_partnership_reused").sole
+        expect(event).to have_attributes(
+          school_partnership_id: result.id,
+          school_id: school.id,
+          lead_provider_id: lead_provider.id
+        )
+        expect(event.metadata).to include(
+          "previous_school_partnership_id" => previous_partnership.id,
+          "reused_into_contract_period_year" => current_year
+        )
       end
     end
   end

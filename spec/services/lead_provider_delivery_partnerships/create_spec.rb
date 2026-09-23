@@ -7,10 +7,6 @@ describe LeadProviderDeliveryPartnerships::Create do
   let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
   let(:params) { { delivery_partner_id: delivery_partner.id } }
 
-  before do
-    allow(Events::Record).to receive(:record_lead_provider_delivery_partnership_added_event!)
-  end
-
   context "with valid params" do
     it "creates the lead provider delivery partnership and records an added event" do
       result = nil
@@ -18,12 +14,10 @@ describe LeadProviderDeliveryPartnerships::Create do
 
       expect(result).to be_persisted
       expect(result).to have_attributes(framework_agreement:, delivery_partner:)
-      expect(Events::Record).to have_received(:record_lead_provider_delivery_partnership_added_event!).with(
-        author:,
-        delivery_partner:,
-        lead_provider: framework_agreement.lead_provider,
-        contract_period: framework_agreement.contract_period,
-        lead_provider_delivery_partnership: result
+      expect(Event.where(event_type: "lead_provider_delivery_partnership_added").sole).to have_attributes(
+        delivery_partner_id: delivery_partner.id,
+        lead_provider_id: framework_agreement.lead_provider_id,
+        lead_provider_delivery_partnership_id: result.id
       )
     end
   end
@@ -33,7 +27,7 @@ describe LeadProviderDeliveryPartnerships::Create do
 
     it "raises ActiveRecord::RecordInvalid and does not record an event" do
       expect { service.call }.to raise_error(ActiveRecord::RecordInvalid)
-      expect(Events::Record).not_to have_received(:record_lead_provider_delivery_partnership_added_event!)
+      expect(Event.where(event_type: "lead_provider_delivery_partnership_added")).to be_empty
     end
   end
 end

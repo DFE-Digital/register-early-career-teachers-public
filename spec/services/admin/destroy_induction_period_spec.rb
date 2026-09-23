@@ -9,13 +9,10 @@ RSpec.describe Admin::DestroyInductionPeriod do
   include_context "test TRS API returns a teacher"
   include ActiveJob::TestHelper
 
-  before do
-    allow(Events::Record).to receive(:record_induction_period_deleted_event!).and_return(true)
-  end
-
   let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let(:teacher) { FactoryBot.create(:teacher) }
-  let(:author) { FactoryBot.create(:user) }
+  let(:user) { FactoryBot.create(:user, :admin) }
+  let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
   let!(:induction_period) { FactoryBot.create(:induction_period, teacher:, appropriate_body_period:) }
 
   describe "#destroy_induction_period!" do
@@ -24,13 +21,14 @@ RSpec.describe Admin::DestroyInductionPeriod do
     end
 
     it "records an event with the correct parameters" do
-      expect(Events::Record).to receive(:record_induction_period_deleted_event!).with(
-        author:,
-        teacher:,
-        appropriate_body_period:,
-        modifications: induction_period.attributes
-      )
       service.destroy_induction_period!
+
+      event = Event.where(event_type: "induction_period_deleted").sole
+      expect(event).to have_attributes(
+        teacher_id: teacher.id,
+        appropriate_body_period_id: appropriate_body_period.id
+      )
+      expect(event.modifications).to be_present
     end
   end
 end

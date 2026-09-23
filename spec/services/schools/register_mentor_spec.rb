@@ -70,21 +70,21 @@ RSpec.describe Schools::RegisterMentor do
         end
 
         it "records a teacher_name_updated_by_user event when a corrected name is provided" do
-          expect(Events::Record).to receive(:teacher_name_updated_by_user_event!).with(
-            old_name: "#{trs_first_name} #{trs_last_name}",
-            new_name: "Randy Marsh",
-            author:,
-            teacher: anything
-          )
           service.register!
+
+          expect(Event.where(event_type: "teacher_name_updated_by_user").sole.metadata).to eq(
+            "old_name" => "#{trs_first_name} #{trs_last_name}",
+            "new_name" => "Randy Marsh"
+          )
         end
 
         context "when no corrected name is provided" do
           let(:corrected_name) { nil }
 
           it "does not record a teacher_name_updated_by_user event" do
-            expect(Events::Record).not_to receive(:teacher_name_updated_by_user_event!)
             service.register!
+
+            expect(Event.where(event_type: "teacher_name_updated_by_user")).to be_empty
           end
         end
       end
@@ -262,13 +262,13 @@ RSpec.describe Schools::RegisterMentor do
       end
 
       describe "recording an event" do
-        before { allow(Events::Record).to receive(:record_teacher_registered_as_mentor_event!).with(any_args).and_call_original }
-
         it "records a mentor_registered event with the expected attributes" do
           service.register!
 
-          expect(Events::Record).to have_received(:record_teacher_registered_as_mentor_event!).with(
-            hash_including(author:, mentor_at_school_period:, teacher:, school:)
+          expect(Event.where(event_type: "teacher_registered_as_mentor").sole).to have_attributes(
+            mentor_at_school_period_id: mentor_at_school_period.id,
+            teacher_id: teacher.id,
+            school_id: school.id
           )
         end
       end

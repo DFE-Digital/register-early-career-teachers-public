@@ -5,7 +5,6 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
   include_context "test TRS API returns a teacher"
 
   before do
-    allow(Events::Record).to receive(:new).and_call_original
     allow(author).to receive(:is_a?).with(Sessions::User).and_return(true)
     allow(author).to receive(:is_a?).with(any_args).and_call_original
   end
@@ -81,15 +80,10 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
       it "records an induction_period_opened event" do
         subject.register(pending_induction_submission_params)
 
-        expect(Events::Record).to have_received(:new).with(
-          hash_including(
-            author:,
-            event_type: :induction_period_opened,
-            appropriate_body_period:,
-            heading: "John Doe was claimed by #{appropriate_body_period.name}"
-          )
+        expect(Event.where(event_type: "induction_period_opened").sole).to have_attributes(
+          appropriate_body_period_id: appropriate_body_period.id,
+          heading: "John Doe was claimed by #{appropriate_body_period.name}"
         )
-        perform_enqueued_jobs
 
         expect(Event.all.map(&:event_type)).to match_array(%w[
           teacher_imported_from_trs
@@ -218,17 +212,11 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
         it "records the name change" do
           expect(existing_teacher.trs_first_name).to eql(pending_induction_submission_params[:trs_first_name])
           expect(existing_teacher.trs_last_name).to eql(pending_induction_submission_params[:trs_last_name])
-          expect(Events::Record).to have_received(:new).with(
-            hash_including(
-              author:,
-              event_type: :teacher_name_updated_by_trs,
-              appropriate_body_period:,
-              teacher: existing_teacher,
-              heading: "Name changed from 'Jonathan Dole' to 'John Doe'"
-            )
+          expect(Event.where(event_type: "teacher_name_updated_by_trs").sole).to have_attributes(
+            appropriate_body_period_id: appropriate_body_period.id,
+            teacher_id: existing_teacher.id,
+            heading: "Name changed from 'Jonathan Dole' to 'John Doe'"
           )
-
-          perform_enqueued_jobs
 
           expect(Event.all.map(&:event_type)).to match_array(%w[
             teacher_name_updated_by_trs

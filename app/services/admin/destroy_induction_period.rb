@@ -11,7 +11,7 @@ module Admin
 
     def destroy_induction_period!
       ActiveRecord::Base.transaction do
-        modifications = induction_period.attributes
+        modifications = induction_period.attributes.transform_values { |v| [v, nil] }
         induction_period.destroy!
 
         Events::Record.record_induction_period_deleted_event!(

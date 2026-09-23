@@ -33,9 +33,9 @@ RSpec.describe DeliveryPartners::AddLeadProviderPairings do
       end
 
       it "records partnership added events" do
-        expect(Events::Record).to receive(:record_lead_provider_delivery_partnership_added_event!).twice
-
         service.add!
+
+        expect(Event.where(event_type: "lead_provider_delivery_partnership_added").count).to eq(2)
       end
 
       it "returns true on success" do
@@ -67,10 +67,10 @@ RSpec.describe DeliveryPartners::AddLeadProviderPairings do
         end
 
         it "records only added events (not removed events)" do
-          expect(Events::Record).not_to receive(:record_lead_provider_delivery_partnership_removed_event!)
-          expect(Events::Record).to receive(:record_lead_provider_delivery_partnership_added_event!).twice
-
           service.add!
+
+          expect(Event.where(event_type: "lead_provider_delivery_partnership_added").count).to eq(2)
+          expect(Event.where(event_type: "lead_provider_delivery_partnership_removed")).to be_empty
         end
       end
 
@@ -82,10 +82,12 @@ RSpec.describe DeliveryPartners::AddLeadProviderPairings do
         end
 
         it "does not record any events" do
-          expect(Events::Record).not_to receive(:record_lead_provider_delivery_partnership_added_event!)
-          expect(Events::Record).not_to receive(:record_lead_provider_delivery_partnership_removed_event!)
-
           service.add!
+
+          expect(Event.where(event_type: %w[
+            lead_provider_delivery_partnership_added
+            lead_provider_delivery_partnership_removed
+          ])).to be_empty
         end
       end
     end

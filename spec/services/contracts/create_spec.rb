@@ -43,8 +43,6 @@ describe Contracts::Create do
     }
   end
 
-  before { allow(Events::Record).to receive(:record_contract_created_event!) }
-
   context "when successful" do
     it "creates and returns a contract for the framework agreement, and records the created event" do
       contract = nil
@@ -55,7 +53,10 @@ describe Contracts::Create do
       expect(contract.banded_fee_structure).to have_attributes(banded_fee_structure_attributes)
       expect(contract.banded_fee_structure.bands.size).to eq(1)
       expect(contract.flat_rate_fee_structure).to have_attributes(flat_rate_fee_structure_attributes)
-      expect(Events::Record).to have_received(:record_contract_created_event!).with(author:, contract:)
+      expect(Event.where(event_type: "contract_created").sole).to have_attributes(
+        framework_agreement_id: framework_agreement.id,
+        lead_provider_id: framework_agreement.lead_provider_id
+      )
     end
   end
 
@@ -64,7 +65,7 @@ describe Contracts::Create do
 
     it "does not create a contract or event" do
       expect { service.call }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Banded fee structure band terms band must belong to the contract's lead provider framework agreement")
-      expect(Events::Record).not_to have_received(:record_contract_created_event!)
+      expect(Event.where(event_type: "contract_created")).to be_empty
     end
   end
 end

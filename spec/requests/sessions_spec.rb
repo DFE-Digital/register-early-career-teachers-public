@@ -184,9 +184,9 @@ RSpec.describe "Sessions", type: :request do
       end
 
       it "does not record a school_user_signs_in event" do
-        allow(Events::Record).to receive(:record_school_user_signs_in_event!)
         post("/auth/dfe/callback")
-        expect(Events::Record).not_to have_received(:record_school_user_signs_in_event!)
+
+        expect(Event.where(event_type: "school_user_signs_in")).to be_empty
       end
     end
 
@@ -225,12 +225,10 @@ RSpec.describe "Sessions", type: :request do
       end
 
       it "records a school_user_signs_in event" do
-        allow(Events::Record).to receive(:record_school_user_signs_in_event!)
         post("/auth/dfe/callback")
-        expect(Events::Record).to have_received(:record_school_user_signs_in_event!).with(
-          author: an_instance_of(Sessions::Users::SchoolUser),
-          school: School.find_by(urn: school_urn)
-        )
+
+        expect(Event.where(event_type: "school_user_signs_in").sole.school_id)
+          .to eq(School.find_by(urn: school_urn).id)
       end
     end
 

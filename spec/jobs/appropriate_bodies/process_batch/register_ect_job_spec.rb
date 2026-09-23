@@ -49,17 +49,12 @@ RSpec.describe AppropriateBodies::ProcessBatch::RegisterECTJob, type: :job do
   end
 
   it "creates an induction opened event by the author" do
-    allow(Events::Record).to receive(:record_induction_period_opened_event!).and_call_original
-
     perform_register_ect_job
-    perform_enqueued_jobs
 
-    expect(Events::Record).to have_received(:record_induction_period_opened_event!).with(
-      appropriate_body_period:,
-      teacher:,
-      induction_period:,
-      author: an_instance_of(::Events::AppropriateBodyBatchAuthor),
-      modifications: {}
+    expect(Event.where(event_type: "induction_period_opened").sole).to have_attributes(
+      appropriate_body_period_id: appropriate_body_period.id,
+      teacher_id: teacher.id,
+      induction_period_id: induction_period.id
     )
   end
 

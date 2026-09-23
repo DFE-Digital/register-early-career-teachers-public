@@ -25,17 +25,15 @@ RSpec.describe DeliveryPartners::UpdateLeadProviderPairings do
     context "when adding new partnerships" do
       let(:new_framework_agreement_ids) { [framework_agreement_1.id, framework_agreement_2.id] }
 
-      it "creates new lead provider delivery partnerships" do
+      it "creates new lead provider delivery partnerships and records an event for each" do
         expect { service.update! }.to change(LeadProviderDeliveryPartnership, :count).by(2)
 
         partnerships = delivery_partner.lead_provider_delivery_partnerships.reload
         expect(partnerships.map(&:framework_agreement_id)).to contain_exactly(framework_agreement_1.id, framework_agreement_2.id)
-      end
 
-      it "records partnership added events" do
-        expect(Events::Record).to receive(:record_lead_provider_delivery_partnership_added_event!).twice
-
-        service.update!
+        events = Event.where(event_type: "lead_provider_delivery_partnership_added")
+        expect(events.count).to eq(2)
+        expect(events.map(&:lead_provider_delivery_partnership_id)).to match_array(partnerships.map(&:id))
       end
 
       it "returns true on success" do
@@ -70,7 +68,7 @@ RSpec.describe DeliveryPartners::UpdateLeadProviderPairings do
       context "when replacing existing partnerships with new ones" do
         let(:new_framework_agreement_ids) { [framework_agreement_2.id, framework_agreement_3.id] }
 
-        it "removes existing partnerships and adds new ones" do
+        it "removes existing partnerships, adds new ones and records an event for each" do
           expect { service.update! }.to change(LeadProviderDeliveryPartnership, :count).by(1) # -1 + 2 = 1
 
           partnerships = delivery_partner.lead_provider_delivery_partnerships.reload
@@ -78,13 +76,9 @@ RSpec.describe DeliveryPartners::UpdateLeadProviderPairings do
             framework_agreement_2.id,
             framework_agreement_3.id
           )
-        end
 
-        it "records both removed and added events" do
-          expect(Events::Record).to receive(:record_lead_provider_delivery_partnership_removed_event!).once
-          expect(Events::Record).to receive(:record_lead_provider_delivery_partnership_added_event!).twice
-
-          service.update!
+          expect(Event.where(event_type: "lead_provider_delivery_partnership_removed").count).to eq(1)
+          expect(Event.where(event_type: "lead_provider_delivery_partnership_added").count).to eq(2)
         end
       end
     end
@@ -109,41 +103,38 @@ RSpec.describe DeliveryPartners::UpdateLeadProviderPairings do
       context "when unchecking some partnerships" do
         let(:new_framework_agreement_ids) { [framework_agreement_1.id] }
 
-        it "removes unchecked partnerships" do
+        it "removes unchecked partnerships and records a removal event" do
+          removed_lead_provider = existing_partnership_2.lead_provider
+
           expect { service.update! }.to change(LeadProviderDeliveryPartnership, :count).by(-1)
 
           partnerships = delivery_partner.lead_provider_delivery_partnerships.reload
           expect(partnerships.map(&:framework_agreement_id)).to contain_exactly(framework_agreement_1.id)
-        end
 
-        it "records partnership removed events" do
-          expect(Events::Record).to receive(:record_lead_provider_delivery_partnership_removed_event!).once
-
-          service.update!
+          event = Event.where(event_type: "lead_provider_delivery_partnership_removed").sole
+          expect(event).to have_attributes(
+            delivery_partner_id: delivery_partner.id,
+            lead_provider_id: removed_lead_provider.id
+          )
         end
       end
 
       context "when unchecking all partnerships" do
         let(:new_framework_agreement_ids) { [] }
 
-        it "removes all partnerships" do
+        it "removes all partnerships and records an event for each" do
           expect { service.update! }.to change(LeadProviderDeliveryPartnership, :count).by(-2)
 
           partnerships = delivery_partner.lead_provider_delivery_partnerships.reload
           expect(partnerships).to be_empty
-        end
-
-        it "records partnership removed events for all removed partnerships" do
-          expect(Events::Record).to receive(:record_lead_provider_delivery_partnership_removed_event!).twice
-
-          service.update!
+          expect(Event.where(event_type: "lead_provider_delivery_partnership_removed").count).to eq(2)
         end
       end
 
       context "when adding and removing partnerships in the same operation" do
         let(:new_framework_agreement_ids) { [framework_agreement_2.id, framework_agreement_3.id] }
 
-        it "removes unchecked partnerships and adds new ones" do
+        it "removes unchecked partnerships, adds new ones and records an event for each" do
           expect { service.update! }.not_to change(LeadProviderDeliveryPartnership, :count) # -1 + 1 = 0
 
           partnerships = delivery_partner.lead_provider_delivery_partnerships.reload
@@ -151,13 +142,9 @@ RSpec.describe DeliveryPartners::UpdateLeadProviderPairings do
             framework_agreement_2.id,
             framework_agreement_3.id
           )
-        end
 
-        it "records both added and removed events" do
-          expect(Events::Record).to receive(:record_lead_provider_delivery_partnership_removed_event!).once
-          expect(Events::Record).to receive(:record_lead_provider_delivery_partnership_added_event!).once
-
-          service.update!
+          expect(Event.where(event_type: "lead_provider_delivery_partnership_removed").count).to eq(1)
+          expect(Event.where(event_type: "lead_provider_delivery_partnership_added").count).to eq(1)
         end
       end
     end
@@ -173,14 +160,9 @@ RSpec.describe DeliveryPartners::UpdateLeadProviderPairings do
 
       let(:new_framework_agreement_ids) { [framework_agreement_1.id] }
 
-      it "does not change partnerships" do
+      it "does not change partnerships or record any events" do
         expect { service.update! }.not_to change(LeadProviderDeliveryPartnership, :count)
-      end
-
-      it "does not record any events" do
-        expect(Events::Record).not_to receive(:record_lead_provider_delivery_partnership_added_event!)
-
-        service.update!
+        expect(Event.count).to eq(0)
       end
 
       it "returns true" do

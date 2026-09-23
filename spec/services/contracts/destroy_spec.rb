@@ -10,8 +10,6 @@ describe Contracts::Destroy do
   let(:user) { FactoryBot.create(:user, :admin) }
   let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
 
-  before { allow(Events::Record).to receive(:record_contract_deleted_event!) }
-
   it "destroys the contract, its banded fee structure and band terms, and records the deleted event" do
     banded_fee_structure_id = contract.banded_fee_structure.id
     band_term_ids = contract.banded_fee_structure.band_terms.pluck(:id)
@@ -21,7 +19,10 @@ describe Contracts::Destroy do
     expect(Contract).not_to exist(contract.id)
     expect(Contract::BandedFeeStructure).not_to exist(banded_fee_structure_id)
     expect(Contract::BandedFeeStructure::BandTerm.where(id: band_term_ids)).not_to exist
-    expect(Events::Record).to have_received(:record_contract_deleted_event!).with(author:, contract:, framework_agreement:)
+    expect(Event.where(event_type: "contract_deleted").sole).to have_attributes(
+      framework_agreement_id: framework_agreement.id,
+      lead_provider_id: framework_agreement.lead_provider_id
+    )
   end
 
   context "when the contract has statements" do

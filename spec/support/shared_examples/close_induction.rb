@@ -37,12 +37,14 @@ RSpec.shared_context "it closes an induction" do
   end
 
   it "does not log events for a teacher leaving school" do
-    expect(Events::Record).not_to receive(:record_teacher_left_school_as_ect!)
-    expect(Events::Record).not_to receive(:record_teacher_finishes_training_period_event!)
-    expect(Events::Record).not_to receive(:record_teacher_finishes_mentoring_event!)
-    expect(Events::Record).not_to receive(:record_teacher_finishes_being_mentored_event!)
-
     service_call
+
+    expect(Event.where(event_type: %w[
+      teacher_left_school_as_ect
+      teacher_finishes_training_period
+      teacher_finishes_mentoring
+      teacher_finishes_being_mentored
+    ])).to be_empty
   end
 
   context "without an ongoing induction period" do

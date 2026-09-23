@@ -1,6 +1,4 @@
 describe Teachers::RefreshTRSAttributes do
-  include ActiveJob::TestHelper
-
   subject(:service) { Teachers::RefreshTRSAttributes.new(teacher) }
 
   let(:teacher) do
@@ -51,7 +49,6 @@ describe Teachers::RefreshTRSAttributes do
       expect(teacher.events).to be_empty
 
       service.refresh!
-      perform_enqueued_jobs
 
       expect(teacher.events.map(&:event_type)).to contain_exactly(
         "teacher_name_updated_by_trs",
@@ -185,7 +182,6 @@ describe Teachers::RefreshTRSAttributes do
         expect(teacher.events).to be_empty
 
         service.refresh!
-        perform_enqueued_jobs
 
         expect(teacher.events.map(&:event_type)).to contain_exactly(
           "teacher_trs_merged"
@@ -207,7 +203,6 @@ describe Teachers::RefreshTRSAttributes do
         expect(teacher.events).to be_empty
 
         service.refresh!
-        perform_enqueued_jobs
 
         expect(teacher.events.map(&:event_type)).to contain_exactly(
           "teacher_trs_not_found"
@@ -317,7 +312,6 @@ describe Teachers::RefreshTRSAttributes do
         expect(teacher.events).to be_empty
 
         service.refresh!
-        perform_enqueued_jobs
 
         expect(teacher.events.map(&:event_type)).to contain_exactly(
           "teacher_trs_deactivated"

@@ -17,14 +17,14 @@ module LeadProviderDeliveryPartnerships
       contract_period = lead_provider_delivery_partnership.contract_period
 
       ActiveRecord::Base.transaction do
+        lead_provider_delivery_partnership.destroy!
+
         Events::Record.record_lead_provider_delivery_partnership_removed_event!(
           author:,
           delivery_partner:,
           lead_provider:,
-          contract_period:,
-          lead_provider_delivery_partnership:
+          contract_period:
         )
-        lead_provider_delivery_partnership.destroy!
       end
 
       true

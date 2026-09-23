@@ -37,25 +37,13 @@ RSpec.describe "Admin::InductionPeriodsController", type: :request do
       end
 
       it "records an 'admin creates induction period' event" do
-        allow(Events::Record)
-          .to receive(:record_induction_period_opened_event!)
-          .once.and_call_original
-
         post admin_teacher_induction_periods_path(teacher), params: valid_params
 
-        expect(Events::Record)
-          .to have_received(:record_induction_period_opened_event!)
-          .once
-          .with(
-            hash_including(
-              {
-                appropriate_body_period:,
-                author: kind_of(Sessions::User),
-                induction_period: kind_of(InductionPeriod),
-                teacher:,
-              }
-            )
-          )
+        expect(Event.where(event_type: "induction_period_opened").sole).to have_attributes(
+          appropriate_body_period_id: appropriate_body_period.id,
+          teacher_id: teacher.id,
+          induction_period_id: teacher.induction_periods.sole.id
+        )
       end
 
       it "creates the period with correct attributes" do
@@ -393,24 +381,18 @@ RSpec.describe "Admin::InductionPeriodsController", type: :request do
         end
 
         it "records an induction period updated event" do
-          allow(Events::Record).to receive(:record_induction_period_updated_event!).once.and_call_original
-
           induction_period.assign_attributes(valid_params[:induction_period])
           expected_modifications = induction_period.changes
 
           patch admin_teacher_induction_period_path(induction_period.teacher, induction_period), params: valid_params
 
-          expect(Events::Record).to have_received(:record_induction_period_updated_event!).once.with(
-            hash_including(
-              {
-                induction_period:,
-                teacher: induction_period.teacher,
-                appropriate_body_period: induction_period.appropriate_body_period,
-                modifications: expected_modifications,
-                author: kind_of(Sessions::User),
-              }
-            )
+          event = Event.where(event_type: "induction_period_updated").sole
+          expect(event).to have_attributes(
+            induction_period_id: induction_period.id,
+            teacher_id: induction_period.teacher_id,
+            appropriate_body_period_id: induction_period.appropriate_body_period_id
           )
+          expect(event.metadata.keys).to match_array(expected_modifications.keys)
         end
 
         context "when dates would cause overlap" do
@@ -679,9 +661,7 @@ RSpec.describe "Admin::InductionPeriodsController", type: :request do
 
       it "creates a deletion event" do
         expect {
-          perform_enqueued_jobs do
-            delete admin_teacher_induction_period_path(teacher, induction_period), params:
-          end
+          delete admin_teacher_induction_period_path(teacher, induction_period), params:
         }.to change(Event, :count).by(2)
 
         expect(Event.all.map(&:event_type)).to match_array(%w[
@@ -703,9 +683,7 @@ RSpec.describe "Admin::InductionPeriodsController", type: :request do
 
       it "deletes only the specified induction period" do
         expect {
-          perform_enqueued_jobs do
-            delete admin_teacher_induction_period_path(teacher, induction_period1), params:
-          end
+          delete admin_teacher_induction_period_path(teacher, induction_period1), params:
         }.to change(InductionPeriod, :count).by(-1)
 
         expect(response).to redirect_to(admin_teacher_induction_path(teacher))

@@ -1,7 +1,7 @@
 RSpec.describe GIAS::Reconciliation::Merge do
   subject(:service) { described_class.new(gias_school) }
 
-  let(:gias_school) { FactoryBot.create(:gias_school, :with_school, :closed) }
+  let(:gias_school) { FactoryBot.create(:gias_school, :with_school, :closed, closed_on: Date.yesterday) }
   let(:successor_gias_school) { FactoryBot.create(:gias_school, :with_school, :open) }
   let(:predecessor_school) { gias_school.school }
   let(:successor_school) { successor_gias_school.school }
@@ -58,9 +58,9 @@ RSpec.describe GIAS::Reconciliation::Merge do
       end
 
       it "does not record a school merged event" do
-        expect(Events::Record).not_to receive(:record_school_merged_event!)
-
         merge!
+
+        expect(Event.where(event_type: "school_merged")).to be_empty
       end
 
       it "does not destroy the predecessor school" do
@@ -98,7 +98,6 @@ RSpec.describe GIAS::Reconciliation::Merge do
         allow(GIAS::Reconciliation::MentorAtSchoolPeriods::Merge).to receive(:call).and_call_original
         allow(GIAS::Reconciliation::MentorAtSchoolPeriods::Transfer).to receive(:call).and_call_original
         allow(GIAS::Reconciliation::ECTAtSchoolPeriods::Transfer).to receive(:call).and_call_original
-        allow(Events::Record).to receive(:record_school_merged_event!)
       end
 
       it { expect(merge!).to be_truthy }
@@ -113,18 +112,15 @@ RSpec.describe GIAS::Reconciliation::Merge do
         end
 
         it "records a school opened event for the successor GIAS school" do
-          allow(Events::Record).to receive(:record_school_opened_event!)
-
           merge!
 
-          expect(Events::Record)
-            .to have_received(:record_school_opened_event!)
-            .with(
-              school: successor_gias_school.reload.school,
-              gias_school: successor_gias_school,
-              happened_at: gias_school.closed_on,
-              author: an_instance_of(Events::SystemAuthor)
-            )
+          event = Event.where(event_type: "school_opened").sole
+          expect(event.school_id).to eq(successor_gias_school.reload.school.id)
+          expect(event.metadata).to eq(
+            "gias_school_urn" => successor_gias_school.urn,
+            "gias_school_name" => successor_gias_school.name
+          )
+          expect(event.happened_at.to_date).to eq(gias_school.closed_on)
         end
 
         it "does not merge any records because there are none at the successor school" do
@@ -249,15 +245,15 @@ RSpec.describe GIAS::Reconciliation::Merge do
       it "records a school merged event" do
         merge!
 
-        expect(Events::Record)
-          .to have_received(:record_school_merged_event!)
-          .with(
-            school: successor_school,
-            successor_gias_school:,
-            predecessor_gias_school: gias_school,
-            happened_at: gias_school.closed_on,
-            author: an_instance_of(Events::SystemAuthor)
-          )
+        event = Event.where(event_type: "school_merged").sole
+        expect(event.school_id).to eq(successor_school.id)
+        expect(event.metadata).to eq(
+          "predecessor_gias_school_urn" => gias_school.urn,
+          "predecessor_gias_school_name" => gias_school.name,
+          "successor_gias_school_urn" => successor_gias_school.urn,
+          "successor_gias_school_name" => successor_gias_school.name
+        )
+        expect(event.happened_at.to_date).to eq(gias_school.closed_on)
       end
     end
   end
