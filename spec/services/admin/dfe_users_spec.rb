@@ -62,13 +62,13 @@ RSpec.describe Admin::DfEUsers do
       it "does not remove the user" do
         expect {
           expect { remove_user }
-            .to raise_error(Admin::DfEUsers::CannotRemoveSelf)
+            .to raise_error(Admin::DfEUsers::CannotRemoveSelfError)
         }.not_to change(User, :count)
       end
 
       it "does not record a deletion event" do
         expect { remove_user }
-          .to raise_error(Admin::DfEUsers::CannotRemoveSelf)
+          .to raise_error(Admin::DfEUsers::CannotRemoveSelfError)
 
         expect(Events::Record)
           .not_to have_received(:record_dfe_user_deleted_event!)
@@ -87,13 +87,13 @@ RSpec.describe Admin::DfEUsers do
       it "does not remove the user" do
         expect {
           expect { remove_user }
-            .to raise_error(Admin::DfEUsers::UserReferencedByDeclaration)
+            .to raise_error(Admin::DfEUsers::UserReferencedByDeclarationError)
         }.not_to change(User, :count)
       end
 
       it "does not record a deletion event" do
         expect { remove_user }
-          .to raise_error(Admin::DfEUsers::UserReferencedByDeclaration)
+          .to raise_error(Admin::DfEUsers::UserReferencedByDeclarationError)
 
         expect(Events::Record)
           .not_to have_received(:record_dfe_user_deleted_event!)
