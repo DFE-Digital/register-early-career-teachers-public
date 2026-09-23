@@ -61,7 +61,6 @@ erDiagram
     enum deferral_reason
     datetime deferred_at
     uuid ecf_end_induction_record_id
-    uuid ecf_start_induction_record_id
     integer ect_at_school_period_id
     integer expression_of_interest_id
     date finished_on
@@ -82,8 +81,8 @@ erDiagram
   TrainingPeriod }o--|| FrameworkAgreement : belongs_to
   TeachingSchoolHub {
     integer id
-    datetime created_at
     string name
+    datetime created_at
     datetime updated_at
   }
   TeacherIdChange {
@@ -261,8 +260,8 @@ erDiagram
   PendingInductionSubmission }o--|| PendingInductionSubmissionBatch : belongs_to
   NationalBody {
     integer id
-    datetime created_at
     string name
+    datetime created_at
     datetime updated_at
   }
   Milestone {
@@ -279,7 +278,6 @@ erDiagram
     integer id
     datetime created_at
     uuid ecf_end_induction_record_id
-    uuid ecf_start_induction_record_id
     integer ect_at_school_period_id
     date finished_on
     integer mentor_at_school_period_id
@@ -293,7 +291,6 @@ erDiagram
     integer id
     datetime created_at
     uuid ecf_end_induction_record_id
-    uuid ecf_start_induction_record_id
     citext email
     date finished_on
     daterange range
@@ -307,8 +304,8 @@ erDiagram
   MentorAtSchoolPeriod }o--|| Teacher : belongs_to
   LocalAuthority {
     integer id
-    datetime created_at
     string name
+    datetime created_at
     datetime updated_at
   }
   LeadProviderDeliveryPartnership {
@@ -368,7 +365,6 @@ erDiagram
     integer id
     datetime created_at
     uuid ecf_end_induction_record_id
-    uuid ecf_start_induction_record_id
     citext email
     date finished_on
     daterange range
@@ -461,12 +457,12 @@ erDiagram
     enum body_type
     datetime created_at
     uuid dfe_sign_in_organisation_id
-    integer local_authority_id
     string name
-    integer national_body_id
-    integer school_id
-    integer teaching_school_hub_id
     datetime updated_at
+    integer teaching_school_hub_id
+    integer school_id
+    integer national_body_id
+    integer local_authority_id
   }
   AppropriateBodyPeriod }o--|| DfESignInOrganisation : belongs_to
   AppropriateBodyPeriod }o--|| AppropriateBody : belongs_to

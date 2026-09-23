@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_16_170809) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_23_091136) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -319,7 +319,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_16_170809) do
   create_table "ect_at_school_periods", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.uuid "ecf_end_induction_record_id"
-    t.uuid "ecf_start_induction_record_id"
     t.citext "email"
     t.date "finished_on"
     t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on, '[]'::text)", stored: true
@@ -520,7 +519,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_16_170809) do
   create_table "mentor_at_school_periods", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.uuid "ecf_end_induction_record_id"
-    t.uuid "ecf_start_induction_record_id"
     t.citext "email"
     t.date "finished_on"
     t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on, '[]'::text)", stored: true
@@ -540,7 +538,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_16_170809) do
   create_table "mentorship_periods", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.uuid "ecf_end_induction_record_id"
-    t.uuid "ecf_start_induction_record_id"
     t.bigint "ect_at_school_period_id", null: false
     t.date "finished_on"
     t.bigint "mentor_at_school_period_id", null: false
@@ -979,7 +976,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_16_170809) do
     t.enum "deferral_reason", enum_type: "deferral_reasons"
     t.datetime "deferred_at"
     t.uuid "ecf_end_induction_record_id"
-    t.uuid "ecf_start_induction_record_id"
     t.bigint "ect_at_school_period_id"
     t.bigint "expression_of_interest_id"
     t.date "finished_on"
