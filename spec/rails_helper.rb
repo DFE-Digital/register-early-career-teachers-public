@@ -27,6 +27,7 @@ RSpec.configure do |config|
   config.include Features::ViewHelpers, type: :feature
   config.include AuthHelper, type: :request
   config.include APIHelper, type: :request
+  config.include OAuthHelper, type: :request
   config.include HaveSummaryListRow, type: :component
   config.include HaveSummaryListRow, type: :view
   config.include HaveStatementTable, type: :component

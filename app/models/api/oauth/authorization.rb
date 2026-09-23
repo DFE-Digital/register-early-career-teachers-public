@@ -13,6 +13,9 @@ class API::OAuth::Authorization < ApplicationRecord
   validate :only_one_active_authorization, if: :active?
 
   scope :active, -> { active_token.not_revoked }
+  scope :with_token, ->(token) { where(token_digest: Digest::SHA256.hexdigest(token)) }
+
+  delegate :name, to: :appropriate_body_period, allow_nil: true, prefix: :appropriate_body
 
   def active? = token_active? && not_revoked?
 
@@ -28,6 +31,9 @@ class API::OAuth::Authorization < ApplicationRecord
   end
 
   def error_messages_description = errors.full_messages.join(", ")
+
+  # Add other user types as needed
+  def user_name = appropriate_body_name
 
 private
 

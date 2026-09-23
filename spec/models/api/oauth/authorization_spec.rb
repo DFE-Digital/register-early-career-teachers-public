@@ -39,6 +39,13 @@ describe API::OAuth::Authorization do
         expect(client.authorizations.active_token).to contain_exactly(authorization_with_token, authorization_with_revoked_token)
       end
     end
+
+    describe "with_token" do
+      it "returns the matching authorization" do
+        expect(described_class.with_token(authorization_with_token.token)).to eq [authorization_with_token]
+        expect(described_class.with_token("unknown-token")).to be_empty
+      end
+    end
   end
 
   describe "validations" do

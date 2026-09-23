@@ -61,6 +61,7 @@ RSpec.describe "Rack::Attack" do
   [
     "/api/guidance",
     "/api/docs/v3",
+    "/api/hello/world",
   ].each do |public_api_path|
     context "when requesting the public API path #{public_api_path}" do
       let(:path) { public_api_path }

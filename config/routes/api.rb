@@ -30,6 +30,14 @@ namespace :api do
     resources :schools, only: %i[index show], param: :api_id
     resources :unfunded_mentors, only: %i[index show], path: "unfunded-mentors", param: :api_id
   end
+
+  constraints -> { Rails.application.config.enable_hello_api } do
+    namespace :hello do
+      resource :world, only: :show
+      resource :client, only: :show
+      resource :user, only: :show
+    end
+  end
 end
 
 namespace :oauth, module: "api/oauth" do

@@ -171,6 +171,17 @@ describe API::OAuth::Client do
         expect(client.authorization_for_token(token: "wrong-code")).to be_nil
       end
     end
+
+    context "when the token has expired or been revoked" do
+      let(:revoked_authorization) { FactoryBot.create(:api_oauth_authorization, :with_token, :revoked, client:) }
+
+      before { FactoryBot.create(:api_oauth_authorization, :with_expired_token, client:, token: "expired-token") }
+
+      it "returns nil" do
+        expect(client.authorization_for_token(token: "expired-token")).to be_nil
+        expect(client.authorization_for_token(token: revoked_authorization.token)).to be_nil
+      end
+    end
   end
 
   context "when there is unexpected whitespace" do
