@@ -5,7 +5,7 @@ namespace :api do
   get "guidance/release-notes/:slug", to: redirect("/api/docs/training/guidance/release-notes/%{slug}")
   get "guidance/swagger-api-documentation", to: redirect("/api/docs/training/v3")
   get "guidance/*page", to: redirect("/api/docs/training/guidance/%{page}")
-  get "docs/:version", to: redirect("/api/docs/training/%{version}")
+  get "docs/v3", to: redirect("/api/docs/training/v3")
 
   namespace :v3 do
     resources :participants, only: %i[index show], param: :api_id do
