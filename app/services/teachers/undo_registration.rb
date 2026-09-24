@@ -19,9 +19,7 @@ module Teachers
       expected_mentorship_period_ids: nil,
       expected_at_school_period_gid: nil
     )
-      ActiveRecord::Base.transaction do
-        lock_at_school_period!
-
+      at_school_period.with_lock do
         action = periods_will_be_closed? ? "close" : "delete"
 
         raise ConfirmationChangedError if expected_action.present? && expected_action != action
@@ -58,10 +56,6 @@ module Teachers
 
     def anonymiser
       @anonymiser ||= Teachers::Anonymise.new(teacher:, reason:)
-    end
-
-    def lock_at_school_period!
-      @at_school_period = at_school_period.class.lock.find(at_school_period.id)
     end
 
     def billable_or_refundable_declarations_exist?

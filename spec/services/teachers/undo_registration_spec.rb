@@ -301,14 +301,20 @@ RSpec.describe Teachers::UndoRegistration do
           expect(undo_registration).to eq("delete")
         end
 
-        it "raises a record not found error without recording another event when the registration has already been undone" do
+        it "raises a record not found error without recording another event when another process has already undone the registration" do
           allow(Events::Record)
             .to receive(:record_undo_registration_event!)
             .and_call_original
 
+          stale_undo_registration_service = described_class.new(
+            author:,
+            at_school_period: ect_at_school_period.class.find(ect_at_school_period.id),
+            reason: :registered_in_error
+          )
+
           undo_registration
 
-          expect { undo_registration_service.undo! }
+          expect { stale_undo_registration_service.undo! }
             .to raise_error(ActiveRecord::RecordNotFound)
 
           expect(Events::Record)
