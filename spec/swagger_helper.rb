@@ -1,5 +1,3 @@
-require "api/version"
-
 Dir[Rails.root.join("spec/swagger_schemas/**/*.rb")].sort.each { |f| require f }
 
 RSpec.configure do |config|

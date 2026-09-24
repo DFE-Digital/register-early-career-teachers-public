@@ -1,9 +1,11 @@
 namespace :api do
-  get "guidance", to: "guidance#show"
-  resources :release_notes, path: "guidance/release-notes", only: %i[index show], param: :slug, as: :guidance_release_notes
-  get "guidance/swagger-api-documentation", to: redirect("/api/docs/v3")
-  get "guidance/*page", to: "guidance#page", as: :guidance_page
-  get "docs/:version", to: "documentation#index", as: :documentation
+  # legacy documentation routes, can be removed with LP API v3
+  get "guidance", to: redirect("/api/docs/training/guidance")
+  get "guidance/release-notes", to: redirect("/api/docs/training/guidance/release-notes")
+  get "guidance/release-notes/:slug", to: redirect("/api/docs/training/guidance/release-notes/%{slug}")
+  get "guidance/swagger-api-documentation", to: redirect("/api/docs/training/v3")
+  get "guidance/*page", to: redirect("/api/docs/training/guidance/%{page}")
+  get "docs/v3", to: redirect("/api/docs/training/v3")
 
   namespace :v3 do
     resources :participants, only: %i[index show], param: :api_id do
@@ -29,6 +31,24 @@ namespace :api do
     resources :partnerships, only: %i[show index create update], param: :api_id
     resources :schools, only: %i[index show], param: :api_id
     resources :unfunded_mentors, only: %i[index show], path: "unfunded-mentors", param: :api_id
+  end
+
+  namespace :docs, module: :documentation do
+    scope "training", module: :training do
+      get "guidance", to: "guidance#show"
+
+      scope "guidance" do
+        resources :release_notes,
+                  path: "release-notes",
+                  only: %i[index show],
+                  param: :slug,
+                  as: :guidance_release_notes
+
+        get "*page", to: "guidance#page", as: :guidance_page
+      end
+
+      get "v3", to: "v3/documentation#index", as: :documentation
+    end
   end
 end
 

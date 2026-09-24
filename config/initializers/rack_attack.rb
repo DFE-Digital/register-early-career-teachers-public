@@ -25,7 +25,6 @@ class Rack::Attack
   ].freeze
 
   PUBLIC_API_PATH_PREFIXES = [
-    "/api/guidance",
     "/api/docs",
   ].freeze
 

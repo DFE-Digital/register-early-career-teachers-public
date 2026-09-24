@@ -155,9 +155,9 @@ Capybara/CurrentPathExpectation:
 
 RSpec/EmptyExampleGroup:
   Exclude:
-    - 'spec/requests/api/docs/**/*'
+    - 'spec/requests/api/documentation/**/*'
 
 RSpec/VariableName:
   Exclude:
-    - 'spec/requests/api/docs/**/*'
+    - 'spec/requests/api/documentation/**/*'
     - 'spec/support/shared_contexts/api/api_doc_request_auth.rb'
