@@ -39,6 +39,13 @@ describe API::OAuth::Authorization do
         expect(client.authorizations.active_token).to contain_exactly(authorization_with_token, authorization_with_revoked_token)
       end
     end
+
+    describe "with_token" do
+      it "returns the matching authorization" do
+        expect(described_class.with_token(authorization_with_token.token)).to eq [authorization_with_token]
+        expect(described_class.with_token("unknown-token")).to be_empty
+      end
+    end
   end
 
   describe "validations" do
@@ -236,6 +243,16 @@ describe API::OAuth::Authorization do
       subject(:authorization) { FactoryBot.build(:api_oauth_authorization, :with_token).tap { it.token_expires_at = 1.day.ago } }
 
       it { is_expected.not_to be_token_active }
+    end
+  end
+
+  describe "#user_name" do
+    subject(:authorization) { FactoryBot.build(:api_oauth_authorization, appropriate_body_period:) }
+
+    let(:appropriate_body_period) { FactoryBot.build(:appropriate_body_period, name: "Golden Leaf Teaching Hub") }
+
+    it "returns the appropriate body name" do
+      expect(authorization.user_name).to eq("Golden Leaf Teaching Hub")
     end
   end
 end

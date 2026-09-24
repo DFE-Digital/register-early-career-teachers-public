@@ -27,6 +27,6 @@ private
   end
 
   def render_unauthorized
-    render json: { error: "invalid_client" }.to_json, status: :unauthorized
+    render json: { error: "invalid_client" }, status: :unauthorized
   end
 end
