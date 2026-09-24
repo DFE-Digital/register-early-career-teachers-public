@@ -92,7 +92,11 @@ RSpec.describe "Admin::Teachers::UndoRegistrationWizardController", type: :reque
       end
       let(:declaration) { nil }
 
-      it "deletes the registration and shows the delete confirmation" do
+      it "deletes the registration, shows the delete confirmation, and prevents a repeated submission" do
+        allow(Events::Record)
+          .to receive(:record_undo_registration_event!)
+          .and_call_original
+
         post admin_teacher_undo_registration_wizard_confirm_path(teacher),
              params: {
                confirm: {
@@ -113,6 +117,20 @@ RSpec.describe "Admin::Teachers::UndoRegistrationWizardController", type: :reque
 
         expect(response).to have_http_status(:ok)
         expect(response.body).to include("Associated school, training, and mentorship periods have been deleted.")
+
+        post admin_teacher_undo_registration_wizard_confirm_path(teacher),
+             params: {
+               confirm: {
+                 confirmed: "1",
+                 expected_action: "delete",
+                 expected_training_period_ids: training_period.id.to_s,
+                 expected_mentorship_period_ids: "",
+                 expected_at_school_period_gid: at_school_period.to_global_id.to_s
+               }
+             }
+
+        expect(response).to redirect_to(admin_teacher_undo_registration_wizard_confirmation_path(teacher))
+        expect(Events::Record).to have_received(:record_undo_registration_event!).once
       end
     end
 
@@ -146,7 +164,7 @@ RSpec.describe "Admin::Teachers::UndoRegistrationWizardController", type: :reque
 
         expect(response).to redirect_to(admin_teacher_undo_registration_wizard_confirm_path(teacher))
         expect(flash[:error]).to eq(
-          "The periods for this registration have changed. Review the updated periods before continuing."
+          "The registration has changed. Review the updated details before continuing."
         )
         expect { remaining_at_school_period.reload }.not_to raise_error
         expect(Events::Record).not_to have_received(:record_undo_registration_event!)
@@ -207,158 +225,6 @@ RSpec.describe "Admin::Teachers::UndoRegistrationWizardController", type: :reque
         expect(response).to have_http_status(:unprocessable_content)
         expect(at_school_period.reload.finished_on).to be_nil
         expect(training_period.reload.finished_on).to be_nil
-      end
-    end
-
-    context "when the service finds no open periods to close" do
-      let(:at_school_period) do
-        FactoryBot.create(:ect_at_school_period, :unfinished, teacher:)
-      end
-      let(:training_period) do
-        FactoryBot.create(:training_period, :for_ect, :unfinished, ect_at_school_period: at_school_period)
-      end
-      let(:undo_registration_service) do
-        instance_double(
-          ::Teachers::UndoRegistration,
-          undoable?: true
-        )
-      end
-
-      before do
-        allow(::Teachers::UndoRegistration).to receive(:new).and_return(undo_registration_service)
-        allow(undo_registration_service).to receive(:undo!)
-          .and_raise(::Teachers::UndoRegistration::NoPeriodsToCloseError)
-      end
-
-      it "redirects to school history with an explanation" do
-        post admin_teacher_undo_registration_wizard_confirm_path(teacher),
-             params: {
-               confirm: {
-                 confirmed: "1",
-                 expected_action: "close",
-                 expected_training_period_ids: training_period.id.to_s,
-                 expected_mentorship_period_ids: "",
-                 expected_at_school_period_gid: at_school_period.to_global_id.to_s
-               }
-             }
-
-        expect(response).to redirect_to(admin_teacher_school_path(teacher))
-        expect(flash[:error]).to eq("There are no open periods to close for this registration.")
-      end
-    end
-
-    context "when the undo outcome has changed" do
-      let(:at_school_period) do
-        FactoryBot.create(:ect_at_school_period, :unfinished, teacher:)
-      end
-      let(:training_period) do
-        FactoryBot.create(:training_period, :for_ect, :unfinished, ect_at_school_period: at_school_period)
-      end
-      let(:undo_registration_service) do
-        instance_double(
-          ::Teachers::UndoRegistration,
-          undoable?: true
-        )
-      end
-
-      before do
-        allow(::Teachers::UndoRegistration).to receive(:new).and_return(undo_registration_service)
-        allow(undo_registration_service).to receive(:undo!)
-          .and_raise(::Teachers::UndoRegistration::UndoOutcomeChangedError)
-      end
-
-      it "redirects to confirmation so the updated outcome can be reviewed" do
-        post admin_teacher_undo_registration_wizard_confirm_path(teacher),
-             params: {
-               confirm: {
-                 confirmed: "1",
-                 expected_action: "delete",
-                 expected_training_period_ids: training_period.id.to_s,
-                 expected_mentorship_period_ids: "",
-                 expected_at_school_period_gid: at_school_period.to_global_id.to_s
-               }
-             }
-
-        expect(response).to redirect_to(admin_teacher_undo_registration_wizard_confirm_path(teacher))
-        expect(flash[:error]).to eq(
-          "The declarations for this registration have changed. Review the updated outcome before continuing."
-        )
-      end
-    end
-
-    context "when the affected periods have changed" do
-      let(:at_school_period) do
-        FactoryBot.create(:ect_at_school_period, :unfinished, teacher:)
-      end
-      let(:training_period) do
-        FactoryBot.create(:training_period, :for_ect, :unfinished, ect_at_school_period: at_school_period)
-      end
-      let(:undo_registration_service) do
-        instance_double(
-          ::Teachers::UndoRegistration,
-          undoable?: true
-        )
-      end
-
-      before do
-        allow(::Teachers::UndoRegistration).to receive(:new).and_return(undo_registration_service)
-        allow(undo_registration_service).to receive(:undo!)
-          .and_raise(::Teachers::UndoRegistration::AffectedPeriodsChangedError)
-      end
-
-      it "redirects to confirmation so the updated periods can be reviewed" do
-        post admin_teacher_undo_registration_wizard_confirm_path(teacher),
-             params: {
-               confirm: {
-                 confirmed: "1",
-                 expected_action: "close",
-                 expected_training_period_ids: training_period.id.to_s,
-                 expected_mentorship_period_ids: "",
-                 expected_at_school_period_gid: at_school_period.to_global_id.to_s
-               }
-             }
-
-        expect(response).to redirect_to(admin_teacher_undo_registration_wizard_confirm_path(teacher))
-        expect(flash[:error]).to eq(
-          "The periods for this registration have changed. Review the updated periods before continuing."
-        )
-      end
-    end
-
-    context "when the registration has already been undone" do
-      let(:at_school_period) do
-        FactoryBot.create(:ect_at_school_period, :unfinished, teacher:)
-      end
-      let(:training_period) do
-        FactoryBot.create(:training_period, :for_ect, :unfinished, ect_at_school_period: at_school_period)
-      end
-      let(:undo_registration_service) do
-        instance_double(
-          ::Teachers::UndoRegistration,
-          undoable?: true
-        )
-      end
-
-      before do
-        allow(::Teachers::UndoRegistration).to receive(:new).and_return(undo_registration_service)
-        allow(undo_registration_service).to receive(:undo!)
-          .and_raise(::Teachers::UndoRegistration::RegistrationAlreadyUndoneError)
-      end
-
-      it "redirects to school history with an explanation" do
-        post admin_teacher_undo_registration_wizard_confirm_path(teacher),
-             params: {
-               confirm: {
-                 confirmed: "1",
-                 expected_action: "close",
-                 expected_training_period_ids: training_period.id.to_s,
-                 expected_mentorship_period_ids: "",
-                 expected_at_school_period_gid: at_school_period.to_global_id.to_s
-               }
-             }
-
-        expect(response).to redirect_to(admin_teacher_school_path(teacher))
-        expect(flash[:error]).to eq("This registration has already been undone.")
       end
     end
   end

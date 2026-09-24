@@ -45,7 +45,7 @@ RSpec.describe Teachers::UndoRegistration do
           expect(undo_registration).to eq("close")
         end
 
-        context "when the affected periods have changed" do
+        context "when the expected mentorship periods have changed" do
           let(:finished_mentorship_on) { ect_at_school_period.started_on + 1.month }
           let!(:mentorship_period) do
             FactoryBot.create(
@@ -75,7 +75,7 @@ RSpec.describe Teachers::UndoRegistration do
                 expected_training_period_ids: [training_period.id],
                 expected_mentorship_period_ids: []
               )
-            }.to raise_error(described_class::AffectedPeriodsChangedError)
+            }.to raise_error(described_class::ConfirmationChangedError)
 
             expect(ect_at_school_period.reload.finished_on).to be_nil
             expect(training_period.reload.finished_on).to be_nil
@@ -99,7 +99,46 @@ RSpec.describe Teachers::UndoRegistration do
             expect(Events::Record).not_to receive(:record_undo_registration_event!)
 
             expect { undo_registration_service.undo!(expected_action: "delete") }
-              .to raise_error(described_class::UndoOutcomeChangedError)
+              .to raise_error(described_class::ConfirmationChangedError)
+
+            expect(ect_at_school_period.reload.finished_on).to be_nil
+            expect(training_period.reload.finished_on).to be_nil
+            expect(mentorship_period.reload.finished_on).to be_nil
+          end
+        end
+
+        context "when the expected at school period has changed" do
+          it "does not undo the registration" do
+            other_at_school_period = FactoryBot.create(:ect_at_school_period)
+            expect(Events::Record).not_to receive(:record_undo_registration_event!)
+
+            expect {
+              undo_registration_service.undo!(
+                expected_action: "close",
+                expected_training_period_ids: [training_period.id],
+                expected_mentorship_period_ids: [mentorship_period.id],
+                expected_at_school_period_gid: other_at_school_period.to_global_id.to_s
+              )
+            }.to raise_error(described_class::ConfirmationChangedError)
+
+            expect(ect_at_school_period.reload.finished_on).to be_nil
+            expect(training_period.reload.finished_on).to be_nil
+            expect(mentorship_period.reload.finished_on).to be_nil
+          end
+        end
+
+        context "when the expected training periods have changed" do
+          it "does not undo the registration" do
+            expect(Events::Record).not_to receive(:record_undo_registration_event!)
+
+            expect {
+              undo_registration_service.undo!(
+                expected_action: "close",
+                expected_training_period_ids: [],
+                expected_mentorship_period_ids: [mentorship_period.id],
+                expected_at_school_period_gid: ect_at_school_period.to_global_id.to_s
+              )
+            }.to raise_error(described_class::ConfirmationChangedError)
 
             expect(ect_at_school_period.reload.finished_on).to be_nil
             expect(training_period.reload.finished_on).to be_nil
@@ -205,7 +244,7 @@ RSpec.describe Teachers::UndoRegistration do
           expect(undo_registration_service).not_to be_undoable
 
           expect { undo_registration_service.undo! }
-            .to raise_error(described_class::NoPeriodsToCloseError, "No open periods to close")
+            .to raise_error(described_class::ConfirmationChangedError)
 
           expect(Events::Record)
             .to have_received(:record_undo_registration_event!)
@@ -262,11 +301,19 @@ RSpec.describe Teachers::UndoRegistration do
           expect(undo_registration).to eq("delete")
         end
 
-        it "raises when the registration has already been undone" do
+        it "raises a record not found error without recording another event when the registration has already been undone" do
+          allow(Events::Record)
+            .to receive(:record_undo_registration_event!)
+            .and_call_original
+
           undo_registration
 
           expect { undo_registration_service.undo! }
-            .to raise_error(described_class::RegistrationAlreadyUndoneError)
+            .to raise_error(ActiveRecord::RecordNotFound)
+
+          expect(Events::Record)
+            .to have_received(:record_undo_registration_event!)
+            .once
         end
 
         it "deletes the relevant periods" do

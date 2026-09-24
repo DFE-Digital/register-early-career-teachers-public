@@ -1,9 +1,6 @@
 module Teachers
   class UndoRegistration
-    class NoPeriodsToCloseError < StandardError; end
-    class UndoOutcomeChangedError < StandardError; end
-    class AffectedPeriodsChangedError < StandardError; end
-    class RegistrationAlreadyUndoneError < StandardError; end
+    class ConfirmationChangedError < StandardError; end
 
     attr_reader :author, :at_school_period, :reason, :teacher
 
@@ -27,8 +24,8 @@ module Teachers
 
         action = periods_will_be_closed? ? "close" : "delete"
 
-        raise UndoOutcomeChangedError if expected_action.present? && expected_action != action
-        raise AffectedPeriodsChangedError unless affected_periods_match?(
+        raise ConfirmationChangedError if expected_action.present? && expected_action != action
+        raise ConfirmationChangedError unless affected_periods_match?(
           action:,
           expected_at_school_period_gid:,
           expected_training_period_ids:,
@@ -36,7 +33,7 @@ module Teachers
         )
 
         if action == "close"
-          raise NoPeriodsToCloseError, "No open periods to close" unless periods_to_close?
+          raise ConfirmationChangedError unless periods_to_close?
 
           finish_periods!
         else
@@ -64,10 +61,7 @@ module Teachers
     end
 
     def lock_at_school_period!
-      # Reload the school period so we can catch if another undo has deleted it.
       @at_school_period = at_school_period.class.lock.find(at_school_period.id)
-    rescue ActiveRecord::RecordNotFound
-      raise RegistrationAlreadyUndoneError
     end
 
     def billable_or_refundable_declarations_exist?
