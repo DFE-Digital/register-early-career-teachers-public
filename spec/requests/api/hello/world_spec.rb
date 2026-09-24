@@ -8,10 +8,10 @@ RSpec.describe "GET /api/hello/world", type: :request do
 
   context "when the hello API is disabled" do
     around do |example|
-      Rails.application.config.enable_hello_api = false
+      Rails.application.config.enable_apis_under_development = false
       example.run
     ensure
-      Rails.application.config.enable_hello_api = true
+      Rails.application.config.enable_apis_under_development = true
     end
 
     it "is not found" do

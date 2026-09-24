@@ -31,7 +31,7 @@ namespace :api do
     resources :unfunded_mentors, only: %i[index show], path: "unfunded-mentors", param: :api_id
   end
 
-  constraints -> { Rails.application.config.enable_hello_api } do
+  constraints -> { Rails.application.config.enable_apis_under_development } do
     namespace :hello do
       resource :world, only: :show
       resource :client, only: :show
