@@ -152,7 +152,7 @@ describe API::OAuth::Client do
     end
   end
 
-  describe "authorization_for_token" do
+  describe "active_authorization_for_token" do
     let(:client) { FactoryBot.create(:api_oauth_client) }
     let!(:authorization_1) do
       FactoryBot.create(:api_oauth_authorization, :with_token, client:)
@@ -163,12 +163,12 @@ describe API::OAuth::Client do
     let!(:authorization_2) { FactoryBot.create(:api_oauth_authorization, client:) }
 
     it "returns the authorization record matching the code" do
-      expect(client.authorization_for_token(token:)).to eq authorization_1
+      expect(client.active_authorization_for_token(token:)).to eq authorization_1
     end
 
     context "when the code does not match any authorizations" do
       it "returns nil" do
-        expect(client.authorization_for_token(token: "wrong-code")).to be_nil
+        expect(client.active_authorization_for_token(token: "wrong-code")).to be_nil
       end
     end
 
@@ -178,8 +178,8 @@ describe API::OAuth::Client do
       before { FactoryBot.create(:api_oauth_authorization, :with_expired_token, client:, token: "expired-token") }
 
       it "returns nil" do
-        expect(client.authorization_for_token(token: "expired-token")).to be_nil
-        expect(client.authorization_for_token(token: revoked_authorization.token)).to be_nil
+        expect(client.active_authorization_for_token(token: "expired-token")).to be_nil
+        expect(client.active_authorization_for_token(token: revoked_authorization.token)).to be_nil
       end
     end
   end

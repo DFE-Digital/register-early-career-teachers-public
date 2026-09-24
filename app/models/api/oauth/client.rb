@@ -35,7 +35,7 @@ class API::OAuth::Client < ApplicationRecord
     authorizations.find_by(code_digest:)
   end
 
-  def authorization_for_token(token:) = authorizations.active.with_token(token).take
+  def active_authorization_for_token(token:) = authorizations.active.with_token(token).take
 
 private
 

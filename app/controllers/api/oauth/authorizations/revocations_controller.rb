@@ -15,7 +15,7 @@ module API
       private
 
         def set_authorization
-          @authorization = current_client.authorization_for_token(token: params.require(:token))
+          @authorization = current_client.active_authorization_for_token(token: params.require(:token))
         end
       end
     end
