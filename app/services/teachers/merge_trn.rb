@@ -11,7 +11,7 @@ module Teachers
 
       ActiveRecord::Base.transaction do
         move_school_periods
-        move_induction_records
+        merge_induction_periods_service.move!
         move_teacher_id_changes
         move_data
         move_mentor_ineligibility_data
@@ -21,6 +21,7 @@ module Teachers
         teacher.destroy!
       end
 
+      merge_induction_periods_service.sync
       Teachers::SyncTeacherWithTRSJob.perform_later(teacher: destination)
     end
 
@@ -65,11 +66,6 @@ module Teachers
       teacher.mentor_at_school_periods.find_each { |period| period.update!(teacher: destination) }
     end
 
-    def move_induction_records
-      teacher.induction_periods.find_each { |period| period.update!(teacher: destination) }
-      teacher.induction_extensions.find_each { |extension| extension.update!(teacher: destination) }
-    end
-
     def move_teacher_id_changes
       teacher.teacher_id_changes.find_each { |change| change.update!(teacher: destination) }
     end
@@ -107,6 +103,10 @@ module Teachers
         api_from_teacher_id: teacher.api_id,
         api_to_teacher_id: destination.api_id
       )
+    end
+
+    def merge_induction_periods_service
+      @merge_induction_periods_service ||= Teachers::Merge::InductionPeriods.new(teacher:)
     end
 
     # The declarative refresh hook only re-points the destination's metadata on

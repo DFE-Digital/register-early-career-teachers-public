@@ -36,6 +36,10 @@ RSpec.describe Teachers::MergeTRN do
   let(:second_period_started_on) { Date.new(2025, 6, 1) }
   let(:second_period_finished_on) { Date.new(2025, 11, 30) }
 
+  before do
+    allow(BeginECTInductionJob).to receive(:perform_now)
+  end
+
   shared_examples "does not move or change any data" do
     it "does not move any ect_at_school_periods" do
       expect { service.merge! }.not_to(change { teacher.reload.ect_at_school_periods.map(&:teacher_id) })
@@ -79,7 +83,7 @@ RSpec.describe Teachers::MergeTRN do
   end
 
   describe "#merge!" do
-    context "when the destination has no overlapping records" do
+    context "when the destination has no overlapping records (happy path)" do
       it "moves the at-school periods to the destination teacher" do
         service.merge!
 
@@ -290,6 +294,15 @@ RSpec.describe Teachers::MergeTRN do
         expect(events.map(&:body).join).to include(source_api_id, destination.api_id)
       end
 
+      it "syncs the moved induction start date with TRS" do
+        expect(BeginECTInductionJob).to receive(:perform_now).with(
+          trn: destination.trn,
+          start_date: induction_period.started_on
+        )
+
+        service.merge!
+      end
+
       it "calls a sync with TRS" do
         expect(Teachers::SyncTeacherWithTRSJob).to receive(:perform_later)
 
@@ -306,6 +319,12 @@ RSpec.describe Teachers::MergeTRN do
         service.merge!
 
         expect(Event.where(event_type: "teacher_merged")).to be_empty
+      end
+
+      it "does not sync induction data with TRS" do
+        expect(BeginECTInductionJob).not_to receive(:perform_now)
+
+        service.merge!
       end
 
       it "does not resync with TRS" do
@@ -326,6 +345,12 @@ RSpec.describe Teachers::MergeTRN do
         expect(Event.where(event_type: "teacher_merged")).to be_empty
       end
 
+      it "does not sync induction data with TRS" do
+        expect(BeginECTInductionJob).not_to receive(:perform_now)
+
+        service.merge!
+      end
+
       it "does not resync with TRS" do
         expect(Teachers::SyncTeacherWithTRSJob).not_to receive(:perform_later)
 
@@ -342,6 +367,12 @@ RSpec.describe Teachers::MergeTRN do
         service.merge!
 
         expect(Event.where(event_type: "teacher_merged")).to be_empty
+      end
+
+      it "does not sync induction data with TRS" do
+        expect(BeginECTInductionJob).not_to receive(:perform_now)
+
+        service.merge!
       end
 
       it "does not resync with TRS" do
