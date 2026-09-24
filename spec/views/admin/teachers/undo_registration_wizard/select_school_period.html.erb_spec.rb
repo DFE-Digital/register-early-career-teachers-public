@@ -67,7 +67,7 @@ RSpec.describe "admin/teachers/undo_registration_wizard/select_school_period.htm
 
   it "uses one radio group for both school period types" do
     expect(rendered).to have_css('input[type="radio"]', count: 2)
-    expect(rendered).to have_css('input[type="radio"][name="select_school_period[school_period_gid]"]', count: 2)
+    expect(rendered).to have_css('input[type="radio"][name="select_school_period[at_school_period_gid]"]', count: 2)
   end
 
   context "when the teacher has no ECT school periods" do

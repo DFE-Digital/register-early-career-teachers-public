@@ -115,7 +115,7 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::Wizard do
 
       before do
         FactoryBot.create(:mentor_at_school_period, teacher:)
-        store.school_period_gid = ect_at_school_period.to_global_id.to_s
+        store.at_school_period_gid = ect_at_school_period.to_global_id.to_s
       end
 
       it { is_expected.to eq(%i[start select_school_period confirm]) }
@@ -161,7 +161,7 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::Wizard do
 
       before do
         FactoryBot.create(:ect_at_school_period, teacher:)
-        store.school_period_gid = mentor_at_school_period.to_global_id.to_s
+        store.at_school_period_gid = mentor_at_school_period.to_global_id.to_s
       end
 
       it { is_expected.to eq(mentor_at_school_period) }
@@ -173,7 +173,7 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::Wizard do
       before do
         FactoryBot.create(:ect_at_school_period, teacher:)
         FactoryBot.create(:mentor_at_school_period, teacher:)
-        store.school_period_gid = other_school_period.to_global_id.to_s
+        store.at_school_period_gid = other_school_period.to_global_id.to_s
       end
 
       it { is_expected.to be_nil }

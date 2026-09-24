@@ -23,7 +23,7 @@ module Admin
 
           if at_school_periods.many?
             steps << :select_school_period
-            return steps if selected_school_period.blank?
+            return steps if selected_at_school_period.blank?
           end
 
           return [] unless undoable?
@@ -64,13 +64,13 @@ module Admin
         end
 
         def at_school_period
-          return selected_school_period if selected_school_period
+          return selected_at_school_period if selected_at_school_period
 
           at_school_periods.first if at_school_periods.one?
         end
 
-        def school_period_from_gid(school_period_gid)
-          at_school_periods.find { |school_period| school_period.to_global_id.to_s == school_period_gid }
+        def at_school_period_from_gid(at_school_period_gid)
+          at_school_periods.find { |at_school_period| at_school_period.to_global_id.to_s == at_school_period_gid }
         end
 
         def periods_will_be_closed?
@@ -143,8 +143,8 @@ module Admin
           )
         end
 
-        def selected_school_period
-          @selected_school_period ||= school_period_from_gid(store.school_period_gid)
+        def selected_at_school_period
+          @selected_at_school_period ||= at_school_period_from_gid(store.at_school_period_gid)
         end
 
         def periods_affected(periods)

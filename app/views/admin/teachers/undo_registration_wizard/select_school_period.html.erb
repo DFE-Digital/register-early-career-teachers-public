@@ -16,19 +16,19 @@
       <%= content_for(:error_summary) { form.govuk_error_summary } %>
 
       <%= form.govuk_radio_buttons_fieldset(
-        :school_period_gid,
+        :at_school_period_gid,
         legend: { text: "Select a school period to undo", hidden: true }
       ) do %>
         <% if @wizard.ect_at_school_periods.any? %>
           <h2 class="govuk-heading-m">ECT school periods</h2>
 
-          <% @wizard.ect_at_school_periods.each do |school_period| %>
+          <% @wizard.ect_at_school_periods.each do |at_school_period| %>
             <%= render(
               "school_period_radio",
               form:,
-              school_period:,
-              appropriate_body_name: school_period.school_reported_appropriate_body_name,
-              link_errors: school_period == @wizard.at_school_periods.first
+              at_school_period:,
+              appropriate_body_name: at_school_period.school_reported_appropriate_body_name,
+              link_errors: at_school_period == @wizard.at_school_periods.first
             ) %>
           <% end %>
         <% end %>
@@ -36,13 +36,13 @@
         <% if @wizard.mentor_at_school_periods.any? %>
           <h2 class="govuk-heading-m">Mentor school periods</h2>
 
-          <% @wizard.mentor_at_school_periods.each do |school_period| %>
+          <% @wizard.mentor_at_school_periods.each do |at_school_period| %>
             <%= render(
               "school_period_radio",
               form:,
-              school_period:,
+              at_school_period:,
               appropriate_body_name: nil,
-              link_errors: school_period == @wizard.at_school_periods.first
+              link_errors: at_school_period == @wizard.at_school_periods.first
             ) %>
           <% end %>
         <% end %>
