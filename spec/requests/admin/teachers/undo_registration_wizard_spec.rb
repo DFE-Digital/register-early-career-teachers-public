@@ -52,8 +52,8 @@ RSpec.describe "Admin::Teachers::UndoRegistrationWizardController", type: :reque
                confirm: {
                  confirmed: "1",
                  expected_action: "close",
-                 expected_training_period_ids: training_period.id.to_s,
-                 expected_mentorship_period_ids: "",
+                 expected_training_period_ids: ["", training_period.id.to_s],
+                 expected_mentorship_period_ids: [""],
                  expected_at_school_period_gid: at_school_period.to_global_id.to_s
                }
              }
@@ -72,8 +72,8 @@ RSpec.describe "Admin::Teachers::UndoRegistrationWizardController", type: :reque
                confirm: {
                  confirmed: "1",
                  expected_action: "close",
-                 expected_training_period_ids: training_period.id.to_s,
-                 expected_mentorship_period_ids: "",
+                 expected_training_period_ids: ["", training_period.id.to_s],
+                 expected_mentorship_period_ids: [""],
                  expected_at_school_period_gid: at_school_period.to_global_id.to_s
                }
              }
@@ -87,8 +87,17 @@ RSpec.describe "Admin::Teachers::UndoRegistrationWizardController", type: :reque
       let(:at_school_period) do
         FactoryBot.create(:ect_at_school_period, :unfinished, teacher:)
       end
+      let(:previous_training_period) do
+        FactoryBot.create(:training_period, :for_ect, :finished, ect_at_school_period: at_school_period)
+      end
       let(:training_period) do
-        FactoryBot.create(:training_period, :for_ect, :unfinished, ect_at_school_period: at_school_period)
+        FactoryBot.create(
+          :training_period,
+          :for_ect,
+          :unfinished,
+          ect_at_school_period: at_school_period,
+          started_on: previous_training_period.finished_on + 1.day
+        )
       end
       let(:declaration) { nil }
 
@@ -102,14 +111,15 @@ RSpec.describe "Admin::Teachers::UndoRegistrationWizardController", type: :reque
                confirm: {
                  confirmed: "1",
                  expected_action: "delete",
-                 expected_training_period_ids: training_period.id.to_s,
-                 expected_mentorship_period_ids: "",
+                 expected_training_period_ids: ["", previous_training_period.id.to_s, training_period.id.to_s],
+                 expected_mentorship_period_ids: [""],
                  expected_at_school_period_gid: at_school_period.to_global_id.to_s
                }
              }
 
         expect(response).to redirect_to(admin_teacher_undo_registration_wizard_confirmation_path(teacher))
         expect { at_school_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+        expect { previous_training_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
         expect { training_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
         expect(teacher.reload.anonymised_at).to be_present
 
@@ -123,8 +133,8 @@ RSpec.describe "Admin::Teachers::UndoRegistrationWizardController", type: :reque
                confirm: {
                  confirmed: "1",
                  expected_action: "delete",
-                 expected_training_period_ids: training_period.id.to_s,
-                 expected_mentorship_period_ids: "",
+                 expected_training_period_ids: ["", previous_training_period.id.to_s, training_period.id.to_s],
+                 expected_mentorship_period_ids: [""],
                  expected_at_school_period_gid: at_school_period.to_global_id.to_s
                }
              }
@@ -156,8 +166,8 @@ RSpec.describe "Admin::Teachers::UndoRegistrationWizardController", type: :reque
                confirm: {
                  confirmed: "1",
                  expected_action: "delete",
-                 expected_training_period_ids: "",
-                 expected_mentorship_period_ids: "",
+                 expected_training_period_ids: [""],
+                 expected_mentorship_period_ids: [""],
                  expected_at_school_period_gid:
                }
              }
@@ -185,8 +195,8 @@ RSpec.describe "Admin::Teachers::UndoRegistrationWizardController", type: :reque
                confirm: {
                  confirmed: "1",
                  expected_action: "close",
-                 expected_training_period_ids: training_period.id.to_s,
-                 expected_mentorship_period_ids: "",
+                 expected_training_period_ids: ["", training_period.id.to_s],
+                 expected_mentorship_period_ids: [""],
                  expected_at_school_period_gid: at_school_period.to_global_id.to_s
                }
              }
@@ -216,8 +226,32 @@ RSpec.describe "Admin::Teachers::UndoRegistrationWizardController", type: :reque
                confirm: {
                  confirmed: "1",
                  expected_action: "",
-                 expected_training_period_ids: training_period.id.to_s,
-                 expected_mentorship_period_ids: "",
+                 expected_training_period_ids: ["", training_period.id.to_s],
+                 expected_mentorship_period_ids: [""],
+                 expected_at_school_period_gid: at_school_period.to_global_id.to_s
+               }
+             }
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(at_school_period.reload.finished_on).to be_nil
+        expect(training_period.reload.finished_on).to be_nil
+      end
+    end
+
+    context "when the reviewed period IDs are omitted" do
+      let(:at_school_period) do
+        FactoryBot.create(:ect_at_school_period, :unfinished, teacher:)
+      end
+      let(:training_period) do
+        FactoryBot.create(:training_period, :for_ect, :unfinished, ect_at_school_period: at_school_period)
+      end
+
+      it "does not undo the registration" do
+        post admin_teacher_undo_registration_wizard_confirm_path(teacher),
+             params: {
+               confirm: {
+                 confirmed: "1",
+                 expected_action: "close",
                  expected_at_school_period_gid: at_school_period.to_global_id.to_s
                }
              }

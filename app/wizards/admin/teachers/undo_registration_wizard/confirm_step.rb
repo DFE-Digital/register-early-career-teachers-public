@@ -4,8 +4,8 @@ module Admin
       class ConfirmStep < Step
         attribute :confirmed, :boolean
         attribute :expected_action, :string
-        attribute :expected_training_period_ids, :string
-        attribute :expected_mentorship_period_ids, :string
+        attribute :expected_training_period_ids
+        attribute :expected_mentorship_period_ids
         attribute :expected_at_school_period_gid, :string
 
         validates :confirmed,
@@ -23,12 +23,14 @@ module Admin
 
         validate :reviewed_periods_present
 
-        def self.permitted_params = %i[
-          confirmed
-          expected_action
-          expected_training_period_ids
-          expected_mentorship_period_ids
-          expected_at_school_period_gid
+        def self.permitted_params = [
+          :confirmed,
+          :expected_action,
+          :expected_at_school_period_gid,
+          {
+            expected_training_period_ids: [],
+            expected_mentorship_period_ids: []
+          }
         ]
 
         def previous_step = :start
@@ -52,8 +54,8 @@ module Admin
 
         def expected_associated_period_ids
           {
-            expected_training_period_ids: expected_training_period_ids.split(",").map(&:to_i),
-            expected_mentorship_period_ids: expected_mentorship_period_ids.split(",").map(&:to_i)
+            expected_training_period_ids: expected_training_period_ids.compact_blank.map(&:to_i),
+            expected_mentorship_period_ids: expected_mentorship_period_ids.compact_blank.map(&:to_i)
           }
         end
 

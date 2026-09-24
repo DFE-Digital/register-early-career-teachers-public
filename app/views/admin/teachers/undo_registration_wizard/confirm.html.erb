@@ -73,8 +73,14 @@
       <%= content_for(:error_summary) { form.govuk_error_summary } %>
 
       <%= form.hidden_field :expected_action, value: action_verb %>
-      <%= form.hidden_field :expected_training_period_ids, value: training_period_ids.join(",") %>
-      <%= form.hidden_field :expected_mentorship_period_ids, value: mentorship_period_ids.join(",") %>
+      <%= form.hidden_field :expected_training_period_ids, value: "", multiple: true, id: nil %>
+      <% training_period_ids.each do |training_period_id| %>
+        <%= form.hidden_field :expected_training_period_ids, value: training_period_id, multiple: true, id: nil %>
+      <% end %>
+      <%= form.hidden_field :expected_mentorship_period_ids, value: "", multiple: true, id: nil %>
+      <% mentorship_period_ids.each do |mentorship_period_id| %>
+        <%= form.hidden_field :expected_mentorship_period_ids, value: mentorship_period_id, multiple: true, id: nil %>
+      <% end %>
       <%= form.hidden_field :expected_at_school_period_gid, value: school_period.to_global_id.to_s %>
 
       <%= form.govuk_check_boxes_fieldset :confirmed, multiple: false, legend: nil do %>

@@ -12,9 +12,9 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::ConfirmStep do
 
   let(:confirmed) { "1" }
   let(:expected_action) { "close" }
-  let(:expected_training_period_ids) { "1" }
-  let(:expected_mentorship_period_ids) { "2" }
-  let(:expected_at_school_period_gid) { "gid://app/ECTAtSchoolPeriod/3" }
+  let(:expected_training_period_ids) { ["", "1", "2"] }
+  let(:expected_mentorship_period_ids) { ["", "3", "4"] }
+  let(:expected_at_school_period_gid) { "gid://app/ECTAtSchoolPeriod/5" }
   let(:undo_action) { "close" }
   let(:periods_will_be_closed) { true }
   let(:store) { FactoryBot.build(:session_repository) }
@@ -43,8 +43,8 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::ConfirmStep do
     it "undoes the registration" do
       expect(wizard).to receive(:undo_registration!).with(
         expected_action:,
-        expected_training_period_ids: [1],
-        expected_mentorship_period_ids: [2],
+        expected_training_period_ids: [1, 2],
+        expected_mentorship_period_ids: [3, 4],
         expected_at_school_period_gid:
       )
 
@@ -66,6 +66,22 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::ConfirmStep do
         step.save!
 
         expect(store.undo_action).to eq("delete")
+      end
+    end
+
+    context "when the reviewed associated period collections are empty" do
+      let(:expected_training_period_ids) { [""] }
+      let(:expected_mentorship_period_ids) { [""] }
+
+      it "passes empty collections to the service" do
+        expect(wizard).to receive(:undo_registration!).with(
+          expected_action:,
+          expected_training_period_ids: [],
+          expected_mentorship_period_ids: [],
+          expected_at_school_period_gid:
+        )
+
+        expect(step.save!).to be(true)
       end
     end
 
@@ -128,6 +144,7 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::ConfirmStep do
 
     context "when the reviewed period IDs are missing" do
       let(:expected_training_period_ids) { nil }
+      let(:expected_mentorship_period_ids) { nil }
 
       it "does not undo the registration" do
         expect(wizard).not_to receive(:undo_registration!)

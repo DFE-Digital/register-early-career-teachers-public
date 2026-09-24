@@ -80,8 +80,8 @@ RSpec.describe "admin/teachers/undo_registration_wizard/confirm.html.erb" do
     end
 
     it "includes the reviewed period identities" do
-      expect(rendered).to have_field("confirm_expected_training_period_ids", type: "hidden", with: training_period.id.to_s)
-      expect(rendered).to have_field("confirm_expected_mentorship_period_ids", type: "hidden", with: mentorship_period.id.to_s)
+      expect(hidden_field_values(:expected_training_period_ids)).to eq(["", training_period.id.to_s])
+      expect(hidden_field_values(:expected_mentorship_period_ids)).to eq(["", mentorship_period.id.to_s])
       expect(rendered).to have_field("confirm_expected_at_school_period_gid", type: "hidden", with: at_school_period.to_global_id.to_s)
     end
 
@@ -120,14 +120,37 @@ RSpec.describe "admin/teachers/undo_registration_wizard/confirm.html.erb" do
     end
   end
 
+  context "when the school period has no associated training or mentorship periods" do
+    let(:at_school_period) do
+      FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:)
+    end
+
+    before { render }
+
+    it "submits intentionally empty collections" do
+      expect(hidden_field_values(:expected_training_period_ids)).to eq([""])
+      expect(hidden_field_values(:expected_mentorship_period_ids)).to eq([""])
+    end
+  end
+
   context "when the teacher has an ECT school period without declarations" do
+    let!(:previous_training_period) do
+      FactoryBot.create(
+        :training_period,
+        :for_ect,
+        :school_led,
+        :finished,
+        ect_at_school_period: at_school_period
+      )
+    end
     let!(:training_period) do
       FactoryBot.create(
         :training_period,
         :for_ect,
         :school_led,
         :unfinished,
-        ect_at_school_period: at_school_period
+        ect_at_school_period: at_school_period,
+        started_on: previous_training_period.finished_on + 1.day
       )
     end
 
@@ -140,11 +163,16 @@ RSpec.describe "admin/teachers/undo_registration_wizard/confirm.html.erb" do
 
     it "shows the periods that will be deleted" do
       expect(rendered).to have_css("h3", text: "School period that will be deleted", normalize_ws: true)
-      expect(rendered).to have_css("h3", text: "ECT training period that will be deleted", normalize_ws: true)
+      expect(rendered).to have_css("h3", text: "ECT training periods that will be deleted", normalize_ws: true)
     end
 
     it "shows the affected training period" do
       expect(rendered).to have_text("School-led training programme")
+    end
+
+    it "submits each period ID as an array value" do
+      expect(hidden_field_values(:expected_training_period_ids))
+        .to contain_exactly("", previous_training_period.id.to_s, training_period.id.to_s)
     end
 
     it "asks the admin to confirm deleting the periods" do
@@ -203,5 +231,11 @@ RSpec.describe "admin/teachers/undo_registration_wizard/confirm.html.erb" do
     render
 
     expect(rendered).to have_link("Cancel and go back to Kyojuro Rengoku", href: admin_teacher_path(teacher))
+  end
+
+  def hidden_field_values(field_name)
+    Capybara.string(rendered)
+      .all(%(input[name="confirm[#{field_name}][]"]), visible: :hidden)
+      .map { |field| field[:value] }
   end
 end
