@@ -245,4 +245,14 @@ describe API::OAuth::Authorization do
       it { is_expected.not_to be_token_active }
     end
   end
+
+  describe "#user_name" do
+    subject(:authorization) { FactoryBot.build(:api_oauth_authorization, appropriate_body_period:) }
+
+    let(:appropriate_body_period) { FactoryBot.build(:appropriate_body_period, name: "Golden Leaf Teaching Hub") }
+
+    it "returns the appropriate body name" do
+      expect(authorization.user_name).to eq("Golden Leaf Teaching Hub")
+    end
+  end
 end
