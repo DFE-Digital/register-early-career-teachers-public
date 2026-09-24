@@ -351,10 +351,10 @@ RSpec.describe Events::Record do
 
         Events::Record.record_teacher_ect_first_became_eligible_for_training_reset_event!(author:, teacher:, modifications:)
 
-        expect(RecordEventJob).to have_received(:perform_later).with(
+        expect(Event.sole).to have_attributes(
           teacher:,
           heading: "ECT #{teacher_name}’s first became eligible for training timestamp was reset",
-          event_type: :teacher_ect_first_became_eligible_for_training_reset,
+          event_type: "teacher_ect_first_became_eligible_for_training_reset",
           happened_at: Time.zone.now,
           modifications: ["ECT first became eligible for training at '#{ect_first_became_eligible_for_training_at}' removed"],
           metadata: modifications,
