@@ -7,12 +7,7 @@ RSpec.describe "GET /api/hello/world", type: :request do
   end
 
   context "when the hello API is disabled" do
-    around do |example|
-      Rails.application.config.enable_apis_under_development = false
-      example.run
-    ensure
-      Rails.application.config.enable_apis_under_development = true
-    end
+    before { allow(Rails.application.config).to receive(:enable_apis_under_development).and_return(false) }
 
     it "is not found" do
       get "/api/hello/world"
