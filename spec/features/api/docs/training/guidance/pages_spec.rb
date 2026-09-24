@@ -78,7 +78,7 @@ private
   end
 
   def when_i_visit_non_existing_guidance_page
-    path = api_docs_guidance_page_path("does-not-exist")
+    path = api_docs_training_guidance_page_path("does-not-exist")
     page.goto(path)
     expect(page).to have_path(path)
   end

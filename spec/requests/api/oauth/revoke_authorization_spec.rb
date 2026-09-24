@@ -13,10 +13,13 @@ RSpec.describe "API OAuth Authorization revoked by client", type: :request do
   let!(:authorization) { FactoryBot.create(:api_oauth_authorization, :with_token, client:) }
   let(:token) { authorization.token }
 
-  let(:params) do
-    {
-      token:,
-    }
+  let(:params) { { token:, } }
+
+  let(:enable_apis_under_development) { true }
+
+  before do
+    allow(Rails.application.config)
+      .to receive(:enable_apis_under_development) { enable_apis_under_development }
   end
 
   describe "POST /oauth/revoke" do
@@ -59,6 +62,16 @@ RSpec.describe "API OAuth Authorization revoked by client", type: :request do
         post("/oauth/revoke", params:, headers: basic_auth)
 
         expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context "when enable_apis_under_development is false" do
+      let(:enable_apis_under_development) { false }
+
+      it "returns 404 response" do
+        post("/oauth/revoke", params:, headers: basic_auth)
+
+        expect(response).to have_http_status(:not_found)
       end
     end
   end

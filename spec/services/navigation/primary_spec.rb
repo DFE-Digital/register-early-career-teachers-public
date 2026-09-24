@@ -167,7 +167,7 @@ describe Navigation::Primary, type: :component do
         end
 
         describe "api guidance" do
-          subject { instance.send(:items_by_area).fetch(:training_api_guidance) }
+          subject { instance.send(:items_by_area).fetch(:training_api_documentation) }
 
           it "has the correct nodes and paths" do
             expect(subject).to eql(
@@ -176,6 +176,22 @@ describe Navigation::Primary, type: :component do
                 { text: "Swagger API documentation", href: "/api/docs/training/v3", active_when: "/api/docs/training/v3" },
                 { text: "Release notes", href: "/api/docs/training/guidance/release-notes", active_when: "/api/docs/training/guidance/release-notes" },
                 { text: "Guidance", href: "/api/docs/training/guidance/guidance-for-lead-providers", active_when: "/api/docs/training/guidance/guidance-for-lead-providers" },
+              ]
+            )
+          end
+        end
+
+        describe "api documentation" do
+          subject { instance.send(:items_by_area).fetch(:api_documentation) }
+
+          it "has the correct nodes and paths" do
+            expect(subject).to eq(
+              [
+                { text: "Home", href: "/api/docs" },
+                { text: "Authentication", href: "#authentication", active_when: "#authentication" },
+                { text: "Hello World API", href: "#hello-world", active_when: "#hello-world" },
+                { text: "Training API", href: "/api/docs/training/guidance", active_when: "/api/docs/training/guidance" },
+                { text: "Induction API", href: "#induction", active_when: "#induction" },
               ]
             )
           end
