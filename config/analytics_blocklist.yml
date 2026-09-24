@@ -385,19 +385,15 @@
   - range
   :training_periods:
   - range
-  - ecf_start_induction_record_id
   - ecf_end_induction_record_id
   :mentorship_periods:
   - range
-  - ecf_start_induction_record_id
   - ecf_end_induction_record_id
   :mentor_at_school_periods:
   - range
-  - ecf_start_induction_record_id
   - ecf_end_induction_record_id
   :ect_at_school_periods:
   - range
-  - ecf_start_induction_record_id
   - ecf_end_induction_record_id
   :contract_periods:
   - range
