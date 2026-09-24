@@ -2598,7 +2598,7 @@ RSpec.describe Events::Record do
   end
 
   describe ".record_dfe_user_deleted_event!" do
-    it "queues a RecordEventJob with a snapshot of the deleted user" do
+    it "records an event with a snapshot of the deleted user" do
       freeze_time do
         Events::Record.record_dfe_user_deleted_event!(
           author:,
@@ -2607,18 +2607,16 @@ RSpec.describe Events::Record do
           user_role: another_dfe_user.role
         )
 
-        expect(RecordEventJob).to have_received(:perform_later).with(
-          hash_including(
-            heading: "User Ian Richardson removed",
-            event_type: :dfe_user_deleted,
-            happened_at: Time.zone.now,
-            metadata: {
-              name: another_dfe_user.name,
-              email: another_dfe_user.email,
-              role: another_dfe_user.role,
-            },
-            **author_params
-          )
+        expect(Event.sole).to have_attributes(
+          heading: "User Ian Richardson removed",
+          event_type: "dfe_user_deleted",
+          happened_at: Time.zone.now,
+          metadata: {
+            "name" => another_dfe_user.name,
+            "email" => another_dfe_user.email,
+            "role" => another_dfe_user.role,
+          },
+          **author_params
         )
       end
     end
