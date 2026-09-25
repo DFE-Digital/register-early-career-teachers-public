@@ -5,3 +5,8 @@ public/api/docs/v3/swagger.yaml:
     - '#/openapi'
   info-license:
     - '#/info'
+public/api/docs/hello/swagger.yaml:
+  no-empty-servers:
+    - '#/openapi'
+  info-license:
+    - '#/info'

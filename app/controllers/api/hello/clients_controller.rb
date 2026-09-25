@@ -4,7 +4,7 @@ module API
       include API::OAuth::ClientAuthenticable
 
       def show
-        render json: { name: current_client.name }
+        render json: API::Hello::ClientSerializer.render(current_client)
       end
     end
   end

@@ -22,7 +22,7 @@ private
   def render_unauthorized
     if request.authorization.present?
       headers["WWW-Authenticate"] = %(Bearer error="invalid_token")
-      render json: { error: "invalid_token" }, status: :unauthorized
+      render json: API::OAuth::ErrorSerializer.render({ error: "invalid_token" }), status: :unauthorized
     else
       headers["WWW-Authenticate"] = "Bearer"
       head :unauthorized

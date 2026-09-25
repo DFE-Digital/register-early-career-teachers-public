@@ -27,6 +27,7 @@ private
   end
 
   def render_unauthorized
-    render json: { error: "invalid_client" }, status: :unauthorized
+    headers["WWW-Authenticate"] = %(Basic realm="Application")
+    render json: API::OAuth::ErrorSerializer.render({ error: "invalid_client" }), status: :unauthorized
   end
 end
