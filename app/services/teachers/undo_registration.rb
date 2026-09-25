@@ -46,6 +46,8 @@ module Teachers
 
     def periods_will_be_closed? = billable_or_refundable_declarations_exist?
 
+    # Registrations with billable or refundable declarations must be closed rather
+    # than deleted. If every period is already finished, there is nothing left to close.
     def undoable? = !periods_will_be_closed? || periods_to_close?
 
     def finish_date_for(period)
