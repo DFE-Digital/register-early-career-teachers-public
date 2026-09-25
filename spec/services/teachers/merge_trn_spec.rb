@@ -304,7 +304,7 @@ RSpec.describe Teachers::MergeTRN do
       end
 
       it "calls a sync with TRS" do
-        expect(Teachers::SyncTeacherWithTRSJob).to receive(:perform_later)
+        expect(Teachers::SyncTeacherWithTRSJob).to receive(:perform_later).with(teacher: destination, wait: 5.minutes)
 
         service.merge!
       end
