@@ -26,12 +26,10 @@
 
       <p class="govuk-body">
         The periods shown below will be closed with the end dates shown.
-        Their teacher record will not be deleted.
       </p>
     <% else %>
       <p class="govuk-body">
-        Their school and training periods will be deleted.
-        Their teacher record will not be deleted.
+        The periods shown below will be deleted.
       </p>
     <% end %>
 
@@ -91,7 +89,7 @@
           link_errors: true,
           multiple: false,
           label: {
-            text: "I confirm I want to undo this registration and #{action_verb} these school and training periods"
+            text: "I confirm I want to undo this registration"
           }
         ) %>
       <% end %>

@@ -72,9 +72,9 @@ RSpec.describe "admin/teachers/undo_registration_wizard/confirm.html.erb" do
       expect(rendered).to have_css("h3", text: "Mentorship period that will be closed", normalize_ws: true)
     end
 
-    it "asks the admin to confirm closing the periods" do
+    it "asks the admin to confirm undoing the registration" do
       expect(rendered).to have_field(
-        "I confirm I want to undo this registration and close these school and training periods",
+        "I confirm I want to undo this registration",
         type: "checkbox"
       )
     end
@@ -159,6 +159,7 @@ RSpec.describe "admin/teachers/undo_registration_wizard/confirm.html.erb" do
     it "uses delete wording" do
       expect(view.content_for(:page_title))
         .to eq("Confirm undo registration and delete school periods for Kyojuro Rengoku")
+      expect(rendered).to have_text("The periods shown below will be deleted.")
     end
 
     it "shows the periods that will be deleted" do
@@ -175,9 +176,9 @@ RSpec.describe "admin/teachers/undo_registration_wizard/confirm.html.erb" do
         .to contain_exactly("", previous_training_period.id.to_s, training_period.id.to_s)
     end
 
-    it "asks the admin to confirm deleting the periods" do
+    it "asks the admin to confirm undoing the registration" do
       expect(rendered).to have_field(
-        "I confirm I want to undo this registration and delete these school and training periods",
+        "I confirm I want to undo this registration",
         type: "checkbox"
       )
     end

@@ -16,7 +16,7 @@ describe "Admin undoing a registration" do
     when_i_start_the_undo_registration_journey
     then_i_see_the_close_confirmation
 
-    when_i_confirm_the_undo(action: "close")
+    when_i_confirm_the_undo
     then_i_see_the_registration_undone_confirmation(action: "closed")
   end
 
@@ -26,7 +26,7 @@ describe "Admin undoing a registration" do
     when_i_start_the_undo_registration_journey
     then_i_see_the_delete_confirmation
 
-    when_i_confirm_the_undo(action: "delete")
+    when_i_confirm_the_undo
     then_i_see_the_registration_undone_confirmation(action: "deleted")
   end
 
@@ -39,7 +39,7 @@ describe "Admin undoing a registration" do
     when_i_select_the_ect_registration
     then_i_see_the_close_confirmation
 
-    when_i_confirm_the_undo(action: "close")
+    when_i_confirm_the_undo
     then_i_see_the_registration_undone_confirmation(action: "closed")
   end
 
@@ -84,10 +84,8 @@ private
     ).to be_visible
   end
 
-  def when_i_confirm_the_undo(action:)
-    page.get_by_label(
-      "I confirm I want to undo this registration and #{action} these school and training periods"
-    ).check
+  def when_i_confirm_the_undo
+    page.get_by_label("I confirm I want to undo this registration").check
     page.get_by_role("button", name: "Confirm").click
   end
 
