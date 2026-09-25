@@ -83,17 +83,11 @@ module ECTAtSchoolPeriods
     end
 
     def destroy_unstarted_training_periods!
-      unstarted_training_periods.find_each do |training_period|
-        Event.where(training_period:).delete_all
-        training_period.destroy!
-      end
+      unstarted_training_periods.find_each(&:destroy!)
     end
 
     def destroy_unstarted_mentorship_periods!
-      ect_at_school_period.mentorship_periods.started_on_or_after(finished_on).find_each do |mentorship_period|
-        Event.where(mentorship_period:).delete_all
-        mentorship_period.destroy!
-      end
+      ect_at_school_period.mentorship_periods.started_on_or_after(finished_on).find_each(&:destroy!)
     end
 
     def unstarted_training_periods
