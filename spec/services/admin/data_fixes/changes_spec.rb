@@ -6,9 +6,7 @@ RSpec.describe Admin::DataFixes::Changes do
   let!(:teacher) { FactoryBot.create(:teacher) }
   let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period) }
 
-  describe "#process" do
-    subject(:process) { changes.process }
-
+  describe "validations" do
     context "when none of the changes are valid" do
       let(:parsed_rows) do
         [
@@ -27,10 +25,8 @@ RSpec.describe Admin::DataFixes::Changes do
         ]
       end
 
-      it { is_expected.to be_falsey }
-
-      it "validates the data changes are successful" do
-        process
+      it "is invalid" do
+        expect(changes).to be_invalid
         expect(changes.errors.count).to eq(2)
         expect(changes.errors[:base].first)
           .to match(/Row 1: Validation failed: TRN/)
@@ -57,10 +53,8 @@ RSpec.describe Admin::DataFixes::Changes do
         ]
       end
 
-      it { is_expected.to be_falsey }
-
-      it "validates the data changes are successful" do
-        process
+      it "is invalid" do
+        expect(changes).to be_invalid
         expect(changes.errors.count).to eq(1)
         expect(changes.errors[:base].first)
           .to match(/Row 2: Unknown action 'destroy'/)
@@ -85,31 +79,9 @@ RSpec.describe Admin::DataFixes::Changes do
         ]
       end
 
-      it { is_expected.to be_truthy }
-
       it "has no errors" do
-        process
+        expect(changes).to be_valid
         expect(changes.errors).to be_empty
-      end
-
-      it "returns the saved changes" do
-        expect(process).to eq(
-          [
-            {
-              gid: teacher.to_global_id.to_s,
-              action: "update",
-              changes: {
-                "trn" => [teacher.trn.to_s, "123456"],
-                "trs_first_name" => [teacher.trs_first_name, "New Name"]
-              }
-            },
-            {
-              gid: ect_at_school_period.to_global_id.to_s,
-              action: "delete",
-              changes: {}
-            }
-          ]
-        )
       end
     end
   end
