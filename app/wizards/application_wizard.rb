@@ -3,6 +3,7 @@ class ApplicationWizard
 
   # So we can boot the application without error
   def self.steps(&) = [{}]
+  def self.routes = []
 
   def allowed_steps = raise NotImplementedError
 

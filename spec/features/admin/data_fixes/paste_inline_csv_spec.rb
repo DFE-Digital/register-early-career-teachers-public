@@ -1,6 +1,4 @@
 RSpec.describe "Product team users can paste inline CSV to fix data" do
-  include ActiveJob::TestHelper
-
   before do
     freeze_time
     setup_data_to_fix
@@ -48,9 +46,10 @@ RSpec.describe "Product team users can paste inline CSV to fix data" do
     then_i_see_an_error("Add a note or enter the Zendesk ticket number")
 
     given_i_enter_a_reason_for_the_changes
-    perform_enqueued_jobs { and_i_verify_the_changes }
+    and_i_verify_the_changes
     then_i_am_taken_to_the_confirmation_step
     and_confirmed_changes_are_displayed
+    and_events_are_recorded_for_each_change
 
     given_i_choose_to_fix_more_data
     then_i_am_taken_to_the_csv_step
@@ -65,7 +64,8 @@ private
   end
 
   def given_i_am_signed_in_as_a_product_team_user
-    sign_in_as_dfe_user(role: :product_team)
+    @user = FactoryBot.create(:user, :product_team)
+    sign_in_as_dfe_user(role: :product_team, user: @user)
   end
 
   def when_i_open_the_tools_tab
@@ -223,6 +223,36 @@ private
   end
 
   alias_method :and_confirmed_changes_are_displayed, :and_proposed_processed_changes_are_displayed
+
+  def and_events_are_recorded_for_each_change
+    events = Event.where(event_type: "admin_data_fix").order(created_at: :asc)
+    expect(events.count).to eq(2)
+    expect(events.first).to have_attributes(
+      author: @user,
+      body: "This is a test reason",
+      zendesk_ticket_id: nil,
+      modifications: ["TRN changed from '#{@teacher.trn}' to '1234567'"],
+      metadata: {
+        "action" => "update",
+        "changes" => { "trn" => [@teacher.trn, "1234567"] },
+        "gid" => @teacher.to_global_id.to_s
+      },
+      teacher: @teacher
+    )
+    expect(events.second).to have_attributes(
+      author: @user,
+      body: "This is a test reason",
+      zendesk_ticket_id: nil,
+      modifications: [],
+      metadata: {
+        "action" => "delete",
+        "changes" => {},
+        "gid" => @ect_at_school_period.to_global_id.to_s
+      },
+      ect_at_school_period: nil,
+      teacher: @ect_at_school_period.teacher
+    )
+  end
 
   def given_i_choose_to_fix_more_data
     page.get_by_role("link", name: "Fix more data", exact: true).click

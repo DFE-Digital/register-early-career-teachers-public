@@ -2,16 +2,12 @@ module Admin
   class DataFixesController < AdminController
     layout "full"
 
-    include WizardStoreRescuable
-
-    before_action :set_steps,
-                  :set_store,
-                  :set_wizard
+    before_action :set_wizard
 
     before_action -> { redirect_to "/404", as: :not_found },
-                  unless: -> { wizard_class.step?(@current_step) }
+                  unless: -> { @wizard.valid_path_to_current_step? }
 
-    before_action -> { @wizard.reset },
+    before_action -> { @wizard.clear },
                   if: -> { @current_step == :csv && starting_afresh? },
                   only: :new
 
@@ -24,7 +20,7 @@ module Admin
     end
 
     def create
-      if @wizard.save!
+      if @wizard.save_current_step
         redirect_to @wizard.next_step_path
       else
         render @current_step, status: :unprocessable_content
@@ -35,29 +31,21 @@ module Admin
 
     def authorised? = super && current_user.product_team?
 
-    def starting_afresh?
-      !wizard_class.step?(@previous_step) || @previous_step == :confirmation
-    end
-
-    def set_steps
+    def set_wizard
       @current_step = request.path.split("/").last.underscore.to_sym
       @previous_step = request.referer&.split("/")&.last&.underscore&.to_sym
-    end
-
-    def set_store
-      @store = SessionRepository.new(session:, form_key: :admin_data_fixes_wizard)
-    end
-
-    def set_wizard
-      @wizard = wizard_class.new(
-        current_step: @current_step,
-        author: current_user,
-        step_params: params,
-        store: @store
+      repository = DfE::Wizard::Repository::Session.new(session:, key: :admin_data_fixes_wizard)
+      state_store = DataFixesWizard::StateStore.new(repository:)
+      @wizard = DataFixesWizard::Wizard.new(
+        current_step: @current_step || :csv,
+        current_step_params: params,
+        state_store:
       )
     end
 
-    def wizard_class = DataFixesWizard::Wizard
+    def starting_afresh?
+      !@wizard.valid_path_to?(@previous_step) || @previous_step == :confirmation
+    end
 
     def wrap_in_transaction
       ActiveRecord::Base.transaction do
