@@ -36,7 +36,7 @@ end
   {
     name: "DfE Sign-In Organisations",
     statement: "SELECT * FROM dfe_sign_in_organisations",
-    description: "Authentication responses",
+    description: "DfE authentication responses",
   },
   {
     name: "Regions",
@@ -84,7 +84,7 @@ end
     description: "TRS syncing has flagged records merged into another TRN"
   },
   {
-    name: "Active lead provider bands",
+    name: "Framework agreement bands",
     statement: "SELECT * FROM framework_agreement_bands ORDER BY framework_agreement_id, allocation_order",
     description: ""
   }
