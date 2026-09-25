@@ -1,4 +1,4 @@
-RSpec.describe Admin::DataFixesWizard::VerifyStep do
+RSpec.describe Admin::DataFixesWizard::Steps::VerifyStep do
   subject(:current_step) { wizard.current_step }
 
   let(:wizard) do

@@ -1602,10 +1602,11 @@ module Events
     end
 
     def self.relationship_for(record)
-      return {} unless record.persisted?
-
-      name = record.model_name.singular.to_sym
-      relationships = RELATIONSHIPS.include?(name) ? { name => record } : {}
+      relationships = {}
+      belongs_to_name = record.model_name.singular.to_sym
+      if record.persisted? && RELATIONSHIPS.include?(belongs_to_name)
+        relationships[belongs_to_name] = record
+      end
       relationships[:teacher] ||= record.teacher if record.respond_to?(:teacher)
       relationships.compact
     end

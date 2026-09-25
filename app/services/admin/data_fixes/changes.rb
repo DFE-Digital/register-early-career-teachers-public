@@ -8,12 +8,6 @@ module Admin::DataFixes
 
     validate :all_results_successful
 
-    def process
-      return false unless valid?
-
-      results.map(&:saved_change)
-    end
-
     def results = @results ||= parsed_rows.map { process_row(it) }
 
   private

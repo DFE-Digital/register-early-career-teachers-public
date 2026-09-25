@@ -1,4 +1,4 @@
-RSpec.describe Admin::DataFixesWizard::PreviewStep do
+RSpec.describe Admin::DataFixesWizard::Steps::PreviewStep do
   subject(:current_step) { wizard.current_step }
 
   let(:wizard) do

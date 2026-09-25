@@ -1,4 +1,4 @@
-RSpec.describe Admin::DataFixesWizard::CSVStep do
+RSpec.describe Admin::DataFixesWizard::Steps::CSVStep do
   subject(:current_step) { wizard.current_step }
 
   let(:wizard) do

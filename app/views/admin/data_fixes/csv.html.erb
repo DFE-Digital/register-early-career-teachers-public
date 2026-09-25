@@ -5,13 +5,19 @@
     backlink_href: admin_tools_path,
 ) %>
 
-<%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |form| %>
-  <%= content_for(:error_summary) { form.govuk_error_summary(presenter: @wizard.error_presenter) } %>
+<%= form_with(
+      model: @wizard.current_step,
+      url: @wizard.current_step_path,
+      scope: @wizard.current_step_name
+    ) do |form| %>
+  <%= content_for(:error_summary) do %>
+    <%= form.govuk_error_summary(presenter: @wizard.error_presenter) %>
+  <% end %>
 
   <%= form.govuk_text_area(
         :csv_string,
         label: { text: "Enter data fixes in CSV format", tag: "h1", size: "l" },
-        hint: { text: "Include a header row: #{Admin::DataFixes::InlineCSV::HEADER_ROW.join(',')}" },
+        hint: { text: "Include a header row: #{Admin::DataFixesWizard::Operations::ParseCSV::HEADER_ROW.join(',')}" },
         rows: 10
       ) %>
 

@@ -1,44 +1,69 @@
-module Admin
-  module DataFixesWizard
-    class Wizard < ApplicationWizard
-      steps do
-        [
-          {
-            csv: CSVStep,
-            preview: PreviewStep,
-            verify: VerifyStep,
-            confirmation: ConfirmationStep
-          }
-        ]
+module Admin::DataFixesWizard
+  class Wizard
+    include DfE::Wizard
+
+    def self.routes = %i[csv preview verify confirmation]
+
+    def steps_processor
+      DfE::Wizard::StepsProcessor::Graph.draw(self, predicate_caller: state_store) do |graph|
+        graph.add_node :csv, Steps::CSVStep
+        graph.add_node :preview, Steps::PreviewStep
+        graph.add_node :verify, Steps::VerifyStep
+        graph.add_node :confirmation, Steps::ConfirmationStep
+
+        graph.root :csv
+
+        graph.add_edge from: :csv, to: :preview
+        graph.add_edge from: :preview, to: :verify
+        graph.add_edge from: :verify, to: :confirmation
+      end
+    end
+
+    def steps_operator
+      DfE::Wizard::StepsOperator::Builder.draw(wizard: self, callable: state_store) do |builder|
+        builder.on_step(
+          :csv,
+          use: [
+            DfE::Wizard::Operations::Validate,
+            Operations::ParseCSV,
+            DfE::Wizard::Operations::Persist
+          ]
+        )
+        builder.on_step(
+          :preview,
+          use: [
+            Operations::ProcessChanges,
+            DfE::Wizard::Operations::Persist
+          ]
+        )
+        builder.on_step(
+          :verify,
+          use: [
+            DfE::Wizard::Operations::Validate,
+            Operations::ConfirmChanges,
+            DfE::Wizard::Operations::Persist
+          ]
+        )
+      end
+    end
+
+    def route_strategy
+      DfE::Wizard::RouteStrategy::NamedRoutes.new(wizard: self, namespace: "admin_data_fixes")
+    end
+
+    delegate :clear, to: :state_store
+
+    def author = Current.user
+    def error_presenter = ErrorSummaryPresenter
+
+    class ErrorSummaryPresenter
+      def initialize(error_messages)
+        @error_messages = error_messages
       end
 
-      def self.step?(step_name) = Array(steps).first[step_name].present?
-
-      attr_accessor :store, :author
-
-      delegate :save!, to: :current_step
-      delegate :reset, to: :store
-
-      def current_step_path = step_path(current_step_name)
-      def next_step_path = step_path(current_step.next_step)
-      def previous_step_path = step_path(current_step.previous_step)
-      def error_presenter = ErrorSummaryPresenter
-
-    private
-
-      def step_path(step_name)
-        url_helpers.public_send("admin_data_fixes_#{step_name}_path")
-      end
-
-      class ErrorSummaryPresenter
-        def initialize(error_messages)
-          @error_messages = error_messages
-        end
-
-        def formatted_error_messages
-          @error_messages.flat_map do |attribute, messages|
-            messages.map { |message| [attribute, message] }
-          end
+      def formatted_error_messages
+        @error_messages.flat_map do |attribute, messages|
+          messages.map { |message| [attribute, message] }
         end
       end
     end
