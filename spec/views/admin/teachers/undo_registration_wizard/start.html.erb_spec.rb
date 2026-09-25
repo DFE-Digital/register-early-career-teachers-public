@@ -16,8 +16,9 @@ RSpec.describe "admin/teachers/undo_registration_wizard/start.html.erb" do
   end
 
   it "displays the start page" do
-    expect(view.content_for(:page_title)).to eq("Undo a registration and close school periods for #{wizard.teacher_name}")
-    expect(rendered).to have_text("Undo a registration for #{wizard.teacher_name}")
+    expect(view.content_for(:page_title)).to eq("Undo a registration and update school periods for #{wizard.teacher_name}")
+    expect(rendered)
+      .to have_text("Undo a registration for #{wizard.teacher_name} and update the related school periods")
     expect(rendered).to have_text("Only continue if the registration was made in error.")
   end
 

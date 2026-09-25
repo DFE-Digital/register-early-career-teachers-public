@@ -84,7 +84,7 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::Wizard do
         FactoryBot.create(:ect_at_school_period, teacher:, started_on: 6.months.ago.to_date, finished_on: nil)
       end
 
-      it { is_expected.to eq([:start]) }
+      it { is_expected.to eq(%i[start select_school_period]) }
     end
 
     context "when the teacher has multiple mentor at school periods" do
@@ -98,7 +98,7 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::Wizard do
         FactoryBot.create(:mentor_at_school_period, teacher:, started_on: 6.months.ago.to_date, finished_on: nil)
       end
 
-      it { is_expected.to eq([:start]) }
+      it { is_expected.to eq(%i[start select_school_period]) }
     end
 
     context "when the teacher has both ECT and mentor at school periods" do
@@ -107,7 +107,18 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::Wizard do
         FactoryBot.create(:mentor_at_school_period, teacher:)
       end
 
-      it { is_expected.to eq([:start]) }
+      it { is_expected.to eq(%i[start select_school_period]) }
+    end
+
+    context "when the teacher has selected one of multiple school periods" do
+      let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
+
+      before do
+        FactoryBot.create(:mentor_at_school_period, teacher:)
+        store.at_school_period_gid = ect_at_school_period.to_global_id.to_s
+      end
+
+      it { is_expected.to eq(%i[start select_school_period confirm]) }
     end
 
     context "when the registration has been undone" do
@@ -143,6 +154,55 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::Wizard do
       end
 
       it { is_expected.to be_nil }
+    end
+
+    context "when the teacher has multiple at school periods and one has been selected" do
+      let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:) }
+
+      before do
+        FactoryBot.create(:ect_at_school_period, teacher:)
+        store.at_school_period_gid = mentor_at_school_period.to_global_id.to_s
+      end
+
+      it { is_expected.to eq(mentor_at_school_period) }
+    end
+
+    context "when the selected school period belongs to another teacher" do
+      let!(:other_school_period) { FactoryBot.create(:ect_at_school_period) }
+
+      before do
+        FactoryBot.create(:ect_at_school_period, teacher:)
+        FactoryBot.create(:mentor_at_school_period, teacher:)
+        store.at_school_period_gid = other_school_period.to_global_id.to_s
+      end
+
+      it { is_expected.to be_nil }
+    end
+  end
+
+  describe "#at_school_periods" do
+    let!(:older_ect_at_school_period) do
+      FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2023, 9, 1))
+    end
+    let!(:newer_ect_at_school_period) do
+      FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2024, 9, 1))
+    end
+    let!(:older_mentor_at_school_period) do
+      FactoryBot.create(:mentor_at_school_period, teacher:, started_on: Date.new(2023, 9, 1))
+    end
+    let!(:newer_mentor_at_school_period) do
+      FactoryBot.create(:mentor_at_school_period, teacher:, started_on: Date.new(2024, 9, 1))
+    end
+
+    it "returns school periods by type and most recent start date" do
+      expect(wizard.at_school_periods).to eq(
+        [
+          newer_ect_at_school_period,
+          older_ect_at_school_period,
+          newer_mentor_at_school_period,
+          older_mentor_at_school_period
+        ]
+      )
     end
   end
 
