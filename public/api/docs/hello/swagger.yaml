@@ -1,0 +1,114 @@
+---
+openapi: 3.0.1
+info:
+  title: Hello API
+  version: hello
+paths:
+  "/api/hello/client":
+    get:
+      summary: Check your client credentials identify your API client
+      operationId: getAPIHelloClient
+      security:
+      - client_credentials: []
+      tags:
+      - Hello world
+      responses:
+        '200':
+          description: The API client the credentials belong to
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HelloClient"
+        '401':
+          description: The client credentials are invalid
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/OAuthError"
+  "/api/hello/user":
+    get:
+      summary: Check your access token identifies an appropriate body
+      operationId: getAPIHelloUser
+      security:
+      - bearer: []
+      tags:
+      - Hello world
+      responses:
+        '200':
+          description: The appropriate body the access token was issued to
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HelloUser"
+        '401':
+          description: The access token is missing, unknown, expired or revoked. A
+            missing token returns no body.
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/OAuthError"
+  "/api/hello/world":
+    get:
+      summary: Check you can call an open API endpoint
+      operationId: getAPIHelloWorld
+      security: []
+      tags:
+      - Hello world
+      responses:
+        '200':
+          description: A static greeting
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HelloWorld"
+components:
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+      description: OAuth 2.0 access token
+    client_credentials:
+      type: http
+      scheme: basic
+      description: OAuth 2.0 client ID and secret
+  schemas:
+    HelloWorld:
+      description: Test API for unrestricted API.
+      type: object
+      required:
+      - message
+      properties:
+        message:
+          type: string
+          description: An anonymous greeting.
+          example: Hello World
+    HelloClient:
+      description: Test API for APIs restricted by the client credentials.
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          description: The API client name.
+          example: Vendor Ltd
+    HelloUser:
+      description: Test API for APIs restricted by the OAuth access token.
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          description: The appropriate body name.
+          example: Golden Leaf Teaching School Hub
+    OAuthError:
+      description: An OAuth 2.0 error.
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          type: string
+          description: The OAuth 2.0 error code.
+          example: invalid_token

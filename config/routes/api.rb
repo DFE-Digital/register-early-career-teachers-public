@@ -3,6 +3,10 @@ namespace :api do
   resources :release_notes, path: "guidance/release-notes", only: %i[index show], param: :slug, as: :guidance_release_notes
   get "guidance/swagger-api-documentation", to: redirect("/api/docs/v3")
   get "guidance/*page", to: "guidance#page", as: :guidance_page
+  constraints -> { Rails.application.config.enable_apis_under_development } do
+    resource :hello_documentation, only: :show, path: "docs/hello", controller: "hello/documentations"
+  end
+
   get "docs/:version", to: "documentation#index", as: :documentation
 
   namespace :v3 do

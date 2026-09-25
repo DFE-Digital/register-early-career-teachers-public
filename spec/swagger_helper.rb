@@ -131,7 +131,35 @@ RSpec.configure do |config|
 
         }
       }
-    }
+    },
+    "hello/swagger.yaml" => {
+      openapi: "3.0.1",
+      info: {
+        title: "Hello API",
+        version: "hello",
+      },
+      paths: {},
+      components: {
+        securitySchemes: {
+          bearer: {
+            type: :http,
+            scheme: :bearer,
+            description: "OAuth 2.0 access token",
+          },
+          client_credentials: {
+            type: :http,
+            scheme: :basic,
+            description: "OAuth 2.0 client ID and secret",
+          },
+        },
+        schemas: {
+          **API::Hello::WorldSerializer.openapi_schema_definition,
+          **API::Hello::ClientSerializer.openapi_schema_definition,
+          **API::Hello::UserSerializer.openapi_schema_definition,
+          **API::OAuth::ErrorSerializer.openapi_schema_definition,
+        },
+      },
+    },
   }
 
   # Specify the format of the output Swagger file when running 'rswag:specs:swaggerize'.
