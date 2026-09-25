@@ -41,6 +41,7 @@ namespace :api do
     end
 
     get "docs", to: "documentation#show", as: :documentation
+    resource :hello_documentation, only: :show, path: "docs/hello", controller: "hello/documentations"
   end
 
   namespace :docs, module: :documentation do

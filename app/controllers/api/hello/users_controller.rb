@@ -4,7 +4,7 @@ module API
       include API::OAuth::TokenAuthenticable
 
       def show
-        render json: { name: current_authorization.user_name }
+        render json: API::Hello::UserSerializer.render(current_authorization)
       end
     end
   end
