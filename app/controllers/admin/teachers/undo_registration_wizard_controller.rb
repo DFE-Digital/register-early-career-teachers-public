@@ -7,8 +7,8 @@ module Admin
 
       include WizardStoreRescuable
 
-      rescue_from ::Teachers::UndoRegistration::ConfirmationChangedError,
-                  with: :redirect_confirmation_changed
+      rescue_from ::Teachers::UndoRegistration::ConfirmationMismatchError,
+                  with: :redirect_confirmation_mismatch
 
       before_action :set_teacher
       before_action :reset_store_on_entry
@@ -45,7 +45,7 @@ module Admin
                     flash: { error: "There are no open periods to close for this registration." }
       end
 
-      def redirect_confirmation_changed
+      def redirect_confirmation_mismatch
         redirect_to @wizard.current_step_path,
                     flash: { error: "The registration has changed. Review the updated details before continuing." }
       end

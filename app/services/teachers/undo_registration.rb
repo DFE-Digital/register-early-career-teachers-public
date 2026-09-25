@@ -1,6 +1,6 @@
 module Teachers
   class UndoRegistration
-    class ConfirmationChangedError < StandardError; end
+    class ConfirmationMismatchError < StandardError; end
 
     attr_reader :author, :at_school_period, :reason, :teacher
 
@@ -22,16 +22,16 @@ module Teachers
       at_school_period.with_lock do
         action = periods_will_be_closed? ? "close" : "delete"
 
-        raise ConfirmationChangedError if expected_action.present? && expected_action != action
-        raise ConfirmationChangedError unless affected_periods_match?(
+        raise ConfirmationMismatchError unless confirmation_matches?(
           action:,
+          expected_action:,
           expected_at_school_period_gid:,
           expected_training_period_ids:,
           expected_mentorship_period_ids:
         )
 
         if action == "close"
-          raise ConfirmationChangedError unless periods_to_close?
+          raise ConfirmationMismatchError unless periods_to_close?
 
           finish_periods!
         else
@@ -70,32 +70,39 @@ module Teachers
         mentorship_periods.unfinished.exists?
     end
 
-    def affected_periods_match?(
+    def confirmation_matches?(
       action:,
+      expected_action:,
       expected_at_school_period_gid:,
       expected_training_period_ids:,
       expected_mentorship_period_ids:
     )
-      return false if expected_at_school_period_gid &&
-        at_school_period.to_global_id.to_s != expected_at_school_period_gid
+      expected_values = [
+        expected_action,
+        expected_at_school_period_gid,
+        expected_training_period_ids,
+        expected_mentorship_period_ids
+      ]
 
-      return true if expected_training_period_ids.nil? && expected_mentorship_period_ids.nil?
-      return false if expected_training_period_ids.nil? || expected_mentorship_period_ids.nil?
+      return true if expected_values.all?(&:nil?)
+      return false if expected_values.any?(&:nil?)
 
-      affected_period_ids(training_periods, action:) == expected_training_period_ids.sort &&
+      expected_action == action &&
+        at_school_period.to_global_id.to_s == expected_at_school_period_gid &&
+        affected_period_ids(training_periods, action:) == expected_training_period_ids.sort &&
         affected_period_ids(mentorship_periods, action:) == expected_mentorship_period_ids.sort
     end
 
     def affected_period_ids(periods, action:)
-      periods = periods.where(finished_on: nil) if action == "close"
+      periods = periods.unfinished if action == "close"
 
       periods.ids.sort
     end
 
     def finish_periods!
-      mentorship_periods.where(finished_on: nil).find_each { |period| period.finish!(finish_date_for(period)) }
-      training_periods.where(finished_on: nil).find_each { |period| period.finish!(finish_date_for(period)) }
-      at_school_period.finish!(finish_date_for(at_school_period)) if at_school_period.finished_on.nil?
+      mentorship_periods.unfinished.find_each { |period| period.finish!(finish_date_for(period)) }
+      training_periods.unfinished.find_each { |period| period.finish!(finish_date_for(period)) }
+      at_school_period.finish!(finish_date_for(at_school_period)) if at_school_period.unfinished?
     end
 
     def delete_periods!

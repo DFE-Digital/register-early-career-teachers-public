@@ -73,9 +73,10 @@ RSpec.describe Teachers::UndoRegistration do
               undo_registration_service.undo!(
                 expected_action: "close",
                 expected_training_period_ids: [training_period.id],
-                expected_mentorship_period_ids: []
+                expected_mentorship_period_ids: [],
+                expected_at_school_period_gid: ect_at_school_period.to_global_id.to_s
               )
-            }.to raise_error(described_class::ConfirmationChangedError)
+            }.to raise_error(described_class::ConfirmationMismatchError)
 
             expect(ect_at_school_period.reload.finished_on).to be_nil
             expect(training_period.reload.finished_on).to be_nil
@@ -98,8 +99,27 @@ RSpec.describe Teachers::UndoRegistration do
           it "does not undo the registration" do
             expect(Events::Record).not_to receive(:record_undo_registration_event!)
 
-            expect { undo_registration_service.undo!(expected_action: "delete") }
-              .to raise_error(described_class::ConfirmationChangedError)
+            expect {
+              undo_registration_service.undo!(
+                expected_action: "delete",
+                expected_training_period_ids: [training_period.id],
+                expected_mentorship_period_ids: [mentorship_period.id],
+                expected_at_school_period_gid: ect_at_school_period.to_global_id.to_s
+              )
+            }.to raise_error(described_class::ConfirmationMismatchError)
+
+            expect(ect_at_school_period.reload.finished_on).to be_nil
+            expect(training_period.reload.finished_on).to be_nil
+            expect(mentorship_period.reload.finished_on).to be_nil
+          end
+        end
+
+        context "when only some confirmation values are supplied" do
+          it "does not undo the registration" do
+            expect(Events::Record).not_to receive(:record_undo_registration_event!)
+
+            expect { undo_registration_service.undo!(expected_action: "close") }
+              .to raise_error(described_class::ConfirmationMismatchError)
 
             expect(ect_at_school_period.reload.finished_on).to be_nil
             expect(training_period.reload.finished_on).to be_nil
@@ -119,7 +139,7 @@ RSpec.describe Teachers::UndoRegistration do
                 expected_mentorship_period_ids: [mentorship_period.id],
                 expected_at_school_period_gid: other_at_school_period.to_global_id.to_s
               )
-            }.to raise_error(described_class::ConfirmationChangedError)
+            }.to raise_error(described_class::ConfirmationMismatchError)
 
             expect(ect_at_school_period.reload.finished_on).to be_nil
             expect(training_period.reload.finished_on).to be_nil
@@ -138,7 +158,7 @@ RSpec.describe Teachers::UndoRegistration do
                 expected_mentorship_period_ids: [mentorship_period.id],
                 expected_at_school_period_gid: ect_at_school_period.to_global_id.to_s
               )
-            }.to raise_error(described_class::ConfirmationChangedError)
+            }.to raise_error(described_class::ConfirmationMismatchError)
 
             expect(ect_at_school_period.reload.finished_on).to be_nil
             expect(training_period.reload.finished_on).to be_nil
@@ -227,6 +247,23 @@ RSpec.describe Teachers::UndoRegistration do
 
           expect(finished_training_period.reload.finished_on).to eq(original_finished_on)
         end
+
+        it "matches only unfinished training periods in a close confirmation" do
+          original_finished_on = finished_training_period.finished_on
+
+          expect {
+            undo_registration_service.undo!(
+              expected_action: "close",
+              expected_training_period_ids: [training_period.id],
+              expected_mentorship_period_ids: [mentorship_period.id],
+              expected_at_school_period_gid: ect_at_school_period.to_global_id.to_s
+            )
+          }.not_to raise_error
+
+          expect(training_period.reload.finished_on).to eq(Date.current)
+          expect(mentorship_period.reload.finished_on).to eq(Date.current)
+          expect(finished_training_period.reload.finished_on).to eq(original_finished_on)
+        end
       end
 
       context "when the registration has already been undone" do
@@ -244,7 +281,7 @@ RSpec.describe Teachers::UndoRegistration do
           expect(undo_registration_service).not_to be_undoable
 
           expect { undo_registration_service.undo! }
-            .to raise_error(described_class::ConfirmationChangedError)
+            .to raise_error(described_class::ConfirmationMismatchError)
 
           expect(Events::Record)
             .to have_received(:record_undo_registration_event!)
