@@ -22,7 +22,7 @@ module Teachers
       end
 
       merge_induction_periods_service.sync
-      Teachers::SyncTeacherWithTRSJob.perform_later(teacher: destination)
+      Teachers::SyncTeacherWithTRSJob.perform_later(teacher: destination, wait: 5.minutes)
     end
 
   private

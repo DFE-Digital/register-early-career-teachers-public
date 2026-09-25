@@ -13,9 +13,6 @@ module Teachers
         return if destination.blank?
         return if any_overlapping_periods?
 
-        @source_earliest_started_on = source_periods.minimum(:started_on)
-        return unless @source_earliest_started_on
-
         @sync_required = earlier_induction_period_on_source?
 
         ActiveRecord::Base.transaction do
@@ -50,6 +47,10 @@ module Teachers
       end
 
       def earlier_induction_period_on_source?
+        @source_earliest_started_on = source_periods.minimum(:started_on)
+
+        return false unless @source_earliest_started_on
+
         destination_earliest_started_on = destination_periods.minimum(:started_on)
 
         destination_earliest_started_on.nil? || @source_earliest_started_on < destination_earliest_started_on
