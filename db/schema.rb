@@ -674,12 +674,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_091136) do
   end
 
   create_table "regions", force: :cascade do |t|
-    t.bigint "appropriate_body_id"
     t.string "code", null: false
     t.datetime "created_at", null: false
     t.string "districts", null: false, array: true
     t.datetime "updated_at", null: false
-    t.index ["appropriate_body_id"], name: "index_regions_on_appropriate_body_id"
     t.index ["code"], name: "index_regions_on_code", unique: true
     t.index ["districts"], name: "index_regions_on_districts", using: :gin
   end
@@ -963,6 +961,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_091136) do
     t.check_constraint "trnless OR trn IS NOT NULL", name: "check_trn_presence"
   end
 
+  create_table "teaching_school_hub_lead_schools", force: :cascade do |t|
+    t.bigint "appropriate_body_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "deactivated_at"
+    t.bigint "region_id", null: false
+    t.bigint "school_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["appropriate_body_id", "region_id"], name: "index_teaching_school_hub_lead_schools_on_body_and_region", unique: true
+    t.index ["appropriate_body_id"], name: "index_teaching_school_hub_lead_schools_on_appropriate_body_id"
+    t.index ["region_id"], name: "index_teaching_school_hub_lead_schools_on_active_region", unique: true, where: "(deactivated_at IS NULL)"
+    t.index ["region_id"], name: "index_teaching_school_hub_lead_schools_on_region_id"
+    t.index ["school_id"], name: "index_teaching_school_hub_lead_schools_on_school_id"
+  end
+
   create_table "teaching_school_hubs", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -1093,7 +1105,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_091136) do
   add_foreign_key "pending_induction_submission_batches", "appropriate_body_periods"
   add_foreign_key "pending_induction_submissions", "appropriate_body_periods"
   add_foreign_key "pending_induction_submissions", "pending_induction_submission_batches"
-  add_foreign_key "regions", "appropriate_bodies"
   add_foreign_key "schedules", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "school_funding_eligibilities", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "school_funding_eligibilities", "gias_schools", column: "gias_school_urn", primary_key: "urn"
@@ -1115,6 +1126,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_091136) do
   add_foreign_key "teacher_id_changes", "teachers"
   add_foreign_key "teachers", "contract_periods", column: "ect_payments_frozen_year", primary_key: "year"
   add_foreign_key "teachers", "contract_periods", column: "mentor_payments_frozen_year", primary_key: "year"
+  add_foreign_key "teaching_school_hub_lead_schools", "appropriate_body_periods", column: "appropriate_body_id"
+  add_foreign_key "teaching_school_hub_lead_schools", "regions"
+  add_foreign_key "teaching_school_hub_lead_schools", "schools"
   add_foreign_key "training_periods", "ect_at_school_periods"
   add_foreign_key "training_periods", "framework_agreements", column: "expression_of_interest_id"
   add_foreign_key "training_periods", "mentor_at_school_periods"

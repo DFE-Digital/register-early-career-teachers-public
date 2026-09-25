@@ -12,6 +12,18 @@ erDiagram
   }
   Contract_BandedFeeStructure_BandTerm }o--|| Contract_BandedFeeStructure : belongs_to
   Contract_BandedFeeStructure_BandTerm }o--|| FrameworkAgreement_Band : belongs_to
+  TeachingSchoolHub_LeadSchool {
+    integer id
+    integer appropriate_body_id
+    integer school_id
+    integer region_id
+    datetime deactivated_at
+    datetime created_at
+    datetime updated_at
+  }
+  TeachingSchoolHub_LeadSchool }o--|| AppropriateBodyPeriod : belongs_to
+  TeachingSchoolHub_LeadSchool }o--|| School : belongs_to
+  TeachingSchoolHub_LeadSchool }o--|| Region : belongs_to
   FrameworkAgreement_Band {
     integer id
     integer allocation_order
@@ -161,13 +173,11 @@ erDiagram
   Schedule }o--|| ContractPeriod : belongs_to
   Region {
     integer id
-    integer appropriate_body_id
     string code
     datetime created_at
     array[string] districts
     datetime updated_at
   }
-  Region }o--|| AppropriateBody : belongs_to
   PendingInductionSubmissionBatch {
     integer id
     integer appropriate_body_period_id
@@ -464,8 +474,12 @@ erDiagram
     integer national_body_id
     integer local_authority_id
   }
-  AppropriateBodyPeriod }o--|| DfESignInOrganisation : belongs_to
   AppropriateBodyPeriod }o--|| AppropriateBody : belongs_to
+  AppropriateBodyPeriod }o--|| DfESignInOrganisation : belongs_to
+  AppropriateBodyPeriod }o--|| School : belongs_to
+  AppropriateBodyPeriod }o--|| TeachingSchoolHub : belongs_to
+  AppropriateBodyPeriod }o--|| NationalBody : belongs_to
+  AppropriateBodyPeriod }o--|| LocalAuthority : belongs_to
   AppropriateBody {
     integer id
     datetime created_at

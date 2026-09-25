@@ -36,11 +36,18 @@
     - name
     - created_at
     - updated_at
+  :teaching_school_hub_lead_schools:
+    - id
+    - appropriate_body_id
+    - school_id
+    - region_id
+    - deactivated_at
+    - created_at
+    - updated_at
   :regions:
     - id
     - code
     - districts
-    - appropriate_body_id
     - created_at
     - updated_at
   :appropriate_body_periods:

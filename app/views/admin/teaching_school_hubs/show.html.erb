@@ -1,18 +1,36 @@
 <% page_data(
   title: @teaching_school_hub.name,
-  caption: @teaching_school_hub.districts.to_sentence
 ) %>
 
-<h2 class="govuk-heading-m">Lead school</h2>
-<p class="govuk-body">
-    <%=
-      if @teaching_school_hub.lead_school.present?
-        govuk_link_to(
-          @teaching_school_hub.lead_school.name,
-          href: admin_school_overview_path(@teaching_school_hub.lead_school.urn)
-          )
-      else
-        "No lead school assigned"
+<% @teaching_school_hub.appropriate_bodies.each do |ab| %>
+  <h3 class="govuk-heading-s">
+    <%= ab.name %>
+  </h3>
+
+  <p class="govuk-body govuk-!-margin-bottom-3">
+    Provisioning lead school:
+    <%= govuk_link_to(ab.provisioning_school.name, href: admin_school_path(ab.provisioning_school.urn)) %>
+  </p>
+
+  <%=
+    govuk_table do |table|
+      table.with_head do |head|
+        head.with_row do |row|
+          row.with_cell(text: "Region")
+          row.with_cell(text: "Districts")
+          row.with_cell(text: "Lead school")
+        end
       end
-    %>
-</p>
+
+      table.with_body do |body|
+        ab.teaching_school_hub_lead_schools.active.includes(:region, :school).each do |lead_school|
+          body.with_row do |row|
+            row.with_cell(text: lead_school.code)
+            row.with_cell(text: lead_school.districts.to_sentence)
+            row.with_cell(text: lead_school.name)
+          end
+        end
+      end
+    end
+  %>
+<% end %>

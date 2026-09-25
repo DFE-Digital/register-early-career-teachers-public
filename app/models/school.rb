@@ -28,6 +28,13 @@ class School < ApplicationRecord
   has_many :training_periods, through: :school_partnerships
   has_many :school_funding_eligibilities, through: :gias_school
 
+  # Teaching School Hubs and former Teaching Schools
+  has_many :teaching_school_hub_lead_schools,
+           class_name: "TeachingSchoolHub::LeadSchool",
+           dependent: :destroy
+  has_many :awarded_regions, through: :teaching_school_hub_lead_schools, source: :region
+  has_many :appropriate_body_periods, -> { distinct }, through: :teaching_school_hub_lead_schools, source: :appropriate_body
+
   touch -> { contract_period_metadata }, when_changing: %i[urn induction_tutor_name induction_tutor_email], timestamp_attribute: :api_updated_at
   touch -> { school_partnerships }, when_changing: %i[urn induction_tutor_name induction_tutor_email], timestamp_attribute: :api_updated_at
   touch -> { ect_teachers }, when_changing: %i[urn], timestamp_attribute: :api_updated_at
