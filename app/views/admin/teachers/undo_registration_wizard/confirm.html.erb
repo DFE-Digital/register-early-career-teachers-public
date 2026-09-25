@@ -1,0 +1,114 @@
+<%
+  periods_will_be_closed = @wizard.periods_will_be_closed?
+  action = periods_will_be_closed ? "closed" : "deleted"
+  action_verb = periods_will_be_closed ? "close" : "delete"
+  school_period = @wizard.at_school_period
+  school_period_type = school_period.is_a?(ECTAtSchoolPeriod) ? "ECT" : "Mentor"
+  end_date_for = ->(period) { periods_will_be_closed ? @wizard.finish_date_for(period) : period.finished_on }
+  training_period_ids = @wizard.affected_training_periods.map(&:id)
+  mentorship_period_ids = @wizard.affected_mentorship_periods.map(&:id)
+
+  page_data(
+    title: "Confirm undo registration and #{action_verb} school periods for #{@wizard.teacher_name}",
+    error: @wizard.current_step.errors.present?,
+    backlink_href: @wizard.previous_step_path
+  )
+%>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h2 class="govuk-heading-m">What will happen with this undo</h2>
+
+    <% if periods_will_be_closed %>
+      <p class="govuk-body">
+        <%= @wizard.teacher_name %> has declarations associated with this school period.
+      </p>
+
+      <p class="govuk-body">
+        The periods shown below will be closed with the end dates shown.
+        Their teacher record will not be deleted.
+      </p>
+    <% else %>
+      <p class="govuk-body">
+        Their school and training periods will be deleted.
+        Their teacher record will not be deleted.
+      </p>
+    <% end %>
+
+    <h3 class="govuk-heading-s">School period that will be <%= action %></h3>
+
+    <%= render Admin::Teachers::UndoRegistrationWizard::SchoolPeriodSummaryComponent.new(
+      school_period:,
+      end_date: end_date_for.call(school_period)
+    ) %>
+
+    <% if training_period_ids.any? %>
+      <h3 class="govuk-heading-s">
+        <%= school_period_type %> training <%= "period".pluralize(training_period_ids.size) %>
+        that will be <%= action %>
+      </h3>
+
+      <% @wizard.affected_training_periods.each do |training_period| %>
+        <%= render Admin::Teachers::UndoRegistrationWizard::TrainingPeriodSummaryComponent.new(
+          training_period:,
+          end_date: end_date_for.call(training_period)
+        ) %>
+      <% end %>
+    <% end %>
+
+    <% if mentorship_period_ids.any? %>
+      <h3 class="govuk-heading-s">
+        Mentorship <%= "period".pluralize(mentorship_period_ids.size) %>
+        that will be <%= action %>
+      </h3>
+
+      <%= render Admin::Teachers::UndoRegistrationWizard::MentorshipPeriodsSummaryComponent.new(
+        mentorship_periods: @wizard.affected_mentorship_periods,
+        school_period:,
+        end_date_for:
+      ) %>
+    <% end %>
+
+    <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |form| %>
+      <%= content_for(:error_summary) { form.govuk_error_summary } %>
+
+      <%= form.hidden_field :expected_action, value: action_verb %>
+      <%= form.hidden_field :expected_training_period_ids, value: "", multiple: true, id: nil %>
+      <% training_period_ids.each do |training_period_id| %>
+        <%= form.hidden_field :expected_training_period_ids, value: training_period_id, multiple: true, id: nil %>
+      <% end %>
+      <%= form.hidden_field :expected_mentorship_period_ids, value: "", multiple: true, id: nil %>
+      <% mentorship_period_ids.each do |mentorship_period_id| %>
+        <%= form.hidden_field :expected_mentorship_period_ids, value: mentorship_period_id, multiple: true, id: nil %>
+      <% end %>
+      <%= form.hidden_field :expected_at_school_period_gid, value: school_period.to_global_id.to_s %>
+
+      <%= form.govuk_check_boxes_fieldset :confirmed, multiple: false, legend: nil do %>
+        <%= form.govuk_check_box(
+          :confirmed,
+          "1",
+          "0",
+          link_errors: true,
+          multiple: false,
+          label: {
+            text: "I confirm I want to undo this registration and #{action_verb} these school and training periods"
+          }
+        ) %>
+      <% end %>
+
+      <%= govuk_warning_text do %>
+        This action cannot be undone.
+      <% end %>
+
+      <%= form.govuk_submit "Confirm", warning: true %>
+    <% end %>
+
+    <p class="govuk-body">
+      <%= govuk_link_to(
+            "Cancel and go back to #{@wizard.teacher_name}",
+            admin_teacher_path(@teacher),
+            no_visited_state: true
+          ) %>
+    </p>
+  </div>
+</div>

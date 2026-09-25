@@ -1,0 +1,24 @@
+<%
+  action = {
+    "close" => "closed",
+    "delete" => "deleted"
+  }.fetch(@wizard.undo_action)
+
+  page_data(title: "Registration undone", header: false)
+%>
+
+<%= govuk_panel(title_text: "Registration undone") %>
+
+<p>
+  Associated school, training, and mentorship periods have been <%= action %>.
+</p>
+
+<h2 class="govuk-heading-m">What you need to do</h2>
+
+<p>
+  If training was delivered by a lead provider, tell them that you’ve undone this registration. They’ll need to update their own records.
+</p>
+
+<p class="govuk-body">
+  <%= govuk_link_to("Back to teachers", admin_teachers_path, no_visited_state: true) %>
+</p>

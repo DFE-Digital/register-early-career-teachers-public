@@ -45,6 +45,34 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::Wizard do
       it { is_expected.to eq(%i[start confirm]) }
     end
 
+    context "when the registration has no open periods to close" do
+      let!(:at_school_period) do
+        FactoryBot.create(
+          :ect_at_school_period,
+          teacher:,
+          started_on: 2.years.ago.to_date,
+          finished_on: 1.year.ago.to_date
+        )
+      end
+      let!(:training_period) do
+        FactoryBot.create(
+          :training_period,
+          :for_ect,
+          ect_at_school_period: at_school_period,
+          started_on: 18.months.ago.to_date,
+          finished_on: 1.year.ago.to_date
+        )
+      end
+
+      before { FactoryBot.create(:declaration, :eligible, training_period:) }
+
+      it "does not allow the undo registration journey" do
+        expect(wizard.allowed_steps).to be_empty
+        expect(wizard.allowed_step_path)
+          .to eq(Rails.application.routes.url_helpers.admin_teacher_school_path(teacher))
+      end
+    end
+
     context "when the teacher has multiple ECT at school periods" do
       before do
         FactoryBot.create(
@@ -137,9 +165,19 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::Wizard do
     end
 
     it "undoes the registration for the selected school period" do
-      expect(undo_registration).to receive(:undo!)
+      expect(undo_registration).to receive(:undo!).with(
+        expected_action: "close",
+        expected_training_period_ids: [1],
+        expected_mentorship_period_ids: [2],
+        expected_at_school_period_gid: at_school_period.to_global_id.to_s
+      )
 
-      wizard.undo_registration!
+      wizard.undo_registration!(
+        expected_action: "close",
+        expected_training_period_ids: [1],
+        expected_mentorship_period_ids: [2],
+        expected_at_school_period_gid: at_school_period.to_global_id.to_s
+      )
     end
   end
 
