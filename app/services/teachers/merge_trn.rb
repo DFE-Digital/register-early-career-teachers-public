@@ -11,15 +11,18 @@ module Teachers
 
       ActiveRecord::Base.transaction do
         move_school_periods
-        move_induction_records
+        merge_induction_periods_service.move!
         move_teacher_id_changes
+        move_data
+        move_mentor_ineligibility_data
         record_teacher_id_change
         refresh_metadata
         record_merge_events
         teacher.destroy!
       end
 
-      Teachers::SyncTeacherWithTRSJob.perform_later(teacher: destination)
+      merge_induction_periods_service.sync
+      Teachers::SyncTeacherWithTRSJob.perform_later(teacher: destination, wait: 5.minutes)
     end
 
   private
@@ -63,13 +66,35 @@ module Teachers
       teacher.mentor_at_school_periods.find_each { |period| period.update!(teacher: destination) }
     end
 
-    def move_induction_records
-      teacher.induction_periods.find_each { |period| period.update!(teacher: destination) }
-      teacher.induction_extensions.find_each { |extension| extension.update!(teacher: destination) }
-    end
-
     def move_teacher_id_changes
       teacher.teacher_id_changes.find_each { |change| change.update!(teacher: destination) }
+    end
+
+    def move_data
+      destination.update_columns(
+        ect_first_became_eligible_for_training_at: earliest_date(:ect_first_became_eligible_for_training_at),
+        ect_became_ineligible_for_funding_on: earliest_date(:ect_became_ineligible_for_funding_on),
+        mentor_first_became_eligible_for_training_at: earliest_date(:mentor_first_became_eligible_for_training_at),
+        ect_payments_frozen_year: earliest_date(:ect_payments_frozen_year),
+        mentor_payments_frozen_year: earliest_date(:mentor_payments_frozen_year)
+      )
+    end
+
+    def move_mentor_ineligibility_data
+      source_date = teacher.mentor_became_ineligible_for_funding_on
+      destination_date = destination.mentor_became_ineligible_for_funding_on
+
+      return if source_date.blank?
+      return if destination_date.present? && destination_date <= source_date
+
+      destination.update_columns(
+        mentor_became_ineligible_for_funding_on: source_date,
+        mentor_became_ineligible_for_funding_reason: teacher.mentor_became_ineligible_for_funding_reason
+      )
+    end
+
+    def earliest_date(attribute)
+      [teacher.public_send(attribute), destination.public_send(attribute)].compact.min
     end
 
     def record_teacher_id_change
@@ -78,6 +103,10 @@ module Teachers
         api_from_teacher_id: teacher.api_id,
         api_to_teacher_id: destination.api_id
       )
+    end
+
+    def merge_induction_periods_service
+      @merge_induction_periods_service ||= Teachers::Merge::InductionPeriods.new(teacher:)
     end
 
     # The declarative refresh hook only re-points the destination's metadata on
