@@ -52,38 +52,12 @@ We will need to have registered your application, your callback endpoints and pr
 > How is this done for new applications/vendors?
 
 
-
-
-
 ## Getting an OAuth 2.0 access token
 
 The complete process of obtaining an access token is illustrated by this sequence diagram
 
 
-
-```mermaid
-sequenceDiagram
-    actor User 
-    participant Vendor as Application
-    participant RIAB as RIAB Service
-   
-    User->>Vendor: Initiates connection to RIAB
-    Vendor->>Vendor: Generate code-challenge
-    Vendor-->>User: Redirect to /oauth/authorize
-    User->>RIAB: GET /oauth/authorize
-    Note over User,RIAB: [User not signed in to RIAB] sign-in via DfE Sign-in and then continues 
-    RIAB->>RIAB: Validate request
-    RIAB-->>User: Show authorisation request details
-    User->>RIAB: Approve connection
-    RIAB-->>User: Redirect to vendor callback
-    User->>Vendor: GET /callback
-    Vendor->>Vendor: Validate state
-    Vendor->>RIAB: POST /oauth/token
-    RIAB->>RIAB: Validate request and generate token 
-    RIAB-->>Vendor: 200 OK with token payload
-```
-
-
+<%= image_tag("documentation/authorization/overview.png", width: 800, alt: "Getting an OAuth Token overview sequence diagram") %>
 
 The process can be broken down into 3 steps:
 
@@ -96,22 +70,7 @@ The process can be broken down into 3 steps:
 
 This part of the process is illustrated by this sequence diagram
 
-```mermaid
-sequenceDiagram
-    actor User
-    participant Vendor as Application
-    participant RIAB as RIAB Service
-   
-    User->>Vendor: Initiates connection to RIAB
-    Vendor->>Vendor: Generate code-challenge
-    Vendor-->>User: Redirect to /oauth/authorize
-    User->>RIAB: GET /oauth/authorize
-    Note over User,RIAB: [User not signed in to RIAB] sign-in via DfE Sign-in and then continues 
-    RIAB->>RIAB: Validate request
-    RIAB-->>User: Show authorisation request details
-    
-
-```
+<%= image_tag("documentation/authorization/request-authorization.png", width: 800, alt: "Request authorization sequence diagram") %>
 
 #### 1.1 Syntax
 
@@ -156,25 +115,12 @@ response_type=code\
 | `code_challenge`             | The [PKCE](https://oauth.net/2/pkce/) `code_challenge` is used to ensure that the subsequently-issued access token is not intercepted. |
 | `code_challenge_method`      | The [PKCE](https://oauth.net/2/pkce/) `code_challenge_method` is used to transform the `code_verifier` to the `code_challenge`. This must have a value of `S256`. |
 
-##### 
 
 ### 2. Receive authorisation results
 
 The process is shown in this diagram which continues from step 1
 
-```mermaid
-sequenceDiagram
-    actor User
-    participant Vendor
-    participant RIAB as RIAB Service
-   
-    User->>RIAB: Approve connection
-    RIAB-->>User: Redirect to vendor callback
-    User->>Vendor: GET /callback
-    Vendor->>Vendor: Validate state
-
-```
-
+<%= image_tag("documentation/authorization/receive-authorization-result.png", width: 800, alt: "Receive authorization results sequence diagram") %>
 
 
 You must create an endpoint in your application to receive the authorisation results. This endpoint must accept an HTTP GET request to the redirect URI you specified in step 1.
@@ -228,17 +174,7 @@ If there are any other issues with your call to our authorisation endpoint, we r
 
 The process is shown in this diagram which continues from step 2. 
 
-```mermaid
-sequenceDiagram
-    actor User
-    participant Vendor
-    participant RIAB as RIAB Service
-   
-    Vendor->>RIAB: POST /oauth/token
-    RIAB->>RIAB: Validate request and generate token 
-    RIAB-->>Vendor: 200 OK with token payload
-```
-
+<%= image_tag("documentation/authorization/exchange-code-for-token.png", width: 800, alt: "Exchange  authorization code for access token sequence diagram") %>
 
 
 When you receive the authorisation code, you must exchange this for an access token **within 10 minutes**.
@@ -289,7 +225,7 @@ The response contains the access token as a JSON payload.   The access token is 
 
 A successful response will return HTTP status code `201` to indicate your token was created and a JSON payload containing the access token
 
-```json
+```
 {
   "access_token": "QGbWG8KckncuwwD4uYXgWxF4HQvuPmrmUqKgkpQP",
   "token_type": "Bearer",
@@ -297,18 +233,15 @@ A successful response will return HTTP status code `201` to indicate your token 
 }
 ```
 
-
-
 #### 3.3 Error responses
 
 An unsuccessful request will a HTTP status error code and a JSON payload containing an `error` value, for example:
 
-```json
+```
 {
   error: "invalid_grant"
 }
 ```
-
 
 
 | Error scenario                     | HTTP status          | Error                    |
@@ -336,8 +269,6 @@ curl -X GET https://sandbox.register-early-career-teachers/hello/user \
 -H "Accept: application/vnd.hmrc.1.0+json" \
 -H "Authorization: Bearer [ACCESS-TOKEN]"
 ```
-
-#### 
 
 (maybe we defer this section until we have the `/hello` API to reference?)
 
@@ -394,7 +325,7 @@ The successful response will be HTTP status 200 code with an empty body.  The ac
 
 An unsuccessful request will a HTTP status error code and a JSON payload containing an `error` value, for example:
 
-```json
+```
 {
   error: "invalid_client"
 }
