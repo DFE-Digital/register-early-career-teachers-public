@@ -1,9 +1,17 @@
 describe "admin/users/show.html.erb" do
   let(:role) { :admin }
   let(:user) { FactoryBot.create(:user, role) }
+  let(:current_user) { FactoryBot.build(:user, :user_manager) }
 
   before do
     assign(:user, user)
+
+    view.singleton_class.class_eval do
+      attr_accessor :current_user
+    end
+
+    view.current_user = current_user
+
     render
   end
 
@@ -42,6 +50,35 @@ describe "admin/users/show.html.erb" do
 
   it "does not display an unlock OTP sign-in button" do
     expect(rendered).not_to have_button("Unlock OTP sign-in")
+  end
+
+  it "displays the remove user link for a user who can manage users" do
+    expect(rendered).to have_link("Remove user", href: remove_admin_user_path(user))
+  end
+
+  context "when the current user cannot manage users" do
+    let(:current_user) { FactoryBot.build(:user, role: :admin) }
+
+    it "does not display the remove user link" do
+      expect(rendered).not_to have_link("Remove user")
+    end
+  end
+
+  context "when the current user is viewing their own account" do
+    let(:current_user) { FactoryBot.create(:user, :user_manager) }
+    let(:user) { current_user }
+
+    it "does not display the remove user link" do
+      expect(rendered).not_to have_link("Remove user")
+    end
+  end
+
+  context "when the current user is a finance user" do
+    let(:current_user) { FactoryBot.build(:user, :finance) }
+
+    it "displays the remove user link" do
+      expect(rendered).to have_link("Remove user", href: remove_admin_user_path(user))
+    end
   end
 
   context "when the user is locked out of OTP sign-in" do

@@ -39,6 +39,7 @@ RSpec/SpecFilePathFormat:
   CustomTransform:
     ECTs: ects
     OAuth: oauth
+    DfEUsers: dfe_users
 
 Style/StringLiterals:
   EnforcedStyle: double_quotes
