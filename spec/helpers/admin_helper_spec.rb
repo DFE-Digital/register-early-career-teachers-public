@@ -37,6 +37,36 @@ describe AdminHelper do
     end
   end
 
+  describe "#admin_last_active" do
+    context "when they've never logged in" do
+      let(:time_last_active) { nil }
+
+      it "returns the formatted date" do
+        expect(admin_last_active(time_last_active)).to eql("Never")
+      end
+    end
+
+    context "when less than 1 month ago" do
+      let(:time_last_active) { 1.month.ago.next_day }
+
+      it "returns the formatted date" do
+        expect(admin_last_active(time_last_active)).to eql(time_last_active.to_date.to_formatted_s(:govuk))
+      end
+    end
+
+    context "when more than 1 month ago" do
+      let(:time_last_active) { 1.month.ago.prev_day }
+
+      it "returns the formatted date" do
+        expected_date = time_last_active.to_date.to_formatted_s(:govuk)
+        description = time_ago_in_words(time_last_active)
+        expected = "#{expected_date} (#{description} ago)"
+
+        expect(admin_last_active(time_last_active)).to eql(expected)
+      end
+    end
+  end
+
   describe "#format_uuid" do
     it "wraps the input in code tags" do
       uuid = SecureRandom.uuid

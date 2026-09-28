@@ -44,6 +44,18 @@ module AdminHelper
     ]
   end
 
+  def admin_last_active(time)
+    return "Never" if time.blank?
+
+    last_active_date_formatted = time.to_date.to_formatted_s(:govuk)
+
+    if time < 1.month.ago
+      "#{last_active_date_formatted} (#{time_ago_in_words(time)} ago)"
+    else
+      last_active_date_formatted
+    end
+  end
+
   def role_name(role)
     User::ROLES.fetch(role.to_sym)
   end
