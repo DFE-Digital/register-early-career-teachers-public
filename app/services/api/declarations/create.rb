@@ -33,10 +33,10 @@ module API::Declarations
       message: "Enter a valid declaration type."
     }, allow_blank: true, if: -> { errors.empty? }
     validate :validates_billable_slot_available
+    validates :evidenced_at, api_date_time_format: true
     validate :evidenced_at_in_the_past
     validates :evidenced_at,
               evidenced_at_within_milestone: true,
-              api_date_time_format: true,
               allow_blank: true
     validate :validate_only_started_or_completed_if_mentor
     validates :evidence_type, evidence_type: true, if: -> { errors.empty? }

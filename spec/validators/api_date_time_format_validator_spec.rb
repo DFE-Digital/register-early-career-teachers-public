@@ -53,4 +53,13 @@ RSpec.describe APIDateTimeFormatValidator, type: :model do
       expect(subject.errors.messages_for(:date)).to include("Enter a valid RFC3339 '#/date'.")
     end
   end
+
+  context "when the date is not a string" do
+    subject { model_class.new(date: 12_345) }
+
+    it "has a meaningful error", :aggregate_failures do
+      expect(subject).to be_invalid
+      expect(subject.errors.messages_for(:date)).to include("Enter a valid RFC3339 '#/date'.")
+    end
+  end
 end

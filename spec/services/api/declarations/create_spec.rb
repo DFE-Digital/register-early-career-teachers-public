@@ -123,6 +123,13 @@ RSpec.describe API::Declarations::Create, type: :model do
           it { is_expected.to have_error(:evidenced_at, "Enter a valid RFC3339 '#/evidenced_at'.") }
         end
 
+        context "when `evidenced_at` is not a date" do
+          let!(:evidenced_at) { 45_758 }
+
+          it { is_expected.to have_one_error_only }
+          it { is_expected.to have_error(:evidenced_at, "Enter a valid RFC3339 '#/evidenced_at'.") }
+        end
+
         context "when `declaration_type` is nil" do
           let!(:milestone) { FactoryBot.create(:milestone, declaration_type: "started", schedule:) }
           let!(:declaration_type) { nil }
