@@ -1,8 +1,8 @@
 describe "admin/users/index.html.erb" do
-  let(:user_manager_user) { FactoryBot.create(:user, :user_manager, name: "User manager user") }
-  let(:finance_user) { FactoryBot.create(:user, :finance, name: "Finance user") }
-  let(:admin_user) { FactoryBot.create(:user, :admin, name: "Admin user") }
-  let(:product_team_user) { FactoryBot.create(:user, :product_team, name: "Product team user", updated_at: 3.months.ago) }
+  let(:user_manager_user) { FactoryBot.create(:user, :user_manager, name: "User manager user", otp_verified_at: 1.minute.ago) }
+  let(:finance_user) { FactoryBot.create(:user, :finance, name: "Finance user", otp_verified_at: 1.minute.ago) }
+  let(:admin_user) { FactoryBot.create(:user, :admin, name: "Admin user", otp_verified_at: 1.minute.ago) }
+  let(:product_team_user) { FactoryBot.create(:user, :product_team, name: "Product team user", otp_verified_at: 3.months.ago) }
 
   let(:users) { [user_manager_user, finance_user, product_team_user, admin_user] }
 
@@ -22,7 +22,7 @@ describe "admin/users/index.html.erb" do
   it "has columns for name, roles and last active on" do
     expect(rendered).to have_css("th", text: "Name")
     expect(rendered).to have_css("th", text: "Roles")
-    expect(rendered).to have_css("th", text: "Last active on")
+    expect(rendered).to have_css("th", text: "Last signed in")
   end
 
   describe "last active dates" do

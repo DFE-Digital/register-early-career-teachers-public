@@ -38,6 +38,14 @@ describe AdminHelper do
   end
 
   describe "#admin_last_active" do
+    context "when they've never logged in" do
+      let(:time_last_active) { nil }
+
+      it "returns the formatted date" do
+        expect(admin_last_active(time_last_active)).to eql("Never")
+      end
+    end
+
     context "when less than 1 month ago" do
       let(:time_last_active) { 1.month.ago.next_day }
 

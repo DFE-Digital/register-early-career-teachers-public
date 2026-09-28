@@ -11,12 +11,12 @@
 
 <%=
   govuk_table(
-    head: ["Name", "Roles", "Last active on"],
+    head: ["Name", "Roles", "Last signed in"],
     rows: @users.map do |u|
       [
         govuk_link_to(u.name, admin_user_path(u), no_visited_state: true),
         role_name(u.role),
-        admin_last_active(u.updated_at)
+        admin_last_active(u.otp_verified_at)
       ]
     end
   )
