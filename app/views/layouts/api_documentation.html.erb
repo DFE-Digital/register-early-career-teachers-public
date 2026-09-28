@@ -13,6 +13,9 @@
         <%= render partial: "layouts/shared/main_preamble" %>
 
         <div class="govuk-grid-row">
+          <%= yield(:page_caption) %>
+          <%= yield(:page_header) %>
+
           <%= yield %>
         </div>
       </main>
