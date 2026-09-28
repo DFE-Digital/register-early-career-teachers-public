@@ -1,0 +1,633 @@
+<%
+  page_data(
+    title: "Authorization",
+    error: false,
+    caption: "API Developer documentation",
+    caption_size: 'l'
+  )
+%>
+
+<h2 class="govuk-heading-m">How authorization works</h2>
+
+<p class="govuk-body">
+We use the open standard <%= govuk_link_to("OAuth 2.0", "https://oauth.net/2/") %> with the <%= govuk_link_to("Authorization Code Grant", "https://oauth.net/2/grant-types/authorization-code/") %>. This standard lets your users give your application permission to interact with us without sharing their password.
+</p>
+
+<p class="govuk-body">
+We use <%= govuk_link_to("PKCE", "https://oauth.net/2/pkce/") %>, in order to prevent code injection and CSRF attacks in the Authorization Code flow.
+</p>
+
+<p class="govuk-body">
+A user from each Appropriate Body you work with <strong>must</strong> authorise the use of your application before we can grant you a token to access the RIAB API on their behalf.
+</p>
+
+<h3 class="govuk-heading-m">PKCE code-verifier and code-challenge</h3>
+
+<p class="govuk-body">
+PKCE works by having a random secret called a <code>code verifier</code>, and a <code>code challenge</code> that is derived from it.
+You send the <code>code challenge</code> with the authorization request, and send the <code>code verifier</code> when exchanging the code for a token. This ensures only the application that started the flow can complete it.
+</p>
+
+<p class="govuk-body">
+You can optionally include a <code>state</code> value.  This is a value you can use to maintain a state between the request and the callback.
+If you include a <code>state</code> it will be returned to you in the callback after the client approves (or denies) the connection request.
+</p>
+
+<h3 class="govuk-heading-m">Access token</h3>
+
+<p class="govuk-body">
+We will return a token for each Appropriate Body that authorises your application that you should keep securely.
+</p>
+
+<p class="govuk-body">
+The token is valid for <strong>1 year</strong> from date of issue. When the token expires, you can get a new one by going through the authorisation process again. We do not support refresh tokens.
+</p>
+
+<h3 class="govuk-heading-m">Credentials</h3>
+
+<p class="govuk-body">
+Your credentials are your client ID and your client secret.
+</p>
+
+<p class="govuk-body">
+Credentials are used:
+  <ul class="govuk-list govuk-list--bullet">
+    <li>to identify your application during each step of an OAuth 2.0 journey</li>
+    <li>when you test your application with sandbox APIs</li>
+  </ul>
+</p>
+
+<h4 class="govuk-heading-s">Client ID</h4>
+
+<p class="govuk-body">
+Your client ID is a unique identifier we create for your application when we add you to the service.
+</p>
+
+<h4 class="govuk-heading-s">Client secret</h4>
+
+<p class="govuk-body">
+Client secrets are unique passphrases used to authenticate your application. They are known only to your application and the authorising server.
+</p>
+
+<p class="govuk-body">
+The client secret is the equivalent of a password and should not be stored in plain text. Only store an encrypted version of the client secret to reduce the chance of it being compromised.
+</p>
+
+
+<h2 class="govuk-heading-m">Before you start</h2>
+
+<p class="govuk-body">
+We will need to have registered your application, your callback endpoints and provided you with a Client ID.
+</p>
+
+<%= govuk_notification_banner(title_text: "Note") do %>
+  <p>
+  How is this done for new applications/vendors?
+  </p>
+<% end %>
+
+
+<h2 class="govuk-heading-m">Getting an OAuth 2.0 access token</h2>
+
+<p class="govuk-body">
+The complete process of obtaining an access token is illustrated by this sequence diagram
+
+<%= image_tag("documentation/authorization/overview.png", width: 800, alt: "Getting an OAuth Token overview sequence diagram") %>
+</p>
+
+<p class="govuk-body">
+The process can be broken down into 3 steps:
+</p>
+
+<h3 class="govuk-heading-m">1. Request authorization</h3>
+
+<ol class="govuk-list govuk-list--number">
+  <li>Send your user to our authorize endpoint</li>
+  <li>The user is taken through the DfE Sign-In process (if not already authenticated)</li>
+  <li>We display the authorization request details to your user</li>
+  <li>The user is asked to grant your application the authority to access their data</li>
+</ol>
+
+<p class="govuk-body">
+This part of the process is illustrated by this sequence diagram
+
+<%= image_tag("documentation/authorization/request-authorization.png", width: 800, alt: "Request authorization sequence diagram") %>
+</p>
+
+<h4 class="govuk-heading-s">1.1 Syntax</h4>
+
+<p class="govuk-body">
+<pre>
+<code>
+  curl -X GET https://sandbox.register-early-career-teachers.education.gov.uk/oauth/authorize?\
+  response_type=code\
+  &client_id=[YOUR-CLIENT-ID]\
+  &appropriate_body_period_id=[USERS-APPROPRIATE-BODY-IDENTIFIER]\
+  &state=[STATE]\
+  &redirect_uri=[YOUR-REDIRECT-URI]\
+  &code_challenge=[CODE-CHALLENGE]\
+  &code_challenge_method=[CODE-CHALLENGE-METHOD]"
+</code>
+</pre>
+</p>
+
+<h4 class="govuk-heading-s">1.2 Example</h4>
+
+<p class="govuk-body">
+<pre>
+<code>
+  curl -X GET "https://sandbox.register-early-career-teachers.education.gov.uk/oauth/authorize?\
+  response_type=code\
+  &client_id=Hf8sfkiUkYp9I3_R10qSnZ2ZUvoa\
+  &appropriate_body_period_id=9def8316-1d33-4181-b0d5-59c34c4a03f5\
+  &state=30de877c-ee2f-15db-8314-0800200c9a66\
+  &redirect_uri=https://www.myservice.example.com/callback\
+  &code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM\
+  &code_challenge_method=S256"
+</code>
+</pre>
+
+  <%= govuk_warning_text(text: "Do not include your client secret in this request.") %>
+</p>
+
+
+<h4 class="govuk-heading-s">1.3 Parameters</h4>
+
+<%= govuk_table do |table|
+  table.with_head do |head|
+    head.with_row do |row|
+      row.with_cell(text: "Parameter")
+      row.with_cell(text: "Description")
+    end
+  end
+  table.with_body do |body|
+    body.with_row do |row|
+      row.with_cell(text: "response_type")
+      row.with_cell(text: "The OAuth 2.0 response type. Currently the only acceptable value is 'code'")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "client_id")
+      row.with_cell(text: "The Client ID for your application")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "appropriate_body_period_id")
+      row.with_cell(text: "The ID for the Appropriate Body making the connection")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "state")
+      row.with_cell(text: "An opaque value used to maintain state between the request and callback and to prevent tampering as described in the #{govuk_link_to("OAuth 2.0 specification", "https://tools.ietf.org/html/rfc6749#section-10.12")}. This is passed back to your application via the <code>redirect_uri</code>".html_safe)
+    end
+    body.with_row do |row|
+      row.with_cell(text: "redirect_uri")
+      row.with_cell(text: "The URI that we use to send users back to your application after successful (or unsuccessful) authorisation.  This must match one of the redirect URIs you specified when you created your application")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "code_challenge")
+      row.with_cell(text: "The #{govuk_link_to("PKCE", "https://oauth.net/2/pkce/") } <code>code_challenge</code> is used to ensure that the subsequently-issued access token is not intercepted".html_safe)
+    end
+    body.with_row do |row|
+      row.with_cell(text: "code_challenge_method")
+      row.with_cell(text: "The #{govuk_link_to("PKCE", "https://oauth.net/2/pkce/") } <code>code_challenge_method</code> is used to transform the <code>code_verifier</code> to the <code>code_challenge</code>. This must have a value of <code>S256</code>".html_safe)
+    end
+  end
+end %>
+
+
+<h3 class="govuk-heading-m">2. Receive authorisation results</h3>
+
+<p class="govuk-body">
+The process is shown in this diagram which continues from step 1
+
+<%= image_tag("documentation/authorization/receive-authorization-result.png", width: 800, alt: "Receive authorization results sequence diagram") %>
+</p>
+
+<p class="govuk-body">
+You must create an endpoint in your application to receive the authorisation results. This endpoint must accept a HTTP GET request to the redirect URI you specified in step 1.
+</p>
+
+<p class="govuk-body">
+The user's browser will be redirected back to your endpoint once they have granted your application the requested authority.
+</p>
+
+<p class="govuk-body">
+Your endpoint must support the following query parameters:
+
+<%= govuk_table do |table|
+  table.with_head do |head|
+    head.with_row do |row|
+      row.with_cell(text: "Parameter")
+      row.with_cell(text: "Description")
+    end
+  end
+  table.with_body do |body|
+    body.with_row do |row|
+      row.with_cell(text: "code")
+      row.with_cell(text: "The authorisation code, if authorisation is successful. This is a single-use token that will expire after 10 minutes")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "state")
+      row.with_cell(text: "The value of the optional state parameter you provided in the authorisation request, whether authorisation is successful or not. ")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "error")
+      row.with_cell(text: "A short identifier for the error such as <code>access_denied</code>, if authorisation failed or <code>invalid_request</code> if the request parameters are invalid")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "error_description")
+      row.with_cell(text: "Human readable description of the error, if authorisation failed, for example, 'User refused connection'")
+    end
+  end
+end %>
+</p>
+
+<h4 class="govuk-heading-s">2.1 Example redirects</h4>
+
+<p class="govuk-body">
+Example of a redirect we issue after a successful authorisation:
+
+<pre>
+<code>
+https://www.myapp.example.com/callback?code=6589c5d9fc4b9872b1f9013583c2f39d&state=30de877c-ee2f-15db-8314-0800200c9a66
+</code>
+</pre>
+</p>
+
+<p class="govuk-body">
+Example of a redirect we issue after an unsuccessful authorisation:
+
+<pre>
+<code>
+https://www.myapp.example.com/callback?error=access_denied&error_description=User+refused+connection&state=30de877c-ee2f-15db-8314-0800200c9a66
+</code>
+</pre>
+</p>
+
+<h4 class="govuk-heading-s">2.2 Error scenarios</h4>
+
+<p class="govuk-body">
+If the <code>client_id</code> or the <code>redirect_uri</code>do not match our records, we return HTTP error status <code>400</code> (Bad request) and do not redirect to your <code>redirect_uri</code>. 
+</p>
+
+<p class="govuk-body">
+If there are any other issues with your call to our authorisation endpoint, we return an HTTP error status to your <code>redirect_uri</code>.
+</p>
+
+<%= govuk_table do |table|
+  table.with_head do |head|
+    head.with_row do |row|
+      row.with_cell(text: "Error scenario")
+      row.with_cell(text: "HTTP status")
+      row.with_cell(text: "Error code")
+      row.with_cell(text: "Error message")
+    end
+  end
+  table.with_body do |body|
+    body.with_row do |row|
+      row.with_cell(text: "Response Type is missing")
+      row.with_cell(text: "400 (Bad Request)")
+      row.with_cell(text: "invalid_request")
+      row.with_cell(text: "response_type can't be blank")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "Response Type is invalid")
+      row.with_cell(text: "400 (Bad Request)")
+      row.with_cell(text: "unsupported_response_type")
+      row.with_cell(text: "Response type is not included in the list")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "Appropriate Body ID is missing")
+      row.with_cell(text: "400 (Bad Request)")
+      row.with_cell(text: "invalid_request")
+      row.with_cell(text: "appropraite_body_period_id can't be blank")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "Appropriate Body ID does not match signed-in user's organisation")
+      row.with_cell(text: "400 (Bad Request)")
+      row.with_cell(text: "access_denied")
+      row.with_cell(text: "appropriate_body_period_id does not match the logged-in Appropriate Body")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "PKCE Code Challenge is missing")
+      row.with_cell(text: "400 (Bad Request)")
+      row.with_cell(text: "invalid_request")
+      row.with_cell(text: "Code challenge can't be blank")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "PKCE Code Challenge method is not 'S256'")
+      row.with_cell(text: "400 (Bad Request)")
+      row.with_cell(text: "invalid_request")
+      row.with_cell(text: "Code challenge imethod is not included in the list")
+    end
+  end
+end %>
+
+<h3 class="govuk-heading-m">3. Exchange authorisation code for access token</h3>
+
+<p class="govuk-body">
+The process is shown in this diagram which continues from step 2. 
+
+<%= image_tag("documentation/authorization/exchange-code-for-token.png", width: 800, alt: "Exchange  authorization code for access token sequence diagram") %>
+</p>
+
+<p class="govuk-body">
+When you receive the authorisation code, you must exchange this for an access token **within 10 minutes**.
+</p>
+
+<p class="govuk-body">
+Do this via a HTTP POST to our token endpoint.
+</p>
+
+<p class="govuk-body">
+You must authenticate the request with <%= govuk_link_to("HTTP Basic Authentication", "https://www.rfc-editor.org/info/rfc7617/") %>
+using your client ID and secret.  This is added as a HTTP header in which you Base64 encode your credentials in the form <code>client_id:client_secret</code>.
+</p>
+
+<p class="govuk-body">
+For example, if your client ID was <code>client123</code> and your secret was <code>supersecretvalue</code> then your Basic Authentication header would be this:
+
+<pre>
+<code>
+Authorization: Basic Y2xpZW50MTIzOnN1cGVyc2VjcmV0dmFsdWU=
+</code>
+</pre>
+
+</p>
+
+<%= govuk_warning_text(text: "Do not include your client ID or client secret in the body of the request.") %>
+
+
+<p class="govuk-body">
+Include the other parameters in the request body, not as additional request headers.
+</p>
+
+<p class="govuk-body">
+The example URLs shown below are for the sandbox environment only. In the production environment you should use https://register-early-career-teachers.education.gov.uk/
+</p>
+
+<h4 class="govuk-heading-s">3.1 Example request</h4>
+
+<pre>
+<code>
+  curl -X POST https://sandbox.register-early-career-teachers.education.gov.uk/oauth/token \
+  --user "client123:supersecretvalue" \
+  -H "content-type:application/x-www-form-urlencoded" \
+  --data \
+  "grant_type=authorization_code\
+  &redirect_uri=[YOUR-REDIRECT-URI]\
+  &code=[AUTHORIZATION-CODE] \
+  &code_verifier=[CODE-VERIFIER]"
+</code>
+</pre>
+
+<%= govuk_table do |table|
+  table.with_head do |head|
+    head.with_row do |row|
+      row.with_cell(text: "Parameter")
+      row.with_cell(text: "Description")
+    end
+  end
+  table.with_body do |body|
+    body.with_row do |row|
+      row.with_cell(text: "grant_type")
+      row.with_cell(text: "The OAuth 2.0 grant type. Currently the only acceptable value is <code>authorization_code</code>".html_safe)
+    end
+    body.with_row do |row|
+      row.with_cell(text: "redirect_uri")
+      row.with_cell(text: "The same redirect URI you used to call the authorisation endpoint.")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "code")
+      row.with_cell(text: "The authorisation code you received from us in the previous step")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "code_verifier")
+      row.with_cell(text: "Your #{govuk_link_to("PKCE", "https://oauth.net/2/pkce/")} <code>code_verifier</code>".html_safe)
+    end
+  end
+end %>
+
+<p class="govuk-body">
+The response contains the access token as a JSON payload.   The access token is the equivalent of your password to access the API as the Appropriate Body that has authorised the request.  As such you should store it securely.
+</p>
+
+<h4 class="govuk-heading-s">3.2 Example response</h4>
+
+<p class="govuk-body">
+A successful response will return HTTP status code <code>201</code> to indicate your token was created and a JSON payload containing the access token
+</p>
+
+<pre>
+<code>
+{
+  "access_token": "QGbWG8KckncuwwD4uYXgWxF4HQvuPmrmUqKgkpQP",
+  "token_type": "Bearer",
+  "expires_in": 31536000
+}
+</code>
+</pre>
+
+<h4 class="govuk-heading-s">3.3 Error responses</h4>
+
+<p class="govuk-body">
+An unsuccessful request will a HTTP status error code and a JSON payload containing an <code>error</code> value, for example:
+</p>
+
+<pre>
+<code>
+{
+  error: "invalid_grant"
+}
+</code>
+</pre>
+
+<%= govuk_table do |table|
+  table.with_head do |head|
+    head.with_row do |row|
+      row.with_cell(text: "Error scenario")
+      row.with_cell(text: "HTTP status")
+      row.with_cell(text: "Error")
+    end
+  end
+  table.with_body do |body|
+    body.with_row do |row|
+      row.with_cell(text: "Client ID or client secret invalid")
+      row.with_cell(text: "401 (Unauthorized)")
+      row.with_cell(text: "invalid_client")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "Grant type is missing")
+      row.with_cell(text: "400 (Bad Request)")
+      row.with_cell(text: "invalid_request")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "Grant type is invalid")
+      row.with_cell(text: "400 (Bad Request)")
+      row.with_cell(text: "unsupported_grant_type")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "Redirect UI is missing")
+      row.with_cell(text: "400 (Bad Request)")
+      row.with_cell(text: "invalid_grant")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "Redirect UI is invalid")
+      row.with_cell(text: "400 (Bad Request)")
+      row.with_cell(text: "invalid_grant")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "Code is missing")
+      row.with_cell(text: "400 (Bad Request)")
+      row.with_cell(text: "invalid_grant")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "Code is invalid")
+      row.with_cell(text: "400 (Bad Request)")
+      row.with_cell(text: "invalid_grant")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "Code verifier is missing")
+      row.with_cell(text: "400 (Bad Request)")
+      row.with_cell(text: "invalid_grant")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "Code verifier is invalid")
+      row.with_cell(text: "400 (Bad Request)")
+      row.with_cell(text: "invalid_grant")
+    end
+  end
+end %>
+
+<h2 class="govuk-heading-m">Calling the API</h2>
+
+<p class="govuk-body">
+You can now call an API using the <code>access_token</code> we issued. Do this with an Authorization header containing this <code>access_token</code> as an OAuth 2.0 Bearer Token 
+</p>
+
+<h3 class="govuk-heading-s">Example request</h3>
+
+<pre>
+<code>
+curl -X GET https://sandbox.register-early-career-teachers/hello/user \
+-H "Accept: application/vnd.hmrc.1.0+json" \
+-H "Authorization: Bearer [ACCESS-TOKEN]"
+</code>
+</pre>
+
+<%= govuk_notification_banner(title_text: "Note") do %>
+  <p>
+defer this section until we have the <code>/hello</code> API to reference
+  </p>
+<% end %>
+
+
+
+
+<h2 class="govuk-heading-m">When an access token expires</h2>
+
+<p class="govuk-body">
+When an access token has expired you will be unable to access the API.
+</p>
+
+<p class="govuk-body">
+You will need to get a new access token by following the authorization process again to obtain a new one.
+</p>
+
+
+<h2 class="govuk-heading-m">Revoking authorization</h2>
+
+<p class="govuk-body">
+An authorization can be revoked should the need arise, for example if the token was leaked.
+</p>
+
+<p class="govuk-body">
+You revoke a token via a HTTP POST request to our revoke endpoint.
+</p>
+
+<p class="govuk-body">
+You must authenticate the request with <%= govuk_link_to("HTTP Basic Authentication", "https://www.rfc-editor.org/info/rfc7617/") %>
+using your client ID and secret.  This is added as a HTTP header in which you Base64 encode your credentials in the form <code>client_id:client_secret</code>.
+</p>
+
+<p class="govuk-body">
+For example, if your client ID was <code>client123</code> and your secret was <code>supersecretvalue</code> then your Basic Authentication header would be this:
+</p>
+
+<pre>
+<code>
+Authorization: Basic Y2xpZW50MTIzOnN1cGVyc2VjcmV0dmFsdWU=
+</code>
+</pre>
+
+
+<%= govuk_warning_text(text: "Do not include your client ID or client secret in the body of the request.") %>
+
+<p class="govuk-body">
+Include the other parameters in the request body, not as additional request headers.
+</p>
+
+<p class="govuk-body">
+The example URLs shown below are for the sandbox environment only. In the production environment you should use https://register-early-career-teachers.education.gov.uk/
+</p>
+
+<h3 class="govuk-heading-s">Example request</h3>
+
+<pre>
+<code>
+curl -X POST https://sandbox.register-early-career-teachers.education.gov.uk/oauth/revoke \
+--user "client123:supersecretvalue" \
+-H "content-type:application/x-www-form-urlencoded" \
+--data "token=[ACCESS-TOKEN-TO-REVOKE]"
+</code>
+</pre>
+
+<%= govuk_table do |table|
+  table.with_head do |head|
+    head.with_row do |row|
+      row.with_cell(text: "Parameter")
+      row.with_cell(text: "Description")
+    end
+  end
+  table.with_body do |body|
+    body.with_row do |row|
+      row.with_cell(text: "token")
+      row.with_cell(text: "The access token to be revoked")
+    end
+  end
+end %>
+
+<p class="govuk-body">
+The successful response will be HTTP status 200 code with an empty body.  The access token will now be unusable.
+</p>
+
+
+<h3 class="govuk-heading-s">Error responses</h3>
+
+<p class="govuk-body">
+An unsuccessful request will a HTTP status error code and a JSON payload containing an <code>error</code> value, for example:
+</p>
+
+<pre>
+<code>
+{
+  error: "invalid_client"
+}
+</code>
+</pre>
+
+<%= govuk_table do |table|
+  table.with_head do |head|
+    head.with_row do |row|
+      row.with_cell(text: "Error scenario")
+      row.with_cell(text: "HTTP status")
+      row.with_cell(text: "Error")
+    end
+  end
+  table.with_body do |body|
+    body.with_row do |row|
+      row.with_cell(text: "Client ID or client secret invalid")
+      row.with_cell(text: "401 (Unauthorized)")
+      row.with_cell(text: "invalid_client")
+    end
+  end
+end %>
+

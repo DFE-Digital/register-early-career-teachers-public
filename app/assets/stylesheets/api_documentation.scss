@@ -1,0 +1,19 @@
+@use "govuk-frontend/dist/govuk" as *;
+
+.api-documentation {
+  pre {
+    background-color: govuk-colour("black", $variant: "tint-95");
+    padding: 1em 1.5em;
+
+    code {
+      padding: none;
+    }
+  }
+
+  code {
+    background-color: govuk-colour("black", $variant: "tint-95");
+    font-family: monospace;
+    font-size: 0.9em;
+    padding: 2px 5px;
+  }
+}
