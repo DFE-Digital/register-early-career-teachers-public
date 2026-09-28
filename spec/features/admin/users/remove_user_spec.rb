@@ -102,9 +102,7 @@ private
   end
 
   def and_i_confirm_removal
-    perform_enqueued_jobs do
-      page.get_by_role("button", name: "Confirm").click
-    end
+    page.get_by_role("button", name: "Confirm").click
   end
 
   def then_i_should_be_on_the_users_page

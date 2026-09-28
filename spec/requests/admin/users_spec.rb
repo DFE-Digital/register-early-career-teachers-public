@@ -304,7 +304,7 @@ RSpec.describe "Admin::Users" do
         let(:unchecked_confirmation_params) do
           {
             admin_users_remove_user_form: {
-              confirmed: "false"
+              confirmed: ""
             }
           }
         end
