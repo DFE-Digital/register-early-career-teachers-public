@@ -17,9 +17,7 @@ module Admin
       end
 
       def create
-        if @wizard.valid_step?
-          @wizard.current_step.save!
-
+        if @wizard.save_current_step
           if current_step == :check_answers
             redirect_to admin_school_partnerships_path(@school.urn), alert: "Partnership added"
           else
@@ -40,42 +38,34 @@ module Admin
         redirect_to @wizard.allowed_step_path unless @wizard.allowed_step?
       end
 
-      def store
-        @store ||= SessionRepository.new(session:, form_key: FORM_KEY)
-      end
-
-      def current_step
-        @current_step ||= begin
-          step = step_name_from_path
-          return :not_found unless wizard_class.step?(step)
-
-          step
-        end
-      end
-
-      def step_name_from_path
-        request.path.split("/").last.underscore.to_sym
-      end
-
-      def initialize_wizard
-        @wizard = wizard_class.new(
-          current_step:,
-          step_params: params,
-          author: current_user,
-          school_urn: @school.urn,
-          store:
+      def state_store
+        @state_store ||= Admin::Schools::AddPartnershipWizard::StateStore.new(
+          repository: DfE::Wizard::Repository::Session.new(
+            session:,
+            key: FORM_KEY
+          )
         )
       end
 
-      def wizard_class
-        Admin::Schools::AddPartnershipWizard::Wizard
+      def current_step
+        @current_step ||= request.path.split("/").last.underscore.to_sym
+      end
+
+      def initialize_wizard
+        @wizard = Admin::Schools::AddPartnershipWizard::Wizard.new(
+          current_step:,
+          current_step_params: params,
+          author: current_user,
+          school_urn: @school.urn,
+          state_store:
+        )
       end
 
       def reset_store_on_entry
         return unless current_step == :select_contract_period
         return if request.referer.to_s.include?("/partnerships/add/")
 
-        store.reset
+        state_store.clear
       end
     end
   end
