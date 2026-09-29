@@ -39,10 +39,12 @@ namespace :api do
       resource :client, only: :show
       resource :user, only: :show
     end
+
+    get "docs", to: "documentation#show", as: :documentation
   end
 
   namespace :docs, module: :documentation do
-    scope "training", module: :training do
+    scope "training", module: :training, as: :training do
       get "guidance", to: "guidance#show"
 
       scope "guidance" do
@@ -60,10 +62,12 @@ namespace :api do
   end
 end
 
-namespace :oauth, module: "api/oauth" do
-  get "authorize", to: "authorizations#new", as: :authorization
-  post "authorize", to: "authorizations#create"
-  delete "authorize", to: "authorizations#destroy"
-  post "token", to: "authorizations/access_tokens#create", as: :access_token
-  post "revoke", to: "authorizations/revocations#create", as: :revocation
+constraints -> { Rails.application.config.enable_apis_under_development } do
+  namespace :oauth, module: "api/oauth" do
+    get "authorize", to: "authorizations#new", as: :authorization
+    post "authorize", to: "authorizations#create"
+    delete "authorize", to: "authorizations#destroy"
+    post "token", to: "authorizations/access_tokens#create", as: :access_token
+    post "revoke", to: "authorizations/revocations#create", as: :revocation
+  end
 end

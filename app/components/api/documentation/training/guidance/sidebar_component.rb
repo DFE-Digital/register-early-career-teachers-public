@@ -22,7 +22,7 @@ module API
             node = Struct.new(:name, :href, :prefix, :nodes)
 
             self.class.guidance_pages.map do |p|
-              path = api_docs_guidance_page_path("#{GUIDANCE_PREFIX}/#{p[:path]}")
+              path = api_docs_training_guidance_page_path("#{GUIDANCE_PREFIX}/#{p[:path]}")
               node.new(p[:title], path, path, [])
             end
           end
