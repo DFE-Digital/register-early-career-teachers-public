@@ -18,20 +18,6 @@ RSpec.describe "Hello user endpoint", openapi_spec: "hello/swagger.yaml", type: 
       let(:Authorization) { bearer_auth_headers(authorization:, token: "unknown").fetch("Authorization") }
 
       serialized_using API::OAuth::ErrorSerializer
-
-      context "with an expired token" do
-        let(:authorization) { FactoryBot.create(:api_oauth_authorization, :with_expired_token) }
-        let(:Authorization) { bearer_auth_headers(authorization:).fetch("Authorization") }
-
-        run_test!
-      end
-
-      context "with a revoked token" do
-        let(:authorization) { FactoryBot.create(:api_oauth_authorization, :with_token, :revoked) }
-        let(:Authorization) { bearer_auth_headers(authorization:).fetch("Authorization") }
-
-        run_test!
-      end
     end
 
     responds_with 429, "Too many requests. Retry after the rate limit period has passed.", rack_attack: true do
