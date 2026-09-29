@@ -1,0 +1,42 @@
+<%#
+---
+title: Getting an OAuth 2.0 access token
+sidebar_position: 2
+---
+%>
+<%
+  page_data(
+    title: "Getting an OAuth 2.0 access token",
+    error: false,
+    caption: "API Developer documentation",
+    caption_size: 'l'
+  )
+%>
+
+<p class="govuk-body">
+The complete process of obtaining an access token is illustrated by this sequence diagram
+
+<%= image_tag("documentation/authorization/overview.png", width: 800, alt: "Getting an OAuth Token overview sequence diagram") %>
+</p>
+
+<p class="govuk-body">
+The process can be broken down into 3 steps:
+</p>
+<ol class="govuk-list govuk-list--number">
+  <li>
+    <%= govuk_link_to("Request authorisation",
+                      api_documentation_authentication_page_path("request-authorisation"),
+                      no_visited_state: true) %>
+  </li>
+  <li>
+    <%= govuk_link_to("Receive authorisation results",
+                      api_documentation_authentication_page_path("receive-authorisation-results"),
+                      no_visited_state: true) %>
+  </li>
+  <li>
+    <%= govuk_link_to("Exchange authorisation code for access token",
+                      api_documentation_authentication_page_path("exchange-authorisation-code-for-token"),
+                      no_visited_state: true) %>
+  </li>
+</ol>
+
