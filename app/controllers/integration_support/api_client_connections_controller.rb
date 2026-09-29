@@ -2,7 +2,7 @@ module IntegrationSupport
   class APIClientConnectionsController < ApplicationController
     layout "integration_support"
 
-    before_action :resume_api_client_connection, only: %i[show update]
+    before_action :resume_api_client_connection, only: %i[show update delete destroy]
 
     def new
       @appropriate_body_periods = AppropriateBodyPeriod.order(:name)
@@ -35,6 +35,19 @@ module IntegrationSupport
       @request_error = e.message
     end
 
+    def delete
+      @api_client_connection.access_token = params[:access_token]
+    end
+
+    def destroy
+      @api_client_connection.assign_attributes(api_client_connection_destroy_params)
+      @api_client_connection.store_in(session)
+
+      @response = @api_client_connection.revoke_token(oauth_revocation_url)
+    rescue Faraday::Error => e
+      @request_error = e.message
+    end
+
   private
 
     def resume_api_client_connection
@@ -63,6 +76,10 @@ module IntegrationSupport
       params.expect(
         integration_support_api_client_connection: %i[client_id client_secret grant_type code code_verifier redirect_uri]
       )
+    end
+
+    def api_client_connection_destroy_params
+      params.expect(integration_support_api_client_connection: %i[client_id client_secret access_token])
     end
   end
 end

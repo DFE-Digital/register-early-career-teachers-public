@@ -121,6 +121,12 @@ RSpec.describe "API client connections", type: :request do
 
       patch(integration_support_api_client_connection_path, params: connection_params)
       expect(response).to have_http_status(:bad_request)
+
+      get(delete_integration_support_api_client_connection_path(access_token: "abc"))
+      expect(response).to have_http_status(:bad_request)
+
+      delete(integration_support_api_client_connection_path, params: connection_params)
+      expect(response).to have_http_status(:bad_request)
     end
   end
 
@@ -148,7 +154,9 @@ RSpec.describe "API client connections", type: :request do
       patch(integration_support_api_client_connection_path, params: update_params)
 
       expect(response).to have_http_status(:ok)
-      expect(Capybara.string(response.body)).to have_css(".app-summary-card--green pre", text: '"access_token": "abc"')
+      page = Capybara.string(response.body)
+      expect(page).to have_css(".app-summary-card--green pre", text: '"access_token": "abc"')
+      expect(page).to have_link("Revoke access token", href: delete_integration_support_api_client_connection_path(access_token: "abc"))
       expect(
         a_request(:post, token_url).with(
           basic_auth: %w[test-client-id test-client-secret],
@@ -161,6 +169,56 @@ RSpec.describe "API client connections", type: :request do
       stub_request(:post, token_url).to_raise(Faraday::ConnectionFailed.new("Connection refused"))
 
       patch(integration_support_api_client_connection_path, params: update_params)
+
+      expect(response).to have_http_status(:ok)
+      expect(Capybara.string(response.body)).to have_css(".app-summary-card--red", text: "Connection refused")
+    end
+  end
+
+  describe "GET /integration-support/api-client-connection/delete" do
+    it "renders the revoke form with the client and access token" do
+      post(integration_support_api_client_connection_path, params: connection_params)
+      get(delete_integration_support_api_client_connection_path(access_token: "abc"))
+
+      page = Capybara.string(response.body)
+      expect(response).to have_http_status(:ok)
+      expect(page).to have_field("Client ID", with: "test-client-id")
+      expect(page).to have_field("Client secret", with: "test-client-secret")
+      expect(page).to have_field("Token", with: "abc")
+      expect(page).to have_button("Revoke token")
+    end
+  end
+
+  describe "DELETE /integration-support/api-client-connection" do
+    let(:revocation_url) { "http://www.example.com/oauth/revoke" }
+    let(:destroy_params) do
+      {
+        integration_support_api_client_connection: {
+          client_id: "other-client-id",
+          client_secret: "other-client-secret",
+          access_token: "abc"
+        }
+      }
+    end
+
+    before { post(integration_support_api_client_connection_path, params: connection_params) }
+
+    it "revokes the token and shows the response" do
+      stub_request(:post, revocation_url).to_return(status: 200)
+
+      delete(integration_support_api_client_connection_path, params: destroy_params)
+
+      expect(response).to have_http_status(:ok)
+      expect(Capybara.string(response.body)).to have_css(".app-summary-card--green", text: "HTTP 200 OK")
+      expect(
+        a_request(:post, revocation_url).with(basic_auth: %w[other-client-id other-client-secret], body: { token: "abc" })
+      ).to have_been_made.once
+    end
+
+    it "shows the error when the revoke endpoint cannot be reached" do
+      stub_request(:post, revocation_url).to_raise(Faraday::ConnectionFailed.new("Connection refused"))
+
+      delete(integration_support_api_client_connection_path, params: destroy_params)
 
       expect(response).to have_http_status(:ok)
       expect(Capybara.string(response.body)).to have_css(".app-summary-card--red", text: "Connection refused")

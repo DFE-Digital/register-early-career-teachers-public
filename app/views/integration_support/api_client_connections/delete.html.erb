@@ -1,0 +1,25 @@
+<% page_data(title: "Revoke access token", backlink_href: new_integration_support_api_client_connection_path) %>
+
+<p class="govuk-body">
+  Configure the parameters for the POST /oauth/revoke request and revoke the access token.
+</p>
+
+<%= form_with(model: @api_client_connection, url: integration_support_api_client_connection_path, method: :delete) do |form| %>
+  <%= govuk_summary_card(title: "API client") do %>
+    <%= form.govuk_text_field(:client_id,
+                              label: { text: "Client ID" },
+                              hint: { text: "The client identifier issued to the API client." }) %>
+
+    <%= form.govuk_text_field(:client_secret,
+                              label: { text: "Client secret" },
+                              hint: { text: "The client secret issued to the API client." }) %>
+  <% end %>
+
+  <%= govuk_summary_card(title: "Access token") do %>
+    <%= form.govuk_text_field(:access_token,
+                              label: { text: "Token" },
+                              hint: { text: "The access token to revoke. Clear or change it to test a missing or invalid token." }) %>
+  <% end %>
+
+  <%= form.govuk_submit("Revoke token") %>
+<% end %>

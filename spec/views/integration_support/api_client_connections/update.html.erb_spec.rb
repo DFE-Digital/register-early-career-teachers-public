@@ -15,5 +15,14 @@ RSpec.describe "integration_support/api_client_connections/update.html.erb" do
 
     expect(rendered).to have_css(".app-summary-card--red", text: "HTTP 404 Not Found")
     expect(rendered).to have_css(".app-summary-card--red .govuk-details", text: "Raw response body")
+    expect(rendered).to have_no_link("Revoke access token")
+  end
+
+  it "links to revoke the access token after a successful exchange" do
+    assign(:response, Faraday::Response.new(status: 201, body: { "access_token" => "abc" }))
+
+    render
+
+    expect(rendered).to have_link("Revoke access token", href: delete_integration_support_api_client_connection_path(access_token: "abc"))
   end
 end
