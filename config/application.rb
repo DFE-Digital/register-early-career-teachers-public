@@ -103,6 +103,12 @@ module RegisterEarlyCareerTeachers
 
     config.school_reminder_email_opt_out_token_secret = ENV.fetch("SCHOOL_REMINDER_EMAIL_OPT_OUT_TOKEN_SECRET", nil)
 
+    # For review apps extract everything but the last segment.
+    #   Ex: "cpd-ec2-review-154-web-9cc9fdbbf-gkd22" => cpd-ec2-review-154-web.test.teacherservices.cloud
+    #
+    # For the rest of environments get the value from ENV['SERVICE_URL']
+    config.service_url = ENV["SERVICE_URL"] || ENV["HOSTNAME"]&.split(/-(web|worker)/)&.first&.concat("-web.test.teacherservices.cloud")
+
     config.after_initialize do
       ActionView::Base.default_form_builder = GOVUKDesignSystemFormBuilder::FormBuilder
     end

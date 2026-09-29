@@ -13,10 +13,12 @@ sidebar_position: 5
   )
 %>
 
-<h3 class="govuk-heading-m">3. Exchange authorisation code for access token</h3>
-
 <p class="govuk-body">
-The process is shown in this diagram which continues from step 2. 
+The process is shown in this diagram which continues from the
+<%= govuk_link_to("receive authorisation results",
+                  api_documentation_authentication_page_path("receive-authorisation-results"),
+                  no_visited_state: true) %> step.
+</p>
 
 <%= image_tag("documentation/authorization/exchange-code-for-token.png", width: 800, alt: "Exchange  authorization code for access token sequence diagram") %>
 </p>
@@ -52,15 +54,11 @@ Authorization: Basic Y2xpZW50MTIzOnN1cGVyc2VjcmV0dmFsdWU=
 Include the other parameters in the request body, not as additional request headers.
 </p>
 
-<p class="govuk-body">
-The example URLs shown below are for the sandbox environment only. In the production environment you should use https://register-early-career-teachers.education.gov.uk/
-</p>
-
 <h4 class="govuk-heading-s">3.1 Example request</h4>
 
 <pre>
 <code>
-  curl -X POST https://sandbox.register-early-career-teachers.education.gov.uk/oauth/token \
+  curl -X POST <%= @api_base_url %>/oauth/token \
   --user "client123:supersecretvalue" \
   -H "content-type:application/x-www-form-urlencoded" \
   --data \
@@ -99,7 +97,8 @@ The example URLs shown below are for the sandbox environment only. In the produc
 end %>
 
 <p class="govuk-body">
-The response contains the access token as a JSON payload.   The access token is the equivalent of your password to access the API as the Appropriate Body that has authorised the request.  As such you should store it securely.
+The response contains the access token as a JSON payload.
+The access token is the equivalent of your password to access the API as the organisation that has authorised the request.  As such you should store it securely.
 </p>
 
 <h4 class="govuk-heading-s">3.2 Example response</h4>

@@ -31,7 +31,7 @@ This part of the process is illustrated by this sequence diagram
 <p class="govuk-body">
 <pre>
 <code>
-  curl -X GET https://sandbox.register-early-career-teachers.education.gov.uk/oauth/authorize?\
+  curl -X GET "<%= @api_base_url %>/oauth/authorize?\
   response_type=code\
   &client_id=[YOUR-CLIENT-ID]\
   &appropriate_body_period_id=[USERS-APPROPRIATE-BODY-IDENTIFIER]\
@@ -48,7 +48,7 @@ This part of the process is illustrated by this sequence diagram
 <p class="govuk-body">
 <pre>
 <code>
-  curl -X GET "https://sandbox.register-early-career-teachers.education.gov.uk/oauth/authorize?\
+  curl -X GET "<%= @api_base_url %>/oauth/authorize?\
   response_type=code\
   &client_id=Hf8sfkiUkYp9I3_R10qSnZ2ZUvoa\
   &appropriate_body_period_id=9def8316-1d33-4181-b0d5-59c34c4a03f5\

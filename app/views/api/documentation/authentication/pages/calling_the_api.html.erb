@@ -13,8 +13,6 @@ sidebar_position: 6
   )
 %>
 
-<h2 class="govuk-heading-m">Calling the API</h2>
-
 <p class="govuk-body">
 You can now call an API using the <code>access_token</code> we issued. Do this with an Authorization header containing this <code>access_token</code> as an OAuth 2.0 Bearer Token 
 </p>
@@ -23,7 +21,7 @@ You can now call an API using the <code>access_token</code> we issued. Do this w
 
 <pre>
 <code>
-curl -X GET https://sandbox.register-early-career-teachers/hello/user \
+curl -X GET <%= @api_base_url %>/hello/user \
 -H "Accept: application/json" \
 -H "Authorization: Bearer [ACCESS-TOKEN]"
 </code>

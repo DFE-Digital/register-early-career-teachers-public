@@ -13,8 +13,6 @@ sidebar_position: 8
   )
 %>
 
-<h2 class="govuk-heading-m">Revoking authorisation</h2>
-
 
 <%= govuk_notification_banner(title_text: "Note") do %>
   <p>
@@ -52,15 +50,11 @@ Authorization: Basic Y2xpZW50MTIzOnN1cGVyc2VjcmV0dmFsdWU=
 Include the other parameters in the request body, not as additional request headers.
 </p>
 
-<p class="govuk-body">
-The example URLs shown below are for the sandbox environment only. In the production environment you should use https://register-early-career-teachers.education.gov.uk/
-</p>
-
 <h3 class="govuk-heading-s">Example request</h3>
 
 <pre>
 <code>
-curl -X POST https://sandbox.register-early-career-teachers.education.gov.uk/oauth/revoke \
+curl -X POST <%= @api_base_url %>/oauth/revoke \
 --user "client123:supersecretvalue" \
 -H "content-type:application/x-www-form-urlencoded" \
 --data "token=[ACCESS-TOKEN-TO-REVOKE]"

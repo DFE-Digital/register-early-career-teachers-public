@@ -16,7 +16,7 @@ sidebar_position: 4
 <p class="govuk-body">
 The process is shown in this diagram which continues from the
 <%= govuk_link_to("request authorisation",
-                  api_documentation_authentication_page_path("request_authorisation"),
+                  api_documentation_authentication_page_path("request-authorisation"),
                   no_visited_state: true) %> step.
 </p>
 
@@ -45,7 +45,7 @@ Your endpoint must support the following query parameters:
   table.with_body do |body|
     body.with_row do |row|
       row.with_cell(text: "code")
-      row.with_cell(text: "The authorisation code, if authorisation is successful. This is a single-use token that will expire after 10 minutes")
+      row.with_cell(text: "The authorisation code, if authorisation is successful. This is a single-use token that will expire after <strong>10 minutes</strong>".html_safe)
     end
     body.with_row do |row|
       row.with_cell(text: "state")
@@ -53,7 +53,7 @@ Your endpoint must support the following query parameters:
     end
     body.with_row do |row|
       row.with_cell(text: "error")
-      row.with_cell(text: "A short identifier for the error such as <code>access_denied</code>, if authorisation failed or <code>invalid_request</code> if the request parameters are invalid")
+      row.with_cell(text: "A short identifier for the error such as <code>access_denied</code>, if authorisation failed or <code>invalid_request</code> if the request parameters are invalid".html_safe)
     end
     body.with_row do |row|
       row.with_cell(text: "error_description")

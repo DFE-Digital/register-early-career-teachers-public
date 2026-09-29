@@ -13,13 +13,13 @@ sidebar_position: 7
   )
 %>
 
-<h2 class="govuk-heading-m">When an access token expires</h2>
-
 <p class="govuk-body">
-When an access token has expired you will be unable to access the API.
+When an access token has expired you will be unable to use it to access the API.
 </p>
 
 <p class="govuk-body">
-You will need to get a new access token by following the authorisation process again to obtain a new one.
+You will need to get a new access token by following the
+<%= govuk_link_to("authorisation process", api_documentation_authentication_page_path("getting-an-oauth-access-token"), no_visited_state: true) %>
+again to obtain a new one.
 </p>
 
