@@ -1,7 +1,17 @@
 RSpec.describe "Admin::Teachers::UndoRegistrationWizardController", type: :request do
-  include_context "sign in as DfE user"
+  include_context "sign in as product_team DfE user"
 
   let(:teacher) { FactoryBot.create(:teacher) }
+
+  context "when signed in as a non-product team DfE user" do
+    let(:user) { FactoryBot.create(:user, :admin) }
+
+    it "returns unauthorized" do
+      get admin_teacher_undo_registration_wizard_start_path(teacher)
+
+      expect(response).to have_http_status(:unauthorized)
+    end
+  end
 
   describe "GET start" do
     let!(:at_school_period) do
