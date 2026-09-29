@@ -29,8 +29,8 @@ module Navigation
     end
 
     def navigation_area
-      if current_path.start_with?("/api/guidance", "/api/docs")
-        :api_guidance
+      if current_path.start_with?("/api/docs/training/guidance", "/api/docs")
+        :training_api_guidance
       elsif current_user_type == :dfe_user_impersonating_school_user
         :school_user
       else
@@ -61,11 +61,11 @@ module Navigation
           { text: "Mentors", href: schools_mentors_home_path, active_when: schools_mentors_path },
           { text: "Induction tutor", href: schools_induction_tutor_path, active_when: "/school/induction-tutor" }
         ],
-        api_guidance: [
-          { text: "Home", href: "/api/guidance" },
-          { text: "Swagger API documentation", href: "/api/docs/v3", active_when: "/api/docs" },
-          { text: "Release notes", href: "/api/guidance/release-notes", active_when: "/api/guidance/release-notes" },
-          { text: "Guidance", href: "/api/guidance/guidance-for-lead-providers", active_when: "/api/guidance/guidance-for-lead-providers" },
+        training_api_guidance: [
+          { text: "Home", href: "/api/docs/training/guidance" },
+          { text: "Swagger API documentation", href: "/api/docs/training/v3", active_when: "/api/docs/training/v3" },
+          { text: "Release notes", href: "/api/docs/training/guidance/release-notes", active_when: "/api/docs/training/guidance/release-notes" },
+          { text: "Guidance", href: "/api/docs/training/guidance/guidance-for-lead-providers", active_when: "/api/docs/training/guidance/guidance-for-lead-providers" },
         ]
       }
     end
