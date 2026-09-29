@@ -25,8 +25,8 @@ RSpec.describe "admin/teachers/undo_registration_wizard/confirmation.html.erb" d
     expect(rendered).to have_text("If training was delivered by a lead provider, tell them that you’ve undone this registration. They’ll need to update their own records.")
   end
 
-  it "links back to teachers" do
-    expect(rendered).to have_link("Back to teachers", href: admin_teachers_path)
+  it "links back to the teachers school history" do
+    expect(rendered).to have_link("Back to school history", href: admin_teacher_school_path(teacher))
   end
 
   context "when the registration was deleted" do
