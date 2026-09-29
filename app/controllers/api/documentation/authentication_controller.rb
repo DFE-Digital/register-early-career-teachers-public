@@ -1,6 +1,6 @@
 module API
   module Documentation
-    class AuthorizationController < ApplicationController
+    class AuthenticationController < ApplicationController
       layout "api_documentation"
 
       def show

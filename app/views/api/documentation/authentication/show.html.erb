@@ -1,13 +1,13 @@
 <%
   page_data(
-    title: "Authorization",
+    title: "Authentication",
     error: false,
     caption: "API Developer documentation",
     caption_size: 'l'
   )
 %>
 
-<h2 class="govuk-heading-m">How authorization works</h2>
+<h2 class="govuk-heading-m">How authentication works</h2>
 
 <p class="govuk-body">
 We use the open standard <%= govuk_link_to("OAuth 2.0", "https://oauth.net/2/") %> with the <%= govuk_link_to("Authorization Code Grant", "https://oauth.net/2/grant-types/authorization-code/") %>. This standard lets your users give your application permission to interact with us without sharing their password.
@@ -18,7 +18,7 @@ We use <%= govuk_link_to("PKCE", "https://oauth.net/2/pkce/") %>, in order to pr
 </p>
 
 <p class="govuk-body">
-A user from each Appropriate Body you work with <strong>must</strong> authorise the use of your application before we can grant you a token to access the RIAB API on their behalf.
+A user from each organisation you work with <strong>must</strong> authorise the use of your application before we can grant you a token to access the API on their behalf.
 </p>
 
 <h3 class="govuk-heading-m">PKCE code-verifier and code-challenge</h3>
@@ -36,7 +36,7 @@ If you include a <code>state</code> it will be returned to you in the callback a
 <h3 class="govuk-heading-m">Access token</h3>
 
 <p class="govuk-body">
-We will return a token for each Appropriate Body that authorises your application that you should keep securely.
+We will return a token for each organisation that authorises your application that you should keep securely.
 </p>
 
 <p class="govuk-body">
@@ -330,7 +330,7 @@ The process is shown in this diagram which continues from step 2.
 </p>
 
 <p class="govuk-body">
-When you receive the authorisation code, you must exchange this for an access token **within 10 minutes**.
+When you receive the authorisation code, you must exchange this for an access token <strong>within 10 minutes</strong>.
 </p>
 
 <p class="govuk-body">
@@ -533,6 +533,13 @@ You will need to get a new access token by following the authorization process a
 
 
 <h2 class="govuk-heading-m">Revoking authorization</h2>
+
+
+<%= govuk_notification_banner(title_text: "Note") do %>
+  <p>
+  We need to add how an end user can do this once the journey is built
+  </p>
+<% end %>
 
 <p class="govuk-body">
 An authorization can be revoked should the need arise, for example if the token was leaked.

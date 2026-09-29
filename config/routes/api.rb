@@ -42,7 +42,7 @@ namespace :api do
 
     get "docs", to: "documentation#show", as: :documentation
     resource :hello_documentation, only: :show, path: "docs/hello", controller: "hello/documentations"
-    get "docs/authorization", to: "documentation/authorization#show", as: :documentation_authorization
+    get "docs/authentication", to: "documentation/authentication#show", as: :documentation_authentication
   end
 
   namespace :docs, module: :documentation do
