@@ -29,6 +29,8 @@ module Admin
 
     private
 
+      def authorised? = super && current_user.product_team?
+
       def set_teacher
         @teacher = Teacher.find(params[:teacher_id])
       end

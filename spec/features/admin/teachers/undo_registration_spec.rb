@@ -7,7 +7,7 @@ describe "Admin undoing a registration" do
     )
     @teacher_name = Teachers::Name.new(@teacher).full_name
 
-    sign_in_as_dfe_user(role: :admin)
+    sign_in_as_dfe_user(role: :product_team)
   end
 
   it "closes an ECT registration with declarations" do
@@ -30,7 +30,7 @@ describe "Admin undoing a registration" do
     then_i_see_the_registration_undone_confirmation(action: "deleted")
   end
 
-  it "allows an admin to select a registration when the teacher has multiple school periods" do
+  it "allows a product team user to select a registration when the teacher has multiple school periods" do
     given_an_ect_and_a_mentor_registration
 
     when_i_start_the_undo_registration_journey
