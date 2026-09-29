@@ -1,7 +1,9 @@
 module Admin
   module Schools
     module AddPartnershipWizard
-      class SelectLeadProviderStep < Step
+      class SelectLeadProviderStep
+        include DfE::Wizard::Step
+
         attribute :framework_agreement_id, :integer
 
         validates :framework_agreement_id, presence: { message: "Select a lead provider" }
@@ -9,17 +11,7 @@ module Admin
 
         def self.permitted_params = %i[framework_agreement_id]
 
-        def previous_step = :select_contract_period
-
-        def next_step = :select_delivery_partner
-
       private
-
-        def persist
-          value = step_params["framework_agreement_id"] || framework_agreement_id
-          store.framework_agreement_id = value
-          store.delivery_partner_id = nil
-        end
 
         def framework_agreement_available
           return if framework_agreement_id.blank?
