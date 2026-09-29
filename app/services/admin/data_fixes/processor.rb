@@ -94,7 +94,7 @@ private
 
     attrs = {}
 
-    attributes_list.split(",").each_slice(2) do |k, v|
+    CSV.parse_line(attributes_list).each_slice(2) do |k, v|
       if batch_refs.key?(v)
         v = batch_refs[v]
       end
