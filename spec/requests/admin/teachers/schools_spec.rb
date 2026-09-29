@@ -51,8 +51,12 @@ RSpec.describe "Admin::Teachers::Schools", type: :request do
           it "links to undo the registration" do
             get admin_teacher_school_path(teacher)
 
-            expect(response.body).to include("Undo a registration for #{Teachers::Name.new(teacher).full_name}")
-            expect(response.body).to include(admin_teacher_undo_registration_wizard_start_path(teacher))
+            page = Capybara.string(response.body)
+
+            expect(page).to have_link(
+              "Undo a registration for #{Teachers::Name.new(teacher).full_name}",
+              href: admin_teacher_undo_registration_wizard_start_path(teacher)
+            )
           end
         end
       end
@@ -73,8 +77,12 @@ RSpec.describe "Admin::Teachers::Schools", type: :request do
           it "links to undo the registration" do
             get admin_teacher_school_path(teacher)
 
-            expect(response.body).to include("Undo a registration for #{Teachers::Name.new(teacher).full_name}")
-            expect(response.body).to include(admin_teacher_undo_registration_wizard_start_path(teacher))
+            page = Capybara.string(response.body)
+
+            expect(page).to have_link(
+              "Undo a registration for #{Teachers::Name.new(teacher).full_name}",
+              href: admin_teacher_undo_registration_wizard_start_path(teacher)
+            )
           end
         end
       end
