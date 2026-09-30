@@ -39,7 +39,7 @@ module Admin
               :select_contract_period,
               use: [
                 DfE::Wizard::Operations::Validate,
-                ClearLaterSelections,
+                Operations::ClearLaterSelections,
                 DfE::Wizard::Operations::Persist
               ]
             )
@@ -48,14 +48,14 @@ module Admin
               :select_lead_provider,
               use: [
                 DfE::Wizard::Operations::Validate,
-                ClearLaterSelections,
+                Operations::ClearLaterSelections,
                 DfE::Wizard::Operations::Persist
               ]
             )
 
             builder.on_step(
               :check_answers,
-              use: [DfE::Wizard::Operations::Validate, CreatePartnership]
+              use: [DfE::Wizard::Operations::Validate, Operations::CreatePartnership]
             )
           end
         end
