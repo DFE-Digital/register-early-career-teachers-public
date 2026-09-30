@@ -58,7 +58,16 @@ namespace :admin do
     scope path: "partnerships/add",
           as: :add_partnership_wizard,
           controller: "add_partnership_wizard" do
-      concerns :wizardable, wizard: Admin::Schools::AddPartnershipWizard
+      # Define routes here until the shared wizardable helper is updated for v1
+      %w[
+        select-contract-period
+        select-lead-provider
+        select-delivery-partner
+        check-answers
+      ].each do |step|
+        get step, action: :new
+        post step, action: :create
+      end
     end
   end
 

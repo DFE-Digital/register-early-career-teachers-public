@@ -1,7 +1,9 @@
 module Admin
   module Schools
     module AddPartnershipWizard
-      class SelectContractPeriodStep < Step
+      class SelectContractPeriodStep
+        include DfE::Wizard::Step
+
         attribute :contract_period_year, :integer
 
         validates :contract_period_year, presence: { message: "Select a contract period" }
@@ -9,16 +11,7 @@ module Admin
 
         def self.permitted_params = %i[contract_period_year]
 
-        def next_step = :select_lead_provider
-
       private
-
-        def persist
-          value = step_params["contract_period_year"] || contract_period_year
-          store.contract_period_year = value
-          store.framework_agreement_id = nil
-          store.delivery_partner_id = nil
-        end
 
         def contract_period_available
           return if contract_period_year.blank?
