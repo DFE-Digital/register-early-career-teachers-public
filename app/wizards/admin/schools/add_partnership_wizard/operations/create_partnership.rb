@@ -1,32 +1,34 @@
 module Admin
   module Schools
     module AddPartnershipWizard
-      class CreatePartnership
-        REQUIRED_ANSWERS = %i[
-          contract_period_year
-          framework_agreement_id
-          delivery_partner_id
-        ].freeze
+      module Operations
+        class CreatePartnership
+          REQUIRED_ANSWERS = %i[
+            contract_period_year
+            framework_agreement_id
+            delivery_partner_id
+          ].freeze
 
-        def initialize(repository:, step:)
-          @repository = repository
-          @step = step
-        end
-
-        def execute
-          if REQUIRED_ANSWERS.any? { |key| @repository.read[key].blank? }
-            raise ApplicationWizardStep::EmptyStoreError
+          def initialize(repository:, step:)
+            @repository = repository
+            @step = step
           end
 
-          wizard = @step.wizard
+          def execute
+            if REQUIRED_ANSWERS.any? { |key| @repository.read[key].blank? }
+              raise ApplicationWizardStep::EmptyStoreError
+            end
 
-          SchoolPartnerships::Create.new(
-            author: wizard.author,
-            school: wizard.school,
-            lead_provider_delivery_partnership: wizard.lead_provider_delivery_partnership
-          ).create # rubocop:disable Rails/SaveBang
+            wizard = @step.wizard
 
-          { success: true }
+            SchoolPartnerships::Create.new(
+              author: wizard.author,
+              school: wizard.school,
+              lead_provider_delivery_partnership: wizard.lead_provider_delivery_partnership
+            ).create # rubocop:disable Rails/SaveBang
+
+            { success: true }
+          end
         end
       end
     end
