@@ -58,7 +58,7 @@ namespace :admin do
     scope path: "partnerships/add",
           as: :add_partnership_wizard,
           controller: "add_partnership_wizard" do
-      # Use explicit routes until wizardable supports v1 Wizard.routes
+      # Define routes here until the shared wizardable helper is updated for v1
       %w[
         select-contract-period
         select-lead-provider
