@@ -21,7 +21,7 @@ We use <%= govuk_link_to("PKCE", "https://oauth.net/2/pkce/") %>, in order to pr
 A user from each organisation you work with <strong>must</strong> authorise the use of your application before we can grant you a token to access the API on their behalf.
 </p>
 
-<h3 class="govuk-heading-m">PKCE code-verifier and code-challenge</h3>
+<h3 class="govuk-heading-s">PKCE code-verifier and code-challenge</h3>
 
 <p class="govuk-body">
 PKCE works by having a random secret called a <code>code verifier</code>, and a <code>code challenge</code> that is derived from it.
@@ -33,7 +33,7 @@ You can optionally include a <code>state</code> value.  This is a value you can 
 If you include a <code>state</code> it will be returned to you in the callback after the client approves (or denies) the connection request.
 </p>
 
-<h3 class="govuk-heading-m">Access token</h3>
+<h3 class="govuk-heading-s">Access token</h3>
 
 <p class="govuk-body">
 We will return a token for each organisation that authorises your application that you should keep securely.
@@ -43,7 +43,7 @@ We will return a token for each organisation that authorises your application th
 The token is valid for <strong>1 year</strong> from date of issue. When the token expires, you can get a new one by going through the authorisation process again. We do not support refresh tokens.
 </p>
 
-<h3 class="govuk-heading-m">Credentials</h3>
+<h3 class="govuk-heading-s">Credentials</h3>
 
 <p class="govuk-body">
 Your credentials are your client ID and your client secret.
@@ -57,19 +57,19 @@ Credentials are used:
   <li>when you test your application with sandbox APIs</li>
 </ul>
 
-<h4 class="govuk-heading-s">Client ID</h4>
+<h4 class="govuk-heading-xs">Client ID</h4>
 
 <p class="govuk-body">
 Your client ID is a unique identifier we create for your application when we add you to the service.
 </p>
 
-<h4 class="govuk-heading-s">Client secret</h4>
+<h4 class="govuk-heading-xs">Client secret</h4>
 
 <p class="govuk-body">
 Client secrets are unique passphrases used to authenticate your application. They are known only to your application and the authorising server.
 </p>
 
 <p class="govuk-body">
-The client secret is the equivalent of a password and should not be stored in plain text. Only store an encrypted version of the client secret to reduce the chance of it being compromised.
+The client secret is the equivalent of a password and should be stored securely to reduce the chance of it being compromised.
 </p>
 
