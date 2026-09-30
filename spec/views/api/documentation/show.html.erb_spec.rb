@@ -6,7 +6,7 @@ describe "api/documentation/show.html.erb" do
   it { is_expected.to have_css("h1", text: "Register early career teachers APIs") }
 
   it { is_expected.to have_css("h2", text: "Authentication") }
-  it { is_expected.to have_link("Read the authentication guidance", href: "#authentication") }
+  it { is_expected.to have_link("Read the authentication guidance", href: api_documentation_authentication_path) }
 
   it { is_expected.to have_css("h2", text: "Hello API") }
   it { is_expected.to have_link("View the Hello API", href: api_hello_documentation_path) }
