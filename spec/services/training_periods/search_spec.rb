@@ -69,17 +69,20 @@ describe TrainingPeriods::Search do
       FactoryBot.create(
         :framework_agreement,
         lead_provider:,
-        contract_period_year: contract_period.year
+        contract_period:
       )
     end
 
     let!(:linkable_tp) do
-      FactoryBot.create(:training_period,
-                        :with_only_expression_of_interest,
-                        ect_at_school_period:,
-                        expression_of_interest: matching_expression_of_interest,
-                        started_on: Date.new(2025, 3, 1),
-                        finished_on: Date.new(2025, 3, 31))
+      FactoryBot.create(
+        :training_period,
+        ect_at_school_period:,
+        school_partnership: nil,
+        expression_of_interest: matching_expression_of_interest,
+        schedule: FactoryBot.create(:schedule, contract_period:),
+        started_on: Date.new(2025, 3, 1),
+        finished_on: Date.new(2025, 3, 31)
+      )
     end
 
     let!(:already_linked_tp) do
@@ -93,27 +96,41 @@ describe TrainingPeriods::Search do
     end
 
     let!(:wrong_provider_tp) do
-      FactoryBot.create(:training_period,
-                        :with_only_expression_of_interest,
-                        ect_at_school_period:,
-                        expression_of_interest: FactoryBot.create(:framework_agreement,
-                                                                  lead_provider: FactoryBot.create(:lead_provider), # different provider
-                                                                  contract_period_year: contract_period.year),
-                        started_on: Date.new(2025, 5, 1),
-                        finished_on: Date.new(2025, 5, 31))
+      wrong_provider_contract_period = FactoryBot.create(:contract_period, year: contract_period.year)
+      wrong_provider_expression_of_interest = FactoryBot.create(
+        :framework_agreement,
+        lead_provider: FactoryBot.create(:lead_provider), # different provider
+        contract_period: wrong_provider_contract_period
+      )
+
+      FactoryBot.create(
+        :training_period,
+        ect_at_school_period:,
+        school_partnership: nil,
+        expression_of_interest: wrong_provider_expression_of_interest,
+        schedule: FactoryBot.create(:schedule, contract_period: wrong_provider_contract_period),
+        started_on: Date.new(2025, 5, 1),
+        finished_on: Date.new(2025, 5, 31)
+      )
     end
 
     let!(:wrong_year_tp) do
       wrong_contract_period = FactoryBot.create(:contract_period, year: 2030)
+      wrong_year_expression_of_interest = FactoryBot.create(
+        :framework_agreement,
+        lead_provider:,
+        contract_period: wrong_contract_period
+      )
 
-      FactoryBot.create(:training_period,
-                        :with_only_expression_of_interest,
-                        ect_at_school_period:,
-                        expression_of_interest: FactoryBot.create(:framework_agreement,
-                                                                  lead_provider:,
-                                                                  contract_period_year: wrong_contract_period.year),
-                        started_on: Date.new(2025, 6, 1),
-                        finished_on: Date.new(2025, 6, 30))
+      FactoryBot.create(
+        :training_period,
+        ect_at_school_period:,
+        school_partnership: nil,
+        expression_of_interest: wrong_year_expression_of_interest,
+        schedule: FactoryBot.create(:schedule, contract_period: wrong_contract_period),
+        started_on: Date.new(2025, 6, 1),
+        finished_on: Date.new(2025, 6, 30)
+      )
     end
 
     it "returns only training periods linked to an EOI at the school (no school partnership, matching lead_provider + contract period)" do
