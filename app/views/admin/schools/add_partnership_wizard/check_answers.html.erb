@@ -27,7 +27,7 @@
   <% end %>
 <% end %>
 
-<%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
+<%= form_with(model: @wizard.current_step, url: @wizard.current_step_path, scope: @wizard.current_step_name) do |f| %>
   <%= f.govuk_submit "Confirm" %>
 <% end %>
 
