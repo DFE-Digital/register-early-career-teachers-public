@@ -11,6 +11,7 @@ RSpec.describe "GET /api/hello/client", type: :request do
   it "rejects bad client credentials" do
     get "/api/hello/client", headers: basic_auth_headers(client:, secret: "wrong")
     expect(response).to have_http_status(:unauthorized)
+    expect(response.headers["WWW-Authenticate"]).to eq(%(Basic realm="Application"))
     expect(response.parsed_body).to eq("error" => "invalid_client")
 
     unknown_client = FactoryBot.build(:api_oauth_client)
