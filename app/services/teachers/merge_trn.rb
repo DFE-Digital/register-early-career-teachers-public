@@ -7,19 +7,28 @@ module Teachers
     def merge!
       return unless merge_required?
       return if destination.blank?
+      return if both_teachers_have_induction_periods?
       return if any_overlapping_periods?
+
+      teacher_started_induction_on = teacher.induction_periods.minimum(:started_on)
 
       ActiveRecord::Base.transaction do
         move_school_periods
-        move_induction_records
+        move_induction_periods
         move_teacher_id_changes
+        move_data
+        move_mentor_ineligibility_data
         record_teacher_id_change
         refresh_metadata
         record_merge_events
         teacher.destroy!
       end
 
-      Teachers::SyncTeacherWithTRSJob.perform_later(teacher: destination)
+      if teacher_started_induction_on.present?
+        BeginECTInductionJob.perform_now(trn: destination.trn, start_date: teacher_started_induction_on)
+      end
+
+      Teachers::SyncTeacherWithTRSJob.perform_later(teacher: destination, wait: 5.minutes)
     end
 
   private
@@ -35,15 +44,12 @@ module Teachers
     end
 
     def any_overlapping_periods?
-      overlapping_induction_periods? ||
-        overlapping_mentor_at_school_periods? ||
+      overlapping_mentor_at_school_periods? ||
         overlapping_ect_at_school_periods?
     end
 
-    def overlapping_induction_periods?
-      teacher.induction_periods.any? do
-        destination.induction_periods.overlapping_with(it).exists?
-      end
+    def both_teachers_have_induction_periods?
+      teacher.induction_periods.any? && destination.induction_periods.any?
     end
 
     def overlapping_mentor_at_school_periods?
@@ -63,13 +69,40 @@ module Teachers
       teacher.mentor_at_school_periods.find_each { |period| period.update!(teacher: destination) }
     end
 
-    def move_induction_records
+    def move_induction_periods
       teacher.induction_periods.find_each { |period| period.update!(teacher: destination) }
       teacher.induction_extensions.find_each { |extension| extension.update!(teacher: destination) }
     end
 
     def move_teacher_id_changes
       teacher.teacher_id_changes.find_each { |change| change.update!(teacher: destination) }
+    end
+
+    def move_data
+      destination.update_columns(
+        ect_first_became_eligible_for_training_at: earliest_date(:ect_first_became_eligible_for_training_at),
+        ect_became_ineligible_for_funding_on: earliest_date(:ect_became_ineligible_for_funding_on),
+        mentor_first_became_eligible_for_training_at: earliest_date(:mentor_first_became_eligible_for_training_at),
+        ect_payments_frozen_year: earliest_date(:ect_payments_frozen_year),
+        mentor_payments_frozen_year: earliest_date(:mentor_payments_frozen_year)
+      )
+    end
+
+    def move_mentor_ineligibility_data
+      source_date = teacher.mentor_became_ineligible_for_funding_on
+      destination_date = destination.mentor_became_ineligible_for_funding_on
+
+      return if source_date.blank?
+      return if destination_date.present? && destination_date <= source_date
+
+      destination.update_columns(
+        mentor_became_ineligible_for_funding_on: source_date,
+        mentor_became_ineligible_for_funding_reason: teacher.mentor_became_ineligible_for_funding_reason
+      )
+    end
+
+    def earliest_date(attribute)
+      [teacher.public_send(attribute), destination.public_send(attribute)].compact.min
     end
 
     def record_teacher_id_change
