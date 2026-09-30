@@ -7,11 +7,14 @@ module Teachers
     def merge!
       return unless merge_required?
       return if destination.blank?
+      return if both_teachers_have_induction_periods?
       return if any_overlapping_periods?
+
+      teacher_started_induction_on = teacher.induction_periods.minimum(:started_on)
 
       ActiveRecord::Base.transaction do
         move_school_periods
-        merge_induction_periods_service.move!
+        move_induction_periods
         move_teacher_id_changes
         move_data
         move_mentor_ineligibility_data
@@ -21,7 +24,10 @@ module Teachers
         teacher.destroy!
       end
 
-      merge_induction_periods_service.sync
+      if teacher_started_induction_on.present?
+        BeginECTInductionJob.perform_now(trn: destination.trn, start_date: teacher_started_induction_on)
+      end
+
       Teachers::SyncTeacherWithTRSJob.perform_later(teacher: destination, wait: 5.minutes)
     end
 
@@ -38,15 +44,12 @@ module Teachers
     end
 
     def any_overlapping_periods?
-      overlapping_induction_periods? ||
-        overlapping_mentor_at_school_periods? ||
+      overlapping_mentor_at_school_periods? ||
         overlapping_ect_at_school_periods?
     end
 
-    def overlapping_induction_periods?
-      teacher.induction_periods.any? do
-        destination.induction_periods.overlapping_with(it).exists?
-      end
+    def both_teachers_have_induction_periods?
+      teacher.induction_periods.any? && destination.induction_periods.any?
     end
 
     def overlapping_mentor_at_school_periods?
@@ -64,6 +67,11 @@ module Teachers
     def move_school_periods
       teacher.ect_at_school_periods.find_each { |period| period.update!(teacher: destination) }
       teacher.mentor_at_school_periods.find_each { |period| period.update!(teacher: destination) }
+    end
+
+    def move_induction_periods
+      teacher.induction_periods.find_each { |period| period.update!(teacher: destination) }
+      teacher.induction_extensions.find_each { |extension| extension.update!(teacher: destination) }
     end
 
     def move_teacher_id_changes
@@ -103,10 +111,6 @@ module Teachers
         api_from_teacher_id: teacher.api_id,
         api_to_teacher_id: destination.api_id
       )
-    end
-
-    def merge_induction_periods_service
-      @merge_induction_periods_service ||= Teachers::Merge::InductionPeriods.new(teacher:)
     end
 
     # The declarative refresh hook only re-points the destination's metadata on

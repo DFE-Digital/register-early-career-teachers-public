@@ -8,13 +8,44 @@ namespace :product_review do
     source = Teacher.find_by_trn("9000000")
     destination = Teacher.find_by_trn("9000001")
 
+    source.update!(
+      ect_first_became_eligible_for_training_at: "2024-02-01",
+      ect_became_ineligible_for_funding_on: "2025-02-01",
+      ect_payments_frozen_year: "2024",
+      mentor_first_became_eligible_for_training_at: "2024-01-01",
+      mentor_became_ineligible_for_funding_on: "2025-01-01",
+      mentor_became_ineligible_for_funding_reason: "started_not_completed",
+      mentor_payments_frozen_year: "2024"
+    )
+
+    destination.update!(
+      ect_first_became_eligible_for_training_at: "2025-02-01",
+      ect_became_ineligible_for_funding_on: "2026-02-01",
+      ect_payments_frozen_year: "2025",
+      mentor_first_became_eligible_for_training_at: "2025-01-01",
+      mentor_became_ineligible_for_funding_on: "2026-01-01",
+      mentor_became_ineligible_for_funding_reason: "completed_declaration_received",
+      mentor_payments_frozen_year: "2025"
+    )
+
+    Teachers::Manage.system_update(teacher: source).mark_teacher_as_merged!(
+      trs_data_last_refreshed_at: Time.zone.now,
+      redirected_to: destination.trn,
+      event_body: "TRN #{source.trn} redirects to TRN #{destination.trn}"
+    )
+
+    source = Teacher.find_by_trn("9000002")
+    destination = Teacher.find_by_trn("9000003")
+
     FactoryBot.create(:induction_period,
+                      :fail,
                       teacher: source,
                       started_on: "2024-01-01",
                       finished_on: "2025-01-01",
                       number_of_terms: 1)
 
     FactoryBot.create(:induction_period,
+                      :pass,
                       teacher: destination,
                       started_on: "2025-01-01",
                       finished_on: "2026-01-01",
@@ -40,29 +71,6 @@ namespace :product_review do
       event_body: "TRN #{source.trn} redirects to TRN #{destination.trn}"
     )
 
-    source = Teacher.find_by_trn("9000002")
-    destination = Teacher.find_by_trn("9000003")
-
-    source.update!(
-      mentor_first_became_eligible_for_training_at: "2024-01-01",
-      mentor_became_ineligible_for_funding_on: "2025-01-01",
-      mentor_became_ineligible_for_funding_reason: "started_not_completed",
-      mentor_payments_frozen_year: "2024"
-    )
-
-    destination.update!(
-      mentor_first_became_eligible_for_training_at: "2025-01-01",
-      mentor_became_ineligible_for_funding_on: "2026-01-01",
-      mentor_became_ineligible_for_funding_reason: "completed_declaration_received",
-      mentor_payments_frozen_year: "2025"
-    )
-
-    Teachers::Manage.system_update(teacher: source).mark_teacher_as_merged!(
-      trs_data_last_refreshed_at: Time.zone.now,
-      redirected_to: destination.trn,
-      event_body: "TRN #{source.trn} redirects to TRN #{destination.trn}"
-    )
-
     source = Teacher.find_by_trn("9000004")
     destination = Teacher.find_by_trn("9000005")
 
@@ -72,6 +80,7 @@ namespace :product_review do
                       started_on: "2026-01-01")
 
     FactoryBot.create(:induction_period,
+                      :fail,
                       teacher: destination,
                       started_on: "2024-01-01",
                       finished_on: "2025-01-01",
@@ -121,11 +130,17 @@ namespace :product_review do
 
     FactoryBot.create(:induction_period,
                       :unfinished,
+                      teacher: source,
+                      started_on: "2025-02-01")
+
+    FactoryBot.create(:induction_period,
+                      :unfinished,
                       teacher: destination,
                       started_on: "2025-01-01")
 
     source.update!(
-      trs_induction_status: "RequiredToComplete"
+      trs_induction_status: "InProgress",
+      ect_first_became_eligible_for_training_at: "2025-02-01"
     )
 
     destination.update!(

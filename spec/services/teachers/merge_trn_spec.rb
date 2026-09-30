@@ -28,9 +28,6 @@ RSpec.describe Teachers::MergeTRN do
   let!(:destination_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher: destination, started_on: second_period_started_on, finished_on: second_period_finished_on) }
   let!(:destination_ect_training_period) { FactoryBot.create(:training_period, :for_ect, :with_framework_agreement, ect_at_school_period: destination_ect_at_school_period, started_on: second_period_started_on, finished_on: second_period_finished_on) }
 
-  let!(:induction_period) { FactoryBot.create(:induction_period, teacher:) }
-  let!(:induction_extension) { FactoryBot.create(:induction_extension, teacher:) }
-
   let(:first_period_started_on) { Date.new(2025, 1, 1) }
   let(:first_period_finished_on) { Date.new(2025, 3, 31) }
   let(:second_period_started_on) { Date.new(2025, 6, 1) }
@@ -53,8 +50,19 @@ RSpec.describe Teachers::MergeTRN do
       expect { service.merge! }.not_to(change { teacher.reload.induction_periods.map(&:teacher_id) })
     end
 
-    it "does not move any induction extensions" do
-      expect { service.merge! }.not_to(change { teacher.reload.induction_extensions.map(&:teacher_id) })
+    context "when the source has induction records" do
+      let!(:induction_period) { FactoryBot.create(:induction_period, teacher:) }
+      let!(:induction_extension) { FactoryBot.create(:induction_extension, teacher:) }
+
+      it "does not move any induction extensions" do
+        expect { service.merge! }.not_to(change { teacher.reload.induction_extensions.map(&:teacher_id) })
+      end
+
+      it "does not sync the induction start date with TRS" do
+        expect(BeginECTInductionJob).not_to receive(:perform_now)
+
+        service.merge!
+      end
     end
 
     it "does not move any declarations or training periods" do
@@ -83,7 +91,7 @@ RSpec.describe Teachers::MergeTRN do
   end
 
   describe "#merge!" do
-    context "when the destination has no overlapping records (happy path)" do
+    context "when the destination has no overlapping records" do
       it "moves the at-school periods to the destination teacher" do
         service.merge!
 
@@ -100,18 +108,40 @@ RSpec.describe Teachers::MergeTRN do
         expect(destination.ect_training_periods).to contain_exactly(ect_training_period, destination_ect_training_period)
       end
 
-      it "moves the induction records to the destination teacher" do
-        service.merge!
-
-        expect(induction_period.reload.teacher).to eq(destination)
-        expect(induction_extension.reload.teacher).to eq(destination)
-      end
-
       it "moves the declarations with their training periods to the destination teacher" do
         service.merge!
 
         expect(ect_declaration.reload.training_period.teacher).to eq(destination)
         expect(mentor_declaration.reload.training_period.teacher).to eq(destination)
+      end
+
+      context "when the source has induction records" do
+        let!(:induction_period) { FactoryBot.create(:induction_period, teacher:) }
+        let!(:induction_extension) { FactoryBot.create(:induction_extension, teacher:) }
+
+        it "moves the induction records to the destination teacher" do
+          service.merge!
+
+          expect(induction_period.reload.teacher).to eq(destination)
+          expect(induction_extension.reload.teacher).to eq(destination)
+        end
+
+        it "syncs the moved induction start date with TRS" do
+          expect(BeginECTInductionJob).to receive(:perform_now).with(
+            trn: destination.trn,
+            start_date: induction_period.started_on
+          )
+
+          service.merge!
+        end
+      end
+
+      context "when the source has no induction records" do
+        it "does not sync induction data with TRS" do
+          expect(BeginECTInductionJob).not_to receive(:perform_now)
+
+          service.merge!
+        end
       end
 
       context "eligibility dates" do
@@ -294,15 +324,6 @@ RSpec.describe Teachers::MergeTRN do
         expect(events.map(&:body).join).to include(source_api_id, destination.api_id)
       end
 
-      it "syncs the moved induction start date with TRS" do
-        expect(BeginECTInductionJob).to receive(:perform_now).with(
-          trn: destination.trn,
-          start_date: induction_period.started_on
-        )
-
-        service.merge!
-      end
-
       it "calls a sync with TRS" do
         expect(Teachers::SyncTeacherWithTRSJob).to receive(:perform_later).with(teacher: destination, wait: 5.minutes)
 
@@ -360,6 +381,40 @@ RSpec.describe Teachers::MergeTRN do
 
     context "when the destination has an overlapping period" do
       let(:second_period_started_on) { Date.new(2025, 3, 1) }
+
+      it_behaves_like "does not move or change any data"
+
+      it "does not record a merge event" do
+        service.merge!
+
+        expect(Event.where(event_type: "teacher_merged")).to be_empty
+      end
+
+      it "does not sync induction data with TRS" do
+        expect(BeginECTInductionJob).not_to receive(:perform_now)
+
+        service.merge!
+      end
+
+      it "does not resync with TRS" do
+        expect(Teachers::SyncTeacherWithTRSJob).not_to receive(:perform_later)
+
+        service.merge!
+      end
+    end
+
+    context "when the teachers both have induction records" do
+      let!(:induction_period) { FactoryBot.create(:induction_period, teacher:) }
+      let!(:induction_extension) { FactoryBot.create(:induction_extension, teacher:) }
+
+      before do
+        FactoryBot.create(:induction_period,
+                          :fail,
+                          teacher: destination,
+                          started_on: second_period_started_on,
+                          finished_on: second_period_finished_on,
+                          number_of_terms: 1)
+      end
 
       it_behaves_like "does not move or change any data"
 
