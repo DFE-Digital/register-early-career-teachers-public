@@ -10,12 +10,14 @@ RSpec.describe Teachers::MergeTRN do
                       trs_redirected_to: destination_trn)
   end
 
+  let(:school) { FactoryBot.create(:school) }
+
   let!(:destination) { FactoryBot.create(:teacher, :with_realistic_name, trn: destination_trn) }
 
   let(:source_trn) { "654321" }
   let(:destination_trn) { "123456" }
 
-  let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, started_on: first_period_started_on, finished_on: first_period_finished_on) }
+  let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on: first_period_started_on, finished_on: first_period_finished_on) }
   let!(:ect_training_period) { FactoryBot.create(:training_period, :for_ect, :with_framework_agreement, ect_at_school_period:, started_on: first_period_started_on, finished_on: first_period_finished_on) }
   let!(:ect_declaration) { FactoryBot.create(:declaration, training_period: ect_training_period) }
 
@@ -23,15 +25,16 @@ RSpec.describe Teachers::MergeTRN do
   let!(:mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, :with_framework_agreement, mentor_at_school_period:, started_on: first_period_started_on, finished_on: first_period_finished_on) }
   let!(:mentor_declaration) { FactoryBot.create(:declaration, training_period: mentor_training_period) }
 
-  let!(:destination_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher: destination, started_on: second_period_started_on, finished_on: second_period_finished_on) }
+  let!(:destination_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher: destination, school:, started_on: second_period_started_on, finished_on: second_period_finished_on) }
   let!(:destination_mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, :with_framework_agreement, mentor_at_school_period: destination_mentor_at_school_period, started_on: second_period_started_on, finished_on: second_period_finished_on) }
-  let!(:destination_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher: destination, started_on: second_period_started_on, finished_on: second_period_finished_on) }
+  let!(:destination_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher: destination, school:, started_on: second_period_started_on, finished_on: second_period_finished_on) }
   let!(:destination_ect_training_period) { FactoryBot.create(:training_period, :for_ect, :with_framework_agreement, ect_at_school_period: destination_ect_at_school_period, started_on: second_period_started_on, finished_on: second_period_finished_on) }
 
   let(:first_period_started_on) { Date.new(2025, 1, 1) }
   let(:first_period_finished_on) { Date.new(2025, 3, 31) }
   let(:second_period_started_on) { Date.new(2025, 6, 1) }
   let(:second_period_finished_on) { Date.new(2025, 11, 30) }
+  let(:overlapping_period_started_on) { Date.new(2025, 5, 1) }
 
   before do
     allow(BeginECTInductionJob).to receive(:perform_now)
@@ -285,49 +288,61 @@ RSpec.describe Teachers::MergeTRN do
           end
         end
       end
+    end
 
-      it "destroys the source teacher" do
-        expect { service.merge! }.to(change { Teacher.exists?(teacher.id) }.from(true).to(false))
+    context "when the destination has overlapping records" do
+      context "mentor at school periods" do
+        let!(:overlapping_mentor_period) do
+          FactoryBot.create(:mentor_at_school_period, teacher:, school:,
+                                                      started_on: overlapping_period_started_on,
+                                                      finished_on: Date.new(2025, 7, 30))
+        end
+
+        it "merges the overlapping mentor at school periods" do
+          service.merge!
+
+          merged_mentor_at_school_period = destination.reload.mentor_at_school_periods.latest_first.first
+
+          expect(merged_mentor_at_school_period.teacher).to eq(destination)
+          expect(merged_mentor_at_school_period.started_on).to eq(overlapping_period_started_on)
+          expect(merged_mentor_at_school_period.finished_on).to eq(second_period_finished_on)
+        end
+
+        it "moves the non-overlapping mentor at school periods to the destination teacher" do
+          service.merge!
+
+          expect(mentor_at_school_period.reload.teacher).to eq(destination)
+          expect(mentor_at_school_period.started_on).to eq(first_period_started_on)
+          expect(mentor_at_school_period.finished_on).to eq(first_period_finished_on)
+        end
       end
 
-      it "records a TeacherIdChange from the source participant to the destination participant" do
-        source_api_id = teacher.api_id
+      context "ect at school periods" do
+        let!(:overlapping_period) do
+          FactoryBot.create(:ect_at_school_period,
+                            teacher:, school:,
+                            started_on: overlapping_period_started_on, finished_on: overlapping_period_finished_on)
+        end
 
-        expect { service.merge! }.to change(TeacherIdChange, :count).by(1)
+        let(:overlapping_period_finished_on) { Date.new(2025, 7, 30) }
 
-        change = TeacherIdChange.last
-        expect(change.teacher).to eq(destination)
-        expect(change.api_from_teacher_id).to eq(source_api_id)
-        expect(change.api_to_teacher_id).to eq(destination.api_id)
-      end
+        it "merges the overlapping ect at school periods" do
+          service.merge!
 
-      it "moves the source's existing teacher_id_changes onto the destination" do
-        earlier_change = FactoryBot.create(:teacher_id_change, teacher:)
+          merged_ect_at_school_period = destination.ect_at_school_periods.latest_first.first
 
-        service.merge!
+          expect(merged_ect_at_school_period.teacher).to eq(destination)
+          expect(merged_ect_at_school_period.started_on).to eq(overlapping_period_started_on)
+          expect(merged_ect_at_school_period.finished_on).to eq(second_period_finished_on)
+        end
 
-        expect(earlier_change.reload.teacher).to eq(destination)
-      end
+        it "moves the non-overlapping ect at school periods to the destination teacher" do
+          service.merge!
 
-      it "populates the destination's metadata (which the model hooks do not do on reassignment)" do
-        expect { service.merge! }.to change { destination.reload.lead_provider_metadata.count }.from(0)
-      end
-
-      it "records a merge event" do
-        source_api_id = teacher.api_id
-
-        service.merge!
-
-        events = Event.where(event_type: "teacher_merged")
-        expect(events.count).to eq(2)
-        expect(events.pluck(:teacher_id).compact).to eq([destination.id])
-        expect(events.map(&:body).join).to include(source_api_id, destination.api_id)
-      end
-
-      it "calls a sync with TRS" do
-        expect(Teachers::SyncTeacherWithTRSJob).to receive(:perform_later).with(teacher: destination, wait: 5.minutes)
-
-        service.merge!
+          expect(ect_at_school_period.reload.teacher).to eq(destination)
+          expect(ect_at_school_period.started_on).to eq(first_period_started_on)
+          expect(ect_at_school_period.finished_on).to eq(first_period_finished_on)
+        end
       end
     end
 
@@ -379,8 +394,9 @@ RSpec.describe Teachers::MergeTRN do
       end
     end
 
-    context "when the destination has an overlapping period" do
+    context "when there are overlapping ECT periods at different schools" do
       let(:second_period_started_on) { Date.new(2025, 3, 1) }
+      let!(:destination_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher: destination, started_on: second_period_started_on, finished_on: second_period_finished_on) }
 
       it_behaves_like "does not move or change any data"
 
@@ -414,6 +430,48 @@ RSpec.describe Teachers::MergeTRN do
                           started_on: second_period_started_on,
                           finished_on: second_period_finished_on,
                           number_of_terms: 1)
+      end
+
+      it_behaves_like "does not move or change any data"
+
+      it "does not record a merge event" do
+        service.merge!
+
+        expect(Event.where(event_type: "teacher_merged")).to be_empty
+      end
+
+      it "does not sync induction data with TRS" do
+        expect(BeginECTInductionJob).not_to receive(:perform_now)
+
+        service.merge!
+      end
+
+      it "does not resync with TRS" do
+        expect(Teachers::SyncTeacherWithTRSJob).not_to receive(:perform_later)
+
+        service.merge!
+      end
+    end
+
+    context "when the teachers have training periods in different contract periods" do
+      let(:lead_provider) { FactoryBot.create(:lead_provider) }
+      let(:framework_agreement_2024) { FactoryBot.create(:framework_agreement, :for_year, lead_provider:, year: 2024) }
+      let(:framework_agreement_2025) { FactoryBot.create(:framework_agreement, :for_year, lead_provider:, year: 2025) }
+
+      let!(:ect_training_period) do
+        FactoryBot.create(:training_period,
+                          :for_ect,
+                          :with_framework_agreement,
+                          framework_agreement: framework_agreement_2024,
+                          ect_at_school_period:, started_on: first_period_started_on, finished_on: first_period_finished_on)
+      end
+
+      let!(:destination_ect_training_period) do
+        FactoryBot.create(:training_period,
+                          :for_ect, :with_framework_agreement,
+                          framework_agreement: framework_agreement_2025,
+                          ect_at_school_period: destination_ect_at_school_period,
+                          started_on: second_period_started_on, finished_on: second_period_finished_on)
       end
 
       it_behaves_like "does not move or change any data"

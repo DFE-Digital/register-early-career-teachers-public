@@ -7,8 +7,7 @@ module Teachers
     def merge!
       return unless merge_required?
       return if destination.blank?
-      return if both_teachers_have_induction_periods?
-      return if any_overlapping_periods?
+      return if merged_blocked?
 
       teacher_started_induction_on = teacher.induction_periods.minimum(:started_on)
 
@@ -43,30 +42,61 @@ module Teachers
       teacher.trs_response == "permanent_redirect" && teacher.trs_redirected_to.present?
     end
 
-    def any_overlapping_periods?
-      overlapping_mentor_at_school_periods? ||
-        overlapping_ect_at_school_periods?
+    def merged_blocked?
+      both_teachers_have_induction_periods? ||
+        overlapping_ect_periods_at_different_schools? ||
+        training_periods_have_different_contract_periods?
     end
 
     def both_teachers_have_induction_periods?
       teacher.induction_periods.any? && destination.induction_periods.any?
     end
 
-    def overlapping_mentor_at_school_periods?
-      teacher.mentor_at_school_periods.any? do
-        destination.mentor_at_school_periods.overlapping_with(it).exists?
+    def training_periods_have_different_contract_periods?
+      training_periods = teacher.mentor_training_periods + teacher.ect_training_periods + destination.mentor_training_periods + destination.ect_training_periods
+
+      training_periods.map(&:contract_period).uniq.size > 1
+    end
+
+    def overlapping_ect_periods_at_different_schools?
+      teacher.ect_at_school_periods.any? do |period|
+        destination.ect_at_school_periods
+          .where.not(school_id: period.school_id)
+          .overlapping_with(period)
+          .exists?
       end
     end
 
-    def overlapping_ect_at_school_periods?
-      teacher.ect_at_school_periods.any? do
-        destination.ect_at_school_periods.overlapping_with(it).exists?
+    def overlapping_mentor_at_school_periods
+      periods = teacher.mentor_at_school_periods + destination.mentor_at_school_periods
+
+      Teachers::MergeTRN::Overlapping.find(periods:)
+    end
+
+    def overlapping_ect_at_school_periods
+      periods = teacher.ect_at_school_periods + destination.ect_at_school_periods
+
+      Teachers::MergeTRN::Overlapping.find(periods:)
+    end
+
+    def merge_overlapping_mentor_at_school_periods
+      overlapping_mentor_at_school_periods.each do |periods|
+        Teachers::MergeTRN::Merge.call(periods:, destination:)
+      end
+    end
+
+    def merge_overlapping_ect_at_school_periods
+      overlapping_ect_at_school_periods.each do |periods|
+        Teachers::MergeTRN::Merge.call(periods:, destination:)
       end
     end
 
     def move_school_periods
-      teacher.ect_at_school_periods.find_each { |period| period.update!(teacher: destination) }
-      teacher.mentor_at_school_periods.find_each { |period| period.update!(teacher: destination) }
+      merge_overlapping_ect_at_school_periods
+      merge_overlapping_mentor_at_school_periods
+
+      teacher.ect_at_school_periods.reload.find_each { |period| period.update!(teacher: destination) }
+      teacher.mentor_at_school_periods.reload.find_each { |period| period.update!(teacher: destination) }
     end
 
     def move_induction_periods
@@ -123,10 +153,6 @@ module Teachers
 
     def record_merge_events
       Events::Record.record_teacher_trn_merged_events!(author:, source: teacher, destination:)
-    end
-
-    def anonymise_teacher
-      Teachers::Anonymise.new(teacher: teacher.reload, reason: :teacher_record_merged).anonymise!
     end
 
     def author
