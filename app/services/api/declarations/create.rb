@@ -18,15 +18,9 @@ module API::Declarations
     attribute :declaration_type
     attribute :evidence_type
 
-    validates :teacher_api_id, presence: { message: "Enter a '#/teacher_api_id'." }
-    validate :teacher_exists
-    validates :teacher_type, presence: { message: "Enter a '#/teacher_type'." }, if: -> { errors.empty? }
-    validates :teacher_type, inclusion: {
-      in: TEACHER_TYPES,
-      message: "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again."
-    }, allow_blank: true
+    validate :teacher_exists_and_is_registered_with_lead_provider
     validates :evidenced_at, presence: { message: "Enter a '#/evidenced_at'." }, if: -> { errors.empty? }
-    validate :teacher_type_exists
+    validate :teacher_type_exists_with_training
     validates :declaration_type, presence: { message: "Enter a '#/declaration_type'." }, if: -> { errors.empty? }
     validates :declaration_type, inclusion: {
       in: Declaration.declaration_types.keys,
@@ -45,7 +39,7 @@ module API::Declarations
     validate :payment_statement_available
     validate :validate_milestone_exists
     validate :declaration_in_sequence
-    validate :teacher_registered_with_lead_provider
+    # validate :teacher_registered_with_lead_provider
 
     def create
       return false unless valid?
@@ -144,31 +138,24 @@ module API::Declarations
       end
     end
 
-    def teacher_exists
-      return if errors[:teacher_api_id].any?
-      return if errors[:teacher_type].any?
-      return if teacher
+    def teacher_exists_and_is_registered_with_lead_provider
+      return if errors.any?
 
-      errors.add(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check participant details and try again.")
-    end
+      errors.add(:teacher_api_id, "Enter a '#/teacher_api_id'.") and return if teacher_api_id.blank?
 
-    def teacher_type_exists
-      return if errors[:teacher_type].any?
-      return if errors[:teacher_api_id].any?
-      return if errors[:lead_provider_id].any?
-      return if errors[:declaration_type].any?
-      return if errors[:evidenced_at].any?
-      return if training_period
-      return unless teacher_registered_with_lead_provider?
-
-      errors.add(:teacher_type, "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again.")
-    end
-
-    def teacher_registered_with_lead_provider
-      return if errors[:teacher_api_id].any? || errors[:lead_provider_id].any?
       return if teacher_registered_with_lead_provider?
-
       errors.add(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check participant details and try again.")
+    end
+
+    def teacher_type_exists_with_training
+      return if errors.any?
+
+      errors.add(:teacher_type, "Enter a '#/teacher_type'.") and return if teacher_type.blank?
+
+      if TEACHER_TYPES.exclude?(teacher_type) || (training_period.blank? && teacher_registered_with_lead_provider?)
+        errors.add(:teacher_type,
+                   "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again.")
+      end
     end
 
     def teacher_registered_with_lead_provider?
