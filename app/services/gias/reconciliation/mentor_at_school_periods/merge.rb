@@ -109,7 +109,7 @@ module GIAS::Reconciliation
         Events::Record.record_teacher_mentor_at_school_periods_merged!(
           teacher: successor_period.teacher,
           successor_period:,
-          mentor_at_school_periods: periods,
+          periods:,
           happened_at: predecessor_school.gias_school.closed_on,
           author:
         )
