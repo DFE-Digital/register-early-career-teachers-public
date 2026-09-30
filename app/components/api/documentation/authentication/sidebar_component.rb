@@ -13,10 +13,6 @@ module API
           @page = page
         end
 
-        # def render?
-        #   page.to_s.starts_with?(PAGES_PREFIX)
-        # end
-
         def structure
           node = Struct.new(:name, :href, :prefix, :nodes)
 

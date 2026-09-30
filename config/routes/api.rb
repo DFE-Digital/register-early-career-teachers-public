@@ -42,7 +42,7 @@ namespace :api do
 
     get "docs", to: "documentation#show", as: :documentation
     resource :hello_documentation, only: :show, path: "docs/hello", controller: "hello/documentations"
-    get "docs/authentication", to: "documentation/authentication#show", as: :documentation_authentication
+    get "docs/authentication", to: redirect("/api/docs/authentication/how-authentication-works"), as: :documentation_authentication
     get "docs/authentication/*page", to: "documentation/authentication#page", as: :documentation_authentication_page
   end
 
