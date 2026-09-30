@@ -114,6 +114,11 @@ variable "postgres_server_version" {
   default = "18"
 }
 
+variable "postgres_snapshot_server_version" {
+  type    = string
+  default = "18"
+}
+
 variable "postgres_flexible_server_sku" {
   type    = string
   default = "B_Standard_B1ms"
