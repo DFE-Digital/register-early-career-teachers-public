@@ -62,6 +62,7 @@ private
   def setup_data_to_fix
     @ect_at_school_period = FactoryBot.create(:ect_at_school_period)
     @teacher = @ect_at_school_period.teacher
+    @gias_school = @ect_at_school_period.school.gias_school
   end
 
   def given_i_am_signed_in_as_a_product_team_user
@@ -125,16 +126,19 @@ private
     object_type,object_id,action,wrong_header
     teacher,#{@teacher.id},update,"trn,1"
     ect_at_school_period,#{@ect_at_school_period.id},destroy,""
+    gias_school,#{@gias_school.id},update,"name,""A name, with a comma"""
   ROWS
   def valid_rows = <<~ROWS
     object_type,object_id,action,attributes
     teacher,#{@teacher.id},update,"trn,1"
     ect_at_school_period,#{@ect_at_school_period.id},destroy,""
+    GIAS::School,#{@gias_school.id},update,"name,""A name, with a comma"""
   ROWS
   def processable_rows = <<~ROWS
     object_type,object_id,action,attributes
     teacher,#{@teacher.id},update,"trn,1234567"
     ect_at_school_period,#{@ect_at_school_period.id},delete,""
+    GIAS::School,#{@gias_school.id},update,"name,""A name, with a comma"""
   ROWS
 
   def and_the_csv_string_is_displayed_for(rows)
@@ -147,7 +151,8 @@ private
       header: %w[object_type object_id action attributes],
       rows: [
         ["teacher", @teacher.id.to_s, "update", "trn,1"],
-        ["ect_at_school_period", @ect_at_school_period.id.to_s, "destroy", ""]
+        ["ect_at_school_period", @ect_at_school_period.id.to_s, "destroy", ""],
+        ["GIAS::School", @gias_school.id.to_s, "update", "name,\"A name, with a comma\""]
       ]
     )
   end
@@ -158,7 +163,8 @@ private
       header: %w[object_type object_id action attributes],
       rows: [
         ["teacher", @teacher.id.to_s, "update", "trn,1234567"],
-        ["ect_at_school_period", @ect_at_school_period.id.to_s, "delete", ""]
+        ["ect_at_school_period", @ect_at_school_period.id.to_s, "delete", ""],
+        ["GIAS::School", @gias_school.id.to_s, "update", "name,\"A name, with a comma\""]
       ]
     )
   end
@@ -189,6 +195,10 @@ private
     and_summary_card_is_displayed(
       @ect_at_school_period.to_global_id,
       rows: { "Action" => "delete" }
+    )
+    and_summary_card_is_displayed(
+      @gias_school.to_global_id,
+      rows: { "Action" => "update", "name" => [@gias_school.name, "A name, with a comma"] }
     )
   end
 
