@@ -1,6 +1,8 @@
 module Teachers
   class MergeTRN
     class Merge
+      class CannotMergePeriods < StandardError; end
+
       def self.call(...) = new(...).call
 
       def initialize(periods:, destination:)
@@ -10,19 +12,20 @@ module Teachers
 
       def call
         raise ArgumentError, "Periods must be of the same type" if different_period_types?
+        raise CannotMergePeriods, "Periods have different training programmes" if periods_have_different_training_programmes?
+        raise CannotMergePeriods, "Periods have different schedules" if periods_have_different_schedules?
+        raise CannotMergePeriods, "Periods have different partnerships" if periods_have_different_partnerships?
 
         ActiveRecord::Base.transaction do
-          successor_period.assign_attributes(started_on:, finished_on:)
+          successor_period.update!(started_on:, finished_on:)
 
-          update_mentorship_periods!
-          update_training_periods!
-          update_events!
+          successor_period.reload
+
+          update_related_records!
+
           redundant_periods.each do |period|
-            if at_school_period?
-              period.training_periods.reset
-              period.mentorship_periods.reset
-            end
-            period.events.reset
+            reset_related_records!(period)
+
             period.destroy!
           end
 
@@ -53,7 +56,29 @@ module Teachers
       end
 
       def period_type
-        period_types.first.to_s.underscore.to_sym
+        @period_type ||= period_types.first.to_s.underscore.to_sym
+      end
+
+      def training_period?
+        period_type == :training_period
+      end
+
+      def periods_have_different_partnerships?
+        return unless training_period?
+
+        periods.map(&:school_partnership).uniq.size > 1
+      end
+
+      def periods_have_different_training_programmes?
+        return unless training_period?
+
+        periods.map(&:training_programme).uniq.size > 1
+      end
+
+      def periods_have_different_schedules?
+        return unless training_period?
+
+        periods.map(&:schedule).uniq.size > 1
       end
 
       def at_school_period?
@@ -72,6 +97,10 @@ module Teachers
         @mentorship_periods ||= redundant_periods.flat_map(&:mentorship_periods).uniq
       end
 
+      def declarations
+        @declarations ||= redundant_periods.flat_map(&:declarations).uniq
+      end
+
       def events
         @events ||= redundant_periods.flat_map(&:events).uniq
       end
@@ -86,6 +115,18 @@ module Teachers
         { attribute_name => successor_period }
       end
 
+      def update_related_records!
+        case period_type
+        when :mentor_at_school_period, :ect_at_school_period
+          update_mentorship_periods!
+          update_training_periods!
+        when :training_period
+          move_declarations!
+        end
+
+        move_events!
+      end
+
       def update_mentorship_periods!
         return unless at_school_period?
 
@@ -95,11 +136,45 @@ module Teachers
       def update_training_periods!
         return unless at_school_period?
 
-        training_periods.each { |period| period.update!(attrs) }
+        overlapping_training_periods.each do |periods|
+          Teachers::MergeTRN::Merge.call(periods:, destination:)
+        end
+
+        merged_training_periods = overlapping_training_periods.flat_map(&:itself).uniq
+
+        training_periods.each do |period|
+          next if merged_training_periods.include?(period)
+
+          period.update!(attrs)
+        end
       end
 
-      def update_events!
+      def overlapping_training_periods
+        @overlapping_training_periods ||= Teachers::MergeTRN::Overlapping.find(periods: source_and_destination_training_periods)
+      end
+
+      def source_and_destination_training_periods
+        training_periods + successor_period.training_periods
+      end
+
+      def move_declarations!
+        declarations.each { |declaration| declaration.update!(attrs) }
+      end
+
+      def move_events!
         events.each { |event| event.update!(attrs) }
+      end
+
+      def reset_related_records!(period)
+        case period_type
+        when :mentor_at_school_period, :ect_at_school_period
+          period.training_periods.reset
+          period.mentorship_periods.reset
+        when :training_period
+          period.declarations.reset
+        end
+
+        period.events.reset
       end
 
       def finished_on
