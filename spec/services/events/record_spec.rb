@@ -2476,6 +2476,343 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe ".record_teacher_training_periods_merged!" do
+    let(:school) { FactoryBot.create(:school) }
+    let(:source) { FactoryBot.create(:teacher) }
+    let(:destination) { FactoryBot.create(:teacher) }
+    let(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, year: 2025) }
+    let(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, school:, year: 2025) }
+
+    let(:first_at_school_period) do
+      FactoryBot.create(:mentor_at_school_period,
+                        teacher: source, school:,
+                        started_on: first_period_started_on,
+                        finished_on: first_period_finished_on)
+    end
+
+    let(:second_at_school_period) do
+      FactoryBot.create(:mentor_at_school_period,
+                        teacher: destination, school:,
+                        started_on: first_period_started_on,
+                        finished_on: second_period_finished_on)
+    end
+
+    let!(:first_period) do
+      FactoryBot.create(
+        :training_period,
+        :for_mentor,
+        school_partnership:,
+        mentor_at_school_period: first_at_school_period,
+        started_on: first_period_started_on,
+        finished_on: first_period_finished_on
+      )
+    end
+
+    let!(:second_period) do
+      FactoryBot.create(
+        :training_period,
+        :for_mentor,
+        school_partnership:,
+        mentor_at_school_period: second_at_school_period,
+        started_on: second_period_started_on,
+        finished_on: second_period_finished_on
+      )
+    end
+
+    let(:first_period_started_on) { Date.new(2025, 1, 1) }
+    let(:first_period_finished_on) { Date.new(2025, 6, 30) }
+    let(:second_period_started_on) { Date.new(2025, 1, 1) }
+    let(:second_period_finished_on) { Date.new(2025, 12, 31) }
+
+    let(:successor_period) { second_period }
+    let(:periods) { [first_period, second_period] }
+    let(:provider_name) { "#{successor_period.lead_provider_name} & #{successor_period.delivery_partner_name}" }
+
+    let(:formatted_periods) do
+      [
+        { finished_on: first_period_finished_on,
+          training_programme: "provider_led",
+          contract_period: 2025,
+          provider_name:,
+          schedule: "ecf-standard-september",
+          started_on: first_period_started_on,
+          id: first_period.id, },
+        { finished_on: second_period_finished_on,
+          training_programme: "provider_led",
+          contract_period: 2025,
+          provider_name:,
+          schedule: "ecf-standard-september",
+          started_on: second_period_started_on,
+          id: second_period.id, }
+      ]
+    end
+
+    context "when the successor period is ongoing" do
+      let(:second_period_finished_on) { nil }
+
+      it "records an event with ongoing period message" do
+        freeze_time do
+          Events::Record.record_teacher_training_periods_merged!(author:, teacher:, periods:, successor_period:)
+
+          expect(Event.sole).to have_attributes(
+            event_type: "teacher_training_periods_merged",
+            teacher:,
+            training_period: successor_period,
+            metadata: { periods: formatted_periods }.as_json,
+            heading: "Rhys Ifans's training periods with #{provider_name} from 2025-01-01 were merged into a single period",
+            happened_at: Time.zone.now,
+            **author_params
+          )
+        end
+      end
+    end
+
+    context "when the successor period is finished" do
+      it "records an event with between two dates message" do
+        freeze_time do
+          Events::Record.record_teacher_training_periods_merged!(author:, teacher:, periods:, successor_period:)
+
+          expect(Event.sole).to have_attributes(
+            event_type: "teacher_training_periods_merged",
+            teacher:,
+            training_period: successor_period,
+            metadata: { periods: formatted_periods }.as_json,
+            heading: "Rhys Ifans's training periods with #{provider_name} between 2025-01-01 and 2025-12-31 were merged into a single period",
+            happened_at: Time.zone.now,
+            **author_params
+          )
+        end
+      end
+    end
+
+    context "when the successor period is school-led" do
+      let(:first_at_school_period) do
+        FactoryBot.create(:ect_at_school_period,
+                          teacher: source, school:,
+                          started_on: first_period_started_on,
+                          finished_on: first_period_finished_on)
+      end
+
+      let(:second_at_school_period) do
+        FactoryBot.create(:ect_at_school_period,
+                          teacher: destination, school:,
+                          started_on: first_period_started_on,
+                          finished_on: second_period_finished_on)
+      end
+
+      let!(:first_period) do
+        FactoryBot.create(
+          :training_period,
+          :for_ect,
+          :school_led,
+          ect_at_school_period: first_at_school_period,
+          started_on: first_period_started_on,
+          finished_on: first_period_finished_on
+        )
+      end
+
+      let!(:second_period) do
+        FactoryBot.create(
+          :training_period,
+          :for_ect,
+          :school_led,
+          ect_at_school_period: second_at_school_period,
+          started_on: second_period_started_on,
+          finished_on: second_period_finished_on
+        )
+      end
+
+      let(:formatted_periods) do
+        [
+          { finished_on: first_period_finished_on,
+            training_programme: "school_led",
+            contract_period: nil,
+            provider_name: nil,
+            schedule: nil,
+            started_on: first_period_started_on,
+            id: first_period.id, },
+          { finished_on: second_period_finished_on,
+            training_programme: "school_led",
+            contract_period: nil,
+            provider_name: nil,
+            schedule: nil,
+            started_on: second_period_started_on,
+            id: second_period.id, }
+        ]
+      end
+
+      it "records an event with school-led message" do
+        freeze_time do
+          Events::Record.record_teacher_training_periods_merged!(author:, teacher:, periods:, successor_period:)
+
+          expect(Event.sole).to have_attributes(
+            event_type: "teacher_training_periods_merged",
+            teacher:,
+            training_period: successor_period,
+            metadata: { periods: formatted_periods }.as_json,
+            heading: "Rhys Ifans's school-led training periods between 2025-01-01 and 2025-12-31 were merged into a single period",
+            happened_at: Time.zone.now,
+            **author_params
+          )
+        end
+      end
+    end
+
+    context "when the successor period has only an expression of interest" do
+      let(:framework_agreement) { FactoryBot.create(:framework_agreement, :for_year, year: 2025) }
+      let!(:first_period) do
+        FactoryBot.create(
+          :training_period,
+          :for_mentor,
+          :with_only_expression_of_interest,
+          expression_of_interest: framework_agreement,
+
+          mentor_at_school_period: first_at_school_period,
+          started_on: first_period_started_on,
+          finished_on: first_period_finished_on
+        )
+      end
+
+      let!(:second_period) do
+        FactoryBot.create(
+          :training_period,
+          :for_mentor,
+          :with_only_expression_of_interest,
+          expression_of_interest: framework_agreement,
+          mentor_at_school_period: second_at_school_period,
+          started_on: second_period_started_on,
+          finished_on: second_period_finished_on
+        )
+      end
+
+      let(:provider_name) { successor_period.expression_of_interest_lead_provider.name }
+
+      it "records an event with an expression of interest message" do
+        freeze_time do
+          Events::Record.record_teacher_training_periods_merged!(author:, teacher:, periods:, successor_period:)
+
+          expect(Event.sole).to have_attributes(
+            event_type: "teacher_training_periods_merged",
+            teacher:,
+            training_period: successor_period,
+            metadata: { periods: formatted_periods }.as_json,
+            heading: "Rhys Ifans's training periods with #{provider_name} between 2025-01-01 and 2025-12-31 were merged into a single period",
+            happened_at: Time.zone.now,
+            **author_params
+          )
+        end
+      end
+    end
+  end
+
+  describe "#record_teacher_mentorship_periods_merged!" do
+    let(:first_gias_school) { FactoryBot.create(:gias_school, :with_school, urn: "1234567", name: "Monsters College") }
+    let(:school) { first_gias_school.school }
+
+    let(:mentor) { FactoryBot.create(:mentor_at_school_period, :unfinished, teacher: mentor_teacher, school:, started_on: first_period_started_on) }
+    let(:mentor_teacher) { FactoryBot.create(:teacher, trs_first_name: "Mike", trs_last_name: "Wazowski") }
+    let(:first_mentee) { FactoryBot.create(:ect_at_school_period, school:, started_on: first_period_started_on, finished_on: first_period_finished_on) }
+    let(:second_mentee) { FactoryBot.create(:ect_at_school_period, school:, started_on: second_period_started_on, finished_on: second_period_finished_on) }
+    let(:successor_mentee) { FactoryBot.create(:ect_at_school_period, school:, started_on: first_period_started_on, finished_on: second_period_finished_on) }
+
+    let!(:first_period) do
+      FactoryBot.create(
+        :mentorship_period,
+        mentee: first_mentee,
+        mentor:,
+        started_on: first_period_started_on,
+        finished_on: first_period_finished_on
+      )
+    end
+
+    let!(:second_period) do
+      FactoryBot.create(
+        :mentorship_period,
+        mentee: second_mentee,
+        mentor:,
+        started_on: second_period_started_on,
+        finished_on: second_period_finished_on
+      )
+    end
+
+    let(:successor_period) do
+      FactoryBot.create(
+        :mentorship_period,
+        mentee: successor_mentee,
+        mentor:,
+        started_on: first_period_started_on,
+        finished_on: second_period_finished_on
+      )
+    end
+
+    let(:periods) { [first_period, second_period] }
+
+    context "when the successor period is ongoing" do
+      let(:first_period_started_on) { Date.new(2025, 1, 1) }
+      let(:first_period_finished_on) { Date.new(2025, 6, 30) }
+      let(:second_period_started_on) { Date.new(2025, 7, 1) }
+      let(:second_period_finished_on) { nil }
+
+      it "records an event with ongoing period message" do
+        freeze_time do
+          formatted_periods = [
+            { finished_on: Date.new(2025, 6, 30),
+              started_on: Date.new(2025, 1, 1),
+              id: first_period.id, },
+            { finished_on: nil,
+              started_on: Date.new(2025, 7, 1),
+              id: second_period.id, }
+          ]
+
+          Events::Record.record_teacher_mentorship_periods_merged!(author:, teacher:, periods:, successor_period:)
+
+          expect(Event.sole).to have_attributes(
+            event_type: "teacher_mentorship_periods_merged",
+            teacher:,
+            mentorship_period: successor_period,
+            metadata: { periods: formatted_periods }.as_json,
+            heading: "Rhys Ifans's mentorship period at Monsters College with Mike Wazowski merged into a single period",
+            happened_at: Time.zone.now,
+            **author_params
+          )
+        end
+      end
+    end
+
+    context "when the successor period is finished" do
+      let(:first_period_started_on) { Date.new(2025, 1, 1) }
+      let(:first_period_finished_on) { Date.new(2025, 6, 30) }
+      let(:second_period_started_on) { Date.new(2025, 7, 1) }
+      let(:second_period_finished_on) { Date.new(2025, 12, 31) }
+
+      it "records an event with between two dates message" do
+        freeze_time do
+          Events::Record.record_teacher_mentorship_periods_merged!(author:, teacher:, periods:, successor_period:)
+
+          formatted_periods = [
+            { finished_on: Date.new(2025, 6, 30),
+
+              started_on: Date.new(2025, 1, 1),
+              id: first_period.id, },
+            { finished_on: Date.new(2025, 12, 31),
+              started_on: Date.new(2025, 7, 1),
+              id: second_period.id,  }
+          ]
+
+          expect(Event.sole).to have_attributes(
+            event_type: "teacher_mentorship_periods_merged",
+            teacher:,
+            mentorship_period: successor_period,
+            metadata: { periods: formatted_periods }.as_json,
+            heading: "Rhys Ifans's mentorship period at Monsters College with Mike Wazowski merged into a single period",
+            happened_at: Time.zone.now,
+            **author_params
+          )
+        end
+      end
+    end
+  end
+
   describe "#record_teacher_schedule_assigned_to_training_period!" do
     include_context "safe_schedules"
 

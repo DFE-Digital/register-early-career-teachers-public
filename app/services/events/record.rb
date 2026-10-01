@@ -727,6 +727,49 @@ module Events
       ).record_event!
     end
 
+    def self.record_teacher_training_periods_merged!(author:, teacher:, successor_period:, periods:, happened_at: Time.zone.now)
+      event_type = :teacher_training_periods_merged
+      teacher_name = Teachers::Name.new(teacher).full_name
+
+      provider_name = if successor_period.school_led_training_programme?
+                        nil
+                      elsif successor_period.school_partnership.present?
+                        "#{successor_period.lead_provider_name} & #{successor_period.delivery_partner_name}"
+                      else
+                        successor_period.expression_of_interest_lead_provider&.name
+                      end
+
+      training_period_description = if successor_period.school_led_training_programme?
+                                      "school-led training periods"
+                                    else
+                                      "training periods with #{provider_name}"
+                                    end
+
+      formatted_periods = periods.collect do |period|
+        {
+          training_programme: period.training_programme,
+          contract_period: period.schedule&.contract_period_year,
+          schedule: period.schedule&.identifier,
+          provider_name:,
+          started_on: period.started_on,
+          finished_on: period.finished_on,
+          id: period.id,
+        }
+      end
+
+      time_period = if successor_period.unfinished?
+                      "from #{successor_period.started_on}"
+                    else
+                      "between #{successor_period.started_on} and #{successor_period.finished_on}"
+                    end
+
+      heading = "#{teacher_name}'s #{training_period_description} #{time_period} were merged into a single period"
+
+      metadata = { periods: formatted_periods }
+
+      new(event_type:, author:, heading:, teacher:, training_period: successor_period, metadata:, happened_at:).record_event!
+    end
+
     def self.record_teacher_schedule_assigned_to_training_period!(author:, training_period:, teacher:, schedule:, happened_at: Time.zone.now)
       event_type = :teacher_schedule_assigned_to_training_period
       teacher_name = Teachers::Name.new(teacher).full_name
