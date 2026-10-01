@@ -1,7 +1,7 @@
 module API
   module Hello
     class DocumentationsController < ApplicationController
-      layout "api/documentation/training/api_docs"
+      layout "api/documentation/swagger"
 
       def show
       end

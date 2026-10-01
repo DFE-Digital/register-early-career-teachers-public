@@ -3,7 +3,7 @@ module API
     module Training
       module V3
         class DocumentationController < ApplicationController
-          layout "api/documentation/training/api_docs"
+          layout "api/documentation/swagger"
 
           def index
           end

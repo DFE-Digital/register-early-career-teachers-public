@@ -19,7 +19,7 @@ RSpec.describe "API documentation", type: :request do
     it { expect(response.body).to include("Authentication") }
     it { expect(response.body).to include("Training API") }
     it { expect(response.body).to include("Induction API") }
-    it { expect(response.body).to include("Hello World API") }
+    it { expect(response.body).to include("Hello API") }
 
     context "when enable_apis_under_development is false" do
       let(:enable_apis_under_development) { false }
