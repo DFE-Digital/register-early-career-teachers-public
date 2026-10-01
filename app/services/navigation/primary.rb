@@ -72,7 +72,7 @@ module Navigation
         api_documentation: [
           { text: "Home", href: "/api/docs" },
           { text: "Authentication", href: "#authentication", active_when: "#authentication" },
-          { text: "Hello World API", href: "#hello-world", active_when: "#hello-world" },
+          { text: "Hello API", href: api_hello_documentation_path, active_when: api_hello_documentation_path },
           { text: "Training API", href: api_docs_training_guidance_path, active_when: api_docs_training_guidance_path },
           { text: "Induction API", href: "#induction", active_when: "#induction" },
         ]
