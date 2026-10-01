@@ -10,14 +10,24 @@ RSpec.describe Teachers::MergeTRN::Overlapping do
 
   let(:destination) { FactoryBot.create(:teacher, trn: destination_trn) }
   let(:school) { FactoryBot.create(:school) }
+
   let(:source_trn) { "654321" }
   let(:destination_trn) { "123456" }
+
+  let(:source_attrs) { { teacher: source, school: } }
+  let(:destination_attrs) { { teacher: destination, school: } }
+
+  let(:other_school) { FactoryBot.create(:school) }
+  let(:other_source_attrs) { { teacher: source, school: other_school } }
+  let(:other_destination_attrs) { { teacher: destination, school: other_school } }
+
+  let(:tags) { [] }
 
   let(:first_period) do
     FactoryBot.create(
       period_type,
-      teacher: source,
-      school:,
+      *tags,
+      **source_attrs,
       started_on: first_period_started_on,
       finished_on: first_period_finished_on
     )
@@ -26,8 +36,8 @@ RSpec.describe Teachers::MergeTRN::Overlapping do
   let(:second_period) do
     FactoryBot.create(
       period_type,
-      teacher: destination,
-      school:,
+      *tags,
+      **destination_attrs,
       started_on: second_period_started_on,
       finished_on: second_period_finished_on
     )
@@ -35,8 +45,8 @@ RSpec.describe Teachers::MergeTRN::Overlapping do
 
   let(:third_period) do
     FactoryBot.create(period_type,
-                      teacher: source,
-                      school:,
+                      *tags,
+                      **source_attrs,
                       started_on: third_period_started_on,
                       finished_on: third_period_finished_on)
   end
@@ -44,8 +54,8 @@ RSpec.describe Teachers::MergeTRN::Overlapping do
   let(:fourth_period) do
     FactoryBot.create(
       period_type,
-      teacher: destination,
-      school:,
+      *tags,
+      **destination_attrs,
       started_on: fourth_period_started_on,
       finished_on: fourth_period_finished_on
     )
@@ -53,10 +63,10 @@ RSpec.describe Teachers::MergeTRN::Overlapping do
 
   shared_examples "overlapping periods" do
     let(:periods) { [first_period, second_period] }
-    let(:third_period_started_on) { Date.new(2020, 1, 1) }
-    let(:third_period_finished_on) { Date.new(2020, 1, 2) }
-    let(:fourth_period_started_on) { Date.new(2020, 1, 1) }
-    let(:fourth_period_finished_on) { Date.new(2020, 1, 2) }
+    let(:third_period_started_on) { first_period_started_on }
+    let(:third_period_finished_on) { first_period_finished_on }
+    let(:fourth_period_started_on) { second_period_started_on }
+    let(:fourth_period_finished_on) { second_period_finished_on }
 
     context "when two periods overlap" do
       let(:first_period_started_on) { Date.new(2025, 1, 1) }
@@ -154,21 +164,19 @@ RSpec.describe Teachers::MergeTRN::Overlapping do
       let(:fourth_period_started_on) { Date.new(2025, 9, 1) }
       let(:fourth_period_finished_on) { Date.new(2025, 12, 31) }
 
-      let(:other_school) { FactoryBot.create(:school) }
-
-      let!(:third_period) do
+      let(:third_period) do
         FactoryBot.create(period_type,
-                          teacher: source,
-                          school: other_school,
+                          *tags,
+                          **other_source_attrs,
                           started_on: third_period_started_on,
                           finished_on: third_period_finished_on)
       end
 
-      let!(:fourth_period) do
+      let(:fourth_period) do
         FactoryBot.create(
           period_type,
-          teacher: destination,
-          school: other_school,
+          *tags,
+          **other_destination_attrs,
           started_on: fourth_period_started_on,
           finished_on: fourth_period_finished_on
         )
@@ -282,6 +290,51 @@ RSpec.describe Teachers::MergeTRN::Overlapping do
 
       it_behaves_like "overlapping periods"
       it_behaves_like "overlapping at_school periods"
+    end
+
+    context "training_periods" do
+      let(:period_type) { :training_period }
+      let(:tags) { [:for_mentor] }
+
+      let(:source_period) do
+        FactoryBot.create(:mentor_at_school_period,
+                          teacher: source,
+                          school:,
+                          started_on: first_period_started_on,
+                          finished_on: third_period_finished_on)
+      end
+
+      let(:destination_period) do
+        FactoryBot.create(:mentor_at_school_period,
+                          teacher: destination,
+                          school:,
+                          started_on: second_period_started_on,
+                          finished_on: fourth_period_finished_on)
+      end
+
+      let(:source_attrs) { { mentor_at_school_period: source_period } }
+      let(:destination_attrs) { { mentor_at_school_period: destination_period } }
+
+      let(:other_source_period) do
+        FactoryBot.create(:mentor_at_school_period,
+                          teacher: source,
+                          school: other_school,
+                          started_on: third_period_started_on,
+                          finished_on: third_period_finished_on)
+      end
+
+      let(:other_destination_period) do
+        FactoryBot.create(:mentor_at_school_period,
+                          teacher: destination,
+                          school: other_school,
+                          started_on: fourth_period_started_on,
+                          finished_on: fourth_period_finished_on)
+      end
+
+      let(:other_source_attrs) { { mentor_at_school_period: other_source_period } }
+      let(:other_destination_attrs) { { mentor_at_school_period: other_destination_period } }
+
+      it_behaves_like "overlapping periods"
     end
   end
 

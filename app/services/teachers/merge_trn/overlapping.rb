@@ -37,13 +37,6 @@ module Teachers
         %i[mentor_at_school_period ect_at_school_period].include?(period_type)
       end
 
-      def periods_belong_to_one_teacher?
-        periods.distinct
-          .limit(2)
-          .pluck(:teacher_id)
-          .one?
-      end
-
       def group_periods
         at_school_period? ? group_by_school : group_by_order
       end
