@@ -59,6 +59,11 @@ runs:
       shell: bash
       run: make install-konduit
 
+    - name: Install postgres client
+      uses: DFE-Digital/github-actions/install-postgres-client@master
+      with:
+        version: "18"
+
     - name: Backup database
       shell: bash
       run: |
