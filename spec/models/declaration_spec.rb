@@ -1,13 +1,10 @@
 describe Declaration do
   describe "declarative updates" do
-    include MentorshipPeriodHelpers
-
     def will_change_attribute(attribute_to_change:, new_value:)
       FactoryBot.create(:statement, id: new_value) if attribute_to_change.in?(%i[payment_statement_id clawback_statement_id])
 
       if attribute_to_change == :mentorship_period_id
-        mentee_school_partnership = FactoryBot.create(:school_partnership)
-        create_mentorship_period_for(mentee_school_partnership:).tap { it.update!(id: new_value) }
+        FactoryBot.create(:mentorship_period, id: new_value)
       elsif attribute_to_change == :training_period_id
         FactoryBot.create(:training_period, id: new_value)
       end
