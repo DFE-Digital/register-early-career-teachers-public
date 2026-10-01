@@ -20,7 +20,20 @@ The process is shown in this diagram which continues from the
                   no_visited_state: true) %> step.
 </p>
 
-<%= image_tag("documentation/authorisation/exchange-code-for-token.png", width: 800, alt: "Exchange authorisation code for access token sequence diagram") %>
+<%#
+  Mermaid code for the image
+
+sequenceDiagram
+    actor User as Client
+    participant Vendor as Application
+    participant RIAB as Authorisation API
+
+    Vendor->>RIAB: POST /oauth/token
+    RIAB->>RIAB: Validate request and generate token
+    RIAB-->>Vendor: 200 OK with token payload
+%>
+
+<%= image_tag("documentation/authorisation/exchange-code-for-token.png", width: "700px", alt: "Exchange authorisation code for access token sequence diagram") %>
 
 <p class="govuk-body">
 When you receive the authorisation code, you must exchange this for an access token <strong>within 10 minutes</strong>.

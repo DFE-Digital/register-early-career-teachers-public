@@ -17,7 +17,31 @@ sidebar_position: 2
 The complete process of obtaining an access token is illustrated by this sequence diagram
 </p>
 
-<%= image_tag("documentation/authorisation/overview.png", width: 800, alt: "Getting an OAuth Token overview sequence diagram") %>
+<%#
+  Mermaid code for the image
+
+sequenceDiagram
+    actor User as Client
+    participant Vendor as Application
+    participant RIAB as Authorisation API
+
+    User->>Vendor: Initiates connection
+    Vendor->>Vendor: Generate code-challenge
+    Vendor-->>User: Redirect to /oauth/authorize
+    User->>RIAB: GET /oauth/authorize
+    Note over User,RIAB: [Client not signed-in] sign-in via DfE Sign-in and then continues
+    RIAB->>RIAB: Validate request
+    RIAB-->>User: Show authorisation request details
+    User->>RIAB: Approve connection
+    RIAB-->>User: Redirect to vendor callback
+    User->>Vendor: GET /callback
+    Vendor->>Vendor: Validate state
+    Vendor->>RIAB: POST /oauth/token
+    RIAB->>RIAB: Validate request and generate token
+    RIAB-->>Vendor: 200 OK with token payload
+%>
+
+<%= image_tag("documentation/authorisation/overview.png", width: "750px", alt: "Getting an OAuth Token overview sequence diagram") %>
 
 <p class="govuk-body">
 The process can be broken down into 3 steps:
