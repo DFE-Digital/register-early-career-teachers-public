@@ -170,6 +170,11 @@ RSpec.describe "Declarations API", :with_metadata, type: :request do
       let(:resource) { travel_to(3.days.from_now) { create_resource(framework_agreement:, declaration_trait: :paid) } }
       let(:service) { API::Declarations::Clawback }
 
+      before do
+        # Ensure a future dated output fee statement exists for the clawback to appear on.
+        FactoryBot.create(:statement, :open, :output_fee, deadline_date: 1.month.from_now, framework_agreement:)
+      end
+
       it_behaves_like "a token authenticated endpoint", :put
       it_behaves_like "an API update endpoint", accepts_request_body: false
       it_behaves_like "an endpoint that refreshes metadata", :put

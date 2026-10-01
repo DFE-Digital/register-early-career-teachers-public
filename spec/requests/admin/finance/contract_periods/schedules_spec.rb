@@ -35,7 +35,10 @@ RSpec.describe "Admin finance schedules", type: :request do
       before do
         FactoryBot.create(:schedule, identifier: "ecf-standard-january", contract_period:)
         FactoryBot.create(:schedule, identifier: "ecf-standard-april", contract_period:)
-        FactoryBot.create(:schedule, identifier: "ecf-extended-january")
+
+        other_contract_period = FactoryBot.create(:contract_period, year: contract_period.year + 1)
+        FactoryBot.create(:schedule, identifier: "ecf-extended-january", contract_period: other_contract_period)
+
         get index_path
       end
 
