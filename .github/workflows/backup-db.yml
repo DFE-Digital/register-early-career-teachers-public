@@ -111,9 +111,10 @@ jobs:
           echo "BACKUP_FILE=${BACKUP_FILE}" >> $GITHUB_ENV
 
       - name: Backup ${{ env.DEPLOY_ENV }} postgres
-        uses: DFE-Digital/github-actions/backup-postgres@master
+        uses: cpjmcquillan/github-actions/backup-postgres@connor/backup-postgres-with-version
         with:
           storage-account: ${{ env.STORAGE_ACCOUNT_NAME }}
+          postgres-client-version: "18"
           resource-group: ${{ env.RESOURCE_GROUP_NAME }}
           app-name: ${{ env.APP_NAME }}
           namespace: ${{ env.NAMESPACE }}
