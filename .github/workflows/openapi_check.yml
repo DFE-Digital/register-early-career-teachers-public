@@ -1,4 +1,4 @@
-name: "Lead Provider OpenAPI Check"
+name: "OpenAPI Check"
 on:
   workflow_call:
     inputs:
@@ -63,10 +63,7 @@ jobs:
         run: npm install -g @redocly/cli@latest
 
       - name: Run linting
-        run: redocly lint public/api/docs/v3/swagger.yaml --format=github-actions
-
-      - name: Run hello linting
-        run: redocly lint public/api/docs/hello/swagger.yaml --format=github-actions
+        run: redocly lint public/api/docs/*/swagger.yaml --format=github-actions
 
       - name: Generate API doc checksums (original)
         run: |
