@@ -131,7 +131,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::CurrentAc
       expect {
         service_call
       }.to raise_error(
-        described_class::UnsupportedTrainingPeriodError,
+        Admin::Teachers::TrainingPeriods::ChangeContractPeriod::UnsupportedTrainingPeriodError,
         "Contract period changes are only supported for the current active training period"
       )
     end
@@ -144,7 +144,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::CurrentAc
       expect {
         service_call
       }.to raise_error(
-        described_class::ScheduleNotFoundError,
+        Admin::Teachers::TrainingPeriods::ChangeContractPeriod::ScheduleNotFoundError,
         "No equivalent schedule found for #{schedule.identifier} in contract period #{target_contract_period.year}"
       )
     end
