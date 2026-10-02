@@ -353,7 +353,7 @@
   - id
   - recruitment_target
   - uplift_fee_per_declaration
-  - uplift_target_ratio
+  - uplift_target_proportion
   - monthly_service_fee
   - setup_fee
   - created_at
@@ -364,8 +364,8 @@
   - banded_fee_structure_id
   - band_id
   - fee_per_declaration
-  - output_fee_ratio
-  - service_fee_ratio
+  - output_fee_proportion
+  - service_fee_proportion
   - created_at
   - updated_at
   :framework_agreement_bands:

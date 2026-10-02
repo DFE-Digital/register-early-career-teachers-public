@@ -109,8 +109,8 @@ private
       new_fee_structure.band_terms.build(
         band:,
         fee_per_declaration: previous_term.fee_per_declaration,
-        output_fee_ratio: previous_term.output_fee_ratio,
-        service_fee_ratio: previous_term.service_fee_ratio
+        output_fee_proportion: previous_term.output_fee_proportion,
+        service_fee_proportion: previous_term.service_fee_proportion
       )
     end
 

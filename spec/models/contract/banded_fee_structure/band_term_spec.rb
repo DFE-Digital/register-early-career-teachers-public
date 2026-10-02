@@ -8,13 +8,13 @@ RSpec.describe Contract::BandedFeeStructure::BandTerm, type: :model do
     it { is_expected.to validate_presence_of(:fee_per_declaration).with_message("Fee per declaration is required") }
     it { is_expected.to validate_numericality_of(:fee_per_declaration).is_greater_than(0).with_message("Fee per declaration must be a number greater than zero") }
 
-    describe "service_fee_ratio" do
+    describe "service_fee_proportion" do
       subject(:band_term) { FactoryBot.build_stubbed(:contract_banded_fee_structure_band_term) }
 
       it "is required once an output fee has been set" do
-        band_term.service_fee_ratio = nil
+        band_term.service_fee_proportion = nil
         expect(band_term).to be_invalid
-        expect(band_term.errors[:service_fee_ratio]).to eq(["Service fee ratio is required"])
+        expect(band_term.errors[:service_fee_proportion]).to eq(["Service fee proportion is required"])
       end
     end
 
@@ -35,30 +35,30 @@ RSpec.describe Contract::BandedFeeStructure::BandTerm, type: :model do
       end
     end
 
-    describe "output_fee_ratio + service_fee_ratio" do
+    describe "output_fee_proportion + service_fee_proportion" do
       subject(:band_term) do
         FactoryBot.build_stubbed(:contract_banded_fee_structure_band_term,
-                                 output_fee_ratio:,
-                                 service_fee_ratio:)
+                                 output_fee_proportion:,
+                                 service_fee_proportion:)
       end
 
       context "when the sum exceeds 1.0" do
-        let(:output_fee_ratio) { 0.60 }
-        let(:service_fee_ratio) { 0.41 }
+        let(:output_fee_proportion) { 0.60 }
+        let(:service_fee_proportion) { 0.41 }
 
         it { is_expected.to be_invalid }
       end
 
       context "when the sum is less than 1.0" do
-        let(:output_fee_ratio) { 0.60 }
-        let(:service_fee_ratio) { 0.39 }
+        let(:output_fee_proportion) { 0.60 }
+        let(:service_fee_proportion) { 0.39 }
 
         it { is_expected.to be_invalid }
       end
 
       context "when the sum is equal to 1.0" do
-        let(:output_fee_ratio) { 0.60 }
-        let(:service_fee_ratio) { 0.40 }
+        let(:output_fee_proportion) { 0.60 }
+        let(:service_fee_proportion) { 0.40 }
 
         it { is_expected.to be_valid }
       end
@@ -121,30 +121,30 @@ RSpec.describe Contract::BandedFeeStructure::BandTerm, type: :model do
   describe "percentages" do
     subject(:band_term) do
       FactoryBot.build(:contract_banded_fee_structure_band_term,
-                       output_fee_ratio: 0.123,
-                       service_fee_ratio: 0.456)
+                       output_fee_proportion: 0.123,
+                       service_fee_proportion: 0.456)
     end
 
     describe "#output_fee_percentage" do
-      it "converts and rounds output_fee_ratio" do
+      it "converts and rounds output_fee_proportion" do
         expect(band_term.output_fee_percentage).to eq(12)
       end
     end
 
     describe "#output_fee_percentage=" do
-      it "overrides and rounds output_fee_ratio and derives service_fee_ratio" do
+      it "overrides and rounds output_fee_proportion and derives service_fee_proportion" do
         band_term.output_fee_percentage = 34.56
-        expect(band_term.output_fee_ratio.to_f).to eq(0.35)
-        expect(band_term.service_fee_ratio.to_f).to eq(0.65)
+        expect(band_term.output_fee_proportion.to_f).to eq(0.35)
+        expect(band_term.service_fee_proportion.to_f).to eq(0.65)
 
         band_term.output_fee_percentage = nil
-        expect(band_term.output_fee_ratio).to be_nil
-        expect(band_term.service_fee_ratio).to be_nil
+        expect(band_term.output_fee_proportion).to be_nil
+        expect(band_term.service_fee_proportion).to be_nil
       end
     end
 
     describe "#service_fee_percentage" do
-      it "converts and rounds service_fee_ratio" do
+      it "converts and rounds service_fee_proportion" do
         expect(band_term.service_fee_percentage).to eq(46)
       end
     end

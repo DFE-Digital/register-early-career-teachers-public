@@ -4,7 +4,7 @@ FactoryBot.define do
     association :band, factory: :framework_agreement_band
 
     fee_per_declaration { Faker::Number.between(from: 20, to: 200) }
-    output_fee_ratio { 0.75 }
-    service_fee_ratio { 0.25 }
+    output_fee_proportion { 0.75 }
+    service_fee_proportion { 0.25 }
   end
 end

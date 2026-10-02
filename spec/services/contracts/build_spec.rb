@@ -48,8 +48,8 @@ describe Contracts::Build do
         existing_band_terms.each_with_index do |existing_band_term, i|
           expect(built_band_terms[i]).to have_attributes(
             fee_per_declaration: existing_band_term.fee_per_declaration,
-            output_fee_ratio: existing_band_term.output_fee_ratio,
-            service_fee_ratio: existing_band_term.service_fee_ratio
+            output_fee_proportion: existing_band_term.output_fee_proportion,
+            service_fee_proportion: existing_band_term.service_fee_proportion
           )
         end
       end

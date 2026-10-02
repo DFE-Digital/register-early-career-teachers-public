@@ -6,8 +6,8 @@ erDiagram
     integer banded_fee_structure_id
     datetime created_at
     decimal fee_per_declaration
-    decimal output_fee_ratio
-    decimal service_fee_ratio
+    decimal output_fee_proportion
+    decimal service_fee_proportion
     datetime updated_at
   }
   Contract_BandedFeeStructure_BandTerm }o--|| Contract_BandedFeeStructure : belongs_to
@@ -39,7 +39,7 @@ erDiagram
     decimal setup_fee
     datetime updated_at
     decimal uplift_fee_per_declaration
-    decimal uplift_target_ratio
+    decimal uplift_target_proportion
   }
   Contract_BandedFeeStructure }o--|| Contract : belongs_to
   User {

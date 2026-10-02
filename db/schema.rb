@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_23_091136) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_02_100000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -203,8 +203,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_091136) do
     t.bigint "banded_fee_structure_id", null: false
     t.datetime "created_at", null: false
     t.decimal "fee_per_declaration", precision: 12, scale: 2, null: false
-    t.decimal "output_fee_ratio", precision: 3, scale: 2, null: false
-    t.decimal "service_fee_ratio", precision: 3, scale: 2, null: false
+    t.decimal "output_fee_proportion", precision: 3, scale: 2, null: false
+    t.decimal "service_fee_proportion", precision: 3, scale: 2, null: false
     t.datetime "updated_at", null: false
     t.index ["band_id"], name: "index_contract_banded_fee_structure_band_terms_on_band_id"
     t.index ["banded_fee_structure_id", "band_id"], name: "idx_on_banded_fee_structure_id_band_id_04f5837f9d", unique: true
@@ -219,7 +219,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_091136) do
     t.decimal "setup_fee", precision: 12, scale: 2, null: false
     t.datetime "updated_at", null: false
     t.decimal "uplift_fee_per_declaration", precision: 12, scale: 2, null: false
-    t.decimal "uplift_target_ratio", precision: 5, scale: 4
+    t.decimal "uplift_target_proportion", precision: 5, scale: 4
     t.index ["contract_id"], name: "index_banded_fee_structures_on_contract_id_unique_not_null", unique: true, where: "(contract_id IS NOT NULL)"
     t.index ["contract_id"], name: "index_contract_banded_fee_structures_on_contract_id"
   end
