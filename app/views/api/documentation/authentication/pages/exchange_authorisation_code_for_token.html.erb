@@ -1,0 +1,201 @@
+<%#
+---
+title: Exchange authorisation code for access token
+sidebar_position: 5
+---
+%>
+<%
+  page_data(
+    title: "Exchange authorisation code for access token",
+    error: false,
+    caption: "API Developer documentation",
+    caption_size: 'l'
+  )
+%>
+
+<p class="govuk-body">
+The process is shown in this diagram which continues from the
+<%= govuk_link_to("receive authorisation results",
+                  api_documentation_authentication_page_path("receive-authorisation-results"),
+                  no_visited_state: true) %> step.
+</p>
+
+<%#
+  Mermaid code for the image
+
+sequenceDiagram
+    actor User as Client
+    participant Vendor as Application
+    participant RIAB as Authorisation API
+
+    Vendor->>RIAB: POST /oauth/token
+    RIAB->>RIAB: Validate request and generate token
+    RIAB-->>Vendor: 200 OK with token payload
+%>
+
+<%= image_tag("documentation/authorisation/exchange-code-for-token.png", width: "700px", alt: "Exchange authorisation code for access token sequence diagram") %>
+
+<p class="govuk-body">
+When you receive the authorisation code, you must exchange this for an access token <strong>within 10 minutes</strong>.
+</p>
+
+<p class="govuk-body">
+Do this via a HTTP POST to our token endpoint.
+</p>
+
+<p class="govuk-body">
+You must authenticate the request with <%= govuk_link_to("HTTP Basic Authentication", "https://www.rfc-editor.org/info/rfc7617/") %>
+using your client ID and secret.  This is added as a HTTP header in which you Base64 encode your credentials in the form <code>client_id:client_secret</code>.
+</p>
+
+<p class="govuk-body">
+For example, if your client ID was <code>client123</code> and your secret was <code>supersecretvalue</code> then your Basic Authentication header would be this:
+
+<pre>
+<code>
+Authorization: Basic Y2xpZW50MTIzOnN1cGVyc2VjcmV0dmFsdWU=
+</code>
+</pre>
+
+</p>
+
+<%= govuk_warning_text(text: "Do not include your client ID or client secret in the body of the request.") %>
+
+
+<p class="govuk-body">
+Include the other parameters in the request body, not as additional request headers.
+</p>
+
+<h4 class="govuk-heading-s">3.1 Example request</h4>
+
+<pre>
+<code>
+  curl -X POST <%= @api_base_url %>/oauth/token \
+  --user "client123:supersecretvalue" \
+  -H "content-type:application/x-www-form-urlencoded" \
+  --data \
+  "grant_type=authorization_code\
+  &redirect_uri=[YOUR-REDIRECT-URI]\
+  &code=[AUTHORIZATION-CODE] \
+  &code_verifier=[CODE-VERIFIER]"
+</code>
+</pre>
+
+<%= govuk_table do |table|
+  table.with_head do |head|
+    head.with_row do |row|
+      row.with_cell(text: "Parameter")
+      row.with_cell(text: "Description")
+    end
+  end
+  table.with_body do |body|
+    body.with_row do |row|
+      row.with_cell(text: "grant_type")
+      row.with_cell(text: "The OAuth 2.0 grant type. Currently the only acceptable value is <code>authorization_code</code>".html_safe)
+    end
+    body.with_row do |row|
+      row.with_cell(text: "redirect_uri")
+      row.with_cell(text: "The same redirect URI you used to call the authorisation endpoint.")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "code")
+      row.with_cell(text: "The authorisation code you received from us in the previous step")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "code_verifier")
+      row.with_cell(text: "Your #{govuk_link_to("PKCE", "https://oauth.net/2/pkce/")} <code>code_verifier</code>".html_safe)
+    end
+  end
+end %>
+
+<p class="govuk-body">
+The response contains the access token as a JSON payload.
+The access token is the equivalent of your password to access the API as the organisation that has authorised the request.  As such you should store it securely.
+</p>
+
+<h4 class="govuk-heading-s">3.2 Example response</h4>
+
+<p class="govuk-body">
+A successful response will return HTTP status code <code>201</code> to indicate your token was created and a JSON payload containing the access token
+</p>
+
+<pre>
+<code>
+{
+  "access_token": "QGbWG8KckncuwwD4uYXgWxF4HQvuPmrmUqKgkpQP",
+  "token_type": "Bearer",
+  "expires_in": 31536000
+}
+</code>
+</pre>
+
+<h4 class="govuk-heading-s">3.3 Error responses</h4>
+
+<p class="govuk-body">
+An unsuccessful request will a HTTP status error code and a JSON payload containing an <code>error</code> value, for example:
+</p>
+
+<pre>
+<code>
+{
+  error: "invalid_grant"
+}
+</code>
+</pre>
+
+<%= govuk_table do |table|
+  table.with_head do |head|
+    head.with_row do |row|
+      row.with_cell(text: "Error scenario")
+      row.with_cell(text: "HTTP status")
+      row.with_cell(text: "Error")
+    end
+  end
+  table.with_body do |body|
+    body.with_row do |row|
+      row.with_cell(text: "Client ID or client secret invalid")
+      row.with_cell(text: "401 (Unauthorized)")
+      row.with_cell(text: "invalid_client")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "Grant type is missing")
+      row.with_cell(text: "400 (Bad Request)")
+      row.with_cell(text: "invalid_request")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "Grant type is invalid")
+      row.with_cell(text: "400 (Bad Request)")
+      row.with_cell(text: "unsupported_grant_type")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "Redirect UI is missing")
+      row.with_cell(text: "400 (Bad Request)")
+      row.with_cell(text: "invalid_grant")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "Redirect UI is invalid")
+      row.with_cell(text: "400 (Bad Request)")
+      row.with_cell(text: "invalid_grant")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "Code is missing")
+      row.with_cell(text: "400 (Bad Request)")
+      row.with_cell(text: "invalid_grant")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "Code is invalid")
+      row.with_cell(text: "400 (Bad Request)")
+      row.with_cell(text: "invalid_grant")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "Code verifier is missing")
+      row.with_cell(text: "400 (Bad Request)")
+      row.with_cell(text: "invalid_grant")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "Code verifier is invalid")
+      row.with_cell(text: "400 (Bad Request)")
+      row.with_cell(text: "invalid_grant")
+    end
+  end
+end %>

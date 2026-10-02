@@ -1,0 +1,35 @@
+<%#
+---
+title: Calling the API
+sidebar_position: 6
+---
+%>
+<%
+  page_data(
+    title: "Calling the API",
+    error: false,
+    caption: "API Developer documentation",
+    caption_size: 'l'
+  )
+%>
+
+<p class="govuk-body">
+You can now call an API using the <code>access_token</code> we issued. Do this with an authorisation header containing this <code>access_token</code> as an OAuth 2.0 Bearer Token 
+</p>
+
+<h3 class="govuk-heading-s">Example request</h3>
+
+<pre>
+<code>
+curl -X GET <%= @api_base_url %>/hello/user \
+-H "Accept: application/json" \
+-H "Authorization: Bearer [ACCESS-TOKEN]"
+</code>
+</pre>
+
+<%= govuk_notification_banner(title_text: "Note") do %>
+  <p>
+defer this section until we have the <code>/hello</code> API to reference
+  </p>
+<% end %>
+

@@ -1,0 +1,81 @@
+<%#
+---
+title: How authentication works
+sidebar_position: 0
+---
+%>
+<%
+  page_data(
+    title: "Authentication",
+    error: false,
+    caption: "API Developer documentation",
+    caption_size: 'l'
+  )
+%>
+
+<h2 class="govuk-heading-m">How authentication works</h2>
+
+<p class="govuk-body">
+We use the open standard <%= govuk_link_to("OAuth 2.0", "https://oauth.net/2/") %> with the <%= govuk_link_to("Authorization Code Grant", "https://oauth.net/2/grant-types/authorization-code/") %>. This standard lets your users give your application permission to interact with us without sharing their password.
+</p>
+
+<p class="govuk-body">
+We use <%= govuk_link_to("PKCE", "https://oauth.net/2/pkce/") %>, in order to prevent code injection and CSRF attacks in the Authorization Code flow.
+</p>
+
+<p class="govuk-body">
+A user from each organisation you work with <strong>must</strong> authorise the use of your application before we can grant you a token to access the API on their behalf.
+</p>
+
+<h3 class="govuk-heading-s">PKCE code-verifier and code-challenge</h3>
+
+<p class="govuk-body">
+PKCE works by having a random secret called a <code>code verifier</code>, and a <code>code challenge</code> that is derived from it.
+You send the <code>code challenge</code> with the authorization request, and send the <code>code verifier</code> when exchanging the code for a token. This ensures only the application that started the flow can complete it.
+</p>
+
+<p class="govuk-body">
+You can optionally include a <code>state</code> value.  This is a value you can use to maintain a state between the request and the callback.
+If you include a <code>state</code> it will be returned to you in the callback after the client approves (or denies) the connection request.
+</p>
+
+<h3 class="govuk-heading-s">Access token</h3>
+
+<p class="govuk-body">
+We will return a token for each organisation that authorises your application that you should keep securely.
+</p>
+
+<p class="govuk-body">
+The token is valid for <strong>1 year</strong> from date of issue. When the token expires, you can get a new one by going through the authorisation process again. We do not support refresh tokens.
+</p>
+
+<h3 class="govuk-heading-s">Credentials</h3>
+
+<p class="govuk-body">
+Your credentials are your client ID and your client secret.
+</p>
+
+<p class="govuk-body">
+Credentials are used:
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>to identify your application during each step of an OAuth 2.0 journey</li>
+  <li>when you test your application with sandbox APIs</li>
+</ul>
+
+<h4 class="govuk-heading-s">Client ID</h4>
+
+<p class="govuk-body">
+Your client ID is a unique identifier we create for your application when we add you to the service.
+</p>
+
+<h4 class="govuk-heading-s">Client secret</h4>
+
+<p class="govuk-body">
+Client secrets are unique passphrases used to authenticate your application. They are known only to your application and the authorising server.
+</p>
+
+<p class="govuk-body">
+The client secret is the equivalent of a password and should be stored securely to reduce the chance of it being compromised.
+</p>
+

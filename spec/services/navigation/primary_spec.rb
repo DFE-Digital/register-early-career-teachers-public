@@ -188,7 +188,7 @@ describe Navigation::Primary, type: :component do
             expect(subject).to eq(
               [
                 { text: "Home", href: "/api/docs" },
-                { text: "Authentication", href: "#authentication", active_when: "#authentication" },
+                { text: "Authentication", href: "/api/docs/authentication", active_when: "/api/docs/authentication" },
                 { text: "Hello API", href: "/api/docs/hello", active_when: "/api/docs/hello" },
                 { text: "Training API", href: "/api/docs/training/guidance", active_when: "/api/docs/training/guidance" },
                 { text: "Induction API", href: "#induction", active_when: "#induction" },

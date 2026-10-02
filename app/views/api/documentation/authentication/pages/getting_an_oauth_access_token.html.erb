@@ -1,0 +1,66 @@
+<%#
+---
+title: Getting an OAuth 2.0 access token
+sidebar_position: 2
+---
+%>
+<%
+  page_data(
+    title: "Getting an OAuth 2.0 access token",
+    error: false,
+    caption: "API Developer documentation",
+    caption_size: 'l'
+  )
+%>
+
+<p class="govuk-body">
+The complete process of obtaining an access token is illustrated by this sequence diagram
+</p>
+
+<%#
+  Mermaid code for the image
+
+sequenceDiagram
+    actor User as Client
+    participant Vendor as Application
+    participant RIAB as Authorisation API
+
+    User->>Vendor: Initiates connection
+    Vendor->>Vendor: Generate code-challenge
+    Vendor-->>User: Redirect to /oauth/authorize
+    User->>RIAB: GET /oauth/authorize
+    Note over User,RIAB: [Client not signed-in] sign-in via DfE Sign-in and then continues
+    RIAB->>RIAB: Validate request
+    RIAB-->>User: Show authorisation request details
+    User->>RIAB: Approve connection
+    RIAB-->>User: Redirect to vendor callback
+    User->>Vendor: GET /callback
+    Vendor->>Vendor: Validate state
+    Vendor->>RIAB: POST /oauth/token
+    RIAB->>RIAB: Validate request and generate token
+    RIAB-->>Vendor: 200 OK with token payload
+%>
+
+<%= image_tag("documentation/authorisation/overview.png", width: "750px", alt: "Getting an OAuth Token overview sequence diagram") %>
+
+<p class="govuk-body">
+The process can be broken down into 3 steps:
+</p>
+<ol class="govuk-list govuk-list--number">
+  <li>
+    <%= govuk_link_to("Request authorisation",
+                      api_documentation_authentication_page_path("request-authorisation"),
+                      no_visited_state: true) %>
+  </li>
+  <li>
+    <%= govuk_link_to("Receive authorisation results",
+                      api_documentation_authentication_page_path("receive-authorisation-results"),
+                      no_visited_state: true) %>
+  </li>
+  <li>
+    <%= govuk_link_to("Exchange authorisation code for access token",
+                      api_documentation_authentication_page_path("exchange-authorisation-code-for-token"),
+                      no_visited_state: true) %>
+  </li>
+</ol>
+

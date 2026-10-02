@@ -1,0 +1,122 @@
+<%#
+---
+title: Request authorisation
+sidebar_position: 3
+---
+%>
+<%
+  page_data(
+    title: "Request authorisation",
+    error: false,
+    caption: "API Developer documentation",
+    caption_size: 'l'
+  )
+%>
+
+<ol class="govuk-list govuk-list--number">
+  <li>Send your user to our authorise endpoint</li>
+  <li>The user is taken through the DfE Sign-In process (if not already authenticated)</li>
+  <li>We display the authorisation request details to your user</li>
+  <li>The user is asked to grant your application the authority to access their data</li>
+</ol>
+
+<p class="govuk-body">
+This part of the process is illustrated by this sequence diagram
+</p>
+
+<%#
+  Mermaid code for the image
+
+sequenceDiagram
+    actor User as Client
+    participant Vendor as Application
+    participant RIAB as Authorisation API
+
+    User->>Vendor: Initiates connection
+    Vendor->>Vendor: Generate code-challenge
+    Vendor-->>User: Redirect to /oauth/authorize
+    User->>RIAB: GET /oauth/authorize
+    Note over User,RIAB: [Client not signed-in] sign-in via DfE Sign-in and then continues
+    RIAB->>RIAB: Validate request
+    RIAB-->>User: Show authorisation request details
+%>
+<%= image_tag("documentation/authorisation/request-authorisation.png", width: "750px", alt: "Request authorisation sequence diagram") %>
+
+<h4 class="govuk-heading-s">1.1 Syntax</h4>
+
+<p class="govuk-body">
+<pre>
+<code>
+  curl -X GET "<%= @api_base_url %>/oauth/authorize?\
+  response_type=code\
+  &client_id=[YOUR-CLIENT-ID]\
+  &appropriate_body_period_id=[USERS-APPROPRIATE-BODY-IDENTIFIER]\
+  &state=[STATE]\
+  &redirect_uri=[YOUR-REDIRECT-URI]\
+  &code_challenge=[CODE-CHALLENGE]\
+  &code_challenge_method=[CODE-CHALLENGE-METHOD]"
+</code>
+</pre>
+</p>
+
+<h4 class="govuk-heading-s">1.2 Example</h4>
+
+<p class="govuk-body">
+<pre>
+<code>
+  curl -X GET "<%= @api_base_url %>/oauth/authorize?\
+  response_type=code\
+  &client_id=Hf8sfkiUkYp9I3_R10qSnZ2ZUvoa\
+  &appropriate_body_period_id=9def8316-1d33-4181-b0d5-59c34c4a03f5\
+  &state=30de877c-ee2f-15db-8314-0800200c9a66\
+  &redirect_uri=https://www.myservice.example.com/callback\
+  &code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM\
+  &code_challenge_method=S256"
+</code>
+</pre>
+
+  <%= govuk_warning_text(text: "Do not include your client secret in this request.") %>
+</p>
+
+
+<h4 class="govuk-heading-s">1.3 Parameters</h4>
+
+<%= govuk_table do |table|
+  table.with_head do |head|
+    head.with_row do |row|
+      row.with_cell(text: "Parameter")
+      row.with_cell(text: "Description")
+    end
+  end
+  table.with_body do |body|
+    body.with_row do |row|
+      row.with_cell(text: "response_type")
+      row.with_cell(text: "The OAuth 2.0 response type. Currently the only acceptable value is 'code'")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "client_id")
+      row.with_cell(text: "The Client ID for your application")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "appropriate_body_period_id")
+      row.with_cell(text: "The ID for the Appropriate Body making the connection")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "state")
+      row.with_cell(text: "An opaque value used to maintain state between the request and callback and to prevent tampering as described in the #{govuk_link_to("OAuth 2.0 specification", "https://tools.ietf.org/html/rfc6749#section-10.12")}. This is passed back to your application via the <code>redirect_uri</code>".html_safe)
+    end
+    body.with_row do |row|
+      row.with_cell(text: "redirect_uri")
+      row.with_cell(text: "The URI that we use to send users back to your application after successful (or unsuccessful) authorisation.  This must match one of the redirect URIs you specified when you created your application")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "code_challenge")
+      row.with_cell(text: "The #{govuk_link_to("PKCE", "https://oauth.net/2/pkce/") } <code>code_challenge</code> is used to ensure that the subsequently-issued access token is not intercepted".html_safe)
+    end
+    body.with_row do |row|
+      row.with_cell(text: "code_challenge_method")
+      row.with_cell(text: "The #{govuk_link_to("PKCE", "https://oauth.net/2/pkce/") } <code>code_challenge_method</code> is used to transform the <code>code_verifier</code> to the <code>code_challenge</code>. This must have a value of <code>S256</code>".html_safe)
+    end
+  end
+end %>
+

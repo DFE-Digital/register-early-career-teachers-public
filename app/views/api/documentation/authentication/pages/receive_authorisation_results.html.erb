@@ -1,0 +1,160 @@
+<%#
+---
+title: Receive authorisation results
+sidebar_position: 4
+---
+%>
+<%
+  page_data(
+    title: "Receive authorisation results",
+    error: false,
+    caption: "API Developer documentation",
+    caption_size: 'l'
+  )
+%>
+
+<p class="govuk-body">
+The process is shown in this diagram which continues from the
+<%= govuk_link_to("request authorisation",
+                  api_documentation_authentication_page_path("request-authorisation"),
+                  no_visited_state: true) %> step.
+</p>
+
+<%#
+  Mermaid code for the image
+
+sequenceDiagram
+    actor User as Client
+    participant Vendor as Application
+    participant RIAB as Authorisation API
+
+    User->>RIAB: Approve connection
+    RIAB-->>User: Redirect to vendor callback
+    User->>Vendor: GET /callback
+    Vendor->>Vendor: Validate state
+%>
+
+<%= image_tag("documentation/authorisation/receive-authorisation-result.png", width: "600px", alt: "Receive authorisation results sequence diagram") %>
+
+<p class="govuk-body">
+You must create an endpoint in your application to receive the authorisation results. This endpoint must accept a HTTP GET request to the redirect URI you specified in step 1.
+</p>
+
+<p class="govuk-body">
+The user's browser will be redirected back to your endpoint once they have granted your application the requested authority.
+</p>
+
+<p class="govuk-body">
+Your endpoint must support the following query parameters:
+
+<%= govuk_table do |table|
+  table.with_head do |head|
+    head.with_row do |row|
+      row.with_cell(text: "Parameter")
+      row.with_cell(text: "Description")
+    end
+  end
+  table.with_body do |body|
+    body.with_row do |row|
+      row.with_cell(text: "code")
+      row.with_cell(text: "The authorisation code, if authorisation is successful. This is a single-use token that will expire after <strong>10 minutes</strong>".html_safe)
+    end
+    body.with_row do |row|
+      row.with_cell(text: "state")
+      row.with_cell(text: "The value of the optional state parameter you provided in the authorisation request, whether authorisation is successful or not. ")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "error")
+      row.with_cell(text: "A short identifier for the error such as <code>access_denied</code>, if authorisation failed or <code>invalid_request</code> if the request parameters are invalid".html_safe)
+    end
+    body.with_row do |row|
+      row.with_cell(text: "error_description")
+      row.with_cell(text: "Human readable description of the error, if authorisation failed, for example, 'User refused connection'")
+    end
+  end
+end %>
+</p>
+
+<h4 class="govuk-heading-s">2.1 Example redirects</h4>
+
+<p class="govuk-body">
+Example of a redirect we issue after a successful authorisation:
+
+<pre>
+<code>
+https://www.myapp.example.com/callback?code=6589c5d9fc4b9872b1f9013583c2f39d
+&state=30de877c-ee2f-15db-8314-0800200c9a66
+</code>
+</pre>
+</p>
+
+<p class="govuk-body">
+Example of a redirect we issue after an unsuccessful authorisation:
+
+<pre>
+<code>
+https://www.myapp.example.com/callback?error=access_denied
+&error_description=User+refused+connection
+&state=30de877c-ee2f-15db-8314-0800200c9a66
+</code>
+</pre>
+</p>
+
+<h4 class="govuk-heading-s">2.2 Error scenarios</h4>
+
+<p class="govuk-body">
+If the <code>client_id</code> or the <code>redirect_uri</code>do not match our records, we return HTTP error status <code>400</code> (Bad request) and do not redirect to your <code>redirect_uri</code>. 
+</p>
+
+<p class="govuk-body">
+If there are any other issues with your call to our authorisation endpoint, we return an HTTP error status to your <code>redirect_uri</code>.
+</p>
+
+<%= govuk_table do |table|
+  table.with_head do |head|
+    head.with_row do |row|
+      row.with_cell(text: "Error scenario")
+      row.with_cell(text: "HTTP status")
+      row.with_cell(text: "Error code")
+      row.with_cell(text: "Error message")
+    end
+  end
+  table.with_body do |body|
+    body.with_row do |row|
+      row.with_cell(text: "Response Type is missing")
+      row.with_cell(text: "400 (Bad Request)")
+      row.with_cell(text: "invalid_request")
+      row.with_cell(text: "response_type can't be blank")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "Response Type is invalid")
+      row.with_cell(text: "400 (Bad Request)")
+      row.with_cell(text: "unsupported_response_type")
+      row.with_cell(text: "Response type is not included in the list")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "Appropriate Body ID is missing")
+      row.with_cell(text: "400 (Bad Request)")
+      row.with_cell(text: "invalid_request")
+      row.with_cell(text: "appropraite_body_period_id can't be blank")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "Appropriate Body ID does not match signed-in user's organisation")
+      row.with_cell(text: "400 (Bad Request)")
+      row.with_cell(text: "access_denied")
+      row.with_cell(text: "appropriate_body_period_id does not match the logged-in Appropriate Body")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "PKCE Code Challenge is missing")
+      row.with_cell(text: "400 (Bad Request)")
+      row.with_cell(text: "invalid_request")
+      row.with_cell(text: "Code challenge can't be blank")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "PKCE Code Challenge method is not 'S256'")
+      row.with_cell(text: "400 (Bad Request)")
+      row.with_cell(text: "invalid_request")
+      row.with_cell(text: "Code challenge imethod is not included in the list")
+    end
+  end
+end %>
