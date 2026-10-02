@@ -9,12 +9,9 @@ RSpec.describe "admin/teachers/training_periods/change_contract_period_wizard/se
     )
   end
   let(:teacher) { training_period.teacher }
-  let(:store) { SessionRepository.new(session: {}, form_key: "change_contract_period") }
   let(:wizard) do
     Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Wizard.new(
-      store:,
-      teacher_id: teacher.id,
-      training_period_id: training_period.id,
+      state_store: Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::StateStore.new(training_period:),
       current_step: :select_contract_period
     )
   end

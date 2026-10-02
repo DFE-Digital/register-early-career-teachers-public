@@ -260,6 +260,21 @@ RSpec.describe "Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizardCont
     end
   end
 
+  describe "re-selecting the contract period" do
+    it "clears the previously selected partnership" do
+      select_contract_period_and_partnership
+      post(
+        path_for_step("select-contract-period"),
+        params: { select_contract_period: { contract_period_year: target_contract_period.year } },
+        headers: { "HTTP_REFERER" => path_for_step("check-answers") }
+      )
+
+      get path_for_step("check-answers")
+
+      expect(response).to redirect_to(path_for_step("select-partnership"))
+    end
+  end
+
   describe "GET select-partnership" do
     it "redirects to select contract period when no contract period has been selected" do
       get path_for_step("select-partnership")
