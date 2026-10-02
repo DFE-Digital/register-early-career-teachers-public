@@ -31,6 +31,7 @@ module IntegrationSupport
     attribute :returned_state, :string
     attribute :error, :string
     attribute :error_description, :string
+    attribute :access_token, :string
 
     class << self
       def from(session)
@@ -65,6 +66,8 @@ module IntegrationSupport
     def exchange_code_for_token(token_url)
       connection.post(token_url, { grant_type:, code:, code_verifier:, redirect_uri: })
     end
+
+    def revoke_token(revocation_url) = connection.post(revocation_url, { token: access_token })
 
   private
 

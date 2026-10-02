@@ -66,4 +66,24 @@ RSpec.describe IntegrationSupport::APIClientConnection, type: :model do
       ).to have_been_made.once
     end
   end
+
+  describe "#revoke_token" do
+    subject(:revoke) { connection.revoke_token("#{base_url}/oauth/revoke") }
+
+    let(:connection) { described_class.new(client_id: "test-client-id", client_secret: "test-client-secret", access_token: "abc") }
+
+    before { stub_request(:post, "#{base_url}/oauth/revoke").to_return(status: 200) }
+
+    it "posts the token form-encoded with HTTP basic client credentials" do
+      expect(revoke.status).to eq(200)
+
+      expect(
+        a_request(:post, "#{base_url}/oauth/revoke").with(
+          basic_auth: %w[test-client-id test-client-secret],
+          headers: { content_type: "application/x-www-form-urlencoded" },
+          body: { token: "abc" }
+        )
+      ).to have_been_made.once
+    end
+  end
 end
