@@ -2774,6 +2774,7 @@ RSpec.describe Events::Record do
           }.as_json,
           lead_provider:,
           happened_at: Time.zone.now,
+          teacher: nil,
           **author_params
         )
       end
@@ -2808,6 +2809,7 @@ RSpec.describe Events::Record do
             changes: { "vat_rate" => [0.2, 0.125] }
           }.as_json,
           happened_at: Time.zone.now,
+          teacher: nil,
           **author_params
         )
       end
@@ -2844,6 +2846,44 @@ RSpec.describe Events::Record do
             changes: {}
           }.as_json,
           happened_at: Time.zone.now,
+          teacher: nil,
+          **author_params
+        )
+      end
+    end
+
+    context "when the record belongs to a teacher and has been destroyed" do
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period) }
+
+      before { ect_at_school_period.destroy! }
+
+      it "records an event with the correct values" do
+        Events::Record.record_admin_data_fix_event!(
+          author:,
+          body: "A test reason for the change",
+          zendesk_ticket_id: "123456",
+          modifications: {},
+          metadata: {
+            gid: ect_at_school_period.to_global_id.to_s,
+            action: "delete",
+            changes: {}
+          },
+          record: ect_at_school_period
+        )
+
+        expect(Event.sole).to have_attributes(
+          event_type: "admin_data_fix",
+          heading: "Admin data fix: #{ect_at_school_period.to_global_id} (delete)",
+          body: "A test reason for the change",
+          zendesk_ticket_id: 123_456,
+          modifications: [],
+          metadata: {
+            gid: ect_at_school_period.to_global_id.to_s,
+            action: "delete",
+            changes: {}
+          }.as_json,
+          happened_at: Time.zone.now,
+          teacher: ect_at_school_period.teacher,
           **author_params
         )
       end
