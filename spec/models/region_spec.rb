@@ -1,6 +1,7 @@
 RSpec.describe Region, type: :model do
   describe "associations" do
-    it { is_expected.to belong_to(:appropriate_body) }
+    it { is_expected.to have_many(:awards).class_name("Region::Award").dependent(:destroy) }
+    it { is_expected.to have_one(:active_award).class_name("Region::Award") }
   end
 
   describe "validations" do
