@@ -35,6 +35,7 @@ RSpec.configure do |config|
   config.include SwaggerExampleParser, type: :request
   config.extend APIDocumentationHelpers, type: :request
   config.include ActiveJob::TestHelper
+  config.include DfE::Wizard::Test::RSpecMatchers, file_path: %r{/spec/wizards/}
 
   config.use_transactional_fixtures = true
   config.infer_spec_type_from_file_location!
