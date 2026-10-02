@@ -40,7 +40,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Ope
     context "when the training period is not supported" do
       before do
         allow(change_service).to receive(:change_contract_period!).and_raise(
-          service_class::UnsupportedTrainingPeriodError
+          Admin::Teachers::TrainingPeriods::ChangeContractPeriod::UnsupportedTrainingPeriodError
         )
       end
 
@@ -53,7 +53,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Ope
     context "when the training period has no matching schedule" do
       before do
         allow(change_service).to receive(:change_contract_period!).and_raise(
-          service_class::ScheduleNotFoundError
+          Admin::Teachers::TrainingPeriods::ChangeContractPeriod::ScheduleNotFoundError
         )
       end
 
@@ -66,7 +66,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Ope
     context "when the training period has no equivalent framework agreement" do
       before do
         allow(change_service).to receive(:change_contract_period!).and_raise(
-          service_class::FrameworkAgreementNotFoundError
+          Admin::Teachers::TrainingPeriods::ChangeContractPeriod::FrameworkAgreementNotFoundError
         )
       end
 
@@ -78,14 +78,14 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Ope
   end
 
   context "when the training period has started" do
-    let(:service_class) { described_class::CurrentActivePeriodChange }
+    let(:service_class) { Admin::Teachers::TrainingPeriods::ChangeContractPeriod::CurrentActivePeriod }
     let(:started_on) { today.prev_month }
 
     it_behaves_like "applies the change and maps service errors to validation errors"
   end
 
   context "when the training period starts in the future" do
-    let(:service_class) { described_class::FuturePeriodChange }
+    let(:service_class) { Admin::Teachers::TrainingPeriods::ChangeContractPeriod::FuturePeriod }
 
     it_behaves_like "applies the change and maps service errors to validation errors"
   end

@@ -1,7 +1,6 @@
 module Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Operations
   class ApplyContractPeriodChange
-    CurrentActivePeriodChange = ::Admin::Teachers::TrainingPeriods::ChangeContractPeriod::CurrentActivePeriod
-    FuturePeriodChange = ::Admin::Teachers::TrainingPeriods::ChangeContractPeriod::FuturePeriod
+    ChangeContractPeriod = ::Admin::Teachers::TrainingPeriods::ChangeContractPeriod
 
     def initialize(repository:, step:)
       @repository = repository
@@ -12,14 +11,11 @@ module Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Operations
       service.change_contract_period!
 
       { success: true }
-    rescue CurrentActivePeriodChange::UnsupportedTrainingPeriodError,
-           FuturePeriodChange::UnsupportedTrainingPeriodError
+    rescue ChangeContractPeriod::UnsupportedTrainingPeriodError
       failure("Training period is not eligible for contract period change")
-    rescue CurrentActivePeriodChange::ScheduleNotFoundError,
-           FuturePeriodChange::ScheduleNotFoundError
+    rescue ChangeContractPeriod::ScheduleNotFoundError
       failure("A matching schedule could not be found for the selected contract period")
-    rescue CurrentActivePeriodChange::FrameworkAgreementNotFoundError,
-           FuturePeriodChange::FrameworkAgreementNotFoundError
+    rescue ChangeContractPeriod::FrameworkAgreementNotFoundError
       failure("A lead provider framework agreement could not be found for the selected contract period")
     end
 
@@ -42,9 +38,9 @@ module Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Operations
 
     def service_class
       if training_period.started_on > Time.zone.today
-        FuturePeriodChange
+        ChangeContractPeriod::FuturePeriod
       else
-        CurrentActivePeriodChange
+        ChangeContractPeriod::CurrentActivePeriod
       end
     end
 
