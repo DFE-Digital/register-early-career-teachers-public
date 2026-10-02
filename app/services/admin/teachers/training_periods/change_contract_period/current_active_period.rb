@@ -3,10 +3,6 @@ module Admin
     module TrainingPeriods
       module ChangeContractPeriod
         class CurrentActivePeriod
-          class UnsupportedTrainingPeriodError < StandardError; end
-          class ScheduleNotFoundError < StandardError; end
-          class FrameworkAgreementNotFoundError < StandardError; end
-
           attr_reader :training_period, :contract_period, :school_partnership, :author
 
           def initialize(training_period:, contract_period:, school_partnership:, author:)
