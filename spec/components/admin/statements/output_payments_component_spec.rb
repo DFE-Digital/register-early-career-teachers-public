@@ -13,13 +13,11 @@ RSpec.describe Admin::Statements::OutputPaymentsComponent, type: :component do
       FactoryBot.build(:contract_banded_fee_structure_band_term,
                        fee_per_declaration:,
                        output_fee_proportion:,
-                       service_fee_proportion:,
                        band:)
     end
   end
 
   let(:output_fee_proportion) { 0.8 }
-  let(:service_fee_proportion) { 0.2 }
   let(:capacity) { 10 }
 
   let(:banded_fee_structure) do

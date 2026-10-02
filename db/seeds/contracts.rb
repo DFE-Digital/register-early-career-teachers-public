@@ -35,7 +35,6 @@ FrameworkAgreement
           contract.banded_fee_structure.band_terms.find_or_create_by!(band:) do |term|
             term.fee_per_declaration = Faker::Number.between(from: 20, to: 200)
             term.output_fee_proportion = 0.8
-            term.service_fee_proportion = 0.2
           end
         end
       end

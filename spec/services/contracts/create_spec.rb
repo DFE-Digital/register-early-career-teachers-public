@@ -38,8 +38,7 @@ describe Contracts::Create do
   let(:band_terms_attributes) do
     {
       fee_per_declaration: 200,
-      output_fee_proportion: 0.75,
-      service_fee_proportion: 0.25
+      output_fee_proportion: 0.75
     }
   end
 

@@ -59,7 +59,7 @@ RSpec.describe FrameworkAgreements::SeedFromPrevious do
         end
 
         it "builds terms for the new banded_fee_structure, based on the previous" do
-          band_term_attributes = %i[fee_per_declaration output_fee_proportion service_fee_proportion]
+          band_term_attributes = %i[fee_per_declaration output_fee_proportion]
           expect(new_contract.banded_fee_structure.band_terms.map { |t| t.slice(*band_term_attributes) })
           .to match_array(previous_contract.banded_fee_structure.band_terms.map { |t| t.slice(*band_term_attributes) })
           expect(new_contract.banded_fee_structure.band_terms).not_to include(*previous_contract.banded_fee_structure.band_terms)

@@ -22,12 +22,6 @@ class Contract::BandedFeeStructure::BandTerm < ApplicationRecord
               allow_nil: true,
               message: "Output fee percentage must be between 0 and 100"
             }
-  validates :service_fee_proportion,
-            presence: { message: "Service fee proportion is required" },
-            if: -> { output_fee_proportion.present? }
-
-  validate :sum_of_proportions_equals_one,
-           if: -> { output_fee_proportion? && service_fee_proportion? }
 
   validate :band_belongs_to_contracts_framework_agreement
 
@@ -39,7 +33,12 @@ class Contract::BandedFeeStructure::BandTerm < ApplicationRecord
 
   def output_fee_percentage=(val)
     self.output_fee_proportion = val.present? ? val.to_d / 100 : nil
-    self.service_fee_proportion = output_fee_proportion.present? ? 1 - output_fee_proportion : nil
+  end
+
+  def service_fee_proportion
+    return if output_fee_proportion.nil?
+
+    1 - output_fee_proportion
   end
 
   def service_fee_percentage
@@ -53,10 +52,5 @@ private
     return if band.framework_agreement == banded_fee_structure.contract.framework_agreement
 
     errors.add(:band, "must belong to the contract's lead provider framework agreement")
-  end
-
-  def sum_of_proportions_equals_one
-    errors.add(:base, "Sum of proportions must equal 1") unless
-      (output_fee_proportion + service_fee_proportion).to_d == 1.0.to_d
   end
 end

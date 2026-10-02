@@ -14,7 +14,6 @@ RSpec.describe PaymentCalculator::Banded::DeclarationTypeOutput do
                       band:,
                       banded_fee_structure: contract.banded_fee_structure,
                       fee_per_declaration: 150,
-                      service_fee_proportion: 0.5,
                       output_fee_proportion: 0.5)
   end
 

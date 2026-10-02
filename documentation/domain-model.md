@@ -7,7 +7,6 @@ erDiagram
     datetime created_at
     decimal fee_per_declaration
     decimal output_fee_proportion
-    decimal service_fee_proportion
     datetime updated_at
   }
   Contract_BandedFeeStructure_BandTerm }o--|| Contract_BandedFeeStructure : belongs_to

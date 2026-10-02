@@ -365,7 +365,6 @@
   - band_id
   - fee_per_declaration
   - output_fee_proportion
-  - service_fee_proportion
   - created_at
   - updated_at
   :framework_agreement_bands:

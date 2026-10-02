@@ -15,8 +15,7 @@ RSpec.describe Contracts::Update do
                       banded_fee_structure:,
                       band:,
                       fee_per_declaration: 100,
-                      output_fee_proportion: 0.70,
-                      service_fee_proportion: 0.30)
+                      output_fee_proportion: 0.70)
   end
   let(:band) do
     FactoryBot.create(:framework_agreement_band,
@@ -47,7 +46,6 @@ RSpec.describe Contracts::Update do
     original_recruitment_target = banded_fee_structure.recruitment_target
     original_fee_per_declaration = band_term.fee_per_declaration
     original_output_fee_proportion = band_term.output_fee_proportion
-    original_service_fee_proportion = band_term.service_fee_proportion
     original_vat_rate = contract.vat_rate
 
     result = service.call
@@ -68,9 +66,10 @@ RSpec.describe Contracts::Update do
       "vat_rate" => [original_vat_rate.to_f.to_s, "0.1"],
       "banded_recruitment_target" => [original_recruitment_target, 9_999],
       "band_A_fee_per_declaration" => [original_fee_per_declaration.to_f.to_s, "9999.0"],
-      "band_A_output_fee_proportion" => [original_output_fee_proportion.to_f.to_s, "0.8"],
-      "band_A_service_fee_proportion" => [original_service_fee_proportion.to_f.to_s, "0.2"]
+      "band_A_output_fee_proportion" => [original_output_fee_proportion.to_f.to_s, "0.8"]
     )
+
+    expect(event.metadata.keys).not_to include("band_A_service_fee_proportion")
   end
 
   context "when the band term is not changed" do
@@ -105,8 +104,7 @@ RSpec.describe Contracts::Update do
       )
       expect(metadata.keys).not_to include(
         "band_A_fee_per_declaration",
-        "band_A_output_fee_proportion",
-        "band_A_service_fee_proportion"
+        "band_A_output_fee_proportion"
       )
     end
   end

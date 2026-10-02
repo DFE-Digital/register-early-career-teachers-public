@@ -11,7 +11,6 @@ RSpec.describe PaymentCalculator::ServiceFees do
     [
       FactoryBot.build(:contract_banded_fee_structure_band_term,
                        fee_per_declaration: 800,
-                       service_fee_proportion: 0.40,
                        output_fee_proportion: 0.60)
     ]
   end
@@ -35,11 +34,9 @@ RSpec.describe PaymentCalculator::ServiceFees do
         [
           FactoryBot.build(:contract_banded_fee_structure_band_term,
                            fee_per_declaration: 800,
-                           service_fee_proportion: 0.40,
                            output_fee_proportion: 0.60),
           FactoryBot.build(:contract_banded_fee_structure_band_term,
                            fee_per_declaration: 600,
-                           service_fee_proportion: 0.40,
                            output_fee_proportion: 0.60)
         ]
       end
