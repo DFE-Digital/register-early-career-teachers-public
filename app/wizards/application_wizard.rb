@@ -2,7 +2,9 @@ class ApplicationWizard
   include DfE::Wizard
 
   # So we can boot the application without error
+  # .steps and .routes can be deleted after all wizards are converted
   def self.steps(&) = [{}]
+  def self.routes = []
 
   def allowed_steps = raise NotImplementedError
 
