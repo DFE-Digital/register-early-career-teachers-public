@@ -32,7 +32,7 @@ module PaymentCalculator
         filled = [remaining, band_term.capacity].min
         remaining -= filled
 
-        filled * band_term.fee_per_declaration * band_term.service_fee_ratio
+        filled * band_term.fee_per_declaration * band_term.service_fee_proportion
       end
     end
 

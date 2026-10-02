@@ -92,9 +92,9 @@ module Admin::Statements
       "(#{number_to_percentage(REVISED_RECRUITMENT_TARGET_MULTIPLIER * 100, precision: 0)})"
     end
 
-    def display_uplifts? = contract.ecf_contract_type? && uplift_target_ratio.present?
-    def uplift_target_ratio = banded_fee_structure.uplift_target_ratio
-    def uplift_target_percentage = uplift_target_ratio * 100
+    def display_uplifts? = contract.ecf_contract_type? && uplift_target_proportion.present?
+    def uplift_target_proportion = banded_fee_structure.uplift_target_proportion
+    def uplift_target_percentage = uplift_target_proportion * 100
     def uplift_amount = banded_fee_structure.uplift_fee_per_declaration
     def band_term_label(band_term) = "Band #{band_term.letter}"
   end

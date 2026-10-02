@@ -22,28 +22,27 @@ class Contract::BandedFeeStructure::BandTerm < ApplicationRecord
               allow_nil: true,
               message: "Output fee percentage must be between 0 and 100"
             }
-  validates :service_fee_ratio,
-            presence: { message: "Service fee ratio is required" },
-            if: -> { output_fee_ratio.present? }
-
-  validate :sum_of_ratios_equals_one,
-           if: -> { output_fee_ratio? && service_fee_ratio? }
 
   validate :band_belongs_to_contracts_framework_agreement
 
   delegate :capacity, :min_declarations, :max_declarations, :letter, to: :band
 
   def output_fee_percentage
-    (output_fee_ratio * 100).to_i if output_fee_ratio
+    (output_fee_proportion * 100).to_i if output_fee_proportion
   end
 
   def output_fee_percentage=(val)
-    self.output_fee_ratio = val.present? ? val.to_d / 100 : nil
-    self.service_fee_ratio = output_fee_ratio.present? ? 1 - output_fee_ratio : nil
+    self.output_fee_proportion = val.present? ? val.to_d / 100 : nil
+  end
+
+  def service_fee_proportion
+    return if output_fee_proportion.nil?
+
+    1 - output_fee_proportion
   end
 
   def service_fee_percentage
-    (service_fee_ratio * 100).to_i if service_fee_ratio
+    (service_fee_proportion * 100).to_i if service_fee_proportion
   end
 
 private
@@ -53,10 +52,5 @@ private
     return if band.framework_agreement == banded_fee_structure.contract.framework_agreement
 
     errors.add(:band, "must belong to the contract's lead provider framework agreement")
-  end
-
-  def sum_of_ratios_equals_one
-    errors.add(:base, "Sum of ratios must equal 1") unless
-      (output_fee_ratio + service_fee_ratio).to_d == 1.0.to_d
   end
 end
