@@ -59,7 +59,9 @@ class InductionPeriod < ApplicationRecord
   scope :passed, -> { finished.where(outcome: :pass) }
   scope :failed, -> { finished.where(outcome: :fail) }
 
-  delegate :name, to: :appropriate_body_period, prefix: :appropriate_body
+  # @return [String] AppropriateBodyPeriod#name may be nil
+  def appropriate_body_name = appropriate_body_period.display_name
+
   delegate :trn, :full_name, to: :teacher
 
   def siblings

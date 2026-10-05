@@ -2,7 +2,7 @@
   <% if choices&.appropriate_body.present? %>
     <% summary_list.with_row do |row| %>
       <% row.with_key(text: 'Appropriate body') %>
-      <% row.with_value(text: choices.appropriate_body.name) %>
+      <% row.with_value(text: choices.appropriate_body.display_name) %>
     <% end %>
   <% end %>
 

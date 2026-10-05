@@ -140,7 +140,7 @@ module Events
       event_type = :induction_period_opened
       happened_at = induction_period.started_on
       teacher_name = Teachers::Name.new(teacher).full_name
-      heading = "#{teacher_name} was claimed by #{appropriate_body_period.name}"
+      heading = "#{teacher_name} was claimed by #{appropriate_body_period.display_name}"
 
       new(event_type:, author:, appropriate_body_period:, teacher:, induction_period:, heading:, happened_at:, modifications:).record_event!
     end
@@ -151,7 +151,7 @@ module Events
       event_type = :induction_period_closed
       happened_at = induction_period.finished_on
       teacher_name = Teachers::Name.new(teacher).full_name
-      heading = "#{teacher_name} was released by #{appropriate_body_period.name}"
+      heading = "#{teacher_name} was released by #{appropriate_body_period.display_name}"
 
       new(event_type:, author:, appropriate_body_period:, teacher:, induction_period:, heading:, happened_at:).record_event!
     end
@@ -216,7 +216,7 @@ module Events
       happened_at = induction_period.finished_on
       teacher_name = Teachers::Name.new(teacher).full_name
       heading = "#{teacher_name} passed induction by admin" if author.dfe_user?
-      heading = "#{teacher_name} passed induction by #{appropriate_body_period.name}" if author.appropriate_body_user?
+      heading = "#{teacher_name} passed induction by #{appropriate_body_period.display_name}" if author.appropriate_body_user?
 
       new(event_type:, author:, appropriate_body_period:, teacher:, induction_period:, ect_at_school_period:, mentorship_period:, training_period:, heading:, happened_at:, body:, zendesk_ticket_id:).record_event!
     end
@@ -228,7 +228,7 @@ module Events
       happened_at = induction_period.finished_on
       teacher_name = Teachers::Name.new(teacher).full_name
       heading = "#{teacher_name} failed induction by admin" if author.dfe_user?
-      heading = "#{teacher_name} failed induction by #{appropriate_body_period.name}" if author.appropriate_body_user?
+      heading = "#{teacher_name} failed induction by #{appropriate_body_period.display_name}" if author.appropriate_body_user?
 
       new(event_type:, author:, appropriate_body_period:, teacher:, induction_period:, ect_at_school_period:, mentorship_period:, training_period:, heading:, happened_at:, body:, zendesk_ticket_id:).record_event!
     end
@@ -343,7 +343,7 @@ module Events
     def self.record_induction_extension_created_event!(author:, appropriate_body_period:, teacher:, induction_extension:, modifications:, happened_at: Time.zone.now)
       event_type = :induction_extension_created
       teacher_name = Teachers::Name.new(teacher).full_name
-      actioner_suffix = appropriate_body_period ? " by #{appropriate_body_period.name}" : ""
+      actioner_suffix = appropriate_body_period ? " by #{appropriate_body_period.display_name}" : ""
       heading = "#{teacher_name}’s induction extended by #{induction_extension.number_of_terms} terms#{actioner_suffix}"
 
       new(event_type:, author:, appropriate_body_period:, teacher:, induction_extension:, modifications:, heading:, happened_at:).record_event!
@@ -352,7 +352,7 @@ module Events
     def self.record_induction_extension_updated_event!(author:, appropriate_body_period:, teacher:, induction_extension:, modifications:, happened_at: Time.zone.now)
       event_type = :induction_extension_updated
       teacher_name = Teachers::Name.new(teacher).full_name
-      actioner_suffix = appropriate_body_period ? " by #{appropriate_body_period.name}" : ""
+      actioner_suffix = appropriate_body_period ? " by #{appropriate_body_period.display_name}" : ""
       heading = "#{teacher_name}’s induction extended by #{induction_extension.number_of_terms} terms#{actioner_suffix}"
 
       new(event_type:, author:, appropriate_body_period:, teacher:, induction_extension:, modifications:, heading:, happened_at:).record_event!
@@ -361,7 +361,7 @@ module Events
     def self.record_induction_extension_deleted_event!(author:, appropriate_body_period:, teacher:, number_of_terms:, happened_at: Time.zone.now)
       event_type = :induction_extension_deleted
       teacher_name = Teachers::Name.new(teacher).full_name
-      actioner_suffix = appropriate_body_period ? " by #{appropriate_body_period.name}" : ""
+      actioner_suffix = appropriate_body_period ? " by #{appropriate_body_period.display_name}" : ""
       heading = "#{teacher_name}’s induction extension of #{number_of_terms} terms was deleted#{actioner_suffix}"
 
       new(event_type:, author:, appropriate_body_period:, teacher:, heading:, happened_at:).record_event!
@@ -880,14 +880,14 @@ module Events
 
     def self.record_bulk_upload_started_event!(author:, batch:)
       event_type = :bulk_upload_started
-      heading = "#{batch.appropriate_body_period.name} started a bulk #{batch.batch_type}"
+      heading = "#{batch.appropriate_body_period.display_name} started a bulk #{batch.batch_type}"
 
       new(event_type:, author:, appropriate_body_period: batch.appropriate_body_period, pending_induction_submission_batch: batch, heading:, happened_at: Time.zone.now).record_event!
     end
 
     def self.record_bulk_upload_completed_event!(author:, batch:)
       event_type = :bulk_upload_completed
-      heading = "#{batch.appropriate_body_period.name} completed a bulk #{batch.batch_type}"
+      heading = "#{batch.appropriate_body_period.display_name} completed a bulk #{batch.batch_type}"
 
       new(event_type:, author:, appropriate_body_period: batch.appropriate_body_period, pending_induction_submission_batch: batch, heading:, happened_at: Time.zone.now).record_event!
     end
@@ -918,7 +918,7 @@ module Events
       event_type = :oauth_authorization_created
       client = authorization.client
       appropriate_body_period = authorization.appropriate_body_period
-      heading = "#{client.name} was authorised by #{appropriate_body_period.name}"
+      heading = "#{client.name} was authorised by #{appropriate_body_period.display_name}"
       metadata = { client_name: client.name, client_id: client.client_id }
       oauth_client = authorization.client
 
@@ -933,7 +933,7 @@ module Events
 
     def self.record_api_oauth_authorization_code_exchanged_event!(author:, authorization:)
       event_type = :api_oauth_authorization_code_exchanged
-      heading = "Authorization code exchanged by client '#{authorization.client.name}' for '#{authorization.appropriate_body_period.name}'"
+      heading = "Authorization code exchanged by client '#{authorization.client.name}' for '#{authorization.appropriate_body_period.display_name}'"
       appropriate_body_period = authorization.appropriate_body_period
       happened_at = authorization.code_exchanged_at
       oauth_client = authorization.client
@@ -950,7 +950,7 @@ module Events
 
     def self.record_api_oauth_access_token_revoked_event!(author:, authorization:)
       event_type = :api_oauth_access_token_revoked
-      heading = "Access token revoked by client '#{authorization.client.name}' for '#{authorization.appropriate_body_period.name}'"
+      heading = "Access token revoked by client '#{authorization.client.name}' for '#{authorization.appropriate_body_period.display_name}'"
       appropriate_body_period = authorization.appropriate_body_period
       happened_at = authorization.revoked_at
       oauth_client = authorization.client
@@ -1476,8 +1476,8 @@ module Events
     def self.record_teacher_appropriate_body_changed!(author:, ect_at_school_period:, old_appropriate_body_period:, new_appropriate_body_period:, happened_at: Time.current)
       event_type = :teacher_appropriate_body_changed
       teacher = ect_at_school_period.teacher
-      old_appropriate_body_name = old_appropriate_body_period&.name || "Not reported"
-      heading = TransitionDescription.for("appropriate body", from: old_appropriate_body_name, to: new_appropriate_body_period.name)
+      old_appropriate_body_name = old_appropriate_body_period&.display_name || "Not reported"
+      heading = TransitionDescription.for("appropriate body", from: old_appropriate_body_name, to: new_appropriate_body_period.display_name)
 
       new(event_type:, author:, heading:, teacher:, ect_at_school_period:, appropriate_body_period: new_appropriate_body_period, happened_at:).record_event!
     end

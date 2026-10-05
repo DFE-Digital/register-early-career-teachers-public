@@ -75,7 +75,7 @@ module TestGuidance
 
       case
       when Current.user.appropriate_body_user?
-        teacher.ongoing_induction_period&.appropriate_body_period&.name || inactive
+        teacher.ongoing_induction_period&.appropriate_body_period&.display_name || inactive
       when Current.user.school_user?
         teacher.current_or_next_ect_at_school_period&.school&.gias_school&.name || inactive
       else

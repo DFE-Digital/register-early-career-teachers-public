@@ -102,6 +102,26 @@ describe Schools::ECTs::ChangeAppropriateBodyWizard::EditStep do
         expect(current_step.appropriate_bodies_except_current).to contain_exactly(other_appropriate_body_period, appropriate_body_period)
       end
     end
+
+    context "when the other period has no name of its own" do
+      let(:school_reported_appropriate_body) do
+        FactoryBot.create(:appropriate_body_period, :teaching_school_hub, name: "Current Body")
+      end
+      let!(:appropriate_body_period) do
+        FactoryBot.create(
+          :appropriate_body_period,
+          :teaching_school_hub,
+          name: nil,
+          teaching_school_hub: FactoryBot.create(:teaching_school_hub, name: "Bright Futures Teaching School Hub")
+        )
+      end
+      let!(:other_appropriate_body_period) { nil }
+
+      it "offers the other period, named by its parent organisation" do
+        expect(current_step.appropriate_bodies_except_current.map(&:display_name))
+          .to contain_exactly("Bright Futures Teaching School Hub")
+      end
+    end
   end
 
   describe "validations" do

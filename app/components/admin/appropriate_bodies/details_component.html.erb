@@ -43,6 +43,11 @@
     sl.with_row do |row|
       row.with_key(text: 'Type')
       row.with_value(text: appropriate_body.body_type.titlecase)
+      row.with_action(
+        text: 'View',
+        href: admin_teaching_school_hub_path(appropriate_body.teaching_school_hub),
+        visually_hidden_text: 'teaching school hub'
+      ) if appropriate_body.teaching_school_hub?
     end
   end
 %>

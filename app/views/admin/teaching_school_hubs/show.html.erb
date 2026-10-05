@@ -1,38 +1,41 @@
 <% page_data(
   title: @teaching_school_hub.name,
+  caption: @teaching_school_hub.region_codes.to_sentence.presence,
+  backlink_href: admin_teaching_school_hubs_path,
 ) %>
 
+<%= govuk_section_break(visible: true, size: "m") %>
+
 <% @teaching_school_hub.appropriate_body_periods.each do |appropriate_body_period| %>
-  <h3 class="govuk-heading-s">
-    <%= appropriate_body_period.name %>
-  </h3>
+  <%= render Admin::AppropriateBodies::DescriptionComponent.new(appropriate_body_period:) %>
 
-  <% if appropriate_body_period.provisioning_school.present? %>
-    <p class="govuk-body govuk-!-margin-bottom-3">
-      Provisioning lead school:
-      <%= govuk_link_to(appropriate_body_period.provisioning_school.name, href: admin_school_path(appropriate_body_period.provisioning_school.urn)) %>
-    </p>
+  <p class="govuk-body">
+    <%= govuk_link_to("View appropriate body", admin_appropriate_body_path(appropriate_body_period), visually_hidden_suffix: appropriate_body_period.display_name) %>
+  </p>
+
+  <%= govuk_table do |table| %>
+    <% table.with_head do |head| %>
+      <% head.with_row do |row| %>
+        <% row.with_cell(text: "Region") %>
+        <% row.with_cell(text: "Districts") %>
+        <% row.with_cell(text: "Lead school") %>
+      <% end %>
+    <% end %>
+
+    <% table.with_body do |body| %>
+      <% appropriate_body_period.region_awards.select(&:active?).each do |award| %>
+        <% body.with_row do |row| %>
+          <% row.with_cell(text: award.region.code) %>
+          <% row.with_cell(text: award.region.districts.to_sentence) %>
+          <% row.with_cell do %>
+            <% if award.school_id == appropriate_body_period.school_id %>
+              <%= tag.strong(award.school.name) %>
+            <% else %>
+              <%= award.school.name %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
   <% end %>
-
-  <%=
-    govuk_table do |table|
-      table.with_head do |head|
-        head.with_row do |row|
-          row.with_cell(text: "Region")
-          row.with_cell(text: "Districts")
-          row.with_cell(text: "Lead school")
-        end
-      end
-
-      table.with_body do |body|
-        appropriate_body_period.region_awards.select(&:active?).each do |award|
-          body.with_row do |row|
-            row.with_cell(text: award.region.code)
-            row.with_cell(text: award.region.districts.to_sentence)
-            row.with_cell(text: award.school.name)
-          end
-        end
-      end
-    end
-  %>
 <% end %>

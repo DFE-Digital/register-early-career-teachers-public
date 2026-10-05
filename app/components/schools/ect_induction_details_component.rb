@@ -47,10 +47,10 @@ module Schools
 
     def appropriate_body_html
       return claimed_appropriate_body_html if appropriate_body.from_induction?
-      return appropriate_body.name unless appropriate_body.from_school?
+      return appropriate_body.display_name unless appropriate_body.from_school?
 
       safe_join([
-        appropriate_body.name,
+        appropriate_body.display_name,
         tag.br,
         tag.span("Awaiting confirmation by the appropriate body", class: "govuk-hint")
       ])
@@ -58,7 +58,7 @@ module Schools
 
     def claimed_appropriate_body_html
       safe_join([
-        appropriate_body.name,
+        appropriate_body.display_name,
         tag.br,
         tag.span(
           safe_join([

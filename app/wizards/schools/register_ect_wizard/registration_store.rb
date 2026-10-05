@@ -51,7 +51,7 @@ module Schools
                to: :status
 
       # appropriate_body_name
-      delegate :name, to: :appropriate_body, prefix: true, allow_nil: true
+      def appropriate_body_name = appropriate_body&.display_name
 
       # lead_provider_name
       delegate :name, to: :lead_provider, prefix: true, allow_nil: true

@@ -4,7 +4,7 @@ module Schools
       class ConfirmationStep < Step
         def previous_step = :check_answers
 
-        delegate :name, to: :new_appropriate_body_period, prefix: :new_appropriate_body
+        def new_appropriate_body_name = new_appropriate_body_period.display_name
 
       private
 

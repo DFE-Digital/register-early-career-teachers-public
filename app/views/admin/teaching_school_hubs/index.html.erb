@@ -1,11 +1,19 @@
 <% page_data(
   title: 'Teaching school hubs',
+  backlink_href: admin_organisations_path,
 ) %>
 
+<% if @hubs_with_concurrent_appropriate_body_periods.any? %>
+  <h2 class="govuk-heading-m">More than one active appropriate body</h2>
+  <p class="govuk-body">
+    Multiple provisioning schools within the organisation.
+  </p>
 
-<%=
-teaching_school_hubs = @teaching_school_hubs.map do |tsh|
-  govuk_link_to(tsh.name, href: admin_teaching_school_hub_path(tsh))
-end
-    govuk_list(teaching_school_hubs, type: :bullet)
-%>
+  <%= render Admin::TeachingSchoolHubs::SummaryCardComponent.with_collection(@hubs_with_concurrent_appropriate_body_periods) %>
+<% end %>
+
+<% if @other_hubs.any? %>
+  <h2 class="govuk-heading-m">One appropriate body</h2>
+
+  <%= render Admin::TeachingSchoolHubs::SummaryCardComponent.with_collection(@other_hubs) %>
+<% end %>
