@@ -53,9 +53,13 @@ module Teachers
     end
 
     def training_periods_have_different_contract_periods?
-      training_periods = teacher.mentor_training_periods + teacher.ect_training_periods + destination.mentor_training_periods + destination.ect_training_periods
+      mentor_training_periods = teacher.mentor_training_periods + destination.mentor_training_periods
 
-      training_periods.map(&:contract_period).uniq.size > 1
+      return true if mentor_training_periods.map(&:contract_period).uniq.size > 1
+
+      ect_training_period = teacher.ect_training_periods + destination.ect_training_periods
+
+      ect_training_period.map(&:contract_period).uniq.size > 1
     end
 
     def overlapping_ect_periods_at_different_schools?
