@@ -69,29 +69,14 @@ module Admin
           end
         end
 
-        def allowed_steps
-          steps = [:select_contract_period]
-          return steps if state_store.contract_period_year.blank?
+        def furthest_valid_step_path
+          step_id = root_step
 
-          steps << :select_lead_provider
-          return steps if state_store.framework_agreement_id.blank?
+          while valid?(step_id) && (next_step_id = steps_processor.next_step(step_id))
+            step_id = next_step_id
+          end
 
-          steps << :select_delivery_partner
-          return steps if state_store.delivery_partner_id.blank?
-
-          steps << :check_answers
-        end
-
-        def allowed_step?
-          allowed_steps.include?(current_step_name)
-        end
-
-        def allowed_step_path
-          route_strategy.resolve(step_id: allowed_steps.last)
-        end
-
-        def first_step_path
-          route_strategy.resolve(step_id: :select_contract_period)
+          resolve_step_path(step_id)
         end
 
         def school

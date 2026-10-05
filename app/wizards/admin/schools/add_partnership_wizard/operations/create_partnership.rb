@@ -3,22 +3,11 @@ module Admin
     module AddPartnershipWizard
       module Operations
         class CreatePartnership
-          REQUIRED_ANSWERS = %i[
-            contract_period_year
-            framework_agreement_id
-            delivery_partner_id
-          ].freeze
-
-          def initialize(repository:, step:)
-            @repository = repository
+          def initialize(step:, **)
             @step = step
           end
 
           def execute
-            if REQUIRED_ANSWERS.any? { |key| @repository.read[key].blank? }
-              raise ApplicationWizardStep::EmptyStoreError
-            end
-
             wizard = @step.wizard
 
             SchoolPartnerships::Create.new(
