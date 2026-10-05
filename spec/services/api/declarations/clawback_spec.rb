@@ -6,120 +6,122 @@ RSpec.describe API::Declarations::Clawback, type: :model do
   let(:lead_provider_id) { declaration.training_period.lead_provider.id }
   let(:contract_period) { declaration.training_period.contract_period }
 
-  context "when lead_provider_id is missing" do
-    let(:declaration) { FactoryBot.create(:declaration, :paid) }
-    let(:lead_provider_id) { nil }
+  describe "validations" do
+    context "when lead_provider_id is missing" do
+      let(:declaration) { FactoryBot.create(:declaration, :paid) }
+      let(:lead_provider_id) { nil }
 
-    it { is_expected.to have_one_error_only }
-    it { is_expected.to have_error(:lead_provider_id, "Enter a '#/lead_provider_id'.") }
-  end
-
-  context "when lead provider does not exist" do
-    let(:declaration) { FactoryBot.create(:declaration, :paid) }
-    let(:lead_provider_id) { 123_456_789 }
-
-    it { is_expected.to have_one_error_only }
-    it { is_expected.to have_error(:lead_provider_id, "The '#/lead_provider_id' you have entered is invalid.") }
-  end
-
-  context "when declaration is awaiting clawback" do
-    let(:declaration) { FactoryBot.create(:declaration, :awaiting_clawback) }
-
-    it { is_expected.to have_one_error_only }
-    it { is_expected.to have_error(:declaration_api_id, "The declaration will or has been refunded") }
-  end
-
-  context "when declaration has been clawed back" do
-    let(:declaration) { FactoryBot.create(:declaration, :clawed_back) }
-
-    it { is_expected.to have_one_error_only }
-    it { is_expected.to have_error(:declaration_api_id, "The declaration will or has been refunded") }
-  end
-
-  context "when there are no future output fee statements available" do
-    let(:declaration) { FactoryBot.create(:declaration, :paid) }
-
-    before do
-      payment_statement = declaration.payment_statement
-      # Update columns to bypass validation that ensures deadline_date
-      # is only ever set to a future date.
-      payment_statement.update_columns(deadline_date: Date.yesterday, payment_date: Date.tomorrow)
-      Statement.where("deadline_date > ?", payment_statement.deadline_date).destroy_all
+      it { is_expected.to have_one_error_only }
+      it { is_expected.to have_documented_api_error(:lead_provider_id, "Enter a '#/lead_provider_id'.") }
     end
 
-    it { is_expected.to have_one_error_only }
+    context "when lead provider does not exist" do
+      let(:declaration) { FactoryBot.create(:declaration, :paid) }
+      let(:lead_provider_id) { 123_456_789 }
 
-    it { is_expected.not_to be_valid }
-
-    it "has the correct error message" do
-      error_message = <<~TXT.squish
-        You cannot submit or void declarations for the #{contract_period.year}
-        contract period. The funding contract for this contract period has
-        ended. Get in touch if you need to discuss this with us
-      TXT
-      expect(instance).to have_error(:declaration_api_id, error_message)
-    end
-  end
-
-  context "when the declaration's payment statement has no output fee" do
-    let(:declaration) { FactoryBot.create(:declaration, :paid) }
-
-    before { declaration.payment_statement.update!(fee_type: :service) }
-
-    it { is_expected.to have_one_error_only }
-
-    it "has the correct error message" do
-      error_message = <<~TXT.squish
-        You cannot submit or void declarations for the #{contract_period.year}
-        contract period. The funding contract for this contract period has
-        ended. Get in touch if you need to discuss this with us
-      TXT
-      expect(instance).to have_error(:declaration_api_id, error_message)
-    end
-  end
-
-  context "when the declaration's payment statement deadline date is in the past" do
-    let(:declaration) do
-      FactoryBot.create(
-        :declaration,
-        :paid,
-        payment_statement:,
-        framework_agreement: payment_statement.framework_agreement
-      )
-    end
-    let(:payment_statement) do
-      FactoryBot.create(
-        :statement,
-        :paid,
-        deadline_date: Date.yesterday,
-        payment_date: Date.tomorrow
-      )
+      it { is_expected.to have_one_error_only }
+      it { is_expected.to have_documented_api_error(:lead_provider_id, "The '#/lead_provider_id' you have entered is invalid.") }
     end
 
-    it { is_expected.to have_one_error_only }
+    context "when declaration is awaiting clawback" do
+      let(:declaration) { FactoryBot.create(:declaration, :awaiting_clawback) }
 
-    it "has the correct error message" do
-      error_message = <<~TXT.squish
-        You cannot submit or void declarations for the #{contract_period.year}
-        contract period. The funding contract for this contract period has
-        ended. Get in touch if you need to discuss this with us
-      TXT
-      expect(instance).to have_error(:declaration_api_id, error_message)
-    end
-  end
-
-  context "when declaration has not been refunded and output fee is available" do
-    let(:declaration) { FactoryBot.create(:declaration, :paid) }
-
-    before do
-      FactoryBot.create(
-        :statement,
-        deadline_date: declaration.evidenced_at + 1.month,
-        framework_agreement: declaration.training_period.framework_agreement
-      )
+      it { is_expected.to have_one_error_only }
+      it { is_expected.to have_documented_api_error(:declaration_api_id, "The declaration will or has been refunded") }
     end
 
-    it { is_expected.to be_valid }
+    context "when declaration has been clawed back" do
+      let(:declaration) { FactoryBot.create(:declaration, :clawed_back) }
+
+      it { is_expected.to have_one_error_only }
+      it { is_expected.to have_documented_api_error(:declaration_api_id, "The declaration will or has been refunded") }
+    end
+
+    context "when there are no future output fee statements available" do
+      let(:declaration) { FactoryBot.create(:declaration, :paid) }
+
+      before do
+        payment_statement = declaration.payment_statement
+        # Update columns to bypass validation that ensures deadline_date
+        # is only ever set to a future date.
+        payment_statement.update_columns(deadline_date: Date.yesterday, payment_date: Date.tomorrow)
+        Statement.where("deadline_date > ?", payment_statement.deadline_date).destroy_all
+      end
+
+      it { is_expected.to have_one_error_only }
+
+      it { is_expected.not_to be_valid }
+
+      it "has the correct error message" do
+        error_message = <<~TXT.squish
+          You cannot submit or void declarations for the #{contract_period.year}
+          contract period. The funding contract for this contract period has
+          ended. Get in touch if you need to discuss this with us
+        TXT
+        expect(instance).to have_documented_api_error(:declaration_api_id, error_message)
+      end
+    end
+
+    context "when the declaration's payment statement has no output fee" do
+      let(:declaration) { FactoryBot.create(:declaration, :paid) }
+
+      before { declaration.payment_statement.update!(fee_type: :service) }
+
+      it { is_expected.to have_one_error_only }
+
+      it "has the correct error message" do
+        error_message = <<~TXT.squish
+          You cannot submit or void declarations for the #{contract_period.year}
+          contract period. The funding contract for this contract period has
+          ended. Get in touch if you need to discuss this with us
+        TXT
+        expect(instance).to have_documented_api_error(:declaration_api_id, error_message)
+      end
+    end
+
+    context "when the declaration's payment statement deadline date is in the past" do
+      let(:declaration) do
+        FactoryBot.create(
+          :declaration,
+          :paid,
+          payment_statement:,
+          framework_agreement: payment_statement.framework_agreement
+        )
+      end
+      let(:payment_statement) do
+        FactoryBot.create(
+          :statement,
+          :paid,
+          deadline_date: Date.yesterday,
+          payment_date: Date.tomorrow
+        )
+      end
+
+      it { is_expected.to have_one_error_only }
+
+      it "has the correct error message" do
+        error_message = <<~TXT.squish
+          You cannot submit or void declarations for the #{contract_period.year}
+          contract period. The funding contract for this contract period has
+          ended. Get in touch if you need to discuss this with us
+        TXT
+        expect(instance).to have_documented_api_error(:declaration_api_id, error_message)
+      end
+    end
+
+    context "when declaration has not been refunded and output fee is available" do
+      let(:declaration) { FactoryBot.create(:declaration, :paid) }
+
+      before do
+        FactoryBot.create(
+          :statement,
+          deadline_date: declaration.evidenced_at + 1.month,
+          framework_agreement: declaration.training_period.framework_agreement
+        )
+      end
+
+      it { is_expected.to be_valid }
+    end
   end
 
   describe "#clawback" do

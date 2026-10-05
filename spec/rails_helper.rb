@@ -71,4 +71,15 @@ RSpec.configure do |config|
       DeclarativeUpdates.skip(*declarative_updates_to_skip) { example.run }
     end
   end
+
+  config.add_setting :api_error_documentation
+  config.api_error_documentation = APIErrorDocumentation.new
+  config.after(:suite) do
+    next if ENV["API_ERROR_DOCUMENTATION_PATH"].blank?
+
+    config.api_error_documentation.verify_completeness!
+    config.api_error_documentation.write(
+      ENV["API_ERROR_DOCUMENTATION_PATH"]
+    )
+  end
 end

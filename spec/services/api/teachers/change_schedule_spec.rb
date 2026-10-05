@@ -37,7 +37,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
             end
 
             it { is_expected.to have_one_error_per_attribute }
-            it { is_expected.to have_error(:schedule_identifier, "The property '#/schedule_identifier' must be present and correspond to a valid schedule.") }
+            it { is_expected.to have_documented_api_error(:schedule_identifier, "The property '#/schedule_identifier' must be present and correspond to a valid schedule.") }
           end
 
           context "when training_period is withdrawn" do
@@ -49,14 +49,14 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
             end
 
             it { is_expected.to have_one_error_per_attribute }
-            it { is_expected.to have_error(:teacher_api_id, "Cannot perform actions on a withdrawn participant") }
+            it { is_expected.to have_documented_api_error(:teacher_api_id, "Cannot perform actions on a withdrawn participant") }
 
             context "and participant_status is left" do
               before { training_period.update!(finished_on: 1.day.ago) }
 
               it { is_expected.to have_one_error_per_attribute }
 
-              it { expect(subject).to have_error(:teacher_api_id, "You cannot change this participant's schedule. This is because the participant has a 'left' participant_status, so they are not training with you currently.") }
+              it { expect(subject).to have_documented_api_error(:teacher_api_id, "You cannot change this participant's schedule. This is because the participant has a 'left' participant_status, so they are not training with you currently.") }
             end
           end
 
@@ -65,7 +65,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
             let(:schedule_identifier) { schedule.identifier }
 
             it { is_expected.to have_one_error_per_attribute }
-            it { is_expected.to have_error(:schedule_identifier, "Selected schedule is already on the profile") }
+            it { is_expected.to have_documented_api_error(:schedule_identifier, "Selected schedule is already on the profile") }
           end
 
           if trainee_type == :ect
@@ -74,7 +74,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
               let!(:schedule) { FactoryBot.create(:schedule, identifier: schedule_identifier, contract_period:) }
 
               it { is_expected.to have_one_error_per_attribute }
-              it { is_expected.to have_error(:schedule_identifier, "Selected schedule is not valid for the teacher_type") }
+              it { is_expected.to have_documented_api_error(:schedule_identifier, "Selected schedule is not valid for the teacher_type") }
             end
           else
             context "when a mentor attempts to change to a reduced schedule" do
@@ -82,7 +82,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
               let!(:schedule) { FactoryBot.create(:schedule, identifier: schedule_identifier, contract_period:) }
 
               it { is_expected.to have_one_error_per_attribute }
-              it { is_expected.to have_error(:schedule_identifier, "Mentors cannot be placed on a reduced schedule. Assign them to a different schedule.") }
+              it { is_expected.to have_documented_api_error(:schedule_identifier, "Mentors cannot be placed on a reduced schedule. Assign them to a different schedule.") }
             end
           end
 
@@ -95,7 +95,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
             end
 
             it { is_expected.to have_one_error_per_attribute }
-            it { is_expected.to have_error(:contract_period_year, "You cannot change a participant to this contract_period as you do not have a partnership with the school for the contract_period. Contact the DfE for assistance.") }
+            it { is_expected.to have_documented_api_error(:contract_period_year, "You cannot change a participant to this contract_period as you do not have a partnership with the school for the contract_period. Contact the DfE for assistance.") }
           end
 
           context "when the participant is leaving" do
@@ -108,7 +108,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
             before { training_period.update!(finished_on: 1.day.ago) }
 
             it { is_expected.to have_one_error_per_attribute }
-            it { is_expected.to have_error(:teacher_api_id, "You cannot change this participant's schedule. This is because the participant has a 'left' participant_status, so they are not training with you currently.") }
+            it { is_expected.to have_documented_api_error(:teacher_api_id, "You cannot change this participant's schedule. This is because the participant has a 'left' participant_status, so they are not training with you currently.") }
           end
 
           context "when there are future training periods (for the same teacher)" do
@@ -117,7 +117,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
             end
 
             it { is_expected.to have_one_error_per_attribute }
-            it { is_expected.to have_error(:teacher_api_id, "You cannot change this participant's schedule as they are due to start with another lead provider in the future.") }
+            it { is_expected.to have_documented_api_error(:teacher_api_id, "You cannot change this participant's schedule as they are due to start with another lead provider in the future.") }
           end
 
           context "when there are future training periods (for a different teacher)" do
@@ -134,7 +134,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
             let(:teacher_type) { "invalid" }
 
             it { is_expected.to have_one_error_per_attribute }
-            it { is_expected.to have_error(:teacher_type, "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again.") }
+            it { is_expected.to have_documented_api_error(:teacher_type, "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again.") }
           end
 
           context "when participant has completed training" do
@@ -149,7 +149,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
 
             it "returns error" do
               expect(subject).to have_one_error_per_attribute
-              expect(subject).to have_error(:teacher_api_id, "You cannot change this participant's schedule as they have completed their training or induction.")
+              expect(subject).to have_documented_api_error(:teacher_api_id, "You cannot change this participant's schedule as they have completed their training or induction.")
             end
 
             context "when schedule is reduced" do
@@ -158,8 +158,8 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
               if trainee_type == :ect
                 it { is_expected.to be_valid }
               else
-                it { is_expected.to have_error(:teacher_api_id, "You cannot change this participant's schedule as they have completed their training or induction.") }
-                it { is_expected.to have_error(:schedule_identifier, "Mentors cannot be placed on a reduced schedule. Assign them to a different schedule.") }
+                it { is_expected.to have_documented_api_error(:teacher_api_id, "You cannot change this participant's schedule as they have completed their training or induction.") }
+                it { is_expected.to have_documented_api_error(:schedule_identifier, "Mentors cannot be placed on a reduced schedule. Assign them to a different schedule.") }
               end
             end
           end
@@ -176,7 +176,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
 
             it { is_expected.to have_one_error_per_attribute }
 
-            it { is_expected.to have_error(:contract_period_year, "You cannot move a participant to a payments frozen contract period unless they previously belonged to that contract period.") }
+            it { is_expected.to have_documented_api_error(:contract_period_year, "You cannot move a participant to a payments frozen contract period unless they previously belonged to that contract period.") }
           end
 
           context "when the training period `started_on` has not yet passed and there are existing declarations" do
@@ -196,7 +196,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
 
               it { is_expected.to have_one_error_per_attribute }
 
-              it { is_expected.to have_error(:schedule_identifier, "The change of schedule cannot be applied because a previous change of schedule and a declaration were made on the same day. Applying another change of schedule would invalidate existing declarations. Please contact DfE for assistance.") }
+              it { is_expected.to have_documented_api_error(:schedule_identifier, "The change of schedule cannot be applied because a previous change of schedule and a declaration were made on the same day. Applying another change of schedule would invalidate existing declarations. Please contact DfE for assistance.") }
             end
           end
         end
