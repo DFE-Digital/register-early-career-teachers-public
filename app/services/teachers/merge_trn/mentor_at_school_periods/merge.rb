@@ -2,9 +2,8 @@ module Teachers
   class MergeTRN
     module MentorAtSchoolPeriods
       class Merge
+        include Periods::Mergeable
         include Teachers::MergeTRN::Concerns::MergeableAtSchoolPeriod
-
-        def self.call(...) = new(...).call
 
       private
 

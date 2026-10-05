@@ -2,13 +2,7 @@ module Teachers
   class MergeTRN
     module Concerns
       module MergeableAtSchoolPeriod
-        include Teachers::MergeTRN::Concerns::MergeablePeriod
-
       private
-
-        def redundant_periods
-          @redundant_periods ||= periods.excluding(successor_period)
-        end
 
         def training_periods
           @training_periods ||= redundant_periods.flat_map(&:training_periods).uniq

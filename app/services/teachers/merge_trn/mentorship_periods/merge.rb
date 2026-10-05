@@ -2,11 +2,9 @@ module Teachers
   class MergeTRN
     module MentorshipPeriods
       class Merge
-        include Teachers::MergeTRN::Concerns::MergeablePeriod
+        include Periods::Mergeable
 
         class CannotMergePeriods < StandardError; end
-
-        def self.call(...) = new(...).call
 
         def call
           raise CannotMergePeriods, "Periods have different mentors" if periods_have_different_mentors?

@@ -367,6 +367,14 @@ RSpec.describe Teachers::MergeTRN do
           expect(merged_mentor_at_school_period.finished_on).to eq(second_period_finished_on)
         end
 
+        it "moves the non-overlapping mentor at school periods to the destination teacher" do
+          service.merge!
+
+          expect(mentor_at_school_period.reload.teacher).to eq(destination)
+          expect(mentor_at_school_period.started_on).to eq(first_period_started_on)
+          expect(mentor_at_school_period.finished_on).to eq(first_period_finished_on)
+        end
+
         context "when there are overlapping training periods" do
           let!(:overlapping_training_period) do
             FactoryBot.create(:training_period,
@@ -386,14 +394,12 @@ RSpec.describe Teachers::MergeTRN do
             expect(merged_training_period.started_on).to eq(overlapping_period_started_on)
             expect(merged_training_period.finished_on).to eq(second_period_finished_on)
           end
-        end
 
-        it "moves the non-overlapping mentor at school periods to the destination teacher" do
-          service.merge!
+          it "moves the non-overlapping training periods to the destination teacher" do
+            service.merge!
 
-          expect(mentor_at_school_period.reload.teacher).to eq(destination)
-          expect(mentor_at_school_period.started_on).to eq(first_period_started_on)
-          expect(mentor_at_school_period.finished_on).to eq(first_period_finished_on)
+            expect(mentor_training_period.reload.teacher).to eq(destination)
+          end
         end
       end
 
@@ -432,6 +438,12 @@ RSpec.describe Teachers::MergeTRN do
             expect(merged_training_period.teacher).to eq(destination)
             expect(merged_training_period.started_on).to eq(overlapping_period_started_on)
             expect(merged_training_period.finished_on).to eq(second_period_finished_on)
+          end
+
+          it "moves the non-overlapping training periods to the destination teacher" do
+            service.merge!
+
+            expect(ect_training_period.reload.teacher).to eq(destination)
           end
         end
 

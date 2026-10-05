@@ -1,7 +1,7 @@
 module GIAS::Reconciliation
   module MentorAtSchoolPeriods
     class Merge
-      def self.call(...) = new(...).call
+      include Periods::Mergeable
 
       def initialize(periods:, predecessor_school:, successor_school:)
         @periods = periods
@@ -9,30 +9,13 @@ module GIAS::Reconciliation
         @successor_school = successor_school
       end
 
-      def call
-        ActiveRecord::Base.transaction do
-          successor_period.assign_attributes(started_on:, finished_on:)
-
-          update_mentorship_periods!
-          update_training_periods!
-          update_events!
-
-          redundant_periods.each do |period|
-            period.training_periods.reset
-            period.mentorship_periods.reset
-            period.events.reset
-            period.destroy!
-          end
-
-          successor_period.save!
-
-          record_event!
-        end
-      end
-
     private
 
       attr_reader :periods, :predecessor_school, :successor_school
+
+      def period_type
+        :mentor_at_school_period
+      end
 
       # Periods to merge are provided by the Overlapping service, and always include
       # at least one period from the successor school that the others will be merged into.
@@ -40,10 +23,6 @@ module GIAS::Reconciliation
         @successor_period ||= periods
           .select { |period| period.school == successor_school }
           .max_by(&:started_on)
-      end
-
-      def redundant_periods
-        @redundant_periods ||= periods.excluding(successor_period)
       end
 
       def training_periods
@@ -54,8 +33,18 @@ module GIAS::Reconciliation
         @mentorship_periods ||= redundant_periods.flat_map(&:mentorship_periods).uniq
       end
 
-      def events
-        @events ||= redundant_periods.flat_map(&:events).uniq
+      def update_related_records!
+        update_mentorship_periods!
+        update_training_periods!
+
+        super
+      end
+
+      def reset_related_records!(period)
+        period.training_periods.reset
+        period.mentorship_periods.reset
+
+        super
       end
 
       def update_training_periods!
@@ -76,7 +65,7 @@ module GIAS::Reconciliation
         end
       end
 
-      def update_events!
+      def move_events!
         events.each do |event|
           if event.school_partnership.present?
             event.school_partnership = successor_partnership(event.school_partnership)
@@ -91,20 +80,6 @@ module GIAS::Reconciliation
         SchoolPartnerships::Transfer.call(predecessor_school_partnership:, successor_school:)
       end
 
-      def finished_on
-        @finished_on ||= calculate_finished_on
-      end
-
-      def calculate_finished_on
-        return nil if periods.any?(&:unfinished?)
-
-        periods.map(&:finished_on).compact.max
-      end
-
-      def started_on
-        @started_on ||= periods.map(&:started_on).min
-      end
-
       def record_event!
         Events::Record.record_teacher_mentor_at_school_periods_merged!(
           teacher: successor_period.teacher,
@@ -114,8 +89,6 @@ module GIAS::Reconciliation
           author:
         )
       end
-
-      def author = Events::SystemAuthor.new
     end
   end
 end

@@ -75,7 +75,7 @@ module Teachers
       def next_period_at_different_school?(current_group, next_period)
         return unless at_school_period?
 
-        current_group.last.school != next_period.school
+        current_group.last.school_id != next_period.school_id
       end
 
       def gap_between?(group, period)

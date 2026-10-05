@@ -38,6 +38,15 @@ RSpec.describe Teachers::MergeTRN::ECTAtSchoolPeriods::Merge do
                           finished_on: second_period_finished_on)
       end
 
+      it "calls the Merge service for overlapping mentorship periods" do
+        expect(Teachers::MergeTRN::MentorshipPeriods::Merge).to receive(:call).with(
+          periods: [source_mentorship_period, destination_mentorship_period],
+          destination:
+        )
+
+        service
+      end
+
       it "changes the start date of the second period" do
         expect { service }.to change(destination_period, :started_on).to(first_period_started_on)
       end
@@ -46,11 +55,11 @@ RSpec.describe Teachers::MergeTRN::ECTAtSchoolPeriods::Merge do
         expect { service }.to change(destination_period, :finished_on).to(first_period_finished_on)
       end
 
-      # it "deletes the first period" do
-      #   service
+      it "deletes the first period" do
+        service
 
-      #   expect(klass.exists?(first_period.id)).to be(false)
-      # end
+        expect(MentorshipPeriod.exists?(first_period.id)).to be(false)
+      end
     end
   end
 end

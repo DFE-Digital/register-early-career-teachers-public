@@ -49,7 +49,7 @@ RSpec.shared_context "a mergeable period" do
 
     return nil if dates.any?(&:nil?)
 
-    dates.compact.max
+    dates.max
   end
 end
 
@@ -97,7 +97,12 @@ RSpec.shared_examples "it reassigns training_periods" do
       let!(:training_period) { FactoryBot.create(:training_period, *training_period_tag, **attrs) }
 
       it "reassigns the training_period to the destination period's teacher" do
-        expect { service }.to change { training_period.send(period_type) }.to(destination_period)
+        expect { service }.to change { training_period.reload.send(period_type) }.to(destination_period)
+      end
+
+      it "does not call the Merge service" do
+        expect(Teachers::MergeTRN::TrainingPeriods::Merge).not_to receive(:call)
+        service
       end
     end
 
@@ -123,6 +128,15 @@ RSpec.shared_examples "it reassigns training_periods" do
                           finished_on: second_period_finished_on)
       end
 
+      it "calls the Merge service for overlapping training periods" do
+        expect(Teachers::MergeTRN::TrainingPeriods::Merge).to receive(:call).with(
+          periods: [training_period, overlapping_training_period],
+          destination:
+        )
+
+        service
+      end
+
       it "changes the start date of the overlapping training period" do
         service
 
@@ -145,36 +159,39 @@ RSpec.shared_examples "it reassigns training_periods" do
 end
 
 RSpec.shared_examples "it reassigns mentorship_periods" do
-  context "it reassigns mentorship_periods" do
-    context "when the mentorship_periods do not overlap" do
-      let(:period_attr) { period_type == :mentor_at_school_period ? :mentor : :mentee }
-      let(:other_period_attr) { period_type == :mentor_at_school_period ? :mentee : :mentor }
-      let(:other_period_type) do
-        case period_type
-        when :mentor_at_school_period then :ect_at_school_period
-        when :ect_at_school_period then :mentor_at_school_period
-        end
+  context "when the mentorship_periods do not overlap" do
+    let(:period_attr) { period_type == :mentor_at_school_period ? :mentor : :mentee }
+    let(:other_period_attr) { period_type == :mentor_at_school_period ? :mentee : :mentor }
+    let(:other_period_type) do
+      case period_type
+      when :mentor_at_school_period then :ect_at_school_period
+      when :ect_at_school_period then :mentor_at_school_period
       end
+    end
 
-      let(:other_period) do
-        FactoryBot.create(other_period_type,
-                          school:,
-                          started_on: first_period_started_on,
-                          finished_on: first_period_finished_on)
-      end
+    let(:other_period) do
+      FactoryBot.create(other_period_type,
+                        school:,
+                        started_on: first_period_started_on,
+                        finished_on: first_period_finished_on)
+    end
 
-      let(:mentorship_attrs) { { period_attr => source_period, other_period_attr => other_period } }
+    let(:mentorship_attrs) { { period_attr => source_period, other_period_attr => other_period } }
 
-      let!(:mentorship_period) do
-        FactoryBot.create(:mentorship_period,
-                          **mentorship_attrs,
-                          started_on: first_period_started_on,
-                          finished_on: first_period_finished_on)
-      end
+    let!(:mentorship_period) do
+      FactoryBot.create(:mentorship_period,
+                        **mentorship_attrs,
+                        started_on: first_period_started_on,
+                        finished_on: first_period_finished_on)
+    end
 
-      it "reassigns the mentorship_period to the destination period's teacher" do
-        expect { service }.to change { mentorship_period.reload.send(period_attr) }.to(destination_period)
-      end
+    it "reassigns the mentorship_period to the destination period's teacher" do
+      expect { service }.to change { mentorship_period.reload.send(period_attr) }.to(destination_period)
+    end
+
+    it "does not call the Merge service for overlapping mentorship periods" do
+      expect(Teachers::MergeTRN::MentorshipPeriods::Merge).not_to receive(:call)
+      service
     end
   end
 end

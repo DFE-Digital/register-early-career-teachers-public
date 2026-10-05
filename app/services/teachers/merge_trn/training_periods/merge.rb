@@ -2,11 +2,9 @@ module Teachers
   class MergeTRN
     module TrainingPeriods
       class Merge
-        include Teachers::MergeTRN::Concerns::MergeablePeriod
+        include Periods::Mergeable
 
         class CannotMergePeriods < StandardError; end
-
-        def self.call(...) = new(...).call
 
         def call
           raise CannotMergePeriods, "Periods have different training programmes" if periods_have_different_training_programmes?
@@ -23,7 +21,7 @@ module Teachers
         end
 
         def periods_have_different_partnerships?
-          periods.map(&:school_partnership).uniq.size > 1
+          periods.map(&:school_partnership_id).uniq.size > 1
         end
 
         def periods_have_different_training_programmes?
@@ -31,7 +29,7 @@ module Teachers
         end
 
         def periods_have_different_schedules?
-          periods.map(&:schedule).uniq.size > 1
+          periods.map(&:schedule_id).uniq.size > 1
         end
 
         def declarations
