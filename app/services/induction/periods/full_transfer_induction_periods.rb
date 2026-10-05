@@ -38,7 +38,7 @@ module Induction::Periods
     def transfer_event(event)
       event.update!(
         appropriate_body_period: new_appropriate_body,
-        heading: event.heading.gsub(current_appropriate_body.name, new_appropriate_body.name),
+        heading: corrected_heading(event.heading),
         body: event_body_context
       )
     end

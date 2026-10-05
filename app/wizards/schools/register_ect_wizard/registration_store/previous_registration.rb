@@ -8,7 +8,7 @@ module Schools
         end
 
         def previous_appropriate_body_name
-          previous_appropriate_body&.name
+          previous_appropriate_body&.display_name
         end
 
         def previous_delivery_partner_name

@@ -77,7 +77,7 @@ module Schools
       def appropriate_body_row
         {
           key: { text: "Appropriate body" },
-          value: { text: appropriate_body.name }
+          value: { text: appropriate_body.display_name }
         }
       end
 
