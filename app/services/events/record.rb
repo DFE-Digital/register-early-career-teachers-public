@@ -770,6 +770,26 @@ module Events
       new(event_type:, author:, heading:, teacher:, training_period: successor_period, metadata:, happened_at:).record_event!
     end
 
+    def self.record_teacher_mentorship_periods_merged!(author:, teacher:, successor_period:, periods:, happened_at: Time.zone.now)
+      event_type = :teacher_mentorship_periods_merged
+      teacher_name = Teachers::Name.new(teacher).full_name
+      mentor_name = Teachers::Name.new(successor_period.mentor.teacher).full_name
+      school_name = successor_period.mentor.school.name
+      heading = "#{teacher_name}'s mentorship period at #{school_name} with #{mentor_name} merged into a single period"
+
+      formatted_periods = periods.collect do |period|
+        {
+          started_on: period.started_on,
+          finished_on: period.finished_on,
+          id: period.id,
+        }
+      end
+
+      metadata = { periods: formatted_periods }
+
+      new(event_type:, author:, heading:, teacher:, mentorship_period: successor_period, metadata:, happened_at:).record_event!
+    end
+
     def self.record_teacher_schedule_assigned_to_training_period!(author:, training_period:, teacher:, schedule:, happened_at: Time.zone.now)
       event_type = :teacher_schedule_assigned_to_training_period
       teacher_name = Teachers::Name.new(teacher).full_name

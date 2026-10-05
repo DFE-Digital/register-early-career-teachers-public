@@ -2796,7 +2796,7 @@ RSpec.describe Events::Record do
               id: first_period.id, },
             { finished_on: Date.new(2025, 12, 31),
               started_on: Date.new(2025, 7, 1),
-              id: second_period.id,  }
+              id: second_period.id, }
           ]
 
           expect(Event.sole).to have_attributes(

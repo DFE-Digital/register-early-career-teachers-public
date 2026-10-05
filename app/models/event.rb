@@ -87,6 +87,7 @@ class Event < ApplicationRecord
     teacher_changes_schedule_training_period
     teacher_training_period_contract_period_changed
     teacher_training_periods_merged
+    teacher_mentorship_periods_merged
     teacher_declaration_voided
     teacher_declaration_awaiting_clawback
     teacher_declaration_created
