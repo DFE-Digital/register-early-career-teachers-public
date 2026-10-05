@@ -97,8 +97,9 @@ RSpec.describe Sessions::OneTimePassword do
     end
 
     context "when the code is invalid" do
-      let(:code) { service.generate }
-      let(:invalid_code) { ((code.to_i + 1) % 1_000_000).to_s.rjust(6, "0") }
+      let(:invalid_code) { "abcdef" }
+
+      before { service.generate }
 
       it "increments failed attempts" do
         expect { service.verify(code: invalid_code) }.to change { user.reload.otp_failed_attempts }.from(0).to(1)
