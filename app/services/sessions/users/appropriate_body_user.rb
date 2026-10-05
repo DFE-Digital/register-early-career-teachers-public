@@ -37,9 +37,9 @@ module Sessions
       # @return [String]
       def organisation_name
         if has_multiple_roles?
-          appropriate_body_period.name + " (appropriate body)"
+          "#{appropriate_body_period.display_name} (appropriate body)"
         else
-          appropriate_body_period.name
+          appropriate_body_period.display_name
         end
       end
 

@@ -49,6 +49,26 @@ RSpec.describe "admin/appropriate_bodies/index.html.erb" do
     end
   end
 
+  context "when a period has no name of its own" do
+    let(:number_of_appropriate_bodies) { 1 }
+    let(:appropriate_bodies) do
+      [
+        FactoryBot.create(
+          :appropriate_body_period,
+          :teaching_school_hub,
+          name: nil,
+          teaching_school_hub: FactoryBot.create(:teaching_school_hub, name: "Bright Futures Teaching School Hub")
+        )
+      ]
+    end
+
+    it "labels the card with the parent hub name" do
+      render
+
+      expect(rendered).to have_link("Bright Futures Teaching School Hub", href: admin_appropriate_body_path(appropriate_bodies.first))
+    end
+  end
+
   it "renders an unchecked toggle for de-designated appropriate bodies" do
     render
 
