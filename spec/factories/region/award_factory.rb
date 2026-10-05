@@ -8,6 +8,7 @@ FactoryBot.define do
 
     trait :deactivated do
       deactivated_at { 1.day.ago }
+      deactivation_reason { "promoted to provisioning school in a new hub" }
     end
   end
 end

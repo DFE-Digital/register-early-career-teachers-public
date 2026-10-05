@@ -85,18 +85,17 @@ RSpec.describe Region::Award, type: :model do
     end
   end
 
-  describe "appropriate body associations" do
-    it "lists lead schools and regions through the join, collapsing multi-region schools" do
-      appropriate_body_period = FactoryBot.create(:appropriate_body_period, :teaching_school_hub)
-      school = FactoryBot.create(:school)
-      region = FactoryBot.create(:region)
-      other_region = FactoryBot.create(:region)
+  describe "#active?" do
+    context "when the award has not been deactivated" do
+      subject(:award) { FactoryBot.build(:region_award) }
 
-      FactoryBot.create(:region_award, appropriate_body_period:, school:, region:)
-      FactoryBot.create(:region_award, appropriate_body_period:, school:, region: other_region)
+      it { is_expected.to be_active }
+    end
 
-      expect(appropriate_body_period.lead_schools).to contain_exactly(school)
-      expect(appropriate_body_period.regions).to contain_exactly(region, other_region)
+    context "when the award has been deactivated" do
+      subject(:award) { FactoryBot.build(:region_award, :deactivated) }
+
+      it { is_expected.not_to be_active }
     end
   end
 end

@@ -9,15 +9,18 @@ class Region < ApplicationRecord
           class_name: "Region::Award",
           dependent: nil
 
-  # Schools which fall within a district in the region
-  has_many :district_schools,
-           ->(region) {
-             unscope(:where).joins(:gias_school).where(gias_school: {
-               administrative_district_name: region.districts
-             })
-           }, class_name: "School"
-
   # Validations
   validates :code, presence: true, uniqueness: true
   validates :districts, presence: true
+
+  def district_schools
+    School
+      .joins(:gias_school)
+      .where(
+        gias_school: {
+          administrative_district_name: districts,
+          status: %i[open proposed_to_close]
+        }
+      )
+  end
 end
