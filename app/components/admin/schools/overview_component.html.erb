@@ -3,7 +3,10 @@
   sl.with_row do |row|
     row.with_key(text: "Lead school for")
     row.with_value(text: school.teaching_school_hub_name.presence || "Not set")
-    row.with_action(text: "View", href: admin_teaching_school_hub_path(school.teaching_school_hub)) if school.teaching_school_hub.present?
+    row.with_action(text: "View",
+                    href: admin_appropriate_body_path(school.teaching_school_hub),
+                    visually_hidden_text: 'appropriate body'
+                   ) if school.teaching_school_hub.present?
   end
 
   sl.with_row do |row|

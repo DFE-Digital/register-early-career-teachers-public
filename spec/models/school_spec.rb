@@ -120,29 +120,6 @@ RSpec.describe School do
     end
   end
 
-  describe "#teaching_school_hub" do
-    let(:school) { FactoryBot.create(:school) }
-
-    context "when the school's DfE Sign-In organisation belongs to an appropriate body period" do
-      let!(:dfe_sign_in_organisation) { FactoryBot.create(:dfe_sign_in_organisation, urn: school.urn) }
-      let!(:appropriate_body_period) do
-        FactoryBot.create(:appropriate_body_period, dfe_sign_in_organisation:)
-      end
-
-      it "returns the appropriate body period" do
-        expect(school.teaching_school_hub).to eq(appropriate_body_period)
-      end
-
-      it "returns the appropriate body period name through teaching_school_hub_name" do
-        expect(school.teaching_school_hub_name).to eq(appropriate_body_period.name)
-      end
-    end
-
-    context "when the school has no DfE Sign-In organisation" do
-      it { expect(school.teaching_school_hub).to be_nil }
-    end
-  end
-
   describe "validations" do
     subject { FactoryBot.create(:school) }
 
@@ -569,6 +546,105 @@ RSpec.describe School do
       let(:school) { FactoryBot.create(:school, :state_funded) }
 
       it { is_expected.to be_falsey }
+    end
+  end
+
+  describe "#teaching_school_hub" do
+    let(:school) { FactoryBot.create(:school) }
+
+    context "when the school's DfE Sign-In organisation belongs to an appropriate body period" do
+      let!(:dfe_sign_in_organisation) { FactoryBot.create(:dfe_sign_in_organisation, urn: school.urn) }
+      let!(:appropriate_body_period) do
+        FactoryBot.create(:appropriate_body_period, dfe_sign_in_organisation:)
+      end
+
+      it "returns the appropriate body period" do
+        expect(school.teaching_school_hub).to eq(appropriate_body_period)
+      end
+
+      it "returns the appropriate body period name through teaching_school_hub_name" do
+        expect(school.teaching_school_hub_name).to eq(appropriate_body_period.name)
+      end
+
+      context "when the period belongs to a hub" do
+        let!(:appropriate_body_period) do
+          FactoryBot.create(:appropriate_body_period, :teaching_school_hub, dfe_sign_in_organisation:)
+        end
+
+        it "still returns the period, because handing back the hub is later work" do
+          expect(school.teaching_school_hub).to eq(appropriate_body_period)
+        end
+      end
+    end
+
+    context "when the school has no DfE Sign-In organisation" do
+      it { expect(school.teaching_school_hub).to be_nil }
+    end
+  end
+
+  describe "#teaching_school_hub_name" do
+    subject(:teaching_school_hub_name) { school.teaching_school_hub_name }
+
+    let(:school) { FactoryBot.create(:school, :eligible) }
+
+    context "when the school is a lead school for a hub" do
+      let(:lead_school_hub) { FactoryBot.create(:teaching_school_hub, name: "Bright Futures Teaching School Hub") }
+      let(:dfe_sign_in_organisation) { FactoryBot.create(:dfe_sign_in_organisation, urn: school.urn) }
+      let!(:appropriate_body_period) do
+        FactoryBot.create(:appropriate_body_period, :teaching_school_hub,
+                          name: nil,
+                          teaching_school_hub: lead_school_hub,
+                          dfe_sign_in_organisation:)
+      end
+
+      it "names the hub" do
+        expect(teaching_school_hub_name).to eq("Bright Futures Teaching School Hub")
+      end
+    end
+
+    context "when the school is not a lead school for a hub" do
+      it { is_expected.to be_nil }
+    end
+
+    context "when the school has no DfE Sign-In organisation" do
+      it { expect(school.teaching_school_hub).to be_nil }
+    end
+  end
+
+  describe "#last_chosen_appropriate_body_name" do
+    subject(:last_chosen_appropriate_body_name) { school.last_chosen_appropriate_body_name }
+
+    let(:school) { FactoryBot.create(:school, :state_funded) }
+
+    context "when a period has been chosen" do
+      let(:teaching_school_hub) do
+        FactoryBot.create(:teaching_school_hub, name: "Five Counties Teaching School Hub Alliance")
+      end
+      let(:last_chosen_appropriate_body) do
+        FactoryBot.create(:appropriate_body_period, :teaching_school_hub, name:, teaching_school_hub:)
+      end
+
+      before { school.update!(last_chosen_appropriate_body:) }
+
+      context "when the period has a name of its own" do
+        let(:name) { "Five Counties" }
+
+        it "uses it" do
+          expect(last_chosen_appropriate_body_name).to eq("Five Counties")
+        end
+      end
+
+      context "when the period has no name of its own" do
+        let(:name) { nil }
+
+        it "delegates to the parent hub" do
+          expect(last_chosen_appropriate_body_name).to eq("Five Counties Teaching School Hub Alliance")
+        end
+      end
+    end
+
+    context "when no period has been chosen" do
+      it { is_expected.to be_nil }
     end
   end
 end

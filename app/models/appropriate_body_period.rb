@@ -1,3 +1,20 @@
+# An AppropriateBodyPeriod is not "the appropriate body". It is the
+# time-bound pairing of a parent organisation (TeachingSchoolHub,
+# NationalBody, LocalAuthority, or a legacy TeachingSchool linked through a
+# School foreign key), a provisioning lead school, and the regions awarded to
+# that pairing for a period of time.
+#
+# The parent entity carries the canonical name. This model carries the DfE
+# Sign-in identity (dfe_sign_in_organisation_id) because it is users at the
+# provisioning school who authenticate, and each period may have a different
+# provisioning school — e.g. a large hub with concurrent periods can have several
+# different authenticated users, one per period.
+#
+# This model carries #name when the name at the time is not the name today: a
+# trading name to separate concurrent periods, or the historic name of a
+# Teaching School, whose school record has since been renamed.
+#
+# TODO: make #name nullable; stop using it as a canonical lookup key.
 class AppropriateBodyPeriod < ApplicationRecord
   # Enums
   enum :body_type, {
@@ -45,6 +62,7 @@ class AppropriateBodyPeriod < ApplicationRecord
   normalizes :name, with: -> { it.squish }
 
   # Validations
+  validates :name, uniqueness: true, allow_nil: true
   validates :started_on, presence: true
 
   # Teaching School Hub or Teaching School
@@ -93,6 +111,15 @@ class AppropriateBodyPeriod < ApplicationRecord
     validate :started_on_or_after_local_authority_body_introduced
     validate :started_on_or_before_local_authority_body_retired
     validate :finished_on_or_before_local_authority_body_retired
+  end
+
+  # @return [String] AppropriateBodyPeriod#name is an override to the associated body type
+  def display_name
+    name.presence ||
+      teaching_school_hub&.name ||
+      national_body&.name ||
+      local_authority&.name ||
+      provisioning_school&.name
   end
 
   # Predicates

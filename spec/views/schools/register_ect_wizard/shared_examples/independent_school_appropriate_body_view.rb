@@ -41,4 +41,21 @@ RSpec.shared_examples "an independent school appropriate body view" do |current_
     expect(rendered).to have_button("Continue")
     expect(rendered).to have_selector("form[action='#{send(continue_path)}']")
   end
+
+  context "when the appropriate body period has no name of its own" do
+    let!(:appropriate_body_period) do
+      FactoryBot.create(
+        :appropriate_body_period,
+        :teaching_school_hub,
+        name: nil,
+        teaching_school_hub: FactoryBot.create(:teaching_school_hub, name: "Bright Futures Teaching School Hub")
+      )
+    end
+
+    it "offers the parent hub name in the list of appropriate bodies" do
+      render
+
+      expect(rendered).to have_css("option", text: "Bright Futures Teaching School Hub")
+    end
+  end
 end

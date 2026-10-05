@@ -4,7 +4,7 @@ module ECTAtSchoolPeriods
       @ect_at_school_period = ect_at_school_period
     end
 
-    delegate :name, to: :appropriate_body
+    delegate :display_name, to: :appropriate_body
 
     def from_induction? = claimed_by_appropriate_body.present?
 
@@ -41,7 +41,7 @@ module ECTAtSchoolPeriods
 
     NullAppropriateBody = Data.define do
       def present? = false
-      def name = "Not reported"
+      def display_name = "Not reported"
     end
   end
 end

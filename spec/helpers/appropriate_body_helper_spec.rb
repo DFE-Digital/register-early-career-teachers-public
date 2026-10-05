@@ -24,6 +24,21 @@ RSpec.describe AppropriateBodyHelper, type: :helper do
     end
 
     it { is_expected.to contain_exactly(teaching_school_hub_appropriate_body_period) }
+
+    context "when a hub period has no name of its own" do
+      let!(:teaching_school_hub_appropriate_body_period) do
+        FactoryBot.create(
+          :appropriate_body_period,
+          :teaching_school_hub,
+          name: nil,
+          teaching_school_hub: FactoryBot.create(:teaching_school_hub, name: "Bright Futures Teaching School Hub")
+        )
+      end
+
+      it "labels the option with the parent hub name" do
+        expect(subject.map(&:display_name)).to contain_exactly("Bright Futures Teaching School Hub")
+      end
+    end
   end
 
   describe "#induction_programme_choices" do
