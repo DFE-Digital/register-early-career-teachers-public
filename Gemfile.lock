@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/DFE-Digital/dfe-analytics.git
-  revision: 3367c90f9e2566f9b27b87abee13b4070f6b663f
-  tag: v1.16.0
+  revision: 1beb572140130981efc7c7a77229c1702c7e79bd
+  tag: v1.16.1
   specs:
-    dfe-analytics (1.16.0)
+    dfe-analytics (1.16.1)
       google-cloud-bigquery (~> 1.38)
       httparty (~> 0.24)
       json (< 3)
@@ -308,7 +308,7 @@ GEM
     html-attributes-utils (1.0.2)
       activesupport (>= 6.1.4.4)
     http_parser.rb (0.8.1)
-    httparty (0.24.2)
+    httparty (0.24.3)
       csv
       mini_mime (>= 1.0.0)
       multi_xml (>= 0.5.2)
@@ -629,7 +629,7 @@ GEM
     regexp_parser (2.12.0)
     reline (0.7.0)
       io-console (~> 0.5)
-    representable (3.3.0)
+    representable (3.3.1)
       declarative (< 0.1.0)
       trailblazer-option (>= 0.1.1, < 0.2.0)
       uber (< 0.2.0)
