@@ -215,13 +215,14 @@ module API::Declarations
 
     def evidenced_at_is_within_milestone
       return if errors.any?
+      return unless Declaration.declaration_types.key?(declaration_type)
 
       EvidencedAtWithinMilestoneValidator.new.validate(self)
     end
 
     def evidenced_at_is_in_sequence_with_existing_declaration_dates
       return if errors.any?
-      return if declaration_type.blank?
+      return unless Declaration.declaration_types.key?(declaration_type)
       return unless contract_period && contract_period.year >= 2025
 
       ordered_types = Declaration.declaration_types.values
