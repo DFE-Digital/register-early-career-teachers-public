@@ -225,6 +225,14 @@ RSpec.describe "Admin::Schools::AddPartnershipWizardController", type: :request 
 
       expect(response).to redirect_to(path_for_step("select-delivery-partner"))
     end
+
+    it "redirects to contract period selection when confirming with an empty session" do
+      expect {
+        post path_for_step("check-answers"), params: { check_answers: {} }
+      }.not_to change(SchoolPartnership, :count)
+
+      expect(response).to redirect_to(path_for_step("select-contract-period"))
+    end
   end
 
 private
