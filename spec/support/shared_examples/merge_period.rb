@@ -1,11 +1,4 @@
-RSpec.describe Teachers::MergeTRN::Merge do
-  subject(:service) do
-    described_class.call(
-      periods:,
-      destination:
-    )
-  end
-
+RSpec.shared_context "a mergeable period" do
   let(:source) do
     FactoryBot.create(:teacher,
                       :merged_in_trs,
@@ -43,7 +36,6 @@ RSpec.describe Teachers::MergeTRN::Merge do
   let(:destination_attrs) { { teacher: destination, school: } }
   let(:tags) { [] }
   let(:periods) { [first_period, second_period] }
-  let(:period_type) { :mentor_at_school_period }
   let(:klass) { period_type.to_s.classify.constantize }
   let(:attrs) { { period_type => source_period } }
 
@@ -52,7 +44,17 @@ RSpec.describe Teachers::MergeTRN::Merge do
   let(:second_period_started_on) { Date.new(2025, 4, 1) }
   let(:second_period_finished_on) { Date.new(2025, 9, 30) }
 
-  shared_examples "it merges periods" do
+  def max_date
+    dates = [first_period_finished_on, second_period_finished_on]
+
+    return nil if dates.any?(&:nil?)
+
+    dates.compact.max
+  end
+end
+
+RSpec.shared_examples "it merges periods" do
+  context "it merges periods" do
     it "changes the start date of the second period" do
       expect { service }.to change(destination_period, :started_on).to(first_period_started_on)
     end
@@ -85,8 +87,10 @@ RSpec.describe Teachers::MergeTRN::Merge do
       end
     end
   end
+end
 
-  shared_examples "it reassigns training_periods" do
+RSpec.shared_examples "it reassigns training_periods" do
+  context "it reassigns training_periods" do
     let(:training_period_tag) { period_type == :mentor_at_school_period ? :for_mentor : :for_ect }
 
     context "when the training_periods do not overlap" do
@@ -138,8 +142,10 @@ RSpec.describe Teachers::MergeTRN::Merge do
       end
     end
   end
+end
 
-  shared_examples "it reassigns mentorship_periods" do
+RSpec.shared_examples "it reassigns mentorship_periods" do
+  context "it reassigns mentorship_periods" do
     context "when the mentorship_periods do not overlap" do
       let(:period_attr) { period_type == :mentor_at_school_period ? :mentor : :mentee }
       let(:other_period_attr) { period_type == :mentor_at_school_period ? :mentee : :mentor }
@@ -170,104 +176,5 @@ RSpec.describe Teachers::MergeTRN::Merge do
         expect { service }.to change { mentorship_period.reload.send(period_attr) }.to(destination_period)
       end
     end
-  end
-
-  shared_examples "it reassigns declarations" do
-    context "when there are declarations" do
-      let!(:declaration) { FactoryBot.create(:declaration, training_period: first_period) }
-
-      it "reassigns the training_period to the destination period's teacher" do
-        first_period.reload
-
-        expect { service }.to change { declaration.reload.training_period }.to(destination_period)
-      end
-    end
-  end
-
-  describe "#call" do
-    context "mentor at school periods" do
-      let(:period_type) { :mentor_at_school_period }
-
-      it_behaves_like "it merges periods"
-      it_behaves_like "it reassigns training_periods"
-      it_behaves_like "it reassigns mentorship_periods"
-    end
-
-    context "ect at school periods" do
-      let(:period_type) { :ect_at_school_period }
-
-      it_behaves_like "it merges periods"
-      it_behaves_like "it reassigns training_periods"
-      it_behaves_like "it reassigns mentorship_periods"
-    end
-
-    context "training periods" do
-      let(:period_type) { :training_period }
-      let(:tags) { [:for_ect] }
-
-      let(:source_ect) do
-        FactoryBot.create(:ect_at_school_period,
-                          teacher: source,
-                          school:,
-                          started_on: first_period_started_on,
-                          finished_on: first_period_finished_on)
-      end
-
-      let(:destination_ect) do
-        FactoryBot.create(:ect_at_school_period,
-                          teacher: destination,
-                          school:,
-                          started_on: first_period_started_on,
-                          finished_on: first_period_finished_on)
-      end
-
-      let(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, year: 2024) }
-      let(:source_attrs) { { ect_at_school_period: source_ect, school_partnership: } }
-      let(:destination_attrs) { { ect_at_school_period: destination_ect, school_partnership: } }
-
-      it_behaves_like "it merges periods"
-      it_behaves_like "it reassigns declarations"
-
-      context "when the periods are for different partnerships" do
-        let(:other_school_partnership) { FactoryBot.create(:school_partnership, :for_year, year: 2024) }
-        let(:destination_attrs) { { ect_at_school_period: destination_ect, school_partnership: other_school_partnership } }
-        let(:source_attrs) { { ect_at_school_period: source_ect, school_partnership: } }
-
-        it "raises a CannotMergePeriods error" do
-          expect { service }.to raise_error(Teachers::MergeTRN::Merge::CannotMergePeriods, "Periods have different partnerships")
-        end
-      end
-
-      context "when the periods have different training programmes" do
-        let(:tags) { %i[for_ect with_only_expression_of_interest] }
-
-        let(:destination_attrs) { { ect_at_school_period: destination_ect, training_programme: :school_led, expression_of_interest: nil, schedule: nil } }
-        let(:source_attrs) { { ect_at_school_period: source_ect } }
-
-        it "raises a CannotMergePeriods error" do
-          expect { service }.to raise_error(Teachers::MergeTRN::Merge::CannotMergePeriods, "Periods have different training programmes")
-        end
-      end
-
-      context "when the periods have different schedules" do
-        let(:tags) { %i[for_ect with_schedule] }
-        let(:lead_provider) { school_partnership.lead_provider }
-        let(:delivery_partner) { school_partnership.delivery_partner }
-        let(:other_school_partnership) { FactoryBot.create(:school_partnership, :for_year, year: 2023, lead_provider:, delivery_partner:) }
-        let(:destination_attrs) { { ect_at_school_period: destination_ect, school_partnership: other_school_partnership } }
-
-        it "raises a CannotMergePeriods error" do
-          expect { service }.to raise_error(Teachers::MergeTRN::Merge::CannotMergePeriods, "Periods have different schedules")
-        end
-      end
-    end
-  end
-
-  def max_date
-    dates = [first_period_finished_on, second_period_finished_on]
-
-    return nil if dates.any?(&:nil?)
-
-    dates.compact.max
   end
 end

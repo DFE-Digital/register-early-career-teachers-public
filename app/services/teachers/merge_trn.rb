@@ -85,13 +85,13 @@ module Teachers
 
     def merge_overlapping_mentor_at_school_periods
       overlapping_mentor_at_school_periods.each do |periods|
-        Teachers::MergeTRN::Merge.call(periods:, destination:)
+        Teachers::MergeTRN::MentorAtSchoolPeriods::Merge.call(periods:, destination:)
       end
     end
 
     def merge_overlapping_ect_at_school_periods
       overlapping_ect_at_school_periods.each do |periods|
-        Teachers::MergeTRN::Merge.call(periods:, destination:)
+        Teachers::MergeTRN::ECTAtSchoolPeriods::Merge.call(periods:, destination:)
       end
     end
 
