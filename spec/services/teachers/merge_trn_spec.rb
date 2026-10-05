@@ -65,6 +65,29 @@ RSpec.describe Teachers::MergeTRN do
                       finished_on: second_period_finished_on)
   end
 
+  let(:mentor) do
+    FactoryBot.create(:mentor_at_school_period,
+                      :unfinished,
+                      school:,
+                      started_on: first_period_started_on)
+  end
+
+  let!(:source_mentorship_period) do
+    FactoryBot.create(:mentorship_period,
+                      mentee: ect_at_school_period,
+                      mentor:,
+                      started_on: first_period_started_on,
+                      finished_on: first_period_finished_on)
+  end
+
+  let!(:destination_mentorship_period) do
+    FactoryBot.create(:mentorship_period,
+                      mentee: destination_ect_at_school_period,
+                      mentor:,
+                      started_on: second_period_started_on,
+                      finished_on: second_period_finished_on)
+  end
+
   let(:first_period_started_on) { Date.new(2025, 1, 1) }
   let(:first_period_finished_on) { Date.new(2025, 3, 31) }
   let(:second_period_started_on) { Date.new(2025, 6, 1) }
@@ -412,6 +435,37 @@ RSpec.describe Teachers::MergeTRN do
           end
         end
 
+        context "when there are overlapping mentorship periods" do
+          let!(:overlapping_ect_period) { nil }
+          let(:first_period_finished_on) { Date.new(2025, 7, 30) }
+
+          let!(:overlapping_mentorship_period) do
+            FactoryBot.create(:mentorship_period,
+                              mentee: ect_at_school_period,
+                              mentor:,
+                              started_on: overlapping_period_started_on,
+                              finished_on: overlapping_period_finished_on)
+          end
+
+          let!(:source_mentorship_period) do
+            FactoryBot.create(:mentorship_period,
+                              mentee: ect_at_school_period,
+                              mentor:,
+                              started_on: first_period_started_on,
+                              finished_on: Date.new(2025, 3, 30))
+          end
+
+          it "merges overlapping mentorship periods" do
+            service.merge!
+
+            merged_mentorship_period = MentorshipPeriod.where(mentor:).latest_first.first
+
+            expect(merged_mentorship_period.mentee.teacher).to eq(destination)
+            expect(merged_mentorship_period.started_on).to eq(overlapping_period_started_on)
+            expect(merged_mentorship_period.finished_on).to eq(second_period_finished_on)
+          end
+        end
+
         it "moves the non-overlapping ect at school periods to the destination teacher" do
           service.merge!
 
@@ -491,6 +545,8 @@ RSpec.describe Teachers::MergeTRN do
                           started_on: second_period_started_on,
                           finished_on: second_period_finished_on)
       end
+
+      let!(:destination_mentorship_period) { nil }
 
       it_behaves_like "does not move or change any data"
 
