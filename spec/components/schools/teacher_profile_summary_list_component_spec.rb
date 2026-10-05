@@ -48,6 +48,32 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
     end
   end
 
+  context "when the ECT is exempt from induction" do
+    let(:mentee_teacher) { FactoryBot.create(:teacher, :induction_exempt) }
+    let(:mentor_row) { page.find(".govuk-summary-list__row", text: "Mentor") }
+
+    context "and has a mentor assigned" do
+      before do
+        FactoryBot.create(:mentorship_period, :unfinished, mentee:, mentor: current_mentor, started_on: 2.years.ago)
+
+        render_inline(component)
+      end
+
+      it "renders the mentor name without the change mentor link" do
+        expect(mentor_row).to have_css(".govuk-summary-list__value", text: current_mentor_name)
+        expect(mentor_row).not_to have_link("Change")
+      end
+    end
+
+    context "and has no mentor assigned" do
+      before { render_inline(component) }
+
+      it "does not render the assign mentor link" do
+        expect(mentor_row).not_to have_link("Assign a mentor for this ECT")
+      end
+    end
+  end
+
   describe "school start date change link" do
     let(:school_start_date_row) do
       page.find(

@@ -50,6 +50,46 @@ RSpec.describe Schools::ECTs::MentorshipComponent, type: :component do
     end
   end
 
+  context "when the ECT is exempt from induction and has no current mentorship" do
+    let(:mentee_teacher) { FactoryBot.create(:teacher, :induction_exempt) }
+
+    it "does not render" do
+      render_inline(component)
+
+      expect(page).not_to have_link("Assign a mentor for this ECT")
+      expect(page).not_to have_css(".govuk-warning-text")
+    end
+  end
+
+  context "when the ECT is exempt from induction and has a current mentorship" do
+    let(:mentee_teacher) { FactoryBot.create(:teacher, :induction_exempt) }
+    let(:current_mentor_at_school_period) do
+      FactoryBot.create(
+        :mentor_at_school_period,
+        :unfinished,
+        teacher: FactoryBot.create(:teacher, corrected_name: "Test Mentor"),
+        school: ect_at_school_period.school,
+        started_on: ect_at_school_period.started_on
+      )
+    end
+
+    before do
+      FactoryBot.create(
+        :mentorship_period,
+        :unfinished,
+        mentee: ect_at_school_period,
+        mentor: current_mentor_at_school_period,
+        started_on: current_mentor_at_school_period.started_on
+      )
+    end
+
+    it "renders the current mentor name" do
+      render_inline(component)
+
+      expect(page).to have_text("Test Mentor")
+    end
+  end
+
   context "when the ECT has a current mentorship and no upcoming mentorships" do
     let(:current_mentor_teacher) do
       FactoryBot.create(:teacher, corrected_name: "Test Mentor")

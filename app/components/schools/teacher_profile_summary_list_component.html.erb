@@ -28,7 +28,7 @@
     <% row.with_value do %>
       <%= render Schools::ECTs::MentorshipComponent.new(@ect) %>
     <% end %>
-    <% if current_mentor.present? %>
+    <% if current_mentor.present? && !exempt? %>
       <% row.with_action(
           text: "Change",
           visually_hidden_text: "mentor",

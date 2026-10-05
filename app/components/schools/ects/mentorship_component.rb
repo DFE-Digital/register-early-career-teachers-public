@@ -6,7 +6,15 @@ module Schools::ECTs
       @ect_at_school_period = ect_at_school_period
     end
 
+    def render?
+      mentorship.current_mentor.present? || !exempt?
+    end
+
   private
+
+    def exempt?
+      ect_at_school_period.teacher.trs_induction_status == "Exempt"
+    end
 
     def assign_or_create_mentor_link
       govuk_link_to(
