@@ -19,7 +19,7 @@ module API
 
       false
     end
-    
+
     def invalid?
       !valid?
     end

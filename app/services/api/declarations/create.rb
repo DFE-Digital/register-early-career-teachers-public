@@ -125,15 +125,17 @@ module API::Declarations
 
     def teacher_api_id_is_not_blank
       return if errors.any?
+
       errors.add(:teacher_api_id, "Enter a '#/teacher_api_id'.") if teacher_api_id.blank?
     end
 
     def teacher_api_id_is_registered_with_a_lead_provider
       return if errors.any?
       return if teacher_registered_with_lead_provider?
+
       errors.add(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check participant details and try again.")
     end
-    
+
     def teacher_api_id_has_not_withdrawn_before_evidenced_at
       return if errors.any?
       return unless training_status&.withdrawn?
@@ -184,7 +186,7 @@ module API::Declarations
       return if errors.any?
 
       evidenced_at_is_not_blank
-      evidenced_at_is_in_RFC3339_format
+      evidenced_at_is_in_rfc3339_format
       evidenced_at_is_in_the_past
       evidenced_at_is_within_milestone
       evidenced_at_is_in_sequence_with_existing_declaration_dates
@@ -197,7 +199,7 @@ module API::Declarations
       errors.add(:evidenced_at, "Enter a '#/evidenced_at'.")
     end
 
-    def evidenced_at_is_in_RFC3339_format
+    def evidenced_at_is_in_rfc3339_format
       return if errors.any?
       return if API::DateTimeFormatCheck.new(evidenced_at).valid?
 
@@ -213,6 +215,7 @@ module API::Declarations
 
     def evidenced_at_is_within_milestone
       return if errors.any?
+
       EvidencedAtWithinMilestoneValidator.new.validate(self)
     end
 
@@ -268,13 +271,14 @@ module API::Declarations
 
     def declaration_type_is_a_valid_type
       return if errors.any?
-      return if Declaration.declaration_types.keys.include?(declaration_type)
+      return if Declaration.declaration_types.key?(declaration_type)
 
       errors.add(:declaration_type, "Enter a valid declaration type.")
     end
 
     def declaration_type_does_not_already_exist
       return if errors.any?
+
       if existing_declarations.billable_or_changeable_for_declaration_type(declaration_type).exists?
         errors.add(:declaration_type, "A declaration has already been submitted that will be, or has been, paid for this event.")
       end
