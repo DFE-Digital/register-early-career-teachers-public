@@ -11,23 +11,19 @@
     <%= row.with_value { @wizard.school.name } %>
   <% end %>
 
-  <%= list.with_row do |row| %>
-    <%= row.with_key { "Contract period" } %>
-    <%= row.with_value { @wizard.selected_contract_period_label } %>
-  <% end %>
-
-  <%= list.with_row do |row| %>
-    <%= row.with_key { "Lead provider" } %>
-    <%= row.with_value { @wizard.selected_lead_provider.name } %>
-  <% end %>
-
-  <%= list.with_row do |row| %>
-    <%= row.with_key { "Delivery partner" } %>
-    <%= row.with_value { @wizard.selected_delivery_partner.name } %>
+  <% @review.partnership_details.each do |answer| %>
+    <%= list.with_row do |row| %>
+      <%= row.with_key { answer.label } %>
+      <%= row.with_value { answer.formatted_value } %>
+    <% end %>
   <% end %>
 <% end %>
 
-<%= form_with(model: @wizard.current_step, url: @wizard.current_step_path, scope: @wizard.current_step_name) do |f| %>
+<%= form_with(
+  model: @wizard.current_step,
+  url: @wizard.current_step_path,
+  scope: @wizard.current_step_name
+) do |f| %>
   <%= f.govuk_submit "Confirm" %>
 <% end %>
 

@@ -5,14 +5,16 @@ module Admin
 
       FORM_KEY = "admin_schools_add_partnership_wizard"
 
-      include WizardStoreRescuable
-
       before_action :set_school
       before_action :reset_store_on_entry
       before_action :initialize_wizard
       before_action :check_allowed_step
 
       def new
+        if current_step == :check_answers
+          @review = Admin::Schools::AddPartnershipReview.new(@wizard)
+        end
+
         render current_step
       end
 
@@ -24,6 +26,10 @@ module Admin
             redirect_to @wizard.next_step_path
           end
         else
+          if current_step == :check_answers
+            @review = Admin::Schools::AddPartnershipReview.new(@wizard)
+          end
+
           render current_step
         end
       end
@@ -35,7 +41,9 @@ module Admin
       end
 
       def check_allowed_step
-        redirect_to @wizard.allowed_step_path unless @wizard.allowed_step?
+        return if @wizard.valid_path_to_current_step?
+
+        redirect_to @wizard.furthest_valid_step_path
       end
 
       def state_store
