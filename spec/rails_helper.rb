@@ -41,10 +41,6 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
 
   config.before do
-    allow(Rails.application.config).to receive_messages(
-      enable_teaching_school_hubs: true # RIAB: new data model
-    )
-
     # Ensure registration window (i.e contract periods) are always open
     allow(Schools::RegistrationWindow).to receive(:closed?).and_return(false)
 
