@@ -56,8 +56,7 @@ RSpec.describe Schools::ECTs::MentorshipComponent, type: :component do
     it "does not render" do
       render_inline(component)
 
-      expect(page).not_to have_link("Assign a mentor for this ECT")
-      expect(page).not_to have_css(".govuk-warning-text")
+      expect(rendered_content).to be_empty
     end
   end
 
