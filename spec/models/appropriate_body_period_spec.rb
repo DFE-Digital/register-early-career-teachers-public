@@ -13,11 +13,15 @@ describe AppropriateBodyPeriod do
   describe "associations" do
     it { is_expected.to belong_to(:dfe_sign_in_organisation) }
     it { is_expected.to belong_to(:appropriate_body) }
+    it { is_expected.to belong_to(:provisioning_school) }
     it { is_expected.to have_many(:induction_periods) }
     it { is_expected.to have_many(:pending_induction_submissions) }
     it { is_expected.to have_many(:events) }
     it { is_expected.to have_many(:oauth_authorizations).class_name("API::OAuth::Authorization").dependent(:destroy) }
     it { is_expected.to have_many(:unclaimed_ect_at_school_periods).class_name("ECTAtSchoolPeriod").with_foreign_key(:school_reported_appropriate_body_id) }
+    it { is_expected.to have_many(:region_awards).class_name("Region::Award").dependent(:destroy) }
+    it { is_expected.to have_many(:regions).through(:region_awards) }
+    it { is_expected.to have_many(:lead_schools).through(:region_awards).source(:school) }
   end
 
   describe "scopes" do
@@ -76,6 +80,23 @@ describe AppropriateBodyPeriod do
 
     it "removes leading and trailing spaces from the name" do
       expect(subject.name).to eql("Some appropriate body")
+    end
+  end
+
+  describe "lead schools and regions" do
+    let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, :teaching_school_hub) }
+    let(:school) { FactoryBot.create(:school) }
+    let(:region) { FactoryBot.create(:region) }
+    let(:other_region) { FactoryBot.create(:region) }
+
+    before do
+      FactoryBot.create(:region_award, appropriate_body_period:, school:, region:)
+      FactoryBot.create(:region_award, appropriate_body_period:, school:, region: other_region)
+    end
+
+    it "lists lead schools and regions collapsing multi-region schools" do
+      expect(appropriate_body_period.lead_schools).to contain_exactly(school)
+      expect(appropriate_body_period.regions).to contain_exactly(region, other_region)
     end
   end
 end

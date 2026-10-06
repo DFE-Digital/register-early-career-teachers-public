@@ -1,18 +1,38 @@
 <% page_data(
   title: @teaching_school_hub.name,
-  caption: @teaching_school_hub.districts.to_sentence
 ) %>
 
-<h2 class="govuk-heading-m">Lead school</h2>
-<p class="govuk-body">
-    <%=
-      if @teaching_school_hub.lead_school.present?
-        govuk_link_to(
-          @teaching_school_hub.lead_school.name,
-          href: admin_school_overview_path(@teaching_school_hub.lead_school.urn)
-          )
-      else
-        "No lead school assigned"
+<% @teaching_school_hub.appropriate_body_periods.each do |appropriate_body_period| %>
+  <h3 class="govuk-heading-s">
+    <%= appropriate_body_period.name %>
+  </h3>
+
+  <% if appropriate_body_period.provisioning_school.present? %>
+    <p class="govuk-body govuk-!-margin-bottom-3">
+      Provisioning lead school:
+      <%= govuk_link_to(appropriate_body_period.provisioning_school.name, href: admin_school_path(appropriate_body_period.provisioning_school.urn)) %>
+    </p>
+  <% end %>
+
+  <%=
+    govuk_table do |table|
+      table.with_head do |head|
+        head.with_row do |row|
+          row.with_cell(text: "Region")
+          row.with_cell(text: "Districts")
+          row.with_cell(text: "Lead school")
+        end
       end
-    %>
-</p>
+
+      table.with_body do |body|
+        appropriate_body_period.region_awards.select(&:active?).each do |award|
+          body.with_row do |row|
+            row.with_cell(text: award.region.code)
+            row.with_cell(text: award.region.districts.to_sentence)
+            row.with_cell(text: award.school.name)
+          end
+        end
+      end
+    end
+  %>
+<% end %>

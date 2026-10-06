@@ -5,7 +5,6 @@ RSpec.describe AppropriateBody, type: :model do
     it { is_expected.to belong_to(:dfe_sign_in_organisation) }
 
     it { is_expected.to have_many(:appropriate_body_periods) }
-    it { is_expected.to have_many(:regions) }
   end
 
   describe "validations" do
@@ -23,14 +22,6 @@ RSpec.describe AppropriateBody, type: :model do
       FactoryBot.create_list(:appropriate_body_period, 9, appropriate_body:)
       expect(appropriate_body.appropriate_body_periods.count).to eq(9)
     end
-  end
-
-  describe "#districts" do
-    before do
-      FactoryBot.create_list(:region, 3, appropriate_body:)
-    end
-
-    it { expect(appropriate_body.districts).not_to be_empty }
   end
 
   describe "#lead_school" do
