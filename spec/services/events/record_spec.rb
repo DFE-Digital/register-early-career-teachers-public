@@ -2536,14 +2536,14 @@ RSpec.describe Events::Record do
           provider_name:,
           schedule: "ecf-standard-september",
           started_on: first_period_started_on,
-          id: first_period.id, },
+          id: first_period.id },
         { finished_on: second_period_finished_on,
           training_programme: "provider_led",
           contract_period: 2025,
           provider_name:,
           schedule: "ecf-standard-september",
           started_on: second_period_started_on,
-          id: second_period.id, }
+          id: second_period.id }
       ]
     end
 
@@ -2630,14 +2630,14 @@ RSpec.describe Events::Record do
             provider_name: nil,
             schedule: nil,
             started_on: first_period_started_on,
-            id: first_period.id, },
+            id: first_period.id },
           { finished_on: second_period_finished_on,
             training_programme: "school_led",
             contract_period: nil,
             provider_name: nil,
             schedule: nil,
             started_on: second_period_started_on,
-            id: second_period.id, }
+            id: second_period.id }
         ]
       end
 
@@ -2758,10 +2758,10 @@ RSpec.describe Events::Record do
           formatted_periods = [
             { finished_on: Date.new(2025, 6, 30),
               started_on: Date.new(2025, 1, 1),
-              id: first_period.id, },
+              id: first_period.id },
             { finished_on: nil,
               started_on: Date.new(2025, 7, 1),
-              id: second_period.id, }
+              id: second_period.id }
           ]
 
           Events::Record.record_teacher_mentorship_periods_merged!(author:, teacher:, periods:, successor_period:)
@@ -2793,10 +2793,10 @@ RSpec.describe Events::Record do
             { finished_on: Date.new(2025, 6, 30),
 
               started_on: Date.new(2025, 1, 1),
-              id: first_period.id, },
+              id: first_period.id },
             { finished_on: Date.new(2025, 12, 31),
               started_on: Date.new(2025, 7, 1),
-              id: second_period.id, }
+              id: second_period.id }
           ]
 
           expect(Event.sole).to have_attributes(
