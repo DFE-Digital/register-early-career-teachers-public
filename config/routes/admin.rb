@@ -33,10 +33,8 @@ namespace :admin do
         end
       end
 
-      constraints -> { Rails.application.config.enable_teaching_school_hubs } do
-        resources :teaching_school_hubs, only: %i[index show], path: "teaching-school-hubs"
-        resources :dsi_orgs, controller: "dfe_sign_in_organisations", only: %i[show], path: "dfe-sign-in"
-      end
+      resources :teaching_school_hubs, only: %i[index show], path: "teaching-school-hubs"
+      resources :dsi_orgs, controller: "dfe_sign_in_organisations", only: %i[show], path: "dfe-sign-in"
 
       resources :lead_providers, only: %i[index], path: "lead-providers"
       resources :delivery_partners, only: %i[index show new create edit update], path: "delivery-partners" do

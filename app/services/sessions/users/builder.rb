@@ -160,7 +160,6 @@ module Sessions
       #
       # Create new TSHs and NB records from existing AppropriateBody records as needed
       def migrate_appropriate_bodies!
-        return unless Rails.application.config.enable_teaching_school_hubs
         return unless appropriate_body_user?
         return unless School.exists?
 
