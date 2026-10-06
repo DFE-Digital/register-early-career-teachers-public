@@ -135,7 +135,7 @@ RSpec.describe "Admin finance framework agreement contracts", type: :request do
         created_contract = Contract.last
         expect(response).to redirect_to(admin_contract_period_framework_agreement_contract_path(contract_period, framework_agreement, created_contract))
         expect(created_contract.banded_fee_structure.band_terms.size).to eq(3)
-        expect(created_contract.banded_fee_structure.band_terms.map(&:service_fee_ratio)).to all(eq(0.2))
+        expect(created_contract.banded_fee_structure.band_terms.map(&:service_fee_proportion)).to all(eq(0.2))
         expect(created_contract.flat_rate_fee_structure.fee_per_declaration).to eq(500)
         expect(created_contract.flat_rate_fee_structure.recruitment_target).to eq(100)
       end
@@ -344,8 +344,8 @@ RSpec.describe "Admin finance framework agreement contracts", type: :request do
           expect(response).to redirect_to(contract_path)
           expect(contract.reload.vat_rate).to eq(0.1)
           expect(band_term.reload.fee_per_declaration).to eq(999)
-          expect(band_term.output_fee_ratio).to eq(0.8)
-          expect(band_term.service_fee_ratio).to eq(0.2)
+          expect(band_term.output_fee_proportion).to eq(0.8)
+          expect(band_term.service_fee_proportion).to eq(0.2)
         end
       end
 

@@ -174,8 +174,8 @@ RSpec.describe "Update contract band percentages", :js do
   def then_the_band_term_percentages_are(output:, service:)
     band_term = @contract.banded_fee_structure.band_terms.first
 
-    expect(band_term.reload.output_fee_ratio).to eq(output)
-    expect(band_term.service_fee_ratio).to eq(service)
+    expect(band_term.reload.output_fee_proportion).to eq(output)
+    expect(band_term.service_fee_proportion).to eq(service)
   end
 
   def output_input

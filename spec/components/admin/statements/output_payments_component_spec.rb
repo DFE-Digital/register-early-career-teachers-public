@@ -12,14 +12,12 @@ RSpec.describe Admin::Statements::OutputPaymentsComponent, type: :component do
 
       FactoryBot.build(:contract_banded_fee_structure_band_term,
                        fee_per_declaration:,
-                       output_fee_ratio:,
-                       service_fee_ratio:,
+                       output_fee_proportion:,
                        band:)
     end
   end
 
-  let(:output_fee_ratio) { 0.8 }
-  let(:service_fee_ratio) { 0.2 }
+  let(:output_fee_proportion) { 0.8 }
   let(:capacity) { 10 }
 
   let(:banded_fee_structure) do
@@ -34,7 +32,7 @@ RSpec.describe Admin::Statements::OutputPaymentsComponent, type: :component do
     declaration_type_outputs = Declaration.declaration_types.keys.flat_map do |declaration_type|
       banded_fee_structure.band_terms.map.with_index do |band_term, i|
         count = billable_counts.dig(declaration_type, i) || 0
-        fee = fee_proportions[declaration_type] * band_term.output_fee_ratio * band_term.fee_per_declaration
+        fee = fee_proportions[declaration_type] * band_term.output_fee_proportion * band_term.fee_per_declaration
 
         double(
           declaration_type:,

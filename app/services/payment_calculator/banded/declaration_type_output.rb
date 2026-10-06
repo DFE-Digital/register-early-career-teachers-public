@@ -26,7 +26,7 @@ module PaymentCalculator
     delegate :declaration_type, :band, :billable_count, :refundable_count, to: :band_allocation
 
     def type_adjusted_fee_per_declaration
-      fee_proportion * band_term.output_fee_ratio * band_term.fee_per_declaration
+      fee_proportion * band_term.output_fee_proportion * band_term.fee_per_declaration
     end
 
     def total_billable_amount = billable_count * type_adjusted_fee_per_declaration

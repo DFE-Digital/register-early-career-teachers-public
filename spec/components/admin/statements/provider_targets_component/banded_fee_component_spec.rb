@@ -3,13 +3,13 @@ RSpec.describe Admin::Statements::ProviderTargetsComponent::BandedFeeComponent, 
 
   let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
 
-  let(:uplift_target_ratio) { 0.33 }
+  let(:uplift_target_proportion) { 0.33 }
 
   let(:banded_fee_structure) do
     FactoryBot.build(:contract_banded_fee_structure,
                      recruitment_target: 2500,
                      uplift_fee_per_declaration: 50,
-                     uplift_target_ratio:,
+                     uplift_target_proportion:,
                      setup_fee: 5000,
                      band_terms: [
                        FactoryBot.build(:contract_banded_fee_structure_band_term,
@@ -54,8 +54,8 @@ RSpec.describe Admin::Statements::ProviderTargetsComponent::BandedFeeComponent, 
       expect(page).to have_summary_list_row("Uplift target", value: "33%")
     end
 
-    context "when the uplift target ratio is missing" do
-      let(:uplift_target_ratio) { nil }
+    context "when the uplift target proportion is missing" do
+      let(:uplift_target_proportion) { nil }
 
       it "does not render the uplift target" do
         expect(page).not_to have_summary_list_row("Uplift target")
@@ -86,8 +86,8 @@ RSpec.describe Admin::Statements::ProviderTargetsComponent::BandedFeeComponent, 
       )
     end
 
-    context "when the uplift target ratio is not the default" do
-      let(:uplift_target_ratio) { 0.4 }
+    context "when the uplift target proportion is not the default" do
+      let(:uplift_target_proportion) { 0.4 }
 
       it "renders the uplift target from the banded fee structure" do
         expect(page).to have_summary_list_row("Uplift target", value: "40%")
