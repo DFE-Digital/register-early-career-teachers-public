@@ -18,8 +18,8 @@ module API::Declarations
     attribute :declaration_type
     attribute :evidence_type
 
-    validates :teacher_api_id, presence: { message: "Enter a '#/teacher_api_id'." }
-    validate :teacher_exists
+    validate :teacher_api_id_exists_and_is_registered_with_lead_provider
+
     validates :teacher_type, presence: { message: "Enter a '#/teacher_type'." }, if: -> { errors.empty? }
     validates :teacher_type, inclusion: {
       in: TEACHER_TYPES,
@@ -45,7 +45,6 @@ module API::Declarations
     validate :payment_statement_available
     validate :validate_milestone_exists
     validate :declaration_in_sequence
-    validate :teacher_registered_with_lead_provider
 
     def create
       return false unless valid?
@@ -133,6 +132,41 @@ module API::Declarations
       ).statements.first
     end
 
+    #########################################################
+    ### teacher_api_id validations
+
+    def teacher_api_id_exists_and_is_registered_with_lead_provider
+      return if errors.any?
+
+      teacher_api_id_is_not_blank
+      teacher_api_id_is_registered_with_a_lead_provider
+      teacher_api_id_has_not_withdrawn_before_evidenced_at
+    end
+
+    def teacher_api_id_is_not_blank
+      return if errors.any?
+
+      errors.add(:teacher_api_id, "Enter a '#/teacher_api_id'.") if teacher_api_id.blank?
+    end
+
+    def teacher_api_id_is_registered_with_a_lead_provider
+      return if errors.any?
+      return if teacher_registered_with_lead_provider?
+
+      errors.add(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check participant details and try again.")
+    end
+
+    def teacher_api_id_has_not_withdrawn_before_evidenced_at
+      return if errors.any?
+      return unless training_status&.withdrawn?
+      return unless API::DateTimeFormatCheck.new(evidenced_at).valid?
+      return unless training_period.withdrawn_at <= evidenced_at
+
+      errors.add(:teacher_api_id, "This participant withdrew from this course on #{training_period.withdrawn_at.utc.rfc3339}. Enter a '#/evidenced_at' that's on or before the withdrawal date.")
+    end
+
+    #########################################################
+
     def evidenced_at_in_the_past
       return if errors[:evidenced_at].any?
       return if errors[:declaration_type].any?
@@ -142,14 +176,6 @@ module API::Declarations
       if evidenced_at && evidenced_at > Time.zone.now
         errors.add(:evidenced_at, "The '#/evidenced_at' value cannot be a future date. Check the date and try again.")
       end
-    end
-
-    def teacher_exists
-      return if errors[:teacher_api_id].any?
-      return if errors[:teacher_type].any?
-      return if teacher
-
-      errors.add(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check participant details and try again.")
     end
 
     def teacher_type_exists
@@ -162,13 +188,6 @@ module API::Declarations
       return unless teacher_registered_with_lead_provider?
 
       errors.add(:teacher_type, "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again.")
-    end
-
-    def teacher_registered_with_lead_provider
-      return if errors[:teacher_api_id].any? || errors[:lead_provider_id].any?
-      return if teacher_registered_with_lead_provider?
-
-      errors.add(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check participant details and try again.")
     end
 
     def teacher_registered_with_lead_provider?
