@@ -218,3 +218,8 @@ variable "deploy_managed_redis" {
   type        = bool
   default     = true
 }
+
+variable "pg_airbyte_enabled" {
+  default     = false
+  description = "Whether to enable wal replication for Airbyte to connect to the Postgres database"
+}
