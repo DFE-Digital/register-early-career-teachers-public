@@ -5,9 +5,7 @@ module Teachers
     end
 
     def merge!
-      return unless merge_required?
-      return if destination.blank?
-      return if merged_blocked?
+      return unless eligible_for_merge?
 
       teacher_started_induction_on = teacher.induction_periods.minimum(:started_on)
 
@@ -35,40 +33,11 @@ module Teachers
     attr_reader :teacher
 
     def destination
-      @destination || Teacher.find_by_trn(teacher.trs_redirected_to)
+      @destination ||= Teacher.find_by_trn(teacher.trs_redirected_to)
     end
 
-    def merge_required?
-      teacher.trs_response == "permanent_redirect" && teacher.trs_redirected_to.present?
-    end
-
-    def merged_blocked?
-      both_teachers_have_induction_periods? ||
-        overlapping_ect_periods_at_different_schools? ||
-        training_periods_have_different_contract_periods?
-    end
-
-    def both_teachers_have_induction_periods?
-      teacher.induction_periods.any? && destination.induction_periods.any?
-    end
-
-    def training_periods_have_different_contract_periods?
-      mentor_training_periods = teacher.mentor_training_periods + destination.mentor_training_periods
-
-      return true if mentor_training_periods.map(&:contract_period).uniq.size > 1
-
-      ect_training_periods = teacher.ect_training_periods + destination.ect_training_periods
-
-      ect_training_periods.map(&:contract_period).uniq.size > 1
-    end
-
-    def overlapping_ect_periods_at_different_schools?
-      teacher.ect_at_school_periods.any? do |period|
-        destination.ect_at_school_periods
-          .where.not(school_id: period.school_id)
-          .overlapping_with(period)
-          .exists?
-      end
+    def eligible_for_merge?
+      Teachers::MergeTRN::Eligibility.new(teacher:).can_be_merged?
     end
 
     def overlapping_mentor_at_school_periods
