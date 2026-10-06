@@ -68,8 +68,9 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
     context "and has no mentor assigned" do
       before { render_inline(component) }
 
-      it "does not render the assign mentor link" do
-        expect(mentor_row).not_to have_link("Assign a mentor for this ECT")
+      it "does not render the mentor row" do
+        expect(page).not_to have_css(".govuk-summary-list__key", text: "Mentor")
+        expect(page).not_to have_link("Assign a mentor for this ECT")
       end
     end
   end
