@@ -6,13 +6,16 @@ RSpec.describe Teachers::MergeTRN::ECTAtSchoolPeriods::Merge do
     )
   end
 
-  describe "#call" do
-    include_context "a mergeable period"
-    let(:period_type) { :ect_at_school_period }
+  let(:period_type) { :ect_at_school_period }
+  let(:tags) { [] }
 
+  include_context "a mergeable period"
+
+  describe "#call" do
     it_behaves_like "it merges periods"
-    it_behaves_like "it reassigns training_periods"
-    it_behaves_like "it reassigns mentorship_periods"
+    it_behaves_like "it moves non-overlapping training_periods"
+    it_behaves_like "it merges overlapping training periods"
+    it_behaves_like "it moves non-overlapping mentorship_periods"
 
     context "when there are overlapping mentorship periods" do
       let(:mentor) do
@@ -39,12 +42,18 @@ RSpec.describe Teachers::MergeTRN::ECTAtSchoolPeriods::Merge do
       end
 
       it "calls the Merge service for overlapping mentorship periods" do
+        allow(Teachers::MergeTRN::MentorshipPeriods::Overlapping).to receive(:find).and_call_original
+
         expect(Teachers::MergeTRN::MentorshipPeriods::Merge).to receive(:call).with(
-          periods: [source_mentorship_period, destination_mentorship_period],
+          periods: contain_exactly(source_mentorship_period, destination_mentorship_period),
           destination:
         )
 
         service
+
+        expect(Teachers::MergeTRN::MentorshipPeriods::Overlapping).to have_received(:find).with(
+          periods: contain_exactly(source_mentorship_period, destination_mentorship_period)
+        )
       end
 
       it "changes the start date of the second period" do

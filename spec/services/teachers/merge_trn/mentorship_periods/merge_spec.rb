@@ -6,10 +6,12 @@ RSpec.describe Teachers::MergeTRN::MentorshipPeriods::Merge do
     )
   end
 
-  describe "#call" do
-    include_context "a mergeable period"
+  let(:period_type) { :mentorship_period }
+  let(:tags) { [] }
 
-    let(:period_type) { :mentorship_period }
+  include_context "a mergeable period"
+
+  describe "#call" do
     let(:mentor) do
       FactoryBot.create(:mentor_at_school_period,
                         :unfinished,
@@ -17,7 +19,7 @@ RSpec.describe Teachers::MergeTRN::MentorshipPeriods::Merge do
                         started_on: first_period_started_on)
     end
 
-    let(:source_ect) do
+    let(:source_mentee_period) do
       FactoryBot.create(:ect_at_school_period,
                         teacher: source,
                         school:,
@@ -25,7 +27,7 @@ RSpec.describe Teachers::MergeTRN::MentorshipPeriods::Merge do
                         finished_on: first_period_finished_on)
     end
 
-    let(:destination_ect) do
+    let(:destination_mentee_period) do
       FactoryBot.create(:ect_at_school_period,
                         teacher: destination,
                         school:,
@@ -33,20 +35,20 @@ RSpec.describe Teachers::MergeTRN::MentorshipPeriods::Merge do
                         finished_on: first_period_finished_on)
     end
 
-    let(:source_attrs) { { mentee: source_ect, mentor: } }
-    let(:destination_attrs) { { mentee: destination_ect, mentor: } }
+    let(:source_attrs) { { mentee: source_mentee_period, mentor: } }
+    let(:destination_attrs) { { mentee: destination_mentee_period, mentor: } }
 
     it_behaves_like "it merges periods"
 
     context "when the periods are for different mentors" do
-      let(:other_mentor) do
+      let(:other_mentor_period) do
         FactoryBot.create(:mentor_at_school_period,
                           :unfinished,
                           school:,
                           started_on: first_period_started_on)
       end
 
-      let(:destination_attrs) { { mentee: destination_ect, mentor: other_mentor } }
+      let(:destination_attrs) { { mentee: destination_mentee_period, mentor: other_mentor_period } }
 
       it "raises a CannotMergePeriods error" do
         expect { service }.to raise_error(Teachers::MergeTRN::MentorshipPeriods::Merge::CannotMergePeriods, "Periods have different mentors")

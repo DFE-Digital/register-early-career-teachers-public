@@ -1,28 +1,25 @@
 module GIAS::Reconciliation
   module MentorAtSchoolPeriods
     class Overlapping
-      def self.find(...) = new(...).find
+      include Periods::Overlapping
 
       def initialize(teacher:, schools:)
         @teacher = teacher
         @schools = Array(schools).compact.uniq
-        @groups = []
       end
 
       def find
         return [] if only_one_school?
 
-        group_mentor_at_school_periods
-
-        groups.select(&:many?)
+        super
       end
 
     private
 
-      attr_reader :teacher, :schools, :groups
+      attr_reader :teacher, :schools
 
-      def ordered_mentor_at_school_periods
-        @ordered_mentor_at_school_periods ||= teacher
+      def ordered_periods
+        @ordered_periods ||= teacher
           .mentor_at_school_periods
           .where(school: schools)
           .order(:started_on)
@@ -40,26 +37,6 @@ module GIAS::Reconciliation
           .limit(2)
           .pluck(:school_id)
           .one?
-      end
-
-      def group_mentor_at_school_periods
-        ordered_mentor_at_school_periods.each do |period|
-          if start_new_group?(groups.last, period)
-            groups << [period]
-          else
-            groups.last << period
-          end
-        end
-      end
-
-      def start_new_group?(current_group, next_period)
-        current_group.nil? || gap_between?(current_group, next_period)
-      end
-
-      def gap_between?(group, period)
-        return false if group.any?(&:unfinished?)
-
-        group.map(&:finished_on).max < period.started_on
       end
     end
   end

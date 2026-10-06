@@ -2,7 +2,6 @@ module Teachers
   class MergeTRN
     module ECTAtSchoolPeriods
       class Merge
-        include Periods::Mergeable
         include Teachers::MergeTRN::Concerns::MergeableAtSchoolPeriod
 
       private
@@ -30,7 +29,8 @@ module Teachers
         end
 
         def overlapping_mentorship_periods
-          @overlapping_mentorship_periods ||= Teachers::MergeTRN::Overlapping.find(periods: source_and_destination_mentorship_periods)
+          @overlapping_mentorship_periods ||=
+            Teachers::MergeTRN::MentorshipPeriods::Overlapping.find(periods: source_and_destination_mentorship_periods)
         end
       end
     end

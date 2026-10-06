@@ -43,13 +43,13 @@ module Teachers
     def overlapping_mentor_at_school_periods
       periods = teacher.mentor_at_school_periods + destination.mentor_at_school_periods
 
-      Teachers::MergeTRN::Overlapping.find(periods:)
+      Teachers::MergeTRN::MentorAtSchoolPeriods::Overlapping.find(periods:)
     end
 
     def overlapping_ect_at_school_periods
       periods = teacher.ect_at_school_periods + destination.ect_at_school_periods
 
-      Teachers::MergeTRN::Overlapping.find(periods:)
+      Teachers::MergeTRN::ECTAtSchoolPeriods::Overlapping.find(periods:)
     end
 
     def merge_overlapping_mentor_at_school_periods

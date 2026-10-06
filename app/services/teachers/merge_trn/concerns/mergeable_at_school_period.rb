@@ -2,6 +2,9 @@ module Teachers
   class MergeTRN
     module Concerns
       module MergeableAtSchoolPeriod
+        extend ActiveSupport::Concern
+        include Periods::Mergeable
+
       private
 
         def training_periods
@@ -26,7 +29,7 @@ module Teachers
         end
 
         def update_mentorship_periods!
-          mentorship_periods.each { |period| period.update!(mentorship_attrs) }
+          raise NotImplementedError, "Subclasses must implement the update_mentorship_periods! method"
         end
 
         def update_training_periods!
@@ -44,7 +47,8 @@ module Teachers
         end
 
         def overlapping_training_periods
-          @overlapping_training_periods ||= Teachers::MergeTRN::Overlapping.find(periods: source_and_destination_training_periods)
+          @overlapping_training_periods ||=
+            Teachers::MergeTRN::TrainingPeriods::Overlapping.find(periods: source_and_destination_training_periods)
         end
 
         def source_and_destination_training_periods

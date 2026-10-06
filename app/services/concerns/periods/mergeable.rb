@@ -32,7 +32,7 @@ module Periods
 
     attr_reader :periods, :destination
 
-    # Periods to merge are provided by the Overlapping service, and always include
+    # Periods to merge are provided by an appropriate Overlapping service, and always include
     # at least one period from the destination that the others will be merged into.
     def successor_period
       @successor_period ||= periods
