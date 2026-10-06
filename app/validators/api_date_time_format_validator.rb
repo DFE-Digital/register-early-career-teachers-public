@@ -11,7 +11,13 @@ private
 
   def date_has_the_right_format(record, attribute, value)
     return if value.blank?
-    return if API::DateTimeFormatCheck.new(value).valid?
+
+    return if value.to_s.match?(RFC3339_DATE_REGEX) &&
+      begin
+        Time.zone.parse(value.to_s)
+      rescue ArgumentError
+        false
+      end
 
     record.errors.add(attribute, "Enter a valid RFC3339 '#/#{attribute}'.")
   end

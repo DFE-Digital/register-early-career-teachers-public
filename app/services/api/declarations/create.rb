@@ -18,14 +18,20 @@ module API::Declarations
     attribute :declaration_type
     attribute :evidence_type
 
-    validate :teacher_api_id_exists_and_is_registered_with_lead_provider
+    validates :evidenced_at, presence: { message: "Enter a '#/evidenced_at'." }, if: -> { errors.empty? }
+    validates :evidenced_at, api_date_time_format: true
+    validate :evidenced_at_in_the_past
+    validates :evidenced_at,
+              evidenced_at_within_milestone: true,
+              allow_blank: true
+
+    validate :teacher_exists_with_lead_provider
 
     validates :teacher_type, presence: { message: "Enter a '#/teacher_type'." }, if: -> { errors.empty? }
     validates :teacher_type, inclusion: {
       in: TEACHER_TYPES,
       message: "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again."
     }, allow_blank: true
-    validates :evidenced_at, presence: { message: "Enter a '#/evidenced_at'." }, if: -> { errors.empty? }
     validate :teacher_type_exists
     validates :declaration_type, presence: { message: "Enter a '#/declaration_type'." }, if: -> { errors.empty? }
     validates :declaration_type, inclusion: {
@@ -33,11 +39,6 @@ module API::Declarations
       message: "Enter a valid declaration type."
     }, allow_blank: true, if: -> { errors.empty? }
     validate :validates_billable_slot_available
-    validates :evidenced_at, api_date_time_format: true
-    validate :evidenced_at_in_the_past
-    validates :evidenced_at,
-              evidenced_at_within_milestone: true,
-              allow_blank: true
     validate :validate_only_started_or_completed_if_mentor
     validates :evidence_type, evidence_type: true, if: -> { errors.empty? }
     validate :teacher_not_withdrawn_before_evidenced_at
@@ -135,31 +136,13 @@ module API::Declarations
     #########################################################
     ### teacher_api_id validations
 
-    def teacher_api_id_exists_and_is_registered_with_lead_provider
+    def teacher_exists_with_lead_provider
       return if errors.any?
 
-      teacher_api_id_is_not_blank
-      teacher_api_id_is_registered_with_a_lead_provider
-      teacher_api_id_has_not_withdrawn_before_evidenced_at
-    end
+      return errors.add(:teacher_api_id, "Enter a '#/teacher_api_id'.") if teacher_api_id.blank?
+      return errors.add(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check participant details and try again.") unless teacher_registered_with_lead_provider?
 
-    def teacher_api_id_is_not_blank
-      return if errors.any?
-
-      errors.add(:teacher_api_id, "Enter a '#/teacher_api_id'.") if teacher_api_id.blank?
-    end
-
-    def teacher_api_id_is_registered_with_a_lead_provider
-      return if errors.any?
-      return if teacher_registered_with_lead_provider?
-
-      errors.add(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check participant details and try again.")
-    end
-
-    def teacher_api_id_has_not_withdrawn_before_evidenced_at
-      return if errors.any?
       return unless training_status&.withdrawn?
-      return unless API::DateTimeFormatCheck.new(evidenced_at).valid?
       return unless training_period.withdrawn_at <= evidenced_at
 
       errors.add(:teacher_api_id, "This participant withdrew from this course on #{training_period.withdrawn_at.utc.rfc3339}. Enter a '#/evidenced_at' that's on or before the withdrawal date.")
