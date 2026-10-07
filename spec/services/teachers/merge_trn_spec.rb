@@ -134,8 +134,8 @@ RSpec.describe Teachers::MergeTRN do
       it "moves the at-school periods to the destination teacher" do
         service.merge!
 
-        expect(ect_at_school_period.reload.teacher).to eq(destination)
-        expect(mentor_at_school_period.reload.teacher).to eq(destination)
+        expect(ect_at_school_period.reload.teacher).to eq(destination_teacher)
+        expect(mentor_at_school_period.reload.teacher).to eq(destination_teacher)
       end
 
       it "leaves the destinations teacher's periods in place" do
@@ -154,8 +154,8 @@ RSpec.describe Teachers::MergeTRN do
       it "moves the declarations with their training periods to the destination teacher" do
         service.merge!
 
-        expect(ect_declaration.reload.training_period.teacher).to eq(destination)
-        expect(mentor_declaration.reload.training_period.teacher).to eq(destination)
+        expect(ect_declaration.reload.training_period.teacher).to eq(destination_teacher)
+        expect(mentor_declaration.reload.training_period.teacher).to eq(destination_teacher)
       end
 
       it "does not merge any periods" do
@@ -174,8 +174,8 @@ RSpec.describe Teachers::MergeTRN do
         it "moves the induction records to the destination teacher" do
           service.merge!
 
-          expect(induction_period.reload.teacher).to eq(destination)
-          expect(induction_extension.reload.teacher).to eq(destination)
+          expect(induction_period.reload.teacher).to eq(destination_teacher)
+          expect(induction_extension.reload.teacher).to eq(destination_teacher)
         end
 
         it "syncs the moved induction start date with TRS" do
@@ -337,7 +337,7 @@ RSpec.describe Teachers::MergeTRN do
           it "moves the earliest frozen payment years to the destination" do
             service.merge!
 
-            expect(destination.reload.mentor_payments_frozen_year).to eq(2023)
+            expect(destination_teacher.reload.mentor_payments_frozen_year).to eq(2023)
           end
         end
 
@@ -363,7 +363,7 @@ RSpec.describe Teachers::MergeTRN do
           it "moves the earliest frozen payment years to the destination" do
             service.merge!
 
-            expect(destination.reload.ect_payments_frozen_year).to eq(2023)
+            expect(destination_teacher.reload.ect_payments_frozen_year).to eq(2023)
           end
         end
       end
@@ -381,9 +381,9 @@ RSpec.describe Teachers::MergeTRN do
         expect { service.merge! }.to change(TeacherIdChange, :count).by(1)
 
         change = TeacherIdChange.last
-        expect(change.teacher).to eq(destination)
+        expect(change.teacher).to eq(destination_teacher)
         expect(change.api_from_teacher_id).to eq(source_api_id)
-        expect(change.api_to_teacher_id).to eq(destination.api_id)
+        expect(change.api_to_teacher_id).to eq(destination_teacher.api_id)
       end
 
       it "moves the source's existing teacher_id_changes onto the destination" do
@@ -391,7 +391,7 @@ RSpec.describe Teachers::MergeTRN do
 
         service.merge!
 
-        expect(earlier_change.reload.teacher).to eq(destination)
+        expect(earlier_change.reload.teacher).to eq(destination_teacher)
       end
 
       it "populates the destination's metadata (which the model hooks do not do on reassignment)" do
