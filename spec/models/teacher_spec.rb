@@ -705,4 +705,16 @@ describe Teacher do
       it { is_expected.not_to be_syncable_with_trs }
     end
   end
+
+  describe "#training_periods" do
+    subject { teacher.training_periods }
+
+    let(:teacher) { FactoryBot.create(:teacher) }
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
+    let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:) }
+    let!(:ect_training_period) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:) }
+    let!(:mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:) }
+
+    it { is_expected.to contain_exactly(ect_training_period, mentor_training_period) }
+  end
 end
