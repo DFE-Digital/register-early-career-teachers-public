@@ -87,7 +87,7 @@ FactoryBot.define do
         contract_period do
           school_partnership&.contract_period ||
             expression_of_interest&.contract_period ||
-            FactoryBot.create(:contract_period)
+            association(:contract_period)
         end
       end
 

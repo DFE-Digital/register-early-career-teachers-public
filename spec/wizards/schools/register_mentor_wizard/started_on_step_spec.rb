@@ -30,7 +30,7 @@ RSpec.describe Schools::RegisterMentorWizard::StartedOnStep do
 
     let(:ineligible) { false }
     let(:provider_led) { true }
-    let(:previous_training_period) { FactoryBot.build(:training_period) }
+    let(:previous_training_period) { FactoryBot.build_stubbed(:training_period) }
 
     before do
       allow(wizard.mentor).to receive_messages(
