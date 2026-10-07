@@ -28,7 +28,7 @@ module Teachers
         BeginECTInductionJob.perform_now(trn: destination.trn, start_date: teacher_started_induction_on)
       end
 
-      Teachers::SyncTeacherWithTRSJob.perform_later(teacher: destination, wait: 5.minutes)
+      Teachers::SyncTeacherWithTRSJob.set(wait: 5.minutes).perform_later(teacher: destination)
     end
 
   private
