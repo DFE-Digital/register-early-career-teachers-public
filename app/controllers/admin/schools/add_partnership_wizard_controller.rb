@@ -48,6 +48,7 @@ module Admin
 
       def state_store
         @state_store ||= Admin::Schools::AddPartnershipWizard::StateStore.new(
+          school: @school,
           repository: DfE::Wizard::Repository::Session.new(
             session:,
             key: FORM_KEY
@@ -64,7 +65,6 @@ module Admin
           current_step:,
           current_step_params: params,
           author: current_user,
-          school_urn: @school.urn,
           state_store:
         )
       end

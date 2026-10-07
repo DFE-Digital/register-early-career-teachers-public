@@ -3,7 +3,10 @@ RSpec.describe Admin::Schools::AddPartnershipWizard::Wizard do
 
   let(:repository) { DfE::Wizard::Repository::InMemory.new }
   let(:state_store) do
-    Admin::Schools::AddPartnershipWizard::StateStore.new(repository:)
+    Admin::Schools::AddPartnershipWizard::StateStore.new(
+      school:,
+      repository:
+    )
   end
 
   let(:school) { FactoryBot.create(:school) }
@@ -24,7 +27,6 @@ RSpec.describe Admin::Schools::AddPartnershipWizard::Wizard do
   let(:wizard) do
     described_class.new(
       state_store:,
-      school_urn: school.urn,
       author: nil,
       current_step:
     )
