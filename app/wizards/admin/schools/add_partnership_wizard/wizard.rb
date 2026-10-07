@@ -11,10 +11,21 @@ module Admin
           check_answers
         ]
 
-        attr_reader :school_urn, :author
+        attr_reader :author
 
-        def initialize(school_urn:, author:, state_store:, current_step:, current_step_params: {})
-          @school_urn = school_urn
+        delegate :school,
+                 :contract_periods,
+                 :selected_contract_period,
+                 :selected_contract_period_label,
+                 :framework_agreements,
+                 :selected_framework_agreement,
+                 :selected_lead_provider,
+                 :delivery_partners,
+                 :selected_delivery_partner,
+                 :lead_provider_delivery_partnership,
+                 to: :state_store
+
+        def initialize(author:, state_store:, current_step:, current_step_params: {})
           @author = author
           super(state_store:, current_step:, current_step_params:)
         end
@@ -55,7 +66,7 @@ module Admin
 
             builder.on_step(
               :check_answers,
-              use: [DfE::Wizard::Operations::Validate, Operations::CreatePartnership]
+              use: [Operations::CreatePartnership]
             )
           end
         end
@@ -65,7 +76,7 @@ module Admin
             wizard: self,
             namespace: :admin_schools_add_partnership_wizard
           ) do |routes|
-            routes.default_path_arguments = { school_urn: }
+            routes.default_path_arguments = { school_urn: school.urn }
           end
         end
 
@@ -77,66 +88,6 @@ module Admin
           end
 
           resolve_step_path(step_id)
-        end
-
-        def school
-          @school ||= School.includes(:gias_school).find_by!(urn: school_urn)
-        end
-
-        def contract_periods
-          ContractPeriod.most_recent_first
-        end
-
-        def selected_contract_period
-          @selected_contract_period ||= ContractPeriod.find_by(
-            year: state_store.contract_period_year
-          )
-        end
-
-        def selected_contract_period_label
-          [
-            selected_framework_agreement&.contract_period_year,
-            selected_contract_period&.year,
-            state_store.contract_period_year
-          ].compact.first&.to_s
-        end
-
-        def framework_agreements
-          FrameworkAgreement
-            .for_contract_period_year(state_store.contract_period_year)
-            .with_lead_provider_ordered_by_name
-        end
-
-        def selected_framework_agreement
-          return if state_store.framework_agreement_id.blank?
-
-          @selected_framework_agreement ||= FrameworkAgreement
-            .includes(:lead_provider)
-            .find_by(id: state_store.framework_agreement_id)
-        end
-
-        def selected_lead_provider
-          selected_framework_agreement&.lead_provider
-        end
-
-        def delivery_partners
-          selected_framework_agreement&.delivery_partners&.order(:name) ||
-            DeliveryPartner.none
-        end
-
-        def selected_delivery_partner
-          return if state_store.delivery_partner_id.blank?
-
-          @selected_delivery_partner ||= DeliveryPartner.find_by(
-            id: state_store.delivery_partner_id
-          )
-        end
-
-        def lead_provider_delivery_partnership
-          LeadProviderDeliveryPartnership.find_by(
-            framework_agreement: selected_framework_agreement,
-            delivery_partner: selected_delivery_partner
-          )
         end
       end
     end
