@@ -131,6 +131,17 @@ RSpec.describe MentorAtSchoolPeriods::Assignment::Eligibility, type: :service do
       end
     end
 
+    context "when ECT is exempt from induction" do
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, school:, teacher:) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school:, teacher: FactoryBot.create(:teacher, :induction_exempt)) }
+
+      before { FactoryBot.create(:training_period, :for_ect, :unfinished, :provider_led, ect_at_school_period:) }
+
+      it "returns false" do
+        expect(result).to be(false)
+      end
+    end
+
     context "when mentor_at_school_period is nil" do
       let(:mentor_at_school_period) { nil }
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school:) }
