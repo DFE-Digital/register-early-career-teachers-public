@@ -138,6 +138,14 @@ RSpec.describe API::Declarations::Create, type: :model do
           it { is_expected.to have_error(:declaration_type, "Enter a '#/declaration_type'.") }
         end
 
+        context "when `declaration_type` is not valid" do
+          let!(:milestone) { FactoryBot.create(:milestone, declaration_type: "started", schedule:) }
+          let!(:declaration_type) { "invalid_type" }
+
+          it { is_expected.to have_one_error_only }
+          it { is_expected.to have_error(:declaration_type, "Enter a valid declaration type.") }
+        end
+
         context "when `evidence_type` is invalid for the given `declaration_type`" do
           let!(:evidence_type) { "75-percent-engagement-met" }
 

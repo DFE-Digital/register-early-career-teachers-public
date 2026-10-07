@@ -23,6 +23,9 @@ module API::Declarations
     validates :evidenced_at, presence: { message: "Enter a '#/evidenced_at'." }, if: -> { errors.empty? }
     validates :evidenced_at, api_date_time_format: true
     validate :evidenced_at_in_the_past
+    validates :evidenced_at,
+              evidenced_at_within_milestone: true,
+              allow_blank: true
 
     validates :teacher_type, presence: { message: "Enter a '#/teacher_type'." }, if: -> { errors.empty? }
     validates :teacher_type, inclusion: {
@@ -43,12 +46,6 @@ module API::Declarations
     validate :payment_statement_available
     validate :validate_milestone_exists
     validate :declaration_in_sequence
-
-    # this validation depends on declaration_type being a valid type otherwise a DB exception is raised
-    # so moved to the bottom for now
-    validates :evidenced_at,
-              evidenced_at_within_milestone: true,
-              allow_blank: true
 
     def create
       return false unless valid?
@@ -82,6 +79,8 @@ module API::Declarations
     end
 
     def milestone
+      return unless Milestone.declaration_types.key?(declaration_type)
+
       @milestone ||= schedule&.milestones&.find_by(declaration_type:)
     end
 
