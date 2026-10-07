@@ -24,11 +24,20 @@ module Teachers
         teacher.destroy!
       end
 
-      if teacher_started_induction_on.present?
-        BeginECTInductionJob.perform_now(trn: destination.trn, start_date: teacher_started_induction_on)
+      TRSSyncJob.perform_later(teacher: destination, teacher_started_induction_on:)
+    end
+
+    class TRSSyncJob < ApplicationJob
+      after_perform do |job|
+        teacher = job.arguments.first.fetch(:teacher)
+        Teachers::SyncTeacherWithTRSJob.set(wait: 5.minutes).perform_later(teacher:)
       end
 
-      Teachers::SyncTeacherWithTRSJob.set(wait: 5.minutes).perform_later(teacher: destination)
+      def perform(teacher:, teacher_started_induction_on:)
+        if teacher_started_induction_on.present?
+          BeginECTInductionJob.perform_now(trn: teacher.trn, start_date: teacher_started_induction_on)
+        end
+      end
     end
 
   private
