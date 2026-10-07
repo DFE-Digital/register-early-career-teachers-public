@@ -1,24 +1,23 @@
 RSpec.describe Teachers::MergeTRN do
-  subject(:service) do
-    described_class.new(teacher:)
-  end
+  subject(:service) { described_class.new(teacher:) }
 
-  let(:teacher) do
-    FactoryBot.create(:teacher,
-                      :merged_in_trs,
-                      trn: source_trn,
-                      trs_redirected_to: destination_trn)
-  end
+  include_context "a teacher merged in TRS"
+
+  let(:teacher) { source }
 
   let(:school) { FactoryBot.create(:school) }
   let(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, year: 2025, school:) }
 
-  let!(:destination) { FactoryBot.create(:teacher, :with_realistic_name, trn: destination_trn) }
+  let!(:ect_at_school_period) do
+    FactoryBot.create(
+      :ect_at_school_period,
+      teacher:,
+      school:,
+      started_on: first_period_started_on,
+      finished_on: first_period_finished_on
+    )
+  end
 
-  let(:source_trn) { "654321" }
-  let(:destination_trn) { "123456" }
-
-  let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on: first_period_started_on, finished_on: first_period_finished_on) }
   let!(:ect_training_period) do
     FactoryBot.create(:training_period,
                       :for_ect,
@@ -28,9 +27,23 @@ RSpec.describe Teachers::MergeTRN do
                       started_on: first_period_started_on,
                       finished_on: first_period_finished_on)
   end
-  let!(:ect_declaration) { FactoryBot.create(:declaration, training_period: ect_training_period) }
 
-  let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, started_on: first_period_started_on, finished_on: first_period_finished_on) }
+  let!(:ect_declaration) do
+    FactoryBot.create(
+      :declaration,
+      training_period: ect_training_period
+    )
+  end
+
+  let!(:mentor_at_school_period) do
+    FactoryBot.create(
+      :mentor_at_school_period,
+      teacher:,
+      started_on: first_period_started_on,
+      finished_on: first_period_finished_on
+    )
+  end
+
   let!(:mentor_training_period) do
     FactoryBot.create(:training_period,
                       :for_mentor,
@@ -41,9 +54,19 @@ RSpec.describe Teachers::MergeTRN do
                       finished_on: first_period_finished_on)
   end
 
-  let!(:mentor_declaration) { FactoryBot.create(:declaration, training_period: mentor_training_period) }
+  let!(:mentor_declaration) do
+    FactoryBot.create(:declaration,
+                      training_period: mentor_training_period)
+  end
 
-  let!(:destination_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher: destination, school:, started_on: second_period_started_on, finished_on: second_period_finished_on) }
+  let!(:destination_mentor_at_school_period) do
+    FactoryBot.create(:mentor_at_school_period,
+                      teacher: destination,
+                      school:,
+                      started_on: second_period_started_on,
+                      finished_on: second_period_finished_on)
+  end
+
   let!(:destination_mentor_training_period) do
     FactoryBot.create(:training_period,
                       :for_mentor,
@@ -53,7 +76,14 @@ RSpec.describe Teachers::MergeTRN do
                       started_on: second_period_started_on,
                       finished_on: second_period_finished_on)
   end
-  let!(:destination_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher: destination, school:, started_on: second_period_started_on, finished_on: second_period_finished_on) }
+
+  let!(:destination_ect_at_school_period) do
+    FactoryBot.create(:ect_at_school_period,
+                      teacher: destination,
+                      school:,
+                      started_on: second_period_started_on,
+                      finished_on: second_period_finished_on)
+  end
 
   let!(:destination_ect_training_period) do
     FactoryBot.create(:training_period,
@@ -95,9 +125,9 @@ RSpec.describe Teachers::MergeTRN do
   let(:overlapping_period_started_on) { Date.new(2025, 5, 1) }
   let(:overlapping_period_finished_on) { Date.new(2025, 7, 30) }
 
-  before do
-    allow(BeginECTInductionJob).to receive(:perform_now)
-  end
+  let(:api_client) { instance_double(TRS::APIClient, begin_induction!: true) }
+
+  before { allow(TRS::APIClient).to receive(:build).and_return(api_client) }
 
   describe "#merge!" do
     context "when the destination has no overlapping records" do
@@ -111,10 +141,14 @@ RSpec.describe Teachers::MergeTRN do
       it "leaves the destinations teacher's periods in place" do
         service.merge!
 
-        expect(destination.reload.ect_at_school_periods).to contain_exactly(ect_at_school_period, destination_ect_at_school_period)
-        expect(destination.mentor_at_school_periods).to contain_exactly(mentor_at_school_period, destination_mentor_at_school_period)
-        expect(destination.mentor_training_periods).to contain_exactly(mentor_training_period, destination_mentor_training_period)
-        expect(destination.ect_training_periods).to contain_exactly(ect_training_period, destination_ect_training_period)
+        expect(destination.reload.ect_at_school_periods)
+          .to contain_exactly(ect_at_school_period, destination_ect_at_school_period)
+        expect(destination.mentor_at_school_periods)
+          .to contain_exactly(mentor_at_school_period, destination_mentor_at_school_period)
+        expect(destination.mentor_training_periods)
+          .to contain_exactly(mentor_training_period, destination_mentor_training_period)
+        expect(destination.ect_training_periods)
+          .to contain_exactly(ect_training_period, destination_ect_training_period)
       end
 
       it "moves the declarations with their training periods to the destination teacher" do
@@ -145,133 +179,159 @@ RSpec.describe Teachers::MergeTRN do
         end
 
         it "syncs the moved induction start date with TRS" do
-          expect(BeginECTInductionJob).to receive(:perform_now).with(
-            trn: destination.trn,
-            start_date: induction_period.started_on
-          )
-
           service.merge!
+          expect(api_client)
+            .to have_received(:begin_induction!)
+            .with(trn: destination.trn, start_date: induction_period.started_on)
         end
       end
 
       context "when the source has no induction records" do
         it "does not sync induction data with TRS" do
-          expect(BeginECTInductionJob).not_to receive(:perform_now)
-
           service.merge!
+          expect(api_client).not_to have_received(:begin_induction!)
         end
       end
 
       context "eligibility dates" do
         context "when the teacher is an ECT" do
           let(:teacher) do
-            FactoryBot.create(:teacher,
-                              :merged_in_trs,
-                              ect_first_became_eligible_for_training_at: Date.new(2025, 1, 1),
-                              trn: source_trn,
-                              trs_redirected_to: destination_trn)
+            FactoryBot.create(
+              :teacher,
+              :merged_in_trs,
+              ect_first_became_eligible_for_training_at: Date.new(2025, 1, 1),
+              trn: source_trn,
+              trs_redirected_to: destination_trn
+            )
           end
 
           let!(:destination) do
-            FactoryBot.create(:teacher,
-                              ect_first_became_eligible_for_training_at: Date.new(2026, 1, 1),
-                              trn: destination_trn)
+            FactoryBot.create(
+              :teacher,
+              ect_first_became_eligible_for_training_at: Date.new(2026, 1, 1),
+              trn: destination_trn
+            )
           end
 
           it "moves the earliest eligibility dates to the destination" do
             service.merge!
 
-            expect(destination.reload.ect_first_became_eligible_for_training_at).to eq(Date.new(2025, 1, 1))
+            expect(destination.reload.ect_first_became_eligible_for_training_at)
+              .to eq(Date.new(2025, 1, 1))
           end
 
           context "when the teacher is an ECT who became ineligible for funding" do
             let(:teacher) do
-              FactoryBot.create(:teacher,
-                                :merged_in_trs,
-                                ect_became_ineligible_for_funding_on: Date.new(2023, 1, 1),
-                                trn: source_trn,
-                                trs_redirected_to: destination_trn)
+              FactoryBot.create(
+                :teacher,
+                :merged_in_trs,
+                ect_became_ineligible_for_funding_on: Date.new(2023, 1, 1),
+                trn: source_trn,
+                trs_redirected_to: destination_trn
+              )
             end
 
             let!(:destination) do
-              FactoryBot.create(:teacher,
-                                ect_became_ineligible_for_funding_on: Date.new(2024, 1, 1),
-                                trn: destination_trn)
+              FactoryBot.create(
+                :teacher,
+                ect_became_ineligible_for_funding_on: Date.new(2024, 1, 1),
+                trn: destination_trn
+              )
             end
 
             it "moves the earliest ineligibility date to the destination" do
               service.merge!
 
-              expect(destination.reload.ect_became_ineligible_for_funding_on).to eq(Date.new(2023, 1, 1))
+              expect(destination.reload.ect_became_ineligible_for_funding_on)
+                .to eq(Date.new(2023, 1, 1))
             end
           end
         end
 
         context "when the teacher is a mentor" do
           let(:teacher) do
-            FactoryBot.create(:teacher,
-                              :merged_in_trs,
-                              mentor_first_became_eligible_for_training_at: Date.new(2023, 1, 1),
-                              trn: source_trn,
-                              trs_redirected_to: destination_trn)
+            FactoryBot.create(
+              :teacher,
+              :merged_in_trs,
+              mentor_first_became_eligible_for_training_at: Date.new(2023, 1, 1),
+              trn: source_trn,
+              trs_redirected_to: destination_trn
+            )
           end
 
           let!(:destination) do
-            FactoryBot.create(:teacher,
-                              mentor_first_became_eligible_for_training_at: Date.new(2025, 1, 1),
-                              trn: destination_trn)
+            FactoryBot.create(
+              :teacher,
+              mentor_first_became_eligible_for_training_at: Date.new(2025, 1, 1),
+              trn: destination_trn
+            )
           end
 
           it "moves the earliest eligibility dates to the destination" do
             service.merge!
 
-            expect(destination.reload.mentor_first_became_eligible_for_training_at).to eq(Date.new(2023, 1, 1))
+            expect(destination.reload.mentor_first_became_eligible_for_training_at)
+              .to eq(Date.new(2023, 1, 1))
           end
         end
 
         context "when the teacher is a mentor who became ineligible for funding" do
           let(:teacher) do
-            FactoryBot.create(:teacher,
-                              :merged_in_trs,
-                              mentor_became_ineligible_for_funding_on: Date.new(2026, 1, 1),
-                              mentor_became_ineligible_for_funding_reason: "started_not_completed",
-                              trn: source_trn,
-                              trs_redirected_to: destination_trn)
+            FactoryBot.create(
+              :teacher,
+              :merged_in_trs,
+              mentor_became_ineligible_for_funding_on: Date.new(2026, 1, 1),
+              mentor_became_ineligible_for_funding_reason: "started_not_completed",
+              trn: source_trn,
+              trs_redirected_to: destination_trn
+            )
           end
 
           let!(:destination) do
-            FactoryBot.create(:teacher,
-                              mentor_became_ineligible_for_funding_on: Date.new(2026, 6, 1),
-                              mentor_became_ineligible_for_funding_reason: "completed_declaration_received",
-                              trn: destination_trn)
+            FactoryBot.create(
+              :teacher,
+              mentor_became_ineligible_for_funding_on: Date.new(2026, 6, 1),
+              mentor_became_ineligible_for_funding_reason: "completed_declaration_received",
+              trn: destination_trn
+            )
           end
 
           it "moves the earliest mentor funding ineligibility date and reason to the destination" do
             service.merge!
 
-            expect(destination.reload.mentor_became_ineligible_for_funding_on).to eq(Date.new(2026, 1, 1))
-            expect(destination.mentor_became_ineligible_for_funding_reason).to eq("started_not_completed")
+            expect(destination.reload.mentor_became_ineligible_for_funding_on)
+              .to eq(Date.new(2026, 1, 1))
+            expect(destination.mentor_became_ineligible_for_funding_reason)
+              .to eq("started_not_completed")
           end
         end
       end
 
       context "frozen payment data" do
-        let(:frozen_contract_period_1) { FactoryBot.create(:contract_period, :with_payments_frozen, year: 2023) }
-        let(:frozen_contract_period_2) { FactoryBot.create(:contract_period, :with_payments_frozen, year: 2024) }
+        let(:frozen_contract_period_1) do
+          FactoryBot.create(:contract_period, :with_payments_frozen, year: 2023)
+        end
+        let(:frozen_contract_period_2) do
+          FactoryBot.create(:contract_period, :with_payments_frozen, year: 2024)
+        end
 
         context "when the teacher is a mentor with frozen payment data" do
           let(:teacher) do
-            FactoryBot.create(:teacher,
-                              :merged_in_trs,
-                              mentor_payments_frozen_year: frozen_contract_period_1.year,
-                              trn: source_trn,
-                              trs_redirected_to: destination_trn)
+            FactoryBot.create(
+              :teacher,
+              :merged_in_trs,
+              mentor_payments_frozen_year: frozen_contract_period_1.year,
+              trn: source_trn,
+              trs_redirected_to: destination_trn
+            )
           end
 
           let!(:destination) do
-            FactoryBot.create(:teacher,
-                              mentor_payments_frozen_year: frozen_contract_period_2.year,
-                              trn: destination_trn)
+            FactoryBot.create(
+              :teacher,
+              mentor_payments_frozen_year: frozen_contract_period_2.year,
+              trn: destination_trn
+            )
           end
 
           it "moves the earliest frozen payment years to the destination" do
@@ -283,17 +343,21 @@ RSpec.describe Teachers::MergeTRN do
 
         context "when the teacher is an ECT with frozen payment data" do
           let(:teacher) do
-            FactoryBot.create(:teacher,
-                              :merged_in_trs,
-                              ect_payments_frozen_year: frozen_contract_period_1.year,
-                              trn: source_trn,
-                              trs_redirected_to: destination_trn)
+            FactoryBot.create(
+              :teacher,
+              :merged_in_trs,
+              ect_payments_frozen_year: frozen_contract_period_1.year,
+              trn: source_trn,
+              trs_redirected_to: destination_trn
+            )
           end
 
           let!(:destination) do
-            FactoryBot.create(:teacher,
-                              ect_payments_frozen_year: frozen_contract_period_2.year,
-                              trn: destination_trn)
+            FactoryBot.create(
+              :teacher,
+              ect_payments_frozen_year: frozen_contract_period_2.year,
+              trn: destination_trn
+            )
           end
 
           it "moves the earliest frozen payment years to the destination" do
@@ -302,6 +366,60 @@ RSpec.describe Teachers::MergeTRN do
             expect(destination.reload.ect_payments_frozen_year).to eq(2023)
           end
         end
+      end
+
+      it "destroys the source teacher" do
+        expect { service.merge! }
+          .to change { Teacher.exists?(teacher.id) }
+          .from(true)
+          .to(false)
+      end
+
+      it "records a TeacherIdChange from the source participant to the destination participant" do
+        source_api_id = teacher.api_id
+
+        expect { service.merge! }.to change(TeacherIdChange, :count).by(1)
+
+        change = TeacherIdChange.last
+        expect(change.teacher).to eq(destination)
+        expect(change.api_from_teacher_id).to eq(source_api_id)
+        expect(change.api_to_teacher_id).to eq(destination.api_id)
+      end
+
+      it "moves the source's existing teacher_id_changes onto the destination" do
+        earlier_change = FactoryBot.create(:teacher_id_change, teacher:)
+
+        service.merge!
+
+        expect(earlier_change.reload.teacher).to eq(destination)
+      end
+
+      it "populates the destination's metadata (which the model hooks do not do on reassignment)" do
+        expect { service.merge! }
+          .to change { destination.reload.lead_provider_metadata.count }
+          .from(0)
+      end
+
+      it "records a merge event" do
+        source_api_id = teacher.api_id
+
+        service.merge!
+
+        events = Event.where(event_type: "teacher_merged")
+        expect(events.count).to eq(2)
+        expect(events.pluck(:teacher_id).compact)
+          .to eq([destination.id])
+        expect(events.map(&:body).join)
+          .to include(source_api_id, destination.api_id)
+      end
+
+      it "calls a sync with TRS" do
+        freeze_time
+
+        expect { service.merge! }
+          .to have_enqueued_job(Teachers::SyncTeacherWithTRSJob)
+          .with(teacher: destination)
+          .at(5.minutes.from_now)
       end
     end
 
@@ -442,15 +560,13 @@ RSpec.describe Teachers::MergeTRN do
       end
 
       it "does not sync induction data with TRS" do
-        expect(BeginECTInductionJob).not_to receive(:perform_now)
-
         service.merge!
+        expect(api_client).not_to have_received(:begin_induction!)
       end
 
       it "does not resync with TRS" do
-        expect(Teachers::SyncTeacherWithTRSJob).not_to receive(:perform_later)
-
-        service.merge!
+        expect { service.merge! }
+          .not_to have_enqueued_job(Teachers::SyncTeacherWithTRSJob)
       end
     end
 
