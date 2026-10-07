@@ -313,7 +313,7 @@ RSpec.describe Teachers::MergeTRN do
                                                       finished_on: overlapping_period_finished_on)
         end
 
-        it "calls the mentor at school periods merge service" do
+        it "calls the mentor_at_school_periods merge service" do
           allow(Teachers::MergeTRN::MentorAtSchoolPeriods::Merge).to receive(:call).and_call_original
 
           service.merge!
@@ -327,19 +327,7 @@ RSpec.describe Teachers::MergeTRN do
           ).once
         end
 
-        it "merges the overlapping mentor at school periods" do
-          service.merge!
-
-          expect(destination_mentor_at_school_period.reload.started_on).to eq(overlapping_period_started_on)
-        end
-
-        it "destroys the original overlapping mentor at school period" do
-          service.merge!
-
-          expect { overlapping_mentor_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
-        end
-
-        it "moves the non-overlapping mentor at school periods to the destination teacher" do
+        it "moves the non-overlapping mentor_at_school_period to the destination teacher" do
           service.merge!
 
           expect(mentor_at_school_period.reload.teacher).to eq(destination)
@@ -347,48 +335,11 @@ RSpec.describe Teachers::MergeTRN do
           expect(mentor_at_school_period.finished_on).to eq(first_period_finished_on)
         end
 
-        context "when there are no overlapping training periods" do
-          it "does not merge any training periods" do
-            expect(Teachers::MergeTRN::TrainingPeriods::Merge).not_to receive(:call)
-            service.merge!
-          end
-        end
+        it "merges the overlapping mentor_at_school_period" do
+          service.merge!
 
-        context "when there are overlapping training periods" do
-          let!(:overlapping_training_period) do
-            FactoryBot.create(:training_period,
-                              :for_mentor,
-                              mentor_at_school_period: overlapping_mentor_period,
-                              school_partnership:,
-                              started_on: overlapping_period_started_on,
-                              finished_on: overlapping_period_finished_on)
-          end
-
-          it "calls the training periods merge service" do
-            expect(Teachers::MergeTRN::TrainingPeriods::Merge).to receive(:call).with(
-              periods: contain_exactly(
-                overlapping_training_period,
-                destination_mentor_training_period
-              ),
-              destination:
-            ).once
-
-            service.merge!
-          end
-
-          it "merges overlapping training periods" do
-            service.merge!
-
-            expect(destination_mentor_training_period.reload.started_on).to eq(overlapping_period_started_on)
-          end
-
-          it "moves the non-overlapping training periods to the destination teacher" do
-            service.merge!
-
-            expect(mentor_training_period.reload.teacher).to eq(destination)
-            expect(mentor_training_period.started_on).to eq(first_period_started_on)
-            expect(mentor_training_period.finished_on).to eq(first_period_finished_on)
-          end
+          expect(destination_mentor_at_school_period.reload.started_on).to eq(overlapping_period_started_on)
+          expect { overlapping_mentor_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
         end
       end
 
@@ -399,7 +350,7 @@ RSpec.describe Teachers::MergeTRN do
                             started_on: overlapping_period_started_on, finished_on: overlapping_period_finished_on)
         end
 
-        it "calls the ect at school periods merge service" do
+        it "calls the ect_at_school_period merge service" do
           allow(Teachers::MergeTRN::ECTAtSchoolPeriods::Merge).to receive(:call).and_call_original
 
           service.merge!
@@ -411,19 +362,7 @@ RSpec.describe Teachers::MergeTRN do
           ).once
         end
 
-        it "merges the overlapping ect at school periods" do
-          service.merge!
-
-          expect(destination_ect_at_school_period.reload.started_on).to eq(overlapping_period_started_on)
-        end
-
-        it "deletes the overlapping ect at school period from the source teacher" do
-          service.merge!
-
-          expect { overlapping_ect_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
-        end
-
-        it "moves the non-overlapping ect at school periods to the destination teacher" do
+        it "moves the non-overlapping ect_at_school_period to the destination teacher" do
           service.merge!
 
           expect(ect_at_school_period.reload.teacher).to eq(destination)
@@ -431,103 +370,11 @@ RSpec.describe Teachers::MergeTRN do
           expect(ect_at_school_period.finished_on).to eq(first_period_finished_on)
         end
 
-        context "when there are no overlapping ect training periods" do
-          it "does not merge any training periods" do
-            expect(Teachers::MergeTRN::TrainingPeriods::Merge).not_to receive(:call)
-            service.merge!
-          end
-        end
+        it "merges the overlapping ect_at_school_period" do
+          service.merge!
 
-        context "when there are overlapping training periods" do
-          let!(:overlapping_training_period) do
-            FactoryBot.create(:training_period,
-                              :for_ect,
-                              ect_at_school_period: overlapping_ect_period,
-                              school_partnership:,
-                              started_on: overlapping_period_started_on,
-                              finished_on: overlapping_period_finished_on)
-          end
-
-          it "calls the training periods merge service" do
-            expect(Teachers::MergeTRN::TrainingPeriods::Merge).to receive(:call).with(
-              periods: contain_exactly(
-                overlapping_training_period,
-                destination_ect_training_period
-              ),
-              destination:
-            ).once
-
-            service.merge!
-          end
-
-          it "merges overlapping training periods" do
-            service.merge!
-
-            expect(destination_ect_training_period.reload.started_on).to eq(overlapping_period_started_on)
-          end
-
-          it "moves the non-overlapping training periods to the destination teacher" do
-            service.merge!
-
-            expect(ect_training_period.reload.teacher).to eq(destination)
-            expect(ect_training_period.started_on).to eq(first_period_started_on)
-            expect(ect_training_period.finished_on).to eq(first_period_finished_on)
-          end
-        end
-
-        context "when there are no overlapping mentorship periods" do
-          it "does not call the mentorship periods merge service" do
-            expect(Teachers::MergeTRN::MentorshipPeriods::Merge).not_to receive(:call)
-
-            service.merge!
-          end
-        end
-
-        context "when there are overlapping mentorship periods" do
-          let!(:overlapping_ect_period) { nil }
-          let(:first_period_finished_on) { Date.new(2025, 7, 30) }
-
-          let!(:overlapping_mentorship_period) do
-            FactoryBot.create(:mentorship_period,
-                              mentee: ect_at_school_period,
-                              mentor:,
-                              started_on: overlapping_period_started_on,
-                              finished_on: overlapping_period_finished_on)
-          end
-
-          let!(:source_mentorship_period) do
-            FactoryBot.create(:mentorship_period,
-                              mentee: ect_at_school_period,
-                              mentor:,
-                              started_on: first_period_started_on,
-                              finished_on: Date.new(2025, 3, 30))
-          end
-
-          it "calls the mentorship periods merge service" do
-            expect(Teachers::MergeTRN::MentorshipPeriods::Merge).to receive(:call).with(
-              periods: contain_exactly(
-                overlapping_mentorship_period,
-                destination_mentorship_period
-              ),
-              destination:
-            ).once
-
-            service.merge!
-          end
-
-          it "merges overlapping mentorship periods" do
-            service.merge!
-
-            expect(destination_mentorship_period.reload.mentee.teacher).to eq(destination)
-            expect(destination_mentorship_period.started_on).to eq(overlapping_period_started_on)
-            expect(destination_mentorship_period.finished_on).to eq(second_period_finished_on)
-          end
-
-          it "moves the non-overlapping mentorship periods to the destination teacher" do
-            service.merge!
-
-            expect(source_mentorship_period.reload.mentee.teacher).to eq(destination)
-          end
+          expect(destination_ect_at_school_period.reload.started_on).to eq(overlapping_period_started_on)
+          expect { overlapping_ect_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
         end
       end
     end

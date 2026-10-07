@@ -1,22 +1,10 @@
 RSpec.describe Teachers::MergeTRN::Eligibility do
-  let(:teacher) do
-    FactoryBot.create(:teacher,
-                      :merged_in_trs,
-                      trn: source_trn,
-                      trs_redirected_to: destination_trn)
-  end
+  include_context "a teacher merged in TRS"
 
-  let!(:destination) { FactoryBot.create(:teacher, trn: destination_trn) }
-
-  let(:source_trn) { "654321" }
-  let(:destination_trn) { "123456" }
+  let(:teacher) { source }
 
   describe "#can_be_merged?" do
     subject(:can_be_merged) { described_class.new(teacher:).can_be_merged? }
-
-    context "when neither teacher has at_school periods" do
-      it { is_expected.to be true }
-    end
 
     context "when a merge is not required" do
       before { teacher.update!(trs_response: "ok") }
@@ -34,6 +22,10 @@ RSpec.describe Teachers::MergeTRN::Eligibility do
       let(:destination) { nil }
 
       it { is_expected.to be false }
+    end
+
+    context "when neither teacher has at_school periods" do
+      it { is_expected.to be true }
     end
 
     context "when only the source has induction periods" do
@@ -59,7 +51,7 @@ RSpec.describe Teachers::MergeTRN::Eligibility do
 
     context "when both teachers have ECT school periods" do
       let(:school) { FactoryBot.create(:school) }
-      let(:destination_school) { school }
+      let(:destination_school) { FactoryBot.create(:school) }
       let(:destination_started_on) { Date.new(2025, 3, 1) }
 
       before do
@@ -80,19 +72,18 @@ RSpec.describe Teachers::MergeTRN::Eligibility do
         )
       end
 
-      context "when they overlap at the same school" do
-        it { is_expected.to be true }
-      end
-
       context "when they overlap at different schools" do
-        let(:destination_school) { FactoryBot.create(:school) }
-
         it { is_expected.to be false }
       end
 
       context "when they do not overlap at different schools" do
-        let(:destination_school) { FactoryBot.create(:school) }
         let(:destination_started_on) { Date.new(2025, 7, 1) }
+
+        it { is_expected.to be true }
+      end
+
+      context "when they overlap at the same school" do
+        let(:destination_school) { school }
 
         it { is_expected.to be true }
       end
@@ -121,7 +112,7 @@ RSpec.describe Teachers::MergeTRN::Eligibility do
                             school_partnership: school_partnership_2025)
         end
 
-        context "when the training periods are for different years" do
+        context "when the training periods are for different contract_periods" do
           let!(:destination_training_period) do
             FactoryBot.create(:training_period,
                               :for_ect,
@@ -132,7 +123,7 @@ RSpec.describe Teachers::MergeTRN::Eligibility do
           it { is_expected.to be false }
         end
 
-        context "when the training periods are for the same year" do
+        context "when the training periods are for the same contract_periods" do
           let!(:destination_training_period) do
             FactoryBot.create(:training_period,
                               :for_ect,
@@ -155,7 +146,7 @@ RSpec.describe Teachers::MergeTRN::Eligibility do
                             school_partnership: school_partnership_2025)
         end
 
-        context "when the training periods are for different years" do
+        context "when the training periods are for different contract_periods" do
           let!(:destination_training_period) do
             FactoryBot.create(:training_period,
                               :for_mentor,
@@ -166,7 +157,7 @@ RSpec.describe Teachers::MergeTRN::Eligibility do
           it { is_expected.to be false }
         end
 
-        context "when the training periods are for the same year" do
+        context "when the training periods are for the same contract_periods" do
           let!(:destination_training_period) do
             FactoryBot.create(:training_period,
                               :for_mentor,
