@@ -19,13 +19,15 @@ RSpec.describe Teachers::MergeTRN do
   end
 
   let!(:ect_training_period) do
-    FactoryBot.create(:training_period,
-                      :for_ect,
-                      :with_framework_agreement,
-                      ect_at_school_period:,
-                      school_partnership:,
-                      started_on: first_period_started_on,
-                      finished_on: first_period_finished_on)
+    FactoryBot.create(
+      :training_period,
+      :for_ect,
+      :with_framework_agreement,
+      ect_at_school_period:,
+      school_partnership:,
+      started_on: first_period_started_on,
+      finished_on: first_period_finished_on
+    )
   end
 
   let!(:ect_declaration) do
@@ -45,77 +47,95 @@ RSpec.describe Teachers::MergeTRN do
   end
 
   let!(:mentor_training_period) do
-    FactoryBot.create(:training_period,
-                      :for_mentor,
-                      :with_framework_agreement,
-                      mentor_at_school_period:,
-                      school_partnership:,
-                      started_on: first_period_started_on,
-                      finished_on: first_period_finished_on)
+    FactoryBot.create(
+      :training_period,
+      :for_mentor,
+      :with_framework_agreement,
+      mentor_at_school_period:,
+      school_partnership:,
+      started_on: first_period_started_on,
+      finished_on: first_period_finished_on
+    )
   end
 
   let!(:mentor_declaration) do
-    FactoryBot.create(:declaration,
-                      training_period: mentor_training_period)
+    FactoryBot.create(
+      :declaration,
+      training_period: mentor_training_period
+    )
   end
 
   let!(:destination_mentor_at_school_period) do
-    FactoryBot.create(:mentor_at_school_period,
-                      teacher: destination,
-                      school:,
-                      started_on: second_period_started_on,
-                      finished_on: second_period_finished_on)
+    FactoryBot.create(
+      :mentor_at_school_period,
+      teacher: destination,
+      school:,
+      started_on: second_period_started_on,
+      finished_on: second_period_finished_on
+    )
   end
 
   let!(:destination_mentor_training_period) do
-    FactoryBot.create(:training_period,
-                      :for_mentor,
-                      :with_framework_agreement,
-                      mentor_at_school_period: destination_mentor_at_school_period,
-                      school_partnership:,
-                      started_on: second_period_started_on,
-                      finished_on: second_period_finished_on)
+    FactoryBot.create(
+      :training_period,
+      :for_mentor,
+      :with_framework_agreement,
+      mentor_at_school_period: destination_mentor_at_school_period,
+      school_partnership:,
+      started_on: second_period_started_on,
+      finished_on: second_period_finished_on
+    )
   end
 
   let!(:destination_ect_at_school_period) do
-    FactoryBot.create(:ect_at_school_period,
-                      teacher: destination,
-                      school:,
-                      started_on: second_period_started_on,
-                      finished_on: second_period_finished_on)
+    FactoryBot.create(
+      :ect_at_school_period,
+      teacher: destination,
+      school:,
+      started_on: second_period_started_on,
+      finished_on: second_period_finished_on
+    )
   end
 
   let!(:destination_ect_training_period) do
-    FactoryBot.create(:training_period,
-                      :for_ect,
-                      :with_framework_agreement,
-                      school_partnership:,
-                      ect_at_school_period: destination_ect_at_school_period,
-                      started_on: second_period_started_on,
-                      finished_on: second_period_finished_on)
+    FactoryBot.create(
+      :training_period,
+      :for_ect,
+      :with_framework_agreement,
+      school_partnership:,
+      ect_at_school_period: destination_ect_at_school_period,
+      started_on: second_period_started_on,
+      finished_on: second_period_finished_on
+    )
   end
 
   let(:mentor) do
-    FactoryBot.create(:mentor_at_school_period,
-                      :unfinished,
-                      school:,
-                      started_on: first_period_started_on)
+    FactoryBot.create(
+      :mentor_at_school_period,
+      :unfinished,
+      school:,
+      started_on: first_period_started_on
+    )
   end
 
   let!(:source_mentorship_period) do
-    FactoryBot.create(:mentorship_period,
-                      mentee: ect_at_school_period,
-                      mentor:,
-                      started_on: first_period_started_on,
-                      finished_on: first_period_finished_on)
+    FactoryBot.create(
+      :mentorship_period,
+      mentee: ect_at_school_period,
+      mentor:,
+      started_on: first_period_started_on,
+      finished_on: first_period_finished_on
+    )
   end
 
   let!(:destination_mentorship_period) do
-    FactoryBot.create(:mentorship_period,
-                      mentee: destination_ect_at_school_period,
-                      mentor:,
-                      started_on: second_period_started_on,
-                      finished_on: second_period_finished_on)
+    FactoryBot.create(
+      :mentorship_period,
+      mentee: destination_ect_at_school_period,
+      mentor:,
+      started_on: second_period_started_on,
+      finished_on: second_period_finished_on
+    )
   end
 
   let(:first_period_started_on) { Date.new(2025, 1, 1) }
@@ -463,9 +483,11 @@ RSpec.describe Teachers::MergeTRN do
 
       context "ect at school periods" do
         let!(:overlapping_ect_period) do
-          FactoryBot.create(:ect_at_school_period,
-                            teacher:, school:,
-                            started_on: overlapping_period_started_on, finished_on: overlapping_period_finished_on)
+          FactoryBot.create(
+            :ect_at_school_period,
+            teacher:, school:,
+            started_on: overlapping_period_started_on, finished_on: overlapping_period_finished_on
+          )
         end
 
         it "calls the ect_at_school_period merge service" do
@@ -572,18 +594,24 @@ RSpec.describe Teachers::MergeTRN do
 
     context "when merging an overlapping period fails" do
       let!(:overlapping_mentor_period) do
-        FactoryBot.create(:mentor_at_school_period, teacher:, school:,
-                                                    started_on: overlapping_period_started_on,
-                                                    finished_on: overlapping_period_finished_on)
+        FactoryBot.create(
+          :mentor_at_school_period,
+          teacher:,
+          school:,
+          started_on: overlapping_period_started_on,
+          finished_on: overlapping_period_finished_on
+        )
       end
 
       let!(:overlapping_training_period) do
-        FactoryBot.create(:training_period,
-                          :for_mentor,
-                          mentor_at_school_period: overlapping_mentor_period,
-                          school_partnership:,
-                          started_on: overlapping_period_started_on,
-                          finished_on: overlapping_period_finished_on)
+        FactoryBot.create(
+          :training_period,
+          :for_mentor,
+          mentor_at_school_period: overlapping_mentor_period,
+          school_partnership:,
+          started_on: overlapping_period_started_on,
+          finished_on: overlapping_period_finished_on
+        )
       end
 
       before do
