@@ -18,11 +18,11 @@ module API::Declarations
     attribute :declaration_type
     attribute :evidence_type
 
+    validate :teacher_exists_with_lead_provider
+
     validates :evidenced_at, presence: { message: "Enter a '#/evidenced_at'." }, if: -> { errors.empty? }
     validates :evidenced_at, api_date_time_format: true
     validate :evidenced_at_in_the_past
-
-    validate :teacher_exists_with_lead_provider
 
     validates :teacher_type, presence: { message: "Enter a '#/teacher_type'." }, if: -> { errors.empty? }
     validates :teacher_type, inclusion: {
@@ -136,9 +136,6 @@ module API::Declarations
       ).statements.first
     end
 
-    #########################################################
-    ### teacher_api_id validations
-
     def teacher_exists_with_lead_provider
       return if errors.any?
 
@@ -150,8 +147,6 @@ module API::Declarations
 
       errors.add(:teacher_api_id, "This participant withdrew from this course on #{training_period.withdrawn_at.utc.rfc3339}. Enter a '#/evidenced_at' that's on or before the withdrawal date.")
     end
-
-    #########################################################
 
     def evidenced_at_in_the_past
       return if errors[:evidenced_at].any?
