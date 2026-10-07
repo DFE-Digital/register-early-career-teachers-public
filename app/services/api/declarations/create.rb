@@ -20,12 +20,11 @@ module API::Declarations
 
     validate :teacher_exists_with_lead_provider
 
-    validates :evidenced_at, presence: { message: "Enter a '#/evidenced_at'." }, if: -> { errors.empty? }
-    validates :evidenced_at, api_date_time_format: true
-    validate :evidenced_at_in_the_past
-    validates :evidenced_at,
-              evidenced_at_within_milestone: true,
-              allow_blank: true
+    validates :evidenced_at, presence: { message: "Enter a '#/evidenced_at'." },
+                             api_date_time_format: true,
+                             inclusion: { in: :evidenced_at_date_range,
+                                          message: "The '#/evidenced_at' value is outside the dates allowed for this declaration. Check the date and try again.", },
+                             if: -> { errors.empty? }
 
     validates :teacher_type, presence: { message: "Enter a '#/teacher_type'." }, if: -> { errors.empty? }
     validates :teacher_type, inclusion: {
@@ -45,7 +44,6 @@ module API::Declarations
     validate :contract_period_is_not_payments_frozen
     validate :payment_statement_available
     validate :validate_milestone_exists
-    validate :declaration_in_sequence
 
     def create
       return false unless valid?
@@ -246,10 +244,16 @@ module API::Declarations
       errors.add(:contract_period_year, "You cannot submit declarations for the #{current_contract_period.year} contract period. The funding contract for this contract period has ended. Get in touch if you need to discuss this with us.")
     end
 
-    def declaration_in_sequence
-      return if errors[:evidenced_at].any? || errors[:declaration_type].any?
-      return if evidenced_at.blank? || declaration_type.blank?
-      return unless contract_period && contract_period.year >= 2025
+    def evidenced_at_date_range
+      return (..Time.zone.now) unless milestone
+
+      milestone_start = milestone.start_date.beginning_of_day
+      milestone_end = milestone.milestone_date&.end_of_day
+
+      milestone_range = (milestone.start_date.beginning_of_day..[milestone.milestone_date&.end_of_day, Time.zone.now].compact.min)
+
+      return milestone_range unless contract_period && contract_period.year >= 2025
+      return milestone_range if declaration_type.blank?
 
       ordered_types = Declaration.declaration_types.values
       index = ordered_types.index(declaration_type)
@@ -264,13 +268,7 @@ module API::Declarations
         .billable_or_changeable_for_declaration_type(after_declaration_types)
         .minimum(:evidenced_at)
 
-      error_message = "This '#/evidenced_at' is invalid. Check that it is in sequence with existing declaration dates for this participant."
-
-      if from_evidenced_at && parsed_evidenced_at.before?(from_evidenced_at)
-        errors.add(:evidenced_at, error_message)
-      elsif to_evidenced_at && parsed_evidenced_at.after?(to_evidenced_at)
-        errors.add(:evidenced_at, error_message)
-      end
+      ([milestone_start, from_evidenced_at].compact.max..[milestone_end, to_evidenced_at, Time.zone.now].compact.min)
     end
 
     def parsed_evidenced_at = Time.zone.parse(evidenced_at)
