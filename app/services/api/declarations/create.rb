@@ -23,7 +23,7 @@ module API::Declarations
     validates :evidenced_at, presence: { message: "Enter a '#/evidenced_at'." },
                              api_date_time_format: true,
                              inclusion: { in: :evidenced_at_date_range,
-                                          message: "The '#/evidenced_at' value is outside the dates allowed for this declaration. Check the date and try again.", },
+                                          message: ->(object, _) { object.send(:evidenced_at_date_range_error_message) } },
                              if: -> { errors.empty? }
 
     validates :teacher_type, presence: { message: "Enter a '#/teacher_type'." }, if: -> { errors.empty? }
@@ -244,13 +244,18 @@ module API::Declarations
       errors.add(:contract_period_year, "You cannot submit declarations for the #{current_contract_period.year} contract period. The funding contract for this contract period has ended. Get in touch if you need to discuss this with us.")
     end
 
+    def milestone_started_at
+      @milestone_started_at ||= milestone.start_date.beginning_of_day
+    end
+
+    def milestone_finished_at
+      @milestone_finished_at ||= [milestone&.milestone_date&.end_of_day, Time.zone.now].compact.min
+    end
+
     def evidenced_at_date_range
       return (..Time.zone.now) unless milestone
 
-      milestone_start = milestone.start_date.beginning_of_day
-      milestone_end = milestone.milestone_date&.end_of_day
-
-      milestone_range = (milestone.start_date.beginning_of_day..[milestone.milestone_date&.end_of_day, Time.zone.now].compact.min)
+      milestone_range = (milestone_started_at..[milestone_finished_at, Time.zone.now].compact.min)
 
       return milestone_range unless contract_period && contract_period.year >= 2025
       return milestone_range if declaration_type.blank?
@@ -268,7 +273,19 @@ module API::Declarations
         .billable_or_changeable_for_declaration_type(after_declaration_types)
         .minimum(:evidenced_at)
 
-      ([milestone_start, from_evidenced_at].compact.max..[milestone_end, to_evidenced_at, Time.zone.now].compact.min)
+      ([milestone_started_at, from_evidenced_at].compact.max..[milestone_finished_at, to_evidenced_at, Time.zone.now].compact.min)
+    end
+
+    def evidenced_at_date_range_error_message
+      if parsed_evidenced_at.future?
+        "The '#/evidenced_at' value cannot be a future date. Check the date and try again."
+      elsif evidenced_at < milestone_started_at
+        "Evidenced at must be on or after the milestone start date for the same declaration type."
+      elsif evidenced_at > milestone_finished_at
+        "Evidenced at must be on or before the milestone date for the same declaration type."
+      else
+        "This '#/evidenced_at' is invalid. Check that it is in sequence with existing declaration dates for this participant."
+      end
     end
 
     def parsed_evidenced_at = Time.zone.parse(evidenced_at)
