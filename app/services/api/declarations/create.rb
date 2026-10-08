@@ -238,14 +238,19 @@ module API::Declarations
     end
 
     def milestone_finished_at
-      @milestone_finished_at ||= [milestone.milestone_date&.end_of_day, Time.zone.now].compact.min
+      @milestone_finished_at ||= milestone.milestone_date&.end_of_day
     end
 
     def evidenced_at_date_range
       return (..Time.zone.now) unless milestone
-      return milestone_started_at..milestone_finished_at if contract_period.year < 2025
 
-      surrounding_declaration_date_range
+      range = if contract_period.year < 2025
+                milestone_started_at..milestone_finished_at
+              else
+                surrounding_declaration_date_range
+              end
+
+      range.begin..[range.end, Time.zone.now].compact.min
     end
 
     def surrounding_declaration_date_range
@@ -255,7 +260,7 @@ module API::Declarations
       before = existing_declarations.billable_or_changeable_for_declaration_type(types.take(index))
       after = existing_declarations.billable_or_changeable_for_declaration_type(types.drop(index + 1))
 
-      before.maximum(:evidenced_at)..[after.minimum(:evidenced_at), Time.zone.now].compact.min
+      before.maximum(:evidenced_at)..after.minimum(:evidenced_at)
     end
 
     def evidenced_at_date_range_error_message
@@ -263,7 +268,7 @@ module API::Declarations
         "The '#/evidenced_at' value cannot be a future date. Check the date and try again."
       elsif evidenced_at < milestone_started_at
         "Evidenced at must be on or after the milestone start date for the same declaration type."
-      elsif evidenced_at > milestone_finished_at
+      elsif milestone_finished_at.present? && evidenced_at > milestone_finished_at
         "Evidenced at must be on or before the milestone date for the same declaration type."
       else
         "This '#/evidenced_at' is invalid. Check that it is in sequence with existing declaration dates for this participant."
