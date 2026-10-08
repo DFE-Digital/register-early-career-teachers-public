@@ -289,6 +289,14 @@ RSpec.describe Schools::RegisterMentorWizard::RegistrationStore::Status do
         end
       end
 
+      context "when the mentor will continue mentoring at another school" do
+        let(:store) { { "mentoring_at_new_school_only" => "no" } }
+
+        it "returns false" do
+          expect(status.ect_lead_provider_invalid?).to be(false)
+        end
+      end
+
       context "when the mentor is ineligible for funding" do
         before { FactoryBot.create(:teacher, :ineligible_for_mentor_funding, trn:) }
 

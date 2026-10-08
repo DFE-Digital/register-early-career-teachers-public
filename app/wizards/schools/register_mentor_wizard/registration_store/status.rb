@@ -72,7 +72,7 @@ module Schools
         end
 
         def ect_lead_provider_invalid?
-          return eligible_for_funding? if ect_provider_led_training_paused?
+          return eligible_for_funding? && mentoring_at_new_school_only? if ect_provider_led_training_paused?
           return false unless registration_store.ect_lead_provider
 
           !LeadProviders::Active.new(registration_store.ect_lead_provider).active_in_contract_period?(queries.contract_period)
