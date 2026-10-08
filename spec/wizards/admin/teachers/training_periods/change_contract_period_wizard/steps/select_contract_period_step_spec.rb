@@ -54,6 +54,11 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Ste
       expect(state_store.school_partnership_id).to be_nil
     end
 
+    it "keeps the selected partnership when the step is only validated" do
+      expect(step).to be_valid
+      expect(state_store.school_partnership_id).to eq(123)
+    end
+
     context "when invalid" do
       let(:contract_period_year) { nil }
 

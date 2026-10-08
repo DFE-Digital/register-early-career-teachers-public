@@ -48,16 +48,6 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Wiz
   end
 
   describe "operations" do
-    it "resets the partnership selection when a contract period is selected" do
-      expect(wizard).to have_step_operations(
-        select_contract_period: [
-          DfE::Wizard::Operations::Validate,
-          DfE::Wizard::Operations::Persist,
-          Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Operations::ResetSchoolPartnershipSelection
-        ]
-      )
-    end
-
     it "only applies the change on check answers" do
       expect(wizard).to have_step_operations(
         check_answers: [Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Operations::ApplyContractPeriodChange]
