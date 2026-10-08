@@ -11,6 +11,8 @@ module Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Steps
 
     delegate :state_store, to: :wizard
 
+    def serializable_data = super.merge("school_partnership_id" => nil)
+
   private
 
     def contract_period_available

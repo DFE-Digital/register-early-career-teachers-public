@@ -28,7 +28,6 @@ module Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard
 
     def steps_operator
       DfE::Wizard::StepsOperator::Builder.draw(wizard: self, callable: state_store) do |builder|
-        builder.on_step(:select_contract_period, add: [Operations::ResetSchoolPartnershipSelection])
         builder.on_step(:check_answers, use: [Operations::ApplyContractPeriodChange])
       end
     end
