@@ -197,13 +197,15 @@ def populate_school(gias_school, lead_provider, counter = 0)
   3.times do |i|
     start_date = start_dates[i]
     contract_period = contract_periods[i]
-    mentees << teacher(9_000_000 + counter, "Teacher #{counter += 1}") do
+    mentees << teacher(9_000_000 + counter, "Teacher #{counter}") do
+      counter += 1
       ect_at_school_period(school, start_date) do
         training_period(lead_provider, contract_period, start_date)
       end
     end
 
-    mentors << teacher(9_000_000 + counter, "Teacher #{counter += 1}") do
+    mentors << teacher(9_000_000 + counter, "Teacher #{counter}") do
+      counter += 1
       mentor_at_school_period(school, start_date) do
         training_period(lead_provider, contract_period, start_date)
       end
