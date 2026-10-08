@@ -7,7 +7,11 @@ abort("The Rails environment is running in production mode!") if Rails.env.produ
 require "rspec/rails"
 
 Rails.root.glob("db/seeds/support/{*.rb,teacher_histories/*.rb,builders/*.rb}").each { require(it) }
-Rails.root.glob(["spec/support/**/*.rb", "db/seeds/support/**/*.rb"]).sort.each { |f| require f }
+Rails.root
+  .glob(["spec/support/**/*.rb", "db/seeds/support/**/*.rb"])
+  .reject { it.basename.to_s.ends_with?("_spec.rb") }
+  .sort
+  .each { require(it) }
 Rails.application.load_tasks
 
 begin

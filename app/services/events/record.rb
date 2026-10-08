@@ -177,30 +177,21 @@ module Events
       new(event_type:, author:, teacher:, heading:, body:, happened_at:).record_event!
     end
 
-    def self.record_teacher_trn_merged_events!(author:, source:, destination:, happened_at: Time.zone.now)
+    def self.record_teacher_trn_merged_event!(author:, source:, destination:, happened_at: Time.zone.now)
+      event_type = :teacher_merged
       source_name = Teachers::Name.new(source).full_name
       destination_name = Teachers::Name.new(destination).full_name
 
-      common = { event_type: :teacher_merged, author:, happened_at: }
-
       new(
-        **common,
+        event_type:,
+        author:,
         teacher: destination,
         heading: "Records were merged into #{destination_name} from #{source_name}",
+        happened_at:,
         body: <<~BODY.squish
           Records were merged in from #{source_name}
           (participant #{source.api_id}, teacher #{source.id}), which was then deleted.
           Destination: #{destination_name} (TRN #{destination.trn}, participant #{destination.api_id}, teacher #{destination.id}).
-        BODY
-      ).record_event!
-
-      new(
-        **common,
-        teacher: source,
-        heading: "Teacher record was merged into #{destination_name} and deleted",
-        body: <<~BODY.squish
-          This record was merged into
-          #{destination_name} (TRN #{destination.trn}, participant #{destination.api_id}, teacher #{destination.id}) and deleted.
         BODY
       ).record_event!
     end

@@ -419,12 +419,10 @@ RSpec.describe Teachers::MergeTRN do
       end
 
       it "records a merge event" do
-        source_api_id = teacher.api_id
-
         merge!
 
         events = Event.where(event_type: "teacher_merged")
-        expect(events.count).to eq(2)
+        expect(events.count).to eq(1)
         expect(events.pluck(:teacher_id).compact)
           .to eq([destination.id])
         expect(events.map(&:body).join)

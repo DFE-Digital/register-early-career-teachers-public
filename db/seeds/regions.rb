@@ -83,10 +83,10 @@ end
   # ["SW5", "Somerset"],
   # ["SW6", "Bath and North East Somerset, South Gloucestershire"],
   # ["SW7", "Swindon, Wiltshire"],
-  # ["SW8", "Cornwall, Isles of Scilly"],
+  # ["SW8", "Cornwall West, Isles of Scilly"],
   # ["SW9", "Bristol, North Somerset"],
   # ["SW10", "Stroud, Cotswold, Cheltenham"],
-  # ["SW11", "Cornwall"],
+  # ["SW11", "Cornwall East"],
 
   # West Midlands
   ["WM1", "Herefordshire, Wychavon, Malvern Hills, Worcester, Wyre Forest"],

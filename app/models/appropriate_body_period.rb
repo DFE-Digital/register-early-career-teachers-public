@@ -41,9 +41,6 @@ class AppropriateBodyPeriod < ApplicationRecord
   scope :active, -> { where.not(dfe_sign_in_organisation_id: nil) }
   scope :inactive, -> { where(dfe_sign_in_organisation_id: nil) }
 
-  # Validations
-  validates :name, presence: true, uniqueness: true
-
   # Normalizations
   normalizes :name, with: -> { it.squish }
 

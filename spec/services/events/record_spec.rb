@@ -169,14 +169,14 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe ".record_teacher_trn_merged_events!" do
+  describe ".record_teacher_trn_merged_event!" do
     let(:author) { Events::SystemAuthor.new }
     let(:author_params) { { author_type: "system" } }
     let(:source) { FactoryBot.create(:teacher, trs_first_name: "Source", trs_last_name: "Teacher") }
     let(:destination) { FactoryBot.create(:teacher, trs_first_name: "Destination", trs_last_name: "Teacher") }
 
-    it "records an event on both the destination and the source referencing the teachers' api_ids" do
-      Events::Record.record_teacher_trn_merged_events!(author:, source:, destination:)
+    it "records an event on the destination teacher referencing both teacher api_ids" do
+      Events::Record.record_teacher_trn_merged_event!(author:, source:, destination:)
 
       expect(Event.all).to contain_exactly(
         have_attributes(
@@ -184,12 +184,6 @@ RSpec.describe Events::Record do
           event_type: "teacher_merged",
           heading: "Records were merged into #{Teachers::Name.new(destination).full_name} from #{Teachers::Name.new(source).full_name}",
           body: a_string_including(source.api_id).and(a_string_including(destination.api_id))
-        ),
-        have_attributes(
-          teacher: source,
-          event_type: "teacher_merged",
-          heading: "Teacher record was merged into #{Teachers::Name.new(destination).full_name} and deleted",
-          body: a_string_including(destination.api_id)
         )
       )
     end
