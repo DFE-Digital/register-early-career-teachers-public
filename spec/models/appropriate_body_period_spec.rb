@@ -67,12 +67,22 @@ describe AppropriateBodyPeriod do
     end
   end
 
-  describe "validations" do
+  describe "validations", skip: "during data cleanse" do
     subject(:appropriate_body_period) { FactoryBot.build(:appropriate_body_period) }
 
-    it { is_expected.to validate_presence_of(:name) }
-
     it { is_expected.to validate_uniqueness_of(:name) }
+  end
+
+  describe "#name" do
+    it "allows duplicate names (temp during data cleanse)" do
+      described_class.create!(name: "Shared name")
+
+      expect { described_class.create!(name: "Shared name") }.to change(described_class, :count).by(1)
+    end
+
+    it "may be omitted" do
+      expect { described_class.create!(name: nil) }.to change(described_class, :count).by(1)
+    end
   end
 
   describe "normalizing" do
