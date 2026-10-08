@@ -1,4 +1,4 @@
-RSpec::Matchers.define :have_documented_api_error do |attribute, message = nil, context = nil|
+RSpec::Matchers.define :have_api_error do |attribute, message = nil, context = nil|
   match do |actual|
     RSpec.configuration.api_error_documentation.add_error(
       example: RSpec.current_example,

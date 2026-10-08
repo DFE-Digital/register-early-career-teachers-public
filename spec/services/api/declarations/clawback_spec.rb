@@ -12,7 +12,7 @@ RSpec.describe API::Declarations::Clawback, type: :model do
       let(:lead_provider_id) { nil }
 
       it { is_expected.to have_one_error_only }
-      it { is_expected.to have_documented_api_error(:lead_provider_id, "Enter a '#/lead_provider_id'.") }
+      it { is_expected.to have_api_error(:lead_provider_id, "Enter a '#/lead_provider_id'.") }
     end
 
     context "when lead provider does not exist" do
@@ -20,21 +20,21 @@ RSpec.describe API::Declarations::Clawback, type: :model do
       let(:lead_provider_id) { 123_456_789 }
 
       it { is_expected.to have_one_error_only }
-      it { is_expected.to have_documented_api_error(:lead_provider_id, "The '#/lead_provider_id' you have entered is invalid.") }
+      it { is_expected.to have_api_error(:lead_provider_id, "The '#/lead_provider_id' you have entered is invalid.") }
     end
 
     context "when declaration is awaiting clawback" do
       let(:declaration) { FactoryBot.create(:declaration, :awaiting_clawback) }
 
       it { is_expected.to have_one_error_only }
-      it { is_expected.to have_documented_api_error(:declaration_api_id, "The declaration will or has been refunded") }
+      it { is_expected.to have_api_error(:declaration_api_id, "The declaration will or has been refunded") }
     end
 
     context "when declaration has been clawed back" do
       let(:declaration) { FactoryBot.create(:declaration, :clawed_back) }
 
       it { is_expected.to have_one_error_only }
-      it { is_expected.to have_documented_api_error(:declaration_api_id, "The declaration will or has been refunded") }
+      it { is_expected.to have_api_error(:declaration_api_id, "The declaration will or has been refunded") }
     end
 
     context "when there are no future output fee statements available" do
@@ -58,7 +58,7 @@ RSpec.describe API::Declarations::Clawback, type: :model do
           contract period. The funding contract for this contract period has
           ended. Get in touch if you need to discuss this with us
         TXT
-        expect(instance).to have_documented_api_error(:declaration_api_id, error_message)
+        expect(instance).to have_api_error(:declaration_api_id, error_message)
       end
     end
 
@@ -75,7 +75,7 @@ RSpec.describe API::Declarations::Clawback, type: :model do
           contract period. The funding contract for this contract period has
           ended. Get in touch if you need to discuss this with us
         TXT
-        expect(instance).to have_documented_api_error(:declaration_api_id, error_message)
+        expect(instance).to have_api_error(:declaration_api_id, error_message)
       end
     end
 
@@ -105,7 +105,7 @@ RSpec.describe API::Declarations::Clawback, type: :model do
           contract period. The funding contract for this contract period has
           ended. Get in touch if you need to discuss this with us
         TXT
-        expect(instance).to have_documented_api_error(:declaration_api_id, error_message)
+        expect(instance).to have_api_error(:declaration_api_id, error_message)
       end
     end
 
