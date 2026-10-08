@@ -65,12 +65,16 @@ module API::Declarations
     end
 
     def training_periods
-      teacher_type == :ect ? teacher.ect_training_periods : teacher.mentor_training_periods
+      @training_periods ||= if teacher_type == :ect
+                              teacher&.ect_training_periods
+                            elsif teacher_type == :mentor
+                              teacher&.mentor_training_periods
+                            end
+
+      @training_periods || TrainingPeriod.none
     end
 
     def training_period
-      return unless teacher
-
       @training_period ||= training_periods
                              .includes(:lead_provider)
                              .where(framework_agreements: { lead_provider_id: })
@@ -139,7 +143,7 @@ module API::Declarations
       return if errors.any?
 
       return errors.add(:teacher_api_id, "Enter a '#/teacher_api_id'.") if teacher_api_id.blank?
-      return errors.add(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check participant details and try again.") unless teacher_registered_with_lead_provider?
+      return errors.add(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check participant details and try again.") unless training_period_exists_for_lead_provider?
 
       return unless training_status&.withdrawn?
       return unless training_period.withdrawn_at <= evidenced_at
@@ -165,17 +169,18 @@ module API::Declarations
       return if errors[:declaration_type].any?
       return if errors[:evidenced_at].any?
       return if training_period
-      return unless teacher_registered_with_lead_provider?
 
       errors.add(:teacher_type, "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again.")
     end
 
-    def teacher_registered_with_lead_provider?
+    def training_period_exists_for_lead_provider?
       return false unless teacher
 
-      [teacher.ect_training_periods, teacher.mentor_training_periods].any? do |periods|
-        periods.includes(:lead_provider).where(framework_agreements: { lead_provider_id: }).exists?
-      end
+      teacher
+        .training_periods
+        .includes(:lead_provider)
+        .where(framework_agreements: { lead_provider_id: })
+        .exists?
     end
 
     def validate_milestone_exists
