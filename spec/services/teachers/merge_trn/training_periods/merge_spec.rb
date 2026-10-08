@@ -46,22 +46,69 @@ RSpec.describe Teachers::MergeTRN::TrainingPeriods::Merge do
 
     context "when the periods are for different partnerships" do
       let(:other_school_partnership) { FactoryBot.create(:school_partnership, :for_year, year: 2024) }
-      let(:destination_attrs) { { ect_at_school_period: destination_ect_period, school_partnership: other_school_partnership } }
+      let(:destination_attrs) do
+        { ect_at_school_period: destination_ect_period, school_partnership: other_school_partnership }
+      end
       let(:source_attrs) { { ect_at_school_period: source_ect_period, school_partnership: } }
 
       it "raises a CannotMergePeriods error" do
-        expect { service }.to raise_error(Teachers::MergeTRN::TrainingPeriods::Merge::CannotMergePeriods, "Periods have different partnerships")
+        expect {
+          service
+        }.to raise_error(Teachers::MergeTRN::TrainingPeriods::Merge::CannotMergePeriods,
+                         "Periods have different school partnerships")
       end
     end
 
-    context "when the periods have different training programmes" do
+    context "when the periods have different expressions of interest" do
+      let(:destination_attrs) { { ect_at_school_period: destination_ect_period } }
+      let(:source_attrs) { { ect_at_school_period: source_ect_period } }
       let(:tags) { %i[for_ect with_only_expression_of_interest] }
 
-      let(:destination_attrs) { { ect_at_school_period: destination_ect_period, training_programme: :school_led, expression_of_interest: nil, schedule: nil } }
-      let(:source_attrs) { { ect_at_school_period: source_ect_period } }
+      it "raises a CannotMergePeriods error" do
+        expect {
+          service
+        }.to raise_error(Teachers::MergeTRN::TrainingPeriods::Merge::CannotMergePeriods,
+                         "Periods have different expression of interests")
+      end
+    end
+
+    context "when ther periods have different withdrawal reasons" do
+      let(:destination_attrs) do
+        {
+          ect_at_school_period: destination_ect_period,
+          school_partnership:,
+          withdrawal_reason: :left_teaching_profession,
+          withdrawn_at: second_period_finished_on
+        }
+      end
+
+      let(:source_attrs) { { ect_at_school_period: source_ect_period, school_partnership: } }
 
       it "raises a CannotMergePeriods error" do
-        expect { service }.to raise_error(Teachers::MergeTRN::TrainingPeriods::Merge::CannotMergePeriods, "Periods have different training programmes")
+        expect {
+          service
+        }.to raise_error(Teachers::MergeTRN::TrainingPeriods::Merge::CannotMergePeriods,
+                         "Periods have different withdrawal reasons")
+      end
+    end
+
+    context "when ther periods have different deferral reasons" do
+      let(:destination_attrs) do
+        {
+          ect_at_school_period: destination_ect_period,
+          school_partnership:,
+          deferral_reason: :career_break,
+          deferred_at: second_period_finished_on
+        }
+      end
+
+      let(:source_attrs) { { ect_at_school_period: source_ect_period, school_partnership: } }
+
+      it "raises a CannotMergePeriods error" do
+        expect {
+          service
+        }.to raise_error(Teachers::MergeTRN::TrainingPeriods::Merge::CannotMergePeriods,
+                         "Periods have different deferral reasons")
       end
     end
 
@@ -69,11 +116,18 @@ RSpec.describe Teachers::MergeTRN::TrainingPeriods::Merge do
       let(:tags) { %i[for_ect with_schedule] }
       let(:lead_provider) { school_partnership.lead_provider }
       let(:delivery_partner) { school_partnership.delivery_partner }
-      let(:other_school_partnership) { FactoryBot.create(:school_partnership, :for_year, year: 2023, lead_provider:, delivery_partner:) }
-      let(:destination_attrs) { { ect_at_school_period: destination_ect_period, school_partnership: other_school_partnership } }
+      let(:other_school_partnership) do
+        FactoryBot.create(:school_partnership, :for_year, year: 2023, lead_provider:, delivery_partner:)
+      end
+      let(:destination_attrs) do
+        { ect_at_school_period: destination_ect_period, school_partnership: other_school_partnership }
+      end
 
       it "raises a CannotMergePeriods error" do
-        expect { service }.to raise_error(Teachers::MergeTRN::TrainingPeriods::Merge::CannotMergePeriods, "Periods have different schedules")
+        expect {
+          service
+        }.to raise_error(Teachers::MergeTRN::TrainingPeriods::Merge::CannotMergePeriods,
+                         "Periods have different schedules")
       end
     end
   end

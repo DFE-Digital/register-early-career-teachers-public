@@ -7,9 +7,7 @@ module Teachers
         class CannotMergePeriods < StandardError; end
 
         def call
-          raise CannotMergePeriods, "Periods have different training programmes" if periods_have_different_training_programmes?
-          raise CannotMergePeriods, "Periods have different schedules" if periods_have_different_schedules?
-          raise CannotMergePeriods, "Periods have different partnerships" if periods_have_different_partnerships?
+          training_periods_are_incompatible?
 
           super
         end
@@ -20,16 +18,26 @@ module Teachers
           :training_period
         end
 
-        def periods_have_different_partnerships?
-          periods.map(&:school_partnership_id).uniq.size > 1
+        def incompatible_attributes
+          %i[deferral_reason
+             expression_of_interest_id
+             schedule_id
+             school_partnership_id
+             withdrawal_reason]
         end
 
-        def periods_have_different_training_programmes?
-          periods.map(&:training_programme).uniq.size > 1
+        def training_periods_are_incompatible?
+          incompatible_attributes.each do |attribute|
+            attribute_name = attribute.to_s.humanize.pluralize.downcase
+
+            if periods_have_different?(attribute)
+              raise CannotMergePeriods, "Periods have different #{attribute_name}"
+            end
+          end
         end
 
-        def periods_have_different_schedules?
-          periods.map(&:schedule_id).uniq.size > 1
+        def periods_have_different?(attribute)
+          periods.map(&attribute).uniq.size > 1
         end
 
         def declarations
