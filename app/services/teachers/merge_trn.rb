@@ -20,7 +20,7 @@ module Teachers
         move_mentor_ineligibility_data
         record_teacher_id_change
         refresh_metadata
-        record_merge_events
+        record_merge_event
         teacher.destroy!
       end
 
@@ -130,12 +130,8 @@ module Teachers
       Metadata::Manager.new.refresh_metadata!([destination])
     end
 
-    def record_merge_events
-      Events::Record.record_teacher_trn_merged_events!(author:, source: teacher, destination:)
-    end
-
-    def anonymise_teacher
-      Teachers::Anonymise.new(teacher: teacher.reload, reason: :teacher_record_merged).anonymise!
+    def record_merge_event
+      Events::Record.record_teacher_trn_merged_event!(author:, source: teacher, destination:)
     end
 
     def author
