@@ -258,10 +258,18 @@ RSpec.describe Schools::RegisterMentorWizard::RegistrationStore::Status do
   end
 
   describe "#provider_led_ect?" do
-    let(:ect) { instance_double(ECTAtSchoolPeriod, provider_led_training_programme?: true) }
+    let(:ect) { instance_double(ECTAtSchoolPeriod, provider_led_training_active_or_paused?: true) }
 
     it "delegates to the ect instance" do
       expect(status.provider_led_ect?).to be(true)
+    end
+
+    context "when the ECT's training is neither provider-led nor paused" do
+      let(:ect) { instance_double(ECTAtSchoolPeriod, provider_led_training_active_or_paused?: false) }
+
+      it "returns false" do
+        expect(status.provider_led_ect?).to be(false)
+      end
     end
   end
 
@@ -269,6 +277,24 @@ RSpec.describe Schools::RegisterMentorWizard::RegistrationStore::Status do
     context "when no ect lead provider is stored" do
       it "returns false" do
         expect(status.ect_lead_provider_invalid?).to be(false)
+      end
+    end
+
+    context "when the ECT's provider-led training is paused" do
+      let(:ect) { instance_double(ECTAtSchoolPeriod, provider_led_training_paused?: true) }
+
+      context "when the mentor is eligible for funding" do
+        it "returns true" do
+          expect(status.ect_lead_provider_invalid?).to be(true)
+        end
+      end
+
+      context "when the mentor is ineligible for funding" do
+        before { FactoryBot.create(:teacher, :ineligible_for_mentor_funding, trn:) }
+
+        it "returns false" do
+          expect(status.ect_lead_provider_invalid?).to be(false)
+        end
       end
     end
 

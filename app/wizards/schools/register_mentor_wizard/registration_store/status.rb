@@ -68,10 +68,11 @@ module Schools
         end
 
         def provider_led_ect?
-          queries.ect&.provider_led_training_programme?
+          queries.ect&.provider_led_training_active_or_paused?
         end
 
         def ect_lead_provider_invalid?
+          return eligible_for_funding? if ect_provider_led_training_paused?
           return false unless registration_store.ect_lead_provider
 
           !LeadProviders::Active.new(registration_store.ect_lead_provider).active_in_contract_period?(queries.contract_period)
@@ -90,6 +91,10 @@ module Schools
       private
 
         attr_reader :registration_store, :queries
+
+        def ect_provider_led_training_paused?
+          queries.ect&.provider_led_training_paused?
+        end
 
         def mentor_funding_eligibility
           @mentor_funding_eligibility ||= Teachers::MentorFundingEligibility.new(trn: registration_store.trn)

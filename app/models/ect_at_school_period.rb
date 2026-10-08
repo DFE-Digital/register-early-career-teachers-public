@@ -111,6 +111,17 @@ class ECTAtSchoolPeriod < ApplicationRecord
     current_or_next_training_period || latest_training_period
   end
 
+  def provider_led_training_paused?
+    return false if current_or_next_training_period
+
+    latest_training_period&.provider_led_training_programme? &&
+      latest_training_period.status.in?(%i[withdrawn deferred])
+  end
+
+  def provider_led_training_active_or_paused?
+    current_or_next_training_period&.provider_led_training_programme? || provider_led_training_paused?
+  end
+
   def latest_lead_provider_name
     training_period = latest_training_period
     return if training_period.blank?
