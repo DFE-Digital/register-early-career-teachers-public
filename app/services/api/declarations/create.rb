@@ -18,14 +18,20 @@ module API::Declarations
     attribute :declaration_type
     attribute :evidence_type
 
-    validates :teacher_api_id, presence: { message: "Enter a '#/teacher_api_id'." }
-    validate :teacher_exists
+    validate :teacher_exists_with_lead_provider
+
+    validates :evidenced_at, presence: { message: "Enter a '#/evidenced_at'." }, if: -> { errors.empty? }
+    validates :evidenced_at, api_date_time_format: true
+    validate :evidenced_at_in_the_past
+    validates :evidenced_at,
+              evidenced_at_within_milestone: true,
+              allow_blank: true
+
     validates :teacher_type, presence: { message: "Enter a '#/teacher_type'." }, if: -> { errors.empty? }
     validates :teacher_type, inclusion: {
       in: TEACHER_TYPES,
       message: "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again."
     }, allow_blank: true
-    validates :evidenced_at, presence: { message: "Enter a '#/evidenced_at'." }, if: -> { errors.empty? }
     validate :teacher_type_exists
     validates :declaration_type, presence: { message: "Enter a '#/declaration_type'." }, if: -> { errors.empty? }
     validates :declaration_type, inclusion: {
@@ -33,11 +39,6 @@ module API::Declarations
       message: "Enter a valid declaration type."
     }, allow_blank: true, if: -> { errors.empty? }
     validate :validates_billable_slot_available
-    validates :evidenced_at, api_date_time_format: true
-    validate :evidenced_at_in_the_past
-    validates :evidenced_at,
-              evidenced_at_within_milestone: true,
-              allow_blank: true
     validate :validate_only_started_or_completed_if_mentor
     validates :evidence_type, evidence_type: true, if: -> { errors.empty? }
     validate :teacher_not_withdrawn_before_evidenced_at
@@ -45,7 +46,6 @@ module API::Declarations
     validate :payment_statement_available
     validate :validate_milestone_exists
     validate :declaration_in_sequence
-    validate :teacher_registered_with_lead_provider
 
     def create
       return false unless valid?
@@ -65,12 +65,16 @@ module API::Declarations
     end
 
     def training_periods
-      teacher_type == :ect ? teacher.ect_training_periods : teacher.mentor_training_periods
+      @training_periods ||= if teacher_type == :ect
+                              teacher&.ect_training_periods
+                            elsif teacher_type == :mentor
+                              teacher&.mentor_training_periods
+                            end
+
+      @training_periods || TrainingPeriod.none
     end
 
     def training_period
-      return unless teacher
-
       @training_period ||= training_periods
                              .includes(:lead_provider)
                              .where(framework_agreements: { lead_provider_id: })
@@ -79,6 +83,8 @@ module API::Declarations
     end
 
     def milestone
+      return unless Milestone.declaration_types.key?(declaration_type)
+
       @milestone ||= schedule&.milestones&.find_by(declaration_type:)
     end
 
@@ -133,6 +139,18 @@ module API::Declarations
       ).statements.first
     end
 
+    def teacher_exists_with_lead_provider
+      return if errors.any?
+
+      return errors.add(:teacher_api_id, "Enter a '#/teacher_api_id'.") if teacher_api_id.blank?
+      return errors.add(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check participant details and try again.") unless training_period_exists_for_lead_provider?
+
+      return unless training_status&.withdrawn?
+      return unless training_period.withdrawn_at <= evidenced_at
+
+      errors.add(:teacher_api_id, "This participant withdrew from this course on #{training_period.withdrawn_at.utc.rfc3339}. Enter a '#/evidenced_at' that's on or before the withdrawal date.")
+    end
+
     def evidenced_at_in_the_past
       return if errors[:evidenced_at].any?
       return if errors[:declaration_type].any?
@@ -144,14 +162,6 @@ module API::Declarations
       end
     end
 
-    def teacher_exists
-      return if errors[:teacher_api_id].any?
-      return if errors[:teacher_type].any?
-      return if teacher
-
-      errors.add(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check participant details and try again.")
-    end
-
     def teacher_type_exists
       return if errors[:teacher_type].any?
       return if errors[:teacher_api_id].any?
@@ -159,24 +169,18 @@ module API::Declarations
       return if errors[:declaration_type].any?
       return if errors[:evidenced_at].any?
       return if training_period
-      return unless teacher_registered_with_lead_provider?
 
       errors.add(:teacher_type, "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again.")
     end
 
-    def teacher_registered_with_lead_provider
-      return if errors[:teacher_api_id].any? || errors[:lead_provider_id].any?
-      return if teacher_registered_with_lead_provider?
-
-      errors.add(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check participant details and try again.")
-    end
-
-    def teacher_registered_with_lead_provider?
+    def training_period_exists_for_lead_provider?
       return false unless teacher
 
-      [teacher.ect_training_periods, teacher.mentor_training_periods].any? do |periods|
-        periods.includes(:lead_provider).where(framework_agreements: { lead_provider_id: }).exists?
-      end
+      teacher
+        .training_periods
+        .includes(:lead_provider)
+        .where(framework_agreements: { lead_provider_id: })
+        .exists?
     end
 
     def validate_milestone_exists

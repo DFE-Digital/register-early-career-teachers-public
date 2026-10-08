@@ -199,7 +199,7 @@ RSpec.describe Teachers::MergeTRN do
         it "enqueues a `Teachers::MergeTRN::TRSSyncJob` with an induction start date" do
           expect { merge! }
             .to have_enqueued_job(Teachers::MergeTRN::TRSSyncJob)
-            .with(teacher: destination_teacher, teacher_started_induction_on: induction_period.started_on)
+            .with(teacher: destination, teacher_started_induction_on: induction_period.started_on)
         end
       end
 
@@ -207,7 +207,7 @@ RSpec.describe Teachers::MergeTRN do
         it "enqueues a `Teachers::MergeTRN::TRSSyncJob` without an induction start date" do
           expect { merge! }
             .to have_enqueued_job(Teachers::MergeTRN::TRSSyncJob)
-            .with(teacher: destination_teacher, teacher_started_induction_on: nil)
+            .with(teacher: destination, teacher_started_induction_on: nil)
         end
       end
 
@@ -434,7 +434,7 @@ RSpec.describe Teachers::MergeTRN do
       it "enqueues a `Teachers::MergeTRN::TRSSyncJob` without an induction start date" do
         expect { merge! }
           .to have_enqueued_job(Teachers::MergeTRN::TRSSyncJob)
-          .with(teacher: destination_teacher, teacher_started_induction_on: nil)
+          .with(teacher: destination, teacher_started_induction_on: nil)
       end
     end
 
@@ -633,7 +633,9 @@ RSpec.describe Teachers::MergeTRN do
       end
 
       it "does not enqueue a `Teachers::MergeTRN::TRSSyncJob`" do
-        expect { merge! }.not_to have_enqueued_job(Teachers::MergeTRN::TRSSyncJob)
+        expect { merge! }
+        .to raise_error(Teachers::MergeTRN::TrainingPeriods::Merge::CannotMergePeriods)
+        .and not_have_enqueued_job(Teachers::MergeTRN::TRSSyncJob)
       end
     end
   end

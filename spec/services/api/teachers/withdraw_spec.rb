@@ -24,7 +24,7 @@ RSpec.describe API::Teachers::Withdraw, type: :model do
             let(:reason) { "does-not-exist" }
 
             it { is_expected.to have_one_error_per_attribute }
-            it { is_expected.to have_error(:reason, "The entered '#/reason' is not recognised for the given participant. Check details and try again.") }
+            it { is_expected.to have_api_error(:reason, "The entered '#/reason' is not recognised for the given participant. Check details and try again.") }
           end
 
           context "when reason values are dashed" do
@@ -41,34 +41,34 @@ RSpec.describe API::Teachers::Withdraw, type: :model do
             let(:reason) { "long_term_sickness" }
 
             it { is_expected.to have_one_error_per_attribute }
-            it { is_expected.to have_error(:reason, "The entered '#/reason' is not recognised for the given participant. Check details and try again.") }
+            it { is_expected.to have_api_error(:reason, "The entered '#/reason' is not recognised for the given participant. Check details and try again.") }
           end
 
           context "when teacher already withdrawn" do
             let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :withdrawn, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on) }
 
             it { is_expected.to have_one_error_per_attribute }
-            it { is_expected.to have_error(:teacher_api_id, "The '#/teacher_api_id' is already withdrawn.") }
+            it { is_expected.to have_api_error(:teacher_api_id, "The '#/teacher_api_id' is already withdrawn.") }
           end
 
           context "when training not started yet" do
             let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :unfinished, started_on: 3.months.from_now) }
 
             it { is_expected.to have_one_error_per_attribute }
-            it { is_expected.to have_error(:teacher_api_id, "You cannot withdraw #/teacher_api_id. This is because they have not been training with you for at least one day.") }
+            it { is_expected.to have_api_error(:teacher_api_id, "You cannot withdraw #/teacher_api_id. This is because they have not been training with you for at least one day.") }
           end
 
           context "when training started today" do
             let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", "#{trainee_type}_at_school_period": at_school_period, started_on: Time.zone.today) }
 
             it { is_expected.to have_one_error_per_attribute }
-            it { is_expected.to have_error(:teacher_api_id, "You cannot defer or withdraw this participant today. You need to try again tomorrow as the training was recently changed for this participant.") }
+            it { is_expected.to have_api_error(:teacher_api_id, "You cannot defer or withdraw this participant today. You need to try again tomorrow as the training was recently changed for this participant.") }
 
             context "when an earlier training period exists for the lead provider" do
               let!(:previous_training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", "#{trainee_type}_at_school_period": at_school_period, school_partnership: training_period.school_partnership, started_on: 3.days.ago, finished_on: 1.day.ago) }
 
               it { is_expected.to have_one_error_per_attribute }
-              it { is_expected.to have_error(:teacher_api_id, "You cannot defer or withdraw this participant today. You need to try again tomorrow as the training was recently changed for this participant.") }
+              it { is_expected.to have_api_error(:teacher_api_id, "You cannot defer or withdraw this participant today. You need to try again tomorrow as the training was recently changed for this participant.") }
             end
           end
 
@@ -80,17 +80,17 @@ RSpec.describe API::Teachers::Withdraw, type: :model do
         end
       end
 
-      context "for ect with mentor-no-longer-being-mentor reason" do
+      context "when ECT has a mentor-no-longer-being-mentor reason" do
         let(:at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, started_on: 2.months.ago) }
         let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :unfinished, ect_at_school_period: at_school_period, started_on: at_school_period.started_on) }
         let(:teacher_type) { :ect }
         let(:reason) { described_class::MENTOR_ONLY_WITHDRAWAL_REASONS.sample }
 
         it { is_expected.to have_one_error_per_attribute }
-        it { is_expected.to have_error(:reason, "You cannot withdraw an ECT for this reason. The ECT is not a mentor.") }
+        it { is_expected.to have_api_error(:reason, "You cannot withdraw an ECT for this reason. The ECT is not a mentor.") }
       end
 
-      context "for mentor with mentor-no-longer-being-mentor reason" do
+      context "when a mentor has a mentor-no-longer-being-mentor reason" do
         let(:at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, started_on: 2.months.ago) }
         let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :unfinished, mentor_at_school_period: at_school_period, started_on: at_school_period.started_on) }
         let(:teacher_type) { :mentor }

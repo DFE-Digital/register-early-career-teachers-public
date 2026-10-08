@@ -165,4 +165,10 @@ class Teacher < ApplicationRecord
   def syncable_with_trs?
     trs_response.nil? || trs_response_ok?
   end
+
+  def training_periods
+    TrainingPeriod
+      .where(id: ect_training_periods)
+      .or(TrainingPeriod.where(id: mentor_training_periods))
+  end
 end

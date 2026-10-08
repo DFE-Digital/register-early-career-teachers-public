@@ -13,6 +13,7 @@ ECF is a framework of standards to help early career teachers succeed at the sta
 * [ECF service manual](https://register-ects-service-manual.education.gov.uk/)
 * [Design history](https://teacher-cpd.design-history.education.gov.uk/ecf-v2/)
 * [Glossary](./documentation/glossary.md)
+* [API validation errors](./documentation/api-validation-errors.md)
 
 ### Technical stuff
 
