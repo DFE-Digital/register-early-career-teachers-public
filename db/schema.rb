@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_02_103000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_05_183436) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -129,7 +129,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_02_103000) do
     t.datetime "created_at", null: false
     t.uuid "dfe_sign_in_organisation_id"
     t.bigint "local_authority_id"
-    t.string "name", null: false
+    t.string "name"
     t.bigint "national_body_id"
     t.bigint "school_id"
     t.bigint "teaching_school_hub_id"
