@@ -426,7 +426,7 @@ RSpec.describe Teachers::MergeTRN do
         expect(events.pluck(:teacher_id).compact)
           .to eq([destination.id])
         expect(events.map(&:body).join)
-          .to include(source_api_id, destination.api_id)
+          .to include(teacher.api_id, destination.api_id)
       end
 
       it "enqueues a `Teachers::MergeTRN::TRSSyncJob` without an induction start date" do
