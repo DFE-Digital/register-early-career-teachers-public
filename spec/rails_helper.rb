@@ -41,10 +41,6 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
 
   config.before do
-    allow(Rails.application.config).to receive_messages(
-      enable_teaching_school_hubs: true # RIAB: new data model
-    )
-
     # Ensure registration window (i.e contract periods) are always open
     allow(Schools::RegistrationWindow).to receive(:closed?).and_return(false)
 
@@ -70,5 +66,16 @@ RSpec.configure do |config|
     else
       DeclarativeUpdates.skip(*declarative_updates_to_skip) { example.run }
     end
+  end
+
+  config.add_setting :api_error_documentation
+  config.api_error_documentation = APIErrorDocumentation.new
+  config.after(:suite) do
+    next if ENV["API_ERROR_DOCUMENTATION_PATH"].blank?
+
+    config.api_error_documentation.verify_completeness!
+    config.api_error_documentation.write(
+      ENV["API_ERROR_DOCUMENTATION_PATH"]
+    )
   end
 end

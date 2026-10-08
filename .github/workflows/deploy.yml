@@ -40,6 +40,10 @@ jobs:
     name: OpenAPI Check
     uses: ./.github/workflows/openapi_check.yml
 
+  api-error-documentation-check:
+    name: API Error Documentation Check
+    uses: ./.github/workflows/api_error_documentation_check.yml
+
   all-checks-passed:
     name: All checks passed
     needs: [openapi, brakeman, lint, rspec]

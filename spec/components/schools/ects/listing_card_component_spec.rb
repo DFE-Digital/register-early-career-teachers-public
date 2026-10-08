@@ -49,6 +49,17 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
     end
   end
 
+  context "when the ECT is exempt from induction and has no mentor assigned" do
+    let(:teacher) { FactoryBot.create(:teacher, :induction_exempt) }
+
+    before { render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:)) }
+
+    it "does not render the mentor row" do
+      expect(rendered_content).not_to have_css(".govuk-summary-list__key", text: "Mentor")
+      expect(rendered_content).not_to have_link("Assign a mentor for this ECT")
+    end
+  end
+
   it "renders the TRN" do
     render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:))
 

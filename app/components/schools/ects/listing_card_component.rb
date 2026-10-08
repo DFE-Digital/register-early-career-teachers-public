@@ -108,8 +108,12 @@ module Schools
       def mentor_row
         {
           key: { text: "Mentor", classes: %w[mentor-key] },
-          value: { text: render(Schools::ECTs::MentorshipComponent.new(ect_at_school_period)) }
+          value: { text: render(mentorship_component) }
         }
+      end
+
+      def mentorship_component
+        @mentorship_component ||= Schools::ECTs::MentorshipComponent.new(ect_at_school_period)
       end
 
       def start_date_row

@@ -72,6 +72,8 @@ module Schools
 
     def current_mentor = mentorship.current_mentor
 
+    def mentorship_component = @mentorship_component ||= Schools::ECTs::MentorshipComponent.new(@ect)
+
     def mentorship = @mentorship ||= ECTAtSchoolPeriods::Mentorship.new(@ect)
   end
 end
