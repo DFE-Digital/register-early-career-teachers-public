@@ -149,17 +149,6 @@ module API::Declarations
       errors.add(:teacher_api_id, "This participant withdrew from this course on #{training_period.withdrawn_at.utc.rfc3339}. Enter a '#/evidenced_at' that's on or before the withdrawal date.")
     end
 
-    def evidenced_at_in_the_past
-      return if errors[:evidenced_at].any?
-      return if errors[:declaration_type].any?
-      return if errors[:teacher_api_id].any?
-      return if errors[:teacher_type].any?
-
-      if evidenced_at && evidenced_at > Time.zone.now
-        errors.add(:evidenced_at, "The '#/evidenced_at' value cannot be a future date. Check the date and try again.")
-      end
-    end
-
     def teacher_type_exists
       return if errors[:teacher_type].any?
       return if errors[:teacher_api_id].any?
@@ -249,31 +238,24 @@ module API::Declarations
     end
 
     def milestone_finished_at
-      @milestone_finished_at ||= [milestone&.milestone_date&.end_of_day, Time.zone.now].compact.min
+      @milestone_finished_at ||= [milestone.milestone_date&.end_of_day, Time.zone.now].compact.min
     end
 
     def evidenced_at_date_range
       return (..Time.zone.now) unless milestone
+      return milestone_started_at..milestone_finished_at if contract_period.year < 2025
 
-      milestone_range = (milestone_started_at..[milestone_finished_at, Time.zone.now].compact.min)
+      surrounding_declaration_date_range
+    end
 
-      return milestone_range unless contract_period && contract_period.year >= 2025
-      return milestone_range if declaration_type.blank?
+    def surrounding_declaration_date_range
+      types = Declaration.declaration_types.values
+      index = types.index(declaration_type)
 
-      ordered_types = Declaration.declaration_types.values
-      index = ordered_types.index(declaration_type)
-      before_declaration_types = ordered_types[0...index]
-      after_declaration_types = ordered_types[(index + 1)..]
+      before = existing_declarations.billable_or_changeable_for_declaration_type(types.take(index))
+      after = existing_declarations.billable_or_changeable_for_declaration_type(types.drop(index + 1))
 
-      from_evidenced_at = existing_declarations
-        .billable_or_changeable_for_declaration_type(before_declaration_types)
-        .maximum(:evidenced_at)
-
-      to_evidenced_at = existing_declarations
-        .billable_or_changeable_for_declaration_type(after_declaration_types)
-        .minimum(:evidenced_at)
-
-      ([milestone_started_at, from_evidenced_at].compact.max..[milestone_finished_at, to_evidenced_at, Time.zone.now].compact.min)
+      before.maximum(:evidenced_at)..[after.minimum(:evidenced_at), Time.zone.now].compact.min
     end
 
     def evidenced_at_date_range_error_message
