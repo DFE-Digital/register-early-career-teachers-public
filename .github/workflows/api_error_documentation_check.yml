@@ -1,0 +1,70 @@
+name: "API error documentation check"
+on:
+  workflow_call:
+    inputs:
+      ruby-version:
+        description: Ruby version
+        type: string
+        required: false
+        default: "4.0.7"
+jobs:
+  api-error-documentation-check:
+    name: Check API error documentation
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    env:
+      RAILS_ENV: test
+      DB_USERNAME: postgres
+      DB_PASSWORD: ""
+      DB_HOSTNAME: 127.0.0.1
+      DB_PORT: 5432
+      ECF_DB_USERNAME: postgres
+      ECF_DB_PASSWORD: ""
+      ECF_DB_HOSTNAME: 127.0.0.1
+      ECF_DB_PORT: 5432
+      ANALYTICS_DB_USERNAME: postgres
+      ANALYTICS_DB_PASSWORD: ""
+      ANALYTICS_DB_HOSTNAME: 127.0.0.1
+      ANALYTICS_DB_PORT: 5432
+      ENCRYPTION_PRIMARY_KEY: test_primary_key
+      ENCRYPTION_DETERMINISTIC_KEY: test_deterministic_key
+      ENCRYPTION_DERIVATION_SALT: test_derivation_salt
+      CI: true
+
+    services:
+      postgres:
+        image: postgres:16.4-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ""
+          POSTGRES_HOST_AUTH_METHOD: "trust"
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    permissions:
+      contents: read
+      pull-requests: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: ./.github/actions/prepare-app-env
+        id: test
+        with:
+          prepare-test-database: "true"
+          prepare-assets: "true"
+
+      - name: Generate API error documentation
+        run: bundle exec rake api:error_documentation:generate
+
+      - name: Check API error documentation is up to date
+        run: |
+          if ! git diff --exit-code -- documentation/api-errors.md; then
+            echo "API error documentation is out of date. Run 'bundle exec rake api:error_documentation:generate' and commit the result."
+            exit 1
+          fi
