@@ -145,21 +145,19 @@ RSpec.describe Teachers::MergeTRN do
   let(:overlapping_period_started_on) { Date.new(2025, 5, 1) }
   let(:overlapping_period_finished_on) { Date.new(2025, 7, 30) }
 
-  let(:api_client) { instance_double(TRS::APIClient, begin_induction!: true) }
-
-  before { allow(TRS::APIClient).to receive(:build).and_return(api_client) }
-
   describe "#merge!" do
+    subject(:merge!) { service.merge! }
+
     context "when the destination has no overlapping records" do
       it "moves the at-school periods to the destination teacher" do
-        service.merge!
+        merge!
 
         expect(ect_at_school_period.reload.teacher).to eq(destination)
         expect(mentor_at_school_period.reload.teacher).to eq(destination)
       end
 
       it "leaves the destinations teacher's periods in place" do
-        service.merge!
+        merge!
 
         expect(destination.reload.ect_at_school_periods)
           .to contain_exactly(ect_at_school_period, destination_ect_at_school_period)
@@ -172,7 +170,7 @@ RSpec.describe Teachers::MergeTRN do
       end
 
       it "moves the declarations with their training periods to the destination teacher" do
-        service.merge!
+        merge!
 
         expect(ect_declaration.reload.training_period.teacher).to eq(destination)
         expect(mentor_declaration.reload.training_period.teacher).to eq(destination)
@@ -184,7 +182,7 @@ RSpec.describe Teachers::MergeTRN do
         expect(Teachers::MergeTRN::TrainingPeriods::Merge).not_to receive(:call)
         expect(Teachers::MergeTRN::MentorshipPeriods::Merge).not_to receive(:call)
 
-        service.merge!
+        merge!
       end
 
       context "when the source has induction records" do
@@ -192,24 +190,24 @@ RSpec.describe Teachers::MergeTRN do
         let!(:induction_extension) { FactoryBot.create(:induction_extension, teacher:) }
 
         it "moves the induction records to the destination teacher" do
-          service.merge!
+          merge!
 
           expect(induction_period.reload.teacher).to eq(destination)
           expect(induction_extension.reload.teacher).to eq(destination)
         end
 
-        it "syncs the moved induction start date with TRS" do
-          service.merge!
-          expect(api_client)
-            .to have_received(:begin_induction!)
-            .with(trn: destination.trn, start_date: induction_period.started_on)
+        it "enqueues a `Teachers::MergeTRN::TRSSyncJob` with an induction start date" do
+          expect { merge! }
+            .to have_enqueued_job(Teachers::MergeTRN::TRSSyncJob)
+            .with(teacher: destination_teacher, teacher_started_induction_on: induction_period.started_on)
         end
       end
 
       context "when the source has no induction records" do
-        it "does not sync induction data with TRS" do
-          service.merge!
-          expect(api_client).not_to have_received(:begin_induction!)
+        it "enqueues a `Teachers::MergeTRN::TRSSyncJob` without an induction start date" do
+          expect { merge! }
+            .to have_enqueued_job(Teachers::MergeTRN::TRSSyncJob)
+            .with(teacher: destination_teacher, teacher_started_induction_on: nil)
         end
       end
 
@@ -234,7 +232,7 @@ RSpec.describe Teachers::MergeTRN do
           end
 
           it "moves the earliest eligibility dates to the destination" do
-            service.merge!
+            merge!
 
             expect(destination.reload.ect_first_became_eligible_for_training_at)
               .to eq(Date.new(2025, 1, 1))
@@ -260,7 +258,7 @@ RSpec.describe Teachers::MergeTRN do
             end
 
             it "moves the earliest ineligibility date to the destination" do
-              service.merge!
+              merge!
 
               expect(destination.reload.ect_became_ineligible_for_funding_on)
                 .to eq(Date.new(2023, 1, 1))
@@ -288,7 +286,7 @@ RSpec.describe Teachers::MergeTRN do
           end
 
           it "moves the earliest eligibility dates to the destination" do
-            service.merge!
+            merge!
 
             expect(destination.reload.mentor_first_became_eligible_for_training_at)
               .to eq(Date.new(2023, 1, 1))
@@ -317,7 +315,7 @@ RSpec.describe Teachers::MergeTRN do
           end
 
           it "moves the earliest mentor funding ineligibility date and reason to the destination" do
-            service.merge!
+            merge!
 
             expect(destination.reload.mentor_became_ineligible_for_funding_on)
               .to eq(Date.new(2026, 1, 1))
@@ -355,7 +353,7 @@ RSpec.describe Teachers::MergeTRN do
           end
 
           it "moves the earliest frozen payment years to the destination" do
-            service.merge!
+            merge!
 
             expect(destination.reload.mentor_payments_frozen_year).to eq(2023)
           end
@@ -381,7 +379,7 @@ RSpec.describe Teachers::MergeTRN do
           end
 
           it "moves the earliest frozen payment years to the destination" do
-            service.merge!
+            merge!
 
             expect(destination.reload.ect_payments_frozen_year).to eq(2023)
           end
@@ -389,7 +387,7 @@ RSpec.describe Teachers::MergeTRN do
       end
 
       it "destroys the source teacher" do
-        expect { service.merge! }
+        expect { merge! }
           .to change { Teacher.exists?(teacher.id) }
           .from(true)
           .to(false)
@@ -398,7 +396,7 @@ RSpec.describe Teachers::MergeTRN do
       it "records a TeacherIdChange from the source participant to the destination participant" do
         source_api_id = teacher.api_id
 
-        expect { service.merge! }.to change(TeacherIdChange, :count).by(1)
+        expect { merge! }.to change(TeacherIdChange, :count).by(1)
 
         change = TeacherIdChange.last
         expect(change.teacher).to eq(destination)
@@ -409,13 +407,13 @@ RSpec.describe Teachers::MergeTRN do
       it "moves the source's existing teacher_id_changes onto the destination" do
         earlier_change = FactoryBot.create(:teacher_id_change, teacher:)
 
-        service.merge!
+        merge!
 
         expect(earlier_change.reload.teacher).to eq(destination)
       end
 
       it "populates the destination's metadata (which the model hooks do not do on reassignment)" do
-        expect { service.merge! }
+        expect { merge! }
           .to change { destination.reload.lead_provider_metadata.count }
           .from(0)
       end
@@ -423,7 +421,7 @@ RSpec.describe Teachers::MergeTRN do
       it "records a merge event" do
         source_api_id = teacher.api_id
 
-        service.merge!
+        merge!
 
         events = Event.where(event_type: "teacher_merged")
         expect(events.count).to eq(2)
@@ -433,13 +431,10 @@ RSpec.describe Teachers::MergeTRN do
           .to include(source_api_id, destination.api_id)
       end
 
-      it "calls a sync with TRS" do
-        freeze_time
-
-        expect { service.merge! }
-          .to have_enqueued_job(Teachers::SyncTeacherWithTRSJob)
-          .with(teacher: destination)
-          .at(5.minutes.from_now)
+      it "enqueues a `Teachers::MergeTRN::TRSSyncJob` without an induction start date" do
+        expect { merge! }
+          .to have_enqueued_job(Teachers::MergeTRN::TRSSyncJob)
+          .with(teacher: destination_teacher, teacher_started_induction_on: nil)
       end
     end
 
@@ -454,7 +449,7 @@ RSpec.describe Teachers::MergeTRN do
         it "calls the mentor_at_school_periods merge service" do
           allow(Teachers::MergeTRN::MentorAtSchoolPeriods::Merge).to receive(:call).and_call_original
 
-          service.merge!
+          merge!
 
           expect(Teachers::MergeTRN::MentorAtSchoolPeriods::Merge).to have_received(:call).with(
             periods: contain_exactly(
@@ -466,7 +461,7 @@ RSpec.describe Teachers::MergeTRN do
         end
 
         it "moves the non-overlapping mentor_at_school_period to the destination teacher" do
-          service.merge!
+          merge!
 
           expect(mentor_at_school_period.reload.teacher).to eq(destination)
           expect(mentor_at_school_period.started_on).to eq(first_period_started_on)
@@ -474,7 +469,7 @@ RSpec.describe Teachers::MergeTRN do
         end
 
         it "merges the overlapping mentor_at_school_period" do
-          service.merge!
+          merge!
 
           expect(destination_mentor_at_school_period.reload.started_on).to eq(overlapping_period_started_on)
           expect { overlapping_mentor_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
@@ -493,7 +488,7 @@ RSpec.describe Teachers::MergeTRN do
         it "calls the ect_at_school_period merge service" do
           allow(Teachers::MergeTRN::ECTAtSchoolPeriods::Merge).to receive(:call).and_call_original
 
-          service.merge!
+          merge!
 
           expect(Teachers::MergeTRN::ECTAtSchoolPeriods::Merge).to have_received(:call).with(
             periods: contain_exactly(overlapping_ect_period,
@@ -503,7 +498,7 @@ RSpec.describe Teachers::MergeTRN do
         end
 
         it "moves the non-overlapping ect_at_school_period to the destination teacher" do
-          service.merge!
+          merge!
 
           expect(ect_at_school_period.reload.teacher).to eq(destination)
           expect(ect_at_school_period.started_on).to eq(first_period_started_on)
@@ -511,7 +506,7 @@ RSpec.describe Teachers::MergeTRN do
         end
 
         it "merges the overlapping ect_at_school_period" do
-          service.merge!
+          merge!
 
           expect(destination_ect_at_school_period.reload.started_on).to eq(overlapping_period_started_on)
           expect { overlapping_ect_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
@@ -525,11 +520,11 @@ RSpec.describe Teachers::MergeTRN do
       end
 
       it "does not move any ect_at_school_periods" do
-        expect { service.merge! }.not_to(change { teacher.reload.ect_at_school_periods.map(&:teacher_id) })
+        expect { merge! }.not_to(change { teacher.reload.ect_at_school_periods.map(&:teacher_id) })
       end
 
       it "does not move any mentor_at_school_periods" do
-        expect { service.merge! }.not_to(change { teacher.reload.mentor_at_school_periods.map(&:teacher_id) })
+        expect { merge! }.not_to(change { teacher.reload.mentor_at_school_periods.map(&:teacher_id) })
       end
 
       context "when the source has induction records" do
@@ -537,58 +532,46 @@ RSpec.describe Teachers::MergeTRN do
         let!(:induction_extension) { FactoryBot.create(:induction_extension, teacher:) }
 
         it "does not move any induction periods" do
-          expect { service.merge! }.not_to(change { teacher.reload.induction_periods.map(&:teacher_id) })
+          expect { merge! }.not_to(change { teacher.reload.induction_periods.map(&:teacher_id) })
         end
 
         it "does not move any induction extensions" do
-          expect { service.merge! }.not_to(change { teacher.reload.induction_extensions.map(&:teacher_id) })
-        end
-
-        it "does not sync the induction start date with TRS" do
-          expect(BeginECTInductionJob).not_to receive(:perform_now)
-
-          service.merge!
+          expect { merge! }.not_to(change { teacher.reload.induction_extensions.map(&:teacher_id) })
         end
       end
 
       it "does not move any ect declarations or training periods" do
-        expect { service.merge! }.not_to(change { ect_declaration.reload.training_period.teacher })
+        expect { merge! }.not_to(change { ect_declaration.reload.training_period.teacher })
       end
 
       it "does not move any mentor declarations or training periods" do
-        expect { service.merge! }.not_to(change { mentor_declaration.reload.training_period.teacher })
+        expect { merge! }.not_to(change { mentor_declaration.reload.training_period.teacher })
       end
 
       it "does not record a TeacherIdChange" do
-        expect { service.merge! }.not_to change(TeacherIdChange, :count)
+        expect { merge! }.not_to change(TeacherIdChange, :count)
       end
 
       it "does not remove any metadata" do
-        expect { service.merge! }.not_to(change { teacher.reload.lead_provider_metadata.count })
+        expect { merge! }.not_to(change { teacher.reload.lead_provider_metadata.count })
       end
 
       it "does not destroy the source teacher" do
-        expect { service.merge! }.not_to(change { Teacher.exists?(teacher.id) })
+        expect { merge! }.not_to(change { Teacher.exists?(teacher.id) })
       end
 
       it "does not change any eligibility dates or other attributes of the teacher" do
-        expect { service.merge! }.not_to(change { teacher.reload.attributes })
+        expect { merge! }.not_to(change { teacher.reload.attributes })
       end
 
       it "does not record a merge event" do
-        service.merge!
+        merge!
 
         expect(Event.where(event_type: "teacher_merged")).to be_empty
       end
 
-      it "does not sync induction data with TRS" do
-        service.merge!
-        expect(api_client).not_to have_received(:begin_induction!)
-      end
-
-      it "does not resync with TRS" do
-        expect { service.merge! }
-          .not_to have_enqueued_job(Teachers::SyncTeacherWithTRSJob)
+      it "does not enqueue a `Teachers::MergeTRN::TRSSyncJob`" do
+        expect { merge! }.not_to have_enqueued_job(Teachers::MergeTRN::TRSSyncJob)
       end
     end
 
@@ -623,14 +606,14 @@ RSpec.describe Teachers::MergeTRN do
       it "does not change the teacher's record" do
         original_attributes = ect_at_school_period.attributes.slice("started_on", "finished_on", "teacher_id")
 
-        expect { service.merge! }.to raise_error(Teachers::MergeTRN::TrainingPeriods::Merge::CannotMergePeriods)
+        expect { merge! }.to raise_error(Teachers::MergeTRN::TrainingPeriods::Merge::CannotMergePeriods)
 
         expect(ect_at_school_period.reload.attributes.slice(*original_attributes.keys))
           .to eq(original_attributes)
       end
 
       it "does not destroy the source teacher or any related data" do
-        expect { service.merge! }.to raise_error(Teachers::MergeTRN::TrainingPeriods::Merge::CannotMergePeriods)
+        expect { merge! }.to raise_error(Teachers::MergeTRN::TrainingPeriods::Merge::CannotMergePeriods)
 
         expect(Teacher.exists?(teacher.id)).to be true
         expect(ECTAtSchoolPeriod.exists?(ect_at_school_period.id)).to be true
@@ -644,21 +627,13 @@ RSpec.describe Teachers::MergeTRN do
       end
 
       it "does not record a merge event" do
-        expect { service.merge! }.to raise_error(Teachers::MergeTRN::TrainingPeriods::Merge::CannotMergePeriods)
+        expect { merge! }.to raise_error(Teachers::MergeTRN::TrainingPeriods::Merge::CannotMergePeriods)
 
         expect(Event.where(event_type: "teacher_merged")).to be_empty
       end
 
-      it "does not sync induction data with TRS" do
-        expect(BeginECTInductionJob).not_to receive(:perform_now)
-
-        expect { service.merge! }.to raise_error(Teachers::MergeTRN::TrainingPeriods::Merge::CannotMergePeriods)
-      end
-
-      it "does not resync with TRS" do
-        expect(Teachers::SyncTeacherWithTRSJob).not_to receive(:perform_later)
-
-        expect { service.merge! }.to raise_error(Teachers::MergeTRN::TrainingPeriods::Merge::CannotMergePeriods)
+      it "does not enqueue a `Teachers::MergeTRN::TRSSyncJob`" do
+        expect { merge! }.not_to have_enqueued_job(Teachers::MergeTRN::TRSSyncJob)
       end
     end
   end
