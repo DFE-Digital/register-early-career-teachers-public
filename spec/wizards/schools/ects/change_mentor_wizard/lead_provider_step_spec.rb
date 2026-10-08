@@ -170,6 +170,21 @@ describe Schools::ECTs::ChangeMentorWizard::LeadProviderStep do
       it { is_expected.to be_empty }
     end
 
+    context "when the ECT's training with one of the lead providers was withdrawn today" do
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school:, started_on: 1.month.ago) }
+
+      before do
+        FactoryBot.create(:training_period, :provider_led, ect_at_school_period:, school_partnership: nil, expression_of_interest: framework_agreement,
+                                                           started_on: ect_at_school_period.started_on, finished_on: Date.current,
+                                                           withdrawn_at: Time.zone.now, withdrawal_reason: "other")
+      end
+
+      it "offers that lead provider too" do
+        expect(lead_providers_for_select)
+          .to contain_exactly(framework_agreement.lead_provider, other_lead_provider.lead_provider)
+      end
+    end
+
     context "when the mentor started before the current contract period" do
       let(:started_on) { current_contract_period.started_on.prev_day }
 

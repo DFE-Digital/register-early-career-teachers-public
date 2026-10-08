@@ -147,6 +147,12 @@ describe ECTAtSchoolPeriod do
 
         it { is_expected.to be_provider_led_training_paused }
 
+        context "when the training period was withdrawn today" do
+          let(:finished_training_period_attributes) { { ect_at_school_period:, started_on: 1.year.ago, finished_on: Date.current } }
+
+          it { is_expected.to be_provider_led_training_paused }
+        end
+
         context "when there is a later current training period" do
           before do
             FactoryBot.create(:training_period, :provider_led, :unfinished, ect_at_school_period:, started_on: 1.week.ago)

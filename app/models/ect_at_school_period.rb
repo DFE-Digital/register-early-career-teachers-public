@@ -112,8 +112,6 @@ class ECTAtSchoolPeriod < ApplicationRecord
   end
 
   def provider_led_training_paused?
-    return false if current_or_next_training_period
-
     latest_training_period&.provider_led_training_programme? &&
       latest_training_period.status.in?(%i[withdrawn deferred])
   end
