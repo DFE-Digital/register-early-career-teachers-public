@@ -28,18 +28,13 @@ module API::Declarations
 
     validate :training_period_exists_for_teacher_type, if: -> { errors.empty? }
 
-    validates :declaration_type, presence: { message: "Enter a '#/declaration_type'." }, if: -> { errors.empty? }
-    validates :declaration_type, inclusion: {
-      in: Declaration.declaration_types.keys,
-      message: "Enter a valid declaration type."
-    }, allow_blank: true, if: -> { errors.empty? }
-    validate :validates_billable_slot_available
-    validate :validate_only_started_or_completed_if_mentor
+    validate :contract_period_is_not_payments_frozen, if: -> { errors.empty? }
+
+    validate :declaration_type_can_be_billed, if: -> { errors.empty? }
+
     validates :evidence_type, evidence_type: true, if: -> { errors.empty? }
-    validate :teacher_not_withdrawn_before_evidenced_at
-    validate :contract_period_is_not_payments_frozen
-    validate :payment_statement_available
-    validate :validate_milestone_exists
+
+    validate :payment_statement_available, if: -> { errors.empty? }
 
     def create
       return false unless valid?
@@ -162,45 +157,30 @@ module API::Declarations
         .exists?
     end
 
-    def validate_milestone_exists
-      return if errors[:evidenced_at].any?
-      return if errors[:declaration_type].any?
-      return if errors[:teacher_api_id].any?
-      return if errors[:teacher_type].any?
-      return if errors[:lead_provider_id].any?
-      return if errors[:contract_period_year].any?
+    def declaration_type_can_be_billed
+      return errors.add(:declaration_type, "Enter a '#/declaration_type'.") if declaration_type.blank?
+      return errors.add(:declaration_type, "Enter a valid declaration type.") unless Declaration.declaration_types.key?(declaration_type)
+
       return unless training_period
 
-      if milestone.blank?
-        errors.add(:declaration_type, "The property '#/declaration_type' does not exist for this schedule.")
+      if existing_declarations.billable_or_changeable_for_declaration_type(declaration_type).exists?
+        errors.add(:declaration_type, "A declaration has already been submitted that will be, or has been, paid for this event.")
+        return
       end
+
+      if !declaration_type.in?(%w[started completed]) && funded_mentor_training?
+        errors.add(:declaration_type, "You cannot send retained or extended declarations for participants who began their mentor training after June 2025. Resubmit this declaration with either a started or completed declaration.")
+
+        return
+      end
+
+      return if milestone.present?
+
+      errors.add(:declaration_type, "The property '#/declaration_type' does not exist for this schedule.")
     end
 
-    def teacher_not_withdrawn_before_evidenced_at
-      return if errors[:teacher_api_id].any?
-      return unless training_status&.withdrawn?
-      return unless training_period.withdrawn_at <= evidenced_at
-
-      errors.add(:teacher_api_id, "This participant withdrew from this course on #{training_period.withdrawn_at.utc.rfc3339}. Enter a '#/evidenced_at' that's on or before the withdrawal date.")
-    end
-
-    def validate_only_started_or_completed_if_mentor
-      return if errors[:declaration_type].any?
-      return if errors[:contract_period_year].any?
-      return if declaration_type&.in?(%w[started completed])
-      return unless training_period&.for_mentor?
-      return unless contract_period.mentor_funding_enabled?
-
-      errors.add(:declaration_type, "You cannot send retained or extended declarations for participants who began their mentor training after June 2025. Resubmit this declaration with either a started or completed declaration.")
-    end
-
-    def validates_billable_slot_available
-      return if errors[:declaration_type].any?
-      return if errors[:evidenced_at].any?
-      return unless training_period
-      return unless existing_declarations.billable_or_changeable_for_declaration_type(declaration_type).exists?
-
-      errors.add(:declaration_type, "A declaration has already been submitted that will be, or has been, paid for this event.")
+    def funded_mentor_training?
+      training_period.for_mentor? && contract_period.mentor_funding_enabled?
     end
 
     def payment_statement_available
