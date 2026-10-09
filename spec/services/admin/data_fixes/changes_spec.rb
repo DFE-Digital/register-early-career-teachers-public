@@ -20,7 +20,7 @@ RSpec.describe Admin::DataFixes::Changes do
           },
           {
             "object_type" => "ECTAtSchoolPeriod",
-            "object_id" => "99",
+            "object_id" => "invalid_id",
             "action" => "delete",
             "attributes" => ""
           }
