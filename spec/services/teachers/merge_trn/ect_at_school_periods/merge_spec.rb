@@ -64,10 +64,10 @@ RSpec.describe Teachers::MergeTRN::ECTAtSchoolPeriods::Merge do
         expect { service }.to change(destination_period, :finished_on).to(first_period_finished_on)
       end
 
-      it "deletes the first period" do
+      it "deletes the source_mentorship_period" do
         service
 
-        expect(MentorshipPeriod.exists?(first_period.id)).to be(false)
+        expect(MentorshipPeriod.exists?(source_mentorship_period.id)).to be(false)
       end
     end
   end

@@ -18,8 +18,8 @@ module GIAS::Reconciliation
 
       attr_reader :teacher, :schools
 
-      def ordered_periods
-        @ordered_periods ||= teacher
+      def periods_by_start_date
+        @periods_by_start_date ||= teacher
           .mentor_at_school_periods
           .where(school: schools)
           .order(:started_on)

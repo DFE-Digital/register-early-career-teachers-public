@@ -18,13 +18,13 @@ module Periods
 
     attr_reader :groups
 
-    def ordered_periods
+    def periods_by_start_date
       periods.sort_by(&:started_on)
     end
 
     def group_periods = group_by_order
 
-    def group_by_order(periods = ordered_periods)
+    def group_by_order(periods = periods_by_start_date)
       periods.each do |period|
         if start_new_group?(groups.last, period)
           groups << [period]

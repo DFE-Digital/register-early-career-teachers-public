@@ -12,7 +12,7 @@ module Teachers
 
         def find
           return [] if periods.empty?
-          raise ArgumentError, "Periods must be of the same type" if wrong_period_type?
+          raise ArgumentError, "Periods must be of the same type" if unexpected_period_type?
 
           super
         end
@@ -25,7 +25,7 @@ module Teachers
           raise NotImplementedError, "Subclasses must define the period_type"
         end
 
-        def wrong_period_type?
+        def unexpected_period_type?
           periods.map(&:class).any? { |type| type.to_s.underscore.to_sym != period_type }
         end
       end

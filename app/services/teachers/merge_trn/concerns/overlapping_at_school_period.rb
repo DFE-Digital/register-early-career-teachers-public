@@ -9,7 +9,7 @@ module Teachers
       private
 
         def periods_by_school
-          ordered_periods.group_by(&:school_id).values
+          periods_by_start_date.group_by(&:school_id).values
         end
 
         def group_periods = group_by_school
