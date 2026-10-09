@@ -27,6 +27,8 @@ module Schools
         end
 
         def lead_providers_for_select
+          return framework_agreements_in_contract_period unless ect_current_training.lead_provider_available_for_training?
+
           framework_agreements_in_contract_period
             .without(lead_provider_for_ect_at_school_period)
         end

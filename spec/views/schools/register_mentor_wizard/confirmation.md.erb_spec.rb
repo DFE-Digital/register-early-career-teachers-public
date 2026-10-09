@@ -80,6 +80,27 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
         end
       end
 
+      context "when the ect's provider_led training has been withdrawn" do
+        let(:ect) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher:, school: school_partnership.school, started_on: 1.year.ago) }
+        let(:chosen_lead_provider) { FactoryBot.create(:lead_provider, name: "Gobo") }
+
+        before do
+          FactoryBot.create(:training_period, :provider_led, ect_at_school_period: ect, school_partnership:, started_on: 1.year.ago,
+                                                             finished_on: 1.month.ago, withdrawn_at: 1.month.ago, withdrawal_reason: "other")
+          store.lead_provider_id = chosen_lead_provider.id
+        end
+
+        it do
+          assign(:wizard, wizard)
+          assign(:mentor, mentor)
+          assign(:ect_name, "Michale Dixon")
+
+          render
+
+          expect(rendered).to have_content("We’ll pass on their details to Gobo")
+        end
+      end
+
       context "when the ect is not provider_led" do
         before { allow(ect).to receive(:provider_led_training_programme?).and_return(false) }
 
@@ -98,7 +119,7 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
     context "when ineligible" do
       context "when the ect is provider_led" do
         before do
-          allow(wizard.ect).to receive(:provider_led_training_programme?).and_return(true)
+          allow(wizard.ect).to receive(:provider_led_training_active_or_paused?).and_return(true)
           allow(mentor).to receive(:eligible_for_funding?).and_return(false)
         end
 

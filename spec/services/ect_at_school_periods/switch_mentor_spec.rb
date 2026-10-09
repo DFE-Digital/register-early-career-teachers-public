@@ -84,6 +84,42 @@ module ECTAtSchoolPeriods
         end
       end
 
+      context "when the ECT's provider-led training has been withdrawn" do
+        let(:ect_at_school_period) do
+          FactoryBot.create(:ect_at_school_period, :unfinished, started_on: 3.months.ago)
+        end
+        let(:framework_agreement) { FactoryBot.create(:framework_agreement, contract_period:) }
+        let(:lead_provider) { framework_agreement.lead_provider }
+
+        before do
+          FactoryBot.create(
+            :training_period,
+            :provider_led,
+            :for_ect,
+            ect_at_school_period:,
+            started_on: ect_at_school_period.started_on,
+            finished_on: 1.month.ago,
+            withdrawn_at: 1.month.ago,
+            withdrawal_reason: "other"
+          )
+        end
+
+        it "creates a training period for the mentor with the selected lead provider" do
+          expect { switch_mentor }.to change(TrainingPeriod, :count).by(1)
+
+          new_training_period = TrainingPeriod.last
+          expect(selected_mentor_at_school_period.training_periods).to contain_exactly(new_training_period)
+          expect(new_training_period.expression_of_interest_lead_provider).to eq(lead_provider)
+        end
+
+        it "records a `teacher_starts_training_period` event" do
+          switch_mentor
+
+          event = Event.where(event_type: "teacher_starts_training_period").sole
+          expect(event.teacher_id).to eq(selected_mentor_teacher.id)
+        end
+      end
+
       context "when the ECT is undergoing provider-led training" do
         let!(:ect_training_period) do
           FactoryBot.create(

@@ -134,6 +134,89 @@ describe ECTAtSchoolPeriod do
       end
     end
 
+    describe "#provider_led_training_paused?" do
+      subject { ect_at_school_period }
+
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, started_on: 1.year.ago) }
+      let(:finished_training_period_attributes) { { ect_at_school_period:, started_on: 1.year.ago, finished_on: 1.month.ago } }
+
+      context "when the latest training period is provider-led and withdrawn" do
+        before do
+          FactoryBot.create(:training_period, :provider_led, **finished_training_period_attributes, withdrawn_at: 1.month.ago, withdrawal_reason: "other")
+        end
+
+        it { is_expected.to be_provider_led_training_paused }
+
+        context "when the training period was withdrawn today" do
+          let(:finished_training_period_attributes) { { ect_at_school_period:, started_on: 1.year.ago, finished_on: Date.current } }
+
+          it { is_expected.to be_provider_led_training_paused }
+        end
+
+        context "when there is a later current training period" do
+          before do
+            FactoryBot.create(:training_period, :provider_led, :unfinished, ect_at_school_period:, started_on: 1.week.ago)
+          end
+
+          it { is_expected.not_to be_provider_led_training_paused }
+        end
+      end
+
+      context "when the latest training period is provider-led and deferred" do
+        before do
+          FactoryBot.create(:training_period, :provider_led, **finished_training_period_attributes, deferred_at: 1.month.ago, deferral_reason: "parental_leave")
+        end
+
+        it { is_expected.to be_provider_led_training_paused }
+      end
+
+      context "when the latest training period is provider-led and finished without being withdrawn or deferred" do
+        before { FactoryBot.create(:training_period, :provider_led, **finished_training_period_attributes) }
+
+        it { is_expected.not_to be_provider_led_training_paused }
+      end
+
+      context "when the latest training period is school-led" do
+        before { FactoryBot.create(:training_period, :school_led, **finished_training_period_attributes) }
+
+        it { is_expected.not_to be_provider_led_training_paused }
+      end
+
+      context "when there are no training periods" do
+        it { is_expected.not_to be_provider_led_training_paused }
+      end
+    end
+
+    describe "#provider_led_training_active_or_paused?" do
+      subject { ect_at_school_period }
+
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, started_on: 1.year.ago) }
+
+      context "when the current training period is provider-led" do
+        before { FactoryBot.create(:training_period, :provider_led, :unfinished, ect_at_school_period:, started_on: 1.year.ago) }
+
+        it { is_expected.to be_provider_led_training_active_or_paused }
+      end
+
+      context "when the latest training period is provider-led and withdrawn" do
+        before do
+          FactoryBot.create(:training_period, :provider_led, ect_at_school_period:, started_on: 1.year.ago, finished_on: 1.month.ago, withdrawn_at: 1.month.ago, withdrawal_reason: "other")
+        end
+
+        it { is_expected.to be_provider_led_training_active_or_paused }
+      end
+
+      context "when the current training period is school-led" do
+        before { FactoryBot.create(:training_period, :school_led, :unfinished, ect_at_school_period:, started_on: 1.year.ago) }
+
+        it { is_expected.not_to be_provider_led_training_active_or_paused }
+      end
+
+      context "when there are no training periods" do
+        it { is_expected.not_to be_provider_led_training_active_or_paused }
+      end
+    end
+
     describe "leaving/joining training periods" do
       let(:ect_at_school_period) do
         FactoryBot.create(

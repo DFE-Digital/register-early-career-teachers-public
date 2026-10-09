@@ -15,7 +15,7 @@ module Schools
         elsif mentor.became_ineligible_for_funding? || !mentor.provider_led_ect?
           :check_answers
         elsif mentor.previous_training_period.blank?
-          :programme_choices # if previous registration school led
+          mentor.ect_lead_provider_invalid? ? :lead_provider : :programme_choices
         else
           :previous_training_period_details
         end

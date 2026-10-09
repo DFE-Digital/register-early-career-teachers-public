@@ -21,10 +21,20 @@ RSpec.describe Schools::RegisterMentorWizard::LeadProviderStep, type: :model do
           it { expect(subject.previous_step).to eq(:email_address) }
         end
 
-        context "and mentor has been registered before" do
-          before { allow(wizard.mentor).to receive(:previously_registered_as_mentor?).and_return(true) }
+        context "and mentor has been registered before with a training period" do
+          before do
+            allow(wizard.mentor).to receive_messages(previously_registered_as_mentor?: true, previous_training_period: FactoryBot.build(:training_period))
+          end
 
           it { expect(subject.previous_step).to eq(:previous_training_period_details) }
+        end
+
+        context "and mentor has been registered before without a training period" do
+          before do
+            allow(wizard.mentor).to receive_messages(previously_registered_as_mentor?: true, previous_training_period: nil)
+          end
+
+          it { expect(subject.previous_step).to eq(:started_on) }
         end
       end
 

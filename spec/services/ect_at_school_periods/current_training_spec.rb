@@ -227,4 +227,30 @@ describe ECTAtSchoolPeriods::CurrentTraining do
       it { is_expected.to eql(expression_of_interest_training_period.expression_of_interest.lead_provider.name) }
     end
   end
+
+  describe "#lead_provider_available_for_training?" do
+    subject { described_class.new(ect_at_school_period).lead_provider_available_for_training? }
+
+    let(:contract_period) { FactoryBot.create(:contract_period, :current) }
+    let(:framework_agreement) { FactoryBot.create(:framework_agreement, contract_period:) }
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, started_on: 1.month.ago) }
+    let(:training_period_attributes) do
+      { ect_at_school_period:, school_partnership: nil, expression_of_interest: framework_agreement, started_on: 1.month.ago }
+    end
+
+    context "when the ECT is training with a lead provider active in the current contract period" do
+      before { FactoryBot.create(:training_period, :provider_led, :unfinished, **training_period_attributes) }
+
+      it { is_expected.to be(true) }
+    end
+
+    context "when the ECT's training with that lead provider was withdrawn today" do
+      before do
+        FactoryBot.create(:training_period, :provider_led, **training_period_attributes,
+                                                           finished_on: Date.current, withdrawn_at: Time.zone.now, withdrawal_reason: "other")
+      end
+
+      it { is_expected.to be(false) }
+    end
+  end
 end
