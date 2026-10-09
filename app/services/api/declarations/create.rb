@@ -26,12 +26,8 @@ module API::Declarations
                                           message: ->(object, _) { object.send(:evidenced_at_date_range_error_message) } },
                              if: -> { errors.empty? }
 
-    validates :teacher_type, presence: { message: "Enter a '#/teacher_type'." }, if: -> { errors.empty? }
-    validates :teacher_type, inclusion: {
-      in: TEACHER_TYPES,
-      message: "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again."
-    }, allow_blank: true
-    validate :teacher_type_exists
+    validate :training_period_exists_for_teacher_type, if: -> { errors.empty? }
+
     validates :declaration_type, presence: { message: "Enter a '#/declaration_type'." }, if: -> { errors.empty? }
     validates :declaration_type, inclusion: {
       in: Declaration.declaration_types.keys,
@@ -149,12 +145,8 @@ module API::Declarations
       errors.add(:teacher_api_id, "This participant withdrew from this course on #{training_period.withdrawn_at.utc.rfc3339}. Enter a '#/evidenced_at' that's on or before the withdrawal date.")
     end
 
-    def teacher_type_exists
-      return if errors[:teacher_type].any?
-      return if errors[:teacher_api_id].any?
-      return if errors[:lead_provider_id].any?
-      return if errors[:declaration_type].any?
-      return if errors[:evidenced_at].any?
+    def training_period_exists_for_teacher_type
+      return errors.add(:teacher_type, message: "Enter a '#/teacher_type'.") if teacher_type.blank?
       return if training_period
 
       errors.add(:teacher_type, "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again.")
