@@ -47,24 +47,6 @@ module Admin
         def steps_operator
           DfE::Wizard::StepsOperator::Builder.draw(wizard: self, callable: state_store) do |builder|
             builder.on_step(
-              :select_contract_period,
-              use: [
-                DfE::Wizard::Operations::Validate,
-                Operations::ClearLaterSelections,
-                DfE::Wizard::Operations::Persist
-              ]
-            )
-
-            builder.on_step(
-              :select_lead_provider,
-              use: [
-                DfE::Wizard::Operations::Validate,
-                Operations::ClearLaterSelections,
-                DfE::Wizard::Operations::Persist
-              ]
-            )
-
-            builder.on_step(
               :check_answers,
               use: [Operations::CreatePartnership]
             )
