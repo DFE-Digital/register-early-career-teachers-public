@@ -21,7 +21,7 @@ module API::Teachers
     validates :reason,
               inclusion: {
                 in: DEFERRAL_REASONS,
-                message: "The entered '#/reason' is not recognised for the given participant. Check details and try again."
+                message: "The entered '#/reason' is not recognised for the given teacher. Check details and try again."
               }, allow_blank: true
     validate :not_already_deferred
     validate :not_already_withdrawn
@@ -67,7 +67,7 @@ module API::Teachers
       return if errors[:teacher_api_id].any?
       return unless training_period&.started_on&.today?
 
-      errors.add(:teacher_api_id, "You cannot defer or withdraw this participant today. You need to try again tomorrow as the training was recently changed for this participant.")
+      errors.add(:teacher_api_id, "You cannot defer or withdraw this teacher today. You need to try again tomorrow as the training was recently changed for this teacher.")
     end
   end
 end

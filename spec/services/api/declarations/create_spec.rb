@@ -66,28 +66,28 @@ RSpec.describe API::Declarations::Create, type: :model do
           let(:teacher_type) { trainee_type == :ect ? :mentor : :ect }
 
           it { is_expected.to have_one_error_only }
-          it { is_expected.to have_api_error(:teacher_type, "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again.") }
+          it { is_expected.to have_api_error(:teacher_type, "The entered '#/teacher_type' is not recognised for the given teacher. Check details and try again.") }
         end
 
         context "when a matching training period does not exist (different lead provider)" do
           let(:lead_provider_id) { FactoryBot.create(:lead_provider, name: "Different to #{lead_provider.name}").id }
 
           it { is_expected.to have_one_error_only }
-          it { is_expected.to have_api_error(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check participant details and try again.") }
+          it { is_expected.to have_api_error(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check teacher details and try again.") }
         end
 
         context "when the teacher does not exist" do
-          let(:teacher_api_id) { "non-existent-participant-id" }
+          let(:teacher_api_id) { "non-existent-teacher-id" }
 
           it { is_expected.to have_one_error_only }
-          it { is_expected.to have_api_error(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check participant details and try again.") }
+          it { is_expected.to have_api_error(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check teacher details and try again.") }
         end
 
         context "when a non-existent teacher type is provided" do
           let(:teacher_type) { :other }
 
           it { is_expected.to have_one_error_only }
-          it { is_expected.to have_api_error(:teacher_type, "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again.") }
+          it { is_expected.to have_api_error(:teacher_type, "The entered '#/teacher_type' is not recognised for the given teacher. Check details and try again.") }
         end
 
         context "when an empty teacher type is provided" do
@@ -157,7 +157,7 @@ RSpec.describe API::Declarations::Create, type: :model do
           let!(:evidence_type) { "75-percent-engagement-met" }
 
           it { is_expected.to have_one_error_only }
-          it { is_expected.to have_api_error(:evidence_type, "Enter an available '#/evidence_type' type for this participant.") }
+          it { is_expected.to have_api_error(:evidence_type, "Enter an available '#/evidence_type' type for this teacher.") }
         end
 
         context "when milestone does not exist" do
@@ -191,7 +191,7 @@ RSpec.describe API::Declarations::Create, type: :model do
           end
 
           it { is_expected.to have_one_error_only }
-          it { is_expected.to have_api_error(:teacher_api_id, "This participant withdrew from this course on #{withdrawn_at.utc.rfc3339}. Enter a '#/evidenced_at' that's on or before the withdrawal date.") }
+          it { is_expected.to have_api_error(:teacher_api_id, "This teacher withdrew from this course on #{withdrawn_at.utc.rfc3339}. Enter a '#/evidenced_at' that's on or before the withdrawal date.") }
         end
 
         if trainee_type == :mentor
@@ -199,7 +199,7 @@ RSpec.describe API::Declarations::Create, type: :model do
             let(:declaration_type) { "retained-1" }
 
             it { is_expected.to have_one_error_only }
-            it { is_expected.to have_api_error(:declaration_type, "You cannot send retained or extended declarations for participants who began their mentor training after June 2025. Resubmit this declaration with either a started or completed declaration.") }
+            it { is_expected.to have_api_error(:declaration_type, "You cannot send retained or extended declarations for teachers who began their mentor training after June 2025. Resubmit this declaration with either a started or completed declaration.") }
 
             context "when contract period mentor funding is not enabled" do
               before { contract_period.update!(mentor_funding_enabled: false, detailed_evidence_types_enabled: false) }
@@ -251,7 +251,7 @@ RSpec.describe API::Declarations::Create, type: :model do
           let!(:payment_statement) { FactoryBot.create(:statement, :open, framework_agreement:, deadline_date: 1.month.from_now, payment_date: 2.months.from_now) }
           let(:eligible_at_field) { "#{trainee_type}_first_became_eligible_for_training_at" }
 
-          context "when teacher's latest ongoing training period is in a frozen contract period and participant is eligible for funding" do
+          context "when teacher's latest ongoing training period is in a frozen contract period and teacher is eligible for funding" do
             before do
               teacher.update!(eligible_at_field => 3.years.ago)
               contract_period.update!(payments_frozen_at: Time.zone.now)
@@ -261,7 +261,7 @@ RSpec.describe API::Declarations::Create, type: :model do
             it { is_expected.to have_api_error(:contract_period_year, "You cannot submit declarations for the #{contract_period.year} contract period. The funding contract for this contract period has ended. Get in touch if you need to discuss this with us.") }
           end
 
-          context "when teacher's latest ongoing training period is in a frozen contract period but participant is not eligible for funding" do
+          context "when teacher's latest ongoing training period is in a frozen contract period but teacher is not eligible for funding" do
             before do
               teacher.update!(eligible_at_field => nil)
               contract_period.update!(payments_frozen_at: Time.zone.now)
@@ -271,7 +271,7 @@ RSpec.describe API::Declarations::Create, type: :model do
             it { is_expected.to have_api_error(:contract_period_year, "You cannot submit declarations for the #{contract_period.year} contract period. The funding contract for this contract period has ended. Get in touch if you need to discuss this with us.") }
           end
 
-          context "when teacher's latest ongoing training period is in a non-frozen contract period and participant is eligible for funding" do
+          context "when teacher's latest ongoing training period is in a non-frozen contract period and teacher is eligible for funding" do
             before do
               teacher.update!(eligible_at_field => 3.years.ago)
               contract_period.update!(payments_frozen_at: nil)
@@ -472,7 +472,7 @@ RSpec.describe API::Declarations::Create, type: :model do
                 let(:evidenced_at) { (started_declaration.evidenced_at - 1.week).rfc3339 }
 
                 it { is_expected.to have_one_error_only }
-                it { is_expected.to have_api_error(:evidenced_at, "This '#/evidenced_at' is invalid. Check that it is in sequence with existing declaration dates for this participant.") }
+                it { is_expected.to have_api_error(:evidenced_at, "This '#/evidenced_at' is invalid. Check that it is in sequence with existing declaration dates for this teacher.") }
               end
 
               context "when `completed` is submitted after `started` declaration date" do
@@ -505,7 +505,7 @@ RSpec.describe API::Declarations::Create, type: :model do
                 let(:evidenced_at) { (completed_declaration.evidenced_at + 1.week).rfc3339 }
 
                 it { is_expected.to have_one_error_only }
-                it { is_expected.to have_api_error(:evidenced_at, "This '#/evidenced_at' is invalid. Check that it is in sequence with existing declaration dates for this participant.") }
+                it { is_expected.to have_api_error(:evidenced_at, "This '#/evidenced_at' is invalid. Check that it is in sequence with existing declaration dates for this teacher.") }
               end
 
               context "when `started` is submitted before `completed` declaration date" do
@@ -550,7 +550,7 @@ RSpec.describe API::Declarations::Create, type: :model do
                     let(:evidenced_at) { (started_declaration.evidenced_at - 1.day).rfc3339 }
 
                     it { is_expected.to have_one_error_only }
-                    it { is_expected.to have_api_error(:evidenced_at, "This '#/evidenced_at' is invalid. Check that it is in sequence with existing declaration dates for this participant.") }
+                    it { is_expected.to have_api_error(:evidenced_at, "This '#/evidenced_at' is invalid. Check that it is in sequence with existing declaration dates for this teacher.") }
                   end
 
                   context "when declaration date is after completed" do
@@ -558,7 +558,7 @@ RSpec.describe API::Declarations::Create, type: :model do
                     let(:evidenced_at) { (completed_declaration.evidenced_at + 1.day).rfc3339 }
 
                     it { is_expected.to have_one_error_only }
-                    it { is_expected.to have_api_error(:evidenced_at, "This '#/evidenced_at' is invalid. Check that it is in sequence with existing declaration dates for this participant.") }
+                    it { is_expected.to have_api_error(:evidenced_at, "This '#/evidenced_at' is invalid. Check that it is in sequence with existing declaration dates for this teacher.") }
                   end
                 end
 
