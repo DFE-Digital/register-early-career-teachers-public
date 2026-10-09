@@ -209,7 +209,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::FuturePer
         expect {
           service_call
         }.to raise_error(
-          described_class::FrameworkAgreementNotFoundError,
+          Admin::Teachers::TrainingPeriods::ChangeContractPeriod::FrameworkAgreementNotFoundError,
           "No lead provider framework agreement found for #{current_framework_agreement.lead_provider.name} in contract period #{target_contract_period.year}"
         )
       end
@@ -233,7 +233,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::FuturePer
       expect {
         service_call
       }.to raise_error(
-        described_class::UnsupportedTrainingPeriodError,
+        Admin::Teachers::TrainingPeriods::ChangeContractPeriod::UnsupportedTrainingPeriodError,
         "Contract period changes are only supported for eligible future training periods"
       )
     end
@@ -246,7 +246,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::FuturePer
       expect {
         service_call
       }.to raise_error(
-        described_class::UnsupportedTrainingPeriodError,
+        Admin::Teachers::TrainingPeriods::ChangeContractPeriod::UnsupportedTrainingPeriodError,
         "Contract period changes are only supported for eligible future training periods"
       )
     end
@@ -259,7 +259,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriod::FuturePer
       expect {
         service_call
       }.to raise_error(
-        described_class::ScheduleNotFoundError,
+        Admin::Teachers::TrainingPeriods::ChangeContractPeriod::ScheduleNotFoundError,
         "No equivalent schedule found for #{schedule.identifier} in contract period #{target_contract_period.year}"
       )
     end
