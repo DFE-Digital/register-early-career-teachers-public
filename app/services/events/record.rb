@@ -426,6 +426,32 @@ module Events
       new(event_type:, author:, heading:, teacher:, ect_at_school_period:, school: new_school, metadata:, happened_at:).record_event!
     end
 
+    def self.record_teacher_ect_at_school_periods_merged!(author:, teacher:, successor_period:, periods:, happened_at: Time.zone.now)
+      event_type = :teacher_ect_at_school_periods_merged
+      teacher_name = Teachers::Name.new(teacher).full_name
+      school_name = Schools::Name.new(successor_period.school).name_and_urn
+
+      formatted_periods = periods.collect do |period|
+        { school: period.school.name,
+          started_on: period.started_on,
+          finished_on: period.finished_on,
+          id: period.id,
+          urn: period.school.urn }
+      end
+
+      time_period = if successor_period.unfinished?
+                      "from #{successor_period.started_on}"
+                    else
+                      "between #{successor_period.started_on} and #{successor_period.finished_on}"
+                    end
+
+      heading = "#{teacher_name}'s ECT at school periods #{time_period} were merged into a single period at #{school_name}"
+
+      metadata = { periods: formatted_periods }
+
+      new(event_type:, author:, heading:, teacher:, ect_at_school_period: successor_period, metadata:, happened_at:).record_event!
+    end
+
     def self.record_teacher_mentor_at_school_period_moved_school!(author:, teacher:, mentor_at_school_period:, old_school_name_and_urn:, new_school:, happened_at: Time.zone.now)
       event_type = :teacher_mentor_at_school_period_moved_school
       teacher_name = Teachers::Name.new(teacher).full_name
@@ -437,12 +463,12 @@ module Events
       new(event_type:, author:, heading:, teacher:, mentor_at_school_period:, school: new_school, metadata:, happened_at:).record_event!
     end
 
-    def self.record_teacher_mentor_at_school_periods_merged!(author:, teacher:, successor_period:, mentor_at_school_periods:, happened_at: Time.zone.now)
+    def self.record_teacher_mentor_at_school_periods_merged!(author:, teacher:, successor_period:, periods:, happened_at: Time.zone.now)
       event_type = :teacher_mentor_at_school_periods_merged
       teacher_name = Teachers::Name.new(teacher).full_name
       school_name = Schools::Name.new(successor_period.school).name_and_urn
 
-      periods = mentor_at_school_periods.collect do |period|
+      formatted_periods = periods.collect do |period|
         { school: period.school.name,
           started_on: period.started_on,
           finished_on: period.finished_on,
@@ -458,7 +484,7 @@ module Events
 
       heading = "#{teacher_name}'s mentor at school periods #{time_period} were merged into a single period at #{school_name}"
 
-      metadata = { periods: }
+      metadata = { periods: formatted_periods }
 
       new(event_type:, author:, heading:, teacher:, mentor_at_school_period: successor_period, metadata:, happened_at:).record_event!
     end
@@ -690,6 +716,69 @@ module Events
         metadata:,
         happened_at:
       ).record_event!
+    end
+
+    def self.record_teacher_training_periods_merged!(author:, teacher:, successor_period:, periods:, happened_at: Time.zone.now)
+      event_type = :teacher_training_periods_merged
+      teacher_name = Teachers::Name.new(teacher).full_name
+
+      provider_name = if successor_period.school_led_training_programme?
+                        nil
+                      elsif successor_period.school_partnership.present?
+                        "#{successor_period.lead_provider_name} & #{successor_period.delivery_partner_name}"
+                      else
+                        successor_period.expression_of_interest_lead_provider&.name
+                      end
+
+      training_period_description = if successor_period.school_led_training_programme?
+                                      "school-led training periods"
+                                    else
+                                      "training periods with #{provider_name}"
+                                    end
+
+      formatted_periods = periods.collect do |period|
+        {
+          training_programme: period.training_programme,
+          contract_period: period.schedule&.contract_period_year,
+          schedule: period.schedule&.identifier,
+          provider_name:,
+          started_on: period.started_on,
+          finished_on: period.finished_on,
+          id: period.id,
+        }
+      end
+
+      time_period = if successor_period.unfinished?
+                      "from #{successor_period.started_on}"
+                    else
+                      "between #{successor_period.started_on} and #{successor_period.finished_on}"
+                    end
+
+      heading = "#{teacher_name}'s #{training_period_description} #{time_period} were merged into a single period"
+
+      metadata = { periods: formatted_periods }
+
+      new(event_type:, author:, heading:, teacher:, training_period: successor_period, metadata:, happened_at:).record_event!
+    end
+
+    def self.record_teacher_mentorship_periods_merged!(author:, teacher:, successor_period:, periods:, happened_at: Time.zone.now)
+      event_type = :teacher_mentorship_periods_merged
+      teacher_name = Teachers::Name.new(teacher).full_name
+      mentor_name = Teachers::Name.new(successor_period.mentor.teacher).full_name
+      school_name = successor_period.mentor.school.name
+      heading = "#{teacher_name}'s mentorship period at #{school_name} with #{mentor_name} merged into a single period"
+
+      formatted_periods = periods.collect do |period|
+        {
+          started_on: period.started_on,
+          finished_on: period.finished_on,
+          id: period.id,
+        }
+      end
+
+      metadata = { periods: formatted_periods }
+
+      new(event_type:, author:, heading:, teacher:, mentorship_period: successor_period, metadata:, happened_at:).record_event!
     end
 
     def self.record_teacher_schedule_assigned_to_training_period!(author:, training_period:, teacher:, schedule:, happened_at: Time.zone.now)

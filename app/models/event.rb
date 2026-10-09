@@ -58,6 +58,7 @@ class Event < ApplicationRecord
     teacher_ect_at_school_period_deleted
     teacher_mentor_at_school_period_deleted
     teacher_ect_at_school_period_moved_school
+    teacher_ect_at_school_periods_merged
     teacher_mentor_at_school_period_moved_school
     teacher_mentor_at_school_periods_merged
     teacher_registered_as_mentor
@@ -85,6 +86,8 @@ class Event < ApplicationRecord
     teacher_withdraws_training_period
     teacher_changes_schedule_training_period
     teacher_training_period_contract_period_changed
+    teacher_training_periods_merged
+    teacher_mentorship_periods_merged
     teacher_declaration_voided
     teacher_declaration_awaiting_clawback
     teacher_declaration_created
