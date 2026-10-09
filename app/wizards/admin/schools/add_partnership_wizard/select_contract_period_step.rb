@@ -11,6 +11,13 @@ module Admin
 
         def self.permitted_params = %i[contract_period_year]
 
+        def serializable_data
+          super.merge(
+            "framework_agreement_id" => nil,
+            "delivery_partner_id" => nil
+          )
+        end
+
       private
 
         def contract_period_available
