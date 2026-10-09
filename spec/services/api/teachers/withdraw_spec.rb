@@ -24,7 +24,7 @@ RSpec.describe API::Teachers::Withdraw, type: :model do
             let(:reason) { "does-not-exist" }
 
             it { is_expected.to have_one_error_per_attribute }
-            it { is_expected.to have_api_error(:reason, "The entered '#/reason' is not recognised for the given participant. Check details and try again.") }
+            it { is_expected.to have_api_error(:reason, "The entered '#/reason' is not recognised for the given teacher. Check details and try again.") }
           end
 
           context "when reason values are dashed" do
@@ -41,7 +41,7 @@ RSpec.describe API::Teachers::Withdraw, type: :model do
             let(:reason) { "long_term_sickness" }
 
             it { is_expected.to have_one_error_per_attribute }
-            it { is_expected.to have_api_error(:reason, "The entered '#/reason' is not recognised for the given participant. Check details and try again.") }
+            it { is_expected.to have_api_error(:reason, "The entered '#/reason' is not recognised for the given teacher. Check details and try again.") }
           end
 
           context "when teacher already withdrawn" do
@@ -62,13 +62,13 @@ RSpec.describe API::Teachers::Withdraw, type: :model do
             let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", "#{trainee_type}_at_school_period": at_school_period, started_on: Time.zone.today) }
 
             it { is_expected.to have_one_error_per_attribute }
-            it { is_expected.to have_api_error(:teacher_api_id, "You cannot defer or withdraw this participant today. You need to try again tomorrow as the training was recently changed for this participant.") }
+            it { is_expected.to have_api_error(:teacher_api_id, "You cannot defer or withdraw this teacher today. You need to try again tomorrow as the training was recently changed for this teacher.") }
 
             context "when an earlier training period exists for the lead provider" do
               let!(:previous_training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", "#{trainee_type}_at_school_period": at_school_period, school_partnership: training_period.school_partnership, started_on: 3.days.ago, finished_on: 1.day.ago) }
 
               it { is_expected.to have_one_error_per_attribute }
-              it { is_expected.to have_api_error(:teacher_api_id, "You cannot defer or withdraw this participant today. You need to try again tomorrow as the training was recently changed for this participant.") }
+              it { is_expected.to have_api_error(:teacher_api_id, "You cannot defer or withdraw this teacher today. You need to try again tomorrow as the training was recently changed for this teacher.") }
             end
           end
 

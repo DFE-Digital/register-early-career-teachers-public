@@ -137,19 +137,19 @@ module API::Declarations
       return if errors.any?
 
       return errors.add(:teacher_api_id, "Enter a '#/teacher_api_id'.") if teacher_api_id.blank?
-      return errors.add(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check participant details and try again.") unless training_period_exists_for_lead_provider?
+      return errors.add(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check teacher details and try again.") unless training_period_exists_for_lead_provider?
 
       return unless training_status&.withdrawn?
       return unless training_period.withdrawn_at <= evidenced_at
 
-      errors.add(:teacher_api_id, "This participant withdrew from this course on #{training_period.withdrawn_at.utc.rfc3339}. Enter a '#/evidenced_at' that's on or before the withdrawal date.")
+      errors.add(:teacher_api_id, "This teacher withdrew from this course on #{training_period.withdrawn_at.utc.rfc3339}. Enter a '#/evidenced_at' that's on or before the withdrawal date.")
     end
 
     def training_period_exists_for_teacher_type
-      return errors.add(:teacher_type, message: "Enter a '#/teacher_type'.") if teacher_type.blank?
+      return errors.add(:teacher_type, "Enter a '#/teacher_type'.") if teacher_type.blank?
       return if training_period
 
-      errors.add(:teacher_type, "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again.")
+      errors.add(:teacher_type, "The entered '#/teacher_type' is not recognised for the given teacher. Check details and try again.")
     end
 
     def training_period_exists_for_lead_provider?
@@ -181,7 +181,7 @@ module API::Declarations
       return unless training_status&.withdrawn?
       return unless training_period.withdrawn_at <= evidenced_at
 
-      errors.add(:teacher_api_id, "This participant withdrew from this course on #{training_period.withdrawn_at.utc.rfc3339}. Enter a '#/evidenced_at' that's on or before the withdrawal date.")
+      errors.add(:teacher_api_id, "This teacher withdrew from this course on #{training_period.withdrawn_at.utc.rfc3339}. Enter a '#/evidenced_at' that's on or before the withdrawal date.")
     end
 
     def validate_only_started_or_completed_if_mentor
@@ -191,7 +191,7 @@ module API::Declarations
       return unless training_period&.for_mentor?
       return unless contract_period.mentor_funding_enabled?
 
-      errors.add(:declaration_type, "You cannot send retained or extended declarations for participants who began their mentor training after June 2025. Resubmit this declaration with either a started or completed declaration.")
+      errors.add(:declaration_type, "You cannot send retained or extended declarations for teachers who began their mentor training after June 2025. Resubmit this declaration with either a started or completed declaration.")
     end
 
     def validates_billable_slot_available
@@ -263,7 +263,7 @@ module API::Declarations
       elsif milestone_finished_at.present? && evidenced_at > milestone_finished_at
         "Evidenced at must be on or before the milestone date for the same declaration type."
       else
-        "This '#/evidenced_at' is invalid. Check that it is in sequence with existing declaration dates for this participant."
+        "This '#/evidenced_at' is invalid. Check that it is in sequence with existing declaration dates for this teacher."
       end
     end
 

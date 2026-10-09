@@ -87,7 +87,7 @@ RSpec.describe APISeedData::ECTParticipantActionScenarios do
 
       expect(service).not_to be_valid
 
-      expect(service.errors[:teacher_api_id]).to include("This participant cannot be resumed because they are already active with another provider.")
+      expect(service.errors[:teacher_api_id]).to include("This teacher cannot be resumed because they are already active with another provider.")
     end
 
     it "creates a 2024 participant with a billable declaration that can have their contract period and schedule changed" do

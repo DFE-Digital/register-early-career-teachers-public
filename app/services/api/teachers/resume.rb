@@ -35,7 +35,7 @@ module API::Teachers
       return if errors[:teacher_api_id].any?
       return unless training_period_finished_today?
 
-      errors.add(:teacher_api_id, "You cannot resume a participant on the same day they were withdrawn or deferred. Resume them tomorrow or later.")
+      errors.add(:teacher_api_id, "You cannot resume a teacher on the same day they were withdrawn or deferred. Resume them tomorrow or later.")
     end
 
     def training_period_finished_today?
@@ -58,7 +58,7 @@ module API::Teachers
         .contains_today
         .without(training_period)
         .exists?
-        errors.add(:teacher_api_id, "This participant cannot be resumed because they are already active with another provider.")
+        errors.add(:teacher_api_id, "This teacher cannot be resumed because they are already active with another provider.")
       end
     end
 
@@ -67,7 +67,7 @@ module API::Teachers
       return unless training_period
 
       school_period = training_period.at_school_period
-      errors.add(:teacher_api_id, "The participant is no longer at the school. Please contact the induction tutor to resolve.") unless school_period.contains_today?
+      errors.add(:teacher_api_id, "The teacher is no longer at the school. Please contact the induction tutor to resolve.") unless school_period.contains_today?
     end
   end
 end
