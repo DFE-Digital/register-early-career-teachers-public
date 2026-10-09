@@ -82,7 +82,7 @@ module GIAS::Reconciliation
     end
 
     def has_one_open_successor?
-      successors.one? && successor.open_status?
+      successors.one? && (successor.open_status? || successor.proposed_to_open_status?)
     end
 
     def successors
