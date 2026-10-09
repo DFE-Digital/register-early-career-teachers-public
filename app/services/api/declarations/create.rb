@@ -26,7 +26,7 @@ module API::Declarations
                                           message: ->(object, _) { object.send(:evidenced_at_date_range_error_message) } },
                              if: -> { errors.empty? }
 
-    validate :teacher_type_is_correct_for_participant, if: -> { errors.empty? }
+    validate :training_period_exists_for_teacher_type, if: -> { errors.empty? }
 
     validates :declaration_type, presence: { message: "Enter a '#/declaration_type'." }, if: -> { errors.empty? }
     validates :declaration_type, inclusion: {
@@ -145,10 +145,8 @@ module API::Declarations
       errors.add(:teacher_api_id, "This participant withdrew from this course on #{training_period.withdrawn_at.utc.rfc3339}. Enter a '#/evidenced_at' that's on or before the withdrawal date.")
     end
 
-    def teacher_type_is_correct_for_participant
+    def training_period_exists_for_teacher_type
       return errors.add(:teacher_type, message: "Enter a '#/teacher_type'.") if teacher_type.blank?
-      return errors.add(:teacher_type, message: "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again.") unless TEACHER_TYPES.include?(teacher_type)
-
       return if training_period
 
       errors.add(:teacher_type, "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again.")
