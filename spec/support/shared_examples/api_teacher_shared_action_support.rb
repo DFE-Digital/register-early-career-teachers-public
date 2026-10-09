@@ -28,28 +28,28 @@ RSpec.shared_examples "an API teacher shared action", :with_metadata do
           let(:teacher_type) { trainee_type == :ect ? :mentor : :ect }
 
           it { is_expected.to have_one_error_only }
-          it { is_expected.to have_api_error(:teacher_type, "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again.") }
+          it { is_expected.to have_api_error(:teacher_type, "The entered '#/teacher_type' is not recognised for the given teacher. Check details and try again.") }
         end
 
         context "when a matching training period does not exist (different lead provider)" do
           let(:lead_provider_id) { FactoryBot.create(:lead_provider, name: "Different to #{lead_provider.name}").id }
 
           it { is_expected.to have_one_error_only }
-          it { is_expected.to have_api_error(:teacher_type, "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again.") }
+          it { is_expected.to have_api_error(:teacher_type, "The entered '#/teacher_type' is not recognised for the given teacher. Check details and try again.") }
         end
 
         context "when the teacher does not exist" do
           let(:teacher_api_id) { "non-existent-participant-id" }
 
           it { is_expected.to have_one_error_only }
-          it { is_expected.to have_api_error(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check participant details and try again.") }
+          it { is_expected.to have_api_error(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check teacher details and try again.") }
         end
 
         context "when a non-existent teacher type is provided" do
           let(:teacher_type) { :other }
 
           it { is_expected.to have_one_error_only }
-          it { is_expected.to have_api_error(:teacher_type, "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again.") }
+          it { is_expected.to have_api_error(:teacher_type, "The entered '#/teacher_type' is not recognised for the given teacher. Check details and try again.") }
         end
 
         context "when an empty teacher type is provided" do
