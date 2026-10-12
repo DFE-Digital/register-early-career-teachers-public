@@ -27,13 +27,13 @@ RSpec.describe API::Errors::Mapper do
     end
 
     context "when some terms are substrings of other terms" do
-      let(:error) { { title: "longer_rect_term", detail: "maps rect_term after longer_rect_term" } }
+      let(:error) { { title: "rect_term_with_extra_detail", detail: "maps rect_term after longer_rect_term and rect_term_with_extra_detail" } }
 
       it "correctly replaces all terms (prioritising whole terms over substring terms)" do
         result = map_error
 
-        expect(result[:title]).to eql("something_different_in_ecf")
-        expect(result[:detail]).to eql("maps ecf_term after something_different_in_ecf")
+        expect(result[:title]).to eql("ecf_detailed_term")
+        expect(result[:detail]).to eql("maps ecf_term after something_different_in_ecf and ecf_detailed_term")
       end
     end
 
