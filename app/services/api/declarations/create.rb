@@ -184,8 +184,6 @@ module API::Declarations
     end
 
     def payment_statement_available
-      return if errors[:declaration_type].any?
-      return if errors[:contract_period_year].any?
       return unless training_period&.eligible_for_funding?
       return if payment_statement.present?
 
@@ -193,7 +191,6 @@ module API::Declarations
     end
 
     def contract_period_is_not_payments_frozen
-      return if errors[:contract_period_year].any?
       return unless teacher
 
       training_period_ongoing_today = training_periods.contains_today.first
