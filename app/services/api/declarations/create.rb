@@ -178,14 +178,11 @@ module API::Declarations
     end
 
     def contract_period_is_not_frozen_and_payment_statement_available
-      training_period_ongoing_today = training_periods.contains_today.first
+      current_contract_period = training_periods.contains_today.first&.contract_period
 
-      if training_period_ongoing_today
-        current_contract_period = training_period_ongoing_today.contract_period
-        if current_contract_period&.payments_frozen?
-          errors.add(:contract_period_year, "You cannot submit declarations for the #{current_contract_period.year} contract period. The funding contract for this contract period has ended. Get in touch if you need to discuss this with us.")
-          return
-        end
+      if current_contract_period&.payments_frozen?
+        errors.add(:contract_period_year, "You cannot submit declarations for the #{current_contract_period.year} contract period. The funding contract for this contract period has ended. Get in touch if you need to discuss this with us.")
+        return
       end
 
       if training_period&.eligible_for_funding? && payment_statement.blank?
