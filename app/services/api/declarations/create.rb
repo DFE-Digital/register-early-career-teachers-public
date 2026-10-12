@@ -19,7 +19,6 @@ module API::Declarations
     attribute :evidence_type
 
     validate :teacher_exists_with_lead_provider
-
     validates :evidenced_at, presence: { message: "Enter a '#/evidenced_at'." },
                              api_date_time_format: true,
                              inclusion: { in: :evidenced_at_date_range,
@@ -27,14 +26,9 @@ module API::Declarations
                              if: -> { errors.empty? }
 
     validate :training_period_exists_for_teacher_type, if: -> { errors.empty? }
-
-    validate :contract_period_is_not_payments_frozen, if: -> { errors.empty? }
-
+    validate :contract_period_is_not_frozen_and_payment_statement_available, if: -> { errors.empty? }
     validate :declaration_type_can_be_billed, if: -> { errors.empty? }
-
     validates :evidence_type, evidence_type: true, if: -> { errors.empty? }
-
-    validate :payment_statement_available, if: -> { errors.empty? }
 
     def create
       return false unless valid?
@@ -183,23 +177,20 @@ module API::Declarations
       training_period.for_mentor? && contract_period.mentor_funding_enabled?
     end
 
-    def payment_statement_available
-      return unless training_period&.eligible_for_funding?
-      return if payment_statement.present?
-
-      errors.add(:contract_period_year, "You cannot submit or void declarations for the #{contract_period.year} contract period. The funding contract for this contract period has ended. Get in touch if you need to discuss this with us.")
-    end
-
-    def contract_period_is_not_payments_frozen
-      return unless teacher
-
+    def contract_period_is_not_frozen_and_payment_statement_available
       training_period_ongoing_today = training_periods.contains_today.first
-      return unless training_period_ongoing_today
 
-      current_contract_period = training_period_ongoing_today.contract_period
-      return unless current_contract_period&.payments_frozen?
+      if training_period_ongoing_today
+        current_contract_period = training_period_ongoing_today.contract_period
+        if current_contract_period&.payments_frozen?
+          errors.add(:contract_period_year, "You cannot submit declarations for the #{current_contract_period.year} contract period. The funding contract for this contract period has ended. Get in touch if you need to discuss this with us.")
+          return
+        end
+      end
 
-      errors.add(:contract_period_year, "You cannot submit declarations for the #{current_contract_period.year} contract period. The funding contract for this contract period has ended. Get in touch if you need to discuss this with us.")
+      if training_period&.eligible_for_funding? && payment_statement.blank?
+        errors.add(:contract_period_year, "You cannot submit or void declarations for the #{contract_period.year} contract period. The funding contract for this contract period has ended. Get in touch if you need to discuss this with us.")
+      end
     end
 
     def milestone_started_at
