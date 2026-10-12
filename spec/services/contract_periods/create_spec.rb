@@ -9,6 +9,7 @@ describe ContractPeriods::Create do
       detailed_evidence_types_enabled: false,
       mentor_funding_enabled: true,
       uplift_fees_enabled: false,
+      declarations_in_sequence_enabled: false,
     }
   end
   let(:author) { Events::SystemAuthor.new }
@@ -55,7 +56,8 @@ describe ContractPeriods::Create do
           enabled: true,
           mentor_funding_enabled: true,
           detailed_evidence_types_enabled: false,
-          uplift_fees_enabled: false
+          uplift_fees_enabled: false,
+          declarations_in_sequence_enabled: false
         )
       end
 

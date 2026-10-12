@@ -43,6 +43,11 @@
     end
 
     sl.with_row do |row|
+      row.with_key(text: "Declarations in sequence enabled")
+      row.with_value(text: @contract_period.declarations_in_sequence_enabled? ? "Yes" : "No")
+    end
+
+    sl.with_row do |row|
       row.with_key(text: "Payments frozen")
       row.with_value(text: @contract_period.payments_frozen? ? @contract_period.payments_frozen_at.to_fs(:govuk) : "No")
     end

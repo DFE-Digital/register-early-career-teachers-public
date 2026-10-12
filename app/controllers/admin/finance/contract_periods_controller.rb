@@ -75,6 +75,7 @@ module Admin::Finance
           detailed_evidence_types_enabled
           mentor_funding_enabled
           uplift_fees_enabled
+          declarations_in_sequence_enabled
         ]
       )
     end

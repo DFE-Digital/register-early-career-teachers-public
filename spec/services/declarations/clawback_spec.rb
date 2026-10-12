@@ -7,7 +7,10 @@ RSpec.describe Declarations::Clawback do
     )
   end
 
-  let(:declaration) { FactoryBot.create(:declaration, :paid) }
+  let(:declaration) do
+    FactoryBot.create(:declaration, :paid,
+                      framework_agreement: FactoryBot.create(:framework_agreement, contract_period: FactoryBot.create(:contract_period, :previous)))
+  end
   let(:author) { Events::LeadProviderAPIAuthor.new(lead_provider:) }
   let(:voided_by_user_id) { FactoryBot.create(:user).id }
 

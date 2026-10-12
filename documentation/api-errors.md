@@ -32,7 +32,7 @@
 | evidenced_at | Evidenced at must be on or after the milestone start date for the same declaration type. | When evidenced at does not match the milestone start date. |
 | evidenced_at | Evidenced at must be on or before the milestone date for the same declaration type. | When declaration date does not match the milestone date. |
 | evidenced_at | The '#/evidenced_at' value cannot be a future date. Check the date and try again. | When `evidenced_at` is in the future. |
-| evidenced_at | This '#/evidenced_at' is invalid. Check that it is in sequence with existing declaration dates for this teacher. | When contract period is 2025. |
+| evidenced_at | This '#/evidenced_at' is invalid. Check that it is in sequence with existing declaration dates for this teacher. | When contract period is 2025 or later. |
 | lead_provider_id | The '#/lead_provider_id' you have entered is invalid. | When the `lead_provider` does not exist. |
 | teacher_api_id | This teacher withdrew from this course on <datetime>. Enter a '#/evidenced_at' that's on or before the withdrawal date. | When teacher withdrew before the declaration date. |
 | teacher_api_id | Your update cannot be made as the '#/teacher_api_id' is not recognised. Check teacher details and try again. | When a matching training period does not exist (different lead provider). |

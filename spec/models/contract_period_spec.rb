@@ -16,7 +16,7 @@ describe ContractPeriod do
     it { is_expected.to validate_presence_of(:started_on).with_message("Enter a start date") }
     it { is_expected.to validate_presence_of(:finished_on).with_message("Enter an end date") }
 
-    %i[mentor_funding_enabled detailed_evidence_types_enabled uplift_fees_enabled].each do |attribute|
+    %i[mentor_funding_enabled detailed_evidence_types_enabled uplift_fees_enabled declarations_in_sequence_enabled].each do |attribute|
       it { is_expected.to allow_values(true, false).for(attribute) }
       it { is_expected.not_to allow_values(nil, "").for(attribute) }
     end

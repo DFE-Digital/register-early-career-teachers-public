@@ -201,10 +201,10 @@ module API::Declarations
     def evidenced_at_date_range
       return (..Time.zone.now) unless milestone
 
-      range = if contract_period.year < 2025
-                milestone_started_at..milestone_finished_at
-              else
+      range = if contract_period.declarations_in_sequence_enabled?
                 surrounding_declaration_date_range
+              else
+                milestone_started_at..milestone_finished_at
               end
 
       range.begin..[range.end, Time.zone.now].compact.min
