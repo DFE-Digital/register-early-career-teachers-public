@@ -337,7 +337,7 @@ RSpec.describe Events::Record do
     let(:teacher) { FactoryBot.create(:teacher, ect_first_became_eligible_for_training_at:) }
     let(:teacher_name) { Teachers::Name.new(teacher).full_name }
 
-    it "queues a RecordEventJob with the correct values" do
+    it "records an event with the correct values" do
       freeze_time do
         teacher.ect_first_became_eligible_for_training_at = nil
         modifications = teacher.changes
