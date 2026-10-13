@@ -33,4 +33,8 @@ module API::FindLatestTrainingPeriod
   def training_period_started_today?
     training_period&.started_on&.today?
   end
+
+  def training_period_finished_today?
+    training_period&.finished_on&.today?
+  end
 end
