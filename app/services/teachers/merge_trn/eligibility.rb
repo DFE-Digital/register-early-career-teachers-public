@@ -10,8 +10,8 @@ module Teachers
           destination.present? &&
           at_most_one_teacher_has_induction_periods? &&
           ect_periods_at_different_schools_do_not_overlap? &&
-          training_periods_have_same_contract_period?(:mentor_training_periods) &&
-          training_periods_have_same_contract_period?(:ect_training_periods)
+          provider_led_training_periods_have_same_contract_period?(:mentor_training_periods) &&
+          provider_led_training_periods_have_same_contract_period?(:ect_training_periods)
       end
 
     private
@@ -39,10 +39,29 @@ module Teachers
         end
       end
 
-      def training_periods_have_same_contract_period?(association)
-        periods = teacher.public_send(association) + destination.public_send(association)
+      def provider_led_training_periods_have_same_contract_period?(association)
+        contract_period_years(association).uniq.size <= 1
+      end
 
-        periods.map(&:contract_period).uniq.size <= 1
+      def contract_period_years(association)
+        [teacher, destination].flat_map do |record|
+          training_period_contract_period_years(record, association)
+        end
+      end
+
+      def training_period_contract_period_years(record, association)
+        periods = record.public_send(association)&.provider_led_training_programme
+
+        [
+          *pluck_contract_period_years(periods, :contract_period),
+          *pluck_contract_period_years(periods, :expression_of_interest_contract_period)
+        ]
+      end
+
+      def pluck_contract_period_years(periods, relationship)
+        return [] if periods.blank?
+
+        periods.joins(relationship).distinct.pluck(:year)
       end
     end
   end

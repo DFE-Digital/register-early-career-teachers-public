@@ -89,83 +89,331 @@ RSpec.describe Teachers::MergeTRN::Eligibility do
       end
     end
 
-    context "training periods with different contract periods" do
-      let(:school) { FactoryBot.create(:school) }
-      let(:school_partnership_2025) { FactoryBot.create(:school_partnership, :for_year, year: 2025, school:) }
+    context "training periods" do
+      include_context "a mergeable period"
+
+      let(:period_type) { :training_period }
+
+      let(:lead_provider) { FactoryBot.create(:lead_provider) }
+      let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
+
+      let(:school_partnership_2025) do
+        FactoryBot.create(
+          :school_partnership,
+          :for_year,
+          year: 2025,
+          school:,
+          lead_provider:,
+          delivery_partner:
+        )
+      end
+
       let(:school_partnership_2026) do
-        FactoryBot.create(:school_partnership,
-                          :for_year,
-                          year: 2026,
-                          school:,
-                          lead_provider: school_partnership_2025.lead_provider,
-                          delivery_partner: school_partnership_2025.delivery_partner)
+        FactoryBot.create(
+          :school_partnership,
+          :for_year,
+          year: 2026,
+          school:,
+          lead_provider:,
+          delivery_partner:
+        )
       end
 
-      context "when both teachers have ECT training periods" do
-        let(:source_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
-        let(:destination_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher: destination) }
+      let(:expression_of_interest_2025) do
+        FactoryBot.create(
+          :framework_agreement,
+          :for_year,
+          year: 2025,
+          lead_provider:
+        )
+      end
 
-        let!(:source_training_period) do
-          FactoryBot.create(:training_period,
-                            :for_ect,
-                            ect_at_school_period: source_ect_at_school_period,
-                            school_partnership: school_partnership_2025)
+      let(:expression_of_interest_2026) do
+        FactoryBot.create(
+          :framework_agreement,
+          :for_year,
+          year: 2026,
+          lead_provider:
+        )
+      end
+
+      let(:first_period_started_on) { Date.new(2025, 1, 1) }
+      let(:first_period_finished_on) { Date.new(2025, 6, 1) }
+      let(:second_period_started_on) { Date.new(2026, 3, 1) }
+      let(:second_period_finished_on) { Date.new(2026, 12, 1) }
+
+      before do
+        first_period
+        second_period
+      end
+
+      context "ECT training periods" do
+        let(:tags) { [:for_ect] }
+
+        let(:source_ect_at_school_period) do
+          FactoryBot.create(
+            :ect_at_school_period,
+            teacher: source,
+            school:,
+            started_on: first_period_started_on,
+            finished_on: first_period_finished_on
+          )
         end
 
-        context "when the training periods are for different contract_periods" do
-          let!(:destination_training_period) do
-            FactoryBot.create(:training_period,
-                              :for_ect,
-                              ect_at_school_period: destination_ect_at_school_period,
-                              school_partnership: school_partnership_2026)
+        let(:destination_ect_at_school_period) do
+          FactoryBot.create(
+            :ect_at_school_period,
+            teacher: destination,
+            school:,
+            started_on: second_period_started_on,
+            finished_on: second_period_finished_on
+          )
+        end
+
+        let(:source_attrs) do
+          {
+            ect_at_school_period: source_ect_at_school_period,
+            school_partnership: school_partnership_2025
+          }
+        end
+
+        context "when both training periods use confirmed partnerships" do
+          context "when the contract periods are different" do
+            let(:destination_attrs) do
+              {
+                ect_at_school_period: destination_ect_at_school_period,
+                school_partnership: school_partnership_2026
+              }
+            end
+
+            it { is_expected.to be false }
           end
 
-          it { is_expected.to be false }
+          context "when the contract periods are the same" do
+            let(:destination_attrs) do
+              {
+                ect_at_school_period: destination_ect_at_school_period,
+                school_partnership: school_partnership_2025
+              }
+            end
+
+            it { is_expected.to be true }
+          end
         end
 
-        context "when the training periods are for the same contract_periods" do
-          let!(:destination_training_period) do
-            FactoryBot.create(:training_period,
-                              :for_ect,
-                              ect_at_school_period: destination_ect_at_school_period,
-                              school_partnership: school_partnership_2025)
+        context "when both training periods have only expressions of interest" do
+          let(:tags) { %i[for_ect with_only_expression_of_interest] }
+
+          let(:source_attrs) do
+            {
+              ect_at_school_period: source_ect_at_school_period,
+              expression_of_interest: expression_of_interest_2025
+            }
+          end
+
+          context "when the contract periods are different" do
+            let(:destination_attrs) do
+              {
+                ect_at_school_period: destination_ect_at_school_period,
+                expression_of_interest: expression_of_interest_2026
+              }
+            end
+
+            it { is_expected.to be false }
+          end
+
+          context "when the contract periods are the same" do
+            let(:destination_attrs) do
+              {
+                ect_at_school_period: destination_ect_at_school_period,
+                expression_of_interest: expression_of_interest_2025
+              }
+            end
+
+            it { is_expected.to be true }
+          end
+        end
+
+        context "when only one training period is confirmed" do
+          let(:first_period) do
+            FactoryBot.create(
+              :training_period,
+              :for_ect,
+              :with_only_expression_of_interest,
+              ect_at_school_period: source_ect_at_school_period,
+              expression_of_interest: expression_of_interest_2025,
+              started_on: first_period_started_on,
+              finished_on: first_period_finished_on
+            )
+          end
+
+          context "when the contract periods are different" do
+            let(:destination_attrs) do
+              {
+                ect_at_school_period: destination_ect_at_school_period,
+                school_partnership: school_partnership_2026
+              }
+            end
+
+            it { is_expected.to be false }
+          end
+
+          context "when the contract periods are the same" do
+            let(:destination_attrs) do
+              {
+                ect_at_school_period: destination_ect_at_school_period,
+                school_partnership: school_partnership_2025
+              }
+            end
+
+            it { is_expected.to be true }
+          end
+        end
+
+        context "when the training periods have different training programmes" do
+          let(:first_period) do
+            FactoryBot.create(
+              :training_period,
+              :for_ect,
+              :school_led,
+              ect_at_school_period: source_ect_at_school_period,
+              started_on: first_period_started_on,
+              finished_on: first_period_finished_on
+            )
+          end
+
+          let(:destination_attrs) do
+            {
+              ect_at_school_period: destination_ect_at_school_period,
+              school_partnership: school_partnership_2025
+            }
           end
 
           it { is_expected.to be true }
         end
       end
 
-      context "when both teachers have mentor training periods" do
-        let(:source_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:) }
-        let(:destination_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher: destination) }
+      context "Mentor training periods" do
+        let(:tags) { [:for_mentor] }
 
-        let!(:source_training_period) do
-          FactoryBot.create(:training_period,
-                            :for_mentor,
-                            mentor_at_school_period: source_mentor_at_school_period,
-                            school_partnership: school_partnership_2025)
+        let(:source_mentor_at_school_period) do
+          FactoryBot.create(
+            :mentor_at_school_period,
+            teacher: source,
+            school:,
+            started_on: first_period_started_on,
+            finished_on: first_period_finished_on
+          )
         end
 
-        context "when the training periods are for different contract_periods" do
-          let!(:destination_training_period) do
-            FactoryBot.create(:training_period,
-                              :for_mentor,
-                              mentor_at_school_period: destination_mentor_at_school_period,
-                              school_partnership: school_partnership_2026)
-          end
-
-          it { is_expected.to be false }
+        let(:destination_mentor_at_school_period) do
+          FactoryBot.create(
+            :mentor_at_school_period,
+            teacher: destination,
+            school:,
+            started_on: second_period_started_on,
+            finished_on: second_period_finished_on
+          )
         end
 
-        context "when the training periods are for the same contract_periods" do
-          let!(:destination_training_period) do
-            FactoryBot.create(:training_period,
-                              :for_mentor,
-                              mentor_at_school_period: destination_mentor_at_school_period,
-                              school_partnership: school_partnership_2025)
+        let(:source_attrs) do
+          {
+            mentor_at_school_period: source_mentor_at_school_period,
+            school_partnership: school_partnership_2025
+          }
+        end
+
+        context "when both training periods use confirmed partnerships" do
+          context "when the contract periods are different" do
+            let(:destination_attrs) do
+              {
+                mentor_at_school_period: destination_mentor_at_school_period,
+                school_partnership: school_partnership_2026
+              }
+            end
+
+            it { is_expected.to be false }
           end
 
-          it { is_expected.to be true }
+          context "when the contract periods are the same" do
+            let(:destination_attrs) do
+              {
+                mentor_at_school_period: destination_mentor_at_school_period,
+                school_partnership: school_partnership_2025
+              }
+            end
+
+            it { is_expected.to be true }
+          end
+        end
+
+        context "when both training periods have only expressions of interest" do
+          let(:tags) { %i[for_mentor with_only_expression_of_interest] }
+
+          let(:source_attrs) do
+            {
+              mentor_at_school_period: source_mentor_at_school_period,
+              expression_of_interest: expression_of_interest_2025
+            }
+          end
+
+          context "when the contract periods are different" do
+            let(:destination_attrs) do
+              {
+                mentor_at_school_period: destination_mentor_at_school_period,
+                expression_of_interest: expression_of_interest_2026
+              }
+            end
+
+            it { is_expected.to be false }
+          end
+
+          context "when the contract periods are the same" do
+            let(:destination_attrs) do
+              {
+                mentor_at_school_period: destination_mentor_at_school_period,
+                expression_of_interest: expression_of_interest_2025
+              }
+            end
+
+            it { is_expected.to be true }
+          end
+        end
+
+        context "when only one training period is confirmed" do
+          let(:first_period) do
+            FactoryBot.create(
+              :training_period,
+              :for_mentor,
+              :with_only_expression_of_interest,
+              mentor_at_school_period: source_mentor_at_school_period,
+              expression_of_interest: expression_of_interest_2025,
+              started_on: first_period_started_on,
+              finished_on: first_period_finished_on
+            )
+          end
+
+          context "when the contract periods are different" do
+            let(:destination_attrs) do
+              {
+                mentor_at_school_period: destination_mentor_at_school_period,
+                school_partnership: school_partnership_2026
+              }
+            end
+
+            it { is_expected.to be false }
+          end
+
+          context "when the contract periods are the same" do
+            let(:destination_attrs) do
+              {
+                mentor_at_school_period: destination_mentor_at_school_period,
+                school_partnership: school_partnership_2025
+              }
+            end
+
+            it { is_expected.to be true }
+          end
         end
       end
     end

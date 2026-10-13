@@ -211,11 +211,55 @@ namespace :product_review do
       redirected_to: destination.trn,
       event_body: "TRN #{source.trn} redirects to TRN #{destination.trn}"
     )
+
+    # Different Training Programmes, which don't overlap
+    source = Teacher.find_by_trn("9000028")
+    destination = Teacher.find_by_trn("9000030")
+
+    source_tp = source.ect_at_school_periods.first.training_periods.first
+
+    source_tp.training_programme = "school_led"
+    source_tp.school_partnership = nil
+    source_tp.schedule = nil
+
+    source_tp.save!
+
+    destination_ect = destination.ect_at_school_periods.first
+    destination_mp = destination_ect.mentorship_periods.first
+    destination_tp = destination_ect.training_periods.first
+
+    destination_tp.update!(finished_on: "2025-12-05")
+    destination_mp.destroy!
+    destination_ect.update!(finished_on: "2025-12-05")
+
+    Teachers::Manage.system_update(teacher: source).mark_teacher_as_merged!(
+      trs_data_last_refreshed_at: Time.zone.now,
+      redirected_to: destination.trn,
+      event_body: "TRN #{source.trn} redirects to TRN #{destination.trn}"
+    )
+
+    # Different Training Programmes which do overlap
+    source = Teacher.find_by_trn("9000032")
+    destination = Teacher.find_by_trn("9000034")
+
+    source_tp = source.ect_at_school_periods.first.training_periods.first
+
+    source_tp.training_programme = "school_led"
+    source_tp.school_partnership = nil
+    source_tp.schedule = nil
+
+    source_tp.save!
+
+    Teachers::Manage.system_update(teacher: source).mark_teacher_as_merged!(
+      trs_data_last_refreshed_at: Time.zone.now,
+      redirected_to: destination.trn,
+      event_body: "TRN #{source.trn} redirects to TRN #{destination.trn}"
+    )
   end
 
   desc "Merge the TRNs merged automatically #4473"
   task "4473_merge_teachers" => :environment do
-    trns = [9_000_000, 9_000_001, 9_000_004, 9_000_006, 9_000_007, 9_000_008, 9_000_012, 9_000_017, 9_000_019, 9_000_024]
+    trns = [9_000_000, 9_000_001, 9_000_004, 9_000_006, 9_000_007, 9_000_008, 9_000_012, 9_000_017, 9_000_019, 9_000_024, 9_000_028, 9_000_032]
 
     trns.each do |trn|
       puts "\n"
@@ -268,6 +312,13 @@ namespace :product_review do
                 else
                   source.mentor_training_periods + destination.mentor_training_periods
                 end
+
+      training_periods_have_the_same_training_programme = periods.map(&:training_programme).uniq.size <= 1
+
+      unless training_periods_have_the_same_training_programme
+        puts "Training periods do not have the same training programme"
+        next
+      end
 
       training_periods_have_same_contract_period = periods.map(&:contract_period).uniq.size <= 1
 

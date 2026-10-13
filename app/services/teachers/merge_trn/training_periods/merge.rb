@@ -19,7 +19,8 @@ module Teachers
         end
 
         def incompatible_attributes
-          %i[deferral_reason
+          %i[training_programme
+             deferral_reason
              expression_of_interest_id
              schedule_id
              school_partnership_id

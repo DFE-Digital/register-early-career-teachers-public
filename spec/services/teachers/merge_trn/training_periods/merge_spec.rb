@@ -49,7 +49,6 @@ RSpec.describe Teachers::MergeTRN::TrainingPeriods::Merge do
       let(:destination_attrs) do
         { ect_at_school_period: destination_ect_period, school_partnership: other_school_partnership }
       end
-      let(:source_attrs) { { ect_at_school_period: source_ect_period, school_partnership: } }
 
       it "raises a CannotMergePeriods error" do
         expect {
@@ -69,6 +68,25 @@ RSpec.describe Teachers::MergeTRN::TrainingPeriods::Merge do
           service
         }.to raise_error(Teachers::MergeTRN::TrainingPeriods::Merge::CannotMergePeriods,
                          "Periods have different expression of interests")
+      end
+    end
+
+    context "when the periods have different training_programmes" do
+      let!(:second_period) do
+        FactoryBot.create(
+          :training_period,
+          :school_led,
+          ect_at_school_period: destination_ect_period,
+          started_on: second_period_started_on,
+          finished_on: second_period_finished_on
+        )
+      end
+
+      it "raises a CannotMergePeriods error" do
+        expect {
+          service
+        }.to raise_error(Teachers::MergeTRN::TrainingPeriods::Merge::CannotMergePeriods,
+                         "Periods have different training programmes")
       end
     end
 
