@@ -69,19 +69,19 @@ RSpec.describe API::Teachers::SchoolTransfers::Query do
       describe "by `lead_provider_id`" do
         let(:query) { described_class.new(lead_provider_id:) }
 
-        context "when the lead provider has participants with transfers" do
+        context "when the lead provider has teachers with transfers" do
           let(:lead_provider_id) { lead_provider.id }
 
           it { is_expected.to contain_exactly(teacher1, teacher3, teacher5) }
         end
 
-        context "when the other lead provider has participants with transfers" do
+        context "when the other lead provider has teachers with transfers" do
           let(:lead_provider_id) { other_lead_provider.id }
 
           it { is_expected.to contain_exactly(teacher3, teacher4) }
         end
 
-        context "when there are no participants with transfers" do
+        context "when there are no teachers with transfers" do
           let(:lead_provider_id) { FactoryBot.create(:lead_provider).id }
 
           it { is_expected.to be_empty }
