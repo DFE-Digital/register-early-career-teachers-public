@@ -141,16 +141,13 @@ RSpec/RepeatedExampleGroupDescription:
     - 'spec/views/appropriate_bodies/claim_an_ect/check_ect/edit.html.erb_spec.rb'
     - 'spec/wizards/schools/register_mentor_wizard/national_insurance_number_step_spec.rb'
 
-# Offense count: 5
+# Offense count: 2
 # Configuration parameters: Include, CustomTransform, IgnoreMethods, IgnoreMetadata.
 # Include: **/*_spec.rb
 RSpec/SpecFilePathFormat:
   Exclude:
-    - 'spec/lib/dfe_sign_in/api_client_spec.rb'
     - 'spec/services/pending_induction_submissions/build_spec.rb'
     - 'spec/services/sessions/session_manager_spec.rb'
-    - 'spec/services/sessions/users/dfe_persona_spec.rb'
-    - 'spec/services/sessions/users/dfe_user_spec.rb'
 
 # Offense count: 1
 RSpec/SubjectDeclaration:

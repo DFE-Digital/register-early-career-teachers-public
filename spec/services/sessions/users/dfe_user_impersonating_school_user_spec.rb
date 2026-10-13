@@ -1,4 +1,4 @@
-describe Sessions::Users::DfEUserImpersonatingSchoolUser do # rubocop:disable RSpec/SpecFilePathFormat
+describe Sessions::Users::DfEUserImpersonatingSchoolUser do
   subject(:dfe_user_impersonating_school_user) { Sessions::Users::DfEUserImpersonatingSchoolUser.new(email: user.email, school_urn:, original_type:) }
 
   let(:email) { "timothy.dalton@education.gov.uk" }
