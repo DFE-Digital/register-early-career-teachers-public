@@ -341,8 +341,8 @@ RSpec.describe "Moving School - backdated start spec" do
   end
 
   def create_appropriate_bodies
-    FactoryBot.create(:appropriate_body, name: "Golden Leaf Teaching Hub")
-    FactoryBot.create(:appropriate_body, name: "Umber Teaching Hub")
+    FactoryBot.create(:appropriate_body_period, name: "Golden Leaf Teaching Hub")
+    FactoryBot.create(:appropriate_body_period, name: "Umber Teaching Hub")
   end
 
   def and_there_are_partnerships_at_the_schools

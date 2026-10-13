@@ -27,7 +27,7 @@ appropriate_body_periods = [
   # National Bodies
   # ----------------------------------------------------------------------------
   {
-    name: AppropriateBody::ISTIP,
+    name: NationalBody::ISTIP,
     body_type: "national",
     # started_on: Date.new(2011, 8, 31),
     # finished_on: nil,
@@ -38,7 +38,7 @@ appropriate_body_periods = [
     }
   },
   {
-    name: AppropriateBody::ESP,
+    name: NationalBody::ESP,
     body_type: "national",
     # started_on: Date.new(2024, 4, 1),
     # finished_on: nil,

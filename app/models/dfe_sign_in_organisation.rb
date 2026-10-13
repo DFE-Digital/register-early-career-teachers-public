@@ -1,7 +1,7 @@
 # Data from OmniAuth responses from DfE Sign-In
 class DfESignInOrganisation < ApplicationRecord
   # Associations
-  # TODO: remove appropriate_body_period when dfe_sign_in_organisation_id is removed from AppropriateBody
+  # TODO: remove appropriate_body_period when dfe_sign_in_organisation_id is removed from AppropriateBodyPeriod
   has_one :appropriate_body_period,
           foreign_key: :dfe_sign_in_organisation_id,
           primary_key: :uuid,
@@ -10,8 +10,6 @@ class DfESignInOrganisation < ApplicationRecord
   has_one :school,
           foreign_key: :urn,
           primary_key: :urn
-
-  has_one :appropriate_body
 
   # Validations
   validates :name,

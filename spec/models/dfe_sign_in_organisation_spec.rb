@@ -2,7 +2,6 @@ RSpec.describe DfESignInOrganisation, type: :model do
   describe "associations" do
     it { is_expected.to have_one(:school) }
     it { is_expected.to have_one(:appropriate_body_period) } # to be removed
-    it { is_expected.to have_one(:appropriate_body) }
   end
 
   describe "validations" do
@@ -15,9 +14,9 @@ RSpec.describe DfESignInOrganisation, type: :model do
   end
 
   describe "scopes" do
-    let!(:nb_1) { FactoryBot.create(:appropriate_body, :with_dsi) }
-    let!(:nb_2) { FactoryBot.create(:appropriate_body, :with_dsi) }
-    let!(:nb_3) { FactoryBot.create(:appropriate_body, :with_dsi) }
+    let!(:nb_1) { FactoryBot.create(:dfe_sign_in_organisation, urn: nil) }
+    let!(:nb_2) { FactoryBot.create(:dfe_sign_in_organisation, urn: nil) }
+    let!(:nb_3) { FactoryBot.create(:dfe_sign_in_organisation, urn: nil) }
     let!(:school_1) { FactoryBot.create(:school, :with_dsi) }
     let!(:school_2) { FactoryBot.create(:school, :with_dsi) }
     let!(:school_3) { FactoryBot.create(:school, :with_dsi) }
@@ -26,11 +25,7 @@ RSpec.describe DfESignInOrganisation, type: :model do
       let(:scope) { described_class.national_bodies }
 
       it "lists national body logins" do
-        expect(scope).to contain_exactly(
-          nb_1.dfe_sign_in_organisation,
-          nb_2.dfe_sign_in_organisation,
-          nb_3.dfe_sign_in_organisation
-        )
+        expect(scope).to contain_exactly(nb_1, nb_2, nb_3)
         expect(scope).not_to include(
           school_1.dfe_sign_in_organisation,
           school_2.dfe_sign_in_organisation,
@@ -48,11 +43,7 @@ RSpec.describe DfESignInOrganisation, type: :model do
           school_2.dfe_sign_in_organisation,
           school_3.dfe_sign_in_organisation
         )
-        expect(scope).not_to include(
-          nb_1.dfe_sign_in_organisation,
-          nb_2.dfe_sign_in_organisation,
-          nb_3.dfe_sign_in_organisation
-        )
+        expect(scope).not_to include(nb_1, nb_2, nb_3)
       end
     end
   end

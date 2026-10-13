@@ -21,13 +21,13 @@ FactoryBot.define do
 
     trait :istip do
       national
-      name { AppropriateBody::ISTIP }
+      name { NationalBody::ISTIP }
       association :dfe_sign_in_organisation, :istip
     end
 
     trait :esp do
       national
-      name { AppropriateBody::ESP }
+      name { NationalBody::ESP }
       association :dfe_sign_in_organisation, :esp
     end
 

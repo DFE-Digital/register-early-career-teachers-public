@@ -167,7 +167,7 @@ class School < ApplicationRecord
   end
 
   def teaching_school_hub
-    dfe_sign_in_organisation&.appropriate_body
+    dfe_sign_in_organisation&.appropriate_body_period
   end
 
   # teaching_school_hub_name

@@ -120,6 +120,29 @@ RSpec.describe School do
     end
   end
 
+  describe "#teaching_school_hub" do
+    let(:school) { FactoryBot.create(:school) }
+
+    context "when the school's DfE Sign-In organisation belongs to an appropriate body period" do
+      let!(:dfe_sign_in_organisation) { FactoryBot.create(:dfe_sign_in_organisation, urn: school.urn) }
+      let!(:appropriate_body_period) do
+        FactoryBot.create(:appropriate_body_period, dfe_sign_in_organisation:)
+      end
+
+      it "returns the appropriate body period" do
+        expect(school.teaching_school_hub).to eq(appropriate_body_period)
+      end
+
+      it "returns the appropriate body period name through teaching_school_hub_name" do
+        expect(school.teaching_school_hub_name).to eq(appropriate_body_period.name)
+      end
+    end
+
+    context "when the school has no DfE Sign-In organisation" do
+      it { expect(school.teaching_school_hub).to be_nil }
+    end
+  end
+
   describe "validations" do
     subject { FactoryBot.create(:school) }
 

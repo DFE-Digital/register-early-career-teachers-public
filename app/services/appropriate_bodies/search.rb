@@ -7,12 +7,12 @@ module AppropriateBodies
     end
 
     def self.istip
-      new(::AppropriateBody::ISTIP).search.first ||
+      new(::NationalBody::ISTIP).search.first ||
         raise(ActiveRecord::RecordNotFound, "ISTIP appropriate body period not found!")
     end
 
     def self.esp
-      new(::AppropriateBody::ESP).search.first ||
+      new(::NationalBody::ESP).search.first ||
         raise(ActiveRecord::RecordNotFound, "ESP appropriate body period not found!")
     end
 

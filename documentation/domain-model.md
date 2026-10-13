@@ -474,20 +474,11 @@ erDiagram
     integer teaching_school_hub_id
     datetime updated_at
   }
-  AppropriateBodyPeriod }o--|| AppropriateBody : belongs_to
   AppropriateBodyPeriod }o--|| DfESignInOrganisation : belongs_to
   AppropriateBodyPeriod }o--|| School : belongs_to
   AppropriateBodyPeriod }o--|| TeachingSchoolHub : belongs_to
   AppropriateBodyPeriod }o--|| NationalBody : belongs_to
   AppropriateBodyPeriod }o--|| LocalAuthority : belongs_to
-  AppropriateBody {
-    integer id
-    datetime created_at
-    integer dfe_sign_in_organisation_id
-    string name
-    datetime updated_at
-  }
-  AppropriateBody }o--|| DfESignInOrganisation : belongs_to
   SupportQuery {
     integer id
     datetime created_at
