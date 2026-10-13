@@ -1,5 +1,7 @@
 module GIAS::Reconciliation
   class Eligibility
+    OPENING_SOON_DAYS = 3
+
     def initialize(gias_school)
       @gias_school = gias_school
     end
@@ -82,7 +84,13 @@ module GIAS::Reconciliation
     end
 
     def has_one_open_successor?
-      successors.one? && (successor.open_status? || successor.proposed_to_open_status?)
+      successors.one? && (successor.open_status? || successor_opening_soon?)
+    end
+
+    def successor_opening_soon?
+      return false if successor.opened_on.blank?
+
+      successor.proposed_to_open_status? && successor.opened_on <= Date.current + OPENING_SOON_DAYS
     end
 
     def successors
