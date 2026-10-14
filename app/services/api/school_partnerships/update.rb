@@ -7,7 +7,7 @@ module API::SchoolPartnerships
     attribute :delivery_partner_api_id
 
     validate :school_partnership_exists
-    validate :delivery_partnership_can_become_school_partnership
+    validate :delivery_partnership_can_become_school_partnership, if: -> { errors.empty? }
 
     def update
       return false unless valid?
