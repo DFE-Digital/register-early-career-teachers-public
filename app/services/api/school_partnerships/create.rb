@@ -8,20 +8,10 @@ module API::SchoolPartnerships
     attribute :school_api_id
     attribute :delivery_partner_api_id
 
-    validates :contract_period_year, presence: { message: "Enter a '#/contract_period_year'." }
-    validates :school_api_id, presence: { message: "Enter a '#/school_api_id'." }
-    validates :lead_provider_id, presence: { message: "Enter a '#/lead_provider_id'." }
-    validates :delivery_partner_api_id, presence: { message: "Enter a '#/delivery_partner_api_id'." }
-    validate :contract_period_exists
-    validate :contract_period_started
-    validate :contract_period_enabled
-    validate :lead_provider_exists
-    validate :school_exists
-    validate :school_is_eligible
-    validate :delivery_partner_exists
-    validate :lead_provider_delivery_partnership_exists
-    validate :school_partnership_does_not_already_exists
-    validate :not_school_led
+    validate :partnership_can_be_added_to_contract_period
+    validate :school_is_eligible_for_partnership, if: -> { errors.empty? }
+    validate :lead_provider_exists, if: -> { errors.empty? }
+    validate :delivery_partnership_exists, if: -> { errors.empty? }
 
     def create
       return false unless valid?
@@ -51,59 +41,6 @@ module API::SchoolPartnerships
       @delivery_partner ||= DeliveryPartner.find_by(api_id: delivery_partner_api_id) if delivery_partner_api_id
     end
 
-    def contract_period_exists
-      return if errors[:contract_period_year].any?
-
-      errors.add(:contract_period_year, "The '#/contract_period_year' you have entered is invalid. Check contract period details and try again.") unless contract_period
-    end
-
-    def contract_period_enabled
-      return if errors[:contract_period_year].any?
-
-      errors.add(:contract_period_year, "You cannot create this partnership as the contract period is closed.") unless contract_period&.enabled?
-    end
-
-    def contract_period_started
-      return if errors[:contract_period_year].any?
-
-      errors.add(:contract_period_year, "You cannot create a partnership for a future contract period.") unless contract_period&.started_on_or_before_today?
-    end
-
-    def lead_provider_exists
-      return if errors[:lead_provider_id].any?
-
-      errors.add(:lead_provider_id, "Enter a '#/lead_provider_id'.") unless lead_provider
-    end
-
-    def school_exists
-      return if errors[:school_api_id].any?
-
-      errors.add(:school_api_id, "The '#/school_api_id' you have entered is invalid. Check school details and try again. Contact the DfE for support if you are unable to find the '#/school_api_id'.") unless school
-    end
-
-    def school_is_eligible
-      return if errors[:school_api_id].any?
-
-      errors.add(:school_api_id, "The school you have entered is currently ineligible for DfE funding. Contact the school for more information.") unless school&.eligible?
-    end
-
-    def school_partnership_does_not_already_exists
-      return unless school && framework_agreement
-
-      existing_school_partnership = school
-        .school_partnerships
-        .joins(:lead_provider_delivery_partnership)
-        .exists?(lead_provider_delivery_partnerships: { framework_agreement: })
-
-      errors.add(:school_api_id, "You are already in a confirmed partnership with this school for the entered contract period.") if existing_school_partnership
-    end
-
-    def delivery_partner_exists
-      return if errors[:delivery_partner_api_id].any?
-
-      errors.add(:delivery_partner_api_id, "The '#/delivery_partner_api_id' you have entered is invalid. Check delivery partner details and try again.") unless delivery_partner
-    end
-
     def framework_agreement
       return unless lead_provider && contract_period
 
@@ -116,22 +53,47 @@ module API::SchoolPartnerships
       @lead_provider_delivery_partnership ||= delivery_partner.lead_provider_delivery_partnerships.find_by(framework_agreement:, delivery_partner:)
     end
 
-    def lead_provider_delivery_partnership_exists
-      return unless lead_provider && delivery_partner
-
-      errors.add(:delivery_partner_api_id, "The entered delivery partner is not recognised to be working in partnership with you for the given contract period. Contact the DfE for more information.") unless lead_provider_delivery_partnership
-    end
-
     def metadata
       return unless school && contract_period
 
       @metadata ||= school.contract_period_metadata.find_by(contract_period:)
     end
 
-    def not_school_led
-      return unless metadata&.induction_programme_choice == "school_led"
+    def partnership_can_be_added_to_contract_period
+      return errors.add(:contract_period_year, "Enter a '#/contract_period_year'.") if contract_period_year.blank?
+      return errors.add(:contract_period_year, "The '#/contract_period_year' you have entered is invalid. Check contract period details and try again.") unless contract_period
+      return errors.add(:contract_period_year, "You cannot create this partnership as the contract period is closed.") unless contract_period.enabled?
 
-      errors.add(:school_api_id, "This school has only registered school-led teachers. Contact the school for more information.")
+      errors.add(:contract_period_year, "You cannot create a partnership for a future contract period.") unless contract_period.started_on_or_before_today?
+    end
+
+    def school_is_eligible_for_partnership
+      return errors.add(:school_api_id, "Enter a '#/school_api_id'.") if school_api_id.blank?
+      return errors.add(:school_api_id, "The '#/school_api_id' you have entered is invalid. Check school details and try again. Contact the DfE for support if you are unable to find the '#/school_api_id'.") unless school
+      return errors.add(:school_api_id, "The school you have entered is currently ineligible for DfE funding. Contact the school for more information.") unless school.eligible?
+      return errors.add(:school_api_id, "You are already in a confirmed partnership with this school for the entered contract period.") if existing_school_partnership?
+
+      errors.add(:school_api_id, "This school has only registered school-led teachers. Contact the school for more information.") if metadata&.induction_programme_choice == "school_led"
+    end
+
+    def lead_provider_exists
+      errors.add(:lead_provider_id, "Enter a '#/lead_provider_id'.") unless lead_provider
+    end
+
+    def delivery_partnership_exists
+      return errors.add(:delivery_partner_api_id, "Enter a '#/delivery_partner_api_id'.") if delivery_partner_api_id.blank?
+      return errors.add(:delivery_partner_api_id, "The '#/delivery_partner_api_id' you have entered is invalid. Check delivery partner details and try again.") unless delivery_partner
+
+      errors.add(:delivery_partner_api_id, "The entered delivery partner is not recognised to be working in partnership with you for the given contract period. Contact the DfE for more information.") unless lead_provider_delivery_partnership
+    end
+
+    def existing_school_partnership?
+      return false unless framework_agreement
+
+      school
+        .school_partnerships
+        .joins(:lead_provider_delivery_partnership)
+        .exists?(lead_provider_delivery_partnerships: { framework_agreement: })
     end
   end
 end
