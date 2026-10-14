@@ -15,5 +15,5 @@ describe "api/documentation/show.html.erb" do
   it { is_expected.to have_link("View the Training API", href: api_docs_training_guidance_path) }
 
   it { is_expected.to have_css("h2", text: "Induction API") }
-  it { is_expected.to have_link("View the Induction API", href: "#induction") }
+  it { is_expected.to have_link("View the Induction API", href: api_induction_v1_documentation_path) }
 end

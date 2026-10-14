@@ -40,8 +40,15 @@ namespace :api do
       resource :user, only: :show
     end
 
+    namespace :induction do
+      namespace :v1 do
+        resources :appropriate_bodies, only: :index, path: "appropriate-bodies"
+      end
+    end
+
     get "docs", to: "documentation#show", as: :documentation
     resource :hello_documentation, only: :show, path: "docs/hello", controller: "hello/documentations"
+    resource :induction_v1_documentation, only: :show, path: "docs/induction/v1", controller: "induction/v1/documentations"
     get "docs/authentication", to: redirect("/api/docs/authentication/how-authentication-works"), as: :documentation_authentication
     get "docs/authentication/*page", to: "documentation/authentication#page", as: :documentation_authentication_page
   end

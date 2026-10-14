@@ -1,0 +1,63 @@
+---
+openapi: 3.0.1
+info:
+  title: Induction API
+  version: v1
+paths:
+  "/api/induction/v1/appropriate-bodies":
+    get:
+      summary: List appropriate bodies
+      operationId: getAPIInductionV1AppropriateBodies
+      security:
+      - client_credentials: []
+      tags:
+      - Appropriate bodies
+      responses:
+        '200':
+          description: Appropriate bodies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/InductionV1AppropriateBody"
+        '401':
+          description: The client credentials are invalid
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/OAuthError"
+        '429':
+          description: Too many requests. Retry after the rate limit period has passed.
+components:
+  securitySchemes:
+    client_credentials:
+      type: http
+      scheme: basic
+      description: OAuth 2.0 client ID and secret
+  schemas:
+    InductionV1AppropriateBody:
+      description: An appropriate body.
+      type: object
+      required:
+      - id
+      - name
+      properties:
+        id:
+          type: integer
+          description: The appropriate body identifier.
+          example: 123
+        name:
+          type: string
+          description: The appropriate body name.
+          example: Golden Leaf Teaching School Hub
+    OAuthError:
+      description: An OAuth 2.0 error.
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          type: string
+          description: The OAuth 2.0 error code.
+          example: invalid_token
