@@ -26,9 +26,10 @@ module "application_configuration" {
   secret_variables = merge(
     local.bigquery_secrets,
     {
-      DATABASE_URL        = module.postgres.url
-      BLAZER_DATABASE_URL = var.environment == "production" ? module.infrastructure_secrets.map[local.snapshot_db_kv_secret_name] : module.postgres.url
-      REDIS_CACHE_URL     = local.selected_redis.cache_url
+      DATABASE_URL         = module.postgres.url
+      REPLICA_DATABASE_URL = var.read_replica_count != 0 ? module.postgres.read_replica_urls["replica-1"] : null
+      BLAZER_DATABASE_URL  = var.environment == "production" ? module.infrastructure_secrets.map[local.snapshot_db_kv_secret_name] : module.postgres.url
+      REDIS_CACHE_URL      = local.selected_redis.cache_url
     }
   )
 }
