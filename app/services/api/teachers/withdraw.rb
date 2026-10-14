@@ -36,23 +36,21 @@ module API::Teachers
   private
 
     def reason_is_valid_for_teacher_type
-      if reason.blank?
-        errors.add(:reason, "Enter a '#/reason'.")
-      elsif WITHDRAWAL_REASONS.exclude?(reason)
-        errors.add(:reason, "The entered '#/reason' is not recognised for the given teacher. Check details and try again.")
-      elsif training_period&.for_ect? && MENTOR_ONLY_WITHDRAWAL_REASONS.include?(reason)
+      return errors.add(:reason, "Enter a '#/reason'.") if reason.blank?
+      return errors.add(:reason, "The entered '#/reason' is not recognised for the given teacher. Check details and try again.") if WITHDRAWAL_REASONS.exclude?(reason)
+
+      if training_period&.for_ect? && MENTOR_ONLY_WITHDRAWAL_REASONS.include?(reason)
         errors.add(:reason, "You cannot withdraw an ECT for this reason. The ECT is not a mentor.")
       end
     end
 
     def teacher_is_training_and_can_be_withdrawn
-      if training_status&.withdrawn?
-        errors.add(:teacher_api_id, "The '#/teacher_api_id' is already withdrawn.")
-      elsif training_period_has_not_yet_started?
-        errors.add(:teacher_api_id, "You cannot withdraw #/teacher_api_id. This is because they have not been training with you for at least one day.")
-      elsif training_period_started_today?
-        errors.add(:teacher_api_id, "You cannot defer or withdraw this teacher today. You need to try again tomorrow as the training was recently changed for this teacher.")
-      end
+      return errors.add(:teacher_api_id, "The '#/teacher_api_id' is already withdrawn.") if training_status&.withdrawn?
+      return if training_period.blank?
+
+      return errors.add(:teacher_api_id, "You cannot withdraw #/teacher_api_id. This is because they have not been training with you for at least one day.") if training_period.started_on.future?
+
+      errors.add(:teacher_api_id, "You cannot defer or withdraw this teacher today. You need to try again tomorrow as the training was recently changed for this teacher.") if training_period.started_on.today?
     end
   end
 end

@@ -25,16 +25,4 @@ module API::FindLatestTrainingPeriod
                                            teacher_lead_provider_metadata.latest_mentor_training_period
                                          end
   end
-
-  def training_period_has_not_yet_started?
-    training_period&.started_on&.future?
-  end
-
-  def training_period_started_today?
-    training_period&.started_on&.today?
-  end
-
-  def training_period_finished_today?
-    training_period&.finished_on&.today?
-  end
 end

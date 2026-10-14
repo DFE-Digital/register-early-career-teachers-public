@@ -89,6 +89,10 @@ module Interval
     started_on <= finished_on
   end
 
+  def finished?
+    finished_on.present? && finished_on <= Time.zone.today
+  end
+
   def leaving_today_or_in_future?
     finished_on.present? && finished_on >= Time.zone.today
   end

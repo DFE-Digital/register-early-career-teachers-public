@@ -229,6 +229,32 @@ describe Interval do
     end
   end
 
+  describe "#finished?" do
+    context "without finished_on" do
+      subject(:interval) { DummyInterval.new(started_on: 1.week.ago, finished_on: nil) }
+
+      it { is_expected.not_to be_finished }
+    end
+
+    context "with finished_on" do
+      subject(:interval) { DummyInterval.new(started_on: 1.week.ago, finished_on: 1.day.ago) }
+
+      it { is_expected.to be_finished }
+    end
+
+    context "when finished_on is in the future" do
+      subject(:interval) { DummyInterval.new(started_on: 1.week.ago, finished_on: 1.week.from_now) }
+
+      it { is_expected.not_to be_finished }
+    end
+
+    context "when finished_on is today" do
+      subject(:interval) { DummyInterval.new(started_on: 1.week.ago, finished_on: Time.zone.today) }
+
+      it { is_expected.to be_finished }
+    end
+  end
+
   describe "#leaving_today_or_in_future?" do
     subject(:interval) { DummyInterval.new(started_on: 1.week.ago, finished_on:) }
 

@@ -38,15 +38,14 @@ module API::Teachers
   private
 
     def teacher_is_training_and_can_be_deferred
-      if training_status&.withdrawn?
-        errors.add(:teacher_api_id, "The '#/teacher_api_id' is already withdrawn.")
-      elsif training_status&.deferred?
-        errors.add(:teacher_api_id, "The '#/teacher_api_id' is already deferred.")
-      elsif training_period_has_not_yet_started?
-        errors.add(:teacher_api_id, "You cannot defer #/teacher_api_id. This is because they have not been training with you for at least one day.")
-      elsif training_period_started_today?
-        errors.add(:teacher_api_id, "You cannot defer or withdraw this teacher today. You need to try again tomorrow as the training was recently changed for this teacher.")
-      end
+      return errors.add(:teacher_api_id, "The '#/teacher_api_id' is already withdrawn.") if training_status&.withdrawn?
+      return errors.add(:teacher_api_id, "The '#/teacher_api_id' is already deferred.") if training_status&.deferred?
+
+      return if training_period.blank?
+
+      return errors.add(:teacher_api_id, "You cannot defer #/teacher_api_id. This is because they have not been training with you for at least one day.") if training_period.started_on.future?
+
+      errors.add(:teacher_api_id, "You cannot defer or withdraw this teacher today. You need to try again tomorrow as the training was recently changed for this teacher.") if training_period.started_on.today?
     end
   end
 end
