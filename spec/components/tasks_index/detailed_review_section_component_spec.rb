@@ -96,4 +96,38 @@ RSpec.describe TasksIndex::DetailedReviewSectionComponent, type: :component do
       end
     end
   end
+
+  describe "ECTs claimed by another appropriate body" do
+    let(:other_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, :teaching_school_hub) }
+    let(:teacher) { FactoryBot.create(:teacher, trs_qts_awarded_on: 3.years.ago) }
+
+    before do
+      FactoryBot.create(:ect_at_school_period, :unfinished, teacher:, school_reported_appropriate_body: appropriate_body_period)
+      FactoryBot.create(:induction_period, :unfinished, teacher:, appropriate_body_period: other_appropriate_body_period, started_on:)
+    end
+
+    context "when the other appropriate body claimed the ECT before the placement" do
+      let(:started_on) { 2.years.ago }
+
+      it "counts the ECT as claimed by another appropriate body" do
+        expect(component.number_of_records_claimed_by_another_appropriate_body).to eq 1
+      end
+
+      it "does not count the ECT as claimable" do
+        expect(component.number_of_claimable_ect_records).to be_zero
+      end
+    end
+
+    context "when the other appropriate body claimed the ECT during the placement" do
+      let(:started_on) { 6.months.ago }
+
+      it "does not count the ECT as claimed by another appropriate body" do
+        expect(component.number_of_records_claimed_by_another_appropriate_body).to be_zero
+      end
+
+      it "does not count the ECT as claimable" do
+        expect(component.number_of_claimable_ect_records).to be_zero
+      end
+    end
+  end
 end
