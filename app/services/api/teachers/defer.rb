@@ -17,16 +17,11 @@ module API::Teachers
 
     attribute :reason
 
-    validates :reason, presence: { message: "Enter a '#/reason'." }
-    validates :reason,
-              inclusion: {
-                in: DEFERRAL_REASONS,
-                message: "The entered '#/reason' is not recognised for the given teacher. Check details and try again."
-              }, allow_blank: true
-    validate :not_already_deferred
-    validate :not_already_withdrawn
-    validate :training_period_has_started
-    validate :training_for_at_least_one_day
+    validates :reason, presence: { message: "Enter a '#/reason'." },
+                       inclusion: { in: DEFERRAL_REASONS,
+                                    message: "The entered '#/reason' is not recognised for the given teacher. Check details and try again." }, if: -> { errors.empty? }
+
+    validate :teacher_is_training_and_can_be_deferred, if: -> { errors.empty? }
 
     def defer
       return false if invalid?
@@ -42,32 +37,15 @@ module API::Teachers
 
   private
 
-    def not_already_withdrawn
-      return if errors[:teacher_api_id].any?
-      return unless training_status&.withdrawn?
+    def teacher_is_training_and_can_be_deferred
+      return errors.add(:teacher_api_id, "The '#/teacher_api_id' is already withdrawn.") if training_status&.withdrawn?
+      return errors.add(:teacher_api_id, "The '#/teacher_api_id' is already deferred.") if training_status&.deferred?
 
-      errors.add(:teacher_api_id, "The '#/teacher_api_id' is already withdrawn.")
-    end
+      return if training_period.blank?
 
-    def not_already_deferred
-      return if errors[:teacher_api_id].any?
-      return unless training_status&.deferred?
+      return errors.add(:teacher_api_id, "You cannot defer #/teacher_api_id. This is because they have not been training with you for at least one day.") if training_period.started_on.future?
 
-      errors.add(:teacher_api_id, "The '#/teacher_api_id' is already deferred.")
-    end
-
-    def training_period_has_started
-      return if errors[:teacher_api_id].any?
-      return unless training_period&.started_on&.future?
-
-      errors.add(:teacher_api_id, "You cannot defer #/teacher_api_id. This is because they have not been training with you for at least one day.")
-    end
-
-    def training_for_at_least_one_day
-      return if errors[:teacher_api_id].any?
-      return unless training_period&.started_on&.today?
-
-      errors.add(:teacher_api_id, "You cannot defer or withdraw this teacher today. You need to try again tomorrow as the training was recently changed for this teacher.")
+      errors.add(:teacher_api_id, "You cannot defer or withdraw this teacher today. You need to try again tomorrow as the training was recently changed for this teacher.") if training_period.started_on.today?
     end
   end
 end
