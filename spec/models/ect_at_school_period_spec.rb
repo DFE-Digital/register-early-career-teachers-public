@@ -609,6 +609,7 @@ describe ECTAtSchoolPeriod do
 
       let!(:period_without_induction_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school_reported_appropriate_body: appropriate_body_period) }
       let!(:period_with_ongoing_induction_period_for_same_appropriate_body) { FactoryBot.create(:ect_at_school_period, :unfinished, school_reported_appropriate_body: appropriate_body_period) }
+      let!(:period_claimed_by_same_appropriate_body_before_placement) { FactoryBot.create(:ect_at_school_period, :unfinished, school_reported_appropriate_body: appropriate_body_period) }
       let!(:period_with_ongoing_induction_period_for_different_appropriate_body) { FactoryBot.create(:ect_at_school_period, :unfinished, school_reported_appropriate_body: appropriate_body_period) }
       let!(:period_claimed_by_different_appropriate_body_during_placement) { FactoryBot.create(:ect_at_school_period, :unfinished, school_reported_appropriate_body: appropriate_body_period) }
       let!(:period_with_finished_induction_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school_reported_appropriate_body: appropriate_body_period) }
@@ -617,6 +618,7 @@ describe ECTAtSchoolPeriod do
 
       before do
         FactoryBot.create(:induction_period, :unfinished, appropriate_body_period:, teacher: period_with_ongoing_induction_period_for_same_appropriate_body.teacher)
+        FactoryBot.create(:induction_period, :unfinished, appropriate_body_period:, teacher: period_claimed_by_same_appropriate_body_before_placement.teacher, started_on: 2.years.ago)
         FactoryBot.create(:induction_period, :unfinished, appropriate_body_period: other_appropriate_body, teacher: period_with_ongoing_induction_period_for_different_appropriate_body.teacher, started_on: 2.years.ago)
         FactoryBot.create(:induction_period, :unfinished, appropriate_body_period: other_appropriate_body, teacher: period_claimed_by_different_appropriate_body_during_placement.teacher, started_on: 6.months.ago)
         FactoryBot.create(:induction_period, started_on: 1.year.ago, finished_on: 1.month.ago, teacher: period_with_finished_induction_period.teacher)
@@ -633,17 +635,50 @@ describe ECTAtSchoolPeriod do
         )
         expect(results).not_to include(
           period_with_ongoing_induction_period_for_same_appropriate_body,
+          period_claimed_by_same_appropriate_body_before_placement,
           period_claimed_by_different_appropriate_body_during_placement,
           finished_period
         )
       end
 
-      it "agrees with the appropriate body shown to the school" do
-        current_periods = described_class.current_or_future.where(school_reported_appropriate_body: appropriate_body_period)
-        shown_as_awaiting_confirmation = current_periods.reject { ECTAtSchoolPeriods::AppropriateBody.new(it).from_induction? }
+      it "excludes the same periods as ECTAtSchoolPeriods::AppropriateBody using its date range rule" do
+        current_periods = described_class.current_or_future
+        without_induction_period_started_during_placement = current_periods.reject { ECTAtSchoolPeriods::AppropriateBody.new(it).from_induction? }
 
-        expect(described_class.unclaimed_by_school_reported_appropriate_body.where(school_reported_appropriate_body: appropriate_body_period))
-          .to match_array(shown_as_awaiting_confirmation)
+        expect(current_periods.without_ongoing_induction_period_started_during_placement)
+          .to match_array(without_induction_period_started_during_placement)
+      end
+    end
+
+    describe ".claimed_by_school_reported_appropriate_body" do
+      subject(:results) { described_class.claimed_by_school_reported_appropriate_body }
+
+      let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, :teaching_school_hub) }
+      let(:other_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, :teaching_school_hub) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school_reported_appropriate_body: appropriate_body_period) }
+
+      context "when the school-reported appropriate body claimed the ECT before the placement" do
+        before { FactoryBot.create(:induction_period, :unfinished, appropriate_body_period:, teacher: ect_at_school_period.teacher, started_on: 2.years.ago) }
+
+        it "includes the period" do
+          expect(results).to include(ect_at_school_period)
+        end
+      end
+
+      context "when the school-reported appropriate body claimed the ECT during the placement" do
+        before { FactoryBot.create(:induction_period, :unfinished, appropriate_body_period:, teacher: ect_at_school_period.teacher, started_on: 6.months.ago) }
+
+        it "includes the period" do
+          expect(results).to include(ect_at_school_period)
+        end
+      end
+
+      context "when another appropriate body claimed the ECT during the placement" do
+        before { FactoryBot.create(:induction_period, :unfinished, appropriate_body_period: other_appropriate_body_period, teacher: ect_at_school_period.teacher, started_on: 6.months.ago) }
+
+        it "excludes the period" do
+          expect(results).not_to include(ect_at_school_period)
+        end
       end
     end
 
@@ -658,16 +693,16 @@ describe ECTAtSchoolPeriod do
         end
       end
 
-      context "when the ongoing induction period started before the placement" do
-        before { FactoryBot.create(:induction_period, :unfinished, teacher: ect_at_school_period.teacher, started_on: Date.new(2025, 8, 31)) }
+      context "when the induction period is not ongoing" do
+        before { FactoryBot.create(:induction_period, teacher: ect_at_school_period.teacher, started_on: Date.new(2025, 10, 1), finished_on: Date.new(2026, 1, 1)) }
 
         it "includes the period" do
           expect(results).to include(ect_at_school_period)
         end
       end
 
-      context "when an induction period started during the placement has finished" do
-        before { FactoryBot.create(:induction_period, teacher: ect_at_school_period.teacher, started_on: Date.new(2025, 10, 1), finished_on: Date.new(2026, 1, 1)) }
+      context "when the ongoing induction period started before the placement" do
+        before { FactoryBot.create(:induction_period, :unfinished, teacher: ect_at_school_period.teacher, started_on: Date.new(2025, 8, 31)) }
 
         it "includes the period" do
           expect(results).to include(ect_at_school_period)
