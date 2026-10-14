@@ -49,8 +49,9 @@ class ECTAtSchoolPeriod < ApplicationRecord
       .where(induction_periods: { id: nil })
       .without_ongoing_induction_period_started_during_placement
   }
-  # Mirrors ECTAtSchoolPeriods::AppropriateBody: after claim, school sees
-  # that claiming AB instead of school-reported
+  # Same date range rule as ECTAtSchoolPeriods::AppropriateBody: an ongoing
+  # induction period that started during this placement replaces the
+  # school-reported AB as the one shown to the school
   scope :without_ongoing_induction_period_started_during_placement, -> {
     where(<<~SQL)
       NOT EXISTS (
