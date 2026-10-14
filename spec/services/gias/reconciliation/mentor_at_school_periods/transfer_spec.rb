@@ -54,6 +54,22 @@ RSpec.describe GIAS::Reconciliation::MentorAtSchoolPeriods::Transfer do
           expect(training_period.reload.school_partnership.school).to eq(successor_school)
           expect(training_period.school_partnership.lead_provider_delivery_partnership).to eq(lead_provider_delivery_partnership)
         end
+
+        context "when the training_period has billable declarations" do
+          before do
+            FactoryBot.create(:declaration, :paid, training_period:)
+          end
+
+          it "updates the training_period to have a matching school partnership at the successor school" do
+            expect { subject }.not_to raise_error(
+              ActiveRecord::RecordInvalid,
+              "Validation failed: Cannot change the lead provider for a training period with billable declarations"
+            )
+
+            expect(training_period.reload.school_partnership.school).to eq(successor_school)
+            expect(training_period.school_partnership.lead_provider_delivery_partnership).to eq(lead_provider_delivery_partnership)
+          end
+        end
       end
     end
 
