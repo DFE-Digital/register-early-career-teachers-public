@@ -436,7 +436,7 @@ RSpec.describe API::Declarations::Create, type: :model do
                               finished_on: 1.week.from_now)
           end
 
-          context "when contract period is 2025" do
+          context "when contract period is 2025 or later" do
             let(:contract_period_year) { 2025 }
 
             context "when theres existing `started` declaration" do
@@ -582,8 +582,10 @@ RSpec.describe API::Declarations::Create, type: :model do
             end
           end
 
-          context "when contract period is 2024" do
+          context "when declarations in sequence are disabled" do
             let(:contract_period_year) { 2024 }
+
+            before { training_period.contract_period.update!(declarations_in_sequence_enabled: false) }
 
             context "when `completed` is submitted before `started` declaration date" do
               let!(:milestone) { FactoryBot.create(:milestone, declaration_type: "completed", schedule:, start_date: Date.new(contract_period_year, 6, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }

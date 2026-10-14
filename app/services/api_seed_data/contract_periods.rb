@@ -7,28 +7,33 @@ module APISeedData
         payments_frozen_at: Time.zone.local(2024, 6, 18),
         mentor_funding_enabled: false,
         detailed_evidence_types_enabled: false,
-        uplift_fees_enabled: true },
+        uplift_fees_enabled: true,
+        declarations_in_sequence_enabled: false },
       { year: 2022,
         enabled: false,
         payments_frozen_at: Time.zone.local(2025, 6, 16),
         mentor_funding_enabled: false,
         detailed_evidence_types_enabled: false,
-        uplift_fees_enabled: true },
+        uplift_fees_enabled: true,
+        declarations_in_sequence_enabled: false },
       { year: 2023,
         enabled: true,
         mentor_funding_enabled: false,
         detailed_evidence_types_enabled: false,
-        uplift_fees_enabled: true },
+        uplift_fees_enabled: true,
+        declarations_in_sequence_enabled: false },
       { year: 2024,
         enabled: true,
         mentor_funding_enabled: false,
         detailed_evidence_types_enabled: false,
-        uplift_fees_enabled: true },
+        uplift_fees_enabled: true,
+        declarations_in_sequence_enabled: false },
       { year: 2025,
         enabled: true,
         mentor_funding_enabled: true,
         detailed_evidence_types_enabled: true,
-        uplift_fees_enabled: false },
+        uplift_fees_enabled: false,
+        declarations_in_sequence_enabled: true },
     ].freeze
 
     def plant
@@ -43,7 +48,8 @@ module APISeedData
                           payments_frozen_at: data[:payments_frozen_at],
                           mentor_funding_enabled: data[:mentor_funding_enabled],
                           detailed_evidence_types_enabled: data[:detailed_evidence_types_enabled],
-                          uplift_fees_enabled: data[:uplift_fees_enabled]).tap do |contract_period|
+                          uplift_fees_enabled: data[:uplift_fees_enabled],
+                          declarations_in_sequence_enabled: data[:declarations_in_sequence_enabled]).tap do |contract_period|
           log_seed_info("#{contract_period.year} (running from #{contract_period.started_on} until #{contract_period.finished_on})")
         end
       end

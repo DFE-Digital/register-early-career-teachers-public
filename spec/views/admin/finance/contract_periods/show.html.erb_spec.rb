@@ -40,6 +40,7 @@ RSpec.describe "admin/finance/contract_periods/show.html.erb" do
     expect(rendered).to have_content("Mentor funding enabled")
     expect(rendered).to have_content("Detailed evidence types enabled")
     expect(rendered).to have_content("Uplift fees enabled")
+    expect(rendered).to have_content("Declarations in sequence enabled")
     expect(rendered).to have_content("Payments frozen")
   end
 

@@ -101,6 +101,7 @@ RSpec.describe "Admin finance contract periods", type: :request do
             detailed_evidence_types_enabled: true,
             mentor_funding_enabled: true,
             uplift_fees_enabled: false,
+            declarations_in_sequence_enabled: false,
           }
         }
       end
@@ -132,6 +133,7 @@ RSpec.describe "Admin finance contract periods", type: :request do
         expect(contract_period.detailed_evidence_types_enabled).to be_truthy
         expect(contract_period.mentor_funding_enabled).to be_truthy
         expect(contract_period.uplift_fees_enabled).to be_falsey
+        expect(contract_period.declarations_in_sequence_enabled).to be_falsey
       end
     end
 
@@ -151,6 +153,7 @@ RSpec.describe "Admin finance contract periods", type: :request do
             detailed_evidence_types_enabled: true,
             mentor_funding_enabled: true,
             uplift_fees_enabled: false,
+            declarations_in_sequence_enabled: false,
           }
         }
       end
@@ -195,6 +198,7 @@ RSpec.describe "Admin finance contract periods", type: :request do
             detailed_evidence_types_enabled: true,
             mentor_funding_enabled: true,
             uplift_fees_enabled: false,
+            declarations_in_sequence_enabled: false,
           }
         }
       end
@@ -231,6 +235,7 @@ RSpec.describe "Admin finance contract periods", type: :request do
             detailed_evidence_types_enabled: true,
             mentor_funding_enabled: true,
             uplift_fees_enabled: false,
+            declarations_in_sequence_enabled: false,
           }
         }
       end
@@ -266,6 +271,7 @@ RSpec.describe "Admin finance contract periods", type: :request do
               detailed_evidence_types_enabled: true,
               mentor_funding_enabled: true,
               uplift_fees_enabled: false,
+              declarations_in_sequence_enabled: false,
             }
           }
         end
@@ -301,6 +307,7 @@ RSpec.describe "Admin finance contract periods", type: :request do
       expect(response.body).to include("Mentor funding enabled")
       expect(response.body).to include("Detailed evidence types enabled")
       expect(response.body).to include("Uplift fees enabled")
+      expect(response.body).to include("Declarations in sequence enabled")
     end
   end
 
@@ -337,6 +344,7 @@ RSpec.describe "Admin finance contract periods", type: :request do
             detailed_evidence_types_enabled: true,
             mentor_funding_enabled: true,
             uplift_fees_enabled: false,
+            declarations_in_sequence_enabled: false,
           }
         }
       end
@@ -353,6 +361,7 @@ RSpec.describe "Admin finance contract periods", type: :request do
         expect(contract_period.detailed_evidence_types_enabled).to be_truthy
         expect(contract_period.mentor_funding_enabled).to be_truthy
         expect(contract_period.uplift_fees_enabled).to be_falsey
+        expect(contract_period.declarations_in_sequence_enabled).to be_falsey
       end
 
       it "records a contract period updated event" do
@@ -383,6 +392,7 @@ RSpec.describe "Admin finance contract periods", type: :request do
             detailed_evidence_types_enabled: true,
             mentor_funding_enabled: true,
             uplift_fees_enabled: false,
+            declarations_in_sequence_enabled: false,
           }
         }
       end

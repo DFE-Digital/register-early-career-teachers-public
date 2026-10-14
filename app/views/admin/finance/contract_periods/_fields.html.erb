@@ -28,3 +28,9 @@
 <% end %>
 
 <%= govuk_section_break(visible:false, size: "m") %>
+
+<%= form.govuk_check_boxes_fieldset :declarations_in_sequence_enabled, multiple: false, legend: { text: "Declarations in sequence enabled", hidden: true } do %>
+  <%= form.govuk_check_box :declarations_in_sequence_enabled, 1, 0, multiple: false, link_errors: true, label: { text: "Declarations in sequence enabled", size: "m" } %>
+<% end %>
+
+<%= govuk_section_break(visible:false, size: "m") %>

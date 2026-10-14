@@ -3372,7 +3372,8 @@ RSpec.describe Events::Record do
         finished_on: contract_period.finished_on,
         detailed_evidence_types_enabled: contract_period.detailed_evidence_types_enabled,
         mentor_funding_enabled: contract_period.mentor_funding_enabled,
-        uplift_fees_enabled: contract_period.uplift_fees_enabled
+        uplift_fees_enabled: contract_period.uplift_fees_enabled,
+        declarations_in_sequence_enabled: contract_period.declarations_in_sequence_enabled
       }
 
       expect(Event.sole).to have_attributes(

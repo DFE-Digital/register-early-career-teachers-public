@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_05_183436) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_12_075429) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -244,6 +244,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_05_183436) do
     t.date "started_on"
     t.datetime "updated_at", null: false
     t.boolean "uplift_fees_enabled", default: true, null: false
+    t.boolean "declarations_in_sequence_enabled", default: true, null: false
     t.index ["year"], name: "index_contract_periods_on_year", unique: true
     t.check_constraint "finished_on >= started_on", name: "finished_on_not_before_started_on"
   end
