@@ -60,13 +60,10 @@ RSpec.describe GIAS::Reconciliation::ECTAtSchoolPeriods::Transfer do
             FactoryBot.create(:declaration, :paid, training_period:)
           end
 
-          it "updates the training_period to have a matching school partnership at the successor school" do
-            expect { subject }.not_to raise_error(
-              ActiveRecord::RecordInvalid,
-              "Validation failed: Cannot change the lead provider for a training period with billable declarations"
-            )
+          it "does not block transfer to a new school" do
+            expect { subject }.to(change { training_period.reload.school_partnership_id })
 
-            expect(training_period.reload.school_partnership.school).to eq(successor_school)
+            expect(training_period.school_partnership.school).to eq(successor_school)
             expect(training_period.school_partnership.lead_provider_delivery_partnership).to eq(lead_provider_delivery_partnership)
           end
         end

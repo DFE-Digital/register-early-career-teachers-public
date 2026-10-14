@@ -324,6 +324,18 @@ RSpec.describe GIAS::Reconciliation::MentorAtSchoolPeriods::Merge do
 
           expect(first_training_period.school_partnership).to eq(partnership_at_destination_school)
         end
+
+        context "when the training_period has billable declarations" do
+          before do
+            FactoryBot.create(:declaration, :paid, training_period: first_training_period)
+          end
+
+          it "does not block transfer to a new school" do
+            expect { subject }.to(change { first_training_period.reload.school_partnership_id })
+
+            expect(first_training_period.school_partnership).to eq(partnership_at_destination_school)
+          end
+        end
       end
 
       context "when the partnership does not exist at the destination school" do
@@ -335,6 +347,19 @@ RSpec.describe GIAS::Reconciliation::MentorAtSchoolPeriods::Merge do
 
           expect(first_training_period.school_partnership.school).to eq(successor_school)
           expect(first_training_period.school_partnership.lead_provider_delivery_partnership).to eq(school_partnership.lead_provider_delivery_partnership)
+        end
+
+        context "when the training_period has billable declarations" do
+          before do
+            FactoryBot.create(:declaration, :paid, training_period: first_training_period)
+          end
+
+          it "does not block transfer to a new school" do
+            expect { subject }.to(change { first_training_period.reload.school_partnership_id })
+
+            expect(first_training_period.school_partnership.school).to eq(successor_school)
+            expect(first_training_period.school_partnership.lead_provider_delivery_partnership).to eq(school_partnership.lead_provider_delivery_partnership)
+          end
         end
       end
 
