@@ -63,11 +63,14 @@ module Schools
     end
 
     def store
-      @store ||= SessionRepository.new(session:, form_key: :assign_existing_mentor_wizard)
+      @store ||= DfE::Wizard::Repository::Session.new(
+        session:,
+        key: Schools::AssignExistingMentorWizard::StateStore::REPOSITORY_KEY
+      )
     end
 
     def kickoff_assign_existing_wizard!(ect_id:, mentor_period_id:)
-      store.update!(ect_id:, mentor_period_id:)
+      store.save(ect_id:, mentor_period_id:)
     end
 
     def assign_existing_mentor_wizard_start_path

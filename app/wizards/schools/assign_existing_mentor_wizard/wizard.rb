@@ -1,44 +1,46 @@
-module Schools
-  module AssignExistingMentorWizard
-    class Wizard < ApplicationWizard
-      attr_accessor :store, :ect_id, :mentor_period_id, :author
+module Schools::AssignExistingMentorWizard
+  class Wizard
+    include DfE::Wizard
 
-      steps do
-        [{
-          review_mentor_eligibility: ReviewMentorEligibilityStep,
-          lead_provider: LeadProviderStep,
-          confirmation: ConfirmationStep
-        }]
-      end
+    def self.routes = %i[review_mentor_eligibility lead_provider confirmation]
 
-      def self.step?(step_name) = Array(steps).first[step_name].present?
+    def steps_processor
+      DfE::Wizard::StepsProcessor::Graph.draw(self, predicate_caller: state_store) do |graph|
+        graph.add_node :review_mentor_eligibility, Steps::ReviewMentorEligibilityStep
+        graph.add_node :lead_provider, Steps::LeadProviderStep
+        graph.add_node :confirmation, Steps::ConfirmationStep
 
-      def allowed_step?(step_name = current_step_name)
-        allowed_steps.include?(step_name)
-      end
+        graph.root :review_mentor_eligibility
 
-      def mentor_assignment_context
-        # Convenience accessors for key objects used throughout the wizard
-        @mentor_assignment_context ||= Shared::MentorAssignmentContext.new(
-          store:,
-          mentor_at_school_period:,
-          ect_at_school_period:
-        )
-      end
+        # lead_provider has no inbound edge. Users land on it directly, either from
+        # Schools::MentorshipsController when the ECT's lead provider is unavailable,
+        # or from the "different provider" link on review_mentor_eligibility.
+        graph.add_edge from: :lead_provider, to: :confirmation
 
-      alias_method :context, :mentor_assignment_context
-
-    private
-
-      def allowed_steps = %i[review_mentor_eligibility lead_provider confirmation]
-
-      def mentor_at_school_period
-        @mentor_at_school_period ||= MentorAtSchoolPeriod.find(mentor_period_id)
-      end
-
-      def ect_at_school_period
-        @ect_at_school_period ||= ECTAtSchoolPeriod.find(ect_id)
+        graph.add_edge from: :review_mentor_eligibility, to: :confirmation
       end
     end
+
+    def steps_operator
+      DfE::Wizard::StepsOperator::Builder.draw(wizard: self, callable: state_store) do |builder|
+        builder.on_step(:review_mentor_eligibility, use: [Operations::AssignMentorWithTraining])
+        builder.on_step(:lead_provider, add: [Operations::AssignMentorWithTraining])
+      end
+    end
+
+    def route_strategy
+      DfE::Wizard::RouteStrategy::NamedRoutes.new(wizard: self, namespace: "schools_assign_existing_mentor_wizard")
+    end
+
+    delegate :ect_at_school_period,
+             :mentor_at_school_period,
+             :ect_teacher_full_name,
+             :mentor_teacher_full_name,
+             :ect_lead_provider,
+             :ect_lead_provider_available?,
+             :lead_providers_within_contract_period,
+             to: :state_store
+
+    def author = Current.user
   end
 end
