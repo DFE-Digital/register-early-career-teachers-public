@@ -1,6 +1,6 @@
 <% page_data(
   title:
-    "Which lead provider would you like to contact your school about training #{@wizard.context.mentor_teacher_full_name}?",
+    "Which lead provider would you like to contact your school about training #{@wizard.mentor_teacher_full_name}?",
   error: @wizard.current_step.errors.present?,
   backlink_href: assign_existing_mentor_lead_provider_back_link(@wizard)
 ) %>
@@ -11,11 +11,11 @@
   decide if you want to go ahead with the mentor training.
 </p>
 
-<%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
+<%= form_with(model: @wizard.current_step, url: @wizard.current_step_path, scope: @wizard.current_step_name) do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
   <%= f.govuk_collection_radio_buttons(
     :lead_provider_id,
-    @wizard.context.lead_providers_within_contract_period,
+    @wizard.lead_providers_within_contract_period,
     :id,
     :name,
     legend: {

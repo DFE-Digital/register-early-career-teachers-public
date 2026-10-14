@@ -2,57 +2,45 @@ class Schools::AssignExistingMentorWizardController < SchoolsController
   include Schools::RegistrationWindowRedirectable
   include Schools::InductionRedirectable
 
-  before_action :initialize_wizard, only: %i[new create]
-  before_action :check_allowed_step, only: %i[new create]
-
-  WIZARD_CLASS = Schools::AssignExistingMentorWizard::Wizard
+  before_action :ensure_wizard_started
+  before_action :initialize_wizard
 
   def new
     render current_step
   end
 
   def create
-    if @wizard.valid_step?
-      @wizard.current_step.save!
+    if @wizard.save_current_step
       redirect_to @wizard.next_step_path
     else
-      render current_step
+      render current_step, status: :unprocessable_content
     end
   end
 
 private
 
-  def check_allowed_step
-    redirect_to @wizard.allowed_step_path unless @wizard.allowed_step?
+  def ensure_wizard_started
+    redirect_to(schools_ects_home_path) unless state_store.started?
   end
 
-  def store
-    @store ||= SessionRepository.new(session:, form_key: :assign_existing_mentor_wizard)
+  def state_store
+    @state_store ||= Schools::AssignExistingMentorWizard::StateStore.new(
+      repository: DfE::Wizard::Repository::Session.new(
+        session:,
+        key: Schools::AssignExistingMentorWizard::StateStore::REPOSITORY_KEY
+      )
+    )
   end
 
   def current_step
-    @current_step ||= begin
-      step = step_name_from_path
-      return :not_found unless WIZARD_CLASS.step?(step)
-
-      step
-    end
-  end
-
-  def step_name_from_path
-    request.path.split("/").last.underscore.to_sym
+    @current_step ||= request.path.split("/").last.underscore.to_sym
   end
 
   def initialize_wizard
-    redirect_to(root_path) unless store.ect_id && store.mentor_period_id
-
-    @wizard = WIZARD_CLASS.new(
+    @wizard = Schools::AssignExistingMentorWizard::Wizard.new(
       current_step:,
-      step_params: params,
-      author: current_user,
-      ect_id: store.ect_id,
-      mentor_period_id: store.mentor_period_id,
-      store:
+      current_step_params: params,
+      state_store:
     )
   end
 end
