@@ -1,111 +1,75 @@
 module Admin
   module Schools
     module AddPartnershipWizard
-      class Wizard < ApplicationWizard
-        attr_accessor :store, :school_urn, :author
+      class Wizard
+        include DfE::Wizard
 
-        steps do
-          [{
-            select_contract_period: SelectContractPeriodStep,
-            select_lead_provider: SelectLeadProviderStep,
-            select_delivery_partner: SelectDeliveryPartnerStep,
-            check_answers: CheckAnswersStep
-          }]
+        def self.routes = %i[
+          select_contract_period
+          select_lead_provider
+          select_delivery_partner
+          check_answers
+        ]
+
+        attr_reader :author
+
+        delegate :school,
+                 :contract_periods,
+                 :selected_contract_period,
+                 :selected_contract_period_label,
+                 :framework_agreements,
+                 :selected_framework_agreement,
+                 :selected_lead_provider,
+                 :delivery_partners,
+                 :selected_delivery_partner,
+                 :lead_provider_delivery_partnership,
+                 to: :state_store
+
+        def initialize(author:, state_store:, current_step:, current_step_params: {})
+          @author = author
+          super(state_store:, current_step:, current_step_params:)
         end
 
-        def self.step?(step_name) = Array(steps).first[step_name].present?
+        def steps_processor
+          DfE::Wizard::StepsProcessor::Graph.draw(self, predicate_caller: state_store) do |graph|
+            graph.add_node :select_contract_period, SelectContractPeriodStep
+            graph.add_node :select_lead_provider, SelectLeadProviderStep
+            graph.add_node :select_delivery_partner, SelectDeliveryPartnerStep
+            graph.add_node :check_answers, CheckAnswersStep
 
-        def allowed_steps
-          steps = [:select_contract_period]
-          return steps if store.contract_period_year.blank?
-
-          steps << :select_lead_provider
-          return steps if store.framework_agreement_id.blank?
-
-          steps << :select_delivery_partner
-          return steps if store.delivery_partner_id.blank?
-
-          steps << :check_answers
+            graph.root :select_contract_period
+            graph.add_edge from: :select_contract_period, to: :select_lead_provider
+            graph.add_edge from: :select_lead_provider, to: :select_delivery_partner
+            graph.add_edge from: :select_delivery_partner, to: :check_answers
+          end
         end
 
-        def allowed_step_path
-          step_path(allowed_steps.last)
+        def steps_operator
+          DfE::Wizard::StepsOperator::Builder.draw(wizard: self, callable: state_store) do |builder|
+            builder.on_step(
+              :check_answers,
+              use: [Operations::CreatePartnership]
+            )
+          end
         end
 
-        def school
-          @school ||= School.includes(:gias_school).find_by!(urn: school_urn)
+        def route_strategy
+          DfE::Wizard::RouteStrategy::ConfigurableRoutes.new(
+            wizard: self,
+            namespace: :admin_schools_add_partnership_wizard
+          ) do |routes|
+            routes.default_path_arguments = { school_urn: school.urn }
+          end
         end
 
-        def contract_periods
-          ContractPeriod.most_recent_first
-        end
+        def furthest_valid_step_path
+          step_id = root_step
 
-        def selected_contract_period
-          @selected_contract_period ||= ContractPeriod.find_by(year: store.contract_period_year)
-        end
+          while valid?(step_id) && (next_step_id = steps_processor.next_step(step_id))
+            step_id = next_step_id
+          end
 
-        def selected_contract_period_label
-          [
-            selected_framework_agreement&.contract_period_year,
-            selected_contract_period&.year,
-            store.contract_period_year
-          ].compact.first&.to_s
-        end
-
-        def framework_agreements
-          FrameworkAgreement
-            .for_contract_period_year(store.contract_period_year)
-            .with_lead_provider_ordered_by_name
-        end
-
-        def selected_framework_agreement
-          return if store.framework_agreement_id.blank?
-
-          @selected_framework_agreement ||= FrameworkAgreement.includes(:lead_provider).find_by(id: store.framework_agreement_id)
-        end
-
-        def selected_lead_provider
-          selected_framework_agreement&.lead_provider
-        end
-
-        def delivery_partners
-          selected_framework_agreement&.delivery_partners&.order(:name) || DeliveryPartner.none
-        end
-
-        def selected_delivery_partner
-          return if store.delivery_partner_id.blank?
-
-          @selected_delivery_partner ||= DeliveryPartner.find_by(id: store.delivery_partner_id)
-        end
-
-        def lead_provider_delivery_partnership
-          LeadProviderDeliveryPartnership.find_by(
-            framework_agreement: selected_framework_agreement,
-            delivery_partner: selected_delivery_partner
-          )
-        end
-
-        def current_step_path
-          step_path(current_step_name)
-        end
-
-        def next_step_path
-          step_path(current_step.next_step)
-        end
-
-        def previous_step_path
-          step_path(current_step.previous_step)
-        end
-
-      private
-
-        def step_path(step_name)
-          return if step_name.blank?
-
-          Rails.application.routes.url_helpers.public_send(
-            "admin_schools_add_partnership_wizard_#{step_name}_path",
-            school_urn
-          )
+          resolve_step_path(step_id)
         end
       end
     end
