@@ -41,7 +41,7 @@ runs:
     - name: Setup postgres client
       uses: DFE-Digital/github-actions/install-postgres-client@master
       with:
-        version: 16
+        version: 18
 
     - name: Install kubectl
       uses: DFE-Digital/github-actions/set-kubectl@master
@@ -80,6 +80,8 @@ runs:
 
     - name: install-postgres-client
       uses: DFE-Digital/github-actions/install-postgres-client@master
+      with:
+        version: 18
 
     - name: Set Connection String
       shell: bash
