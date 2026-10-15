@@ -127,7 +127,7 @@ describe Declaration do
         declaration = FactoryBot.create(:declaration)
         training_period = declaration.training_period
 
-        expect { training_period.delete }.to raise_error(ActiveRecord::InvalidForeignKey)
+        expect { training_period.delete }.to raise_error(ActiveRecord::StatementInvalid, /PG::RestrictViolation/)
       end
 
       it "allows destroying a training period that has declarations via callback" do
