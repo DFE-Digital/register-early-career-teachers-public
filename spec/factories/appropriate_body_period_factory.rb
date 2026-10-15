@@ -31,8 +31,15 @@ FactoryBot.define do
       association :dfe_sign_in_organisation, :esp
     end
 
+    trait :teaching_school do
+      inactive
+      body_type { "teaching_school" }
+      association :provisioning_school, factory: :school
+    end
+
     trait :teaching_school_hub do
       body_type { "teaching_school_hub" }
+      association :provisioning_school, factory: :school
     end
 
     trait :local_authority do

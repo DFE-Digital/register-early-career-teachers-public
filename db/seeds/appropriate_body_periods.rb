@@ -476,10 +476,10 @@ appropriate_body_periods.each do |data|
 
       appropriate_body_period.update!(provisioning_school:)
 
-      # 4. Teaching School incarnation pre-2021
+      # 4. Teaching School pre-2021.
       FactoryBot.create(:appropriate_body_period,
                         name: ab_name + " (closed)",
-                        body_type:,
+                        body_type: "teaching_school",
                         # started_on: Date.new(1999, 9, 1),
                         # finished_on: Date.new(2021, 8, 31)
                         provisioning_school:,

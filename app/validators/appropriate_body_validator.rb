@@ -1,7 +1,7 @@
 class AppropriateBodyValidator < ActiveModel::Validator
   def validate(record)
     must_be_present(record)
-    cannot_be_local_authority(record) if record.appropriate_body
+    cannot_be_local_authority_or_teaching_school_type(record) if record.appropriate_body
     must_be_school_teaching_hub(record) if record.school&.state_funded? && record.appropriate_body
   end
 
@@ -11,8 +11,8 @@ class AppropriateBodyValidator < ActiveModel::Validator
     record.errors.add(:appropriate_body, "Select the appropriate body which will be supporting the ECT's induction")
   end
 
-  def cannot_be_local_authority(record)
-    return unless record.appropriate_body.local_authority?
+  def cannot_be_local_authority_or_teaching_school_type(record)
+    return unless record.appropriate_body.local_authority? || record.appropriate_body.teaching_school?
 
     record.errors.add(:appropriate_body, "Select a valid appropriate body which will be supporting the ECT's induction")
   end
