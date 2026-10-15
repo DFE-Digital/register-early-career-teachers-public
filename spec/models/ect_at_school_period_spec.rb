@@ -657,6 +657,20 @@ describe ECTAtSchoolPeriod do
       let(:other_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, :teaching_school_hub) }
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school_reported_appropriate_body: appropriate_body_period) }
 
+      context "when there is no induction period" do
+        it "excludes the period" do
+          expect(results).not_to include(ect_at_school_period)
+        end
+      end
+
+      context "when the school-reported appropriate body's induction period is not ongoing" do
+        before { FactoryBot.create(:induction_period, appropriate_body_period:, teacher: ect_at_school_period.teacher, started_on: 6.months.ago, finished_on: 1.month.ago) }
+
+        it "excludes the period" do
+          expect(results).not_to include(ect_at_school_period)
+        end
+      end
+
       context "when the school-reported appropriate body claimed the ECT before the placement" do
         before { FactoryBot.create(:induction_period, :unfinished, appropriate_body_period:, teacher: ect_at_school_period.teacher, started_on: 2.years.ago) }
 
