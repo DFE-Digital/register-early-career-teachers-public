@@ -5,10 +5,7 @@ module Teachers
     end
 
     def merge!
-      return unless merge_required?
-      return if destination.blank?
-      return if both_teachers_have_induction_periods?
-      return if any_overlapping_periods?
+      return unless eligible_for_merge?
 
       teacher_started_induction_on = teacher.induction_periods.minimum(:started_on)
 
@@ -45,37 +42,43 @@ module Teachers
     attr_reader :teacher
 
     def destination
-      @destination || Teacher.find_by_trn(teacher.trs_redirected_to)
+      @destination ||= Teacher.find_by_trn(teacher.trs_redirected_to)
     end
 
-    def merge_required?
-      teacher.trs_response == "permanent_redirect" && teacher.trs_redirected_to.present?
+    def eligible_for_merge?
+      Teachers::MergeTRN::Eligibility.new(teacher:).can_be_merged?
     end
 
-    def any_overlapping_periods?
-      overlapping_mentor_at_school_periods? ||
-        overlapping_ect_at_school_periods?
+    def overlapping_mentor_at_school_periods
+      periods = teacher.mentor_at_school_periods + destination.mentor_at_school_periods
+
+      Teachers::MergeTRN::MentorAtSchoolPeriods::Overlapping.find(periods:)
     end
 
-    def both_teachers_have_induction_periods?
-      teacher.induction_periods.any? && destination.induction_periods.any?
+    def overlapping_ect_at_school_periods
+      periods = teacher.ect_at_school_periods + destination.ect_at_school_periods
+
+      Teachers::MergeTRN::ECTAtSchoolPeriods::Overlapping.find(periods:)
     end
 
-    def overlapping_mentor_at_school_periods?
-      teacher.mentor_at_school_periods.any? do
-        destination.mentor_at_school_periods.overlapping_with(it).exists?
+    def merge_overlapping_mentor_at_school_periods
+      overlapping_mentor_at_school_periods.each do |periods|
+        Teachers::MergeTRN::MentorAtSchoolPeriods::Merge.call(periods:, destination:)
       end
     end
 
-    def overlapping_ect_at_school_periods?
-      teacher.ect_at_school_periods.any? do
-        destination.ect_at_school_periods.overlapping_with(it).exists?
+    def merge_overlapping_ect_at_school_periods
+      overlapping_ect_at_school_periods.each do |periods|
+        Teachers::MergeTRN::ECTAtSchoolPeriods::Merge.call(periods:, destination:)
       end
     end
 
     def move_school_periods
-      teacher.ect_at_school_periods.find_each { |period| period.update!(teacher: destination) }
-      teacher.mentor_at_school_periods.find_each { |period| period.update!(teacher: destination) }
+      merge_overlapping_ect_at_school_periods
+      merge_overlapping_mentor_at_school_periods
+
+      teacher.ect_at_school_periods.reload.find_each { |period| period.update!(teacher: destination) }
+      teacher.mentor_at_school_periods.reload.find_each { |period| period.update!(teacher: destination) }
     end
 
     def move_induction_periods
