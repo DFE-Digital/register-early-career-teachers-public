@@ -7,7 +7,7 @@ RSpec.describe Teachers::MergeTRN::ECTAtSchoolPeriods::Merge do
   end
 
   let(:period_type) { :ect_at_school_period }
-  let(:tags) { [] }
+  let(:traits) { [] }
 
   include_context "a mergeable period"
 

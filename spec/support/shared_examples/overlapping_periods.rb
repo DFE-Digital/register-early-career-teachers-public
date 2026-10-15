@@ -32,7 +32,7 @@ RSpec.shared_context "a mergeable period" do
   let(:first_period) do
     FactoryBot.create(
       period_type,
-      *tags,
+      *traits,
       **source_attrs,
       started_on: first_period_started_on,
       finished_on: first_period_finished_on
@@ -42,7 +42,7 @@ RSpec.shared_context "a mergeable period" do
   let(:second_period) do
     FactoryBot.create(
       period_type,
-      *tags,
+      *traits,
       **destination_attrs,
       started_on: second_period_started_on,
       finished_on: second_period_finished_on
@@ -71,7 +71,7 @@ RSpec.shared_context "overlapping periods" do
   let(:first_period) do
     FactoryBot.create(
       period_type,
-      *tags,
+      *traits,
       **source_attrs,
       started_on: first_period_started_on,
       finished_on: first_period_finished_on
@@ -81,7 +81,7 @@ RSpec.shared_context "overlapping periods" do
   let(:second_period) do
     FactoryBot.create(
       period_type,
-      *tags,
+      *traits,
       **destination_attrs,
       started_on: second_period_started_on,
       finished_on: second_period_finished_on
@@ -91,7 +91,7 @@ RSpec.shared_context "overlapping periods" do
   let(:third_period) do
     FactoryBot.create(
       period_type,
-      *tags,
+      *traits,
       **source_attrs,
       started_on: third_period_started_on,
       finished_on: third_period_finished_on
@@ -101,7 +101,7 @@ RSpec.shared_context "overlapping periods" do
   let(:fourth_period) do
     FactoryBot.create(
       period_type,
-      *tags,
+      *traits,
       **destination_attrs,
       started_on: fourth_period_started_on,
       finished_on: fourth_period_finished_on
@@ -156,8 +156,8 @@ end
 
 RSpec.shared_examples "it moves non-overlapping training_periods" do
   context "when the training_periods do not overlap" do
-    let(:training_period_tag) { period_type == :mentor_at_school_period ? :for_mentor : :for_ect }
-    let!(:training_period) { FactoryBot.create(:training_period, *training_period_tag, **attrs) }
+    let(:training_period_trait) { period_type == :mentor_at_school_period ? :for_mentor : :for_ect }
+    let!(:training_period) { FactoryBot.create(:training_period, *training_period_trait, **attrs) }
 
     it "reassigns the training_period to the destination period's teacher" do
       expect { service }.to change { training_period.reload.send(period_type) }.to(destination_period)
@@ -172,13 +172,13 @@ end
 
 RSpec.shared_examples "it merges overlapping training periods" do
   context "when the training_periods overlap" do
-    let(:training_period_tag) { period_type == :mentor_at_school_period ? :for_mentor : :for_ect }
+    let(:training_period_trait) { period_type == :mentor_at_school_period ? :for_mentor : :for_ect }
     let(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, year: 2024, school:) }
     let(:training_period_attrs) { { period_type => source_period, school_partnership: } }
 
     let!(:training_period) do
       FactoryBot.create(:training_period,
-                        *training_period_tag,
+                        *training_period_trait,
                         **training_period_attrs,
                         started_on: first_period_started_on,
                         finished_on: first_period_finished_on)
@@ -188,7 +188,7 @@ RSpec.shared_examples "it merges overlapping training periods" do
 
     let!(:overlapping_training_period) do
       FactoryBot.create(:training_period,
-                        *training_period_tag,
+                        *training_period_trait,
                         **overlapping_attrs,
                         started_on: second_period_started_on,
                         finished_on: second_period_finished_on)
@@ -382,7 +382,7 @@ RSpec.shared_examples "it identifies overlapping at_school periods" do
   context "when there are periods at two schools" do
     let(:third_period) do
       FactoryBot.create(period_type,
-                        *tags,
+                        *traits,
                         **other_source_attrs,
                         started_on: third_period_started_on,
                         finished_on: third_period_finished_on)
@@ -391,7 +391,7 @@ RSpec.shared_examples "it identifies overlapping at_school periods" do
     let(:fourth_period) do
       FactoryBot.create(
         period_type,
-        *tags,
+        *traits,
         **other_destination_attrs,
         started_on: fourth_period_started_on,
         finished_on: fourth_period_finished_on

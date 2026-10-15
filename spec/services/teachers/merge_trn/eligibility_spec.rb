@@ -148,7 +148,7 @@ RSpec.describe Teachers::MergeTRN::Eligibility do
       end
 
       context "ECT training periods" do
-        let(:tags) { [:for_ect] }
+        let(:traits) { [:for_ect] }
 
         let(:source_ect_at_school_period) do
           FactoryBot.create(
@@ -202,7 +202,7 @@ RSpec.describe Teachers::MergeTRN::Eligibility do
         end
 
         context "when both training periods have only expressions of interest" do
-          let(:tags) { %i[for_ect with_only_expression_of_interest] }
+          let(:traits) { %i[for_ect with_only_expression_of_interest] }
 
           let(:source_attrs) do
             {
@@ -294,7 +294,7 @@ RSpec.describe Teachers::MergeTRN::Eligibility do
       end
 
       context "Mentor training periods" do
-        let(:tags) { [:for_mentor] }
+        let(:traits) { [:for_mentor] }
 
         let(:source_mentor_at_school_period) do
           FactoryBot.create(
@@ -348,7 +348,7 @@ RSpec.describe Teachers::MergeTRN::Eligibility do
         end
 
         context "when both training periods have only expressions of interest" do
-          let(:tags) { %i[for_mentor with_only_expression_of_interest] }
+          let(:traits) { %i[for_mentor with_only_expression_of_interest] }
 
           let(:source_attrs) do
             {

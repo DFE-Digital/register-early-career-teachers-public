@@ -2,7 +2,7 @@ RSpec.describe Teachers::MergeTRN::MentorshipPeriods::Overlapping do
   subject { described_class.find(periods:) }
 
   let(:period_type) { :mentorship_period }
-  let(:tags) { [] }
+  let(:traits) { [] }
 
   include_context "overlapping periods"
 

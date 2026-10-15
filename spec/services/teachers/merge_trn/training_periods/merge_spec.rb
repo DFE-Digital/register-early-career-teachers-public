@@ -7,7 +7,7 @@ RSpec.describe Teachers::MergeTRN::TrainingPeriods::Merge do
   end
 
   let(:period_type) { :training_period }
-  let(:tags) { [:for_ect] }
+  let(:traits) { [:for_ect] }
 
   include_context "a mergeable period"
 
@@ -61,7 +61,7 @@ RSpec.describe Teachers::MergeTRN::TrainingPeriods::Merge do
     context "when the periods have different expressions of interest" do
       let(:destination_attrs) { { ect_at_school_period: destination_ect_period } }
       let(:source_attrs) { { ect_at_school_period: source_ect_period } }
-      let(:tags) { %i[for_ect with_only_expression_of_interest] }
+      let(:traits) { %i[for_ect with_only_expression_of_interest] }
 
       it "raises a CannotMergePeriods error" do
         expect {
@@ -131,7 +131,7 @@ RSpec.describe Teachers::MergeTRN::TrainingPeriods::Merge do
     end
 
     context "when the periods have different schedules" do
-      let(:tags) { %i[for_ect with_schedule] }
+      let(:traits) { %i[for_ect with_schedule] }
       let(:lead_provider) { school_partnership.lead_provider }
       let(:delivery_partner) { school_partnership.delivery_partner }
       let(:other_school_partnership) do
