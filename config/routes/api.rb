@@ -49,8 +49,8 @@ namespace :api do
     get "docs", to: "documentation#show", as: :documentation
     resource :hello_documentation, only: :show, path: "docs/hello", controller: "hello/documentations"
     resource :induction_v1_documentation, only: :show, path: "docs/induction/v1", controller: "induction/v1/documentations"
-    get "docs/authentication", to: redirect("/api/docs/authentication/how-authentication-works"), as: :documentation_authentication
-    get "docs/authentication/*page", to: "documentation/authentication#page", as: :documentation_authentication_page
+    get "docs/authorisation", to: redirect("/api/docs/authorisation/how-authorisation-works"), as: :documentation_authorisation
+    get "docs/authorisation/*page", to: "documentation/authorisation#page", as: :documentation_authorisation_page
   end
 
   namespace :docs, module: :documentation do
