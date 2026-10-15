@@ -19,33 +19,16 @@ module API::Declarations
     attribute :evidence_type
 
     validate :teacher_exists_with_lead_provider
+    validates :evidenced_at, presence: { message: "Enter a '#/evidenced_at'." },
+                             api_date_time_format: true,
+                             inclusion: { in: :evidenced_at_date_range,
+                                          message: ->(object, _) { object.send(:evidenced_at_date_range_error_message) } },
+                             if: -> { errors.empty? }
 
-    validates :evidenced_at, presence: { message: "Enter a '#/evidenced_at'." }, if: -> { errors.empty? }
-    validates :evidenced_at, api_date_time_format: true
-    validate :evidenced_at_in_the_past
-    validates :evidenced_at,
-              evidenced_at_within_milestone: true,
-              allow_blank: true
-
-    validates :teacher_type, presence: { message: "Enter a '#/teacher_type'." }, if: -> { errors.empty? }
-    validates :teacher_type, inclusion: {
-      in: TEACHER_TYPES,
-      message: "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again."
-    }, allow_blank: true
-    validate :teacher_type_exists
-    validates :declaration_type, presence: { message: "Enter a '#/declaration_type'." }, if: -> { errors.empty? }
-    validates :declaration_type, inclusion: {
-      in: Declaration.declaration_types.keys,
-      message: "Enter a valid declaration type."
-    }, allow_blank: true, if: -> { errors.empty? }
-    validate :validates_billable_slot_available
-    validate :validate_only_started_or_completed_if_mentor
+    validate :training_period_exists_for_teacher_type, if: -> { errors.empty? }
+    validate :contract_period_is_not_frozen_and_payment_statement_available, if: -> { errors.empty? }
+    validate :declaration_type_can_be_billed, if: -> { errors.empty? }
     validates :evidence_type, evidence_type: true, if: -> { errors.empty? }
-    validate :teacher_not_withdrawn_before_evidenced_at
-    validate :contract_period_is_not_payments_frozen
-    validate :payment_statement_available
-    validate :validate_milestone_exists
-    validate :declaration_in_sequence
 
     def create
       return false unless valid?
@@ -143,34 +126,19 @@ module API::Declarations
       return if errors.any?
 
       return errors.add(:teacher_api_id, "Enter a '#/teacher_api_id'.") if teacher_api_id.blank?
-      return errors.add(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check participant details and try again.") unless training_period_exists_for_lead_provider?
+      return errors.add(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check teacher details and try again.") unless training_period_exists_for_lead_provider?
 
       return unless training_status&.withdrawn?
       return unless training_period.withdrawn_at <= evidenced_at
 
-      errors.add(:teacher_api_id, "This participant withdrew from this course on #{training_period.withdrawn_at.utc.rfc3339}. Enter a '#/evidenced_at' that's on or before the withdrawal date.")
+      errors.add(:teacher_api_id, "This teacher withdrew from this course on #{training_period.withdrawn_at.utc.rfc3339}. Enter a '#/evidenced_at' that's on or before the withdrawal date.")
     end
 
-    def evidenced_at_in_the_past
-      return if errors[:evidenced_at].any?
-      return if errors[:declaration_type].any?
-      return if errors[:teacher_api_id].any?
-      return if errors[:teacher_type].any?
-
-      if evidenced_at && evidenced_at > Time.zone.now
-        errors.add(:evidenced_at, "The '#/evidenced_at' value cannot be a future date. Check the date and try again.")
-      end
-    end
-
-    def teacher_type_exists
-      return if errors[:teacher_type].any?
-      return if errors[:teacher_api_id].any?
-      return if errors[:lead_provider_id].any?
-      return if errors[:declaration_type].any?
-      return if errors[:evidenced_at].any?
+    def training_period_exists_for_teacher_type
+      return errors.add(:teacher_type, "Enter a '#/teacher_type'.") if teacher_type.blank?
       return if training_period
 
-      errors.add(:teacher_type, "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again.")
+      errors.add(:teacher_type, "The entered '#/teacher_type' is not recognised for the given teacher. Check details and try again.")
     end
 
     def training_period_exists_for_lead_provider?
@@ -183,93 +151,84 @@ module API::Declarations
         .exists?
     end
 
-    def validate_milestone_exists
-      return if errors[:evidenced_at].any?
-      return if errors[:declaration_type].any?
-      return if errors[:teacher_api_id].any?
-      return if errors[:teacher_type].any?
-      return if errors[:lead_provider_id].any?
-      return if errors[:contract_period_year].any?
+    def declaration_type_can_be_billed
+      return errors.add(:declaration_type, "Enter a '#/declaration_type'.") if declaration_type.blank?
+      return errors.add(:declaration_type, "Enter a valid declaration type.") unless Declaration.declaration_types.key?(declaration_type)
+
       return unless training_period
 
-      if milestone.blank?
-        errors.add(:declaration_type, "The property '#/declaration_type' does not exist for this schedule.")
+      if existing_declarations.billable_or_changeable_for_declaration_type(declaration_type).exists?
+        errors.add(:declaration_type, "A declaration has already been submitted that will be, or has been, paid for this event.")
+        return
+      end
+
+      if !declaration_type.in?(%w[started completed]) && funded_mentor_training?
+        errors.add(:declaration_type, "You cannot send retained or extended declarations for teachers who began their mentor training after June 2025. Resubmit this declaration with either a started or completed declaration.")
+
+        return
+      end
+
+      return if milestone.present?
+
+      errors.add(:declaration_type, "The property '#/declaration_type' does not exist for this schedule.")
+    end
+
+    def funded_mentor_training?
+      training_period.for_mentor? && contract_period.mentor_funding_enabled?
+    end
+
+    def contract_period_is_not_frozen_and_payment_statement_available
+      current_contract_period = training_periods.contains_today.first&.contract_period
+
+      if current_contract_period&.payments_frozen?
+        errors.add(:contract_period_year, "You cannot submit declarations for the #{current_contract_period.year} contract period. The funding contract for this contract period has ended. Get in touch if you need to discuss this with us.")
+        return
+      end
+
+      if training_period&.eligible_for_funding? && payment_statement.blank?
+        errors.add(:contract_period_year, "You cannot submit or void declarations for the #{contract_period.year} contract period. The funding contract for this contract period has ended. Get in touch if you need to discuss this with us.")
       end
     end
 
-    def teacher_not_withdrawn_before_evidenced_at
-      return if errors[:teacher_api_id].any?
-      return unless training_status&.withdrawn?
-      return unless training_period.withdrawn_at <= evidenced_at
-
-      errors.add(:teacher_api_id, "This participant withdrew from this course on #{training_period.withdrawn_at.utc.rfc3339}. Enter a '#/evidenced_at' that's on or before the withdrawal date.")
+    def milestone_started_at
+      @milestone_started_at ||= milestone.start_date.beginning_of_day
     end
 
-    def validate_only_started_or_completed_if_mentor
-      return if errors[:declaration_type].any?
-      return if errors[:contract_period_year].any?
-      return if declaration_type&.in?(%w[started completed])
-      return unless training_period&.for_mentor?
-      return unless contract_period.mentor_funding_enabled?
-
-      errors.add(:declaration_type, "You cannot send retained or extended declarations for participants who began their mentor training after June 2025. Resubmit this declaration with either a started or completed declaration.")
+    def milestone_finished_at
+      @milestone_finished_at ||= milestone.milestone_date&.end_of_day
     end
 
-    def validates_billable_slot_available
-      return if errors[:declaration_type].any?
-      return if errors[:evidenced_at].any?
-      return unless training_period
-      return unless existing_declarations.billable_or_changeable_for_declaration_type(declaration_type).exists?
+    def evidenced_at_date_range
+      return (..Time.zone.now) unless milestone
 
-      errors.add(:declaration_type, "A declaration has already been submitted that will be, or has been, paid for this event.")
+      range = if contract_period.declarations_in_sequence_enabled?
+                surrounding_declaration_date_range
+              else
+                milestone_started_at..milestone_finished_at
+              end
+
+      range.begin..[range.end, Time.zone.now].compact.min
     end
 
-    def payment_statement_available
-      return if errors[:declaration_type].any?
-      return if errors[:contract_period_year].any?
-      return unless training_period&.eligible_for_funding?
-      return if payment_statement.present?
+    def surrounding_declaration_date_range
+      types = Declaration.declaration_types.values
+      index = types.index(declaration_type)
 
-      errors.add(:contract_period_year, "You cannot submit or void declarations for the #{contract_period.year} contract period. The funding contract for this contract period has ended. Get in touch if you need to discuss this with us.")
+      before = existing_declarations.billable_or_changeable_for_declaration_type(types.take(index))
+      after = existing_declarations.billable_or_changeable_for_declaration_type(types.drop(index + 1))
+
+      before.maximum(:evidenced_at)..after.minimum(:evidenced_at)
     end
 
-    def contract_period_is_not_payments_frozen
-      return if errors[:contract_period_year].any?
-      return unless teacher
-
-      training_period_ongoing_today = training_periods.contains_today.first
-      return unless training_period_ongoing_today
-
-      current_contract_period = training_period_ongoing_today.contract_period
-      return unless current_contract_period&.payments_frozen?
-
-      errors.add(:contract_period_year, "You cannot submit declarations for the #{current_contract_period.year} contract period. The funding contract for this contract period has ended. Get in touch if you need to discuss this with us.")
-    end
-
-    def declaration_in_sequence
-      return if errors[:evidenced_at].any? || errors[:declaration_type].any?
-      return if evidenced_at.blank? || declaration_type.blank?
-      return unless contract_period && contract_period.year >= 2025
-
-      ordered_types = Declaration.declaration_types.values
-      index = ordered_types.index(declaration_type)
-      before_declaration_types = ordered_types[0...index]
-      after_declaration_types = ordered_types[(index + 1)..]
-
-      from_evidenced_at = existing_declarations
-        .billable_or_changeable_for_declaration_type(before_declaration_types)
-        .maximum(:evidenced_at)
-
-      to_evidenced_at = existing_declarations
-        .billable_or_changeable_for_declaration_type(after_declaration_types)
-        .minimum(:evidenced_at)
-
-      error_message = "This '#/evidenced_at' is invalid. Check that it is in sequence with existing declaration dates for this participant."
-
-      if from_evidenced_at && parsed_evidenced_at.before?(from_evidenced_at)
-        errors.add(:evidenced_at, error_message)
-      elsif to_evidenced_at && parsed_evidenced_at.after?(to_evidenced_at)
-        errors.add(:evidenced_at, error_message)
+    def evidenced_at_date_range_error_message
+      if parsed_evidenced_at.future?
+        "The '#/evidenced_at' value cannot be a future date. Check the date and try again."
+      elsif evidenced_at < milestone_started_at
+        "Evidenced at must be on or after the milestone start date for the same declaration type."
+      elsif milestone_finished_at.present? && evidenced_at > milestone_finished_at
+        "Evidenced at must be on or before the milestone date for the same declaration type."
+      else
+        "This '#/evidenced_at' is invalid. Check that it is in sequence with existing declaration dates for this teacher."
       end
     end
 

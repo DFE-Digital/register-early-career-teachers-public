@@ -34,12 +34,9 @@ RSpec/RequireRailsHelper:
 RSpecRails/HttpStatusNameConsistency:
   Enabled: true
 
-# Otherwise it suggests the namespace "ec_ts"
+# Use the ActiveSupport inflector, so the acronyms in config/initializers/inflections.rb name the spec file.
 RSpec/SpecFilePathFormat:
-  CustomTransform:
-    ECTs: ects
-    OAuth: oauth
-    DfEUsers: dfe_users
+  EnforcedInflector: active_support
 
 Style/StringLiterals:
   EnforcedStyle: double_quotes

@@ -50,22 +50,22 @@ module API::Teachers
     end
 
     def contract_period_acceptable_for_change
-      return errors.add(:contract_period_year, "You cannot change a participant to this contract_period as you do not have a partnership with the school for the contract_period. Contact the DfE for assistance.") if contract_period_changing? && school_partnership.nil?
+      return errors.add(:contract_period_year, "You cannot change a teacher to this contract_period as you do not have a partnership with the school for the contract_period. Contact the DfE for assistance.") if contract_period_changing? && school_partnership.nil?
       return unless contract_period&.payments_frozen?
 
       original_frozen_year = training_period.for_ect? ? teacher.ect_payments_frozen_year : teacher.mentor_payments_frozen_year
       return if original_frozen_year == contract_period.year
 
-      errors.add(:contract_period_year, "You cannot move a participant to a payments frozen contract period unless they previously belonged to that contract period.")
+      errors.add(:contract_period_year, "You cannot move a teacher to a payments frozen contract period unless they previously belonged to that contract period.")
     end
 
     def teacher_can_change_schedule
-      return errors.add(:teacher_api_id, "You cannot change this participant's schedule as they have completed their training or induction.") if training_period.teacher_completed_training? && !ect_moving_to_reduced_schedule?
-      return errors.add(:teacher_api_id, "You cannot change this participant's schedule. This is because the participant has a 'left' participant_status, so they are not training with you currently.") if participant_status.left?
-      return errors.add(:teacher_api_id, "Cannot perform actions on a withdrawn participant") if training_status.withdrawn?
+      return errors.add(:teacher_api_id, "You cannot change this teacher's schedule as they have completed their training or induction.") if training_period.teacher_completed_training? && !ect_moving_to_reduced_schedule?
+      return errors.add(:teacher_api_id, "You cannot change this teacher's schedule. This is because the teacher has a 'left' teacher_status, so they are not training with you currently.") if teacher_status.left?
+      return errors.add(:teacher_api_id, "Cannot perform actions on a withdrawn teacher") if training_status.withdrawn?
       return unless future_training_periods.exists?
 
-      errors.add(:teacher_api_id, "You cannot change this participant's schedule as they are due to start with another lead provider in the future.")
+      errors.add(:teacher_api_id, "You cannot change this teacher's schedule as they are due to start with another lead provider in the future.")
     end
 
     def contract_period
@@ -114,7 +114,7 @@ module API::Teachers
       @framework_agreement ||= lead_provider.framework_agreements.find_by(contract_period_year: contract_period.year)
     end
 
-    def participant_status
+    def teacher_status
       API::TrainingPeriods::TeacherStatus.new(latest_training_period: training_period, teacher:)
     end
 

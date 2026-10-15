@@ -18,15 +18,8 @@ module API::Teachers
 
     attribute :reason
 
-    validates :reason, presence: { message: "Enter a '#/reason'." }
-    validates :reason, inclusion: {
-      in: WITHDRAWAL_REASONS,
-      message: "The entered '#/reason' is not recognised for the given participant. Check details and try again."
-    }, allow_blank: true
-    validate :not_already_withdrawn
-    validate :training_period_has_started
-    validate :training_for_at_least_one_day
-    validate :reason_valid_for_teacher_type
+    validate :reason_is_valid_for_teacher_type
+    validate :teacher_is_training_and_can_be_withdrawn, if: -> { errors.empty? }
 
     def withdraw
       return false unless valid?
@@ -42,33 +35,22 @@ module API::Teachers
 
   private
 
-    def not_already_withdrawn
-      return if errors[:teacher_api_id].any?
-      return unless training_status&.withdrawn?
+    def reason_is_valid_for_teacher_type
+      return errors.add(:reason, "Enter a '#/reason'.") if reason.blank?
+      return errors.add(:reason, "The entered '#/reason' is not recognised for the given teacher. Check details and try again.") if WITHDRAWAL_REASONS.exclude?(reason)
 
-      errors.add(:teacher_api_id, "The '#/teacher_api_id' is already withdrawn.")
+      if training_period&.for_ect? && MENTOR_ONLY_WITHDRAWAL_REASONS.include?(reason)
+        errors.add(:reason, "You cannot withdraw an ECT for this reason. The ECT is not a mentor.")
+      end
     end
 
-    def training_period_has_started
-      return if errors[:teacher_api_id].any?
-      return unless training_period&.started_on&.future?
+    def teacher_is_training_and_can_be_withdrawn
+      return errors.add(:teacher_api_id, "The '#/teacher_api_id' is already withdrawn.") if training_status&.withdrawn?
+      return if training_period.blank?
 
-      errors.add(:teacher_api_id, "You cannot withdraw #/teacher_api_id. This is because they have not been training with you for at least one day.")
-    end
+      return errors.add(:teacher_api_id, "You cannot withdraw #/teacher_api_id. This is because they have not been training with you for at least one day.") if training_period.started_on.future?
 
-    def training_for_at_least_one_day
-      return if errors[:teacher_api_id].any?
-      return unless training_period&.started_on&.today?
-
-      errors.add(:teacher_api_id, "You cannot defer or withdraw this participant today. You need to try again tomorrow as the training was recently changed for this participant.")
-    end
-
-    def reason_valid_for_teacher_type
-      return if errors.any?
-      return unless training_period&.for_ect?
-      return unless MENTOR_ONLY_WITHDRAWAL_REASONS.include?(reason)
-
-      errors.add(:reason, "You cannot withdraw an ECT for this reason. The ECT is not a mentor.")
+      errors.add(:teacher_api_id, "You cannot defer or withdraw this teacher today. You need to try again tomorrow as the training was recently changed for this teacher.") if training_period.started_on.today?
     end
   end
 end

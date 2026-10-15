@@ -1,4 +1,3 @@
-# rubocop:disable RSpec/SpecFilePathFormat
 RSpec.describe DfESignInOrganisation, type: :model do
   describe "associations" do
     it { is_expected.to have_one(:school) }
@@ -69,4 +68,3 @@ RSpec.describe DfESignInOrganisation, type: :model do
     end
   end
 end
-# rubocop:enable RSpec/SpecFilePathFormat

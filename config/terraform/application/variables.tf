@@ -133,6 +133,12 @@ variable "postgres_enable_high_availability" {
   default = false
 }
 
+variable "read_replica_count" {
+  type        = number
+  default     = 0
+  description = "Number of read replicas to create"
+}
+
 variable "redis_managed_cache_sku_name" { default = "Balanced_B1" }
 
 variable "redis_managed_queue_sku_name" { default = "Balanced_B1" }

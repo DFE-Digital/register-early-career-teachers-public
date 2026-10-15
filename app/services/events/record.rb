@@ -1448,7 +1448,8 @@ module Events
         finished_on: contract_period.finished_on,
         detailed_evidence_types_enabled: contract_period.detailed_evidence_types_enabled,
         mentor_funding_enabled: contract_period.mentor_funding_enabled,
-        uplift_fees_enabled: contract_period.uplift_fees_enabled
+        uplift_fees_enabled: contract_period.uplift_fees_enabled,
+        declarations_in_sequence_enabled: contract_period.declarations_in_sequence_enabled
       }
 
       new(event_type:, author:, heading:, contract_period:, happened_at: Time.zone.now, metadata:).record_event!

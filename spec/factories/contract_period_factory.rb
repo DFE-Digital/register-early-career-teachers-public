@@ -27,6 +27,7 @@ FactoryBot.define do
     mentor_funding_enabled { true }
     detailed_evidence_types_enabled { true }
     uplift_fees_enabled { true }
+    declarations_in_sequence_enabled { year >= 2025 }
 
     initialize_with do
       ContractPeriod.find_or_initialize_by(year:)

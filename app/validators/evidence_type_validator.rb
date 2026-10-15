@@ -44,7 +44,7 @@ private
     return if record.errors[:evidence_type].any?
     return if record.evidence_type.present?
 
-    record.errors.add(:evidence_type, "Enter a '#/evidence_type' value for this participant.")
+    record.errors.add(:evidence_type, "Enter a '#/evidence_type' value for this teacher.")
   end
 
   def evidence_type_is_valid_simple_evidence_type(record)
@@ -52,7 +52,7 @@ private
     return if record.evidence_type.blank?
     return if record.evidence_type.in?(SIMPLE_EVIDENCE_TYPES)
 
-    record.errors.add(:evidence_type, "Enter an available '#/evidence_type' type for this participant.")
+    record.errors.add(:evidence_type, "Enter an available '#/evidence_type' type for this teacher.")
   end
 
   def evidence_type_is_valid_detailed_evidence_type(record)
@@ -67,7 +67,7 @@ private
                 end
     return if record.evidence_type.in?(evidences)
 
-    record.errors.add(:evidence_type, "Enter an available '#/evidence_type' type for this participant.")
+    record.errors.add(:evidence_type, "Enter an available '#/evidence_type' type for this teacher.")
   end
 
   def ect_evidences(declaration_type)

@@ -114,7 +114,7 @@ RSpec.describe GIAS::Reconciliation::Eligibility do
       it { is_expected.to be false }
     end
 
-    context "when the school is not open" do
+    context "when the school is proposed_to_open" do
       let(:gias_school) { FactoryBot.create(:gias_school, status: :proposed_to_open) }
 
       it { is_expected.to be false }
@@ -142,10 +142,34 @@ RSpec.describe GIAS::Reconciliation::Eligibility do
 
       it { is_expected.to be true }
 
-      context "when the successor is not open" do
-        let(:successor) { FactoryBot.create(:gias_school, status: :proposed_to_open) }
+      context "when the successor is closed" do
+        let(:successor) { FactoryBot.create(:gias_school, status: :closed) }
 
         it { is_expected.to be false }
+      end
+
+      context "when the successor is proposed_to_open" do
+        let(:successor) { FactoryBot.create(:gias_school, status: :proposed_to_open, opened_on:) }
+
+        before { freeze_time }
+
+        context "when the successor is opening within 3 days from now" do
+          let(:opened_on) { 3.days.from_now }
+
+          it { is_expected.to be true }
+        end
+
+        context "when the successor is opening after 3 days from now" do
+          let(:opened_on) { 4.days.from_now }
+
+          it { is_expected.to be false }
+        end
+
+        context "when the successor has no opened_on date" do
+          let(:opened_on) { nil }
+
+          it { is_expected.to be false }
+        end
       end
 
       context "when the successor already has an associated school" do
@@ -154,7 +178,7 @@ RSpec.describe GIAS::Reconciliation::Eligibility do
         it { is_expected.to be false }
       end
 
-      context "when the school is not closed" do
+      context "when the school is proposed_to_close" do
         let(:gias_school) { FactoryBot.create(:gias_school, :with_school, status: :proposed_to_close) }
 
         it { is_expected.to be false }
@@ -237,13 +261,37 @@ RSpec.describe GIAS::Reconciliation::Eligibility do
 
       it { is_expected.to be true }
 
-      context "when the successor is not open" do
-        let(:successor) { FactoryBot.create(:gias_school, status: :proposed_to_open) }
+      context "when the successor is closed" do
+        let(:successor) { FactoryBot.create(:gias_school, status: :closed) }
 
         it { is_expected.to be false }
       end
 
-      context "when the school is not closed" do
+      context "when the successor is proposed_to_open" do
+        let(:successor) { FactoryBot.create(:gias_school, status: :proposed_to_open, opened_on:) }
+
+        before { freeze_time }
+
+        context "when the successor is opening within 3 days from now" do
+          let(:opened_on) { 3.days.from_now }
+
+          it { is_expected.to be true }
+        end
+
+        context "when the successor is opening after 3 days from now" do
+          let(:opened_on) { 4.days.from_now }
+
+          it { is_expected.to be false }
+        end
+
+        context "when the successor has no opened_on date" do
+          let(:opened_on) { nil }
+
+          it { is_expected.to be false }
+        end
+      end
+
+      context "when the school is proposed_to_close" do
         let(:gias_school) { FactoryBot.create(:gias_school, :with_school, status: :proposed_to_close) }
 
         it { is_expected.to be false }
@@ -335,7 +383,7 @@ RSpec.describe GIAS::Reconciliation::Eligibility do
       end
 
       context "when the school is proposed_to_open" do
-        let(:gias_school) { FactoryBot.create(:gias_school, status: "proposed_to_open") }
+        let(:gias_school) { FactoryBot.create(:gias_school, status: :proposed_to_open) }
 
         it { is_expected.to be false }
       end

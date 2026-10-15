@@ -337,7 +337,7 @@ RSpec.describe Events::Record do
     let(:teacher) { FactoryBot.create(:teacher, ect_first_became_eligible_for_training_at:) }
     let(:teacher_name) { Teachers::Name.new(teacher).full_name }
 
-    it "queues a RecordEventJob with the correct values" do
+    it "records an event with the correct values" do
       freeze_time do
         teacher.ect_first_became_eligible_for_training_at = nil
         modifications = teacher.changes
@@ -3820,7 +3820,8 @@ RSpec.describe Events::Record do
         finished_on: contract_period.finished_on,
         detailed_evidence_types_enabled: contract_period.detailed_evidence_types_enabled,
         mentor_funding_enabled: contract_period.mentor_funding_enabled,
-        uplift_fees_enabled: contract_period.uplift_fees_enabled
+        uplift_fees_enabled: contract_period.uplift_fees_enabled,
+        declarations_in_sequence_enabled: contract_period.declarations_in_sequence_enabled
       }
 
       expect(Event.sole).to have_attributes(
