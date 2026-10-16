@@ -403,15 +403,15 @@ appropriate_body_periods = [
   # ----------------------------------------------------------------------------
   {
     name: "Frame University London",
-    body_type: "teaching_school_hub",
+    body_type: "teaching_school",
   },
   {
     name: "Easelcroft Teaching School",
-    body_type: "teaching_school_hub",
+    body_type: "teaching_school",
   },
   {
     name: "Vista College",
-    body_type: "teaching_school_hub",
+    body_type: "teaching_school",
   },
 
   # Fake Local Authorities
@@ -470,15 +470,22 @@ appropriate_body_periods.each do |data|
                                       urn:,
                                       name: school_name)
 
-      provisioning_school = FactoryBot.create(:school, :eligible, :with_dsi,
+      provisioning_school = FactoryBot.create(:school, :eligible,
                                               urn:,
                                               gias_school:)
 
       appropriate_body_period.update!(provisioning_school:)
 
+      if dfe_sign_in_organisation_id.present?
+        FactoryBot.create(:dfe_sign_in_organisation,
+                          name: school_name,
+                          uuid: dfe_sign_in_organisation_id,
+                          urn:)
+      end
+
       # 4. Teaching School pre-2021.
-      FactoryBot.create(:appropriate_body_period,
-                        name: ab_name + " (closed)",
+      FactoryBot.create(:appropriate_body_period, :inactive,
+                        name: school_name + " (closed)",
                         body_type: "teaching_school",
                         # started_on: Date.new(1999, 9, 1),
                         # finished_on: Date.new(2021, 8, 31)
@@ -508,6 +515,11 @@ appropriate_body_periods.each do |data|
     end
   end
 
+  # 4. Teaching School
+  if body_type == "teaching_school"
+    appropriate_body_period.update!(body_type: "teaching_school")
+  end
+
   # 3. National Bodies
   if appropriate_body_period.national?
     national_body = FactoryBot.create(:national_body,
@@ -518,6 +530,13 @@ appropriate_body_periods.each do |data|
       # started_on: data[:started_on],
       # finished_on: data[:finished_on]
     )
+
+    if dfe_sign_in_organisation_id.present?
+      FactoryBot.create(:dfe_sign_in_organisation,
+                        name: ab_name,
+                        uuid: dfe_sign_in_organisation_id,
+                        urn: nil)
+    end
   end
 
   describe_appropriate_body_period(appropriate_body_period)
