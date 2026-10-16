@@ -18,6 +18,7 @@ module ECTAtSchoolPeriods
     def lead_provider_available_for_training?
       contract_period = ContractPeriod.current
       return false if contract_period.blank?
+      return false if ect_at_school_period.provider_led_training_paused?
 
       current_lead_provider = lead_provider_via_school_partnership_or_eoi
       return false if current_lead_provider.blank?

@@ -31,12 +31,14 @@ RSpec.describe Schools::RegisterMentorWizard::StartedOnStep do
     let(:ineligible) { false }
     let(:provider_led) { true }
     let(:previous_training_period) { FactoryBot.build_stubbed(:training_period) }
+    let(:ect_lead_provider_invalid) { false }
 
     before do
       allow(wizard.mentor).to receive_messages(
         provider_led_ect?: provider_led,
         became_ineligible_for_funding?: ineligible,
-        previous_training_period:
+        previous_training_period:,
+        ect_lead_provider_invalid?: ect_lead_provider_invalid
       )
     end
 
@@ -122,6 +124,12 @@ RSpec.describe Schools::RegisterMentorWizard::StartedOnStep do
       let(:previous_training_period) { nil }
 
       it { is_expected.to eq(:programme_choices) }
+
+      context "when the ECT's lead provider cannot be reused" do
+        let(:ect_lead_provider_invalid) { true }
+
+        it { is_expected.to eq(:lead_provider) }
+      end
     end
 
     context "when mentor is eligible, contract period is enabled, ECT is provider-led, and there is a previous training period" do

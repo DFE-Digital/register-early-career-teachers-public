@@ -6,6 +6,7 @@ module Schools
                :eligible_for_funding?,
                :ect_lead_provider_invalid?,
                :previously_registered_as_mentor?,
+               :previous_training_period,
                to: :subject
 
       def show_row_in_check_your_answers?
@@ -19,7 +20,9 @@ module Schools
       def previous_step_from_lead_provider
         return :programme_choices unless ect_lead_provider_invalid?
 
-        previously_registered_as_mentor? ? :previous_training_period_details : :email_address
+        return :email_address unless previously_registered_as_mentor?
+
+        previous_training_period.present? ? :previous_training_period_details : :started_on
       end
 
     private

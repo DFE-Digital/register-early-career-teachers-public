@@ -8,6 +8,10 @@ module Schools
       end
 
       alias_method :next_step, :previous_step
+
+    private
+
+      def persist = mentor.update(step_params)
     end
   end
 end

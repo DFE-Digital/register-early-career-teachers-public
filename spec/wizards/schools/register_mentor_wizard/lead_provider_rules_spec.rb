@@ -68,9 +68,21 @@ RSpec.describe Schools::RegisterMentorWizard::LeadProviderRules do
       it "returns :previous_training_period_details" do
         allow(registration_store).to receive_messages(
           ect_lead_provider_invalid?: true,
-          previously_registered_as_mentor?: true
+          previously_registered_as_mentor?: true,
+          previous_training_period: FactoryBot.build(:training_period)
         )
         expect(rules.previous_step_from_lead_provider).to eq(:previous_training_period_details)
+      end
+    end
+
+    context "when ect lead provider invalid and mentor previously registered without a training period" do
+      it "returns :started_on" do
+        allow(registration_store).to receive_messages(
+          ect_lead_provider_invalid?: true,
+          previously_registered_as_mentor?: true,
+          previous_training_period: nil
+        )
+        expect(rules.previous_step_from_lead_provider).to eq(:started_on)
       end
     end
 

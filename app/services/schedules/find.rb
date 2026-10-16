@@ -103,7 +103,7 @@ module Schedules
 
     def replacement_schedule?
       return false unless period_type_key == :mentor_at_school_period
-      return false unless mentee && mentee.provider_led_training_programme?
+      return false unless mentee&.provider_led_training_active_or_paused?
       return false if teacher.mentor_became_ineligible_for_funding_on.present?
 
       mentee_has_declared_training_with_previous_mentor?

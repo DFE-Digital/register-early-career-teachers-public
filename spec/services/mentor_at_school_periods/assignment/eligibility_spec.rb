@@ -142,6 +142,52 @@ RSpec.describe MentorAtSchoolPeriods::Assignment::Eligibility, type: :service do
       end
     end
 
+    context "when the ECT has no current or future training period" do
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, school:, teacher:, started_on: 1.year.ago) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school:, started_on: 1.year.ago) }
+      let(:finished_training_period_attributes) { { started_on: 1.year.ago, finished_on: 1.month.ago } }
+
+      context "when the ECT's latest provider-led training period was withdrawn" do
+        before do
+          FactoryBot.create(:training_period, :for_ect, :provider_led, ect_at_school_period:, **finished_training_period_attributes,
+                                                                       withdrawn_at: 1.month.ago, withdrawal_reason: "other")
+        end
+
+        it "returns true" do
+          expect(result).to be(true)
+        end
+      end
+
+      context "when the ECT's latest provider-led training period was deferred" do
+        before do
+          FactoryBot.create(:training_period, :for_ect, :provider_led, ect_at_school_period:, **finished_training_period_attributes,
+                                                                       deferred_at: 1.month.ago, deferral_reason: "parental_leave")
+        end
+
+        it "returns true" do
+          expect(result).to be(true)
+        end
+
+        context "when the mentor is ineligible for funding" do
+          let(:teacher) { FactoryBot.create(:teacher, :ineligible_for_mentor_funding) }
+
+          it "returns false" do
+            expect(result).to be(false)
+          end
+        end
+      end
+
+      context "when the ECT's latest provider-led training period finished without being withdrawn or deferred" do
+        before do
+          FactoryBot.create(:training_period, :for_ect, :provider_led, ect_at_school_period:, **finished_training_period_attributes)
+        end
+
+        it "returns false" do
+          expect(result).to be(false)
+        end
+      end
+    end
+
     context "when mentor_at_school_period is nil" do
       let(:mentor_at_school_period) { nil }
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, school:) }

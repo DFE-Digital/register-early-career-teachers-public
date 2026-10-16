@@ -57,6 +57,21 @@ RSpec.describe "schools/register_mentor_wizard/start.html.erb" do
     end
   end
 
+  context "when the ect's provider led training has been withdrawn" do
+    let(:ect) { FactoryBot.create(:ect_at_school_period, :unfinished, started_on: 1.year.ago) }
+
+    before do
+      FactoryBot.create(:training_period, :provider_led, ect_at_school_period: ect, started_on: 1.year.ago, finished_on: 1.month.ago,
+                                                         withdrawn_at: 1.month.ago, withdrawal_reason: "other")
+    end
+
+    it "informs the user about the mentor training programme requirements" do
+      render
+
+      expect(rendered).to have_text("You may also need to tell us about the mentor’s training programme.")
+    end
+  end
+
   context "when the ect has chosen a school led training programme" do
     let(:ect) { FactoryBot.create(:ect_at_school_period, :unfinished) }
 
