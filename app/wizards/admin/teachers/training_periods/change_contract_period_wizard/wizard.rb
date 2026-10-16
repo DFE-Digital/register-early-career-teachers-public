@@ -1,186 +1,70 @@
-module Admin
-  module Teachers
-    module TrainingPeriods
-      module ChangeContractPeriodWizard
-        class Wizard < ApplicationWizard
-          PartnershipOption = Data.define(:id, :name)
+module Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard
+  class Wizard
+    include DfE::Wizard
 
-          attr_accessor :store, :teacher_id, :training_period_id, :author
+    def self.routes = %i[select_contract_period select_partnership no_partnerships check_answers]
 
-          steps do
-            [{
-              select_contract_period: SelectContractPeriodStep,
-              select_partnership: SelectPartnershipStep,
-              no_partnerships: NoPartnershipsStep,
-              check_answers: CheckAnswersStep
-            }]
-          end
+    def steps_processor
+      DfE::Wizard::StepsProcessor::Graph.draw(self, predicate_caller: state_store) do |graph|
+        graph.add_node :select_contract_period, Steps::SelectContractPeriodStep
+        graph.add_node :select_partnership, Steps::SelectPartnershipStep
+        graph.add_node :no_partnerships, Steps::NoPartnershipsStep
+        graph.add_node :check_answers, Steps::CheckAnswersStep
 
-          def self.step?(step_name) = Array(steps).first[step_name].present?
+        graph.root :select_contract_period
 
-          def allowed_steps
-            steps = [:select_contract_period]
-            return steps unless selected_contract_period_allowed?
-
-            return steps << :check_answers if training_period_eoi_only?
-            return steps << :no_partnerships unless school_partnerships.exists?
-            return steps << :check_answers if only_school_partnership
-
-            steps << :select_partnership
-            return steps unless selected_school_partnership_allowed?
-
-            steps << :check_answers
-          end
-
-          def allowed_step_path
-            step_path(allowed_steps.last)
-          end
-
-          def teacher
-            @teacher ||= Teacher.find(teacher_id)
-          end
-
-          def training_period
-            @training_period ||= TrainingPeriod.find(training_period_id)
-          end
-
-          def teacher_name
-            ::Teachers::Name.new(teacher).full_name
-          end
-
-          delegate :school, to: :training_period
-
-          def contract_periods
-            ChangeContractPeriod::AvailableContractPeriods
-              .new(training_period:)
-              .contract_periods
-          end
-
-          def selected_contract_period
-            return if store.contract_period_year.blank?
-
-            @selected_contract_period ||= contract_periods.find_by(year: store.contract_period_year)
-          end
-
-          def selected_school_partnership
-            return only_school_partnership if only_school_partnership
-            return if store.school_partnership_id.blank?
-
-            @selected_school_partnership ||= school_partnerships.find_by(id: store.school_partnership_id)
-          end
-
-          def school_partnerships
-            return SchoolPartnership.none unless selected_contract_period
-
-            if future_period_with_current_active_period?
-              return SchoolPartnership.none unless same_partnership_as_current_active_period?
-
-              school_partnership_search(
-                lead_provider: current_active_period.lead_provider,
-                delivery_partner: current_active_period.delivery_partner
-              )
-            else
-              school_partnership_search
-            end
-          end
-
-          def partnership_options
-            school_partnerships.map do |partnership|
-              PartnershipOption.new(
-                id: partnership.id,
-                name: "#{partnership.lead_provider.name} & #{partnership.delivery_partner.name}"
-              )
-            end
-          end
-
-          def current_step_path
-            step_path(current_step_name)
-          end
-
-          def next_step_path
-            step_path(current_step.next_step)
-          end
-
-          def previous_step_path
-            step_path(current_step.previous_step)
-          end
-
-          def existing_contract_period
-            training_period.contract_period || training_period.expression_of_interest_contract_period
-          end
-
-          def selected_partnership_name
-            return unless selected_school_partnership
-
-            "#{selected_school_partnership.lead_provider.name} & #{selected_school_partnership.delivery_partner.name}"
-          end
-
-          def selected_lead_provider_name
-            training_period.expression_of_interest_lead_provider.name
-          end
-
-          def training_period_eoi_only?
-            training_period.only_expression_of_interest?
-          end
-
-          def partnership_selection_step_required?
-            !training_period_eoi_only? && school_partnerships.many?
-          end
-
-        private
-
-          def school_partnership_search(lead_provider: :ignore, delivery_partner: :ignore)
-            SchoolPartnerships::Search
-              .new(
-                school:,
-                contract_period: selected_contract_period,
-                lead_provider:,
-                delivery_partner:
-              )
-              .school_partnerships
-              .includes(:lead_provider, :delivery_partner)
-          end
-
-          def same_partnership_as_current_active_period?
-            current_active_period.lead_provider_delivery_partnership == training_period.lead_provider_delivery_partnership
-          end
-
-          def future_period_with_current_active_period?
-            current_active_period.present? && training_period.started_on > Time.zone.today
-          end
-
-          def current_active_period
-            @current_active_period ||= ::TrainingPeriods::RelatedPeriods.new(training_period:).current_active_period
-          end
-
-          def only_school_partnership
-            partnerships = school_partnerships.limit(2).to_a
-            partnerships.first if partnerships.one?
-          end
-
-          def selected_contract_period_allowed?
-            store.contract_period_year.present? &&
-              contract_periods.where(year: store.contract_period_year).exists?
-          end
-
-          def selected_school_partnership_allowed?
-            return true if only_school_partnership.present?
-
-            store.school_partnership_id.present? &&
-              school_partnerships.where(id: store.school_partnership_id).exists?
-          end
-
-          def step_path(step_name)
-            return if step_name.blank?
-
-            Rails.application.routes.url_helpers.public_send(
-              "admin_teacher_training_period_change_contract_period_wizard_#{step_name}_path",
-              teacher_id,
-              training_period_id
-            )
-          end
-        end
+        graph.add_multiple_conditional_edges(
+          from: :select_contract_period,
+          branches: [
+            { when: :training_period_eoi_only?, then: :check_answers },
+            { when: :no_school_partnerships?, then: :no_partnerships },
+            { when: :multiple_school_partnerships?, then: :select_partnership }
+          ],
+          default: :check_answers
+        )
+        graph.add_edge from: :select_partnership, to: :check_answers
       end
+    end
+
+    def steps_operator
+      DfE::Wizard::StepsOperator::Builder.draw(wizard: self, callable: state_store) do |builder|
+        builder.on_step(:check_answers, use: [Operations::ApplyContractPeriodChange])
+      end
+    end
+
+    def route_strategy
+      DfE::Wizard::RouteStrategy::ConfigurableRoutes.new(
+        wizard: self,
+        namespace: "admin_teacher_training_period_change_contract_period_wizard"
+      ) do |routes|
+        routes.default_path_arguments = {
+          teacher_id: training_period.teacher_id,
+          training_period_id: training_period.id
+        }
+      end
+    end
+
+    delegate :training_period,
+             :school,
+             :teacher_name,
+             :training_period_eoi_only?,
+             :contract_periods,
+             :existing_contract_period,
+             :selected_contract_period,
+             :partnership_options,
+             :selected_partnership_name,
+             :selected_lead_provider_name,
+             to: :state_store
+
+    def author = Current.user
+
+    def furthest_valid_step_path
+      step_id = root_step
+      while valid?(step_id) && (next_step_id = steps_processor.next_step(step_id))
+        step_id = next_step_id
+      end
+
+      resolve_step_path(step_id)
     end
   end
 end
