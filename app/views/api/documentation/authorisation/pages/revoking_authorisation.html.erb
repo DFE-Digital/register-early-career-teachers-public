@@ -21,20 +21,22 @@ sidebar_position: 8
 <% end %>
 
 <p class="govuk-body">
-An authorisation can be revoked should the need arise, for example if the token was leaked.
+You can revoke an authorisation if you need to, for example if the access token has been leaked. 
+</p>
+
+<h3 class="govuk-heading-s">Send the request</h3>
+
+<p class="govuk-body">
+To revoke an access token, send an HTTP POST request to our revoke endpoint.
 </p>
 
 <p class="govuk-body">
-You revoke a token via a HTTP POST request to our revoke endpoint.
+You must authenticate the request using <%= govuk_link_to("HTTP Basic Authentication", "https://www.rfc-editor.org/info/rfc7617/") %>
+with your client ID and client secret.  To do this, add a HTTP header containing your credentials in the form <code>client_id:client_secret</code>, Base64 encoded.
 </p>
 
 <p class="govuk-body">
-You must authenticate the request with <%= govuk_link_to("HTTP Basic Authentication", "https://www.rfc-editor.org/info/rfc7617/") %>
-using your client ID and secret.  This is added as a HTTP header in which you Base64 encode your credentials in the form <code>client_id:client_secret</code>.
-</p>
-
-<p class="govuk-body">
-For example, if your client ID was <code>client123</code> and your secret was <code>supersecretvalue</code> then your Basic Authentication header would be this:
+For example, if your client ID was <code>client123</code> and your secret was <code>supersecretvalue</code>, your Basic Authentication header would be:
 </p>
 
 <pre>
@@ -47,8 +49,23 @@ Authorization: Basic Y2xpZW50MTIzOnN1cGVyc2VjcmV0dmFsdWU=
 <%= govuk_warning_text(text: "Do not include your client ID or client secret in the body of the request.") %>
 
 <p class="govuk-body">
-Include the other parameters in the request body, not as additional request headers.
+Put the other parameters in the request body, not in additional request headers.
 </p>
+
+<%= govuk_table do |table|
+  table.with_head do |head|
+    head.with_row do |row|
+      row.with_cell(text: "Parameter")
+      row.with_cell(text: "Description")
+    end
+  end
+  table.with_body do |body|
+    body.with_row do |row|
+      row.with_cell(text: "token")
+      row.with_cell(text: "The access token you want to revoke")
+    end
+  end
+end %>
 
 <h3 class="govuk-heading-s">Example request</h3>
 
@@ -61,30 +78,17 @@ curl -X POST <%= @api_base_url %>/oauth/revoke \
 </code>
 </pre>
 
-<%= govuk_table do |table|
-  table.with_head do |head|
-    head.with_row do |row|
-      row.with_cell(text: "Parameter")
-      row.with_cell(text: "Description")
-    end
-  end
-  table.with_body do |body|
-    body.with_row do |row|
-      row.with_cell(text: "token")
-      row.with_cell(text: "The access token to be revoked")
-    end
-  end
-end %>
+<h3 class="govuk-heading-s">Response</h3>
 
 <p class="govuk-body">
-The successful response will be HTTP status 200 code with an empty body.  The access token will now be unusable.
+If the request is successful, we return HTTP status 200 with an empty body. You can no longer use the access token.
 </p>
 
 
 <h3 class="govuk-heading-s">Error responses</h3>
 
 <p class="govuk-body">
-An unsuccessful request will a HTTP status error code and a JSON payload containing an <code>error</code> value, for example:
+If the request is unsuccessful, we return an HTTP error status and a JSON payload containing an error value. For example: 
 </p>
 
 <pre>
