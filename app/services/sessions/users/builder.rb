@@ -1,6 +1,6 @@
 module Sessions
   module Users
-    # Checks for a matching AppropriateBody or School record and the correct DfE Sign In policy role
+    # Checks for a matching AppropriateBodyPeriod or School record and the correct DfE Sign In policy role
     # OTP is currently used for DfE Users in production
     class Builder
       class UnknownProvider < StandardError; end
@@ -38,7 +38,7 @@ module Sessions
       # @return [Sessions::Users::SchoolPersona]
       def session_user
         if dfe_sign_in?
-          migrate_appropriate_bodies!
+          record_dfe_sign_in_authentication!
 
           return school_user if school_user?
           return appropriate_body_user if appropriate_body_user?
@@ -155,15 +155,11 @@ module Sessions
         @provider ||= payload.provider.to_sym
       end
 
-      # NOTE: on test and staging apps the migrator will not run for a SchoolUser login
-      # if RECT is enabled and a matching School record exists.
-      #
-      # Create new TSHs and NB records from existing AppropriateBody records as needed
-      def migrate_appropriate_bodies!
+      # Record the DfE Sign In authentication, to show the first and most recent sign in
+      def record_dfe_sign_in_authentication!
         return unless appropriate_body_user?
-        return unless School.exists?
 
-        AppropriateBodyMigrator.new(organisation).call
+        DfESignInAuthenticationRecorder.new(organisation).call
       end
 
       # @return [Sessions::Users::SchoolPersona]

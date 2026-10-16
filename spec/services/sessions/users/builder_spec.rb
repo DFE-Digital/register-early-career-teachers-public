@@ -39,12 +39,12 @@ RSpec.describe Sessions::Users::Builder do
       let(:school_urn) { nil }
       let(:dfe_staff) { nil }
       let(:dfe_sign_in_roles) { [] }
-      let(:migrator) { instance_double(AppropriateBodyMigrator, call: true) }
+      let(:recorder_class) { Sessions::Users::DfESignInAuthenticationRecorder }
+      let(:recorder) { instance_double(recorder_class, call: true) }
 
       before do
         allow_any_instance_of(Organisation::Access).to receive(:roles).and_return(dfe_sign_in_roles)
-        FactoryBot.create(:school) # A school is required to exists for the AB migrator to run.
-        allow(AppropriateBodyMigrator).to receive(:new).with(a_hash_including("id" => organisation_id)) { migrator }
+        allow(recorder_class).to receive(:new).with(a_hash_including("id" => organisation_id)) { recorder }
       end
 
       context "when the AppropriateBodyPeriod exists and the user has the AppropriateBodyUser role" do
@@ -56,9 +56,9 @@ RSpec.describe Sessions::Users::Builder do
           expect(session_user).to be_a(Sessions::Users::AppropriateBodyUser)
         end
 
-        it "migrates appropriate bodies" do
+        it "records the DfE Sign In organisation" do
           session_user
-          expect(migrator).to have_received(:call)
+          expect(recorder).to have_received(:call)
         end
       end
 
@@ -71,9 +71,9 @@ RSpec.describe Sessions::Users::Builder do
           expect(session_user).to be_a(Sessions::Users::SchoolUser)
         end
 
-        it "does not migrate appropriate bodies" do
+        it "does not record the DfE Sign In organisation" do
           session_user
-          expect(migrator).not_to have_received(:call)
+          expect(recorder).not_to have_received(:call)
         end
       end
 
@@ -89,9 +89,9 @@ RSpec.describe Sessions::Users::Builder do
           expect(session_user.gias_school).to eq(gias_school)
         end
 
-        it "does not migrate appropriate bodies" do
+        it "does not record the DfE Sign In organisation" do
           session_user
-          expect(migrator).not_to have_received(:call)
+          expect(recorder).not_to have_received(:call)
         end
       end
 
@@ -104,19 +104,19 @@ RSpec.describe Sessions::Users::Builder do
           expect(session_user).to be_a(Sessions::Users::SchoolUser)
         end
 
-        it "migrates appropriate bodies" do
+        it "records the DfE Sign In organisation" do
           session_user
-          expect(migrator).to have_received(:call)
+          expect(recorder).to have_received(:call)
         end
       end
 
-      context "when neither the AppropriateBody or School exist" do
+      context "when neither the AppropriateBodyPeriod or School exist" do
         let(:organisation_id) { Faker::Internet.uuid }
         let(:organisation_urn) { nil }
 
-        it "raises an error and does not migrate appropriate bodies" do
+        it "raises an error and does not record the DfE Sign In organisation" do
           expect { session_user }.to raise_error(described_class::UnknownOrganisation, /#{organisation_id}/)
-          expect(migrator).not_to have_received(:call)
+          expect(recorder).not_to have_received(:call)
         end
       end
     end

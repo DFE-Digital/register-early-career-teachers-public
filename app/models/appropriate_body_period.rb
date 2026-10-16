@@ -12,7 +12,6 @@ class AppropriateBodyPeriod < ApplicationRecord
   # include Interval
 
   # Associations
-  belongs_to :appropriate_body, optional: true
   belongs_to :dfe_sign_in_organisation, primary_key: :uuid, inverse_of: :appropriate_body_period
   belongs_to :provisioning_school, optional: true, class_name: "School", foreign_key: :school_id
   belongs_to :teaching_school_hub, optional: true

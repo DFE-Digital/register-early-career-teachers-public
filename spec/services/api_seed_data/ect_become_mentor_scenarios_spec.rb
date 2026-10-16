@@ -22,7 +22,7 @@ RSpec.describe APISeedData::ECTBecomeMentorScenarios do
 
     # Create delivery partners and appropriate bodies for induction periods
     FactoryBot.create_list(:delivery_partner, 3)
-    FactoryBot.create_list(:appropriate_body, 2)
+    FactoryBot.create_list(:appropriate_body_period, 2)
   end
 
   describe "#plant" do

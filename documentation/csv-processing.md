@@ -8,7 +8,7 @@ or process multiple ECT outcomes and releases more efficiently.
 ```mermaid
 erDiagram
 
-  AppropriateBody {
+  AppropriateBodyPeriod {
     string name
     enum body_type
   }
@@ -56,9 +56,9 @@ erDiagram
   }
 
   PendingInductionSubmissionBatch |o--|{ PendingInductionSubmission : has_many
-  PendingInductionSubmissionBatch }o--|| AppropriateBody : belongs_to
-  PendingInductionSubmission }o--|| AppropriateBody : belongs_to
-  InductionPeriod }o--|| AppropriateBody : belongs_to
+  PendingInductionSubmissionBatch }o--|| AppropriateBodyPeriod : belongs_to
+  PendingInductionSubmission }o--|| AppropriateBodyPeriod : belongs_to
+  InductionPeriod }o--|| AppropriateBodyPeriod : belongs_to
   InductionPeriod }o--|| Teacher : belongs_to
 ```
 

@@ -9,12 +9,12 @@ FactoryBot.define do
     urn { Faker::Number.unique.number(digits: 6) }
 
     trait :istip do
-      name { AppropriateBody::ISTIP }
+      name { NationalBody::ISTIP }
       urn { nil }
     end
 
     trait :esp do
-      name { AppropriateBody::ESP }
+      name { NationalBody::ESP }
       urn { nil }
     end
   end

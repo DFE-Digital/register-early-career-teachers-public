@@ -4,7 +4,7 @@ RSpec.describe APISeedData::TeachersWithHistories do
   let(:environment) { "sandbox" }
   let(:logger) { instance_double(Logger, info: nil, "formatter=" => nil, "level=" => nil) }
   let!(:school_partnerships) { FactoryBot.create_list(:school_partnership, 2) }
-  let!(:appropriate_bodies) { FactoryBot.create_list(:appropriate_body, 2) }
+  let!(:appropriate_bodies) { FactoryBot.create_list(:appropriate_body_period, 2) }
   let(:expected_teachers_per_iteration) { 2 } # ECT and mentor
   let(:expected_number_of_teachers) { described_class::NUMBER_OF_RECORDS * school_partnerships.count * expected_teachers_per_iteration }
 

@@ -7,11 +7,11 @@ FactoryBot.define do
     sequence(:name) { |n| "National Body #{n}" }
 
     trait :istip do
-      name { AppropriateBody::ISTIP }
+      name { NationalBody::ISTIP }
     end
 
     trait :esp do
-      name { AppropriateBody::ESP }
+      name { NationalBody::ESP }
     end
   end
 end

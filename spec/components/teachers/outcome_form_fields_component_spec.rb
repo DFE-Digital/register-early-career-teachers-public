@@ -30,7 +30,7 @@ RSpec.describe Teachers::OutcomeFormFieldsComponent, type: :component do
 
   context "with appropriate body" do
     let(:mode) { :appropriate_body }
-    let(:appropriate_body_period) { FactoryBot.build(:appropriate_body, name: "OmniCorp") }
+    let(:appropriate_body_period) { FactoryBot.build(:appropriate_body_period, name: "OmniCorp") }
 
     it "finished_on" do
       expect(rendered_content).to have_field("model_name[finished_on(1i)]")

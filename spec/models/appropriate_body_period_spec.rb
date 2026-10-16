@@ -13,7 +13,6 @@ describe AppropriateBodyPeriod do
 
   describe "associations" do
     it { is_expected.to belong_to(:dfe_sign_in_organisation) }
-    it { is_expected.to belong_to(:appropriate_body) }
     it { is_expected.to belong_to(:provisioning_school) }
     it { is_expected.to have_many(:induction_periods) }
     it { is_expected.to have_many(:pending_induction_submissions) }
@@ -87,7 +86,7 @@ describe AppropriateBodyPeriod do
   end
 
   describe "normalizing" do
-    subject { FactoryBot.build(:appropriate_body, name: " Some appropriate body ") }
+    subject { FactoryBot.build(:appropriate_body_period, name: " Some appropriate body ") }
 
     it "removes leading and trailing spaces from the name" do
       expect(subject.name).to eql("Some appropriate body")
