@@ -158,6 +158,27 @@ RSpec.configure do |config|
         },
       },
     },
+    "induction/v1/swagger.yaml" => {
+      openapi: "3.0.1",
+      info: {
+        title: "Induction API",
+        version: "v1",
+      },
+      paths: {},
+      components: {
+        securitySchemes: {
+          client_credentials: {
+            type: :http,
+            scheme: :basic,
+            description: "OAuth 2.0 client ID and secret",
+          },
+        },
+        schemas: {
+          **API::Induction::V1::AppropriateBodySerializer.openapi_schema_definition,
+          **API::OAuth::ErrorSerializer.openapi_schema_definition,
+        },
+      },
+    },
   }
 
   # Specify the format of the output Swagger file when running 'rswag:specs:swaggerize'.

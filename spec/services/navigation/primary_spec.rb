@@ -191,7 +191,7 @@ describe Navigation::Primary, type: :component do
                 { text: "Authentication", href: "/api/docs/authentication", active_when: "/api/docs/authentication" },
                 { text: "Hello API", href: "/api/docs/hello", active_when: "/api/docs/hello" },
                 { text: "Training API", href: "/api/docs/training/guidance", active_when: "/api/docs/training/guidance" },
-                { text: "Induction API", href: "#induction", active_when: "#induction" },
+                { text: "Induction API", href: "/api/docs/induction/v1", active_when: "/api/docs/induction/v1" },
               ]
             )
           end

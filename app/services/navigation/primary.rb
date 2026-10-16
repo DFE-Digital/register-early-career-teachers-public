@@ -74,7 +74,7 @@ module Navigation
           { text: "Authentication", href: api_documentation_authentication_path, active_when: api_documentation_authentication_path },
           { text: "Hello API", href: api_hello_documentation_path, active_when: api_hello_documentation_path },
           { text: "Training API", href: api_docs_training_guidance_path, active_when: api_docs_training_guidance_path },
-          { text: "Induction API", href: "#induction", active_when: "#induction" },
+          { text: "Induction API", href: api_induction_v1_documentation_path, active_when: api_induction_v1_documentation_path },
         ]
       }
     end
