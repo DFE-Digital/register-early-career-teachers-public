@@ -115,16 +115,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_14_175500) do
     t.index ["token"], name: "index_api_tokens_on_token", unique: true
   end
 
-  create_table "appropriate_bodies", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.bigint "dfe_sign_in_organisation_id", null: false
-    t.string "name", null: false
-    t.datetime "updated_at", null: false
-    t.index ["dfe_sign_in_organisation_id"], name: "index_appropriate_bodies_on_dfe_sign_in_organisation_id"
-  end
-
   create_table "appropriate_body_periods", force: :cascade do |t|
-    t.bigint "appropriate_body_id"
     t.enum "body_type", default: "teaching_school_hub", enum_type: "appropriate_body_type"
     t.datetime "created_at", null: false
     t.uuid "dfe_sign_in_organisation_id"
@@ -134,7 +125,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_14_175500) do
     t.bigint "school_id"
     t.bigint "teaching_school_hub_id"
     t.datetime "updated_at", null: false
-    t.index ["appropriate_body_id"], name: "index_appropriate_body_periods_on_appropriate_body_id"
     t.index ["dfe_sign_in_organisation_id"], name: "index_appropriate_body_periods_on_dfe_sign_in_organisation_id", unique: true
     t.index ["local_authority_id"], name: "index_appropriate_body_periods_on_local_authority_id"
     t.index ["national_body_id"], name: "index_appropriate_body_periods_on_national_body_id"
@@ -1034,8 +1024,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_14_175500) do
   add_foreign_key "active_lead_provider_bands", "active_lead_providers"
   add_foreign_key "api_oauth_authorizations", "api_oauth_clients", column: "client_id"
   add_foreign_key "api_tokens", "lead_providers"
-  add_foreign_key "appropriate_bodies", "dfe_sign_in_organisations"
-  add_foreign_key "appropriate_body_periods", "appropriate_bodies"
   add_foreign_key "appropriate_body_periods", "local_authorities"
   add_foreign_key "appropriate_body_periods", "national_bodies"
   add_foreign_key "appropriate_body_periods", "schools"
