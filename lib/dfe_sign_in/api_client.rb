@@ -81,6 +81,20 @@ module DfESignIn
       response.body
     end
 
+    # @see https://github.com/DFE-Digital/login.dfe.public-api#request-user-access-to-service
+    def access_requests(organisation_id:, user_id:, role_ids:, service_id: client_id)
+      path = %(services/#{service_id}/access-requests)
+      body = {
+        "userId" => user_id,
+        "organisation" => organisation_id,
+        "roleIds" => role_ids
+      }
+
+      response = @connection.post(path, body)
+
+      raise_error_for_response!(response)
+    end
+
   private
 
     def raise_error_for_response!(response)

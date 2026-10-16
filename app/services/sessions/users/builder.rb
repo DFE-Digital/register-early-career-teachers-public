@@ -18,8 +18,15 @@ module Sessions
         payload.credentials.id_token
       end
 
-      # @return [String]
-      delegate :name, to: :organisation, prefix: true
+      # @return [Hash]
+      def invalid_organisation_details
+        {
+          dfe_sign_in_organisation_id: organisation.id,
+          dfe_sign_in_organisation_urn: organisation.urn,
+          dfe_sign_in_organisation_name: organisation.name,
+          dfe_sign_in_user_id: uid
+        }
+      end
 
       # Determine user session type
       #
