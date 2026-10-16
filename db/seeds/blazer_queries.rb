@@ -40,12 +40,12 @@ end
   },
   {
     name: "Regions",
-    statement: "SELECT id, code, districts FROM regions",
+    statement: "SELECT id AS region_id FROM regions",
     description: "Teaching school hub regions",
   },
   {
     name: "Teaching School Hubs",
-    statement: "SELECT id, name FROM teaching_school_hubs",
+    statement: "SELECT id AS teaching_school_hub_id FROM teaching_school_hubs",
     description: "Regional appropriate bodies",
   },
   {

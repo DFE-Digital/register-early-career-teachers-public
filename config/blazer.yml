@@ -12,15 +12,18 @@ data_sources:
       batch_status: ['pending', 'processing', 'processed', 'completing', 'completed', 'failed']
       batch_type: ['action', 'claim']
       urn: "SELECT urn, CONCAT(name, ' (', urn, ')') FROM gias_schools ORDER BY name ASC"
-      framework_agreement_id: "SELECT framework_agreements.id, lead_providers.name FROM framework_agreements JOIN lead_providers ON lead_providers.id=framework_agreements.lead_provider_id ORDER BY lead_providers.name ASC"
+      framework_agreement_id: "SELECT fa.id, lp.name FROM framework_agreements AS fa JOIN lead_providers AS lp ON lp.id=fa.lead_provider_id ORDER BY lp.name ASC"
 
     # https://blazer.dokkuapp.com/queries/2-smart-column
     smart_columns:
       author_id: "SELECT id, name FROM users WHERE id IN {value}"
       appropriate_body_id: "SELECT id, name FROM appropriate_body_periods WHERE id IN {value}"
+      teaching_school_hub_id: "SELECT id, name FROM teaching_school_hubs WHERE id IN {value}"
       teacher_id: "SELECT id, CONCAT(trs_first_name, ' ', trs_last_name) AS full_name FROM teachers WHERE id IN {value}"
       urn: "SELECT urn, CONCAT(name, ' (', urn, ')') FROM gias_schools WHERE urn IN {value}"
-      framework_agreement_id: "SELECT framework_agreements.id, lead_providers.name FROM framework_agreements JOIN lead_providers ON lead_providers.id=framework_agreements.lead_provider_id WHERE framework_agreements.id IN {value}"
+      framework_agreement_id: "SELECT fa.id, lp.name FROM framework_agreements AS fa JOIN lead_providers AS lp ON lp.id=fa.lead_provider_id WHERE fa.id IN {value}"
+      region_id: "SELECT id, CONCAT(code, ' - ', array_to_string(districts, ', ')) FROM regions WHERE id IN {value}"
+      region_award_id: "SELECT ra.id, CONCAT(r.code, ' (', array_to_string(r.districts, ', '), ')') FROM region_awards AS ra JOIN regions AS r ON r.id=ra.region_id WHERE ra.id IN {value}"
 
       # periods - "01 January 2026 to present"
       appropriate_body_period: "SELECT id, CONCAT(TO_CHAR(started_on, 'DD FMMonth YYYY'), ' to ', COALESCE(TO_CHAR(finished_on, 'DD FMMonth YYYY'), 'present')) FROM appropriate_body_periods WHERE id IN {value}"
@@ -30,6 +33,7 @@ data_sources:
     # https://blazer.dokkuapp.com/queries/3-linked-column (single value only)
     linked_columns:
       appropriate_body_period_id: "/admin/organisations/appropriate-bodies/{value}"
+      teaching_school_hub_id: "/admin/organisations/teaching-school-hubs/{value}"
       teacher_id: "/admin/teachers/{value}/induction"
       pending_induction_submission_batch_id: "/admin/bulk/batches/{value}"
       zendesk_ticket_id: "https://becomingateacher.zendesk.com/agent/tickets/{value}"
