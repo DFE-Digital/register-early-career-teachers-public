@@ -6,12 +6,8 @@ module API::SchoolPartnerships
     attribute :school_partnership_id
     attribute :delivery_partner_api_id
 
-    validates :school_partnership_id, presence: { message: "Enter a '#/school_partnership_id'." }
-    validates :delivery_partner_api_id, presence: { message: "Enter a '#/delivery_partner_api_id'." }
-    validate :delivery_partner_exists
     validate :school_partnership_exists
-    validate :lead_provider_delivery_partnership_exists
-    validate :does_not_cause_duplicate_school_partnership
+    validate :delivery_partnership_can_become_school_partnership, if: -> { errors.empty? }
 
     def update
       return false unless valid?
@@ -46,30 +42,22 @@ module API::SchoolPartnerships
       @lead_provider_delivery_partnership ||= delivery_partner.lead_provider_delivery_partnerships.find_by(framework_agreement:, delivery_partner:)
     end
 
-    def delivery_partner_exists
-      return if errors[:delivery_partner_api_id].any?
-
-      errors.add(:delivery_partner_api_id, "The '#/delivery_partner_api_id' you have entered is invalid. Check delivery partner details and try again.") unless delivery_partner
-    end
-
     def school_partnership_exists
-      return if errors[:school_partnership_id].any?
+      return errors.add(:school_partnership_id, "Enter a '#/school_partnership_id'.") if school_partnership_id.blank?
 
       errors.add(:school_partnership_id, "The '#/school_partnership_id' you have entered is invalid. Check partnership details and try again.") unless school_partnership
     end
 
-    def lead_provider_delivery_partnership_exists
-      return unless framework_agreement && delivery_partner
+    def delivery_partnership_can_become_school_partnership
+      return errors.add(:delivery_partner_api_id, "Enter a '#/delivery_partner_api_id'.") if delivery_partner_api_id.blank?
+      return errors.add(:delivery_partner_api_id, "The '#/delivery_partner_api_id' you have entered is invalid. Check delivery partner details and try again.") unless delivery_partner
+      return errors.add(:delivery_partner_api_id, "The entered delivery partner is not recognised to be working in partnership with you for the given contract period. Contact the DfE for more information.") unless lead_provider_delivery_partnership
 
-      errors.add(:delivery_partner_api_id, "The entered delivery partner is not recognised to be working in partnership with you for the given contract period. Contact the DfE for more information.") unless lead_provider_delivery_partnership
+      errors.add(:delivery_partner_api_id, "We are unable to process this request. You are already confirmed to be in partnership with the entered delivery partner. Contact the DfE for support.") if matching_school_partnership_exists?
     end
 
-    def does_not_cause_duplicate_school_partnership
-      return unless school_partnership && lead_provider_delivery_partnership
-
-      existing_school_partnership = school_partnership.school.school_partnerships.exists?(lead_provider_delivery_partnership:)
-
-      errors.add(:delivery_partner_api_id, "We are unable to process this request. You are already confirmed to be in partnership with the entered delivery partner. Contact the DfE for support.") if existing_school_partnership
+    def matching_school_partnership_exists?
+      school_partnership.school.school_partnerships.exists?(lead_provider_delivery_partnership:)
     end
   end
 end
