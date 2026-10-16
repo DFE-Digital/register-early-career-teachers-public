@@ -47,6 +47,20 @@ class ECTAtSchoolPeriod < ApplicationRecord
           AND induction_periods.appropriate_body_period_id = ect_at_school_periods.school_reported_appropriate_body_id
       SQL
       .where(induction_periods: { id: nil })
+      .without_ongoing_induction_period_started_during_placement
+  }
+  # Same date range rule as ECTAtSchoolPeriods::AppropriateBody: an ongoing
+  # induction period that started during this placement replaces the
+  # school-reported AB as the one shown to the school
+  scope :without_ongoing_induction_period_started_during_placement, -> {
+    where(<<~SQL)
+      NOT EXISTS (
+        SELECT 1 FROM induction_periods AS placement_induction_periods
+        WHERE placement_induction_periods.teacher_id = ect_at_school_periods.teacher_id
+        AND placement_induction_periods.finished_on IS NULL
+        AND ect_at_school_periods.range @> placement_induction_periods.started_on
+      )
+    SQL
   }
   scope :claimed_by_school_reported_appropriate_body, -> {
     where.not(school_reported_appropriate_body_id: nil)
