@@ -201,11 +201,21 @@ class TrainingPeriod < ApplicationRecord
 private
 
   def lead_provider_cannot_change_with_billable_declarations
-    return unless will_save_change_to_school_partnership_id? ||
-      will_save_change_to_expression_of_interest_id?
+    return unless lead_provider_delivery_partnership_will_change? || will_save_change_to_expression_of_interest_id?
     return unless declarations.billable.exists?
 
     errors.add(:base, "Cannot change the lead provider for a training period with billable declarations")
+  end
+
+  def lead_provider_delivery_partnership_will_change?
+    return false unless will_save_change_to_school_partnership_id?
+
+    previous_lead_provider_delivery_partnership_id = SchoolPartnership
+      .where(id: school_partnership_id_in_database)
+      .pick(:lead_provider_delivery_partnership_id)
+
+    previous_lead_provider_delivery_partnership_id !=
+      school_partnership&.lead_provider_delivery_partnership_id
   end
 
   def destroy_non_billable_declarations

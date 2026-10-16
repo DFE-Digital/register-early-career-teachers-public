@@ -178,6 +178,7 @@ def populate_school(gias_school, lead_provider, counter = 0)
 
   rp2025 = ContractPeriod.find_by!(year: 2025)
   rp2026 = ContractPeriod.find_by!(year: 2026)
+  ucl = LeadProvider.find_by!(name: "UCL Institute of Education")
 
   delivery_partner = DeliveryPartner.find_by!(name: "Artisan Education Group")
 
@@ -200,14 +201,22 @@ def populate_school(gias_school, lead_provider, counter = 0)
     mentees << teacher(9_000_000 + counter, "Teacher #{counter}") do
       counter += 1
       ect_at_school_period(school, start_date) do
-        training_period(lead_provider, contract_period, start_date)
+        training_period(lead_provider, contract_period, start_date) do
+          if Date.parse(start_date) < Date.current && lead_provider == ucl
+            declaration("started", start_date, :paid)
+          end
+        end
       end
     end
 
     mentors << teacher(9_000_000 + counter, "Teacher #{counter}") do
       counter += 1
       mentor_at_school_period(school, start_date) do
-        training_period(lead_provider, contract_period, start_date)
+        training_period(lead_provider, contract_period, start_date) do
+          if Date.parse(start_date) < Date.current && lead_provider == ucl
+            declaration("started", start_date, :paid)
+          end
+        end
       end
     end
   end
@@ -228,6 +237,8 @@ def overlap_scenarios(predecessor_school:, successor_school:, lead_provider:, co
     predecessor: predecessor_school.school,
     successor: successor_school.school
   }
+
+  ucl = LeadProvider.find_by!(name: "UCL Institute of Education")
 
   SCENARIOS.each do |scenario|
     print_seed_info("🧪 #{Colourize.text(scenario[:name], :blue)}", indent: 2)
@@ -261,7 +272,11 @@ def overlap_scenarios(predecessor_school:, successor_school:, lead_provider:, co
     mentees_to_create.each do |attributes|
       mentee_teacher = teacher(attributes[:trn], attributes[:name]) do
         ect_at_school_period(attributes[:school], attributes[:date_range]) do
-          training_period(lead_provider, 2025, attributes[:date_range])
+          training_period(lead_provider, 2025, attributes[:date_range]) do
+            if Date.parse(attributes[:started_on]) < Date.current && lead_provider == ucl
+              declaration("started", attributes[:started_on], :paid)
+            end
+          end
         end
       end
 
@@ -298,6 +313,7 @@ print_seed_info("\n🐉 Creating Test Schools:")
 
 ambition = LeadProvider.find_by!(name: "Ambition Institute")
 teach_first = LeadProvider.find_by!(name: "Teach First")
+ucl = LeadProvider.find_by!(name: "UCL Institute of Education")
 
 monsters_college = FactoryBot.create(:gias_school, :with_school, :closed, closed_on: Date.new(2026, 4, 30), urn: 9_123_500, name: "Monsters College").tap do |school|
   describe_school(school)
@@ -333,15 +349,15 @@ end
 
 counter = 0
 
-counter = populate_school(monsters_college, ambition, counter)
+counter = populate_school(monsters_college, ucl, counter)
 counter = populate_school(school_of_excellence, teach_first, counter)
-counter = populate_school(girls_high_school, teach_first, counter)
+counter = populate_school(girls_high_school, ucl, counter)
 counter = populate_school(primary_school, ambition, counter)
-counter = populate_school(closed_school, ambition, counter)
+counter = populate_school(closed_school, ucl, counter)
 counter = populate_school(monstropolis_academy, ambition, counter)
 
-counter = overlap_scenarios(predecessor_school: monsters_college, successor_school: school_of_excellence, lead_provider: ambition, counter:)
-overlap_scenarios(predecessor_school: girls_high_school, successor_school: monstropolis_academy, lead_provider: teach_first, counter:)
+counter = overlap_scenarios(predecessor_school: monsters_college, successor_school: school_of_excellence, lead_provider: ucl, counter:)
+overlap_scenarios(predecessor_school: girls_high_school, successor_school: monstropolis_academy, lead_provider: ucl, counter:)
 
 print_seed_info("\n🌱 Closures:")
 print_seed_info("🔒 #{Colourize.text(closed_school.name, :yellow)} (URN: #{Colourize.text(closed_school.urn, :yellow)}) closed on #{Colourize.text(closed_school.closed_on, :yellow)}", indent: 2)
