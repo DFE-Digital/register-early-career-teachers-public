@@ -3,9 +3,10 @@ class AppropriateBodyPeriod < ApplicationRecord
   enum :body_type, {
     local_authority: "local_authority",
     national: "national",
+    teaching_school: "teaching_school",
     teaching_school_hub: "teaching_school_hub"
   }, validate: {
-    message: "Must be local authority, national or teaching school hub"
+    message: "Must be local authority, national, teaching school hub or teaching school"
   }
 
   # include Interval

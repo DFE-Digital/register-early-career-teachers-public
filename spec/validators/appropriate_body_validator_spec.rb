@@ -43,6 +43,15 @@ RSpec.describe AppropriateBodyValidator, type: :model do
     end
   end
 
+  context "when the appropriate_body is a teaching school" do
+    let(:appropriate_body_id) { FactoryBot.create(:appropriate_body_period, :teaching_school) }
+
+    it "adds an error" do
+      expect(subject).not_to be_valid
+      expect(subject.errors[:appropriate_body]).to include("Select a valid appropriate body which will be supporting the ECT's induction")
+    end
+  end
+
   context "when the school is state funded" do
     let(:school) { double(state_funded?: true) }
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_12_075429) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_14_175500) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -21,7 +21,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_12_075429) do
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
   create_enum "anonymisation_reasons", ["registered_in_error", "teacher_record_merged"]
-  create_enum "appropriate_body_type", ["local_authority", "national", "teaching_school_hub"]
+  create_enum "appropriate_body_type", ["local_authority", "national", "teaching_school", "teaching_school_hub"]
   create_enum "batch_status", ["pending", "processing", "processed", "completing", "completed", "failed"]
   create_enum "batch_type", ["action", "claim"]
   create_enum "contract_types", ["ecf", "ittecf_ectp"]
