@@ -463,7 +463,6 @@ erDiagram
   Contract }o--|| FrameworkAgreement : belongs_to
   AppropriateBodyPeriod {
     integer id
-    integer appropriate_body_id
     enum body_type
     datetime created_at
     uuid dfe_sign_in_organisation_id
