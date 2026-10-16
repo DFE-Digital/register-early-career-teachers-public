@@ -1,0 +1,23 @@
+<%#
+---
+title: When an access token expires
+sidebar_position: 7
+---
+%>
+<%
+  page_data(
+    title: "When an access token expires",
+    error: false,
+    caption: "API Developer documentation",
+    caption_size: 'l'
+  )
+%>
+
+<p class="govuk-body">
+An access token lasts for 1 year from the date we issue it. You cannot use it to access the API after it has expired. 
+</p>
+
+<p class="govuk-body">
+To get a new access token, follow the <%= govuk_link_to("authorisation process", api_documentation_authorisation_page_path("getting-an-oauth-access-token"), no_visited_state: true) %> again. We do not support refresh tokens.
+</p>
+
