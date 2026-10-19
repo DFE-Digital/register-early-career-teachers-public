@@ -451,6 +451,7 @@ erDiagram
     date started_on
     datetime updated_at
     boolean uplift_fees_enabled
+    boolean declarations_in_sequence_enabled
   }
   Contract {
     integer id
