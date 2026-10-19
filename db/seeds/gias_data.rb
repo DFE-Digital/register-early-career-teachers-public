@@ -227,6 +227,11 @@ def populate_school(gias_school, lead_provider, counter = 0)
     finished_on = finished_dates[i]
 
     create_mentorship(mentee:, mentor:, finished_on:)
+
+    if finished_on
+      mentor.update!(reported_leaving_by_school: school)
+      mentee.update!(reported_leaving_by_school: school)
+    end
   end
 
   counter
