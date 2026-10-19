@@ -523,7 +523,7 @@ GEM
     pg (1.7.0-x86_64-linux-musl)
     pg_query (6.2.5)
       google-protobuf (>= 4.34.0)
-    playwright-ruby-client (1.63.0)
+    playwright-ruby-client (1.64.0)
       base64
       concurrent-ruby (>= 1.1.6)
       mime-types (>= 3.0)
@@ -892,7 +892,7 @@ DEPENDENCIES
   omniauth_openid_connect
   pg (~> 1.7)
   pg_query
-  playwright-ruby-client
+  playwright-ruby-client (~> 1.64)
   propshaft
   prosopite
   puma (>= 5.0)

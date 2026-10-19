@@ -79,7 +79,7 @@ end
 
 group :test do
   gem "capybara"
-  gem "playwright-ruby-client"
+  gem "playwright-ruby-client", "~> 1.64"
   gem "rspec"
   gem "rspec-rails"
   gem "shoulda-matchers"
