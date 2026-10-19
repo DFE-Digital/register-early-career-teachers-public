@@ -52,6 +52,7 @@ describe API::DeclarationSerializer, type: :serializer do
       expect(attributes["evidence_held"]).to eq(declaration.evidence_type)
 
       expect(attributes["lead_provider_name"]).to eq(lead_provider.name)
+      expect(attributes["cohort"]).to eq(declaration.contract_period.year.to_s)
     end
 
     describe "course_identifier" do
