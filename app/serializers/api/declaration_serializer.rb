@@ -4,6 +4,7 @@ class API::DeclarationSerializer < Blueprinter::Base
       :payment_statement,
       :clawback_statement,
       :delivery_partner_when_created,
+      :contract_period,
       {
         mentorship_period: { mentor: :teacher },
         training_period: [
@@ -49,6 +50,7 @@ class API::DeclarationSerializer < Blueprinter::Base
     field(:uplift_paid?, name: :uplift_paid)
     field(:evidence_type, name: :evidence_held)
     field(:lead_provider_name) { |declaration| declaration.training_period.lead_provider.name }
+    field(:cohort) { |declaration| declaration.contract_period.year.to_s }
   end
 
   identifier :api_id, name: :id
