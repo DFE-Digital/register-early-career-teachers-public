@@ -1,0 +1,60 @@
+<% page_data(
+  title: "Change TRN for deactivated record",
+  error: @wizard.current_step.errors.present?,
+  backlink_href: admin_teacher_path(@teacher)
+) %>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <p class="govuk-body">
+      You’re changing the TRN for the deactivated record
+      <strong>TRN <%= @teacher.trn %></strong>.
+    </p>
+
+    <p class="govuk-body">
+      Depending on the TRN you're changing it to, TRN details might be merged.
+      We'll check the new TRN when you enter it.
+    </p>
+
+    <%= govuk_inset_text do %>
+      TRN changes and merges will be made to the register early career teachers
+      service only. They will not be made to any other service or system,
+      for example TRS.
+    <% end %>
+
+    <h2 class="govuk-heading-m">If the new TRN exists in this service</h2>
+
+    <p class="govuk-body">
+      The records will be merged and will use the new TRN.
+      The deactivated TRN will be deleted.
+    </p>
+
+    <h2 class="govuk-heading-m">If the new TRN does not exist in this service</h2>
+
+    <p class="govuk-body">
+      The deactivated record will use the new TRN.
+      The deactivated TRN will be deleted.
+    </p>
+
+    <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |form| %>
+      <%= content_for(:error_summary) { form.govuk_error_summary } %>
+
+      <%= form.govuk_text_field(
+        :trn,
+        label: { text: "Enter the new TRN", size: "m" },
+        width: 10,
+        inputmode: "numeric"
+      ) %>
+
+      <%= form.govuk_submit "Continue" %>
+    <% end %>
+
+    <p class="govuk-body">
+      <%= govuk_link_to(
+        "Cancel and go back to #{@wizard.teacher_name}",
+        admin_teacher_path(@teacher),
+        no_visited_state: true
+      ) %>
+    </p>
+  </div>
+</div>

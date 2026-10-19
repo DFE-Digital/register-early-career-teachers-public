@@ -129,5 +129,108 @@ RSpec.describe Teachers::ReplaceTRN do
         expect(Event.where(event_type: "teacher_trn_replaced")).to be_empty
       end
     end
+
+    describe "#replace_deactivated!" do
+      subject(:replace_trn) do
+        described_class.new(teacher:).replace_deactivated!(
+          new_trn:,
+          author:
+        )
+      end
+
+      let(:teacher) do
+        FactoryBot.create(
+          :teacher,
+          :deactivated_in_trs,
+          trn: old_trn
+        )
+      end
+
+      let(:old_trn) { "7654321" }
+      let(:new_trn) { "2345678" }
+      let(:author) { Events::SystemAuthor.new }
+
+      it "replaces a deactivated TRN with the supplied TRN" do
+        replace_trn
+
+        expect(teacher.reload).to have_attributes(
+          trn: new_trn,
+          trs_response: "ok",
+          trs_redirected_to: nil
+        )
+      end
+
+      it "records the replacement event with the supplied author" do
+        expect(Events::Record)
+          .to receive(:record_teacher_trn_replaced_event!)
+          .with(teacher:, author:, old_trn:, new_trn:)
+          .and_call_original
+
+        replace_trn
+
+        event = Event.where(event_type: "teacher_trn_replaced").sole
+        expect(event.teacher).to eq(teacher)
+        expect(event.metadata).to eq(
+          "old_trn" => old_trn,
+          "new_trn" => new_trn
+        )
+      end
+
+      it "queues a TRS refresh" do
+        expect { replace_trn }
+          .to have_enqueued_job(Teachers::SyncTeacherWithTRSJob)
+          .with(teacher:)
+      end
+
+      context "when the teacher is not deactivated" do
+        let(:teacher) { FactoryBot.create(:teacher, trn: old_trn) }
+
+        it "rejects the replacement without changing the teacher" do
+          expect { replace_trn }
+            .to raise_error(described_class::TeacherNotDeactivated)
+
+          expect(teacher.reload.trn).to eq(old_trn)
+          expect(Event.where(event_type: "teacher_trn_replaced")).to be_empty
+          expect(Teachers::SyncTeacherWithTRSJob).not_to have_been_enqueued
+        end
+      end
+
+      context "when the replacement TRN already exists" do
+        before { FactoryBot.create(:teacher, trn: new_trn) }
+
+        it "rejects the replacement without changing the teacher" do
+          expect { replace_trn }
+            .to raise_error(ActiveRecord::RecordInvalid)
+
+          expect(teacher.reload).to have_attributes(
+            trn: old_trn,
+            trs_response: "gone"
+          )
+          expect(Event.where(event_type: "teacher_trn_replaced")).to be_empty
+          expect(Teachers::SyncTeacherWithTRSJob).not_to have_been_enqueued
+        end
+      end
+
+      context "when recording the timeline event fails" do
+        before do
+          allow(Events::Record)
+            .to receive(:record_teacher_trn_replaced_event!)
+            .and_raise(StandardError, "Event recording failed")
+        end
+
+        it "rolls back the replacement and does not queue a TRS refresh" do
+          expect { replace_trn }
+            .to raise_error(StandardError, "Event recording failed")
+
+          expect(teacher.reload).to have_attributes(
+            trn: old_trn,
+            trs_response: "gone",
+            trs_redirected_to: nil
+          )
+          expect(teacher.events.where(event_type: "teacher_trn_replaced")).to be_empty
+          expect(Teachers::SyncTeacherWithTRSJob).not_to have_been_enqueued
+        end
+      end
+    end
   end
 end
