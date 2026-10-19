@@ -1,10 +1,18 @@
 version: 2
+
+multi-ecosystem-groups:
+  playwright-sync:
+    schedule:
+      interval: daily
+
 updates:
   - package-ecosystem: bundler
     directory: "/"
     schedule:
       interval: daily
     open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: playwright-ruby-client
     labels:
       - Dependencies
     groups:
@@ -16,11 +24,14 @@ updates:
         patterns:
           - sentry-ruby
           - sentry-rails
+
   - package-ecosystem: npm
     directory: "/"
     schedule:
       interval: daily
     open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: playwright
     labels:
       - Dependencies
     groups:
@@ -29,6 +40,17 @@ updates:
           - esbuild
           - "@esbuild/linux-x64"
           - "@esbuild/darwin-arm64"
+
+  # Playwright packages grouped together across ecosystems
+  - package-ecosystem: bundler
+    directory: "/"
+    patterns: ["playwright-ruby-client"]
+    multi-ecosystem-group: "playwright-sync"
+  - package-ecosystem: npm
+    directory: "/"
+    patterns: ["playwright"]
+    multi-ecosystem-group: "playwright-sync"
+
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
@@ -36,6 +58,7 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - Dependencies
+
   - package-ecosystem: docker
     directory: "/"
     schedule:
