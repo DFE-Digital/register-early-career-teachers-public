@@ -846,7 +846,7 @@ describe TrainingPeriod do
       let(:contract_period) { training_period.schedule.contract_period }
 
       context "when there is a billable declaration" do
-        it "does not allow the school partnership to change" do
+        it "does not allow the lead_provider_delivery_partnership to change" do
           new_school_partnership = make_partnership_for(
             training_period.school,
             contract_period,
@@ -857,6 +857,20 @@ describe TrainingPeriod do
 
           expect(training_period).not_to be_valid
           expect(training_period.errors[:base]).to include("Cannot change the lead provider for a training period with billable declarations")
+        end
+
+        it "allows the school_partnership to change if it is with the same lead_provider_delivery_partnership" do
+          lead_provider_delivery_partnership = training_period.school_partnership.lead_provider_delivery_partnership
+
+          new_school_partnership = FactoryBot.create(
+            :school_partnership,
+            lead_provider_delivery_partnership:,
+            school: training_period.school
+          )
+
+          training_period.school_partnership = new_school_partnership
+
+          expect(training_period).to be_valid
         end
 
         it "does not allow the expression of interest to change" do
