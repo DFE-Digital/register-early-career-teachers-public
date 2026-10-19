@@ -7,7 +7,7 @@ module API::SchoolPartnerships
     attribute :delivery_partner_api_id
 
     validate :school_partnership_exists
-    validate :delivery_partnership_can_become_school_partnership, if: -> { errors.empty? }
+    validate :delivery_partner_is_eligible_for_school_partnership, if: -> { errors.empty? }
 
     def update
       return false unless valid?
@@ -48,7 +48,7 @@ module API::SchoolPartnerships
       errors.add(:school_partnership_id, "The '#/school_partnership_id' you have entered is invalid. Check partnership details and try again.") unless school_partnership
     end
 
-    def delivery_partnership_can_become_school_partnership
+    def delivery_partner_is_eligible_for_school_partnership
       return errors.add(:delivery_partner_api_id, "Enter a '#/delivery_partner_api_id'.") if delivery_partner_api_id.blank?
       return errors.add(:delivery_partner_api_id, "The '#/delivery_partner_api_id' you have entered is invalid. Check delivery partner details and try again.") unless delivery_partner
       return errors.add(:delivery_partner_api_id, "The entered delivery partner is not recognised to be working in partnership with you for the given contract period. Contact the DfE for more information.") unless lead_provider_delivery_partnership
