@@ -9,7 +9,7 @@
 %>
 
 <%=
-  govuk_summary_list do |component|
+  govuk_summary_list(actions: false) do |component|
     component.with_row do |row|
       row.with_key(text: 'Name')
       row.with_value(text: @user.name)
