@@ -6,6 +6,8 @@ module AtSchoolPeriod
 
   included do
     # Associations
+    belongs_to :reported_leaving_by_school, class_name: "School", optional: true
+
     has_many :events
 
     has_one :current_or_next_training_period, -> { current_or_future.earliest_first }, class_name: "TrainingPeriod"

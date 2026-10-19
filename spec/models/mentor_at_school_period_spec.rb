@@ -26,6 +26,7 @@ describe MentorAtSchoolPeriod do
   describe "associations" do
     it { is_expected.to belong_to(:school).inverse_of(:mentor_at_school_periods) }
     it { is_expected.to belong_to(:teacher).inverse_of(:mentor_at_school_periods) }
+    it { is_expected.to belong_to(:reported_leaving_by_school).class_name("School").optional }
     it { is_expected.to have_many(:mentorship_periods).inverse_of(:mentor) }
     it { is_expected.to have_many(:training_periods) }
     it { is_expected.to have_many(:declarations).through(:training_periods) }
