@@ -10,8 +10,7 @@ module API::Declarations
     attribute :declaration_api_id
     attribute :lead_provider_id
 
-    validate :not_already_voided
-    validate :voidable_payment
+    validate :declaration_is_voidable, if: -> { errors.empty? }
 
     def void
       return false unless valid?
@@ -21,15 +20,9 @@ module API::Declarations
 
   private
 
-    def not_already_voided
-      return if errors[:declaration_api_id].any?
-      return unless declaration.payment_status_voided?
+    def declaration_is_voidable
+      return errors.add(:declaration_api_id, "The declaration has already been voided.") if declaration.payment_status_voided?
 
-      errors.add(:declaration_api_id, "The declaration has already been voided.")
-    end
-
-    def voidable_payment
-      return if errors[:declaration_api_id].any?
       return if declaration.voidable_payment?
 
       # This error message might seem strange since the error isn't related to

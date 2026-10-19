@@ -10,9 +10,7 @@ module API::Declarations
     attribute :declaration_api_id
     attribute :lead_provider_id
 
-    validate :paid
-    validate :not_already_refunded
-    validate :output_fee_statement_available
+    validate :declaration_is_refundable, if: -> { errors.empty? }
 
     def clawback
       return false unless valid?
@@ -29,23 +27,10 @@ module API::Declarations
       )
     end
 
-    def paid
-      return if errors[:declaration_api_id].any?
-      return if declaration.payment_status_paid?
+    def declaration_is_refundable
+      return errors.add(:declaration_api_id, "The declaration must be paid before it can be clawed back") unless declaration.payment_status_paid?
+      return errors.add(:declaration_api_id, "The declaration will or has been refunded") unless declaration.clawback_status_no_clawback?
 
-      errors.add(:declaration_api_id, "The declaration must be paid before it can be clawed back")
-    end
-
-    def not_already_refunded
-      return if errors[:declaration_api_id].any?
-      return if declaration.clawback_status_no_clawback?
-
-      errors.add(:declaration_api_id, "The declaration will or has been refunded")
-    end
-
-    def output_fee_statement_available
-      return if errors[:declaration_api_id].any?
-      return if errors[:lead_provider_id].any?
       return if clawback_service.next_available_output_fee_statement.present?
 
       no_output_fee_statement_error_message = <<~TXT.squish
@@ -53,6 +38,7 @@ module API::Declarations
         contract period. The funding contract for this contract period has
         ended. Get in touch if you need to discuss this with us
       TXT
+
       errors.add(:declaration_api_id, no_output_fee_statement_error_message)
     end
 
