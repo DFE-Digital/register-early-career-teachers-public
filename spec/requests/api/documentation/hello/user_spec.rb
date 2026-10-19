@@ -17,7 +17,7 @@ RSpec.describe "Hello user endpoint", openapi_spec: "hello/swagger.yaml", type: 
     responds_with 401, "The access token is missing, unknown, expired or revoked. A missing token returns no body." do
       let(:Authorization) { bearer_auth_headers(authorization:, token: "unknown").fetch("Authorization") }
 
-      serialized_using API::OAuth::ErrorSerializer
+      serialized_using API::OAuth::ErrorSerializer, include_namespace: true
     end
 
     responds_with 429, "Too many requests. Retry after the rate limit period has passed.", rack_attack: true do

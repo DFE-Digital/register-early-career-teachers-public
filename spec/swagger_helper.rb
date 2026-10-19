@@ -154,7 +154,7 @@ RSpec.configure do |config|
           **API::Hello::WorldSerializer.openapi_schema_definition,
           **API::Hello::ClientSerializer.openapi_schema_definition,
           **API::Hello::UserSerializer.openapi_schema_definition,
-          **API::OAuth::ErrorSerializer.openapi_schema_definition,
+          **API::OAuth::ErrorSerializer.openapi_schema_definition(include_namespace: true),
         },
       },
     },
@@ -175,7 +175,7 @@ RSpec.configure do |config|
         },
         schemas: {
           **API::Induction::V1::AppropriateBodySerializer.openapi_schema_definition,
-          **API::OAuth::ErrorSerializer.openapi_schema_definition,
+          **API::OAuth::ErrorSerializer.openapi_schema_definition(include_namespace: true),
         },
       },
     },

@@ -18,7 +18,7 @@ paths:
           content:
             application/json:
               schema:
-                "$ref": "#/components/schemas/HelloClient"
+                "$ref": "#/components/schemas/Client"
         '401':
           description: The client credentials are invalid
           content:
@@ -41,7 +41,7 @@ paths:
           content:
             application/json:
               schema:
-                "$ref": "#/components/schemas/HelloUser"
+                "$ref": "#/components/schemas/User"
         '401':
           description: The access token is missing, unknown, expired or revoked. A
             missing token returns no body.
@@ -64,7 +64,7 @@ paths:
           content:
             application/json:
               schema:
-                "$ref": "#/components/schemas/HelloWorld"
+                "$ref": "#/components/schemas/World"
         '429':
           description: Too many requests. Retry after the rate limit period has passed.
 components:
@@ -78,7 +78,7 @@ components:
       scheme: basic
       description: OAuth 2.0 client ID and secret
   schemas:
-    HelloWorld:
+    World:
       description: Test API for unrestricted API.
       type: object
       required:
@@ -88,7 +88,7 @@ components:
           type: string
           description: An anonymous greeting.
           example: Hello World
-    HelloClient:
+    Client:
       description: Test API for APIs restricted by the client credentials.
       type: object
       required:
@@ -98,7 +98,7 @@ components:
           type: string
           description: The API client name.
           example: Vendor Ltd
-    HelloUser:
+    User:
       description: Test API for APIs restricted by the OAuth access token.
       type: object
       required:
