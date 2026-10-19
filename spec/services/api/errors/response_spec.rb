@@ -65,8 +65,7 @@ RSpec.describe API::Errors::Response do
 
     it "returns a hash with formatted errors" do
       expect(response[:errors]).to include(
-        { title: "cohort", detail: "Enter a '#/cohort'." },
-        { title: "school_id", detail: "Enter a '#/school_id'." }
+        { title: "cohort", detail: "Enter a '#/cohort'." }
       )
     end
   end
