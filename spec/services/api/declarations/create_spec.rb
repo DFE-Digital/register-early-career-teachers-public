@@ -121,6 +121,20 @@ RSpec.describe API::Declarations::Create, type: :model do
             it { is_expected.to have_one_error_only }
             it { is_expected.to have_api_error(:evidenced_at, "The '#/evidenced_at' value cannot be a future date. Check the date and try again.") }
           end
+
+          context "when the milestone has no milestone_date" do
+            before { milestone.update!(milestone_date: nil) }
+
+            it { is_expected.to have_one_error_only }
+            it { is_expected.to have_api_error(:evidenced_at, "The '#/evidenced_at' value cannot be a future date. Check the date and try again.") }
+          end
+
+          context "when the milestone has a milestone_date that is in the future" do
+            before { milestone.update!(milestone_date: 1.year.from_now) }
+
+            it { is_expected.to have_one_error_only }
+            it { is_expected.to have_api_error(:evidenced_at, "The '#/evidenced_at' value cannot be a future date. Check the date and try again.") }
+          end
         end
 
         context "when `evidenced_at` is not in the correct format" do

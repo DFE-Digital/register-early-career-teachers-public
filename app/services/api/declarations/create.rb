@@ -201,15 +201,16 @@ module API::Declarations
     def evidenced_at_date_range
       return (..Time.zone.now) unless milestone
 
-      started_at = milestone_started_at
-      finished_at = [milestone_finished_at, Time.zone.now].compact.min
+      started_at = [milestone_started_at]
+      # We include Time.zone.now to ensure the evidenced_at is always in the past.
+      finished_at = [milestone_finished_at, Time.zone.now]
 
       if contract_period.declarations_in_sequence_enabled?
-        started_at = [started_at, surrounding_declaration_date_range.begin].compact.max
-        finished_at = [finished_at, surrounding_declaration_date_range.end].compact.min
+        started_at << surrounding_declaration_date_range.begin
+        finished_at << surrounding_declaration_date_range.end
       end
 
-      started_at..finished_at
+      (started_at.compact.max)..(finished_at.compact.min)
     end
 
     def surrounding_declaration_date_range
