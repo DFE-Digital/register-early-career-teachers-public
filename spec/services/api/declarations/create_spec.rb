@@ -439,6 +439,13 @@ RSpec.describe API::Declarations::Create, type: :model do
           context "when contract period is 2025 or later" do
             let(:contract_period_year) { 2025 }
 
+            context "when evidenced at does not match the milestone dates" do
+              let(:evidenced_at) { (milestone.start_date - 1.day).rfc3339 }
+
+              it { is_expected.to have_one_error_only }
+              it { is_expected.to have_api_error(:evidenced_at, "Evidenced at must be on or after the milestone start date for the same declaration type.") }
+            end
+
             context "when theres existing `started` declaration" do
               let!(:milestone) do
                 FactoryBot.create(:milestone,
