@@ -28,16 +28,18 @@ module SelfDocumentable
       }.compact
     end
 
-    def openapi_schema_name
-      name.delete_prefix("API::").delete_suffix("Serializer").gsub("::", "")
+    def openapi_schema_name(include_namespace: false)
+      schema_name = name.delete_prefix("API::").delete_suffix("Serializer")
+      schema_name = schema_name.split("::").last unless include_namespace
+      schema_name.delete("::")
     end
 
-    def openapi_schema_definition
-      { openapi_schema_name => openapi_schema }
+    def openapi_schema_definition(include_namespace: false)
+      { openapi_schema_name(include_namespace:) => openapi_schema }
     end
 
-    def openapi_ref
-      { "$ref": "#/components/schemas/#{openapi_schema_name}" }
+    def openapi_ref(include_namespace: false)
+      { "$ref": "#/components/schemas/#{openapi_schema_name(include_namespace:)}" }
     end
   end
 end

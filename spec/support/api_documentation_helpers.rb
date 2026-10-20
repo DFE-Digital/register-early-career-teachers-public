@@ -34,7 +34,7 @@ module APIDocumentationHelpers
     end
   end
 
-  def serialized_using(serializer)
-    schema serializer.openapi_ref
+  def serialized_using(serializer, include_namespace: false)
+    schema serializer.openapi_ref(include_namespace:)
   end
 end
