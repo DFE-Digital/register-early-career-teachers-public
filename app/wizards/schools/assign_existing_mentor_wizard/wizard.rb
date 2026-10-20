@@ -12,8 +12,12 @@ module Schools::AssignExistingMentorWizard
 
         graph.root :review_mentor_eligibility
 
-        graph.add_edge from: :review_mentor_eligibility, to: :confirmation
+        # lead_provider has no inbound edge. Users land on it directly, either from
+        # Schools::MentorshipsController when the ECT's lead provider is unavailable,
+        # or from the "different provider" link on review_mentor_eligibility.
         graph.add_edge from: :lead_provider, to: :confirmation
+
+        graph.add_edge from: :review_mentor_eligibility, to: :confirmation
       end
     end
 
