@@ -14,12 +14,18 @@ module Teachers
         new_trn: teacher.trs_redirected_to,
         author: Events::SystemAuthor.new
       )
+
+      Teachers::SyncTeacherWithTRSJob.perform_later(teacher:)
     end
 
     def replace_deactivated!(new_trn:, author:)
-      raise TeacherNotDeactivated unless teacher.trs_response_gone?
+      teacher.with_lock do
+        raise TeacherNotDeactivated unless teacher.trs_response_gone?
 
-      replace_trn!(new_trn:, author:)
+        replace_trn!(new_trn:, author:)
+      end
+
+      Teachers::SyncTeacherWithTRSJob.perform_later(teacher:)
     end
 
   private
@@ -43,8 +49,6 @@ module Teachers
           new_trn:
         )
       end
-
-      Teachers::SyncTeacherWithTRSJob.perform_later(teacher:)
     end
 
     def merge_required?

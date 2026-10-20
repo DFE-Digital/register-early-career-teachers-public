@@ -48,6 +48,7 @@ module Admin
 
       def check_allowed_step
         return head :not_found unless wizard_class.step?(current_step)
+        return redirect_teacher_not_deactivated if @wizard.allowed_steps.empty?
         return if @wizard.allowed_step?
 
         redirect_to @wizard.allowed_step_path

@@ -54,6 +54,15 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
         "Change the TRN for this deactivated record"
       )
     end
+
+    it "blocks submitting a replacement TRN" do
+      expect(api_client).not_to receive(:find_teacher)
+
+      post entry_path, params: { enter_trn: { trn: new_trn } }
+
+      expect(response).to have_http_status(:unauthorized)
+      expect(teacher.reload.trn).to eq("7654321")
+    end
   end
 
   %i[finance product_team].each do |role|
@@ -271,10 +280,13 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
   context "when the teacher is not deactivated" do
     let(:teacher) { FactoryBot.create(:teacher, trs_response: "ok") }
 
-    it "redirects back to the teacher overview" do
+    it "redirects back to the teacher overview with an explanation" do
       get entry_path
 
       expect(response).to redirect_to(admin_teacher_path(teacher))
+      expect(flash[:error]).to eq(
+        "This teacher record is no longer deactivated."
+      )
     end
   end
 end

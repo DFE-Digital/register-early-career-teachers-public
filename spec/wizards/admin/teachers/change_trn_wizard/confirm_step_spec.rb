@@ -1,16 +1,17 @@
 RSpec.describe Admin::Teachers::ChangeTRNWizard::ConfirmStep do
   subject(:step) do
-    described_class.new(
-      confirmed:,
-      expected_trn: "2345678",
-      wizard:
-    )
+    described_class.new(confirmed:, expected_trn:, wizard:)
   end
 
+  let(:expected_trn) { "2345678" }
   let(:confirmed) { "1" }
   let(:store) { FactoryBot.build(:session_repository) }
   let(:wizard) do
-    double("ChangeTRNWizard", store:, replace_trn!: true)
+    instance_double(
+      Admin::Teachers::ChangeTRNWizard::Wizard,
+      store:,
+      replace_trn!: true
+    )
   end
 
   before do
@@ -59,6 +60,32 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::ConfirmStep do
       it "does not mark the journey as complete" do
         expect { step.save! }
           .to raise_error(::Teachers::ReplaceTRN::TeacherNotDeactivated)
+
+        expect(store.trn_replaced).to be_nil
+      end
+    end
+
+    context "when the proposed TRN has changed" do
+      let(:expected_trn) { "3456789" }
+
+      it "rejects confirmation without replacing the TRN" do
+        expect(wizard).not_to receive(:replace_trn!)
+
+        expect { step.save! }
+          .to raise_error(described_class::ProposedTRNChanged)
+
+        expect(store.trn_replaced).to be_nil
+      end
+    end
+
+    context "when the reviewed TRN is missing" do
+      let(:expected_trn) { nil }
+
+      it "rejects confirmation without replacing the TRN" do
+        expect(wizard).not_to receive(:replace_trn!)
+
+        expect { step.save! }
+          .to raise_error(described_class::ProposedTRNChanged)
 
         expect(store.trn_replaced).to be_nil
       end
