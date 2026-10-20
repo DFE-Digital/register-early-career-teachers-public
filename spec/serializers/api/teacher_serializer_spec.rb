@@ -245,15 +245,28 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
           end
 
           describe "`eligible_for_funding`" do
-            let(:eligibility_service) { instance_double(API::Teachers::EligibilityForFunding, eligible?: true) }
-
-            before do
-              allow(API::Teachers::EligibilityForFunding).to receive(:new).and_return(eligibility_service)
+            it "returns true when the teacher is eligible for funding" do
+              teacher.update!(
+                ect_first_became_eligible_for_training_at: 1.day.ago,
+                ect_became_ineligible_for_funding_on: nil
+              )
+              expect(ect_enrolment["eligible_for_funding"]).to be(true)
             end
 
-            it "delegates to API::Teachers::EligibilityForFunding" do
-              expect(ect_enrolment["eligible_for_funding"]).to be(true)
-              expect(API::Teachers::EligibilityForFunding).to have_received(:new).with(teacher:, teacher_type: :ect)
+            it "returns false when the teacher is not eligible for funding" do
+              teacher.update!(
+                ect_first_became_eligible_for_training_at: nil,
+                ect_became_ineligible_for_funding_on: 1.day.ago
+              )
+              expect(ect_enrolment["eligible_for_funding"]).to be(false)
+            end
+
+            it "returns nil when the teacher eligibility is undetermined" do
+              teacher.update!(
+                ect_first_became_eligible_for_training_at: nil,
+                ect_became_ineligible_for_funding_on: nil
+              )
+              expect(ect_enrolment["eligible_for_funding"]).to be_nil
             end
           end
 
@@ -471,15 +484,30 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
           end
 
           describe "`eligible_for_funding`" do
-            let(:eligibility_service) { instance_double(API::Teachers::EligibilityForFunding, eligible?: true) }
-
-            before do
-              allow(API::Teachers::EligibilityForFunding).to receive(:new).and_return(eligibility_service)
+            it "returns true when the teacher is eligible for funding" do
+              teacher.update!(
+                mentor_first_became_eligible_for_training_at: 1.day.ago,
+                mentor_became_ineligible_for_funding_on: nil,
+                mentor_became_ineligible_for_funding_reason: nil
+              )
+              expect(mentor_enrolment["eligible_for_funding"]).to be(true)
             end
 
-            it "delegates to API::Teachers::EligibilityForFunding" do
-              expect(mentor_enrolment["eligible_for_funding"]).to be(true)
-              expect(API::Teachers::EligibilityForFunding).to have_received(:new).with(teacher:, teacher_type: :mentor)
+            it "returns false when the teacher is not eligible for funding" do
+              teacher.update!(
+                mentor_first_became_eligible_for_training_at: nil,
+                mentor_became_ineligible_for_funding_on: 1.day.ago
+              )
+              expect(mentor_enrolment["eligible_for_funding"]).to be(false)
+            end
+
+            it "returns nil when the teacher eligibility is undetermined" do
+              teacher.update!(
+                mentor_first_became_eligible_for_training_at: nil,
+                mentor_became_ineligible_for_funding_on: nil,
+                mentor_became_ineligible_for_funding_reason: nil
+              )
+              expect(mentor_enrolment["eligible_for_funding"]).to be_nil
             end
           end
 

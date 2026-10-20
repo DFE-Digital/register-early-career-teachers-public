@@ -6,9 +6,11 @@ class API::Teachers::EligibilityForFunding
     @teacher_type = teacher_type
   end
 
-  def eligible?
-    earliest = [eligible_on, ineligible_on].compact.min
-    earliest && earliest == eligible_on
+  def status
+    return :ineligible if ineligible_on.present?
+    return :eligible if eligible_on.present?
+
+    :undetermined
   end
 
 private
