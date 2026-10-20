@@ -201,23 +201,28 @@ module API::Declarations
     def evidenced_at_date_range
       return (..Time.zone.now) unless milestone
 
-      range = if contract_period.declarations_in_sequence_enabled?
-                surrounding_declaration_date_range
-              else
-                milestone_started_at..milestone_finished_at
-              end
+      started_at = [milestone_started_at]
+      # We include Time.zone.now to ensure the evidenced_at is always in the past.
+      finished_at = [milestone_finished_at, Time.zone.now]
 
-      range.begin..[range.end, Time.zone.now].compact.min
+      if contract_period.declarations_in_sequence_enabled?
+        started_at << surrounding_declaration_date_range.begin
+        finished_at << surrounding_declaration_date_range.end
+      end
+
+      (started_at.compact.max)..(finished_at.compact.min)
     end
 
     def surrounding_declaration_date_range
-      types = Declaration.declaration_types.values
-      index = types.index(declaration_type)
+      @surrounding_declaration_date_range ||= begin
+        types = Declaration.declaration_types.values
+        index = types.index(declaration_type)
 
-      before = existing_declarations.billable_or_changeable_for_declaration_type(types.take(index))
-      after = existing_declarations.billable_or_changeable_for_declaration_type(types.drop(index + 1))
+        before = existing_declarations.billable_or_changeable_for_declaration_type(types.take(index))
+        after = existing_declarations.billable_or_changeable_for_declaration_type(types.drop(index + 1))
 
-      before.maximum(:evidenced_at)..after.minimum(:evidenced_at)
+        before.maximum(:evidenced_at)..after.minimum(:evidenced_at)
+      end
     end
 
     def evidenced_at_date_range_error_message
