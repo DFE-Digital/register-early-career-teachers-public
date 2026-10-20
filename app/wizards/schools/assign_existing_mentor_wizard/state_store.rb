@@ -6,6 +6,8 @@ module Schools::AssignExistingMentorWizard
 
     def started? = ect_id.present? && mentor_period_id.present?
 
+    # Seeded by Schools::MentorshipsController rather than collected by a step;
+    # dfe-wizard doesn't generate readers
     def ect_id = read[:ect_id]
     def mentor_period_id = read[:mentor_period_id]
 
