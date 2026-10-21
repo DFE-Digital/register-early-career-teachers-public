@@ -13,10 +13,14 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
       api_updated_at:
     )
   end
+  let(:eligible_for_funding) { false }
+  let(:eligibility_service) { instance_double(API::Teachers::EligibilityForFunding, eligible_for_funding:) }
 
   before do
     # Ensure other metadata exists for another lead provider.
     FactoryBot.create(:lead_provider)
+
+    allow(API::Teachers::EligibilityForFunding).to receive(:new).and_return(eligibility_service)
   end
 
   describe ".dependencies" do
@@ -245,28 +249,10 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
           end
 
           describe "`eligible_for_funding`" do
-            it "returns true when the teacher is eligible for funding" do
-              teacher.update!(
-                ect_first_became_eligible_for_training_at: 1.day.ago,
-                ect_became_ineligible_for_funding_on: nil
-              )
-              expect(ect_enrolment["eligible_for_funding"]).to be(true)
-            end
+            let(:eligible_for_funding) { true }
 
-            it "returns false when the teacher is not eligible for funding" do
-              teacher.update!(
-                ect_first_became_eligible_for_training_at: nil,
-                ect_became_ineligible_for_funding_on: 1.day.ago
-              )
-              expect(ect_enrolment["eligible_for_funding"]).to be(false)
-            end
-
-            it "returns nil when the teacher eligibility is undetermined" do
-              teacher.update!(
-                ect_first_became_eligible_for_training_at: nil,
-                ect_became_ineligible_for_funding_on: nil
-              )
-              expect(ect_enrolment["eligible_for_funding"]).to be_nil
+            it "serializes the value returned by API::Teachers::EligibilityForFunding" do
+              expect(ect_enrolment["eligible_for_funding"]).to be(eligible_for_funding)
             end
           end
 
@@ -484,30 +470,10 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
           end
 
           describe "`eligible_for_funding`" do
-            it "returns true when the teacher is eligible for funding" do
-              teacher.update!(
-                mentor_first_became_eligible_for_training_at: 1.day.ago,
-                mentor_became_ineligible_for_funding_on: nil,
-                mentor_became_ineligible_for_funding_reason: nil
-              )
-              expect(mentor_enrolment["eligible_for_funding"]).to be(true)
-            end
+            let(:eligible_for_funding) { false }
 
-            it "returns false when the teacher is not eligible for funding" do
-              teacher.update!(
-                mentor_first_became_eligible_for_training_at: nil,
-                mentor_became_ineligible_for_funding_on: 1.day.ago
-              )
-              expect(mentor_enrolment["eligible_for_funding"]).to be(false)
-            end
-
-            it "returns nil when the teacher eligibility is undetermined" do
-              teacher.update!(
-                mentor_first_became_eligible_for_training_at: nil,
-                mentor_became_ineligible_for_funding_on: nil,
-                mentor_became_ineligible_for_funding_reason: nil
-              )
-              expect(mentor_enrolment["eligible_for_funding"]).to be_nil
+            it "serializes the value returned by API::Teachers::EligibilityForFunding" do
+              expect(mentor_enrolment["eligible_for_funding"]).to be(eligible_for_funding)
             end
           end
 

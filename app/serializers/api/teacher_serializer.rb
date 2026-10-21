@@ -78,10 +78,7 @@ class API::TeacherSerializer < Blueprinter::Base
       field(:participant_status) { |(training_period, teacher, _)| API::TrainingPeriods::TeacherStatus.new(latest_training_period: training_period, teacher:).status }
       field(:eligible_for_funding) do |(training_period, teacher, _)|
         teacher_type = training_period.for_ect? ? :ect : :mentor
-        case API::Teachers::EligibilityForFunding.new(teacher:, teacher_type:).status
-        when :eligible then true
-        when :ineligible then false
-        end
+        API::Teachers::EligibilityForFunding.new(teacher:, teacher_type:).eligible_for_funding
       end
       field(:pupil_premium_uplift) do |(training_period, _, metadata)|
         uplift_value(training_period, metadata, :pupil_premium_uplift)
