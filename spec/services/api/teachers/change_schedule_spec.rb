@@ -40,6 +40,17 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
             it { is_expected.to have_api_error(:schedule_identifier, "The property '#/schedule_identifier' must be present and correspond to a valid schedule.") }
           end
 
+          context "when schedule identifier is invalid" do
+            # Skip creating the schedule, as the invalid identifier would be rejected by the database enum
+            let!(:schedule) {}
+            let(:schedule_identifier) { "AN-iNvAlId-iDENtifIER" }
+
+            it "returns an error" do
+              expect(subject).to have_one_error_per_attribute
+              expect(subject).to have_api_error(:schedule_identifier, "Enter a valid schedule identifier.")
+            end
+          end
+
           context "when training_period is withdrawn" do
             let!(:training_period) do
               FactoryBot.create(:training_period, :"for_#{trainee_type}", :withdrawn,
