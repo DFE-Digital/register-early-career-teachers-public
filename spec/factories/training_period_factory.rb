@@ -62,8 +62,14 @@ FactoryBot.define do
         school_period_school { at_school_period&.school || FactoryBot.create(:school) }
       end
 
+      transient do
+        lead_provider { FactoryBot.create(:lead_provider) }
+      end
+
       school_partnership do
         association :school_partnership,
+                    :for_year,
+                    lead_provider:,
                     school: school_period_school
       end
     end

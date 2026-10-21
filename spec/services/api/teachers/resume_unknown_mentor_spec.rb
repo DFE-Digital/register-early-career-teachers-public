@@ -16,7 +16,12 @@ RSpec.describe API::Teachers::ResumeUnknownMentor, type: :model do
   let(:lead_provider_id) { lead_provider.id }
   let(:teacher_api_id) { mentor_at_school_period.teacher.api_id }
 
-  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :with_training_period, lead_provider:, school:, started_on: 1.month.ago, finished_on: nil) }
+  let!(:ect_at_school_period) do
+    FactoryBot.create(:ect_at_school_period, school:, started_on: 1.month.ago, finished_on: nil).tap do |esp|
+      FactoryBot.create(:training_period, :unfinished, :with_school_partnership, ect_at_school_period: esp, lead_provider:)
+    end
+  end
+
   let(:school_partnership) { ect_at_school_period.training_periods.first.school_partnership }
   let!(:mentorship_period) { FactoryBot.create(:mentorship_period, mentor: mentor_at_school_period, mentee: ect_at_school_period) }
 
