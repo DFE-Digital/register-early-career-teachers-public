@@ -74,7 +74,7 @@ describe API::OAuth::Authorization do
 
       it "is invalid" do
         expect(authorization).not_to be_valid
-        expect(authorization.errors[:redirect_uri]).to include("is not included in the list")
+        expect(authorization).to have_error(:redirect_uri, "is not included in the list")
       end
     end
 
@@ -98,7 +98,7 @@ describe API::OAuth::Authorization do
 
       it "permits only 1 active authorization" do
         expect(authorization).not_to be_valid
-        expect(authorization.errors[:client_id]).to include("Only one active authorization permitted for the same client, appropriate body and redirect URI")
+        expect(authorization).to have_error(:client_id, "Only one active authorization permitted for the same client, appropriate body and redirect URI")
       end
     end
   end

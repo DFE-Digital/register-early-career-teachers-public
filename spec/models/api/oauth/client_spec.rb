@@ -71,7 +71,7 @@ describe API::OAuth::Client do
 
       it "is invalid" do
         expect(client).not_to be_valid
-        expect(client.errors[:grant_types]).to include("is not included in the list")
+        expect(client).to have_error(:grant_types, "is not included in the list")
       end
     end
   end

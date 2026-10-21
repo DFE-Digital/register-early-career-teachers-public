@@ -34,7 +34,7 @@ RSpec.describe Schools::RegisterECTWizard::EmailAddressStep, type: :model do
 
       it "is not valid" do
         expect(subject).not_to be_valid
-        expect(subject.errors[:email]).to include("Enter the email address")
+        expect(subject).to have_error(:email, "Enter the email address")
       end
     end
 
@@ -43,7 +43,7 @@ RSpec.describe Schools::RegisterECTWizard::EmailAddressStep, type: :model do
 
       it "is not valid" do
         expect(subject).not_to be_valid
-        expect(subject.errors[:email]).to include("Enter an email address in the correct format, like name@example.com")
+        expect(subject).to have_error(:email, "Enter an email address in the correct format, like name@example.com")
       end
     end
 

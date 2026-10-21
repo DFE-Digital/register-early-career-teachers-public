@@ -132,7 +132,7 @@ RSpec.describe PendingInductionSubmission do
         it "validates absence of number_of_terms" do
           subject.number_of_terms = 5
           subject.valid?(:release_ect)
-          expect(subject.errors[:number_of_terms]).to include("Delete the number of terms if the induction has no end date")
+          expect(subject).to have_error(:number_of_terms, "Delete the number of terms if the induction has no end date", :release_ect)
         end
       end
 
@@ -141,12 +141,12 @@ RSpec.describe PendingInductionSubmission do
 
         it "is invalid on release_ect" do
           expect(subject.valid?(:release_ect)).to be false
-          expect(subject.errors[:number_of_terms]).to include("Terms can only have up to 1 decimal place")
+          expect(subject).to have_error(:number_of_terms, "Terms can only have up to 1 decimal place", :release_ect)
         end
 
         it "is invalid on record_outcome" do
           expect(subject.valid?(:record_outcome)).to be false
-          expect(subject.errors[:number_of_terms]).to include("Terms can only have up to 1 decimal place")
+          expect(subject).to have_error(:number_of_terms, "Terms can only have up to 1 decimal place", :record_outcome)
         end
       end
 
@@ -209,7 +209,7 @@ RSpec.describe PendingInductionSubmission do
 
         it "adds the correct error message" do
           pending_induction_submission.valid?
-          expect(pending_induction_submission.errors[:started_on]).to include("Start date cannot be in the future")
+          expect(pending_induction_submission).to have_error(:started_on, "Start date cannot be in the future")
         end
       end
     end
@@ -248,7 +248,7 @@ RSpec.describe PendingInductionSubmission do
 
         it "adds the correct error message" do
           pending_induction_submission.valid?
-          expect(pending_induction_submission.errors[:finished_on]).to include("End date cannot be in the future")
+          expect(pending_induction_submission).to have_error(:finished_on, "End date cannot be in the future")
         end
       end
     end
@@ -262,7 +262,7 @@ RSpec.describe PendingInductionSubmission do
         it "is valid" do
           pending_induction_submission.valid?(:register_ect)
 
-          expect(pending_induction_submission.errors[:started_on]).to be_empty
+          expect(pending_induction_submission).to have_no_error(:started_on, nil, :register_ect)
         end
       end
 
@@ -272,7 +272,7 @@ RSpec.describe PendingInductionSubmission do
         it "is invalid" do
           pending_induction_submission.valid?(:register_ect)
 
-          expect(pending_induction_submission.errors[:started_on]).to include("Start date cannot be before QTS award date (1 May 2023)")
+          expect(pending_induction_submission).to have_error(:started_on, "Start date cannot be before QTS award date (1 May 2023)", :register_ect)
         end
       end
     end

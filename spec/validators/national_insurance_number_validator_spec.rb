@@ -43,7 +43,7 @@ RSpec.describe NationalInsuranceNumberValidator, type: :model do
       it "does not add any errors for national insurance number = #{national_insurance_number}" do
         subject = test_class.new(national_insurance_number:)
         subject.valid?
-        expect(subject.errors[:national_insurance_number]).to be_empty
+        expect(subject).to have_no_error(:national_insurance_number)
       end
     end
   end
@@ -54,7 +54,7 @@ RSpec.describe NationalInsuranceNumberValidator, type: :model do
         subject = test_class.new(national_insurance_number:)
         subject.valid?
 
-        expect(subject.errors[:national_insurance_number]).to include("Enter a National Insurance Number in the correct format")
+        expect(subject).to have_error(:national_insurance_number, "Enter a National Insurance Number in the correct format")
       end
     end
   end
@@ -64,7 +64,7 @@ RSpec.describe NationalInsuranceNumberValidator, type: :model do
       subject = test_class.new
       subject.valid?
 
-      expect(subject.errors[:national_insurance_number]).to include("Enter a National Insurance Number")
+      expect(subject).to have_error(:national_insurance_number, "Enter a National Insurance Number")
     end
   end
 end

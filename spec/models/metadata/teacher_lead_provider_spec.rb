@@ -23,13 +23,13 @@ describe Metadata::TeacherLeadProvider do
       it "is not valid if latest_ect_training_period is set without latest_ect_contract_period" do
         metadata.latest_ect_contract_period = nil
         expect(metadata).not_to be_valid
-        expect(metadata.errors[:base]).to include("Latest ECT training period and contract period must both be set or both be nil")
+        expect(metadata).to have_error(:base, "Latest ECT training period and contract period must both be set or both be nil")
       end
 
       it "is not valid if latest_ect_contract_period_year is set without latest_ect_training_period" do
         metadata.latest_ect_training_period = nil
         expect(metadata).not_to be_valid
-        expect(metadata.errors[:base]).to include("Latest ECT training period and contract period must both be set or both be nil")
+        expect(metadata).to have_error(:base, "Latest ECT training period and contract period must both be set or both be nil")
       end
     end
 
@@ -39,13 +39,13 @@ describe Metadata::TeacherLeadProvider do
       it "is not valid if latest_mentor_training_period is set without latest_mentor_contract_period" do
         metadata.latest_mentor_contract_period = nil
         expect(metadata).not_to be_valid
-        expect(metadata.errors[:base]).to include("Latest mentor training period and contract period must both be set or both be nil")
+        expect(metadata).to have_error(:base, "Latest mentor training period and contract period must both be set or both be nil")
       end
 
       it "is not valid if latest_mentor_contract_period is set without latest_mentor_training_period" do
         metadata.latest_mentor_training_period = nil
         expect(metadata).not_to be_valid
-        expect(metadata.errors[:base]).to include("Latest mentor training period and contract period must both be set or both be nil")
+        expect(metadata).to have_error(:base, "Latest mentor training period and contract period must both be set or both be nil")
       end
     end
   end

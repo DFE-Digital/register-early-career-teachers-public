@@ -33,7 +33,7 @@ RSpec.describe Schools::RegisterECTWizard::TrainingProgrammeStep, type: :model d
 
       it "is not valid" do
         expect(subject).not_to be_valid
-        expect(subject.errors[:training_programme]).to include("Select either 'Provider-led' or 'School-led' training")
+        expect(subject).to have_error(:training_programme, "Select either 'Provider-led' or 'School-led' training")
       end
     end
 
@@ -42,7 +42,7 @@ RSpec.describe Schools::RegisterECTWizard::TrainingProgrammeStep, type: :model d
 
       it "is not valid" do
         expect(subject).not_to be_valid
-        expect(subject.errors[:training_programme]).to include("'unknown_training_programme' is not a valid training programme")
+        expect(subject).to have_error(:training_programme, "'unknown_training_programme' is not a valid training programme")
       end
     end
 

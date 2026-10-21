@@ -82,7 +82,7 @@ describe Event do
 
         it "states the author is missing in the email" do
           subject.valid?
-          expect(subject.errors.messages[:base]).to include("Author is missing")
+          expect(subject).to have_error(:base, "Author is missing")
         end
       end
     end
