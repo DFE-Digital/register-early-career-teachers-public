@@ -8,7 +8,7 @@ sidebar_position: 4
   page_data(
     title: "Receive authorisation results",
     error: false,
-    caption: "API Developer documentation",
+    caption: "API developer documentation",
     caption_size: 'l'
   )
 %>
@@ -62,19 +62,19 @@ We’ll add these query parameters to the redirect:
   table.with_body do |body|
     body.with_row do |row|
       row.with_cell(text: "<code>code</code>".html_safe)
-      row.with_cell(text: "The authorisation code, if authorisation succeeds. It’s single-use and expires after 10 minutes so exchange it for an access token straight away.".html_safe)
+      row.with_cell(text: "The authorisation code, if authorisation succeeds. It’s single-use and expires after 10 minutes, so exchange it for an access token straight away.".html_safe)
     end
     body.with_row do |row|
       row.with_cell(text: "<code>state</code>".html_safe)
-      row.with_cell(text: "The <code>state</code> value you sent in your authorisation request, if you sent one. We return it whether authorisation succeeds or fails. ".html_safe)
+      row.with_cell(text: "The <code>state</code> value you sent in your authorisation request, if you sent one. We return it whether authorisation succeeds or fails.".html_safe)
     end
     body.with_row do |row|
       row.with_cell(text: "<code>error</code>".html_safe)
-      row.with_cell(text: "A short identifier for the error such as <code>access_denied</code>, if authorisation failed or <code>invalid_request</code> if the request parameters are invalid".html_safe)
+      row.with_cell(text: "A short identifier for the error, such as <code>access_denied</code> if authorisation fails, or <code>invalid_request</code> if the request parameters are invalid.".html_safe)
     end
     body.with_row do |row|
       row.with_cell(text: "<code>error_description</code>".html_safe)
-      row.with_cell(text: "A readable description of the error if authorisation fails, for example, <code>User refused connection</code>".html_safe)
+      row.with_cell(text: "A readable description of the error if authorisation fails, for example, <code>User refused connection</code>.".html_safe)
     end
   end
 end %>
@@ -108,7 +108,7 @@ https://www.myapp.example.com/callback?error=access_denied
 <h4 class="govuk-heading-s">Error scenarios</h4>
 
 <p class="govuk-body">
-If the <code>client_id</code> or the <code>redirect_uri</code>do not match our records, we will not redirect to your <code>redirect_uri</code>. We return HTTP error status <code>400</code> (Bad request) instead. 
+If the <code>client_id</code> or the <code>redirect_uri</code>do not match our records, we will not redirect to your <code>redirect_uri</code>. We return HTTP status <code>400</code> (Bad Request) instead. 
 </p>
 
 <p class="govuk-body">
@@ -132,31 +132,31 @@ For any other problem with your request, we return an HTTP error status to your 
       row.with_cell(text: "response_type can't be blank")
     end
     body.with_row do |row|
-      row.with_cell(text: "response_type is invalid")
+      row.with_cell(text: "response_type is not valid")
       row.with_cell(text: "400 (Bad Request)")
       row.with_cell(text: "unsupported_response_type")
       row.with_cell(text: "Response type is not included in the list")
     end
     body.with_row do |row|
-      row.with_cell(text: "Appropriate Body ID is missing")
+      row.with_cell(text: "Appropriate body ID is missing")
       row.with_cell(text: "400 (Bad Request)")
       row.with_cell(text: "invalid_request")
       row.with_cell(text: "appropraite_body_period_id can't be blank")
     end
     body.with_row do |row|
-      row.with_cell(text: "Appropriate Body ID does not match signed-in user's organisation")
+      row.with_cell(text: "Appropriate body ID does not match signed-in user’s organisation")
       row.with_cell(text: "400 (Bad Request)")
       row.with_cell(text: "access_denied")
       row.with_cell(text: "appropriate_body_period_id does not match the logged-in Appropriate Body")
     end
     body.with_row do |row|
-      row.with_cell(text: "PKCE Code Challenge is missing")
+      row.with_cell(text: "PKCE code challenge is missing")
       row.with_cell(text: "400 (Bad Request)")
       row.with_cell(text: "invalid_request")
       row.with_cell(text: "Code challenge can't be blank")
     end
     body.with_row do |row|
-      row.with_cell(text: "PKCE Code Challenge method is not S256")
+      row.with_cell(text: "PKCE code challenge method is not S256")
       row.with_cell(text: "400 (Bad Request)")
       row.with_cell(text: "invalid_request")
       row.with_cell(text: "Code challenge method is not included in the list")

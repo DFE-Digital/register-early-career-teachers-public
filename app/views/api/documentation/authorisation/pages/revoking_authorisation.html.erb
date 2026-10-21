@@ -8,7 +8,7 @@ sidebar_position: 8
   page_data(
     title: "Revoking authorisation",
     error: false,
-    caption: "API Developer documentation",
+    caption: "API developer documentation",
     caption_size: 'l'
   )
 %>
@@ -32,11 +32,11 @@ To revoke an access token, send an HTTP POST request to our revoke endpoint.
 
 <p class="govuk-body">
 You must authenticate the request using <%= govuk_link_to("HTTP Basic Authentication", "https://www.rfc-editor.org/info/rfc7617/") %>
-with your client ID and client secret.  To do this, add a HTTP header containing your credentials in the form <code>client_id:client_secret</code>, Base64 encoded.
+with your client ID and client secret.  To do this, add an HTTP header containing your credentials in the form <code>client_id:client_secret</code>, Base64 encoded.
 </p>
 
 <p class="govuk-body">
-For example, if your client ID was <code>client123</code> and your secret was <code>supersecretvalue</code>, your Basic Authentication header would be:
+For example, if your client ID is <code>client123</code> and your secret is <code>supersecretvalue</code>, your Basic Authentication header would be:
 </p>
 
 <pre>
@@ -61,7 +61,7 @@ Put the other parameters in the request body, not in additional request headers.
   end
   table.with_body do |body|
     body.with_row do |row|
-      row.with_cell(text: "token")
+      row.with_cell(text: "<code>token</code>".html_safe)
       row.with_cell(text: "The access token you want to revoke")
     end
   end
@@ -104,15 +104,14 @@ If the request is unsuccessful, we return an HTTP error status and a JSON payloa
     head.with_row do |row|
       row.with_cell(text: "Error scenario")
       row.with_cell(text: "HTTP status")
-      row.with_cell(text: "Error")
+      row.with_cell(text: "Error code")
     end
   end
   table.with_body do |body|
     body.with_row do |row|
-      row.with_cell(text: "Client ID or client secret invalid")
+      row.with_cell(text: "Client ID or client secret is invalid")
       row.with_cell(text: "401 (Unauthorized)")
       row.with_cell(text: "invalid_client")
     end
   end
 end %>
-

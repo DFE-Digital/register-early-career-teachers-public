@@ -8,7 +8,7 @@ sidebar_position: 5
   page_data(
     title: "Exchange authorisation code for access token",
     error: false,
-    caption: "API Developer documentation",
+    caption: "API developer documentation",
     caption_size: 'l'
   )
 %>
@@ -46,16 +46,16 @@ sequenceDiagram
 <h4 class="govuk-heading-s">Send the request</h4>
 
 <p class="govuk-body">
-Send a HTTP POST request to our token endpoint.
+Send an HTTP POST request to our token endpoint.
 </p>
 
 <p class="govuk-body">
 You must authenticate the request using <%= govuk_link_to("HTTP Basic Authentication", "https://www.rfc-editor.org/info/rfc7617/") %>
-with your client ID and client secret.  To do this, add a HTTP header containing your credentials in the form <code>client_id:client_secret</code>, Base64 encoded.
+with your client ID and client secret.  To do this, add an HTTP header containing your credentials in the form <code>client_id:client_secret</code>, Base64 encoded.
 </p>
 
 <p class="govuk-body">
-For example, if your client ID was <code>client123</code> and your secret was <code>supersecretvalue</code>, your Basic Authentication header would be:
+For example, if your client ID is <code>client123</code> and your secret is <code>supersecretvalue</code>, your Basic Authentication header would be:
 
 <pre>
 <code>
@@ -82,20 +82,20 @@ Put the other parameters in the request body, not in additional request headers.
   end
   table.with_body do |body|
     body.with_row do |row|
-      row.with_cell(text: "grant_type")
-      row.with_cell(text: "The OAuth 2.0 grant type. The only value we currently accept is <code>authorization_code</code>".html_safe)
+      row.with_cell(text: "<code>grant_type</code>".html_safe)
+      row.with_cell(text: "The OAuth 2.0 grant type. The only value we currently accept is <code>authorization_code</code>.".html_safe)
     end
     body.with_row do |row|
-      row.with_cell(text: "redirect_uri")
+      row.with_cell(text: "<code>redirect_uri</code>".html_safe)
       row.with_cell(text: "The redirect URI you used when you called the authorisation endpoint.")
     end
     body.with_row do |row|
-      row.with_cell(text: "code")
-      row.with_cell(text: "The authorisation code we sent you in the previous step")
+      row.with_cell(text: "<code>code</code>".html_safe)
+      row.with_cell(text: "The authorisation code we sent you in the previous step.")
     end
     body.with_row do |row|
-      row.with_cell(text: "code_verifier")
-      row.with_cell(text: "Your #{govuk_link_to("PKCE", "https://oauth.net/2/pkce/")} <code>code_verifier</code>".html_safe)
+      row.with_cell(text: "<code>code_verifier</code>".html_safe)
+      row.with_cell(text: "Your #{govuk_link_to("PKCE", "https://oauth.net/2/pkce/")} <code>code_verifier</code>.".html_safe)
     end
   end
 end %>
@@ -153,12 +153,12 @@ If the request is unsuccessful, we return an HTTP error status and a JSON payloa
     head.with_row do |row|
       row.with_cell(text: "Error scenario")
       row.with_cell(text: "HTTP status")
-      row.with_cell(text: "Error")
+      row.with_cell(text: "Error code")
     end
   end
   table.with_body do |body|
     body.with_row do |row|
-      row.with_cell(text: "Client ID or client secret invalid")
+      row.with_cell(text: "Client ID or client secret is invalid")
       row.with_cell(text: "401 (Unauthorized)")
       row.with_cell(text: "invalid_client")
     end

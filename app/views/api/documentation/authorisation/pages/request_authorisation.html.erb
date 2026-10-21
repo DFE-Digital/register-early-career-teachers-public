@@ -8,7 +8,7 @@ sidebar_position: 3
   page_data(
     title: "Request authorisation",
     error: false,
-    caption: "API Developer documentation",
+    caption: "API developer documentation",
     caption_size: 'l'
   )
 %>
@@ -18,14 +18,14 @@ When you request authorisation:
 </p>
 
 <ol class="govuk-list govuk-list--number">
-  <li>You send the user to our authorise endpoint.</li>
-  <li>If they are not already signed in, they sign in with DfE Sign-In.</li>
+  <li>You send the user to our authorisation endpoint.</li>
+  <li>If they are not already signed in, they sign in with DfE Sign-in.</li>
   <li>We show the user the details of the authorisation request.</li>
   <li>We ask the user to give your application permission to access their data.</li>
 </ol>
 
 <p class="govuk-body">
-The diagram show these steps.
+The diagram shows these steps.
 </p>
 
 <%#
@@ -84,6 +84,10 @@ sequenceDiagram
 
 <h4 class="govuk-heading-s">Parameters</h4>
 
+<p class="govuk-body">
+These are the parameters in the request.
+</p>
+
 <%= govuk_table do |table|
   table.with_head do |head|
     head.with_row do |row|
@@ -93,34 +97,32 @@ sequenceDiagram
   end
   table.with_body do |body|
     body.with_row do |row|
-      row.with_cell(text: "response_type")
+      row.with_cell(text: "<code>response_type</code>".html_safe)
       row.with_cell(text: "The OAuth 2.0 response type. This must be <code>code</code>.".html_safe)
     end
     body.with_row do |row|
-      row.with_cell(text: "client_id")
+      row.with_cell(text: "<code>client_id</code>".html_safe)
       row.with_cell(text: "Your application’s client ID.")
     end
     body.with_row do |row|
-      row.with_cell(text: "appropriate_body_period_id")
-      row.with_cell(text: "The ID for the appropriate body making the connection")
+      row.with_cell(text: "<code>appropriate_body_period_id</code>".html_safe)
+      row.with_cell(text: "The ID of the appropriate body making the connection.")
     end
     body.with_row do |row|
-      row.with_cell(text: "state")
+      row.with_cell(text: "<code>state</code>".html_safe)
       row.with_cell(text: "A value that only your application understands. It keeps track of the information between the request and the redirect, and helps prevent tampering. We pass it back to your application through the <code>redirect_uri</code>. This is described in the #{govuk_link_to("OAuth 2.0 specification", "https://tools.ietf.org/html/rfc6749#section-10.12")}.".html_safe)
     end
     body.with_row do |row|
-      row.with_cell(text: "redirect_uri")
+      row.with_cell(text: "<code>redirect_uri</code>".html_safe)
       row.with_cell(text: "The URI we use to send users back to your application after authorisation, whether it was successful or not. This must match one of the redirect URIs you gave us when we registered your application.")
     end
     body.with_row do |row|
-      row.with_cell(text: "code_challenge")
-      row.with_cell(text: "The #{govuk_link_to("PKCE", "https://oauth.net/2/pkce/") } <code>code_challenge</code>. This makes sure the access token we issue is not intercepted".html_safe)
+      row.with_cell(text: "<code>code_challenge</code>".html_safe)
+      row.with_cell(text: "The #{govuk_link_to("PKCE", "https://oauth.net/2/pkce/") } <code>code_challenge</code>. This makes sure the access token we issue is not intercepted.".html_safe)
     end
     body.with_row do |row|
-      row.with_cell(text: "code_challenge_method")
-      row.with_cell(text: "The PKCE method used to transform the <code>code_verifier</code> into the <code>code_challenge</code>. This must be <code>S256</code>".html_safe)
+      row.with_cell(text: "<code>code_challenge_method</code>".html_safe)
+      row.with_cell(text: "The PKCE method used to transform the <code>code_verifier</code> into the <code>code_challenge</code>. This must be <code>S256</code>.".html_safe)
     end
   end
 end %>
-
-
