@@ -145,7 +145,7 @@ RSpec.describe "Declarations API", :with_metadata, type: :request do
         end
 
         context "when a valid cohort is provided" do
-          let(:cohort) { "2024" }
+          let(:cohort) { framework_agreement.contract_period_year.to_s }
 
           it "creates the declaration against the training period in that cohort" do
             allow(service).to receive(:new).and_call_original
@@ -153,13 +153,13 @@ RSpec.describe "Declarations API", :with_metadata, type: :request do
             authenticated_api_post(path, params:)
 
             expect(response).to have_http_status(:ok)
-            expect(service).to have_received(:new).with(service_args.merge(contract_period_year: "2024"))
-            expect(parsed_response.dig(:data, :attributes, :cohort)).to eq("2024")
+            expect(service).to have_received(:new).with(service_args.merge(contract_period_year: cohort))
+            expect(parsed_response.dig(:data, :attributes, :cohort)).to eq(cohort)
           end
         end
 
         context "when an invalid cohort is provided" do
-          let(:cohort) { "2023" }
+          let(:cohort) { (framework_agreement.contract_period_year - 1).to_s }
 
           it "returns `unprocessable_content`" do
             authenticated_api_post(path, params:)
