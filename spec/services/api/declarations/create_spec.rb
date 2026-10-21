@@ -71,7 +71,7 @@ RSpec.describe API::Declarations::Create, type: :model do
           it { is_expected.to have_api_error(:teacher_type, "The entered '#/teacher_type' is not recognised for the given teacher. Check details and try again.") }
 
           context "when a cohort is provided" do
-            let(:contract_period_year) { "2024" }
+            let(:contract_period_year) { contract_period.year.to_s }
 
             it { is_expected.to have_one_error_only }
             it { is_expected.to have_api_error(:teacher_type, "The entered '#/teacher_type' is not recognised for the given teacher. Check details and try again.") }
@@ -469,7 +469,7 @@ RSpec.describe API::Declarations::Create, type: :model do
             end
 
             context "when a valid cohort is provided" do
-              let(:contract_period_year) { "2024" }
+              let(:contract_period_year) { contract_period.year.to_s }
 
               it "selects the training period in that cohort" do
                 expect(instance.training_period).to eq(training_period)
@@ -477,7 +477,7 @@ RSpec.describe API::Declarations::Create, type: :model do
             end
 
             context "when an invalid cohort is provided" do
-              let(:contract_period_year) { "2023" }
+              let(:contract_period_year) { (contract_period.year - 1).to_s }
 
               it { is_expected.to have_one_error_only }
               it { is_expected.to have_api_error(:contract_period_year, "The '#/contract_period_year' you have entered is not recognised for this teacher. Check details and try again.") }
