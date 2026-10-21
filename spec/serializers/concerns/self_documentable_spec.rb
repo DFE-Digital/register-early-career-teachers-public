@@ -26,8 +26,18 @@ RSpec.describe SelfDocumentable do
   end
 
   it "names and references the schema after the serializer" do
-    expect(self_documentable.openapi_schema_name).to eq("HelloUser")
-    expect(self_documentable.openapi_ref).to eq("$ref": "#/components/schemas/HelloUser")
-    expect(self_documentable.openapi_schema_definition).to eq("HelloUser" => self_documentable.openapi_schema)
+    expect(self_documentable.openapi_schema_name).to eq("User")
+    expect(self_documentable.openapi_ref).to eq("$ref": "#/components/schemas/User")
+    expect(self_documentable.openapi_schema_definition).to eq("User" => self_documentable.openapi_schema)
+  end
+
+  it "omits the API namespace and version from versioned schema names by default" do
+    expect(API::Induction::V1::AppropriateBodySerializer.openapi_schema_name).to eq("AppropriateBody")
+  end
+
+  it "retains the namespace when requested" do
+    expect(API::OAuth::ErrorSerializer.openapi_schema_name(include_namespace: true)).to eq("OAuthError")
+    expect(API::OAuth::ErrorSerializer.openapi_ref(include_namespace: true)).to eq("$ref": "#/components/schemas/OAuthError")
+    expect(API::OAuth::ErrorSerializer.openapi_schema_definition(include_namespace: true)).to eq("OAuthError" => API::OAuth::ErrorSerializer.openapi_schema)
   end
 end

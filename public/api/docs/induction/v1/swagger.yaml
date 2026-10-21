@@ -20,7 +20,7 @@ paths:
               schema:
                 type: array
                 items:
-                  "$ref": "#/components/schemas/InductionV1AppropriateBody"
+                  "$ref": "#/components/schemas/AppropriateBody"
         '401':
           description: The client credentials are invalid
           content:
@@ -36,7 +36,7 @@ components:
       scheme: basic
       description: OAuth 2.0 client ID and secret
   schemas:
-    InductionV1AppropriateBody:
+    AppropriateBody:
       description: An appropriate body.
       type: object
       required:

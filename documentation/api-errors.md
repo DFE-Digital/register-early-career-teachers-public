@@ -29,6 +29,7 @@
 | evidenced_at | Enter a '#/evidenced_at'. | When `evidenced_at` is nil. |
 | evidenced_at | Enter a valid RFC3339 '#/evidenced_at'. | When `evidenced_at` is not a date. |
 | evidenced_at | Enter a valid RFC3339 '#/evidenced_at'. | When `evidenced_at` is not in the correct format. |
+| evidenced_at | Evidenced at must be on or after the milestone start date for the same declaration type. | When contract period is 2025 or later. |
 | evidenced_at | Evidenced at must be on or after the milestone start date for the same declaration type. | When evidenced at does not match the milestone start date. |
 | evidenced_at | Evidenced at must be on or before the milestone date for the same declaration type. | When declaration date does not match the milestone date. |
 | evidenced_at | The '#/evidenced_at' value cannot be a future date. Check the date and try again. | When `evidenced_at` is in the future. |

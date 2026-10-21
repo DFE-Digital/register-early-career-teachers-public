@@ -16,7 +16,7 @@ RSpec.describe "Hello client endpoint", openapi_spec: "hello/swagger.yaml", type
     responds_with 401, "The client credentials are invalid" do
       let(:Authorization) { basic_auth_headers(client:, secret: "wrong").fetch("Authorization") }
 
-      serialized_using API::OAuth::ErrorSerializer
+      serialized_using API::OAuth::ErrorSerializer, include_namespace: true
     end
 
     responds_with 429, "Too many requests. Retry after the rate limit period has passed.", rack_attack: true do

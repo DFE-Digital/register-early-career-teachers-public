@@ -121,6 +121,20 @@ RSpec.describe API::Declarations::Create, type: :model do
             it { is_expected.to have_one_error_only }
             it { is_expected.to have_api_error(:evidenced_at, "The '#/evidenced_at' value cannot be a future date. Check the date and try again.") }
           end
+
+          context "when the milestone has no milestone_date" do
+            before { milestone.update!(milestone_date: nil) }
+
+            it { is_expected.to have_one_error_only }
+            it { is_expected.to have_api_error(:evidenced_at, "The '#/evidenced_at' value cannot be a future date. Check the date and try again.") }
+          end
+
+          context "when the milestone has a milestone_date that is in the future" do
+            before { milestone.update!(milestone_date: 1.year.from_now) }
+
+            it { is_expected.to have_one_error_only }
+            it { is_expected.to have_api_error(:evidenced_at, "The '#/evidenced_at' value cannot be a future date. Check the date and try again.") }
+          end
         end
 
         context "when `evidenced_at` is not in the correct format" do
@@ -438,6 +452,13 @@ RSpec.describe API::Declarations::Create, type: :model do
 
           context "when contract period is 2025 or later" do
             let(:contract_period_year) { 2025 }
+
+            context "when evidenced at does not match the milestone dates" do
+              let(:evidenced_at) { (milestone.start_date - 1.day).rfc3339 }
+
+              it { is_expected.to have_one_error_only }
+              it { is_expected.to have_api_error(:evidenced_at, "Evidenced at must be on or after the milestone start date for the same declaration type.") }
+            end
 
             context "when theres existing `started` declaration" do
               let!(:milestone) do
