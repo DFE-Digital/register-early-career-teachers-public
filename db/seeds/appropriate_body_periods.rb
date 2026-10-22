@@ -520,7 +520,11 @@ appropriate_body_periods.each do |data|
 
   # 4. Teaching School
   if body_type == "teaching_school"
-    appropriate_body_period.update!(body_type: "teaching_school")
+    appropriate_body_period.update!(
+      body_type: "teaching_school",
+      started_on: School::APPROPRIATE_BODY[:introduced_on],
+      finished_on: School::APPROPRIATE_BODY[:retired_on]
+    )
   end
 
   # 3. National Bodies
