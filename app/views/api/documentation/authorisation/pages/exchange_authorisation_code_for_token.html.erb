@@ -8,15 +8,15 @@ sidebar_position: 5
   page_data(
     title: "Exchange authorisation code for access token",
     error: false,
-    caption: "API Developer documentation",
+    caption: "API developer documentation",
     caption_size: 'l'
   )
 %>
 
 <p class="govuk-body">
-The process is shown in this diagram which continues from the
+When you receive the authorisation code, you must exchange it for an access token within 10 minutes. This continues from the
 <%= govuk_link_to("receive authorisation results",
-                  api_documentation_authentication_page_path("receive-authorisation-results"),
+                  api_documentation_authorisation_page_path("receive-authorisation-results"),
                   no_visited_state: true) %> step.
 </p>
 
@@ -35,21 +35,27 @@ sequenceDiagram
 
 <%= image_tag("documentation/authorisation/exchange-code-for-token.png", width: "700px", alt: "Exchange authorisation code for access token sequence diagram") %>
 
+<h4 class="govuk-heading-s">What the diagram shows</h4>
+
+<ol class="govuk-list govuk-list--number">
+  <li>Your application sends a POST request to /oauth/token on the authorisation API.</li> 
+  <li>The authorisation API validates the request and generates a token. </li> 
+  <li>The authorisation API returns 200 OK with the token payload.</li> 
+</ol>
+
+<h4 class="govuk-heading-s">Send the request</h4>
+
 <p class="govuk-body">
-When you receive the authorisation code, you must exchange this for an access token <strong>within 10 minutes</strong>.
+Send an HTTP POST request to our token endpoint.
 </p>
 
 <p class="govuk-body">
-Do this via a HTTP POST to our token endpoint.
+You must authenticate the request using <%= govuk_link_to("HTTP Basic Authentication", "https://www.rfc-editor.org/info/rfc7617/") %>
+with your client ID and client secret.  To do this, add an HTTP header containing your credentials in the form <code>client_id:client_secret</code>, Base64 encoded.
 </p>
 
 <p class="govuk-body">
-You must authenticate the request with <%= govuk_link_to("HTTP Basic Authentication", "https://www.rfc-editor.org/info/rfc7617/") %>
-using your client ID and secret.  This is added as a HTTP header in which you Base64 encode your credentials in the form <code>client_id:client_secret</code>.
-</p>
-
-<p class="govuk-body">
-For example, if your client ID was <code>client123</code> and your secret was <code>supersecretvalue</code> then your Basic Authentication header would be this:
+For example, if your client ID is <code>client123</code> and your secret is <code>supersecretvalue</code>, your Basic Authentication header would be:
 
 <pre>
 <code>
@@ -63,10 +69,38 @@ Authorization: Basic Y2xpZW50MTIzOnN1cGVyc2VjcmV0dmFsdWU=
 
 
 <p class="govuk-body">
-Include the other parameters in the request body, not as additional request headers.
+Put the other parameters in the request body, not in additional request headers.
 </p>
 
-<h4 class="govuk-heading-s">3.1 Example request</h4>
+
+<%= govuk_table do |table|
+  table.with_head do |head|
+    head.with_row do |row|
+      row.with_cell(text: "Parameter")
+      row.with_cell(text: "Description")
+    end
+  end
+  table.with_body do |body|
+    body.with_row do |row|
+      row.with_cell(text: "<code>grant_type</code>".html_safe)
+      row.with_cell(text: "The OAuth 2.0 grant type. The only value we currently accept is <code>authorization_code</code>.".html_safe)
+    end
+    body.with_row do |row|
+      row.with_cell(text: "<code>redirect_uri</code>".html_safe)
+      row.with_cell(text: "The redirect URI you used when you called the authorisation endpoint.")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "<code>code</code>".html_safe)
+      row.with_cell(text: "The authorisation code we sent you in the previous step.")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "<code>code_verifier</code>".html_safe)
+      row.with_cell(text: "Your #{govuk_link_to("PKCE", "https://oauth.net/2/pkce/")} <code>code_verifier</code>.".html_safe)
+    end
+  end
+end %>
+
+<h4 class="govuk-heading-s">Example request</h4>
 
 <pre>
 <code>
@@ -80,43 +114,10 @@ Include the other parameters in the request body, not as additional request head
   &code_verifier=[CODE-VERIFIER]"
 </code>
 </pre>
-
-<%= govuk_table do |table|
-  table.with_head do |head|
-    head.with_row do |row|
-      row.with_cell(text: "Parameter")
-      row.with_cell(text: "Description")
-    end
-  end
-  table.with_body do |body|
-    body.with_row do |row|
-      row.with_cell(text: "grant_type")
-      row.with_cell(text: "The OAuth 2.0 grant type. Currently the only acceptable value is <code>authorization_code</code>".html_safe)
-    end
-    body.with_row do |row|
-      row.with_cell(text: "redirect_uri")
-      row.with_cell(text: "The same redirect URI you used to call the authorisation endpoint.")
-    end
-    body.with_row do |row|
-      row.with_cell(text: "code")
-      row.with_cell(text: "The authorisation code you received from us in the previous step")
-    end
-    body.with_row do |row|
-      row.with_cell(text: "code_verifier")
-      row.with_cell(text: "Your #{govuk_link_to("PKCE", "https://oauth.net/2/pkce/")} <code>code_verifier</code>".html_safe)
-    end
-  end
-end %>
+<h4 class="govuk-heading-s">Example response</h4>
 
 <p class="govuk-body">
-The response contains the access token as a JSON payload.
-The access token is the equivalent of your password to access the API as the organisation that has authorised the request.  As such you should store it securely.
-</p>
-
-<h4 class="govuk-heading-s">3.2 Example response</h4>
-
-<p class="govuk-body">
-A successful response will return HTTP status code <code>201</code> to indicate your token was created and a JSON payload containing the access token
+If the request is successful, we return HTTP status 201 to show your token was created. The response includes a JSON payload containing the access token.
 </p>
 
 <pre>
@@ -129,10 +130,14 @@ A successful response will return HTTP status code <code>201</code> to indicate 
 </code>
 </pre>
 
-<h4 class="govuk-heading-s">3.3 Error responses</h4>
+<p class="govuk-body">
+The access token works like a password. It gives you access to the API as the organisation that authorised the request, so you must store it securely. 
+</p>
+
+<h4 class="govuk-heading-s">Error responses</h4>
 
 <p class="govuk-body">
-An unsuccessful request will a HTTP status error code and a JSON payload containing an <code>error</code> value, for example:
+If the request is unsuccessful, we return an HTTP error status and a JSON payload containing an error value. For example:
 </p>
 
 <pre>
@@ -148,12 +153,12 @@ An unsuccessful request will a HTTP status error code and a JSON payload contain
     head.with_row do |row|
       row.with_cell(text: "Error scenario")
       row.with_cell(text: "HTTP status")
-      row.with_cell(text: "Error")
+      row.with_cell(text: "Error code")
     end
   end
   table.with_body do |body|
     body.with_row do |row|
-      row.with_cell(text: "Client ID or client secret invalid")
+      row.with_cell(text: "Client ID or client secret is invalid")
       row.with_cell(text: "401 (Unauthorized)")
       row.with_cell(text: "invalid_client")
     end
@@ -168,12 +173,12 @@ An unsuccessful request will a HTTP status error code and a JSON payload contain
       row.with_cell(text: "unsupported_grant_type")
     end
     body.with_row do |row|
-      row.with_cell(text: "Redirect UI is missing")
+      row.with_cell(text: "Redirect URI is missing")
       row.with_cell(text: "400 (Bad Request)")
       row.with_cell(text: "invalid_grant")
     end
     body.with_row do |row|
-      row.with_cell(text: "Redirect UI is invalid")
+      row.with_cell(text: "Redirect URI is invalid")
       row.with_cell(text: "400 (Bad Request)")
       row.with_cell(text: "invalid_grant")
     end

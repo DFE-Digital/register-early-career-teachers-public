@@ -1,0 +1,128 @@
+<%#
+---
+title: Request authorisation
+sidebar_position: 3
+---
+%>
+<%
+  page_data(
+    title: "Request authorisation",
+    error: false,
+    caption: "API developer documentation",
+    caption_size: 'l'
+  )
+%>
+
+<p class="govuk-body">
+When you request authorisation:
+</p>
+
+<ol class="govuk-list govuk-list--number">
+  <li>You send the user to our authorisation endpoint.</li>
+  <li>If they are not already signed in, they sign in with DfE Sign-in.</li>
+  <li>We show the user the details of the authorisation request.</li>
+  <li>We ask the user to give your application permission to access their data.</li>
+</ol>
+
+<p class="govuk-body">
+The diagram shows these steps.
+</p>
+
+<%#
+  Mermaid code for the image
+
+sequenceDiagram
+    actor User as Client
+    participant Vendor as Application
+    participant RIAB as Authorisation API
+
+    User->>Vendor: Initiates connection
+    Vendor->>Vendor: Generate code-challenge
+    Vendor-->>User: Redirect to /oauth/authorize
+    User->>RIAB: GET /oauth/authorize
+    Note over User,RIAB: [Client not signed-in] sign-in via DfE Sign-in and then continues
+    RIAB->>RIAB: Validate request
+    RIAB-->>User: Show authorisation request details
+%>
+<%= image_tag("documentation/authorisation/request-authorisation.png", width: "750px", alt: "Request authorisation sequence diagram") %>
+
+<h4 class="govuk-heading-s">Syntax</h4>
+
+<p class="govuk-body">
+<pre>
+<code>
+  curl -X GET "<%= @api_base_url %>/oauth/authorize?\
+  response_type=code\
+  &client_id=[YOUR-CLIENT-ID]\
+  &appropriate_body_period_id=[USERS-APPROPRIATE-BODY-IDENTIFIER]\
+  &state=[STATE]\
+  &redirect_uri=[YOUR-REDIRECT-URI]\
+  &code_challenge=[CODE-CHALLENGE]\
+  &code_challenge_method=[CODE-CHALLENGE-METHOD]"
+</code>
+</pre>
+</p>
+
+<h4 class="govuk-heading-s">Example</h4>
+
+<p class="govuk-body">
+<pre>
+<code>
+  curl -X GET "<%= @api_base_url %>/oauth/authorize?\
+  response_type=code\
+  &client_id=Hf8sfkiUkYp9I3_R10qSnZ2ZUvoa\
+  &appropriate_body_period_id=9def8316-1d33-4181-b0d5-59c34c4a03f5\
+  &state=30de877c-ee2f-15db-8314-0800200c9a66\
+  &redirect_uri=https://www.myservice.example.com/callback\
+  &code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM\
+  &code_challenge_method=S256"
+</code>
+</pre>
+
+  <%= govuk_warning_text(text: "Do not include your client secret in this request.") %>
+</p>
+
+<h4 class="govuk-heading-s">Parameters</h4>
+
+<p class="govuk-body">
+These are the parameters in the request.
+</p>
+
+<%= govuk_table do |table|
+  table.with_head do |head|
+    head.with_row do |row|
+      row.with_cell(text: "Parameter")
+      row.with_cell(text: "Description")
+    end
+  end
+  table.with_body do |body|
+    body.with_row do |row|
+      row.with_cell(text: "<code>response_type</code>".html_safe)
+      row.with_cell(text: "The OAuth 2.0 response type. This must be <code>code</code>.".html_safe)
+    end
+    body.with_row do |row|
+      row.with_cell(text: "<code>client_id</code>".html_safe)
+      row.with_cell(text: "Your application’s client ID.")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "<code>appropriate_body_period_id</code>".html_safe)
+      row.with_cell(text: "The ID of the appropriate body making the connection.")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "<code>state</code>".html_safe)
+      row.with_cell(text: "A value that only your application understands. It keeps track of the information between the request and the redirect, and helps prevent tampering. We pass it back to your application through the <code>redirect_uri</code>. This is described in the #{govuk_link_to("OAuth 2.0 specification", "https://tools.ietf.org/html/rfc6749#section-10.12")}.".html_safe)
+    end
+    body.with_row do |row|
+      row.with_cell(text: "<code>redirect_uri</code>".html_safe)
+      row.with_cell(text: "The URI we use to send users back to your application after authorisation, whether it was successful or not. This must match one of the redirect URIs you gave us when we registered your application.")
+    end
+    body.with_row do |row|
+      row.with_cell(text: "<code>code_challenge</code>".html_safe)
+      row.with_cell(text: "The #{govuk_link_to("PKCE", "https://oauth.net/2/pkce/") } <code>code_challenge</code>. This makes sure the access token we issue is not intercepted.".html_safe)
+    end
+    body.with_row do |row|
+      row.with_cell(text: "<code>code_challenge_method</code>".html_safe)
+      row.with_cell(text: "The PKCE method used to transform the <code>code_verifier</code> into the <code>code_challenge</code>. This must be <code>S256</code>.".html_safe)
+    end
+  end
+end %>

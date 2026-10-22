@@ -1,0 +1,82 @@
+<%#
+---
+title: How authorisation works
+sidebar_position: 0
+---
+%>
+<%
+  page_data(
+    title: "Authorisation",
+    error: false,
+    caption: "API developer documentation",
+    caption_size: 'l'
+  )
+%>
+
+<h2 class="govuk-heading-m">How authorisation works</h2>
+
+<p class="govuk-body">
+We use <%= govuk_link_to("OAuth 2.0", "https://oauth.net/2/") %> with the <%= govuk_link_to("authorisation code grant", "https://oauth.net/2/grant-types/authorization-code/") %>. This lets users give your application permission to use our API on their behalf, without sharing their password with you.
+</p>
+
+<p class="govuk-body">
+A user from each organisation you work with must authorise your application before we can give you an access token for that organisation.
+</p>
+
+<h3 class="govuk-heading-s">PKCE</h3>
+
+<p class="govuk-body">
+We use <%= govuk_link_to("PKCE (Proof Key for Code Exchange)", "https://oauth.net/2/pkce/") %> to protect the authorisation process from code injection and cross-site request forgery (CSRF) attacks.
+</p>
+
+<p class="govuk-body">
+To use PKCE, you must:
+</p>
+
+<ol class="govuk-list govuk-list--number">
+  <li>Create a random secret called a <code>code_verifier</code>.</li>
+  <li>Create a <code>code_challenge</code> from the <code>code_verifier</code>.</li>
+  <li>Send the <code>code_challenge</code> with the authorisation request.</li>
+  <li>Send the <code>code_verifier</code> when you exchange the authorisation code for an access token.</li>
+</ol>
+
+<p class="govuk-body">
+This makes sure that only the application that started the authorisation process can complete it.
+</p>
+
+<h3 class="govuk-heading-s">State</h3>
+
+<p class="govuk-body">
+You can include a <code>state</code> value when you request authorisation. We’ll return it when we redirect the user back to your application after they approve or deny the request, so you can match the response to the original request.
+</p>
+
+<h3 class="govuk-heading-s">Access tokens</h3>
+
+<p class="govuk-body">
+We’ll give you an access token for each organisation that authorises your application. You must store access tokens securely. 
+</p>
+<p class="govuk-body">
+An access token lasts for 1 year from the date we issue it. When it expires, you’ll need to go through the authorisation process again to get a new one. We do not support refresh tokens.
+</p> 
+
+<h3 class="govuk-heading-s">Credentials</h3>
+
+<p class="govuk-body">
+Your credentials are your client ID and client secret. You use them to identify your application at each step of the authorisation process.
+</p>
+
+<h4 class="govuk-heading-s">Client ID</h4>
+
+<p class="govuk-body">
+Your client ID is a unique identifier we create for your application when we add you to the service.
+</p>
+
+<h4 class="govuk-heading-s">Client secret</h4>
+
+<p class="govuk-body">
+Your client secret is a unique passphrase that only your application and our authorisation server know. We use it to authenticate your application.
+</p>
+
+<p class="govuk-body">
+Treat your client secret like a password and store it securely.
+</p>
