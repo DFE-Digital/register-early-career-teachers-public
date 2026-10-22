@@ -45,8 +45,9 @@ describe Admin::DataFixes::Processor do
       context "when it sets an attribute with a value containing a comma" do
         let!(:target_object) { FactoryBot.build_stubbed(:appropriate_body_period) }
         let(:dfe_sign_in_organisation) { FactoryBot.create(:dfe_sign_in_organisation) }
+        let(:started_on) { TeachingSchoolHub::APPROPRIATE_BODY[:introduced_on] }
         let(:attributes) do
-          "name,\"A name containing, a comma\",dfe_sign_in_organisation_id,#{dfe_sign_in_organisation.uuid}"
+          "name,\"A name containing, a comma\",dfe_sign_in_organisation_id,#{dfe_sign_in_organisation.uuid},started_on,#{started_on}"
         end
 
         it "creates a new record" do

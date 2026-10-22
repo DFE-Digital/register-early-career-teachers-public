@@ -13,5 +13,9 @@ FactoryBot.define do
     trait :esp do
       name { NationalBody::ESP }
     end
+
+    trait :nta do
+      name { NationalBody::NTA }
+    end
   end
 end
