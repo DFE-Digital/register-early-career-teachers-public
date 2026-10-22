@@ -2,6 +2,14 @@ class School < ApplicationRecord
   include GIASHelpers
   include DeclarativeUpdates
 
+  # Teaching Schools acted as appropriate bodies between these dates.
+  # Teaching School Hubs replaced them on 1 September 2021.
+  # Each school started and finished on its own date.
+  APPROPRIATE_BODY = {
+    introduced_on: Date.new(1999, 9, 1),
+    retired_on: Date.new(2021, 8, 31),
+  }.freeze
+
   # Enums
   enum :last_chosen_training_programme,
        { provider_led: "provider_led",

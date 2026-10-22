@@ -100,7 +100,10 @@ module Seeds
 
     def matrix_appropriate_body_period
       @matrix_appropriate_body_period ||= begin
-        abp = AppropriateBodyPeriod.find_or_create_by!(name: PREFERRED_APPROPRIATE_BODY_NAME)
+        abp = AppropriateBodyPeriod.find_or_create_by!(name: PREFERRED_APPROPRIATE_BODY_NAME) do |period|
+          # Every period states when it started; teaching school hubs began on this date.
+          period.started_on = TeachingSchoolHub::APPROPRIATE_BODY[:introduced_on] if period.has_attribute?(:started_on)
+        end
 
         if abp.has_attribute?(:body_type) && abp.body_type != "teaching_school_hub"
           abp.body_type = "teaching_school_hub"
