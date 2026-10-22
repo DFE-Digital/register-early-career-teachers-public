@@ -8,9 +8,11 @@ namespace :product_review do
 
     # 38 takes the seeds' 8 active bodies past two pages of 20, so the list
     # paginates and Shared::PaginationSummaryComponent stops hiding itself.
+    started_on = TeachingSchoolHub::APPROPRIATE_BODY[:introduced_on]
+
     ApplicationRecord.transaction do
-      38.times { AppropriateBodyPeriod.create!(name: sprintf("Review Teaching School Hub %02d", it + 1), dfe_sign_in_organisation_id: SecureRandom.uuid) }
-      12.times { AppropriateBodyPeriod.create!(name: sprintf("Deactivated Review Teaching School Hub %02d", it + 1)) }
+      38.times { AppropriateBodyPeriod.create!(name: sprintf("Review Teaching School Hub %02d", it + 1), dfe_sign_in_organisation_id: SecureRandom.uuid, started_on:) }
+      12.times { AppropriateBodyPeriod.create!(name: sprintf("Deactivated Review Teaching School Hub %02d", it + 1), started_on:) }
     end
 
     puts "Done. #{AppropriateBodyPeriod.active.count} active, #{AppropriateBodyPeriod.inactive.count} deactivated."

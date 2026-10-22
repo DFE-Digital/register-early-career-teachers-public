@@ -5,6 +5,9 @@ class NationalBody < ApplicationRecord
   # British international schools overseas
   ESP = "Educational Success Partners (ESP)"
 
+  # Formerly NIPT (closed)
+  NTA = "National Teacher Accreditation"
+
   has_many :appropriate_body_periods
 
   validates :name, presence: true, uniqueness: true
