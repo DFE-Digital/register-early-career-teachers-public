@@ -132,17 +132,23 @@ RSpec.describe PopulateAppropriateBodyPeriodDates do
       end
     end
 
-    context "when any date is not valid" do
+    context "when a linked teaching school is outside the range" do
       let!(:local_authority) { create_appropriate_body_period(:local_authority) }
       let!(:teaching_school) { create_appropriate_body_period(:teaching_school) }
 
+      # Production data has attempted to link ABP teaching_school types to the correct school without a URN.
+      # The script may surface this when GIAS open/close dates for the school conflict.
       before { teaching_school.provisioning_school.gias_school.update!(opened_on: Date.new(2023, 9, 1)) }
 
-      it "aborts the transaction" do
-        expect { script.call }.to raise_error(ActiveRecord::RecordInvalid, /The end date must be later than the start date/)
-        expect(local_authority.reload).to have_attributes(started_on: nil, finished_on: nil)
+      it "is skipped" do
+        script.call
+
         expect(teaching_school.reload).to have_attributes(started_on: nil, finished_on: nil)
-        expect(File).not_to exist(csv_path)
+        expect(local_authority.reload).to have_attributes(
+          started_on: LocalAuthority::APPROPRIATE_BODY[:introduced_on],
+          finished_on: LocalAuthority::APPROPRIATE_BODY[:retired_on]
+        )
+        expect(File).to exist(csv_path)
       end
     end
 

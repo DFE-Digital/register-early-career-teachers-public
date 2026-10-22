@@ -49,10 +49,15 @@ private
   end
 
   # @param appropriate_body_period [AppropriateBodyPeriod]
+  # @return [Boolean, nil]
   def update(appropriate_body_period)
     return if appropriate_body_period.started_on.present?
 
-    appropriate_body_period.update!(dates_for(appropriate_body_period))
+    dates = dates_for(appropriate_body_period)
+    # If a linked Teaching School's dates conflict we likely have the wrong school or GIAS data.
+    return if dates[:finished_on] && dates[:finished_on] < dates[:started_on]
+
+    appropriate_body_period.update!(dates)
   end
 
   # @param appropriate_body_period [AppropriateBodyPeriod]
