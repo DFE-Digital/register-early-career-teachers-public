@@ -163,11 +163,9 @@ RSpec.describe Schools::ECTs::ChangeStartDateWizard::EditStep do
         it "is invalid" do
           expect(current_step).not_to be_valid
 
-          expect(current_step.errors[:start_date]).to include(
-            "#{teacher_name}'s ECT start date must be on or after " \
+          expect(current_step).to have_error(:start_date, "#{teacher_name}'s ECT start date must be on or after " \
             "the start of the registration period, " \
-            "#{earliest_permitted_start_date.to_fs(:govuk)}."
-          )
+            "#{earliest_permitted_start_date.to_fs(:govuk)}.")
         end
       end
 
@@ -228,10 +226,8 @@ RSpec.describe Schools::ECTs::ChangeStartDateWizard::EditStep do
         it "is invalid" do
           expect(current_step).not_to be_valid
 
-          expect(current_step.errors[:start_date]).to include(
-            "#{teacher_name}'s ECT start date must be on or before " \
-            "their leaving date, #{leaving_date.to_fs(:govuk)}"
-          )
+          expect(current_step).to have_error(:start_date, "#{teacher_name}'s ECT start date must be on or before " \
+            "their leaving date, #{leaving_date.to_fs(:govuk)}")
         end
       end
     end
@@ -244,9 +240,7 @@ RSpec.describe Schools::ECTs::ChangeStartDateWizard::EditStep do
       it "is invalid" do
         expect(current_step).not_to be_valid
 
-        expect(current_step.errors[:start_date]).to include(
-          "The school start date must be different from the current school start date"
-        )
+        expect(current_step).to have_error(:start_date, "The school start date must be different from the current school start date")
       end
     end
 
@@ -312,13 +306,11 @@ RSpec.describe Schools::ECTs::ChangeStartDateWizard::EditStep do
       it "is invalid" do
         expect(current_step).not_to be_valid
 
-        expect(current_step.errors[:start_date]).to include(
-          "Our records show that #{teacher_name} started teaching " \
+        expect(current_step).to have_error(:start_date, "Our records show that #{teacher_name} started teaching " \
           "at #{previous_school.name} on " \
           "#{previous_period.started_on.to_fs(:govuk)}. " \
           "Enter a start date after " \
-          "#{earliest_valid_input_date.to_fs(:govuk)}."
-        )
+          "#{earliest_valid_input_date.to_fs(:govuk)}.")
       end
     end
 
@@ -354,11 +346,9 @@ RSpec.describe Schools::ECTs::ChangeStartDateWizard::EditStep do
         it "is invalid" do
           expect(current_step).not_to be_valid
 
-          expect(current_step.errors[:start_date]).to include(
-            "#{teacher_name}'s ECT start date must not be more than " \
+          expect(current_step).to have_error(:start_date, "#{teacher_name}'s ECT start date must not be more than " \
             "4 months from today, " \
-            "#{(Date.current + 4.months).to_fs(:govuk)}"
-          )
+            "#{(Date.current + 4.months).to_fs(:govuk)}")
         end
       end
     end

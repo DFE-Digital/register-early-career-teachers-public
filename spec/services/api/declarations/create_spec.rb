@@ -431,7 +431,7 @@ RSpec.describe API::Declarations::Create, type: :model do
 
             it "does not raise a teacher_type validation error due to missing training period" do
               instance.valid?
-              expect(instance.errors[:teacher_type]).to be_empty
+              expect(instance).to have_no_error(:teacher_type)
             end
           end
         end

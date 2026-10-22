@@ -15,7 +15,7 @@ RSpec.describe LeadProvider, type: :validator do
 
     it "does not add an error" do
       expect(subject.valid?).to be(true)
-      expect(subject.errors[:lead_provider_id]).to be_empty
+      expect(subject).to have_no_error(:lead_provider_id)
     end
   end
 
@@ -24,7 +24,7 @@ RSpec.describe LeadProvider, type: :validator do
 
     it "does not add an error" do
       expect(subject.valid?).to be(true)
-      expect(subject.errors[:lead_provider_id]).to be_empty
+      expect(subject).to have_no_error(:lead_provider_id)
     end
   end
 
@@ -33,7 +33,7 @@ RSpec.describe LeadProvider, type: :validator do
 
     it "adds a default error message" do
       expect(subject.valid?).to be(false)
-      expect(subject.errors[:lead_provider_id]).to include("Select a lead provider")
+      expect(subject).to have_error(:lead_provider_id, "Select a lead provider")
     end
   end
 
@@ -50,7 +50,7 @@ RSpec.describe LeadProvider, type: :validator do
 
     it "uses the custom message" do
       expect(subject.valid?).to be(false)
-      expect(subject.errors[:lead_provider_id]).to include("custom validation message")
+      expect(subject).to have_error(:lead_provider_id, "custom validation message")
     end
   end
 end

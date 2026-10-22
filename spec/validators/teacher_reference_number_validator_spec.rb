@@ -15,7 +15,7 @@ RSpec.describe TeacherReferenceNumberValidator, type: :model do
       it "does not add any errors for trn - #{trn}" do
         subject = test_class.new(trn:)
         subject.valid?
-        expect(subject.errors[:teacher_reference_number]).to be_empty
+        expect(subject).to have_no_error(:teacher_reference_number)
       end
     end
   end
@@ -30,7 +30,7 @@ RSpec.describe TeacherReferenceNumberValidator, type: :model do
         subject = test_class.new(trn: item[:trn])
         subject.valid?
 
-        expect(subject.errors[:trn]).to include(item[:error_message])
+        expect(subject).to have_error(:trn, item[:error_message])
       end
     end
   end

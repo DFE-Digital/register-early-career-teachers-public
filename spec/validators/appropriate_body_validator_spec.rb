@@ -21,7 +21,7 @@ RSpec.describe AppropriateBodyValidator, type: :model do
 
     it "adds an error" do
       expect(subject).not_to be_valid
-      expect(subject.errors[:appropriate_body]).to include("Select the appropriate body which will be supporting the ECT's induction")
+      expect(subject).to have_error(:appropriate_body, "Select the appropriate body which will be supporting the ECT's induction")
     end
   end
 
@@ -30,7 +30,7 @@ RSpec.describe AppropriateBodyValidator, type: :model do
 
     it "add an error" do
       expect(subject).not_to be_valid
-      expect(subject.errors[:appropriate_body]).to include("Select the appropriate body which will be supporting the ECT's induction")
+      expect(subject).to have_error(:appropriate_body, "Select the appropriate body which will be supporting the ECT's induction")
     end
   end
 
@@ -39,7 +39,7 @@ RSpec.describe AppropriateBodyValidator, type: :model do
 
     it "adds an error" do
       expect(subject).not_to be_valid
-      expect(subject.errors[:appropriate_body]).to include("Select a valid appropriate body which will be supporting the ECT's induction")
+      expect(subject).to have_error(:appropriate_body, "Select a valid appropriate body which will be supporting the ECT's induction")
     end
   end
 
@@ -48,7 +48,7 @@ RSpec.describe AppropriateBodyValidator, type: :model do
 
     it "adds an error" do
       expect(subject).not_to be_valid
-      expect(subject.errors[:appropriate_body]).to include("Select a valid appropriate body which will be supporting the ECT's induction")
+      expect(subject).to have_error(:appropriate_body, "Select a valid appropriate body which will be supporting the ECT's induction")
     end
   end
 
@@ -60,7 +60,7 @@ RSpec.describe AppropriateBodyValidator, type: :model do
 
       it "add an error" do
         expect(subject).not_to be_valid
-        expect(subject.errors[:appropriate_body]).to include("Select a teaching school hub appropriate body which will be supporting the ECT's induction")
+        expect(subject).to have_error(:appropriate_body, "Select a teaching school hub appropriate body which will be supporting the ECT's induction")
       end
     end
 

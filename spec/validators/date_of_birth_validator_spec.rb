@@ -16,7 +16,7 @@ RSpec.describe DateOfBirthValidator, type: :model do
 
       it "adds an error" do
         subject.valid?
-        expect(subject.errors[:date_of_birth]).to include("Enter a date of birth")
+        expect(subject).to have_error(:date_of_birth, "Enter a date of birth")
       end
     end
 
@@ -25,7 +25,7 @@ RSpec.describe DateOfBirthValidator, type: :model do
 
       it "adds an error" do
         subject.valid?
-        expect(subject.errors[:date_of_birth]).to include("Enter the date of birth in the correct format, for example 12 03 1998")
+        expect(subject).to have_error(:date_of_birth, "Enter the date of birth in the correct format, for example 12 03 1998")
       end
     end
 
@@ -34,7 +34,7 @@ RSpec.describe DateOfBirthValidator, type: :model do
 
       it "adds an error" do
         subject.valid?
-        expect(subject.errors[:date_of_birth]).to include("The teacher cannot be more than 100 years old")
+        expect(subject).to have_error(:date_of_birth, "The teacher cannot be more than 100 years old")
       end
     end
 
@@ -43,7 +43,7 @@ RSpec.describe DateOfBirthValidator, type: :model do
 
       it "adds an error" do
         subject.valid?
-        expect(subject.errors[:date_of_birth]).to include("The teacher cannot be less than 18 years old")
+        expect(subject).to have_error(:date_of_birth, "The teacher cannot be less than 18 years old")
       end
     end
   end
@@ -53,7 +53,7 @@ RSpec.describe DateOfBirthValidator, type: :model do
 
     it "does not add any errors" do
       subject.valid?
-      expect(subject.errors[:date_of_birth]).to be_empty
+      expect(subject).to have_no_error(:date_of_birth)
     end
   end
 end

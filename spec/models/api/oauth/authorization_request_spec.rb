@@ -36,7 +36,7 @@ describe API::OAuth::AuthorizationRequest do
 
       it "is invalid" do
         expect(authorization_request).to be_invalid
-        expect(authorization_request.errors[:client]).to include("can't be blank")
+        expect(authorization_request).to have_error(:client, "can't be blank")
       end
     end
   end

@@ -8,7 +8,7 @@ RSpec.shared_examples "an induction period" do
 
         before { subject.valid?(:register_ect) }
 
-        it { expect(subject.errors.messages[:started_on]).to include("Enter a start date after 1 September 2021") }
+        it { expect(subject).to have_error(:started_on, "Enter a start date after 1 September 2021", :register_ect) }
       end
 
       it { is_expected.not_to allow_values("2021-8-30", "2021-8-31").on(:register_ect).for(:started_on) }
@@ -21,7 +21,7 @@ RSpec.shared_examples "an induction period" do
 
         before { subject.valid? }
 
-        it { expect(subject.errors.messages[:started_on]).to include("Enter a start date after 1 September 1999") }
+        it { expect(subject).to have_error(:started_on, "Enter a start date after 1 September 1999") }
       end
 
       it { is_expected.not_to allow_values("1999-8-30", "1999-8-31").for(:started_on) }

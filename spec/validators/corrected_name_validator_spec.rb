@@ -12,7 +12,7 @@ RSpec.describe CorrectedNameValidator, type: :model do
     it "does not add any errors for corrected_name" do
       subject = test_class.new(corrected_name: "Rick Collins")
       subject.valid?
-      expect(subject.errors[:corrected_name]).to be_empty
+      expect(subject).to have_no_error(:corrected_name)
     end
   end
 
@@ -21,7 +21,7 @@ RSpec.describe CorrectedNameValidator, type: :model do
       subject = test_class.new(corrected_name: "a" * 71)
       subject.valid?
 
-      expect(subject.errors[:corrected_name]).to include("Corrected name must be 70 characters or less")
+      expect(subject).to have_error(:corrected_name, "Corrected name must be 70 characters or less")
     end
   end
 
@@ -30,7 +30,7 @@ RSpec.describe CorrectedNameValidator, type: :model do
       subject = test_class.new(corrected_name: "   ")
       subject.valid?
 
-      expect(subject.errors[:corrected_name]).to include("Enter the correct full name")
+      expect(subject).to have_error(:corrected_name, "Enter the correct full name")
     end
   end
 end
