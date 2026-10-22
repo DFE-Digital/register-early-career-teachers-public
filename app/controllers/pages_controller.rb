@@ -7,11 +7,11 @@ class PagesController < ApplicationController
 
   # Unrecognised DfE Sign In user (org/role)
   def access_denied
-    @organisation_name = session[:invalid_user_organisation_name]
+    invalid_organisation_details = session[:invalid_organisation_details]
+    @organisation_name = invalid_organisation_details
+      &.fetch("dfe_sign_in_organisation_name", nil)
     @dfe_sign_in_request_organisation_url =
       Rails.application.config.dfe_sign_in_request_organisation_url
-    @dfe_sign_in_my_services_url =
-      Rails.application.config.dfe_sign_in_my_services_url
   end
 
   def support

@@ -34,6 +34,11 @@ Rails.application.routes.draw do
 
   get "/switch-role", to: "sessions#update", as: "switch_role"
 
+  # DfE sign-in
+  namespace :sessions do
+    resource :access_request, only: :create
+  end
+
   # one time password
   get "/otp-sign-in", to: "otp_sessions#new"
   post "/otp-sign-in", to: "otp_sessions#create"
