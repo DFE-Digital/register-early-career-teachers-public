@@ -46,5 +46,11 @@ FactoryBot.define do
       inactive
       body_type { "local_authority" }
     end
+
+    trait :with_dsi do
+      dfe_sign_in_organisation do
+        association :dfe_sign_in_organisation, name:
+      end
+    end
   end
 end

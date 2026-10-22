@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_26_000000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_28_165108) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -30,6 +30,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_000000) do
   create_enum "declaration_types", ["started", "retained-1", "retained-2", "retained-3", "retained-4", "completed", "extended-1", "extended-2", "extended-3"]
   create_enum "deferral_reasons", ["bereavement", "long_term_sickness", "parental_leave", "career_break", "other"]
   create_enum "dfe_role_type", ["admin", "user_manager", "finance", "product_team"]
+  create_enum "dfe_sign_in_role_code", ["school_user", "appropriate_body_user"]
   create_enum "event_author_types", ["appropriate_body_user", "school_user", "dfe_staff_user", "system", "lead_provider_api", "oauth_client"]
   create_enum "evidence_types", ["training-event-attended", "self-study-material-completed", "materials-engaged-with-offline", "75-percent-engagement-met", "75-percent-engagement-met-reduced-induction", "one-term-induction", "other"]
   create_enum "fee_types", ["output", "service"]
@@ -306,6 +307,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_000000) do
     t.index ["name"], name: "index_dfe_sign_in_organisations_on_name", unique: true
     t.index ["urn"], name: "index_dfe_sign_in_organisations_on_urn", unique: true
     t.index ["uuid"], name: "index_dfe_sign_in_organisations_on_uuid", unique: true
+  end
+
+  create_table "dfe_sign_in_roles", force: :cascade do |t|
+    t.enum "code", null: false, enum_type: "dfe_sign_in_role_code"
+    t.string "dfe_sign_in_role_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_dfe_sign_in_roles_on_code", unique: true
+    t.index ["dfe_sign_in_role_id"], name: "index_dfe_sign_in_roles_on_dfe_sign_in_role_id", unique: true
   end
 
   create_table "ect_at_school_periods", force: :cascade do |t|
