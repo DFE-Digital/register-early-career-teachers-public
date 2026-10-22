@@ -477,6 +477,9 @@ erDiagram
     integer teaching_school_hub_id
     datetime updated_at
     uuid external_id
+    date started_on
+    date finished_on
+    daterange range
   }
   AppropriateBodyPeriod }o--|| DfESignInOrganisation : belongs_to
   AppropriateBodyPeriod }o--|| School : belongs_to
