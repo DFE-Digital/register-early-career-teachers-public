@@ -14,6 +14,12 @@
     - last_authenticated_at
     - created_at
     - updated_at
+  :dfe_sign_in_roles:
+    - id
+    - code
+    - dfe_sign_in_role_id
+    - created_at
+    - updated_at
   :teaching_school_hubs:
     - id
     - name
