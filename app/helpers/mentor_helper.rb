@@ -5,10 +5,10 @@ module MentorHelper
   end
 
   def assign_existing_mentor_lead_provider_back_link(wizard)
-    if wizard.context.ect_lead_provider_available?
+    if wizard.ect_lead_provider_available?
       schools_assign_existing_mentor_wizard_review_mentor_eligibility_path
     else
-      new_schools_ect_mentorship_path(wizard.context.ect_at_school_period, preselect: wizard.mentor_period_id)
+      new_schools_ect_mentorship_path(wizard.ect_at_school_period, preselect: wizard.mentor_at_school_period.id)
     end
   end
 end

@@ -6,8 +6,6 @@ module Admin
 
         FORM_KEY_PREFIX = "admin_teachers_training_periods_change_contract_period_wizard"
 
-        include WizardStoreRescuable
-
         before_action :set_teacher
         before_action :set_training_period
         before_action :ensure_changeable_training_period
@@ -20,12 +18,12 @@ module Admin
         end
 
         def create
-          unless @wizard.valid_step? && @wizard.current_step.save!
+          unless @wizard.save_current_step
             return render current_step, status: :unprocessable_content
           end
 
           if current_step == :check_answers
-            store.reset
+            store.clear
             redirect_to admin_teacher_training_path(@teacher), alert: "Contract period changed"
           else
             redirect_to @wizard.next_step_path
@@ -52,11 +50,11 @@ module Admin
         end
 
         def check_allowed_step
-          redirect_to @wizard.allowed_step_path unless @wizard.allowed_step?
+          redirect_to @wizard.furthest_valid_step_path unless @wizard.valid_path_to_current_step?
         end
 
         def store
-          @store ||= SessionRepository.new(session:, form_key:)
+          @store ||= DfE::Wizard::Repository::Session.new(session:, key: form_key)
         end
 
         def form_key
@@ -64,26 +62,14 @@ module Admin
         end
 
         def current_step
-          @current_step ||= begin
-            step = step_name_from_path
-            return :not_found unless wizard_class.step?(step)
-
-            step
-          end
-        end
-
-        def step_name_from_path
-          request.path.split("/").last.underscore.to_sym
+          @current_step ||= request.path.split("/").last.underscore.to_sym
         end
 
         def initialize_wizard
           @wizard = wizard_class.new(
             current_step:,
-            step_params: params,
-            author: current_user,
-            teacher_id: @teacher.id,
-            training_period_id: @training_period.id,
-            store:
+            current_step_params: params,
+            state_store: ChangeContractPeriodWizard::StateStore.new(repository: store, training_period: @training_period)
           )
         end
 
@@ -95,7 +81,7 @@ module Admin
           return unless current_step == :select_contract_period
           return if request.referer.to_s.include?("/contract-period/change/")
 
-          store.reset
+          store.clear
         end
       end
     end

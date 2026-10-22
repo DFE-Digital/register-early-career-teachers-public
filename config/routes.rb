@@ -1,8 +1,8 @@
 Rails.application.routes.draw do
   # DFE-Digital/dfe-wizard auto-routing
   concern :wizardable do |options = {}|
-    options[:wizard]::Wizard.steps.first.each_key do |step|
-      path = step.to_s.dasherize
+    options[:wizard]::Wizard.routes.each do |route|
+      path = route.to_s.dasherize
 
       get path, action: :new
       post path, action: :create
