@@ -33,7 +33,8 @@ module Admin
           return allowed if store.trn.blank?
 
           if store.destination_teacher_id.present?
-            allowed.concat(%i[merge_preview confirm_merge])
+            allowed << :merge_preview
+            allowed << :confirm_merge if store.merge_previewed
           else
             allowed << :confirm
           end
@@ -88,13 +89,11 @@ module Admin
 
               old_trn = teacher.trn
               source_teacher_name = teacher_name
-              destination_teacher_name = ::Teachers::Name.new(destination).full_name
 
               ::Teachers::TRN::Merge.new(teacher:, new_trn: store.trn, author:).merge!
 
               store.old_trn = old_trn
               store.source_teacher_name = source_teacher_name
-              store.destination_teacher_name = destination_teacher_name
             end
           end
         end
