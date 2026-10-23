@@ -61,7 +61,7 @@ Put the other parameters in the request body, not in additional request headers.
   end
   table.with_body do |body|
     body.with_row do |row|
-      row.with_cell(text: "<code>token</code>".html_safe)
+      row.with_cell { tag.code("token") }
       row.with_cell(text: "The access token you want to revoke")
     end
   end
