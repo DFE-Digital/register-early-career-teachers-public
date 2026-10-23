@@ -6,7 +6,8 @@ RSpec.describe API::Declarations::Create, type: :model do
       teacher_type:,
       evidenced_at:,
       declaration_type:,
-      evidence_type:
+      evidence_type:,
+      contract_period_year:
     )
   end
 
@@ -19,6 +20,7 @@ RSpec.describe API::Declarations::Create, type: :model do
   let(:contract_period) { training_period.contract_period }
   let(:declaration_type) { "started" }
   let(:evidence_type) { "training-event-attended" }
+  let(:contract_period_year) { nil }
   let(:schedule) { training_period.schedule }
   let(:evidence_datetime) { Faker::Time.between(from: milestone.start_date, to: milestone.milestone_date) }
   let(:evidenced_at) { evidence_datetime.rfc3339 }
@@ -67,6 +69,13 @@ RSpec.describe API::Declarations::Create, type: :model do
 
           it { is_expected.to have_one_error_only }
           it { is_expected.to have_api_error(:teacher_type, "The entered '#/teacher_type' is not recognised for the given teacher. Check details and try again.") }
+
+          context "when a cohort is provided" do
+            let(:contract_period_year) { contract_period.year.to_s }
+
+            it { is_expected.to have_one_error_only }
+            it { is_expected.to have_api_error(:teacher_type, "The entered '#/teacher_type' is not recognised for the given teacher. Check details and try again.") }
+          end
         end
 
         context "when a matching training period does not exist (different lead provider)" do
@@ -432,6 +441,46 @@ RSpec.describe API::Declarations::Create, type: :model do
             it "does not raise a teacher_type validation error due to missing training period" do
               instance.valid?
               expect(instance).to have_no_error(:teacher_type)
+            end
+          end
+
+          context "when training periods exist in different cohorts for the same lead provider" do
+            let!(:training_period) do
+              FactoryBot.create(:training_period, :"for_#{trainee_type}", :active,
+                                "#{trainee_type}_at_school_period": at_school_period,
+                                school_partnership:,
+                                started_on: at_school_period.started_on,
+                                finished_on: 2.months.ago)
+            end
+
+            let(:later_school_partnership) do
+              FactoryBot.create(:school_partnership, :for_year, year: 2025, lead_provider:, school: at_school_period.school)
+            end
+
+            let!(:later_training_period) do
+              FactoryBot.create(:training_period, :"for_#{trainee_type}", :unfinished,
+                                "#{trainee_type}_at_school_period": at_school_period,
+                                school_partnership: later_school_partnership,
+                                started_on: 2.months.ago + 1.day)
+            end
+
+            it "selects the latest training period when no cohort is given" do
+              expect(instance.training_period).to eq(later_training_period)
+            end
+
+            context "when a valid cohort is provided" do
+              let(:contract_period_year) { contract_period.year.to_s }
+
+              it "selects the training period in that cohort" do
+                expect(instance.training_period).to eq(training_period)
+              end
+            end
+
+            context "when an invalid cohort is provided" do
+              let(:contract_period_year) { (contract_period.year - 1).to_s }
+
+              it { is_expected.to have_one_error_only }
+              it { is_expected.to have_api_error(:contract_period_year, "The '#/contract_period_year' you have entered is not recognised for this teacher. Check details and try again.") }
             end
           end
         end

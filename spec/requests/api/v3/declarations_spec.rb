@@ -70,7 +70,8 @@ RSpec.describe "Declarations API", :with_metadata, type: :request do
         declaration_type: "started",
         evidence_type: "other",
         teacher_api_id: teacher.api_id,
-        teacher_type:
+        teacher_type:,
+        contract_period_year: nil
       }
     end
 
@@ -83,12 +84,14 @@ RSpec.describe "Declarations API", :with_metadata, type: :request do
             declaration_type:,
             declaration_date:,
             course_identifier:,
-            evidence_held: "other"
-          }
+            evidence_held: "other",
+            cohort:
+          }.compact
         }
       }
     end
     let(:declaration_type) { "started" }
+    let(:cohort) { nil }
 
     %i[ect mentor].each do |teacher_type|
       context "for #{teacher_type}" do
@@ -137,6 +140,34 @@ RSpec.describe "Declarations API", :with_metadata, type: :request do
             expect(parsed_response[:errors]).to contain_exactly(
               title: "declaration_date",
               detail: "Enter a '#/declaration_date'."
+            )
+          end
+        end
+
+        context "when a valid cohort is provided" do
+          let(:cohort) { framework_agreement.contract_period_year.to_s }
+
+          it "creates the declaration against the training period in that cohort" do
+            allow(service).to receive(:new).and_call_original
+
+            authenticated_api_post(path, params:)
+
+            expect(response).to have_http_status(:ok)
+            expect(service).to have_received(:new).with(service_args.merge(contract_period_year: cohort))
+            expect(parsed_response.dig(:data, :attributes, :cohort)).to eq(cohort)
+          end
+        end
+
+        context "when an invalid cohort is provided" do
+          let(:cohort) { (framework_agreement.contract_period_year - 1).to_s }
+
+          it "returns `unprocessable_content`" do
+            authenticated_api_post(path, params:)
+
+            expect(response).to have_http_status(:unprocessable_content)
+            expect(parsed_response[:errors]).to contain_exactly(
+              title: "cohort",
+              detail: "The '#/cohort' you have entered is not recognised for this participant. Check details and try again."
             )
           end
         end
