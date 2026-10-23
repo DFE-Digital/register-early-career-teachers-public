@@ -13,7 +13,7 @@
 
 <% if @ect_declarations.any? %>
   <% @ect_declarations.each do |declaration| %>
-    <%= render "admin/teachers/declarations/declaration", declaration: declaration %>
+    <%= render "admin/teachers/declarations/declaration", declaration: declaration, show_actions: true %>
   <% end %>
 <% else %>
   <p class="govuk-body">There are no ECT training declarations for <%= teacher_full_name(@teacher) %>.</p>
@@ -23,7 +23,7 @@
 
 <% if @mentor_declarations.any? %>
   <% @mentor_declarations.each do |declaration| %>
-    <%= render "admin/teachers/declarations/declaration", declaration: declaration %>
+    <%= render "admin/teachers/declarations/declaration", declaration: declaration, show_actions: true %>
   <% end %>
 <% else %>
   <p class="govuk-body">There are no mentor training declarations for <%= teacher_full_name(@teacher) %>.</p>

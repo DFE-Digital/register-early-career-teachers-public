@@ -9,9 +9,15 @@ module Admin
                   with: :redirect_teacher_not_deactivated
       rescue_from Admin::Teachers::ChangeTRNWizard::ConfirmStep::ProposedTRNChangedError,
                   with: :redirect_proposed_trn_changed
+      rescue_from Admin::Teachers::ChangeTRNWizard::ConfirmMergeStep::ProposedTRNChanged,
+                  with: :redirect_merge_proposal_changed
 
       rescue_from Admin::Teachers::ChangeTRNWizard::Wizard::IneligibleForReplacementError,
                   with: :redirect_ineligible_for_replacement
+
+      rescue_from Admin::Teachers::ChangeTRNWizard::Wizard::IneligibleForMergeError,
+                  Admin::Teachers::ChangeTRNWizard::Wizard::MergeDestinationChangedError,
+                  with: :redirect_merge_records_changed
 
       before_action :set_teacher
       before_action :initialize_wizard
@@ -36,6 +42,8 @@ module Admin
       end
 
       def set_teacher
+        return if store.records_merged
+
         @teacher = Teacher.find(params[:teacher_id])
       end
 
@@ -43,7 +51,7 @@ module Admin
         @wizard = wizard_class.new(
           current_step:,
           step_params: params,
-          teacher_id: @teacher.id,
+          teacher_id: params[:teacher_id],
           author: current_user,
           store:
         )
@@ -82,10 +90,30 @@ module Admin
                     }
       end
 
+      def redirect_merge_proposal_changed
+        path = if store.destination_teacher_id.present?
+                 admin_teacher_change_trn_wizard_merge_preview_path(@teacher)
+               else
+                 admin_teacher_change_trn_wizard_enter_trn_path(@teacher)
+               end
+
+        redirect_to path,
+                    flash: {
+                      error: "The proposed TRN has changed. Review the updated details before continuing."
+                    }
+      end
+
+      def redirect_merge_records_changed
+        store.reset
+
+        redirect_to admin_teacher_change_trn_wizard_enter_trn_path(@teacher),
+                    flash: { error: "The teacher records have changed. Enter the replacement TRN and review the records again." }
+      end
+
       def store
         @store ||= SessionRepository.new(
           session:,
-          form_key: "#{FORM_KEY_PREFIX}_#{@teacher.id}"
+          form_key: "#{FORM_KEY_PREFIX}_#{params[:teacher_id]}"
         )
       end
 
