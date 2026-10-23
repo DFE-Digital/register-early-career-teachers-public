@@ -1,5 +1,18 @@
 ---
 shared:
+  :region_awards:
+    - id
+    - appropriate_body_period_id
+    - school_id
+    - region_id
+    - created_at
+    - updated_at
+  :regions:
+    - id
+    - code
+    - districts
+    - created_at
+    - updated_at
   :appropriate_body_periods:
     - id
     - name

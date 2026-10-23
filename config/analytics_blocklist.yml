@@ -30,20 +30,8 @@
     - created_at
     - updated_at
   :region_awards:
-    - id
-    - appropriate_body_period_id
-    - school_id
-    - region_id
     - deactivated_at
     - deactivation_reason
-    - created_at
-    - updated_at
-  :regions:
-    - id
-    - code
-    - districts
-    - created_at
-    - updated_at
   :appropriate_body_periods:
     - body_type
     - local_authority_id
