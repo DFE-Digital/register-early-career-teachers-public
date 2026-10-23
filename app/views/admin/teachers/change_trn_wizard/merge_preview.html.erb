@@ -3,17 +3,25 @@
   backlink_href: @wizard.previous_step_path
 ) %>
 
-<div class="govuk-grid-row">
+<p class="govuk-body">
+  The new TRN exists in the service. Records will be merged.
+</p>
+
+<div class="govuk-grid-row app-merge-preview">
   <div class="govuk-grid-column-one-half">
     <h2 class="govuk-heading-m">Deactivated record</h2>
 
-    <%= render "teacher_record", teacher: @wizard.teacher %>
+    <%= render "teacher_record",
+      teacher: @wizard.teacher,
+      merging: true %>
   </div>
 
-  <div class="govuk-grid-column-one-half">
-    <h2 class="govuk-heading-m">Active record</h2>
+  <div class="govuk-grid-column-one-half app-merge-preview__destination">
+    <h2 class="govuk-heading-m">Active record being merged with</h2>
 
-    <%= render "teacher_record", teacher: @wizard.destination %>
+    <%= render "teacher_record",
+      teacher: @wizard.destination,
+      merging: false %>
   </div>
 </div>
 

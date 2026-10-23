@@ -7,6 +7,7 @@ module Admin
         def next_step = :confirm_merge
 
         def save!
+          store.merge_previewed = true
           true
         end
       end

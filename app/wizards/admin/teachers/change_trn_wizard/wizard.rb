@@ -2,6 +2,8 @@ module Admin
   module Teachers
     module ChangeTRNWizard
       class Wizard < ApplicationWizard
+        class MergeDestinationChangedError < StandardError; end
+
         attr_accessor :store, :teacher_id, :author
 
         steps do
@@ -28,7 +30,8 @@ module Admin
           return allowed if store.trn.blank?
 
           if store.destination_teacher_id.present?
-            allowed.concat(%i[merge_preview confirm_merge])
+            allowed << :merge_preview
+            allowed << :confirm_merge if store.merge_previewed
           else
             allowed << :confirm
           end
@@ -55,6 +58,8 @@ module Admin
               id: store.destination_teacher_id,
               trn: store.trn
             )
+        rescue ActiveRecord::RecordNotFound
+          raise MergeDestinationChangedError
         end
 
         def replace_trn!
@@ -71,18 +76,15 @@ module Admin
         def merge_trn!
           destination_teacher = destination
           source_teacher_name = teacher_name
-          destination_teacher_name = ::Teachers::Name
-            .new(destination_teacher)
-            .full_name
 
           ::Teachers::MergeTRN.new(teacher:).merge_deactivated!(
             destination: destination_teacher,
-            author:
+            author:,
+            expected_trn: store.trn
           )
 
           store.old_trn = teacher.trn
           store.source_teacher_name = source_teacher_name
-          store.destination_teacher_name = destination_teacher_name
         end
 
         def allowed_step_path

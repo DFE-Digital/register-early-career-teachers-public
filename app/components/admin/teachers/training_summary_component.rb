@@ -2,12 +2,13 @@ module Admin
   module Teachers
     class TrainingSummaryComponent < ApplicationComponent
       class UnexpectedTrainingProgrammeError < StandardError; end
-      attr_reader :training_period, :show_api_row, :show_actions
+      attr_reader :training_period, :show_api_row, :show_actions, :merge_preview
 
-      def initialize(training_period:, show_api_row: false, show_actions: true)
+      def initialize(training_period:, show_api_row: false, show_actions: true, merge_preview: false)
         @training_period = training_period
         @show_api_row = show_api_row
         @show_actions = show_actions
+        @merge_preview = merge_preview
       end
 
       def call
@@ -63,7 +64,7 @@ module Admin
           training_programme_row,
           summary_row("Schedule", schedule_text),
           summary_row("Start date", start_date_text),
-          summary_row("End date", end_date_text),
+          end_date_row,
           api_response_row,
         ].compact
       end
@@ -71,10 +72,10 @@ module Admin
       def school_led_rows
         [
           summary_row("School", training_school_name),
-          summary_row("Training programme", TRAINING_PROGRAMME[training_period.training_programme]),
+          summary_row(training_programme_label, TRAINING_PROGRAMME[training_period.training_programme]),
           summary_row("Start date", start_date_text),
-          summary_row("End date", end_date_text)
-        ]
+          end_date_row
+        ].compact
       end
 
       def card_title
@@ -143,10 +144,20 @@ module Admin
         training_period.finished_on.present? ? format_date(training_period.finished_on) : "No end date recorded"
       end
 
+      def end_date_row
+        return if merge_preview && training_period.finished_on.blank?
+
+        summary_row("End date", end_date_text)
+      end
+
+      def training_programme_label
+        merge_preview ? "Induction programme" : "Training programme"
+      end
+
       def training_programme_row
         return if training_period.for_mentor?
 
-        summary_row("Training programme", TRAINING_PROGRAMME[training_period.training_programme])
+        summary_row(training_programme_label, TRAINING_PROGRAMME[training_period.training_programme])
       end
 
       def api_response_row

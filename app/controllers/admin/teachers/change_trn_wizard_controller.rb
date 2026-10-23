@@ -6,12 +6,16 @@ module Admin
       FORM_KEY_PREFIX = "admin_teachers_change_trn_wizard"
 
       rescue_from ::Teachers::ReplaceTRN::TeacherNotDeactivatedError,
-                  ::Teachers::MergeTRN::TeacherNotDeactivated,
+                  ::Teachers::MergeTRN::TeacherNotDeactivatedError,
                   with: :redirect_teacher_not_deactivated
       rescue_from Admin::Teachers::ChangeTRNWizard::ConfirmStep::ProposedTRNChangedError,
                   with: :redirect_proposed_trn_changed
-      rescue_from Admin::Teachers::ChangeTRNWizard::ConfirmMergeStep::ProposedTRNChanged,
+      rescue_from Admin::Teachers::ChangeTRNWizard::ConfirmMergeStep::ProposedTRNChangedError,
                   with: :redirect_merge_proposal_changed
+      rescue_from ::Teachers::MergeTRN::MergeProposalChangedError,
+                  with: :redirect_merge_destination_changed
+      rescue_from Admin::Teachers::ChangeTRNWizard::Wizard::MergeDestinationChangedError,
+                  with: :redirect_merge_destination_changed
 
       before_action :set_teacher
       before_action :initialize_wizard
@@ -74,15 +78,18 @@ module Admin
       end
 
       def redirect_merge_proposal_changed
-        path = if store.destination_teacher_id.present?
-                 admin_teacher_change_trn_wizard_merge_preview_path(@teacher)
-               else
-                 admin_teacher_change_trn_wizard_enter_trn_path(@teacher)
-               end
-
-        redirect_to path,
+        redirect_to @wizard.allowed_step_path,
                     flash: {
                       error: "The proposed TRN has changed. Review the updated details before continuing."
+                    }
+      end
+
+      def redirect_merge_destination_changed
+        store.reset
+
+        redirect_to admin_teacher_change_trn_wizard_enter_trn_path(@teacher),
+                    flash: {
+                      error: "The teacher records have changed. Enter the replacement TRN and review the records again."
                     }
       end
 

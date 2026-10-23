@@ -56,6 +56,7 @@ module Admin
           store.trs_first_name = nil
           store.trs_last_name = nil
           store.destination_teacher_id = nil
+          store.merge_previewed = nil
         end
 
         def formatted_trn
