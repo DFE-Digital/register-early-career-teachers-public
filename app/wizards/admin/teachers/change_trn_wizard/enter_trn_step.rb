@@ -9,6 +9,7 @@ module Admin
                   presence: {
                     message: "Enter the teacher reference number (TRN)"
                   }
+        validate :trn_must_be_different
 
         def self.permitted_params = [:trn]
 
@@ -36,6 +37,13 @@ module Admin
         end
 
       private
+
+        def trn_must_be_different
+          return if errors[:trn].any?
+          return unless formatted_trn == wizard.teacher.trn
+
+          errors.add(:trn, "Enter a different teacher reference number (TRN)")
+        end
 
         def clear_proposed_details
           store.trn = nil

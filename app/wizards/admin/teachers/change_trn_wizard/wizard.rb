@@ -36,10 +36,10 @@ module Admin
         def replace_trn!
           old_trn = teacher.trn
 
-          ::Teachers::ReplaceTRN.new(teacher:).replace_deactivated!(
-            new_trn: store.trn,
+          ::Teachers::ReplaceTRN.new(
+            teacher:,
             author:
-          )
+          ).replace_deactivated!(new_trn: store.trn)
 
           store.old_trn = old_trn
         end

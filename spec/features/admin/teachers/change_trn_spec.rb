@@ -196,6 +196,10 @@ private
         exact: true
       )
     ).to be_visible
+
+    event = @teacher.events.where(event_type: "teacher_trn_replaced").sole
+
+    expect(event.author_type).to eq("dfe_staff_user")
   end
 
   def when_i_continue_without_entering_a_trn

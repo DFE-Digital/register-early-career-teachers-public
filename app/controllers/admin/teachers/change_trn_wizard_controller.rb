@@ -5,9 +5,9 @@ module Admin
 
       FORM_KEY_PREFIX = "admin_teachers_change_trn_wizard"
 
-      rescue_from ::Teachers::ReplaceTRN::TeacherNotDeactivated,
+      rescue_from ::Teachers::ReplaceTRN::TeacherNotDeactivatedError,
                   with: :redirect_teacher_not_deactivated
-      rescue_from Admin::Teachers::ChangeTRNWizard::ConfirmStep::ProposedTRNChanged,
+      rescue_from Admin::Teachers::ChangeTRNWizard::ConfirmStep::ProposedTRNChangedError,
                   with: :redirect_proposed_trn_changed
 
       before_action :set_teacher

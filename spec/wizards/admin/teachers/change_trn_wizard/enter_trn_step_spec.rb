@@ -3,7 +3,19 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::EnterTRNStep do
 
   let(:trn) { "12345" }
   let(:store) { FactoryBot.build(:session_repository) }
-  let(:wizard) { double("ChangeTRNWizard", store:) }
+
+  let(:teacher) do
+    FactoryBot.create(:teacher, :deactivated_in_trs, trn: "7654321")
+  end
+
+  let(:wizard) do
+    instance_double(
+      Admin::Teachers::ChangeTRNWizard::Wizard,
+      store:,
+      teacher:
+    )
+  end
+
   let(:api_client) { instance_double(TRS::APIClient) }
 
   let(:trs_teacher) do
@@ -31,6 +43,28 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::EnterTRNStep do
       expect(store.trn).to eq("0012345")
       expect(store.trs_first_name).to eq("Sarah")
       expect(store.trs_last_name).to eq("Jones")
+    end
+
+    context "when the proposed TRN matches the current TRN" do
+      let(:teacher) do
+        FactoryBot.create(:teacher, :deactivated_in_trs, trn: "0076543")
+      end
+
+      ["0076543", "76543", "00 76543"].each do |submitted_trn|
+        context "when entered as #{submitted_trn.inspect}" do
+          let(:trn) { submitted_trn }
+
+          it "rejects the TRN without looking it up in TRS" do
+            expect(step.save!).to be(false)
+
+            expect(step.errors[:trn]).to include(
+              "Enter a different teacher reference number (TRN)"
+            )
+            expect(api_client).not_to have_received(:find_teacher)
+            expect(store.trn).to be_nil
+          end
+        end
+      end
     end
 
     context "when the TRN is too short" do

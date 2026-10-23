@@ -2,7 +2,7 @@ module Admin
   module Teachers
     module ChangeTRNWizard
       class ConfirmStep < Step
-        class ProposedTRNChanged < StandardError; end
+        class ProposedTRNChangedError < StandardError; end
 
         attribute :confirmed, :boolean
         attribute :expected_trn, :string
@@ -23,7 +23,7 @@ module Admin
           return false unless valid?
 
           if expected_trn.blank? || expected_trn != store.trn
-            raise ProposedTRNChanged
+            raise ProposedTRNChangedError
           end
 
           wizard.replace_trn!
