@@ -50,6 +50,9 @@
     - national_body_id
     - school_id
     - teaching_school_hub_id
+    - started_on
+    - finished_on
+    - range
   :blazer_queries:
     - id
     - creator_id
