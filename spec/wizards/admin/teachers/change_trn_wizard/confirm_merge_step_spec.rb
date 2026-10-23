@@ -6,7 +6,13 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::ConfirmMergeStep do
   let(:confirmed) { "1" }
   let(:expected_trn) { "2345678" }
   let(:store) { FactoryBot.build(:session_repository) }
-  let(:wizard) { double("ChangeTRNWizard", store:, merge_trn!: true) }
+  let(:wizard) do
+    instance_double(
+      Admin::Teachers::ChangeTRNWizard::Wizard,
+      store:,
+      merge_trn!: true
+    )
+  end
 
   before do
     store.trn = "2345678"
@@ -55,7 +61,7 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::ConfirmMergeStep do
         expect(wizard).not_to receive(:merge_trn!)
 
         expect { step.save! }
-          .to raise_error(described_class::ProposedTRNChanged)
+          .to raise_error(described_class::ProposedTRNChangedError)
 
         expect(store.records_merged).to be_nil
       end
@@ -68,7 +74,7 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::ConfirmMergeStep do
         expect(wizard).not_to receive(:merge_trn!)
 
         expect { step.save! }
-          .to raise_error(described_class::ProposedTRNChanged)
+          .to raise_error(described_class::ProposedTRNChangedError)
 
         expect(store.records_merged).to be_nil
       end

@@ -9,7 +9,7 @@ module Admin
                   with: :redirect_teacher_not_deactivated
       rescue_from Admin::Teachers::ChangeTRNWizard::ConfirmStep::ProposedTRNChangedError,
                   with: :redirect_proposed_trn_changed
-      rescue_from Admin::Teachers::ChangeTRNWizard::ConfirmMergeStep::ProposedTRNChanged,
+      rescue_from Admin::Teachers::ChangeTRNWizard::ConfirmMergeStep::ProposedTRNChangedError,
                   with: :redirect_merge_proposal_changed
 
       rescue_from Admin::Teachers::ChangeTRNWizard::Wizard::IneligibleForReplacementError,
@@ -91,13 +91,7 @@ module Admin
       end
 
       def redirect_merge_proposal_changed
-        path = if store.destination_teacher_id.present?
-                 admin_teacher_change_trn_wizard_merge_preview_path(@teacher)
-               else
-                 admin_teacher_change_trn_wizard_enter_trn_path(@teacher)
-               end
-
-        redirect_to path,
+        redirect_to @wizard.allowed_step_path,
                     flash: {
                       error: "The proposed TRN has changed. Review the updated details before continuing."
                     }

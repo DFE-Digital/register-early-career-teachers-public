@@ -27,26 +27,23 @@
   <% end %>
 <% end %>
 
-<h3 class="govuk-heading-s">School periods</h3>
+<h3 class="govuk-heading-s"><%= merging ? "School periods that will merge" : "Existing school periods" %></h3>
 
 <% if school_periods.empty? %>
   <p class="govuk-body">No school periods recorded.</p>
 <% else %>
   <% school_periods.each do |school_period| %>
-    <%= render Admin::Teachers::SchoolSummaryComponent.new(school_period:) %>
+    <%= render Admin::Teachers::SchoolSummaryComponent.new(school_period:, merge_preview: true) %>
   <% end %>
 <% end %>
 
-<h3 class="govuk-heading-s">Training periods</h3>
+<h3 class="govuk-heading-s"><%= merging ? "Training periods that will merge" : "Existing training periods" %></h3>
 
 <% if training_periods.empty? %>
   <p class="govuk-body">No training periods recorded.</p>
 <% else %>
   <% training_periods.each do |training_period| %>
-    <%= render Admin::Teachers::TrainingSummaryComponent.new(
-      training_period:,
-      show_actions: false
-    ) %>
+    <%= render Admin::Teachers::TrainingSummaryComponent.new(training_period:, show_actions: false, merge_preview: true) %>
   <% end %>
 <% end %>
 
