@@ -7,7 +7,7 @@ RSpec.describe "API OAuth authorizations", type: :request do
     {
       response_type: "code",
       client_id: client.client_id,
-      appropriate_body_period_id: appropriate_body_period.id,
+      appropriate_body_period_uuid: appropriate_body_period.external_uuid,
       redirect_uri:,
       code_challenge: "hR8Nc3vLpQ2xY7bF",
       code_challenge_method: "S256",
