@@ -26,7 +26,13 @@ module GIAS::Reconciliation
       attr_reader :ect_at_school_period, :predecessor_school, :successor_school
 
       def update_ect_at_school_period!
-        ect_at_school_period.update!(school: successor_school)
+        attrs = { school: successor_school }
+
+        if ect_at_school_period.reported_leaving_by?(predecessor_school)
+          attrs[:reported_leaving_by_school] = successor_school
+        end
+
+        ect_at_school_period.update!(attrs)
       end
 
       def update_training_periods!

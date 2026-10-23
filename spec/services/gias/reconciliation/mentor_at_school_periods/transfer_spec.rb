@@ -33,6 +33,32 @@ RSpec.describe GIAS::Reconciliation::MentorAtSchoolPeriods::Transfer do
       expect(event.happened_at.to_date).to eq(predecessor_gias_school.closed_on)
     end
 
+    context "when the mentor_at_school_period is reported as leaving" do
+      context "by the predecessor school" do
+        before do
+          mentor_at_school_period.update!(reported_leaving_by_school: predecessor_school)
+        end
+
+        it "updates the reported_leaving_by_school to the successor school" do
+          subject
+          expect(mentor_at_school_period.reload.reported_leaving_by_school).to eq(successor_school)
+        end
+      end
+
+      context "by another school" do
+        let(:other_gias_school) { FactoryBot.create(:gias_school, :with_school) }
+
+        before do
+          mentor_at_school_period.update!(reported_leaving_by_school: other_gias_school.school)
+        end
+
+        it "does not update the reported_leaving_by_school" do
+          subject
+          expect(mentor_at_school_period.reload.reported_leaving_by_school).to eq(other_gias_school.school)
+        end
+      end
+    end
+
     context "when the mentor_at_school_period has associated training periods" do
       context "when the training period has only an expression of interest" do
         let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :with_only_expression_of_interest, mentor_at_school_period:) }
