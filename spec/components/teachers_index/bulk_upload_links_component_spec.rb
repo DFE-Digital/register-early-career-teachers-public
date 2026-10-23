@@ -1,14 +1,15 @@
 RSpec.describe TeachersIndex::BulkUploadLinksComponent, type: :component do
-  before { render_inline(component) }
-
   let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let(:component) { described_class.new(appropriate_body_period:) }
 
   it "links to Find ECTs" do
+    render_inline(component)
     expect(page).to have_link("Find and claim a new ECT", href: "/appropriate-body/claim-an-ect/find-ect/new")
   end
 
   context "without existing bulk submissions" do
+    before { render_inline(component) }
+
     it "links to new bulk claim page" do
       expect(page).to have_link("Claim multiple ECTs", href: "/appropriate-body/bulk/claims/new")
     end
