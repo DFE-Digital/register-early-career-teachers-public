@@ -1,7 +1,8 @@
 module Teachers
   class MergeTRN
-    class TeacherNotDeactivated < StandardError; end
-    class IneligibleForMerge < StandardError; end
+    class TeacherNotDeactivatedError < StandardError; end
+    class IneligibleForMergeError < StandardError; end
+    class MergeProposalChangedError < StandardError; end
 
     def initialize(teacher:)
       @teacher = teacher
@@ -14,21 +15,25 @@ module Teachers
       enqueue_trs_sync(teacher_started_induction_on:)
     end
 
-    def merge_deactivated!(destination:, author:)
+    def merge_deactivated!(destination:, author:, expected_trn:)
       @destination = destination
       @author = author
 
       teacher_started_induction_on = teacher.with_lock do
-        raise TeacherNotDeactivated unless teacher.trs_response_gone?
+        raise TeacherNotDeactivatedError unless teacher.trs_response_gone?
 
         destination.with_lock do
+          if expected_trn.blank? || destination.trn != expected_trn
+            raise MergeProposalChangedError
+          end
+
           eligibility = Teachers::MergeTRN::Eligibility.new(
             teacher:,
             destination:
           )
 
           unless eligibility.can_be_merged_when_deactivated?
-            raise IneligibleForMerge
+            raise IneligibleForMergeError
           end
 
           merge_records!
@@ -69,6 +74,7 @@ module Teachers
         move_mentor_ineligibility_data
         record_teacher_id_change
         refresh_metadata
+        move_teacher_events
         record_merge_event
         teacher.destroy!
       end
@@ -183,6 +189,10 @@ module Teachers
     def refresh_metadata
       teacher.lead_provider_metadata.destroy_all
       Metadata::Manager.new.refresh_metadata!([destination])
+    end
+
+    def move_teacher_events
+      teacher.events.update_all(teacher_id: destination.id)
     end
 
     def record_merge_event
