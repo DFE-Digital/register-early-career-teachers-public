@@ -13,7 +13,9 @@ module Admin
 
         def self.permitted_params = [:trn]
 
-        def next_step = :confirm
+        def next_step
+          store.destination_teacher_id.present? ? :merge_preview : :confirm
+        end
 
         def save!
           clear_proposed_details
@@ -26,6 +28,10 @@ module Admin
           store.trn = formatted_trn
           store.trs_first_name = trs_teacher.trs_first_name
           store.trs_last_name = trs_teacher.trs_last_name
+          store.destination_teacher_id = Teacher
+            .where.not(id: wizard.teacher_id)
+            .find_by(trn: formatted_trn)
+            &.id
 
           true
         rescue ::TRS::Errors::TeacherNotFound
@@ -49,6 +55,8 @@ module Admin
           store.trn = nil
           store.trs_first_name = nil
           store.trs_last_name = nil
+          store.destination_teacher_id = nil
+          store.merge_previewed = nil
         end
 
         def formatted_trn

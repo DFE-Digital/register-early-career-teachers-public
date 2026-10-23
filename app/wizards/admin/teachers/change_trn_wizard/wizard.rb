@@ -2,11 +2,16 @@ module Admin
   module Teachers
     module ChangeTRNWizard
       class Wizard < ApplicationWizard
+        class MergeDestinationChangedError < StandardError; end
+
         attr_accessor :store, :teacher_id, :author
 
         steps do
           [{
             enter_trn: EnterTRNStep,
+            merge_preview: MergePreviewStep,
+            confirm_merge: ConfirmMergeStep,
+            records_merged: RecordsMergedStep,
             confirm: ConfirmStep,
             confirmation: ConfirmationStep
           }]
@@ -17,11 +22,20 @@ module Admin
         end
 
         def allowed_steps
+          return [:records_merged] if store.records_merged
           return [:confirmation] if store.trn_replaced
           return [] unless teacher.trs_response_gone?
 
           allowed = [:enter_trn]
-          allowed << :confirm if store.trn.present?
+          return allowed if store.trn.blank?
+
+          if store.destination_teacher_id.present?
+            allowed << :merge_preview
+            allowed << :confirm_merge if store.merge_previewed
+          else
+            allowed << :confirm
+          end
+
           allowed
         end
 
@@ -30,7 +44,22 @@ module Admin
         end
 
         def teacher_name
+          return store.source_teacher_name if store.records_merged
+
           ::Teachers::Name.new(teacher).full_name
+        end
+
+        def destination
+          return if store.destination_teacher_id.blank?
+
+          @destination ||= Teacher
+            .where.not(id: teacher_id)
+            .find_by!(
+              id: store.destination_teacher_id,
+              trn: store.trn
+            )
+        rescue ActiveRecord::RecordNotFound
+          raise MergeDestinationChangedError
         end
 
         def replace_trn!
@@ -42,6 +71,20 @@ module Admin
           ).replace_deactivated!(new_trn: store.trn)
 
           store.old_trn = old_trn
+        end
+
+        def merge_trn!
+          destination_teacher = destination
+          source_teacher_name = teacher_name
+
+          ::Teachers::MergeTRN.new(teacher:).merge_deactivated!(
+            destination: destination_teacher,
+            author:,
+            expected_trn: store.trn
+          )
+
+          store.old_trn = teacher.trn
+          store.source_teacher_name = source_teacher_name
         end
 
         def allowed_step_path

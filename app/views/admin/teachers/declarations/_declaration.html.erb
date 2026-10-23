@@ -77,7 +77,7 @@
     %>
   <% end %>
 
-  <% if declaration.billable_or_changeable? %>
+  <% if local_assigns.fetch(:show_actions, true) && declaration.billable_or_changeable? %>
     <p class="govuk-body govuk-!-margin-top-6">
       <%= govuk_button_link_to "Void declaration", new_admin_declaration_void_path(declaration), warning: true %>
     </p>
