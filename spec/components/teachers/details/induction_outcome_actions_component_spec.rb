@@ -15,7 +15,6 @@ RSpec.describe Teachers::Details::InductionOutcomeActionsComponent, type: :compo
   context "with ongoing induction period" do
     before do
       FactoryBot.create(:induction_period, :unfinished, teacher:)
-      render_inline(component)
     end
 
     it "renders" do
@@ -26,6 +25,8 @@ RSpec.describe Teachers::Details::InductionOutcomeActionsComponent, type: :compo
 
     context "when in admin mode" do
       let(:mode) { :admin }
+
+      before { render_inline(component) }
 
       it "displays fail link" do
         expect(page).to have_link("Fail induction", href: "/admin/teachers/#{teacher.id}/record-failed-outcome/new")
@@ -38,6 +39,8 @@ RSpec.describe Teachers::Details::InductionOutcomeActionsComponent, type: :compo
 
     context "when in appropriate body mode" do
       let(:mode) { :appropriate_body }
+
+      before { render_inline(component) }
 
       it "displays fail link" do
         expect(page).to have_link("Fail induction", href: "/appropriate-body/teachers/#{teacher.id}/record-failed-outcome/confirm")

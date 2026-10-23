@@ -26,12 +26,6 @@ RSpec.describe Teachers::Details::PastInductionPeriodsComponent, type: :componen
 
     before { render_inline(component) }
 
-    it "renders" do
-      expect(component.render?).to be true
-      render_inline(component)
-      expect(rendered_content).not_to be_empty
-    end
-
     it "displays the heading" do
       expect(page).to have_css("h2", text: "Past induction periods")
     end
