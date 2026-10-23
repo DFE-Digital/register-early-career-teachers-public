@@ -61,20 +61,20 @@ We’ll add these query parameters to the redirect:
   end
   table.with_body do |body|
     body.with_row do |row|
-      row.with_cell(text: "<code>code</code>".html_safe)
-      row.with_cell(text: "The authorisation code, if authorisation succeeds. It’s single-use and expires after 10 minutes, so exchange it for an access token straight away.".html_safe)
+      row.with_cell { tag.code("code") }
+      row.with_cell(text: "The authorisation code, if authorisation succeeds. It’s single-use and expires after 10 minutes, so exchange it for an access token straight away.")
     end
     body.with_row do |row|
-      row.with_cell(text: "<code>state</code>".html_safe)
-      row.with_cell(text: "The <code>state</code> value you sent in your authorisation request, if you sent one. We return it whether authorisation succeeds or fails.".html_safe)
+      row.with_cell { tag.code("state") }
+      row.with_cell(text: simple_format("The <code>state</code> value you sent in your authorisation request, if you sent one. We return it whether authorisation succeeds or fails."))
     end
     body.with_row do |row|
-      row.with_cell(text: "<code>error</code>".html_safe)
-      row.with_cell(text: "A short identifier for the error, such as <code>access_denied</code> if authorisation fails, or <code>invalid_request</code> if the request parameters are invalid.".html_safe)
+      row.with_cell { tag.code("error") }
+      row.with_cell(text: simple_format("A short identifier for the error, such as <code>access_denied</code> if authorisation fails, or <code>invalid_request</code> if the request parameters are invalid."))
     end
     body.with_row do |row|
-      row.with_cell(text: "<code>error_description</code>".html_safe)
-      row.with_cell(text: "A readable description of the error if authorisation fails, for example, <code>User refused connection</code>.".html_safe)
+      row.with_cell { tag.code("error_description") }
+      row.with_cell(text: simple_format("A readable description of the error if authorisation fails, for example, <code>User refused connection</code>."))
     end
   end
 end %>

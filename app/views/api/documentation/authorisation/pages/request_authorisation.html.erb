@@ -97,32 +97,32 @@ These are the parameters in the request.
   end
   table.with_body do |body|
     body.with_row do |row|
-      row.with_cell(text: "<code>response_type</code>".html_safe)
-      row.with_cell(text: "The OAuth 2.0 response type. This must be <code>code</code>.".html_safe)
+      row.with_cell { tag.code("response_type") }
+      row.with_cell(text: simple_format("The OAuth 2.0 response type. This must be <code>code</code>."))
     end
     body.with_row do |row|
-      row.with_cell(text: "<code>client_id</code>".html_safe)
+      row.with_cell { tag.code("client_id") }
       row.with_cell(text: "Your application’s client ID.")
     end
     body.with_row do |row|
-      row.with_cell(text: "<code>appropriate_body_period_id</code>".html_safe)
+      row.with_cell { tag.code("appropriate_body_period_id") }
       row.with_cell(text: "The ID of the appropriate body making the connection.")
     end
     body.with_row do |row|
-      row.with_cell(text: "<code>state</code>".html_safe)
-      row.with_cell(text: "A value that only your application understands. It keeps track of the information between the request and the redirect, and helps prevent tampering. We pass it back to your application through the <code>redirect_uri</code>. This is described in the #{govuk_link_to("OAuth 2.0 specification", "https://tools.ietf.org/html/rfc6749#section-10.12")}.".html_safe)
+      row.with_cell { tag.code("state") }
+      row.with_cell(text: simple_format("A value that only your application understands. It keeps track of the information between the request and the redirect, and helps prevent tampering. We pass it back to your application through the <code>redirect_uri</code>. This is described in the #{govuk_link_to("OAuth 2.0 specification", "https://tools.ietf.org/html/rfc6749#section-10.12")}."))
     end
     body.with_row do |row|
-      row.with_cell(text: "<code>redirect_uri</code>".html_safe)
+      row.with_cell { tag.code("redirect_uri") }
       row.with_cell(text: "The URI we use to send users back to your application after authorisation, whether it was successful or not. This must match one of the redirect URIs you gave us when we registered your application.")
     end
     body.with_row do |row|
-      row.with_cell(text: "<code>code_challenge</code>".html_safe)
-      row.with_cell(text: "The #{govuk_link_to("PKCE", "https://oauth.net/2/pkce/") } <code>code_challenge</code>. This makes sure the access token we issue is not intercepted.".html_safe)
+      row.with_cell { tag.code("code_challenge") }
+      row.with_cell(text: simple_format("The #{govuk_link_to("PKCE", "https://oauth.net/2/pkce/") } <code>code_challenge</code>. This makes sure the access token we issue is not intercepted."))
     end
     body.with_row do |row|
-      row.with_cell(text: "<code>code_challenge_method</code>".html_safe)
-      row.with_cell(text: "The PKCE method used to transform the <code>code_verifier</code> into the <code>code_challenge</code>. This must be <code>S256</code>.".html_safe)
+      row.with_cell { tag.code("code_challenge_method") }
+      row.with_cell(text: simple_format("The PKCE method used to transform the <code>code_verifier</code> into the <code>code_challenge</code>. This must be <code>S256</code>."))
     end
   end
 end %>
