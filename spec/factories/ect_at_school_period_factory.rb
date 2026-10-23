@@ -73,6 +73,7 @@ FactoryBot.define do
       end
 
       after(:create) do |ect, evaluator|
+        # Queried with Avin why this was added although he's off until next week
         next unless ect.provider_led_training_programme?
 
         selected_lead_provider = evaluator.lead_provider || FactoryBot.create(:lead_provider)
