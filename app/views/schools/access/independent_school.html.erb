@@ -1,0 +1,24 @@
+<%
+  page_data(
+    title: "You cannot use Register early career teachers for #{@school_name}",
+    error: false
+  )
+%>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <p class="govuk-body">
+      <%= @school_name %> is an independent school. Independent schools are not eligible for DfE funding for early career teacher training, so you cannot use this service.
+    </p>
+    <p class="govuk-body">You do not need to give us information about your early career teachers (ECTs) or mentors.</p>
+
+    <h2 class="govuk-heading-m">Arranging training for your ECTs</h2>
+    <p class="govuk-body">You can arrange a training programme directly with a training provider. Your school will need to pay for it.</p>
+    <p class="govuk-body">
+      <%= govuk_link_to("Find out about training options for early career teachers", "https://www.gov.uk/guidance/set-up-and-manage-the-early-career-teacher-entitlement") %>.
+    </p>
+
+    <h2 class="govuk-heading-m">If you need help</h2>
+    <p class="govuk-body">Contact us at <%= school_support_mailto_link %>.</p>
+  </div>
+</div>

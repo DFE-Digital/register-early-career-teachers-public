@@ -8,15 +8,16 @@ module Schools
     before_action :ensure_access_blocked!
 
     def show
+      render :independent_school if @blocker.independent_school_without_funding?
     end
 
   private
 
     def ensure_access_blocked!
-      blocker = Schools::AccessBlocker.new(school_urn: current_user.school_urn)
-      return redirect_to schools_ects_home_path unless blocker.blocked?
+      @blocker = Schools::AccessBlocker.new(school_urn: current_user.school_urn)
+      return redirect_to schools_ects_home_path unless @blocker.blocked?
 
-      @school_name = blocker.school_name || current_user.school_urn
+      @school_name = @blocker.school_name || current_user.school_urn
     end
   end
 end
