@@ -1,5 +1,8 @@
 module Teachers
   class MergeTRN
+    class TeacherNotDeactivated < StandardError; end
+    class IneligibleForMerge < StandardError; end
+
     def initialize(teacher:)
       @teacher = teacher
     end
@@ -7,6 +10,55 @@ module Teachers
     def merge!
       return unless eligible_for_merge?
 
+      teacher_started_induction_on = merge_records!
+      enqueue_trs_sync(teacher_started_induction_on:)
+    end
+
+    def merge_deactivated!(destination:, author:)
+      @destination = destination
+      @author = author
+
+      teacher_started_induction_on = teacher.with_lock do
+        raise TeacherNotDeactivated unless teacher.trs_response_gone?
+
+        destination.with_lock do
+          eligibility = Teachers::MergeTRN::Eligibility.new(
+            teacher:,
+            destination:
+          )
+
+          unless eligibility.can_be_merged_when_deactivated?
+            raise IneligibleForMerge
+          end
+
+          merge_records!
+        end
+      end
+
+      enqueue_trs_sync(teacher_started_induction_on:)
+    end
+
+    class TRSSyncJob < ApplicationJob
+      after_perform do |job|
+        teacher = job.arguments.first.fetch(:teacher)
+        Teachers::SyncTeacherWithTRSJob.set(wait: 5.minutes).perform_later(teacher:)
+      end
+
+      def perform(teacher:, teacher_started_induction_on:)
+        if teacher_started_induction_on.present?
+          BeginECTInductionJob.perform_now(
+            trn: teacher.trn,
+            start_date: teacher_started_induction_on
+          )
+        end
+      end
+    end
+
+  private
+
+    attr_reader :teacher
+
+    def merge_records!
       teacher_started_induction_on = teacher.induction_periods.minimum(:started_on)
 
       ActiveRecord::Base.transaction do
@@ -21,25 +73,15 @@ module Teachers
         teacher.destroy!
       end
 
-      TRSSyncJob.perform_later(teacher: destination, teacher_started_induction_on:)
+      teacher_started_induction_on
     end
 
-    class TRSSyncJob < ApplicationJob
-      after_perform do |job|
-        teacher = job.arguments.first.fetch(:teacher)
-        Teachers::SyncTeacherWithTRSJob.set(wait: 5.minutes).perform_later(teacher:)
-      end
-
-      def perform(teacher:, teacher_started_induction_on:)
-        if teacher_started_induction_on.present?
-          BeginECTInductionJob.perform_now(trn: teacher.trn, start_date: teacher_started_induction_on)
-        end
-      end
+    def enqueue_trs_sync(teacher_started_induction_on:)
+      TRSSyncJob.perform_later(
+        teacher: destination,
+        teacher_started_induction_on:
+      )
     end
-
-  private
-
-    attr_reader :teacher
 
     def destination
       @destination ||= Teacher.find_by_trn(teacher.trs_redirected_to)
@@ -77,17 +119,27 @@ module Teachers
       merge_overlapping_ect_at_school_periods
       merge_overlapping_mentor_at_school_periods
 
-      teacher.ect_at_school_periods.reload.find_each { |period| period.update!(teacher: destination) }
-      teacher.mentor_at_school_periods.reload.find_each { |period| period.update!(teacher: destination) }
+      teacher.ect_at_school_periods.reload.find_each do |period|
+        period.update!(teacher: destination)
+      end
+      teacher.mentor_at_school_periods.reload.find_each do |period|
+        period.update!(teacher: destination)
+      end
     end
 
     def move_induction_periods
-      teacher.induction_periods.find_each { |period| period.update!(teacher: destination) }
-      teacher.induction_extensions.find_each { |extension| extension.update!(teacher: destination) }
+      teacher.induction_periods.find_each do |period|
+        period.update!(teacher: destination)
+      end
+      teacher.induction_extensions.find_each do |extension|
+        extension.update!(teacher: destination)
+      end
     end
 
     def move_teacher_id_changes
-      teacher.teacher_id_changes.find_each { |change| change.update!(teacher: destination) }
+      teacher.teacher_id_changes.find_each do |change|
+        change.update!(teacher: destination)
+      end
     end
 
     def move_data
@@ -134,11 +186,15 @@ module Teachers
     end
 
     def record_merge_event
-      Events::Record.record_teacher_trn_merged_event!(author:, source: teacher, destination:)
+      Events::Record.record_teacher_trn_merged_event!(
+        author:,
+        source: teacher,
+        destination:
+      )
     end
 
     def author
-      Events::SystemAuthor.new
+      @author ||= Events::SystemAuthor.new
     end
   end
 end

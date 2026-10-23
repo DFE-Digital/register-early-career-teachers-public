@@ -1,17 +1,17 @@
 module Teachers
   class MergeTRN
     class Eligibility
-      def initialize(teacher:)
+      def initialize(teacher:, destination: nil)
         @teacher = teacher
+        @destination = destination
       end
 
       def can_be_merged?
-        merge_required? &&
-          destination.present? &&
-          at_most_one_teacher_has_induction_periods? &&
-          ect_periods_at_different_schools_do_not_overlap? &&
-          provider_led_training_periods_have_same_contract_period?(:mentor_training_periods) &&
-          provider_led_training_periods_have_same_contract_period?(:ect_training_periods)
+        merge_required? && records_can_be_merged?
+      end
+
+      def can_be_merged_when_deactivated?
+        teacher.trs_response_gone? && records_can_be_merged?
       end
 
     private
@@ -24,6 +24,15 @@ module Teachers
 
       def merge_required?
         teacher.trs_response == "permanent_redirect" && teacher.trs_redirected_to.present?
+      end
+
+      def records_can_be_merged?
+        destination.present? &&
+          destination.id != teacher.id &&
+          at_most_one_teacher_has_induction_periods? &&
+          ect_periods_at_different_schools_do_not_overlap? &&
+          provider_led_training_periods_have_same_contract_period?(:mentor_training_periods) &&
+          provider_led_training_periods_have_same_contract_period?(:ect_training_periods)
       end
 
       def at_most_one_teacher_has_induction_periods?
