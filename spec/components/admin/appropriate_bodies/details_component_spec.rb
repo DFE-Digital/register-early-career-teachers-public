@@ -3,8 +3,6 @@ RSpec.describe Admin::AppropriateBodies::DetailsComponent, type: :component do
 
   let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
 
-  before { render_inline(component) }
-
   describe "ECTs" do
     context "with current ECTs" do
       before do

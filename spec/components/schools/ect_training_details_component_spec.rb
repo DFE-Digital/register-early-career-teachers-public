@@ -27,7 +27,6 @@ RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
     let(:component) { described_class.new(ect_at_school_period:, training_period:) }
 
     it "renders nothing" do
-      render_inline(component)
       expect(page).to have_no_selector("h2", text: "Training details")
       expect(page).to have_no_selector(".govuk-summary-list")
     end
@@ -116,7 +115,6 @@ RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
     before do
       allow(component).to receive(:leaving_school?).and_return(false)
       allow(component).to receive_messages(leaving_school?: false, exempt?: false)
-      render_inline(component)
     end
 
     it "shows the action required tag and withdrawn message" do
@@ -156,7 +154,6 @@ RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
       before do
         allow(component).to receive(:leaving_school?).and_return(true)
         allow(component).to receive_messages(leaving_school?: true, exempt?: false)
-        render_inline(component)
       end
 
       it "renders withdrawn guidance links" do
@@ -178,7 +175,6 @@ RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
       before do
         allow(component).to receive(:leaving_school?).and_return(false)
         allow(component).to receive_messages(leaving_school?: false, exempt?: true)
-        render_inline(component)
       end
 
       it "renders withdrawn guidance links" do
