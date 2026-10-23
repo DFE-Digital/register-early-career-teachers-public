@@ -10,7 +10,7 @@ module API
 
       attribute :response_type, :string
       attribute :client_id, :string
-      attribute :appropriate_body_period_id, :integer
+      attribute :appropriate_body_period_uuid, :string
       attribute :redirect_uri, :string
       attribute :code_challenge, :string
       attribute :code_challenge_method, :string
@@ -21,8 +21,8 @@ module API
       validates :response_type, inclusion: { in: [RESPONSE_TYPE] }, allow_blank: true
       validates :code_challenge, presence: true
       validates :code_challenge_method, inclusion: { in: Authorization.code_challenge_methods.values }
-      validates :appropriate_body_period_id, presence: true, comparison: {
-        equal_to: :logged_in_appropriate_body_period_id,
+      validates :appropriate_body_period_uuid, presence: true, comparison: {
+        equal_to: :logged_in_appropriate_body_period_uuid,
         message: "does not match the logged-in Appropriate Body"
       }
       validates :client, presence: true
@@ -35,9 +35,19 @@ module API
       def build_authorization
         Authorization.new(
           attributes
-            .slice("appropriate_body_period_id", "redirect_uri", "code_challenge", "code_challenge_method")
-            .merge(client:)
+            .slice("redirect_uri", "code_challenge", "code_challenge_method")
+            .merge(client:, appropriate_body_period: logged_in_appropriate_body_period)
         )
+      end
+
+    private
+
+      def logged_in_appropriate_body_period
+        @logged_in_appropriate_body_period ||= AppropriateBodyPeriod.find(logged_in_appropriate_body_period_id)
+      end
+
+      def logged_in_appropriate_body_period_uuid
+        logged_in_appropriate_body_period&.external_uuid
       end
     end
   end

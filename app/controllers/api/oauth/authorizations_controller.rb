@@ -62,10 +62,11 @@ module API
       end
 
       def authorization_request_params
-        params.permit(
-          :response_type, :client_id, :appropriate_body_period_id, :redirect_uri,
-          :code_challenge, :code_challenge_method, :state
-        )
+        params
+          .permit(
+            :response_type, :client_id, :appropriate_body_period_uuid, :redirect_uri,
+            :code_challenge, :code_challenge_method, :state
+          )
           .to_h
           .symbolize_keys
           .merge(logged_in_appropriate_body_period_id: @appropriate_body.id)

@@ -138,16 +138,16 @@ For any other problem with your request, we return an HTTP error status to your 
       row.with_cell(text: "Response type is not included in the list")
     end
     body.with_row do |row|
-      row.with_cell(text: "Appropriate body ID is missing")
+      row.with_cell(text: "Appropriate Body UUID is missing")
       row.with_cell(text: "400 (Bad Request)")
       row.with_cell(text: "invalid_request")
-      row.with_cell(text: "appropraite_body_period_id can't be blank")
+      row.with_cell(text: "appropriate_body_period_uuid can't be blank")
     end
     body.with_row do |row|
-      row.with_cell(text: "Appropriate body ID does not match signed-in user’s organisation")
+      row.with_cell(text: "Appropriate Body UUID does not match signed-in user’s organisation")
       row.with_cell(text: "400 (Bad Request)")
       row.with_cell(text: "access_denied")
-      row.with_cell(text: "appropriate_body_period_id does not match the logged-in Appropriate Body")
+      row.with_cell(text: "appropriate_body_period_uuid does not match the logged-in Appropriate Body UUID")
     end
     body.with_row do |row|
       row.with_cell(text: "PKCE code challenge is missing")

@@ -38,6 +38,7 @@
     - national_body_id
     - school_id
     - teaching_school_hub_id
+    - external_uuid
   :blazer_queries:
     - id
     - creator_id

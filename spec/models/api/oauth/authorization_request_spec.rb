@@ -2,7 +2,7 @@ describe API::OAuth::AuthorizationRequest do
   subject(:authorization_request) do
     described_class.new(
       logged_in_appropriate_body_period_id: appropriate_body_period.id,
-      appropriate_body_period_id: appropriate_body_period.id,
+      appropriate_body_period_uuid: appropriate_body_period.external_uuid,
       client_id: client.client_id,
       redirect_uri: client.redirect_uris.first,
       response_type: "code",
@@ -21,11 +21,11 @@ describe API::OAuth::AuthorizationRequest do
     it { is_expected.to validate_inclusion_of(:response_type).in_array(%w[code]) }
     it { is_expected.to validate_presence_of(:code_challenge) }
     it { is_expected.to validate_inclusion_of(:code_challenge_method).in_array(%w[S256]) }
-    it { is_expected.to validate_presence_of(:appropriate_body_period_id) }
+    it { is_expected.to validate_presence_of(:appropriate_body_period_uuid) }
 
     it {
-      expect(subject).to validate_comparison_of(:appropriate_body_period_id)
-      .is_equal_to(appropriate_body_period.id)
+      expect(subject).to validate_comparison_of(:appropriate_body_period_uuid)
+      .is_equal_to(appropriate_body_period.external_uuid)
       .with_message("does not match the logged-in Appropriate Body")
     }
 
@@ -100,7 +100,7 @@ describe API::OAuth::AuthorizationRequest do
 
     context "when the Appropriate Body does not match the logged-in one" do
       before do
-        authorization_request.appropriate_body_period_id = 0
+        authorization_request.appropriate_body_period_uuid = SecureRandom.uuid
         authorization_request.validate
       end
 
@@ -112,7 +112,7 @@ describe API::OAuth::AuthorizationRequest do
     let(:client) { FactoryBot.create(:api_oauth_client, redirect_uris: %w[https://vendor.example.com/callback?tenant=1]) }
 
     before do
-      authorization_request.appropriate_body_period_id = 0
+      authorization_request.appropriate_body_period_uuid = SecureRandom.uuid
       authorization_request.validate
     end
 
@@ -130,14 +130,14 @@ describe API::OAuth::AuthorizationRequest do
         "https://vendor.example.com/callback" \
         "?tenant=1" \
         "&error=invalid_request" \
-        "&error_description=Appropriate+body+period+does+not+match+the+logged-in+Appropriate+Body" \
+        "&error_description=Appropriate+body+period+uuid+does+not+match+the+logged-in+Appropriate+Body" \
         "&state=xyz"
       )
       expect(authorization_request.unsuccessful_redirect_uri(error: :access_denied)).to eq(
         "https://vendor.example.com/callback" \
         "?tenant=1" \
         "&error=access_denied" \
-        "&error_description=Appropriate+body+period+does+not+match+the+logged-in+Appropriate+Body" \
+        "&error_description=Appropriate+body+period+uuid+does+not+match+the+logged-in+Appropriate+Body" \
         "&state=xyz"
       )
       expect(
@@ -166,7 +166,7 @@ describe API::OAuth::AuthorizationRequest do
           "https://vendor.example.com/callback" \
           "?tenant=1" \
           "&error=access_denied" \
-          "&error_description=Appropriate+body+period+does+not+match+the+logged-in+Appropriate+Body"
+          "&error_description=Appropriate+body+period+uuid+does+not+match+the+logged-in+Appropriate+Body"
         )
       end
     end
