@@ -50,7 +50,7 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
       expect(teacher.reload.trn).to eq("7654321")
     end
 
-    it "blocks a direct confirmation submission" do
+    it "prevents an unauthorised user from changing a teacher’s TRN" do
       expect {
         post confirm_path,
              params: {
@@ -70,6 +70,29 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
       expect(response.body).not_to include(
         "Change the TRN for this deactivated record"
       )
+    end
+
+    it "prevents an unauthorised user from merging teacher records" do
+      destination = FactoryBot.create(
+        :teacher,
+        trn: new_trn,
+        trs_response: "ok"
+      )
+      source_id = teacher.id
+
+      post admin_teacher_change_trn_wizard_confirm_merge_path(teacher),
+           params: {
+             confirm_merge: {
+               confirmed: "1",
+               expected_trn: new_trn
+             }
+           }
+
+      expect(response).to have_http_status(:unauthorized)
+      expect(Teacher.exists?(source_id)).to be(true)
+      expect(destination.reload.trn).to eq(new_trn)
+      expect(destination.events.where(event_type: "teacher_merged")).to be_empty
+      expect(Teachers::TRN::TRSSyncJob).not_to have_been_enqueued
     end
   end
 
@@ -226,19 +249,16 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
         .with(trn: other_trn)
         .and_return(trs_teacher)
 
-      # Tab A: enter and review the first replacement TRN
       post entry_path, params: { enter_trn: { trn: new_trn } }
       follow_redirect!
 
       expect(response).to have_http_status(:ok)
       expect(response.body).to include(new_trn)
 
-      # Tab B: enter a different replacement TRN in the same session
       post entry_path, params: { enter_trn: { trn: other_trn } }
 
       expect(response).to redirect_to(confirm_path)
 
-      # Tab A: submit the confirmation for the originally reviewed TRN
       expect {
         post confirm_path,
              params: {
@@ -348,7 +368,7 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
 
       expect(teacher.reload.trn).to eq("7654321")
       expect(destination.reload.trn).to eq(new_trn)
-      expect(teacher.events.where(event_type: "teacher_trn_merged")).to be_empty
+      expect(destination.events.where(event_type: "teacher_merged")).to be_empty
     end
 
     it "shows school periods, training periods and declarations for both records" do
@@ -372,8 +392,8 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
         expect(column.text).to include(
           history[:teacher].trn,
           history[:school].name,
-          "School periods",
-          "Training periods",
+          index.zero? ? "School periods that will merge" : "Existing school periods",
+          index.zero? ? "Training periods that will merge" : "Existing training periods",
           "Declarations"
         )
 
@@ -453,6 +473,248 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
         new_trn,
         "Back to teachers"
       )
+    end
+
+    it "does not merge again when confirmation is submitted twice" do
+      source_id = teacher.id
+      confirmation_params = {
+        confirm_merge: {
+          confirmed: "1",
+          expected_trn: new_trn
+        }
+      }
+
+      post entry_path, params: { enter_trn: { trn: new_trn } }
+      post preview_path
+      post confirm_merge_path, params: confirmation_params
+
+      expect(response).to redirect_to(records_merged_path)
+      expect(Teacher.exists?(source_id)).to be(false)
+      expect(destination.events.where(event_type: "teacher_merged").count).to eq(1)
+      expect(Teachers::TRN::TRSSyncJob)
+        .to have_been_enqueued.exactly(:once)
+
+      post confirm_merge_path, params: confirmation_params
+
+      expect(response).to redirect_to(records_merged_path)
+      expect(Teacher.exists?(source_id)).to be(false)
+      expect(Teacher.exists?(destination.id)).to be(true)
+      expect(destination.events.where(event_type: "teacher_merged").count).to eq(1)
+      expect(Teachers::TRN::TRSSyncJob)
+        .to have_been_enqueued.exactly(:once)
+
+      follow_redirect!
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Records merged")
+    end
+
+    it "returns to TRN entry when the destination changes during confirmation" do
+      post entry_path, params: { enter_trn: { trn: new_trn } }
+      post preview_path
+      destination.update!(trn: "3456789")
+
+      post confirm_merge_path,
+           params: {
+             confirm_merge: {
+               confirmed: "1",
+               expected_trn: new_trn
+             }
+           }
+
+      expect(response).to redirect_to(entry_path)
+      expect(flash[:error]).to eq(
+        "The teacher records have changed. Enter the replacement TRN and review the records again."
+      )
+      expect(teacher.reload.trn).to eq("7654321")
+      expect(destination.reload.trn).to eq("3456789")
+      expect(destination.events.where(event_type: "teacher_merged")).to be_empty
+      expect(Teachers::TRN::TRSSyncJob).not_to have_been_enqueued
+
+      get confirm_merge_path
+
+      expect(response).to redirect_to(entry_path)
+    end
+
+    it "returns to the teacher overview when the merge reports the source is no longer deactivated" do
+      post entry_path, params: { enter_trn: { trn: new_trn } }
+      post preview_path
+      teacher.update!(trs_response: "ok")
+
+      post confirm_merge_path,
+           params: {
+             confirm_merge: {
+               confirmed: "1",
+               expected_trn: new_trn
+             }
+           }
+
+      expect(response).to redirect_to(admin_teacher_path(teacher))
+      expect(flash[:error]).to eq(
+        "This teacher record is no longer deactivated."
+      )
+      expect(teacher.reload.trn).to eq("7654321")
+      expect(destination.reload.trn).to eq(new_trn)
+      expect(destination.events.where(event_type: "teacher_merged")).to be_empty
+      expect(Teachers::TRN::TRSSyncJob).not_to have_been_enqueued
+    end
+
+    it "requires the preview before allowing merge confirmation" do
+      source_id = teacher.id
+      destination_id = destination.id
+
+      post entry_path, params: { enter_trn: { trn: new_trn } }
+
+      expect(response).to redirect_to(preview_path)
+
+      post confirm_merge_path,
+           params: {
+             confirm_merge: {
+               confirmed: "1",
+               expected_trn: new_trn
+             }
+           }
+
+      expect(response).to redirect_to(preview_path)
+      expect(Teacher.exists?(source_id)).to be(true)
+      expect(Teacher.exists?(destination_id)).to be(true)
+      expect(destination.events.where(event_type: "teacher_merged")).to be_empty
+      expect(Teachers::TRN::TRSSyncJob).not_to have_been_enqueued
+    end
+
+    it "requires another preview after submitting the TRN again" do
+      source_id = teacher.id
+      destination_id = destination.id
+
+      post entry_path, params: { enter_trn: { trn: new_trn } }
+      post preview_path
+
+      expect(response).to redirect_to(confirm_merge_path)
+
+      post entry_path, params: { enter_trn: { trn: new_trn } }
+
+      expect(response).to redirect_to(preview_path)
+
+      post confirm_merge_path,
+           params: {
+             confirm_merge: {
+               confirmed: "1",
+               expected_trn: new_trn
+             }
+           }
+
+      expect(response).to redirect_to(preview_path)
+      expect(Teacher.exists?(source_id)).to be(true)
+      expect(Teacher.exists?(destination_id)).to be(true)
+      expect(destination.events.where(event_type: "teacher_merged")).to be_empty
+      expect(Teachers::TRN::TRSSyncJob).not_to have_been_enqueued
+    end
+
+    it "prevents merging without first entering a replacement TRN" do
+      source_id = teacher.id
+      destination_id = destination.id
+
+      post confirm_merge_path,
+           params: {
+             confirm_merge: {
+               confirmed: "1",
+               expected_trn: new_trn
+             }
+           }
+
+      expect(response).to redirect_to(entry_path)
+      expect(Teacher.exists?(source_id)).to be(true)
+      expect(Teacher.exists?(destination_id)).to be(true)
+      expect(destination.events.where(event_type: "teacher_merged")).to be_empty
+      expect(Teachers::TRN::TRSSyncJob).not_to have_been_enqueued
+    end
+
+    it "requires another review when the replacement TRN changes" do
+      other_trn = "3456789"
+      other_destination = FactoryBot.create(
+        :teacher,
+        trn: other_trn,
+        trs_response: "ok"
+      )
+
+      allow(api_client).to receive(:find_teacher)
+        .with(trn: other_trn)
+        .and_return(trs_teacher)
+
+      post entry_path, params: { enter_trn: { trn: new_trn } }
+      post preview_path
+      follow_redirect!
+
+      expect(response).to have_http_status(:ok)
+
+      post entry_path, params: { enter_trn: { trn: other_trn } }
+      post preview_path
+
+      expect(response).to redirect_to(confirm_merge_path)
+
+      post confirm_merge_path,
+           params: {
+             confirm_merge: {
+               confirmed: "1",
+               expected_trn: new_trn
+             }
+           }
+
+      expect(response).to redirect_to(confirm_merge_path)
+      expect(flash[:error]).to eq(
+        "The proposed TRN has changed. Review the updated details before continuing."
+      )
+      expect(teacher.reload.trn).to eq("7654321")
+      expect(destination.reload.trn).to eq(new_trn)
+      expect(other_destination.reload.trn).to eq(other_trn)
+      expect(destination.events.where(event_type: "teacher_merged")).to be_empty
+      expect(other_destination.events.where(event_type: "teacher_merged")).to be_empty
+      expect(Teachers::TRN::TRSSyncJob).not_to have_been_enqueued
+    end
+
+    it "returns to TRN entry when the destination TRN changes" do
+      source_id = teacher.id
+
+      post entry_path, params: { enter_trn: { trn: new_trn } }
+
+      destination.update!(trn: "3456789")
+
+      get preview_path
+
+      expect(response).to redirect_to(entry_path)
+      expect(flash[:error]).to eq(
+        "The teacher records have changed. Enter the replacement TRN and review the records again."
+      )
+      expect(Teacher.exists?(source_id)).to be(true)
+      expect(destination.reload.trn).to eq("3456789")
+      expect(destination.events.where(event_type: "teacher_merged")).to be_empty
+      expect(Teachers::TRN::TRSSyncJob).not_to have_been_enqueued
+
+      get confirm_merge_path
+
+      expect(response).to redirect_to(entry_path)
+    end
+
+    it "returns to TRN entry when the destination is deleted" do
+      source_id = teacher.id
+
+      post entry_path, params: { enter_trn: { trn: new_trn } }
+
+      destination.destroy!
+
+      get preview_path
+
+      expect(response).to redirect_to(entry_path)
+      expect(flash[:error]).to eq(
+        "The teacher records have changed. Enter the replacement TRN and review the records again."
+      )
+      expect(Teacher.exists?(source_id)).to be(true)
+      expect(Event.where(event_type: "teacher_merged")).to be_empty
+      expect(Teachers::TRN::TRSSyncJob).not_to have_been_enqueued
+
+      get confirm_merge_path
+
+      expect(response).to redirect_to(entry_path)
     end
   end
 
