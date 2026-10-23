@@ -12,7 +12,7 @@ RSpec.describe Schools::AssignMentorForm, type: :model do
         end
 
         it "adds a base error" do
-          expect(subject.errors.messages[:mentor_id]).to include("This mentor is not registered at this school")
+          expect(subject).to have_error(:mentor_id, "This mentor is not registered at this school")
         end
       end
 
@@ -27,7 +27,7 @@ RSpec.describe Schools::AssignMentorForm, type: :model do
         end
 
         it "adds a base error" do
-          expect(subject.errors.messages[:mentor_id]).to include("This mentor is not registered at this school")
+          expect(subject).to have_error(:mentor_id, "This mentor is not registered at this school")
         end
       end
     end
@@ -44,7 +44,7 @@ RSpec.describe Schools::AssignMentorForm, type: :model do
         end
 
         it "adds a base error" do
-          expect(subject.errors.messages[:mentor_id]).to include("It needs to be a different mentor for this ECT")
+          expect(subject).to have_error(:mentor_id, "It needs to be a different mentor for this ECT")
         end
       end
     end

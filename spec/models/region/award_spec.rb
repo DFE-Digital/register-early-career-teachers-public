@@ -37,7 +37,7 @@ RSpec.describe Region::Award, type: :model do
                                        region:)
 
         expect(other_award).not_to be_valid
-        expect(other_award.errors[:region_id]).to include("is already linked to an active lead school")
+        expect(other_award).to have_error(:region_id, "is already linked to an active lead school")
       end
 
       it "cannot award a region twice within one appropriate body" do
@@ -49,7 +49,7 @@ RSpec.describe Region::Award, type: :model do
                                        region:)
 
         expect(other_award).not_to be_valid
-        expect(other_award.errors[:region_id]).to include("is already linked to this appropriate body")
+        expect(other_award).to have_error(:region_id, "is already linked to this appropriate body")
       end
 
       it "allows a lead school to return to an appropriate body for a region it held before" do

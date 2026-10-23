@@ -26,7 +26,7 @@ RSpec.describe WorkingPatternValidator, type: :model do
 
       it "adds an error" do
         expect(subject).not_to be_valid
-        expect(subject.errors[:working_pattern]).to include("Select if the ECT's working pattern is full or part time")
+        expect(subject).to have_error(:working_pattern, "Select if the ECT's working pattern is full or part time")
       end
     end
 
@@ -35,7 +35,7 @@ RSpec.describe WorkingPatternValidator, type: :model do
 
       it "adds an error" do
         expect(subject).not_to be_valid
-        expect(subject.errors[:working_pattern]).to include("'Invalid-value' is not a valid working pattern")
+        expect(subject).to have_error(:working_pattern, "'Invalid-value' is not a valid working pattern")
       end
     end
   end

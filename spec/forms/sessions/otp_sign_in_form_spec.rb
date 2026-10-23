@@ -27,7 +27,7 @@ RSpec.describe Sessions::OTPSignInForm, type: :model do
 
       it "adds an error" do
         expect(form.valid?(:verify)).to be false
-        expect(form.errors.messages[:code]).to include "Enter the 6-digit code from the email"
+        expect(form).to have_error(:code, "Enter the 6-digit code from the email", :verify)
       end
     end
 
@@ -36,7 +36,7 @@ RSpec.describe Sessions::OTPSignInForm, type: :model do
 
       it "adds an error" do
         expect(form.valid?(:verify)).to be false
-        expect(form.errors.messages[:code]).to include "The code entered is invalid"
+        expect(form).to have_error(:code, "The code entered is invalid", :verify)
       end
     end
 
@@ -50,7 +50,7 @@ RSpec.describe Sessions::OTPSignInForm, type: :model do
 
       it "adds a locked error" do
         expect(form.valid?(:verify)).to be false
-        expect(form.errors.messages[:code]).to include "Your account is locked, please contact support"
+        expect(form).to have_error(:code, "Your account is locked, please contact support", :verify)
       end
     end
 
@@ -66,7 +66,7 @@ RSpec.describe Sessions::OTPSignInForm, type: :model do
 
       it "adds a locked error" do
         expect(form.valid?(:verify)).to be false
-        expect(form.errors.messages[:code]).to include "Your account is locked, please contact support"
+        expect(form).to have_error(:code, "Your account is locked, please contact support", :verify)
       end
     end
 
@@ -80,7 +80,7 @@ RSpec.describe Sessions::OTPSignInForm, type: :model do
 
       it "adds an error" do
         expect(form.valid?(:verify)).to be false
-        expect(form.errors.messages[:code]).to include "The code entered is invalid"
+        expect(form).to have_error(:code, "The code entered is invalid", :verify)
       end
     end
   end

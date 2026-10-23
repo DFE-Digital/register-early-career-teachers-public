@@ -1290,6 +1290,35 @@ module ECTAtSchoolPeriods
           end
         end
 
+        context "when the mentor is in provider-led training at another school" do
+          let(:other_mentor_at_school_period) do
+            FactoryBot.create(
+              :mentor_at_school_period,
+              :unfinished,
+              teacher: mentor_at_school_period.teacher,
+              started_on: ect_at_school_period.started_on
+            )
+          end
+
+          let!(:other_training_period) do
+            FactoryBot.create(
+              :training_period,
+              :for_mentor,
+              :provider_led,
+              :unfinished,
+              mentor_at_school_period: other_mentor_at_school_period,
+              started_on: other_mentor_at_school_period.started_on
+            )
+          end
+
+          it "does not create a new training period for the mentor" do
+            expect { SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:) }
+              .to change(TrainingPeriod, :count).by(1)
+
+            expect(mentor_at_school_period.training_periods).to be_empty
+          end
+        end
+
         context "when the mentor is ineligible for funding" do
           let(:teacher) { FactoryBot.create(:teacher, :ineligible_for_mentor_funding) }
           let(:mentor_at_school_period) do

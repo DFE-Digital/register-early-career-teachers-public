@@ -26,7 +26,7 @@ RSpec.describe TrainingProgrammeValidator, type: :model do
 
       it "adds an error" do
         expect(subject).not_to be_valid
-        expect(subject.errors[:training_programme]).to include("Select either 'Provider-led' or 'School-led' training")
+        expect(subject).to have_error(:training_programme, "Select either 'Provider-led' or 'School-led' training")
       end
     end
 
@@ -35,7 +35,7 @@ RSpec.describe TrainingProgrammeValidator, type: :model do
 
       it "adds an error" do
         expect(subject).not_to be_valid
-        expect(subject.errors[:training_programme]).to include("'Invalid-value' is not a valid training programme")
+        expect(subject).to have_error(:training_programme, "'Invalid-value' is not a valid training programme")
       end
     end
   end

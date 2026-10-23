@@ -23,7 +23,7 @@ describe InductionExtension do
 
         it "is invalid" do
           expect(subject).not_to be_valid
-          expect(subject.errors[:number_of_terms]).to include("Terms can only have up to 1 decimal place")
+          expect(subject).to have_error(:number_of_terms, "Terms can only have up to 1 decimal place")
         end
       end
 

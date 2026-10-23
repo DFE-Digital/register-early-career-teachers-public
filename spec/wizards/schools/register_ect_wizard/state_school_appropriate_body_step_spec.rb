@@ -11,7 +11,7 @@ RSpec.describe Schools::RegisterECTWizard::StateSchoolAppropriateBodyStep, type:
 
       it "is not valid" do
         expect(subject).not_to be_valid
-        expect(subject.errors[:appropriate_body]).to include("Select a teaching school hub appropriate body which will be supporting the ECT's induction")
+        expect(subject).to have_error(:appropriate_body, "Select a teaching school hub appropriate body which will be supporting the ECT's induction")
       end
     end
 

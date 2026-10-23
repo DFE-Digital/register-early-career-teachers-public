@@ -2,7 +2,7 @@
 <%= govuk_html_element do %>
   <%= render partial: "layouts/shared/head" %>
 
-  <%= govuk_body_element(classes: "api-documentation api-authentication") do %>
+  <%= govuk_body_element(classes: "api-documentation api-authorisation") do %>
     <%= render partial: "layouts/shared/js_enabled" %>
     <%= render partial: "layouts/shared/header" %>
 
@@ -13,7 +13,7 @@
         <%= render partial: "layouts/shared/main_preamble" %>
 
         <div class="govuk-grid-row govuk-!-padding-top-7">
-          <%= render API::Documentation::Authentication::SidebarComponent.new(
+          <%= render API::Documentation::Authorisation::SidebarComponent.new(
             current_path: request.path,
             page: params[:page],
           ) %>

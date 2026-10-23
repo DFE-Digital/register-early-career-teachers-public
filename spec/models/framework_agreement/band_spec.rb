@@ -25,7 +25,7 @@ RSpec.describe FrameworkAgreement::Band, type: :model do
       it "validates that the combined capacity cannot be less than the number of payment declarations" do
         band_c.capacity = 2
         expect(band_c).to be_invalid
-        expect(band_c.errors[:capacity]).to include("Band C capacity must be at least 4 to cover the existing payment declarations")
+        expect(band_c).to have_error(:capacity, "Band C capacity must be at least 4 to cover the existing payment declarations")
 
         band_c.capacity = 4
         expect(band_c).to be_valid

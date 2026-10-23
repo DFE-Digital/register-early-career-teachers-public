@@ -15,13 +15,13 @@ describe Statement::Adjustment do
     it "returns validation error when amount is less than -1,000,000" do
       subject.amount = -1_000_001.0
       subject.valid?
-      expect(subject.errors[:amount]).to include("Amount must be greater than or equal to -1,000,000")
+      expect(subject).to have_error(:amount, "Amount must be greater than or equal to -1,000,000")
     end
 
     it "returns validation error when amount is greater than 1,000,000" do
       subject.amount = 1_000_001.0
       subject.valid?
-      expect(subject.errors[:amount]).to include("Amount must be less than or equal to 1,000,000")
+      expect(subject).to have_error(:amount, "Amount must be less than or equal to 1,000,000")
     end
   end
 end

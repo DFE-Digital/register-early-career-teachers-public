@@ -33,7 +33,7 @@ RSpec.describe Schools::RegisterECTWizard::WorkingPatternStep, type: :model do
 
       it "is not valid" do
         expect(subject).not_to be_valid
-        expect(subject.errors[:working_pattern]).to include("Select if the ECT's working pattern is full or part time")
+        expect(subject).to have_error(:working_pattern, "Select if the ECT's working pattern is full or part time")
       end
     end
 
@@ -42,7 +42,7 @@ RSpec.describe Schools::RegisterECTWizard::WorkingPatternStep, type: :model do
 
       it "is not valid" do
         expect(subject).not_to be_valid
-        expect(subject.errors[:working_pattern]).to include("'unknown_working_pattern' is not a valid working pattern")
+        expect(subject).to have_error(:working_pattern, "'unknown_working_pattern' is not a valid working pattern")
       end
     end
 

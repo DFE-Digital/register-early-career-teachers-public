@@ -21,7 +21,7 @@ RSpec.describe Schools::Mentors::ChangeNameWizard::EditStep, type: :model do
 
       it "is not valid" do
         expect(current_step).not_to be_valid
-        expect(current_step.errors[:name]).to include("The name must be different from the current name")
+        expect(current_step).to have_error(:name, "The name must be different from the current name")
       end
     end
 
@@ -32,7 +32,7 @@ RSpec.describe Schools::Mentors::ChangeNameWizard::EditStep, type: :model do
 
       it "is not valid" do
         expect(current_step).not_to be_valid
-        expect(current_step.errors[:name]).to include("Enter the correct full name")
+        expect(current_step).to have_error(:name, "Enter the correct full name")
       end
     end
   end

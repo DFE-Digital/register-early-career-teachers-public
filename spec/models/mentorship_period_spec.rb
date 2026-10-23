@@ -285,13 +285,13 @@ describe MentorshipPeriod do
           it "has an appropriate error message about the ECT at school period" do
             subject.valid?
 
-            expect(subject.errors.messages[:base]).to include("Date range is not contained by the ECT at school period")
+            expect(subject).to have_error(:base, "Date range is not contained by the ECT at school period")
           end
 
           it "has an appropriate error message about the mentor at school period" do
             subject.valid?
 
-            expect(subject.errors.messages[:base]).to include("Date range is not contained by the mentor at school period")
+            expect(subject).to have_error(:base, "Date range is not contained by the mentor at school period")
           end
         end
       end
@@ -308,7 +308,7 @@ describe MentorshipPeriod do
         it "add a base error" do
           subject.valid?
 
-          expect(subject.errors.messages[:base]).to include("A mentee cannot mentor themself")
+          expect(subject).to have_error(:base, "A mentee cannot mentor themself")
         end
       end
 
@@ -321,7 +321,7 @@ describe MentorshipPeriod do
         it "do not add an error" do
           subject.valid?
 
-          expect(subject.errors.messages[:base]).not_to include("A mentee cannot mentor themself")
+          expect(subject).to have_no_error(:base, "A mentee cannot mentor themself")
         end
       end
 
@@ -334,7 +334,7 @@ describe MentorshipPeriod do
         it "do not add an error" do
           subject.valid?
 
-          expect(subject.errors.messages[:base]).not_to include("A mentee cannot mentor themself")
+          expect(subject).to have_no_error(:base, "A mentee cannot mentor themself")
         end
       end
     end
@@ -364,7 +364,7 @@ describe MentorshipPeriod do
 
         it "is valid" do
           expect(subject).to be_valid
-          expect(subject.errors[:base]).not_to include("Mentor and mentee periods must belong to the same school")
+          expect(subject).to have_no_error(:base, "Mentor and mentee periods must belong to the same school")
         end
       end
 
@@ -390,7 +390,7 @@ describe MentorshipPeriod do
         it "adds a base error" do
           subject.valid?
 
-          expect(subject.errors[:base]).to include("Mentor and mentee periods must belong to the same school")
+          expect(subject).to have_error(:base, "Mentor and mentee periods must belong to the same school")
         end
       end
 
@@ -409,7 +409,7 @@ describe MentorshipPeriod do
 
           period.valid?
 
-          expect(period.errors[:base]).not_to include("Mentor and mentee periods must belong to the same school")
+          expect(period).to have_no_error(:base, "Mentor and mentee periods must belong to the same school")
         end
 
         it "does not add an error when mentor is missing" do
@@ -423,7 +423,7 @@ describe MentorshipPeriod do
 
           period.valid?
 
-          expect(period.errors[:base]).not_to include("Mentor and mentee periods must belong to the same school")
+          expect(period).to have_no_error(:base, "Mentor and mentee periods must belong to the same school")
         end
       end
     end
