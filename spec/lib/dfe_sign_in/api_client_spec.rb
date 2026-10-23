@@ -373,4 +373,49 @@ describe DfESignIn::APIClient do
       expect(subject).to all(include("name", "code", "status"))
     end
   end
+
+  describe "#access_requests" do
+    subject(:access_requests) do
+      client.access_requests(organisation_id:, user_id:, role_ids:, service_id:)
+    end
+
+    let(:response_body) { [] }
+    let(:status) { 202 }
+
+    let(:client) { DfESignIn::APIClient.new }
+    let(:connection) { client.instance_variable_get(:@connection) }
+    let(:service_id) { SecureRandom.uuid }
+    let(:expected_path) { %(/services/#{service_id}/access-requests) }
+    let(:expected_request_body) do
+      {
+        "userId" => user_id,
+        "organisation" => organisation_id,
+        "roleIds" => role_ids
+      }
+    end
+    let(:user_id) { SecureRandom.uuid }
+    let(:organisation_id) { SecureRandom.uuid }
+    let(:role_ids) { %w[SchoolUser] }
+
+    before do
+      allow(connection)
+        .to receive(:post)
+        .with(expected_path, expected_request_body)
+        .and_return(response)
+    end
+
+    include_examples "DfE Sign In endpoint with error handling"
+
+    it "calls the access requests endpoint" do
+      access_requests
+
+      expect(connection)
+        .to have_received(:post)
+        .with(expected_path, expected_request_body)
+    end
+
+    it "returns the response body" do
+      expect(access_requests).to eql(response_body)
+    end
+  end
 end

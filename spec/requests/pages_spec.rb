@@ -12,7 +12,9 @@ RSpec.describe "Pages", type: :request do
     context "when a login attempt has failed" do
       before do
         allow_any_instance_of(PagesController).to receive(:session).and_return({
-          invalid_user_organisation_name: "Invalid Organisation"
+          invalid_organisation_details: {
+            "dfe_sign_in_organisation_name" => "Invalid Organisation"
+          }
         })
 
         get "/access-denied"
