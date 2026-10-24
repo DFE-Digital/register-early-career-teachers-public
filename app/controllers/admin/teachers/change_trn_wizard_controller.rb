@@ -18,6 +18,7 @@ module Admin
                   with: :redirect_merge_destination_changed
 
       before_action :set_teacher
+      before_action :reset_store_on_start, only: :new
       before_action :initialize_wizard
       before_action :check_allowed_step
 
@@ -91,6 +92,12 @@ module Admin
                     flash: {
                       error: "The teacher records have changed. Enter the replacement TRN and review the records again."
                     }
+      end
+
+      def reset_store_on_start
+        return unless current_step == :enter_trn && params[:start] == "true"
+
+        store.reset
       end
 
       def store
