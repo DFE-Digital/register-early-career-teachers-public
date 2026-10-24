@@ -51,6 +51,7 @@ describe "Admin changing a deactivated teacher's TRN" do
   it "allows cancellation from the entry page without changing the teacher" do
     when_i_start_the_change_trn_journey
     then_i_see_the_entry_page
+    then_the_replacement_trn_field_is_empty
 
     when_i_cancel_the_change
     then_i_return_to_the_teacher_overview
@@ -169,6 +170,12 @@ private
       name: "Change the TRN for this deactivated record",
       exact: true
     ).click
+  end
+
+  def then_the_replacement_trn_field_is_empty
+    expect(
+      page.get_by_label("Enter the new TRN", exact: true)
+    ).to have_value("")
   end
 
   def then_i_see_the_entry_page
