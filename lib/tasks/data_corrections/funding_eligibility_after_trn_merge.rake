@@ -38,20 +38,6 @@ namespace :data_corrections do
             puts "ECT eligibility is already set"
           end
 
-          # If merge has removed the mentor's eligibility data, set it based on the earliest training period start date
-          if teacher.mentor_first_became_eligible_for_training_at.nil? && teacher.mentor_training_periods.any?
-            puts "Mentor eligibility is missing - setting based on earliest training period"
-            training_started_on = teacher.mentor_training_periods.earliest_first.first.started_on
-
-            teacher.mentor_first_became_eligible_for_training_at = training_started_on
-          end
-
-          # If the ECT is exempt and has not been marked as ineligible for funding, set the ineligible date to today
-          if teacher.trs_induction_status == "Exempt" && teacher.ect_became_ineligible_for_funding_on.nil?
-            puts "ECT is exempt and not marked as ineligible for funding - setting ineligible date to today"
-            teacher.ect_became_ineligible_for_funding_on = Date.current
-          end
-
           # If the mentor has a completed declaration, mark them as ineligible for funding
           completed_mentor_declarations = teacher.mentor_declarations.declaration_type_completed
           earliest_date_training_completed = completed_mentor_declarations
@@ -63,6 +49,22 @@ namespace :data_corrections do
             puts "Marking mentor as ineligible for funding"
             teacher.mentor_became_ineligible_for_funding_on = earliest_date_training_completed
             teacher.mentor_became_ineligible_for_funding_reason = "completed_declaration_received"
+          end
+
+          # If merge has removed the mentor's eligibility data, set it based on the earliest training period start date
+          if teacher.mentor_first_became_eligible_for_training_at.nil? &&
+              teacher.mentor_became_ineligible_for_funding_on.nil? &&
+              teacher.mentor_training_periods.any?
+            puts "Mentor eligibility is missing - setting based on earliest training period"
+            training_started_on = teacher.mentor_training_periods.earliest_first.first.started_on
+
+            teacher.mentor_first_became_eligible_for_training_at = training_started_on
+          end
+
+          # If the ECT is exempt and has not been marked as ineligible for funding, set the ineligible date to today
+          if teacher.trs_induction_status == "Exempt" && teacher.ect_became_ineligible_for_funding_on.nil?
+            puts "ECT is exempt and not marked as ineligible for funding - setting ineligible date to today"
+            teacher.ect_became_ineligible_for_funding_on = Date.current
           end
 
           teacher.save!

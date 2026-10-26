@@ -290,9 +290,19 @@ describe "Data Corrections tasks" do
             }.from(nil).to(started_on.in_time_zone)
           end
         end
+
+        context "when the mentor is ineligible for funding" do
+          let(:mentor_became_ineligible_for_funding_on) { Date.current }
+          let(:mentor_became_ineligible_for_funding_reason) { "completed_declaration_received" }
+          let(:mentor_first_became_eligible_for_training_at) { nil }
+
+          it "does not change the mentor eligibility" do
+            expect { run_task }.not_to(change { teacher.reload.mentor_first_became_eligible_for_training_at })
+          end
+        end
       end
 
-      context "when the teacher is eligible for funding and there are declarations" do
+      context "when the mentor has declarations" do
         let(:mentor_at_school_period) { declaration.mentor_at_school_period }
         let(:teacher) { mentor_at_school_period.teacher }
 
@@ -336,10 +346,15 @@ describe "Data Corrections tasks" do
             )
           end
 
+          let(:mentor_first_became_eligible_for_training_at) { nil }
           let(:training_period_finished_on) { declaration.training_period.started_on + 1.day }
 
           before do
             declaration.training_period.update!(finished_on: training_period_finished_on)
+          end
+
+          it "does not change the mentor eligibility" do
+            expect { run_task }.not_to(change { teacher.reload.mentor_first_became_eligible_for_training_at })
           end
 
           context "when mentor_became_ineligible_for_funding_on is not set" do
