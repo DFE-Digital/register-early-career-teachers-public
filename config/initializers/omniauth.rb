@@ -36,6 +36,8 @@ Rails.application.config.middleware.use(OmniAuth::Builder) do
       scope: %w[openid profile email organisation],
       post_logout_redirect_uri: Rails.application.config.dfe_sign_in_sign_out_redirect_uri
     )
+
+    OmniAuth.config.full_host = Rails.application.config.service_url
   end
 
   OmniAuth.config.logger = Rails.logger
