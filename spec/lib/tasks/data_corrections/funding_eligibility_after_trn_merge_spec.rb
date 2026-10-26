@@ -4,14 +4,8 @@ describe "Data Corrections tasks" do
       Rake::Task["data_corrections:set_funding_eligibility_after_trn_merge"].invoke
     end
 
-    before do
-      Rake::Task["data_corrections:set_funding_eligibility_after_trn_merge"].reenable
-
-      allow(Declarations::Actions::MarkDeclarationsEligible).to receive(:new).and_call_original
-    end
-
+    let(:stdout_lines) { [] }
     let!(:teacher) { FactoryBot.create(:teacher) }
-
     let(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, year:, framework_agreement:) }
     let(:school) { school_partnership.school }
     let(:payment_statement) { FactoryBot.create(:statement) }
@@ -19,6 +13,14 @@ describe "Data Corrections tasks" do
     let(:framework_agreement) { payment_statement.framework_agreement }
     let(:contract) { payment_statement.contract }
     let(:year) { payment_statement.contract_period.year }
+    let(:service_dummy) { double(:service_dummy) }
+
+    before do
+      Rake::Task["data_corrections:set_funding_eligibility_after_trn_merge"].reenable
+
+      allow($stdout).to receive(:puts) { |msg| stdout_lines << msg.to_s }
+      allow(Declarations::Actions::MarkDeclarationsEligible).to receive(:new).and_call_original
+    end
 
     context "when the teacher has not had their TRN merged" do
       it "does nothing to teachers which have not been merged" do
@@ -26,7 +28,7 @@ describe "Data Corrections tasks" do
       end
     end
 
-    context "when there are teachers with ect_at_school_periods whose TRNs have been merged" do
+    context "when there is a teacher with ect_at_school_periods whose TRNs have been merged" do
       let!(:teacher) { ect_at_school_period.teacher }
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period) }
       let(:ect_first_became_eligible_for_training_at) { induction_start_date }
@@ -193,10 +195,23 @@ describe "Data Corrections tasks" do
         it "does not change other declarations" do
           expect { run_task }.not_to(change { voided_declaration.reload.payment_status })
         end
+
+        context "when there is no payment statement" do
+          before do
+            allow(Declarations::Actions::MarkDeclarationsEligible).to receive(:new).and_return(service_dummy)
+            allow(service_dummy).to receive(:mark).and_raise(Declarations::Actions::MarkDeclarationsEligible::MissingPaymentStatementError)
+          end
+
+          it "rescues MissingPaymentStatementError, continues, and reports failed TRNs at the end" do
+            expect { run_task }.not_to raise_error
+
+            expect(stdout_lines).to include("Failed to mark ECT declarations as eligible")
+          end
+        end
       end
     end
 
-    context "when there are teachers with mentor_at_school_periods whose TRNs have been merged" do
+    context "when there is a teacher with mentor_at_school_periods whose TRNs have been merged" do
       let(:mentor_first_became_eligible_for_training_at) { started_on }
       let!(:mentor_at_school_period) do
         FactoryBot.create(
@@ -224,6 +239,19 @@ describe "Data Corrections tasks" do
 
       it "does not update ect eligibility" do
         expect { run_task }.not_to(change { teacher.reload.ect_first_became_eligible_for_training_at })
+      end
+
+      context "when the mentor did their own induction in the past" do
+        before do
+          teacher.update!(
+            ect_first_became_eligible_for_training_at: nil,
+            trs_induction_start_date: 2.years.ago.to_date
+          )
+        end
+
+        it "does not change the mentor's eligibility" do
+          expect { run_task }.not_to(change { teacher.reload.ect_first_became_eligible_for_training_at })
+        end
       end
 
       context "when the mentor does not have training_periods" do
@@ -255,7 +283,7 @@ describe "Data Corrections tasks" do
         context "and their eligibility is not set" do
           let(:mentor_first_became_eligible_for_training_at) { nil }
 
-          it "corrects the ECT eligibility" do
+          it "corrects the Mentor eligibility" do
             expect { run_task }.to change {
               teacher.reload.mentor_first_became_eligible_for_training_at
             }.from(nil).to(started_on.in_time_zone)
@@ -338,6 +366,77 @@ describe "Data Corrections tasks" do
             end
           end
         end
+
+        context "when there is no payment statement" do
+          before do
+            allow(Declarations::Actions::MarkDeclarationsEligible).to receive(:new).and_return(service_dummy)
+            allow(service_dummy).to receive(:mark).and_raise(Declarations::Actions::MarkDeclarationsEligible::MissingPaymentStatementError)
+          end
+
+          it "rescues MissingPaymentStatementError, continues, and reports failed TRNs at the end" do
+            expect { run_task }.not_to raise_error
+
+            expect(stdout_lines).to include("Failed to mark ECT declarations as eligible")
+          end
+        end
+      end
+    end
+
+    context "when there are several teachers with merged TRNs" do
+      let(:teachers) { [ect_at_school_period.teacher, other_ect_at_school_period.teacher, third_teacher] }
+      let(:third_teacher) { third_ect_at_school_period.teacher }
+      let(:ect_at_school_period) { declaration.ect_at_school_period }
+      let(:other_ect_at_school_period) { other_declaration.ect_at_school_period }
+      let!(:third_ect_at_school_period) do
+        FactoryBot.create(
+          :ect_at_school_period,
+          :unfinished,
+          started_on: trs_induction_start_date
+        )
+      end
+
+      let(:trs_induction_start_date) { Date.new(2026, 9, 1) }
+
+      let!(:declaration) { FactoryBot.create(:declaration, :with_ect, payment_statement:, school_partnership:) }
+      let!(:other_declaration) { FactoryBot.create(:declaration, :with_ect, payment_statement:, school_partnership:) }
+
+      before do
+        teachers.each do |teacher|
+          teacher.update!(
+            ect_first_became_eligible_for_training_at: nil,
+            trs_induction_start_date:,
+            trs_induction_status: "InProgress"
+          )
+          FactoryBot.create(:event, event_type: :teacher_merged, teacher:)
+        end
+
+        allow(Declarations::Actions::MarkDeclarationsEligible).to receive(:new)
+        .with(declarations: [declaration], author: anything)
+        .and_call_original
+        allow(Declarations::Actions::MarkDeclarationsEligible).to receive(:new)
+        .with(declarations: [other_declaration], author: anything)
+        .and_return(service_dummy)
+
+        allow(service_dummy).to receive(:mark).and_raise(Declarations::Actions::MarkDeclarationsEligible::MissingPaymentStatementError)
+
+        # Force a validation failure instead of stubbing save!
+        third_teacher.update_column(:mentor_became_ineligible_for_funding_on, Time.zone.today)
+      end
+
+      it "continues processing other teachers when one teacher fails" do
+        expect { run_task }.not_to raise_error
+
+        expect(declaration.reload.payment_status).to eq("eligible")
+        expect(other_declaration.reload.payment_status).to eq("no_payment")
+
+        teachers.each do |teacher|
+          expect(stdout_lines).to include("Processing teacher with TRN: #{teacher.trn}")
+        end
+
+        expect(stdout_lines).to include("Failed to mark ECT declarations as eligible")
+        expect(stdout_lines).to include("Failed TRNs:")
+        expect(stdout_lines).to include("#{other_ect_at_school_period.teacher.trn} (Declarations::Actions::MarkDeclarationsEligible::MissingPaymentStatementError)")
+        expect(stdout_lines).to include("#{third_teacher.trn} (ActiveRecord::RecordInvalid)")
       end
     end
   end
