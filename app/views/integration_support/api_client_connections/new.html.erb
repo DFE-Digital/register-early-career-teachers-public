@@ -15,7 +15,7 @@
   <%= govuk_summary_card(title: "Appropriate body") do %>
     <%= form.govuk_collection_select(:appropriate_body_id,
                                      @appropriate_body_periods,
-                                     :external_uuid,
+                                     :external_id,
                                      :name,
                                      label: { text: "Appropriate body ID" },
                                      hint: { text: "The external UUID of the appropriate body. This must match the appropriate body you sign in as." }) %>

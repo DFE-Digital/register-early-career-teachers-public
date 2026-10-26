@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_21_151649) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_26_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -125,9 +125,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_21_151649) do
     t.bigint "school_id"
     t.bigint "teaching_school_hub_id"
     t.datetime "updated_at", null: false
-    t.uuid "external_uuid", default: -> { "gen_random_uuid()" }, null: false
+    t.uuid "external_id", default: -> { "gen_random_uuid()" }, null: false
     t.index ["dfe_sign_in_organisation_id"], name: "index_appropriate_body_periods_on_dfe_sign_in_organisation_id", unique: true
-    t.index ["external_uuid"], name: "index_appropriate_body_periods_on_external_uuid", unique: true
+    t.index ["external_id"], name: "index_appropriate_body_periods_on_external_id", unique: true
     t.index ["local_authority_id"], name: "index_appropriate_body_periods_on_local_authority_id"
     t.index ["national_body_id"], name: "index_appropriate_body_periods_on_national_body_id"
     t.index ["school_id"], name: "index_appropriate_body_periods_on_school_id"

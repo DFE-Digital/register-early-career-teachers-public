@@ -10,8 +10,8 @@ RSpec.describe "GET /api/induction/v1/appropriate-bodies", type: :request do
 
     expect(response).to have_http_status(:ok)
     expect(response.parsed_body).to eq([
-      { "id" => bright_futures.external_uuid, "name" => "Bright Futures Teaching School Hub" },
-      { "id" => golden_leaf.external_uuid, "name" => "Golden Leaf Teaching School Hub" },
+      { "id" => bright_futures.external_id, "name" => "Bright Futures Teaching School Hub" },
+      { "id" => golden_leaf.external_id, "name" => "Golden Leaf Teaching School Hub" },
     ])
   end
 

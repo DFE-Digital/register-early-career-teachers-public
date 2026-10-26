@@ -10,7 +10,7 @@ describe API::OAuth::Authorizations::Create do
   let(:authorization_request) do
     API::OAuth::AuthorizationRequest.new(
       logged_in_appropriate_body_period_id: appropriate_body_period.id,
-      appropriate_body_id: appropriate_body_period.external_uuid,
+      appropriate_body_id: appropriate_body_period.external_id,
       client_id: client.client_id,
       redirect_uri:,
       response_type: "code",

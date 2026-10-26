@@ -2,7 +2,7 @@ describe API::OAuth::AuthorizationRequest do
   subject(:authorization_request) do
     described_class.new(
       logged_in_appropriate_body_period_id: appropriate_body_period.id,
-      appropriate_body_id: appropriate_body_period.external_uuid,
+      appropriate_body_id: appropriate_body_period.external_id,
       client_id: client.client_id,
       redirect_uri: client.redirect_uris.first,
       response_type: "code",
@@ -25,7 +25,7 @@ describe API::OAuth::AuthorizationRequest do
 
     it {
       expect(subject).to validate_comparison_of(:appropriate_body_id)
-      .is_equal_to(appropriate_body_period.external_uuid)
+      .is_equal_to(appropriate_body_period.external_id)
       .with_message("does not match the logged-in Appropriate Body")
     }
 
