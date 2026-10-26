@@ -7,7 +7,7 @@ RSpec.describe Schools::RegisterECTWizard::LeadProviderStep, type: :model do
 
       it "is not valid" do
         expect(subject).not_to be_valid
-        expect(subject.errors[:lead_provider_id]).to include("Select which lead provider will be training the ECT")
+        expect(subject).to have_error(:lead_provider_id, "Select which lead provider will be training the ECT")
       end
     end
 
@@ -16,7 +16,7 @@ RSpec.describe Schools::RegisterECTWizard::LeadProviderStep, type: :model do
 
       it "is not valid" do
         expect(subject).not_to be_valid
-        expect(subject.errors[:lead_provider_id]).to include("Enter the name of a known lead provider")
+        expect(subject).to have_error(:lead_provider_id, "Enter the name of a known lead provider")
       end
     end
 

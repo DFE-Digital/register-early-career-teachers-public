@@ -46,7 +46,7 @@ describe Schools::RegisterECTWizard::ReviewECTDetailsStep, type: :model do
 
       it "is not valid without a corrected_name" do
         expect(subject).not_to be_valid
-        expect(subject.errors[:corrected_name]).to include("Enter the correct full name")
+        expect(subject).to have_error(:corrected_name, "Enter the correct full name")
       end
     end
 

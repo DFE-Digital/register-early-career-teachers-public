@@ -1,9 +1,9 @@
 module API
   module Documentation
-    module Authentication
+    module Authorisation
       class SidebarComponent < ApplicationComponent
         PAGES_PREFIX = "pages"
-        PAGES_DIR = Rails.root.join("app/views/api/documentation/authentication/pages/*.html.erb")
+        PAGES_DIR = Rails.root.join("app/views/api/documentation/authorisation/pages/*.html.erb")
         FRONT_MATTER_REGEX = /^\s*---(?<front_matter>.*?)---\s/m
 
         attr_reader :current_path, :page
@@ -17,7 +17,7 @@ module API
           node = Struct.new(:name, :href, :prefix, :nodes)
 
           self.class.pages.map do |p|
-            path = api_documentation_authentication_page_path(p[:path].to_s)
+            path = api_documentation_authorisation_page_path(p[:path].to_s)
             node.new(p[:title], path, path, [])
           end
         end

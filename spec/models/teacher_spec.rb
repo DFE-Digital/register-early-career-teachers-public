@@ -384,7 +384,7 @@ describe Teacher do
           subject.valid?
 
           expected_message = /Enter the date when the mentor became ineligible for funding/
-          expect(subject.errors.messages[:mentor_became_ineligible_for_funding_on]).to include(expected_message)
+          expect(subject).to have_error(:mentor_became_ineligible_for_funding_on, expected_message)
         end
       end
 
@@ -397,7 +397,7 @@ describe Teacher do
           subject.valid?
 
           expected_message = /Choose the reason why the mentor became ineligible for funding/
-          expect(subject.errors.messages[:mentor_became_ineligible_for_funding_reason]).to include(expected_message)
+          expect(subject).to have_error(:mentor_became_ineligible_for_funding_reason, expected_message)
         end
       end
     end

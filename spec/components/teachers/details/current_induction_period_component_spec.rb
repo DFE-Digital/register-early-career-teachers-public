@@ -24,12 +24,6 @@ RSpec.describe Teachers::Details::CurrentInductionPeriodComponent, type: :compon
 
     before { render_inline(component) }
 
-    it "renders" do
-      expect(component.render?).to be true
-      render_inline(component)
-      expect(rendered_content).not_to be_empty
-    end
-
     it "displays the heading" do
       expect(page).to have_css("h2", text: "Current induction period")
     end
@@ -117,8 +111,6 @@ RSpec.describe Teachers::Details::CurrentInductionPeriodComponent, type: :compon
 
     describe "#enable_delete" do
       subject(:component) { described_class.new(mode:, teacher:, enable_delete:) }
-
-      before { render_inline(component) }
 
       context "when true" do
         let(:enable_delete) { true }

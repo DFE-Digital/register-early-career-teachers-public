@@ -199,7 +199,7 @@ describe TrainingPeriod do
 
         it "add an error" do
           subject.valid?
-          expect(subject.errors.messages[:base]).to include("Either an ECT at school period or mentor at school period is required")
+          expect(subject).to have_error(:base, "Either an ECT at school period or mentor at school period is required")
         end
       end
 
@@ -231,7 +231,7 @@ describe TrainingPeriod do
         context "when neither the expression of interest or school partnership is present" do
           it "has a base error stating either expression of interest or school partnership required" do
             subject.valid?
-            expect(subject.errors.messages[:base]).to include("Either expression of interest or school partnership required")
+            expect(subject).to have_error(:base, "Either expression of interest or school partnership required")
           end
         end
 
@@ -365,13 +365,13 @@ describe TrainingPeriod do
         it "is valid when the training period starts on or after the at school period" do
           training_period = FactoryBot.build(:training_period, :unfinished, :for_ect, ect_at_school_period:, started_on: 6.months.ago)
           training_period.valid?
-          expect(training_period.errors[:base]).not_to include(envelope_error)
+          expect(training_period).to have_no_error(:base, envelope_error)
         end
 
         it "is invalid when the training period starts before the at school period" do
           training_period = FactoryBot.build(:training_period, :unfinished, :for_ect, ect_at_school_period:, started_on: 2.years.ago)
           training_period.valid?
-          expect(training_period.errors[:base]).to include(envelope_error)
+          expect(training_period).to have_error(:base, envelope_error)
         end
       end
 
@@ -381,7 +381,7 @@ describe TrainingPeriod do
         it "is invalid because the training period extends past the at school period" do
           training_period = FactoryBot.build(:training_period, :for_ect, ect_at_school_period:, started_on: 6.months.ago, finished_on: nil)
           training_period.valid?
-          expect(training_period.errors[:base]).to include(envelope_error)
+          expect(training_period).to have_error(:base, envelope_error)
         end
       end
     end
@@ -551,7 +551,7 @@ describe TrainingPeriod do
 
           it "has an error on expression_of_interest" do
             subject.valid?
-            expect(subject.errors.messages[:expression_of_interest]).to include("Expression of interest must be absent for school-led training programmes")
+            expect(subject).to have_error(:expression_of_interest, "Expression of interest must be absent for school-led training programmes")
           end
         end
 
@@ -563,7 +563,7 @@ describe TrainingPeriod do
 
           it "has an error on school_partnership" do
             subject.valid?
-            expect(subject.errors.messages[:school_partnership]).to include("School partnership must be absent for school-led training programmes")
+            expect(subject).to have_error(:school_partnership, "School partnership must be absent for school-led training programmes")
           end
         end
 
@@ -575,8 +575,8 @@ describe TrainingPeriod do
 
           it "has errors on both expression_of_interest and school_partnership" do
             subject.valid?
-            expect(subject.errors.messages[:expression_of_interest]).to include("Expression of interest must be absent for school-led training programmes")
-            expect(subject.errors.messages[:school_partnership]).to include("School partnership must be absent for school-led training programmes")
+            expect(subject).to have_error(:expression_of_interest, "Expression of interest must be absent for school-led training programmes")
+            expect(subject).to have_error(:school_partnership, "School partnership must be absent for school-led training programmes")
           end
         end
       end
@@ -617,7 +617,7 @@ describe TrainingPeriod do
 
           it "adds an error to schedule" do
             expect(subject).to be_invalid
-            expect(subject.errors[:schedule]).to include("Contract period mismatch: schedule, EOI, school partnership, and declarations must have the same contract period.")
+            expect(subject).to have_error(:schedule, "Contract period mismatch: schedule, EOI, school partnership, and declarations must have the same contract period.")
           end
         end
       end
@@ -660,7 +660,7 @@ describe TrainingPeriod do
 
           it "adds an error to schedule" do
             expect(subject).to be_invalid
-            expect(subject.errors[:schedule]).to include("Contract period mismatch: schedule, EOI, school partnership, and declarations must have the same contract period.")
+            expect(subject).to have_error(:schedule, "Contract period mismatch: schedule, EOI, school partnership, and declarations must have the same contract period.")
           end
         end
 
@@ -669,7 +669,7 @@ describe TrainingPeriod do
 
           it "adds an error to schedule" do
             expect(subject).to be_invalid
-            expect(subject.errors[:schedule]).to include("Schedule must be absent for school-led training programmes")
+            expect(subject).to have_error(:schedule, "Schedule must be absent for school-led training programmes")
           end
         end
       end
@@ -704,7 +704,7 @@ describe TrainingPeriod do
 
           it "adds an error to schedule" do
             expect(subject).to be_invalid
-            expect(subject.errors[:schedule]).to include("Contract period mismatch: schedule, EOI, school partnership, and declarations must have the same contract period.")
+            expect(subject).to have_error(:schedule, "Contract period mismatch: schedule, EOI, school partnership, and declarations must have the same contract period.")
           end
         end
       end
@@ -716,14 +716,14 @@ describe TrainingPeriod do
         school_partnership = FactoryBot.create(:school_partnership, school: ect_at_school_period.school)
         training_period = FactoryBot.build(:training_period, :for_ect, :provider_led, ect_at_school_period:, school_partnership:, schedule: nil)
         training_period.valid?
-        expect(training_period.errors[:schedule]).to include("Schedule is required for provider-led training periods")
+        expect(training_period).to have_error(:schedule, "Schedule is required for provider-led training periods")
       end
 
       it "does not require schedule for school-led training periods" do
         ect_at_school_period = FactoryBot.create(:ect_at_school_period, started_on: Date.new(2024, 12, 25), finished_on: nil)
         training_period = FactoryBot.build(:training_period, :for_ect, :school_led, ect_at_school_period:, schedule: nil)
         training_period.valid?
-        expect(training_period.errors[:schedule]).not_to include("Schedule is required for provider-led training periods")
+        expect(training_period).to have_no_error(:schedule, "Schedule is required for provider-led training periods")
       end
 
       it "is valid when provider-led training period has a schedule" do
@@ -732,7 +732,7 @@ describe TrainingPeriod do
         schedule = FactoryBot.create(:schedule, contract_period: school_partnership.contract_period)
         training_period = FactoryBot.build(:training_period, :for_ect, :provider_led, ect_at_school_period:, school_partnership:, schedule:)
         training_period.valid?
-        expect(training_period.errors[:schedule]).to be_empty
+        expect(training_period).to have_no_error(:schedule)
       end
     end
 
@@ -741,21 +741,21 @@ describe TrainingPeriod do
         ect_at_school_period = FactoryBot.create(:ect_at_school_period, started_on: Date.new(2024, 12, 25), finished_on: nil)
         training_period = FactoryBot.build(:training_period, :for_ect, ect_at_school_period:, schedule: FactoryBot.create(:schedule, :replacement_schedule))
         training_period.valid?
-        expect(training_period.errors[:schedule]).to include("Only mentors can be assigned to replacement schedules")
+        expect(training_period).to have_error(:schedule, "Only mentors can be assigned to replacement schedules")
       end
 
       it "does not add an error when a mentor is assigned to a replacement schedule" do
         mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, started_on: Date.new(2024, 12, 25), finished_on: nil)
         training_period = FactoryBot.build(:training_period, :for_mentor, mentor_at_school_period:, schedule: FactoryBot.create(:schedule, :replacement_schedule))
         training_period.valid?
-        expect(training_period.errors[:schedule]).to be_empty
+        expect(training_period).to have_no_error(:schedule)
       end
 
       it "does not add an error when an ECT is assigned to a non-replacement schedule" do
         ect_at_school_period = FactoryBot.create(:ect_at_school_period, started_on: Date.new(2024, 12, 25), finished_on: nil)
         training_period = FactoryBot.build(:training_period, :for_ect, ect_at_school_period:, schedule: FactoryBot.create(:schedule))
         training_period.valid?
-        expect(training_period.errors[:schedule]).to be_empty
+        expect(training_period).to have_no_error(:schedule)
       end
     end
 
@@ -764,21 +764,21 @@ describe TrainingPeriod do
         mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, started_on: Date.new(2024, 12, 25), finished_on: nil)
         training_period = FactoryBot.build(:training_period, :for_mentor, mentor_at_school_period:, schedule: FactoryBot.create(:schedule, :reduced_schedule))
         training_period.valid?
-        expect(training_period.errors[:schedule]).to include("Only ECTs can be assigned to reduced schedules")
+        expect(training_period).to have_error(:schedule, "Only ECTs can be assigned to reduced schedules")
       end
 
       it "does not add an error when an ECT is assigned to a reduced schedule" do
         ect_at_school_period = FactoryBot.create(:ect_at_school_period, started_on: Date.new(2024, 12, 25), finished_on: nil)
         training_period = FactoryBot.build(:training_period, :for_ect, ect_at_school_period:, schedule: FactoryBot.create(:schedule, :reduced_schedule))
         training_period.valid?
-        expect(training_period.errors[:schedule]).to be_empty
+        expect(training_period).to have_no_error(:schedule)
       end
 
       it "does not add an error when a mentor is assigned to a non-reduced schedule" do
         mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, started_on: Date.new(2024, 12, 25), finished_on: nil)
         training_period = FactoryBot.build(:training_period, :for_mentor, mentor_at_school_period:, schedule: FactoryBot.create(:schedule))
         training_period.valid?
-        expect(training_period.errors[:schedule]).to be_empty
+        expect(training_period).to have_no_error(:schedule)
       end
     end
 
@@ -803,7 +803,7 @@ describe TrainingPeriod do
 
           it "is invalid with the appropriate error" do
             subject.valid?
-            expect(subject.errors[:withdrawal_reason]).to include("You cannot withdraw an ECT for this reason. The ECT is not a mentor.")
+            expect(subject).to have_error(:withdrawal_reason, "You cannot withdraw an ECT for this reason. The ECT is not a mentor.")
           end
         end
 
@@ -812,7 +812,7 @@ describe TrainingPeriod do
 
           it "does not add the trainee-type error" do
             subject.valid?
-            expect(subject.errors[:withdrawal_reason]).to be_empty
+            expect(subject).to have_no_error(:withdrawal_reason)
           end
         end
       end
@@ -835,7 +835,7 @@ describe TrainingPeriod do
 
         it "does not add the trainee-type error" do
           subject.valid?
-          expect(subject.errors[:withdrawal_reason]).to be_empty
+          expect(subject).to have_no_error(:withdrawal_reason)
         end
       end
     end
@@ -856,7 +856,7 @@ describe TrainingPeriod do
           training_period.school_partnership = new_school_partnership
 
           expect(training_period).not_to be_valid
-          expect(training_period.errors[:base]).to include("Cannot change the lead provider for a training period with billable declarations")
+          expect(training_period).to have_error(:base, "Cannot change the lead provider for a training period with billable declarations")
         end
 
         it "allows the school_partnership to change if it is with the same lead_provider_delivery_partnership" do
@@ -880,7 +880,7 @@ describe TrainingPeriod do
           )
 
           expect(training_period).not_to be_valid
-          expect(training_period.errors[:base]).to include("Cannot change the lead provider for a training period with billable declarations")
+          expect(training_period).to have_error(:base, "Cannot change the lead provider for a training period with billable declarations")
         end
 
         it "allows the schedule to change" do
@@ -941,7 +941,7 @@ describe TrainingPeriod do
 
         it "adds an error to school_partnership" do
           training_period.valid?
-          expect(training_period.errors[:school_partnership]).to include("School partnership's school must match the trainee's school")
+          expect(training_period).to have_error(:school_partnership, "School partnership's school must match the trainee's school")
         end
 
         it "sends a message to Sentry" do

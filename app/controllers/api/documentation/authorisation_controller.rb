@@ -1,7 +1,7 @@
 module API
   module Documentation
-    class AuthenticationController < ApplicationController
-      layout "api/documentation/api_authentication"
+    class AuthorisationController < ApplicationController
+      layout "api/documentation/api_authorisation"
 
       before_action :set_api_base_url
 
@@ -9,7 +9,7 @@ module API
       end
 
       def page
-        template = "api/documentation/authentication/pages/#{params[:page].underscore}"
+        template = "api/documentation/authorisation/pages/#{params[:page].underscore}"
 
         if template_exists?(template)
           render template

@@ -34,7 +34,7 @@ RSpec.describe Schools::AssignExistingMentorWizard::LeadProviderStep do
 
       it "is invalid with correct error" do
         expect(step).not_to be_valid
-        expect(step.errors[:lead_provider_id]).to include("Select a lead provider to contact your school")
+        expect(step).to have_error(:lead_provider_id, "Select a lead provider to contact your school")
       end
     end
 

@@ -16,7 +16,7 @@ RSpec.describe "API documentation", type: :request do
     it { expect(response.body).to include("Register early career teachers APIs") }
 
     it { expect(response.body).to include("Home") }
-    it { expect(response.body).to include("Authentication") }
+    it { expect(response.body).to include("Authorisation") }
     it { expect(response.body).to include("Training API") }
     it { expect(response.body).to include(%(href="#{api_docs_training_guidance_path}")) }
     it { expect(response.body).to include("Induction API") }

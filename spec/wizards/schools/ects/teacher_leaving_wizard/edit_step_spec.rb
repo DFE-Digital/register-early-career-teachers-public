@@ -72,7 +72,7 @@ RSpec.describe Schools::ECTs::TeacherLeavingWizard::EditStep do
 
       it "is invalid with the correct error message" do
         expect(step).not_to be_valid
-        expect(step.errors[:leaving_on]).to include("Enter a date no further than 4 months from today")
+        expect(step).to have_error(:leaving_on, "Enter a date no further than 4 months from today")
       end
     end
 
@@ -93,7 +93,7 @@ RSpec.describe Schools::ECTs::TeacherLeavingWizard::EditStep do
 
       it "is invalid with the correct error message" do
         expect(step).not_to be_valid
-        expect(step.errors[:leaving_on]).to include("Our records show that #{teacher_name} started teaching at your school on 1 January 2025. Enter a date after 2 January 2025.")
+        expect(step).to have_error(:leaving_on, "Our records show that #{teacher_name} started teaching at your school on 1 January 2025. Enter a date after 2 January 2025.")
       end
     end
 
@@ -116,7 +116,7 @@ RSpec.describe Schools::ECTs::TeacherLeavingWizard::EditStep do
 
       it "is invalid with the correct error message" do
         expect(step).not_to be_valid
-        expect(step.errors[:leaving_on]).to include("Our records show that #{teacher_name} started their latest training at your school on 31 December 2024. Enter a date after 1 January 2025.")
+        expect(step).to have_error(:leaving_on, "Our records show that #{teacher_name} started their latest training at your school on 31 December 2024. Enter a date after 1 January 2025.")
       end
     end
 

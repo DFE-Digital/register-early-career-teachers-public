@@ -18,7 +18,7 @@ RSpec.describe Schools::RegisterMentorWizard::ProgrammeChoicesStep do
 
       it "is invalid with correct error" do
         expect(step).not_to be_valid
-        expect(step.errors[:use_same_programme_choices]).to include(error_message)
+        expect(step).to have_error(:use_same_programme_choices, error_message)
       end
     end
 

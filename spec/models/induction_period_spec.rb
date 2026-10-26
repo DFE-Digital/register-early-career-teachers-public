@@ -44,7 +44,7 @@ RSpec.describe InductionPeriod do
 
       it "is invalid" do
         expect(induction_period).to be_invalid
-        expect(induction_period.errors[:outcome]).to include("An induction period with an outcome already exists for this teacher")
+        expect(induction_period).to have_error(:outcome, "An induction period with an outcome already exists for this teacher")
       end
     end
 
@@ -143,7 +143,7 @@ RSpec.describe InductionPeriod do
 
         it do
           expect(subject).not_to be_valid
-          expect(subject.errors[:outcome]).to include("Outcome must be either pass or fail")
+          expect(subject).to have_error(:outcome, "Outcome must be either pass or fail")
         end
       end
     end
@@ -168,7 +168,7 @@ RSpec.describe InductionPeriod do
 
         it do
           expect(subject).not_to be_valid
-          expect(subject.errors[:started_on]).to include("Start date cannot be in the future")
+          expect(subject).to have_error(:started_on, "Start date cannot be in the future")
         end
       end
     end
@@ -193,7 +193,7 @@ RSpec.describe InductionPeriod do
 
         it do
           expect(subject).not_to be_valid
-          expect(subject.errors[:finished_on]).to include("End date cannot be in the future")
+          expect(subject).to have_error(:finished_on, "End date cannot be in the future")
         end
       end
     end
@@ -220,7 +220,7 @@ RSpec.describe InductionPeriod do
 
         it do
           expect(subject).not_to be_valid(:record_outcome)
-          expect(subject.errors[:fail_confirmation_sent_on]).to include("Failure confirmation date cannot be in the future")
+          expect(subject).to have_error(:fail_confirmation_sent_on, "Failure confirmation date cannot be in the future", :record_outcome)
         end
       end
 
@@ -231,7 +231,7 @@ RSpec.describe InductionPeriod do
 
         it "a confirmation date is not required" do
           expect(subject).to be_valid(:record_outcome)
-          expect(subject.errors[:fail_confirmation_sent_on]).to be_blank
+          expect(subject).to have_no_error(:fail_confirmation_sent_on, nil, :record_outcome)
         end
       end
     end
@@ -242,7 +242,7 @@ RSpec.describe InductionPeriod do
 
         it do
           expect(subject).not_to be_valid(:record_outcome)
-          expect(subject.errors[:fail_confirmation_sent_on]).to include("Failure confirmation date cannot be before end date")
+          expect(subject).to have_error(:fail_confirmation_sent_on, "Failure confirmation date cannot be before end date", :record_outcome)
         end
       end
     end
@@ -271,7 +271,7 @@ RSpec.describe InductionPeriod do
 
         it do
           expect(subject).not_to be_valid
-          expect(subject.errors[:number_of_terms]).to include("Number of terms must be a number with up to 1 decimal place")
+          expect(subject).to have_error(:number_of_terms, "Number of terms must be a number with up to 1 decimal place")
         end
       end
 
@@ -280,7 +280,7 @@ RSpec.describe InductionPeriod do
 
         it do
           expect(subject).not_to be_valid
-          expect(subject.errors[:number_of_terms]).to include("Terms can only have up to 1 decimal place")
+          expect(subject).to have_error(:number_of_terms, "Terms can only have up to 1 decimal place")
         end
       end
 

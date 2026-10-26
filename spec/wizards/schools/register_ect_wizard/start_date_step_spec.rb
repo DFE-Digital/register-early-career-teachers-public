@@ -45,7 +45,7 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
 
       it "is not valid" do
         expect(subject).not_to be_valid
-        expect(subject.errors[:start_date]).to include("Enter the date the ECT started or will start teaching at your school")
+        expect(subject).to have_error(:start_date, "Enter the date the ECT started or will start teaching at your school")
       end
     end
 
@@ -54,7 +54,7 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
 
       it "is invalid with the correct error message" do
         expect(subject).not_to be_valid
-        expect(subject.errors[:start_date]).to include("Enter the start date using the correct format, for example, 17 09 1999")
+        expect(subject).to have_error(:start_date, "Enter the start date using the correct format, for example, 17 09 1999")
       end
     end
 
@@ -97,7 +97,7 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
 
           it "is invalid over 4 months from today" do
             expect(subject).not_to be_valid
-            expect(subject.errors[:start_date]).to include("Start date must be before 2 May 2025. You cannot register the ECT this far in advance.")
+            expect(subject).to have_error(:start_date, "Start date must be before 2 May 2025. You cannot register the ECT this far in advance.")
           end
 
           context "and the start date falls in a contract period that is not yet open" do
