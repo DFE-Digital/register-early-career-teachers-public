@@ -143,16 +143,6 @@ variable "redis_managed_cache_sku_name" { default = "Balanced_B1" }
 
 variable "redis_managed_queue_sku_name" { default = "Balanced_B1" }
 
-variable "redis_mode" {
-  description = "Whether to use Cache for Redis or Managed Redis"
-  type        = string
-  default     = "legacy" # or "managed"
-  validation {
-    condition     = contains(["managed", "legacy"], var.redis_mode)
-    error_message = "redis_mode must be either 'legacy' (Cache for Redis) or 'managed' (Managed Redis)."
-  }
-}
-
 variable "enable_logit" { default = false }
 
 variable "gcp_table_deletion_protection" {
@@ -183,16 +173,6 @@ locals {
   bigquery_secrets = var.create_bigquery_dataset ? {
     GOOGLE_CLOUD_CREDENTIALS = module.dfe_analytics[0].google_cloud_credentials
   } : {}
-
-  redis = {
-    legacy = {
-      cache_url = try(module.redis-cache[0].url, null)
-    }
-    managed = {
-      cache_url = try(module.redis-managed-cache[0].url, null)
-    }
-  }
-  selected_redis = local.redis[var.redis_mode]
 }
 
 variable "commands" {
@@ -211,18 +191,6 @@ variable "job_name" {
   description = "name of the k8s job to run"
   type        = string
   default     = "migrations"
-}
-
-variable "deploy_cache_redis" {
-  description = "Whether to create a Cache for Redis instance"
-  type        = bool
-  default     = true
-}
-
-variable "deploy_managed_redis" {
-  description = "Whether to create a Managed Redis instance"
-  type        = bool
-  default     = true
 }
 
 variable "pg_airbyte_enabled" {
