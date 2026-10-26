@@ -311,6 +311,7 @@ erDiagram
     datetime updated_at
   }
   MentorAtSchoolPeriod }o--|| School : belongs_to
+  MentorAtSchoolPeriod }o--|| School : belongs_to
   MentorAtSchoolPeriod }o--|| Teacher : belongs_to
   LocalAuthority {
     integer id
@@ -386,6 +387,7 @@ erDiagram
     datetime updated_at
     enum working_pattern
   }
+  ECTAtSchoolPeriod }o--|| School : belongs_to
   ECTAtSchoolPeriod }o--|| School : belongs_to
   ECTAtSchoolPeriod }o--|| Teacher : belongs_to
   ECTAtSchoolPeriod }o--|| AppropriateBodyPeriod : belongs_to
