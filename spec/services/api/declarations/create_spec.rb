@@ -480,7 +480,7 @@ RSpec.describe API::Declarations::Create, type: :model do
               let(:contract_period_year) { (contract_period.year - 1).to_s }
 
               it { is_expected.to have_one_error_only }
-              it { is_expected.to have_api_error(:contract_period_year, "The '#/contract_period_year' you have entered is not recognised for this teacher. Check details and try again.") }
+              it { is_expected.to have_api_error(:contract_period_year, "The '#/contract_period_year' you have entered is not associated with this teacher. Change the teacher's schedule to the correct cohort, or try again with a different cohort.") }
             end
           end
         end
