@@ -57,6 +57,8 @@ RSpec.describe "API OAuth authorization access tokens", type: :request do
 
   describe "POST /oauth/token" do
     before do
+      freeze_time
+      stub_const("API::OAuth::Authorization::ExpirableCredentials::TOKEN_EXPIRES_IN", 1.hour)
       authorization.update!(code_digest:, code_expires_at:)
     end
 
@@ -74,7 +76,7 @@ RSpec.describe "API OAuth authorization access tokens", type: :request do
       payload = JSON.parse(response.body)
 
       expect(Digest::SHA256.hexdigest(payload["access_token"])).to eq authorization.reload.token_digest
-      expect(payload["expires_in"]).to eq 31_536_000
+      expect(payload["expires_in"]).to eq 1.hour.to_i
       expect(payload["token_type"]).to eq "Bearer"
     end
 
