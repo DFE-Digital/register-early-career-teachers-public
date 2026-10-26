@@ -39,15 +39,16 @@ namespace :data_corrections do
           end
 
           # If the mentor has a completed declaration, mark them as ineligible for funding
-          completed_mentor_declarations = teacher.mentor_declarations.declaration_type_completed
-          earliest_date_training_completed = completed_mentor_declarations
-            .map { |declaration| declaration.training_period.finished_on }
-            .compact
-            .min
+          earliest_completed_declaration = teacher
+            .mentor_declarations
+            .declaration_type_completed
+            .billable_or_changeable
+            .order(evidenced_at: :desc)
+            .first
 
-          if earliest_date_training_completed && teacher.mentor_became_ineligible_for_funding_on.nil?
+          if earliest_completed_declaration.present? && teacher.mentor_became_ineligible_for_funding_on.nil?
             puts "Marking mentor as ineligible for funding"
-            teacher.mentor_became_ineligible_for_funding_on = earliest_date_training_completed
+            teacher.mentor_became_ineligible_for_funding_on = earliest_completed_declaration.evidenced_at
             teacher.mentor_became_ineligible_for_funding_reason = "completed_declaration_received"
           end
 

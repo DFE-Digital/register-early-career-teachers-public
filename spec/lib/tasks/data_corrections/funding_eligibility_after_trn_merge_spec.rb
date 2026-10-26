@@ -347,12 +347,7 @@ describe "Data Corrections tasks" do
           end
 
           let(:mentor_first_became_eligible_for_training_at) { nil }
-          let(:training_period_finished_on) { declaration.training_period.started_on + 1.day }
-
-          before do
-            declaration.training_period.update!(finished_on: training_period_finished_on)
-          end
-
+         
           it "does not change the mentor eligibility" do
             expect { run_task }.not_to(change { teacher.reload.mentor_first_became_eligible_for_training_at })
           end
@@ -361,14 +356,14 @@ describe "Data Corrections tasks" do
             it "marks the mentor as ineligible for funding" do
               expect { run_task }.to change {
                 teacher.reload.mentor_became_ineligible_for_funding_on
-              }.from(nil).to(training_period_finished_on).and change {
+              }.from(nil).to(completed_declaration.evidenced_at.to_date).and change {
                 teacher.reload.mentor_became_ineligible_for_funding_reason
               }.from(nil).to("completed_declaration_received")
             end
           end
 
           context "when mentor_became_ineligible_for_funding_on is already set" do
-            let(:mentor_became_ineligible_for_funding_on) { training_period_finished_on - 1.day }
+            let(:mentor_became_ineligible_for_funding_on) { completed_declaration.evidenced_at }
             let(:mentor_became_ineligible_for_funding_reason) { "completed_during_early_roll_out" }
 
             it "does not change the mentor's ineligibility" do
@@ -379,6 +374,22 @@ describe "Data Corrections tasks" do
                   teacher.mentor_became_ineligible_for_funding_reason
                 ]
               end)
+            end
+          end
+
+          context "when the declaration is voided" do
+            let!(:completed_declaration) do
+              FactoryBot.create(
+                :declaration,
+                :voided,
+                declaration_type: :completed,
+                payment_statement: other_statement,
+                training_period: declaration.training_period
+              )
+            end
+
+            it "does not change the mentor eligibility" do
+              expect { run_task }.not_to(change { teacher.reload.mentor_became_ineligible_for_funding_on })
             end
           end
         end
