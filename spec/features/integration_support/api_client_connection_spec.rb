@@ -1,6 +1,6 @@
 RSpec.describe "Integration support API client connection" do
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Golden Leaf Teaching School Hub") }
-  let(:other_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Another Teaching School Hub") }
+  let(:golden_leaf_teaching_school_hub) { FactoryBot.create(:appropriate_body_period, name: "Golden Leaf Teaching School Hub") }
+  let(:umber_teaching_school_hub) { FactoryBot.create(:appropriate_body_period, name: "Umber Teaching School Hub") }
 
   before do
     allow(Rails.application.config).to receive(:enable_api_test_client).and_return(true)
@@ -11,7 +11,7 @@ RSpec.describe "Integration support API client connection" do
   end
 
   scenario "authorising a client, obtaining and revoking an access token" do
-    when_i_start_a_connection_for(appropriate_body_period)
+    given_i_request_authorization_for(golden_leaf_teaching_school_hub, when_signed_in_as: golden_leaf_teaching_school_hub)
     then_my_client_is_preselected
 
     when_i_start_the_authorisation_request
@@ -28,7 +28,7 @@ RSpec.describe "Integration support API client connection" do
   end
 
   scenario "authorising a different appropriate body is denied" do
-    when_i_start_a_connection_for(other_appropriate_body_period)
+    given_i_request_authorization_for(umber_teaching_school_hub, when_signed_in_as: golden_leaf_teaching_school_hub)
     then_my_client_is_preselected
 
     when_i_start_the_authorisation_request
@@ -36,6 +36,13 @@ RSpec.describe "Integration support API client connection" do
   end
 
 private
+
+  def given_i_request_authorization_for(appropriate_body, when_signed_in_as:)
+    sign_in_as_appropriate_body_user(appropriate_body: when_signed_in_as)
+
+    page.goto("/integration-support/api-client-connection/new")
+    page.get_by_label("Appropriate body ID").select_option(label: appropriate_body.name)
+  end
 
   def given_i_am_signed_in_as_an_admin
     sign_in_as_dfe_user(role: :admin)
@@ -49,13 +56,6 @@ private
 
   def then_i_am_asked_to_sign_in_as_an_appropriate_body_user
     expect(page.locator("body")).to have_text("You must be signed in as an appropriate body user to start an authorization request.")
-  end
-
-  def when_i_start_a_connection_for(appropriate_body)
-    sign_in_as_appropriate_body_user(appropriate_body: appropriate_body_period)
-
-    page.goto("/integration-support/api-client-connection/new")
-    page.get_by_label("Appropriate body ID").select_option(label: appropriate_body.name)
   end
 
   def then_my_client_is_preselected
