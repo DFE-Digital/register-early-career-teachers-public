@@ -112,6 +112,22 @@ RSpec.describe "Participants API", :with_touches, type: :request do
           )
         end
       end
+
+      context "when the `schedule_identifier` is invalid and the teacher has completed induction" do
+        let(:schedule_identifier) { "ecf-reduced-January" }
+
+        before { FactoryBot.create(:induction_period, :pass, teacher: resource) }
+
+        it "returns `unprocessable_content`" do
+          authenticated_api_put(path, params:)
+
+          expect(response).to have_http_status(:unprocessable_content)
+          expect(parsed_response[:errors]).to include(
+            title: "schedule_identifier",
+            detail: "Enter a valid schedule identifier."
+          )
+        end
+      end
     end
     it_behaves_like "an endpoint that refreshes metadata", :put
   end

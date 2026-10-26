@@ -73,7 +73,7 @@ module API::Teachers
     end
 
     def schedule
-      return unless contract_period && schedule_identifier
+      return unless contract_period && Schedule.identifiers.key?(schedule_identifier)
 
       @schedule ||= contract_period.schedules.find_by(identifier: schedule_identifier)
     end

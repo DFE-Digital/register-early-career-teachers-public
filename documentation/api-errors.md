@@ -59,6 +59,7 @@
 | contract_period_year | You cannot change a teacher to this contract_period as you do not have a partnership with the school for the contract_period. Contact the DfE for assistance. | When changing contract_period_year without a school partnership. |
 | contract_period_year | You cannot move a teacher to a payments frozen contract period unless they previously belonged to that contract period. | When moving to a frozen contract period where the teacher has not been before. |
 | lead_provider_id | The '#/lead_provider_id' you have entered is invalid. | When the `lead_provider` does not exist. |
+| schedule_identifier | Enter a valid schedule identifier. | When schedule identifier is invalid. |
 | schedule_identifier | Mentors cannot be placed on a reduced schedule. Assign them to a different schedule. | When a mentor attempts to change to a reduced schedule. |
 | schedule_identifier | Mentors cannot be placed on a reduced schedule. Assign them to a different schedule. | When teacher has completed training. |
 | schedule_identifier | Selected schedule is already on the profile | When changing to the same schedule. |
