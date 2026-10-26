@@ -930,7 +930,7 @@ DEPENDENCIES
   zendesk_api (~> 3.1)
 
 RUBY VERSION
-  ruby 4.0.7
+  ruby 4.0.9
 
 BUNDLED WITH
   4.0.10
