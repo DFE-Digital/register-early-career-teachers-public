@@ -60,6 +60,7 @@ class InductionPeriod < ApplicationRecord
   scope :failed, -> { finished.where(outcome: :fail) }
 
   delegate :name, to: :appropriate_body_period, prefix: :appropriate_body
+  delegate :trn, :full_name, to: :teacher
 
   def siblings
     return InductionPeriod.none unless teacher
@@ -76,6 +77,8 @@ class InductionPeriod < ApplicationRecord
 
     super
   end
+
+  def status = unfinished? ? :ongoing : (outcome&.to_sym || :release)
 
 private
 

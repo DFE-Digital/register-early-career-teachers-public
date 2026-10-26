@@ -318,6 +318,17 @@ RSpec.describe InductionPeriod do
     end
   end
 
+  describe "#status" do
+    def status_of(*) = FactoryBot.build(:induction_period, *).status
+
+    it "is ongoing until finished, then the outcome or release" do
+      expect(status_of(:unfinished)).to eq(:ongoing)
+      expect(status_of(:pass)).to eq(:pass)
+      expect(status_of(:fail)).to eq(:fail)
+      expect(status_of).to eq(:release)
+    end
+  end
+
   describe "scopes" do
     let!(:unfinished_period) { FactoryBot.create(:induction_period, :unfinished) }
     let!(:released) { FactoryBot.create(:induction_period) }

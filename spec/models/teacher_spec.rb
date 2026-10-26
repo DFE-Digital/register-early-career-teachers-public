@@ -672,6 +672,12 @@ describe Teacher do
     end
   end
 
+  describe "#full_name" do
+    subject { FactoryBot.build(:teacher, :with_name).full_name }
+
+    it { is_expected.to eq "John Keating" }
+  end
+
   describe "#syncable_with_trs?" do
     subject { FactoryBot.build(:teacher, trs_response:) }
 
