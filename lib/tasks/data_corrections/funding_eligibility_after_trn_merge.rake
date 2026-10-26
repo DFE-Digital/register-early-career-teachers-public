@@ -1,7 +1,11 @@
 namespace :data_corrections do
   desc "Correct funding eligibility for teachers who have had a TRN merge"
 
-  task set_funding_eligibility_after_trn_merge: :environment do
+  task :set_funding_eligibility_after_trn_merge, [:dry_run] => :environment do |_t, args|
+    dry_run = args[:dry_run].nil? || ActiveModel::Type::Boolean.new.cast(args[:dry_run])
+
+    puts("Dry run mode: #{dry_run}")
+
     author = Events::SystemAuthor.new
 
     failed_teachers = []

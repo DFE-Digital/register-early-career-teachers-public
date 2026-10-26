@@ -1,11 +1,12 @@
 describe "Data Corrections tasks" do
   describe "data_corrections:set_funding_eligibility_after_trn_merge" do
     subject :run_task do
-      Rake::Task["data_corrections:set_funding_eligibility_after_trn_merge"].invoke
+      Rake::Task["data_corrections:set_funding_eligibility_after_trn_merge"].invoke(dry_run)
     end
 
     let(:stdout_lines) { [] }
     let!(:teacher) { FactoryBot.create(:teacher) }
+    let(:dry_run) { false }
     let(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, year:, framework_agreement:) }
     let(:school) { school_partnership.school }
     let(:payment_statement) { FactoryBot.create(:statement) }
@@ -400,43 +401,63 @@ describe "Data Corrections tasks" do
       let!(:declaration) { FactoryBot.create(:declaration, :with_ect, payment_statement:, school_partnership:) }
       let!(:other_declaration) { FactoryBot.create(:declaration, :with_ect, payment_statement:, school_partnership:) }
 
-      before do
-        teachers.each do |teacher|
-          teacher.update!(
-            ect_first_became_eligible_for_training_at: nil,
-            trs_induction_start_date:,
-            trs_induction_status: "InProgress"
-          )
-          FactoryBot.create(:event, event_type: :teacher_merged, teacher:)
+      context "when several errors are raised during processing" do
+        before do
+          teachers.each do |teacher|
+            teacher.update!(
+              ect_first_became_eligible_for_training_at: nil,
+              trs_induction_start_date:,
+              trs_induction_status: "InProgress"
+            )
+            FactoryBot.create(:event, event_type: :teacher_merged, teacher:)
+          end
+
+          allow(Declarations::Actions::MarkDeclarationsEligible).to receive(:new)
+          .with(declarations: [declaration], author: anything)
+          .and_call_original
+          allow(Declarations::Actions::MarkDeclarationsEligible).to receive(:new)
+          .with(declarations: [other_declaration], author: anything)
+          .and_return(service_dummy)
+
+          allow(service_dummy).to receive(:mark).and_raise(Declarations::Actions::MarkDeclarationsEligible::MissingPaymentStatementError)
+
+          # Force a validation failure instead of stubbing save!
+          third_teacher.update_column(:mentor_became_ineligible_for_funding_on, Time.zone.today)
         end
 
-        allow(Declarations::Actions::MarkDeclarationsEligible).to receive(:new)
-        .with(declarations: [declaration], author: anything)
-        .and_call_original
-        allow(Declarations::Actions::MarkDeclarationsEligible).to receive(:new)
-        .with(declarations: [other_declaration], author: anything)
-        .and_return(service_dummy)
+        it "continues processing other teachers when one teacher fails" do
+          expect { run_task }.not_to raise_error
 
-        allow(service_dummy).to receive(:mark).and_raise(Declarations::Actions::MarkDeclarationsEligible::MissingPaymentStatementError)
+          expect(declaration.reload.payment_status).to eq("eligible")
+          expect(other_declaration.reload.payment_status).to eq("no_payment")
 
-        # Force a validation failure instead of stubbing save!
-        third_teacher.update_column(:mentor_became_ineligible_for_funding_on, Time.zone.today)
+          teachers.each do |teacher|
+            expect(stdout_lines).to include("Processing teacher with TRN: #{teacher.trn}")
+          end
+
+          expect(stdout_lines).to include("Failed to mark ECT declarations as eligible")
+          expect(stdout_lines).to include("Failed TRNs:")
+          expect(stdout_lines).to include("#{other_ect_at_school_period.teacher.trn} (Declarations::Actions::MarkDeclarationsEligible::MissingPaymentStatementError)")
+          expect(stdout_lines).to include("#{third_teacher.trn} (ActiveRecord::RecordInvalid)")
+        end
       end
 
-      it "continues processing other teachers when one teacher fails" do
-        expect { run_task }.not_to raise_error
+      context "when dry run is enabled" do
+        let(:dry_run) { true }
 
-        expect(declaration.reload.payment_status).to eq("eligible")
-        expect(other_declaration.reload.payment_status).to eq("no_payment")
+        it "does not persist changes or call eligibility services" do
+          expect(Declarations::Actions::MarkDeclarationsEligible).not_to receive(:new)
+          expect { run_task }.not_to raise_error
 
-        teachers.each do |teacher|
-          expect(stdout_lines).to include("Processing teacher with TRN: #{teacher.trn}")
+          expect(stdout_lines.join("\n")).to include("Dry run mode: true")
+
+          teachers.each do |teacher|
+            expect(teacher.reload.ect_first_became_eligible_for_training_at).to be_nil
+          end
+
+          expect(declaration.reload.payment_status).to eq("no_payment")
+          expect(other_declaration.reload.payment_status).to eq("no_payment")
         end
-
-        expect(stdout_lines).to include("Failed to mark ECT declarations as eligible")
-        expect(stdout_lines).to include("Failed TRNs:")
-        expect(stdout_lines).to include("#{other_ect_at_school_period.teacher.trn} (Declarations::Actions::MarkDeclarationsEligible::MissingPaymentStatementError)")
-        expect(stdout_lines).to include("#{third_teacher.trn} (ActiveRecord::RecordInvalid)")
       end
     end
   end
