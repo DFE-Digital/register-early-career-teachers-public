@@ -138,7 +138,7 @@ module API::Declarations
     def training_period_exists_for_teacher_type
       return errors.add(:teacher_type, "Enter a '#/teacher_type'.") if teacher_type.blank?
       return if training_period
-      return errors.add(:contract_period_year, "The '#/contract_period_year' you have entered is not recognised for this teacher. Check details and try again.") if contract_period_year.present? && training_periods.exists?
+      return errors.add(:contract_period_year, "The '#/contract_period_year' you have entered is not associated with this teacher. Change the teacher's schedule to the correct cohort, or try again with a different cohort.") if contract_period_year.present? && training_periods.exists?
 
       errors.add(:teacher_type, "The entered '#/teacher_type' is not recognised for the given teacher. Check details and try again.")
     end

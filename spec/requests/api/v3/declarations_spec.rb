@@ -167,7 +167,7 @@ RSpec.describe "Declarations API", :with_metadata, type: :request do
             expect(response).to have_http_status(:unprocessable_content)
             expect(parsed_response[:errors]).to contain_exactly(
               title: "cohort",
-              detail: "The '#/cohort' you have entered is not recognised for this participant. Check details and try again."
+              detail: "The '#/cohort' you have entered is not associated with this participant. Change the participant's schedule to the correct cohort, or try again with a different cohort."
             )
           end
         end
