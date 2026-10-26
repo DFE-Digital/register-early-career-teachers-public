@@ -3,7 +3,7 @@ module API::OAuth::AuthorizationRequest::Redirectable
 
   ERROR_CODES = {
     %i[response_type inclusion] => :unsupported_response_type,
-    %i[appropriate_body_period_uuid equal_to] => :access_denied,
+    %i[appropriate_body_id equal_to] => :access_denied,
   }.freeze
 
   def redirectable? = redirect_uri.present? && client&.redirect_uris&.include?(redirect_uri)

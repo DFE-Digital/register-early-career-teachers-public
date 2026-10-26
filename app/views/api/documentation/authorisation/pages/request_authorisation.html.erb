@@ -54,7 +54,7 @@ sequenceDiagram
   curl -X GET "<%= @api_base_url %>/oauth/authorize?\
   response_type=code\
   &client_id=[YOUR-CLIENT-ID]\
-  &appropriate_body_period_uuid=[USERS-APPROPRIATE-BODY-IDENTIFIER]\
+  &appropriate_body_id=[USERS-APPROPRIATE-BODY-IDENTIFIER]\
   &state=[STATE]\
   &redirect_uri=[YOUR-REDIRECT-URI]\
   &code_challenge=[CODE-CHALLENGE]\
@@ -71,7 +71,7 @@ sequenceDiagram
   curl -X GET "<%= @api_base_url %>/oauth/authorize?\
   response_type=code\
   &client_id=Hf8sfkiUkYp9I3_R10qSnZ2ZUvoa\
-  &appropriate_body_period_uuid=9def8316-1d33-4181-b0d5-59c34c4a03f5\
+  &appropriate_body_id=9def8316-1d33-4181-b0d5-59c34c4a03f5\
   &state=30de877c-ee2f-15db-8314-0800200c9a66\
   &redirect_uri=https://www.myservice.example.com/callback\
   &code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM\
@@ -105,8 +105,8 @@ These are the parameters in the request.
       row.with_cell(text: "Your application’s client ID.")
     end
     body.with_row do |row|
-      row.with_cell { tag.code("appropriate_body_period_uuid") }
-      row.with_cell(text: "The UUID of the appropriate body making the connection.")
+      row.with_cell { tag.code("appropriate_body_id") }
+      row.with_cell(text: "The ID of the appropriate body making the connection.")
     end
     body.with_row do |row|
       row.with_cell { tag.code("state") }

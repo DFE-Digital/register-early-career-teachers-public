@@ -64,7 +64,7 @@ module API
       def authorization_request_params
         params
           .permit(
-            :response_type, :client_id, :appropriate_body_period_uuid, :redirect_uri,
+            :response_type, :client_id, :appropriate_body_id, :redirect_uri,
             :code_challenge, :code_challenge_method, :state
           )
           .to_h

@@ -4,7 +4,7 @@ RSpec.describe "API client connections", type: :request do
     {
       integration_support_api_client_connection: {
         response_type: "token",
-        appropriate_body_period_uuid: "be50646e-6eb6-40f3-93c9-cbb84d955835",
+        appropriate_body_id: "be50646e-6eb6-40f3-93c9-cbb84d955835",
         redirect_uri:,
         client_id: "test-client-id",
         client_secret: "test-client-secret",
@@ -36,7 +36,7 @@ RSpec.describe "API client connections", type: :request do
 
       page = Capybara.string(response.body)
       expect(response).to have_http_status(:ok)
-      expect(page).to have_select("Appropriate body period UUID", with_options: [appropriate_body_period.name])
+      expect(page).to have_select("Appropriate body ID", with_options: [appropriate_body_period.name])
       expect(page).to have_select("Client ID", selected: client.name, with_options: [client.name, "Unknown client", "Blank client"])
       expect(page).to have_link("Create a test client", href: new_integration_support_api_client_path)
       expect(page).to have_field("Redirect URI", with: "https://vendor.com/oauth/callback")
@@ -90,7 +90,7 @@ RSpec.describe "API client connections", type: :request do
         oauth_authorization_path(
           response_type: "token",
           client_id: "test-client-id",
-          appropriate_body_period_uuid: "be50646e-6eb6-40f3-93c9-cbb84d955835",
+          appropriate_body_id: "be50646e-6eb6-40f3-93c9-cbb84d955835",
           redirect_uri:,
           code_challenge: "a-code-challenge",
           code_challenge_method: "S256",

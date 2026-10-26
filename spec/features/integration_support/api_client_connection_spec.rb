@@ -55,7 +55,7 @@ private
     sign_in_as_appropriate_body_user(appropriate_body: appropriate_body_period)
 
     page.goto("/integration-support/api-client-connection/new")
-    page.get_by_label("Appropriate body period UUID").select_option(label: appropriate_body.name)
+    page.get_by_label("Appropriate body ID").select_option(label: appropriate_body.name)
   end
 
   def then_my_client_is_preselected

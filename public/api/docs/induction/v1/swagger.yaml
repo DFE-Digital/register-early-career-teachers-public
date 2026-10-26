@@ -40,10 +40,10 @@ components:
       description: An appropriate body.
       type: object
       required:
-      - uuid
+      - id
       - name
       properties:
-        uuid:
+        id:
           type: string
           description: The appropriate body UUID.
           example: 123e4567-e89b-12d3-a456-426614174000
