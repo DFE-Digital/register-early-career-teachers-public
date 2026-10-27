@@ -55,21 +55,41 @@ class AppropriateBodyPeriod < ApplicationRecord
     validate :finished_on_or_before_provisioning_school_closed
   end
 
-  # Teaching School Hub only
+  # National Body
+  with_options if: :national? do
+    validates :national_body, presence: true
+    validates :provisioning_school, absence: true
+    validates :teaching_school_hub, absence: true
+    validates :local_authority, absence: true
+  end
+
+  # Teaching School Hub
   with_options if: :teaching_school_hub? do
+    validates :teaching_school_hub, presence: true
+    validates :provisioning_school, presence: true
+    validates :national_body, absence: true
+    validates :local_authority, absence: true
     validate :started_on_or_after_teaching_school_hub_body_introduced
   end
 
-  # Teaching School only
+  # Teaching School
   with_options if: :teaching_school? do
+    validates :provisioning_school, presence: true
+    validates :national_body, absence: true
+    validates :teaching_school_hub, absence: true
+    validates :local_authority, absence: true
     validates :finished_on, presence: true
     validate :started_on_or_after_teaching_school_body_introduced
     validate :started_on_or_before_teaching_school_body_retired
     validate :finished_on_or_before_teaching_school_body_retired
   end
 
-  # Local Authority only
+  # Local Authority
   with_options if: :local_authority? do
+    validates :local_authority, presence: true
+    validates :national_body, absence: true
+    validates :teaching_school_hub, absence: true
+    validates :provisioning_school, absence: true
     validates :finished_on, presence: true
     validate :started_on_or_after_local_authority_body_introduced
     validate :started_on_or_before_local_authority_body_retired
