@@ -115,6 +115,18 @@
 | teacher_type | The entered '#/teacher_type' is not recognised for the given teacher. Check details and try again. | When a matching training period does not exist (different teacher type). |
 | teacher_type | The entered '#/teacher_type' is not recognised for the given teacher. Check details and try again. | When a non-existent teacher type is provided. |
 
+## Teachers → ResumeUnknownMentor
+
+| Attribute | Message | Cause |
+| --- | --- | --- |
+| lead_provider_id | The '#/lead_provider_id' you have entered is invalid. | When the `lead_provider` does not exist. |
+| teacher_api_id | The '#/teacher_api_id' has already trained with the lead provider | When teacher has already trained with the lead provider. |
+| teacher_api_id | The '#/teacher_api_id' has not been selected as a mentor for a teacher you are training | When at school period is finished. |
+| teacher_api_id | The '#/teacher_api_id' has not been selected as a mentor for a teacher you are training | When teacher has not been selected for a mentorship with an ECT training with the lead provider. |
+| teacher_api_id | The '#/teacher_api_id' is already active. | When teacher training period is active/ongoing. |
+| teacher_api_id | You cannot resume a teacher on the same day they were withdrawn or deferred. Resume them tomorrow or later. | When training period has finished today. |
+| teacher_api_id | Your update cannot be made as the '#/teacher_api_id' is not recognised. Check teacher details and try again. | When the teacher does not exist. |
+
 ## Teachers → Withdraw
 
 | Attribute | Message | Cause |
