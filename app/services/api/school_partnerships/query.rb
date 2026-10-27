@@ -3,18 +3,17 @@ module API::SchoolPartnerships
     include Queries::FilterIgnorable
 
     def initialize(
+      lead_provider_id:,
       school_id: :ignore,
       contract_period_years: :ignore,
-      lead_provider_id: :ignore,
       delivery_partner_api_ids: :ignore,
       updated_since: :ignore,
       sort: { created_at: :asc },
       included_associations: []
     )
-      @scope = SchoolPartnership
       @included_associations = included_associations
+      @scope = scope_by_lead_provider(lead_provider_id)
 
-      where_lead_provider_is(lead_provider_id)
       where_contract_period_year_in(contract_period_years)
       where_school_is(school_id)
       where_delivery_partner_is(delivery_partner_api_ids)
@@ -50,10 +49,8 @@ module API::SchoolPartnerships
         .tap { it.includes!(*included_associations) if included_associations.present? }
     end
 
-    def where_lead_provider_is(lead_provider_id)
-      return if ignore?(filter: lead_provider_id)
-
-      @scope = scope
+    def scope_by_lead_provider(lead_provider_id)
+      SchoolPartnership
         .joins(:framework_agreement)
         .where(
           lead_provider_delivery_partnership: { framework_agreements: { lead_provider_id: } }
