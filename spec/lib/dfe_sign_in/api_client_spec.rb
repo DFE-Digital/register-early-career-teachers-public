@@ -203,7 +203,7 @@ describe DfESignIn::APIClient do
           {
             "id" => "cccccccc-dddd-eeee-9999-888888888888",
             "name" => "Register ECTs",
-            "code" => "registerECTsAccess",
+            "code" => "AppropriateBodyUser",
             "numericId" => "22222",
             "status" => {
               "id" => 1,

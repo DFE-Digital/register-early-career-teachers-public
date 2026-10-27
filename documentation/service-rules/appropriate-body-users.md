@@ -41,7 +41,7 @@ The users, accounts, credentials and links to organisations are managed by DfE S
 4. we check our list of appropriate bodies for an `dfe_sign_in_organisation_id` that matches the `organisation->id`
 5. we then call the [DfE Sign-in API](https://github.com/DFE-Digital/login.dfe.public-api?tab=readme-ov-file#get-roles-for-service) to ensure that the person has the role:
     * name: `Register ECTs`
-    * code: `registerECTsAccess`
+    * code: `AppropriateBodyUser`
 6. if they do, we've confirmed they are belong to the appropriate body and have the right access level, create a user session and redirect them to the appropriate body home page
 
 Example user info returned by DfE Sign-in:
