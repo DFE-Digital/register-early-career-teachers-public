@@ -1,3 +1,35 @@
+RSpec.shared_examples "it records an eligibility event" do |teacher_type|
+  it "records a #{teacher_type} funding eligibility event" do
+    teacher_name = Teachers::Name.new(teacher).full_name
+    heading = "#{teacher_name}'s #{teacher_type} funding eligibility was set"
+
+    run_task
+
+    event = Event.where(
+      event_type: "teacher_funding_eligibility_set",
+      heading:
+    ).sole
+
+    expect(event.teacher_id).to eq(teacher.id)
+  end
+end
+
+RSpec.shared_examples "does not change eligibility" do |teacher_type|
+  it "does not change the #{teacher_type} eligibility" do
+    expect { run_task }.not_to(change { teacher.reload.send("#{teacher_type.downcase}_first_became_eligible_for_training_at") })
+  end
+
+  it "does not record a #{teacher_type} funding eligibility event" do
+    teacher_name = Teachers::Name.new(teacher).full_name
+    heading = "#{teacher_name}'s #{teacher_type} funding eligibility was set"
+
+    expect(Event).not_to exist(
+      event_type: "teacher_funding_eligibility_set",
+      heading:
+    )
+  end
+end
+
 describe "Data Corrections tasks" do
   describe "data_corrections:set_funding_eligibility_after_trn_merge" do
     subject :run_task do
@@ -24,9 +56,8 @@ describe "Data Corrections tasks" do
     end
 
     context "when the teacher has not had their TRN merged" do
-      it "does nothing to teachers which have not been merged" do
-        expect { run_task }.not_to(change { teacher.reload.attributes })
-      end
+      it_behaves_like "does not change eligibility", "ECT"
+      it_behaves_like "does not change eligibility", "Mentor"
     end
 
     context "when there is a teacher with ect_at_school_periods whose TRNs have been merged" do
@@ -48,31 +79,14 @@ describe "Data Corrections tasks" do
         FactoryBot.create(:event, event_type: :teacher_merged, teacher:)
       end
 
-      it "does not update mentor eligibility" do
-        expect { run_task }.not_to(change do
-          teacher.reload
-          [
-            teacher.mentor_first_became_eligible_for_training_at,
-            teacher.mentor_became_ineligible_for_funding_on,
-            teacher.mentor_became_ineligible_for_funding_reason
-          ]
-        end)
-      end
+      it_behaves_like "does not change eligibility", "Mentor"
 
       context "when the teacher has not started induction" do
         let(:induction_start_date) { nil }
         let(:ect_first_became_eligible_for_training_at) { nil }
         let(:trs_induction_status) { "RequiredToComplete" }
 
-        it "does not change the ECT eligibility" do
-          expect { run_task }.not_to(change { teacher.reload.ect_first_became_eligible_for_training_at })
-        end
-
-        it "does not mark any declarations as eligible" do
-          expect(Declarations::Actions::MarkDeclarationsEligible).not_to receive(:new)
-
-          run_task
-        end
+        it_behaves_like "does not change eligibility", "ECT"
       end
 
       context "when the teacher has started induction" do
@@ -89,9 +103,7 @@ describe "Data Corrections tasks" do
         context "and their eligibility is set" do
           let(:ect_first_became_eligible_for_training_at) { induction_start_date }
 
-          it "does not change the ECT eligibility" do
-            expect { run_task }.not_to(change { teacher.reload.ect_first_became_eligible_for_training_at })
-          end
+          it_behaves_like "does not change eligibility", "ECT"
         end
 
         context "and their eligibility is not set" do
@@ -102,6 +114,8 @@ describe "Data Corrections tasks" do
               teacher.reload.ect_first_became_eligible_for_training_at
             }.from(nil).to(induction_start_date.in_time_zone)
           end
+
+          it_behaves_like "it records an eligibility event", "ECT"
         end
       end
 
@@ -119,9 +133,7 @@ describe "Data Corrections tasks" do
         context "and their eligibility is set" do
           let(:ect_first_became_eligible_for_training_at) { Date.new(2026, 9, 1) }
 
-          it "does not change the ECT eligibility" do
-            expect { run_task }.not_to(change { teacher.reload.ect_first_became_eligible_for_training_at })
-          end
+          it_behaves_like "does not change eligibility", "ECT"
         end
 
         context "and their eligibility is not set" do
@@ -132,6 +144,8 @@ describe "Data Corrections tasks" do
               teacher.reload.ect_first_became_eligible_for_training_at
             }.from(nil).to(ect_at_school_period.started_on.in_time_zone)
           end
+
+          it_behaves_like "it records an eligibility event", "ECT"
         end
       end
 
@@ -154,12 +168,6 @@ describe "Data Corrections tasks" do
           it "does not change the ECT's ineligible date" do
             expect { run_task }.not_to(change { teacher.reload.ect_became_ineligible_for_funding_on })
           end
-        end
-
-        it "does not mark any declarations as eligible" do
-          expect(Declarations::Actions::MarkDeclarationsEligible).not_to receive(:new)
-
-          run_task
         end
       end
 
@@ -238,9 +246,8 @@ describe "Data Corrections tasks" do
         FactoryBot.create(:event, event_type: :teacher_merged, teacher:)
       end
 
-      it "does not update ect eligibility" do
-        expect { run_task }.not_to(change { teacher.reload.ect_first_became_eligible_for_training_at })
-      end
+      it_behaves_like "does not change eligibility", "ECT"
+      it_behaves_like "does not change eligibility", "Mentor"
 
       context "when the mentor did their own induction in the past" do
         before do
@@ -250,17 +257,14 @@ describe "Data Corrections tasks" do
           )
         end
 
-        it "does not change the mentor's eligibility" do
-          expect { run_task }.not_to(change { teacher.reload.ect_first_became_eligible_for_training_at })
-        end
+        it_behaves_like "does not change eligibility", "ECT"
+        it_behaves_like "does not change eligibility", "Mentor"
       end
 
       context "when the mentor does not have training_periods" do
         let(:mentor_first_became_eligible_for_training_at) { nil }
 
-        it "does not change the mentor eligibility" do
-          expect { run_task }.not_to(change { teacher.reload.mentor_first_became_eligible_for_training_at })
-        end
+        it_behaves_like "does not change eligibility", "Mentor"
       end
 
       context "when the mentor has training_periods" do
@@ -276,9 +280,7 @@ describe "Data Corrections tasks" do
         context "and their eligibility is set" do
           let(:mentor_first_became_eligible_for_training_at) { started_on }
 
-          it "does not change the mentor's eligibility" do
-            expect { run_task }.not_to(change { teacher.reload.mentor_first_became_eligible_for_training_at })
-          end
+          it_behaves_like "does not change eligibility", "Mentor"
         end
 
         context "and their eligibility is not set" do
@@ -289,6 +291,8 @@ describe "Data Corrections tasks" do
               teacher.reload.mentor_first_became_eligible_for_training_at
             }.from(nil).to(started_on.in_time_zone)
           end
+
+          it_behaves_like "it records an eligibility event", "Mentor"
         end
 
         context "when the mentor is ineligible for funding" do
@@ -296,9 +300,7 @@ describe "Data Corrections tasks" do
           let(:mentor_became_ineligible_for_funding_reason) { "completed_declaration_received" }
           let(:mentor_first_became_eligible_for_training_at) { nil }
 
-          it "does not change the mentor eligibility" do
-            expect { run_task }.not_to(change { teacher.reload.mentor_first_became_eligible_for_training_at })
-          end
+          it_behaves_like "does not change eligibility", "Mentor"
         end
       end
 
@@ -347,10 +349,8 @@ describe "Data Corrections tasks" do
           end
 
           let(:mentor_first_became_eligible_for_training_at) { nil }
-         
-          it "does not change the mentor eligibility" do
-            expect { run_task }.not_to(change { teacher.reload.mentor_first_became_eligible_for_training_at })
-          end
+
+          it_behaves_like "does not change eligibility", "Mentor"
 
           context "when mentor_became_ineligible_for_funding_on is not set" do
             it "marks the mentor as ineligible for funding" do
@@ -388,7 +388,7 @@ describe "Data Corrections tasks" do
               )
             end
 
-            it "does not change the mentor eligibility" do
+            it "does not change the mentor ineligibility" do
               expect { run_task }.not_to(change { teacher.reload.mentor_became_ineligible_for_funding_on })
             end
           end
@@ -427,17 +427,19 @@ describe "Data Corrections tasks" do
       let!(:declaration) { FactoryBot.create(:declaration, :with_ect, payment_statement:, school_partnership:) }
       let!(:other_declaration) { FactoryBot.create(:declaration, :with_ect, payment_statement:, school_partnership:) }
 
+      before do
+        teachers.each do |teacher|
+          teacher.update!(
+            ect_first_became_eligible_for_training_at: nil,
+            trs_induction_start_date:,
+            trs_induction_status: "InProgress"
+          )
+          FactoryBot.create(:event, event_type: :teacher_merged, teacher:)
+        end
+      end
+
       context "when several errors are raised during processing" do
         before do
-          teachers.each do |teacher|
-            teacher.update!(
-              ect_first_became_eligible_for_training_at: nil,
-              trs_induction_start_date:,
-              trs_induction_status: "InProgress"
-            )
-            FactoryBot.create(:event, event_type: :teacher_merged, teacher:)
-          end
-
           allow(Declarations::Actions::MarkDeclarationsEligible).to receive(:new)
           .with(declarations: [declaration], author: anything)
           .and_call_original
