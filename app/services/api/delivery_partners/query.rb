@@ -2,12 +2,11 @@ module API::DeliveryPartners
   class Query
     include Queries::FilterIgnorable
 
-    def initialize(lead_provider_id: :ignore, contract_period_years: :ignore, sort: { created_at: :asc }, included_associations: [])
+    def initialize(lead_provider_id:, contract_period_years: :ignore, sort: { created_at: :asc }, included_associations: [])
       @lead_provider_id = lead_provider_id
-      @scope = DeliveryPartner.distinct
+      @scope = delivery_partners_scoped_by_lead_provider
       @included_associations = included_associations
 
-      where_lead_provider_is(lead_provider_id)
       where_contract_period_year_in(contract_period_years)
       set_sort_by(sort)
     end
@@ -38,14 +37,11 @@ module API::DeliveryPartners
         .tap { it.includes!(included_associations) if included_associations.present? }
     end
 
-    def where_lead_provider_is(lead_provider_id)
-      return if ignore?(filter: lead_provider_id)
-
-      delivery_partners_with_lead_provider = DeliveryPartner
+    def delivery_partners_scoped_by_lead_provider
+      DeliveryPartner
         .joins(:framework_agreements)
         .where(framework_agreements: { lead_provider_id: })
-
-      scope.merge!(delivery_partners_with_lead_provider)
+        .distinct
     end
 
     def where_contract_period_year_in(contract_period_years)
