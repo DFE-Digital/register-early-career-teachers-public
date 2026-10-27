@@ -10,6 +10,10 @@ module Schools
       missing_school_record? || closed_school? || no_funding?
     end
 
+    def independent_school_without_funding?
+      !closed_school? && no_funding?
+    end
+
     def school_name
       school&.name || gias_school&.name
     end
