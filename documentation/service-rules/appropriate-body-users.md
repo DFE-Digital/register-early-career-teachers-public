@@ -18,21 +18,14 @@ Appropriate bodies are responsible for informing DfE when:
 
 ## How the service works for appropriate bodies
 
-[Signing in](#signing-in)
-
-[Viewing early career teachers](#viewing-early-career-teachers)
-
-[Finding and claiming new early career teachers](#finding-and-claiming-new-early-career-teachers)
-
-[Releasing an early career teacher](#releasing-an-early-career-teacher)
-
-[Passing an early career teacher’s induction](#passing-an-early-career-teacher-39-s-induction)
-
-[Failing an early career teacher's induction](#failing-an-early-career-teacher-39-s-induction)
-
-[Extensions](#extensions)
-
-[Processing multiple ECTs](#processing-multiple-ects)
+1. [Signing in](#signing-in)
+2. [Viewing early career teachers](#viewing-early-career-teachers)
+3. [Finding and claiming new early career teachers](#finding-and-claiming-new-early-career-teachers)
+4. [Releasing an early career teacher](#releasing-an-early-career-teacher)
+5. [Passing an early career teacher’s induction](#passing-an-early-career-teacher-39-s-induction)
+6. [Failing an early career teacher's induction](#failing-an-early-career-teacher-39-s-induction)
+7. [Extensions](#extensions)
+8. [Processing multiple ECTs](#processing-multiple-ects)
 
 ## Signing in
 
