@@ -7,6 +7,7 @@ namespace :product_review do
     existing_eligible_at = started_on - 1.month
     finished_on = started_on + 1.day
     existing_ineligible_on = finished_on - 1.day
+    completed_evidenced_at = (finished_on + 7.days).in_time_zone
 
     scenarios = [
       {
@@ -95,7 +96,7 @@ namespace :product_review do
         role: :mentor,
         declarations: true,
         completed: true,
-        expected: "Mentor ineligibility becomes #{finished_on}, reason completed_declaration_received"
+        expected: "Mentor ineligibility becomes #{completed_evidenced_at.to_date}, reason completed_declaration_received; eligibility remains unset; declarations stay no_payment and voided"
       },
       {
         name: "Mentor already ineligible",
@@ -106,7 +107,32 @@ namespace :product_review do
           mentor_became_ineligible_for_funding_on: existing_ineligible_on,
           mentor_became_ineligible_for_funding_reason: "completed_during_early_roll_out"
         },
-        expected: "Mentor ineligibility stays #{existing_ineligible_on}, reason completed_during_early_roll_out"
+        expected: "Mentor ineligibility stays #{existing_ineligible_on}, reason completed_during_early_roll_out; eligibility remains unset; declarations stay no_payment and voided"
+      },
+      {
+        name: "Mentor with past induction",
+        role: :mentor,
+        training: true,
+        attributes: { trs_induction_start_date: started_on - 2.years },
+        expected: "Mentor eligibility becomes #{started_on}; ECT eligibility remains unset"
+      },
+      {
+        name: "Mentor ineligible with training",
+        role: :mentor,
+        training: true,
+        attributes: {
+          mentor_became_ineligible_for_funding_on: existing_ineligible_on,
+          mentor_became_ineligible_for_funding_reason: "started_not_completed"
+        },
+        expected: "Mentor eligibility remains unset; ineligibility stays #{existing_ineligible_on}, reason started_not_completed"
+      },
+      {
+        name: "Mentor voided completion",
+        role: :mentor,
+        declarations: true,
+        completed: true,
+        completion_voided: true,
+        expected: "Mentor eligibility becomes #{started_on}; ineligibility remains unset; no_payment becomes eligible; voided declarations stay voided"
       }
     ]
 
@@ -162,6 +188,8 @@ namespace :product_review do
             FactoryBot.create(
               :declaration,
               declaration_type: :completed,
+              evidenced_at: completed_evidenced_at,
+              payment_status: scenario[:completion_voided] ? :voided : :no_payment,
               payment_statement: other_statement,
               training_period:
             )
@@ -193,8 +221,7 @@ namespace :product_review do
           FactoryBot.create(:event, event_type: :teacher_merged, teacher:)
         end
 
-        # Set the review state after factories and their callbacks have run.
-        teacher.update!(
+        teacher.update_columns(
           {
             trn: scenario.fetch(:trn),
             trs_first_name: "Review",
@@ -215,6 +242,7 @@ namespace :product_review do
     puts
 
     scenarios.each do |scenario|
+      puts "----------------------------------------"
       puts "#{scenario.fetch(:trn)} — Review #{scenario.fetch(:name)}"
       puts "  Expected: #{scenario.fetch(:expected)}"
     end
