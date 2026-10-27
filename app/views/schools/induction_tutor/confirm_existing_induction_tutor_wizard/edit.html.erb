@@ -21,7 +21,7 @@ training and induction. We share these details with your appropriate body and le
   end
 end %>  
 
-<%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
+<%= form_with(model: @wizard.current_step, url: @wizard.current_step_path, scope: @wizard.current_step_name) do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
 
   <%= f.govuk_radio_buttons_fieldset :are_these_details_correct, legend: { text: "Are these details correct?" } do %>
