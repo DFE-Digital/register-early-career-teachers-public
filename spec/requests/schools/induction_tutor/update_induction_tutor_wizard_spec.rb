@@ -58,6 +58,23 @@ describe "Schools::InductionTutor::UpdateInductionTutorWizardController" do
         expect(response.body).to include("Second School Tutor")
         expect(response.body).to include("second.school.tutor@example.com")
       end
+
+      it "starts again when returning to the wizard from elsewhere" do
+        post path_for_step("edit"), params: { edit: { induction_tutor_name: "New Name", induction_tutor_email: } }
+
+        get path_for_step("edit"), headers: { "Referer" => schools_induction_tutor_url }
+
+        expect(response.body).not_to include("New Name")
+        expect(response.body).to include(school.induction_tutor_name)
+      end
+
+      it "keeps the entered details when going back from check answers" do
+        post path_for_step("edit"), params: { edit: { induction_tutor_name: "New Name", induction_tutor_email: } }
+
+        get path_for_step("edit"), headers: { "Referer" => "http://www.example.com#{path_for_step('check-answers')}" }
+
+        expect(response.body).to include("New Name")
+      end
     end
   end
 
@@ -88,6 +105,16 @@ describe "Schools::InductionTutor::UpdateInductionTutorWizardController" do
           post(path_for_step("nope"), params:)
 
           expect(response).to have_http_status(:not_found)
+        end
+      end
+
+      context "when the details have not been entered" do
+        it "does not update the school" do
+          expect { post path_for_step("check-answers") }
+            .not_to(change { school.reload.attributes })
+
+          expect(response).to redirect_to(path_for_step("edit"))
+          expect(flash[:error]).to eq(WizardStoreRescuable::EMPTY_STORE_FLASH_MESSAGE)
         end
       end
 
