@@ -10,7 +10,7 @@ module IntegrationSupport
     AUTHORIZE_PARAMS = %i[
       response_type
       client_id
-      appropriate_body_period_id
+      appropriate_body_id
       redirect_uri
       code_challenge
       code_challenge_method
@@ -18,7 +18,7 @@ module IntegrationSupport
     ].freeze
 
     attribute :response_type, :string, default: -> { API::OAuth::AuthorizationRequest::RESPONSE_TYPE }
-    attribute :appropriate_body_period_id, :integer
+    attribute :appropriate_body_id, :string
     attribute :redirect_uri, :string
     attribute :client_id, :string
     attribute :client_secret, :string, default: DEFAULT_CLIENT_SECRET

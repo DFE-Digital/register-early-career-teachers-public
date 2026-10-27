@@ -60,7 +60,7 @@ module IntegrationSupport
       params.expect(
         integration_support_api_client_connection: %i[
           response_type
-          appropriate_body_period_id
+          appropriate_body_id
           redirect_uri
           client_id
           client_secret

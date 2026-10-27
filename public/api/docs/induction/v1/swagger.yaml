@@ -44,9 +44,9 @@ components:
       - name
       properties:
         id:
-          type: integer
-          description: The appropriate body identifier.
-          example: 123
+          type: string
+          description: The appropriate body UUID.
+          example: 123e4567-e89b-12d3-a456-426614174000
         name:
           type: string
           description: The appropriate body name.
