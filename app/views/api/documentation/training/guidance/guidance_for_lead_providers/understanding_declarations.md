@@ -89,6 +89,7 @@ Each declaration includes:
 - declaration date (aligned with what's outlined in the payment guidance, this refers to the date the engagement has taken place during an engagement window.)
 - course identifier (indicates whether the declaration is for ECT or mentor training)
 - evidence held (the type of evidence a lead provider holds to verify that a participant has engaged in training)
+- cohort (optional) – the year the participant started their training, for example `2025`
 
 The evidence type that can be used may differ by cohort and declaration type. Check the schema in the [Swagger documentation](/api/docs/v3#/Declarations) to see which evidence types will be valid.
 Declarations cannot be submitted or voided after a cohort has closed. 
@@ -98,6 +99,16 @@ Duplicate declarations cannot be submitted. If a duplicate is attempted, the API
 Providers can test they're able to submit declarations using [X-With-Server-Date](/api/docs/training/guidance-for-lead-providers/how-to-test-the-api-effectively#test-declaration-submissions-using-x-with-server-date).
 
 See the [Swagger documentation](/api/docs/v3#/Declarations) for full details of the declaration endpoints.
+
+### Choosing the cohort for a declaration
+
+You can include a `cohort` field when you submit a declaration. This is the year the participant started their training, for example `2025`.
+
+If you include it, we’ll record the declaration against the participant’s latest training for that cohort. If you leave it out, we’ll record it against their latest training with you.
+
+If the cohort you include is not recognised for the participant, you’ll get this error: “The ‘#/cohort’ you have entered is not recognised for this participant. Check details and try again.”
+
+The cohort field is optional in version 3 of the API. It will be mandatory in version 4.
 
 ### How lead providers get paid for training participants
 
