@@ -29,8 +29,8 @@ appropriate_body_periods = [
   {
     name: NationalBody::ISTIP,
     body_type: "national",
-    # started_on: Date.new(2011, 8, 31),
-    # finished_on: nil,
+    started_on: Date.new(2011, 8, 31),
+    finished_on: nil,
     dfe_sign_in: {
       test: "e38652da-b01f-4d14-af2a-d2f55e4fcf7b",
       pp: "99424c22-b0c0-4307-bdf7-fabfe7cac252",
@@ -40,8 +40,8 @@ appropriate_body_periods = [
   {
     name: NationalBody::ESP,
     body_type: "national",
-    # started_on: Date.new(2024, 4, 1),
-    # finished_on: nil,
+    started_on: Date.new(2024, 4, 1),
+    finished_on: nil,
     dfe_sign_in: {
       test: "722ebb41-42f6-4ba3-81b6-61af055246a5",
       pp: "b98cb613-192f-400e-9b50-fd7eea9882a1",
@@ -49,10 +49,10 @@ appropriate_body_periods = [
     }
   },
   {
-    name: "National Teacher Accreditation", # formerly NIPT
+    name: NationalBody::NTA,
     body_type: "national",
-    # started_on: Date.new(2013, 8, 31),
-    # finished_on: Date.new(2024, 9, 1),
+    started_on: Date.new(2013, 8, 31),
+    finished_on: Date.new(2024, 9, 1),
     dfe_sign_in: nil
   },
 
@@ -442,9 +442,9 @@ appropriate_body_periods.each do |data|
                                         name: ab_name)
 
     appropriate_body_period.update!(
-      local_authority:
-      # started_on: Date.new(2012, 8, 31),
-      # finished_on: Date.new(2023, 9, 1)
+      local_authority:,
+      started_on: LocalAuthority::APPROPRIATE_BODY[:introduced_on],
+      finished_on: LocalAuthority::APPROPRIATE_BODY[:retired_on]
     )
 
   end
@@ -460,9 +460,9 @@ appropriate_body_periods.each do |data|
                                             name: tsh_name)
 
     appropriate_body_period.update!(
-      teaching_school_hub:
-      # started_on: Date.new(2021, 9, 1),
-      # finished_on: nil
+      teaching_school_hub:,
+      started_on: TeachingSchoolHub::APPROPRIATE_BODY[:introduced_on],
+      finished_on: nil
     )
 
     if urn.present?
@@ -484,11 +484,14 @@ appropriate_body_periods.each do |data|
       end
 
       # 4. Teaching School pre-2021.
+      baseline_started_on = [provisioning_school.opened_on, School::APPROPRIATE_BODY[:introduced_on]].compact.max
+      baseline_finished_on = [provisioning_school.closed_on, School::APPROPRIATE_BODY[:retired_on]].compact.min
+
       FactoryBot.create(:appropriate_body_period, :inactive,
                         name: school_name + " (closed)",
                         body_type: "teaching_school",
-                        # started_on: Date.new(1999, 9, 1),
-                        # finished_on: Date.new(2021, 8, 31)
+                        started_on: data[:teaching_school_started_on] || baseline_started_on,
+                        finished_on: baseline_finished_on,
                         provisioning_school:,
                         teaching_school_hub: nil)
 
@@ -517,7 +520,11 @@ appropriate_body_periods.each do |data|
 
   # 4. Teaching School
   if body_type == "teaching_school"
-    appropriate_body_period.update!(body_type: "teaching_school")
+    appropriate_body_period.update!(
+      body_type: "teaching_school",
+      started_on: School::APPROPRIATE_BODY[:introduced_on],
+      finished_on: School::APPROPRIATE_BODY[:retired_on]
+    )
   end
 
   # 3. National Bodies
@@ -526,9 +533,9 @@ appropriate_body_periods.each do |data|
                                       name: ab_name)
 
     appropriate_body_period.update!(
-      national_body:
-      # started_on: data[:started_on],
-      # finished_on: data[:finished_on]
+      national_body:,
+      started_on: data[:started_on],
+      finished_on: data[:finished_on]
     )
 
     if dfe_sign_in_organisation_id.present?
