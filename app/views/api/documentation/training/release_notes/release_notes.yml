@@ -21,6 +21,42 @@
 #
 #     **bold** and _italic_ text
 
+- title: New optional cohort field for declarations
+  date: 2026-10-28
+  tags:
+    - new-feature
+    - production-release
+    - sandbox-release
+    
+  body: |
+    We’ve added an optional `cohort` field to the POST and GET declarations endpoints.
+
+    ## What’s changed
+
+    When you submit a declaration using POST declarations, you can now include a `cohort` field. This is the year the participant started their training, for example `2025`.
+
+    If you include it, we’ll record the declaration against the participant’s latest training for that cohort. If you leave it out, we’ll record it against their latest training with you, as we do now.
+
+    If the cohort you include is not associated with the participant, you’ll get this error: "The '#/cohort' you have entered is not associated with this participant. Change the participant’s schedule to the correct cohort, or try again with a different cohort."
+
+    GET declarations responses now include the `cohort` for each declaration, including declarations submitted before this change.
+
+    ## Why we’ve made this change
+
+    There have been cases where declarations have been recorded against the wrong statement. Including the cohort makes sure a declaration is paid against the correct statement.
+
+    This will help most over the summer, when participants may be added early or late.
+
+    Showing the cohort in GET responses gives you clearer confirmation that a declaration has been submitted correctly.
+
+    ## Who this applies to
+
+    This applies to all declarations submitted for Early career framework (ECF) or Early career training programme (ECTP) participants. The field is optional.
+
+    ## What you need to do
+
+    If you want to make sure a declaration is recorded against a specific cohort, include the `cohort` field when you submit it.
+
 - title: Improved handling of teacher reference number (TRN) corrections  
   date: 2026-09-16
   tags:
