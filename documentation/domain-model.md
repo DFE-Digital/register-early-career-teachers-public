@@ -337,6 +337,7 @@ erDiagram
     string name
     datetime updated_at
     boolean vat_registered
+    string short_name
   }
   InductionPeriod {
     integer id

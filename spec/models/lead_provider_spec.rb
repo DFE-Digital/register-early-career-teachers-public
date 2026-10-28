@@ -28,7 +28,9 @@ describe LeadProvider do
     subject { FactoryBot.build(:lead_provider) }
 
     it { is_expected.to validate_presence_of(:name) }
+    it { is_expected.to validate_presence_of(:short_name) }
     it { is_expected.to validate_uniqueness_of(:name) }
+    it { is_expected.to validate_uniqueness_of(:short_name) }
     it { is_expected.to validate_uniqueness_of(:ecf_id).case_insensitive.allow_nil }
     it { is_expected.to allow_values(true, false).for(:vat_registered) }
     it { is_expected.not_to allow_values(nil, "").for(:vat_registered) }
@@ -49,6 +51,42 @@ describe LeadProvider do
 
     it "removes leading and trailing spaces from the name" do
       expect(subject.name).to eql("Some lead provider")
+    end
+  end
+
+  context "when setting the name" do
+    subject { lead_provider.short_name }
+
+    context "when the name is several words" do
+      let(:lead_provider) { LeadProvider.new(name: "Some lead provider") }
+
+      it { is_expected.to eq("slp") }
+    end
+
+    context "when the name is only one word" do
+      let(:lead_provider) { LeadProvider.new(name: "Provider") }
+
+      it { is_expected.to eq("provider") }
+    end
+
+    context "when the name is nil" do
+      let(:lead_provider) { LeadProvider.new(name: nil) }
+
+      it { is_expected.to be_nil }
+    end
+
+    context "when the name is an empty string" do
+      let(:lead_provider) { LeadProvider.new(name: "") }
+
+      it { is_expected.to be_nil }
+    end
+
+    context "when the short name is already set" do
+      let(:lead_provider) { LeadProvider.new(name: "Some lead provider", short_name: "Custom") }
+
+      before { lead_provider.name = "Another name" }
+
+      it { is_expected.to eq("Custom") }
     end
   end
 end
