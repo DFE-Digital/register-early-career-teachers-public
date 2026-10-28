@@ -3,12 +3,14 @@ module Schools
     class UpdateInductionTutorWizardController < SchoolsController
       include InductionTutorable
 
+      before_action :reset_wizard
+
     private
 
-      def start_journey
-        state_store.clear unless request.referer.to_s.include?("/school/induction-tutor/update-induction-tutor/")
+      def reset_wizard
+        return if request.referer.to_s.include?("/school/induction-tutor/update-induction-tutor/")
 
-        super
+        state_store.clear if current_step == :edit
       end
     end
   end
