@@ -478,6 +478,7 @@ erDiagram
     date started_on
     date finished_on
     daterange range
+    uuid external_id
   }
   AppropriateBodyPeriod }o--|| DfESignInOrganisation : belongs_to
   AppropriateBodyPeriod }o--|| School : belongs_to

@@ -443,6 +443,8 @@ appropriate_body_periods.each do |data|
 
     appropriate_body_period.update!(
       local_authority:,
+      teaching_school_hub: nil,
+      provisioning_school: nil,
       started_on: LocalAuthority::APPROPRIATE_BODY[:introduced_on],
       finished_on: LocalAuthority::APPROPRIATE_BODY[:retired_on]
     )
@@ -522,6 +524,7 @@ appropriate_body_periods.each do |data|
   if body_type == "teaching_school"
     appropriate_body_period.update!(
       body_type: "teaching_school",
+      teaching_school_hub: nil,
       started_on: School::APPROPRIATE_BODY[:introduced_on],
       finished_on: School::APPROPRIATE_BODY[:retired_on]
     )
@@ -534,6 +537,8 @@ appropriate_body_periods.each do |data|
 
     appropriate_body_period.update!(
       national_body:,
+      teaching_school_hub: nil,
+      provisioning_school: nil,
       started_on: data[:started_on],
       finished_on: data[:finished_on]
     )
