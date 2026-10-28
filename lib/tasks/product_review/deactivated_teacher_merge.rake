@@ -86,8 +86,8 @@ namespace :product_review do
 
       histories = [
         [source, Date.new(2025, 9, 1), Date.new(2025, 10, 31), "started"],
-        [source, Date.new(2025, 11, 1), Date.new(2025, 12, 31), "retained-1"],
-        [destination, Date.new(2026, 1, 1), nil, "retained-2"]
+        [source, Date.new(2025, 11, 1), Date.new(2025, 12, 31), "retained-2"],
+        [destination, Date.new(2025, 10, 1), nil, "retained-1"]
       ]
 
       histories.each do |teacher, started_on, finished_on, declaration_type|
