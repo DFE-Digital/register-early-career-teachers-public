@@ -194,6 +194,7 @@ shared:
     - id
     - ecf_cpd_lead_provider_id
     - name
+    - short_name
     - vat_registered
     - created_at
     - updated_at
