@@ -28,6 +28,7 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::EnterTRNStep do
   end
 
   before do
+    allow(wizard).to receive(:merge_proposed?) { store.destination_teacher_id.present? }
     allow(TRS::APIClient).to receive(:build).and_return(api_client)
     allow(api_client).to receive(:find_teacher)
       .with(trn: "0012345")

@@ -4,7 +4,7 @@ module Admin
       class MergePreviewStep < Step
         def previous_step = :enter_trn
 
-        def next_step = :confirm_merge
+        def next_step = :confirm
 
         def save!
           store.merge_previewed = true

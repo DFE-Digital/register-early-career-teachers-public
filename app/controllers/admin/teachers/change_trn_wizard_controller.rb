@@ -9,15 +9,13 @@ module Admin
                   with: :redirect_teacher_not_deactivated
       rescue_from Admin::Teachers::ChangeTRNWizard::ConfirmStep::ProposedTRNChangedError,
                   with: :redirect_proposed_trn_changed
-      rescue_from Admin::Teachers::ChangeTRNWizard::ConfirmMergeStep::ProposedTRNChangedError,
-                  with: :redirect_merge_proposal_changed
-
+      rescue_from Admin::Teachers::ChangeTRNWizard::Wizard::MergeProposalChangedError,
+                  Admin::Teachers::ChangeTRNWizard::Wizard::MergeDestinationChangedError,
+                  with: :redirect_merge_destination_changed
       rescue_from Admin::Teachers::ChangeTRNWizard::Wizard::IneligibleForReplacementError,
                   with: :redirect_ineligible_for_replacement
-
       rescue_from Admin::Teachers::ChangeTRNWizard::Wizard::IneligibleForMergeError,
-                  Admin::Teachers::ChangeTRNWizard::Wizard::MergeDestinationChangedError,
-                  with: :redirect_merge_records_changed
+                  with: :redirect_ineligible_for_merge
 
       before_action :set_teacher
       before_action :reset_store_on_start, only: :new
@@ -43,7 +41,7 @@ module Admin
       end
 
       def set_teacher
-        return if store.records_merged
+        return if store.records_processed == "merged"
 
         @teacher = Teacher.find(params[:teacher_id])
       end
@@ -74,35 +72,40 @@ module Admin
       end
 
       def redirect_proposed_trn_changed
-        redirect_to admin_teacher_change_trn_wizard_confirm_path(@teacher),
-                    flash: {
-                      error: "The proposed TRN has changed. Review the updated details before continuing."
-                    }
-      end
-
-      def redirect_ineligible_for_replacement
-        store.reset
-
-        redirect_to admin_teacher_change_trn_wizard_enter_trn_path(@teacher),
-                    flash: {
-                      error: "The teacher records are not eligible for replacement with the supplied TRN. " \
-                             "This could be because another teacher redirects to the supplied TRN, " \
-                             "or because the supplied TRN is missing or unchanged."
-                    }
-      end
-
-      def redirect_merge_proposal_changed
         redirect_to @wizard.allowed_step_path,
                     flash: {
                       error: "The proposed TRN has changed. Review the updated details before continuing."
                     }
       end
 
-      def redirect_merge_records_changed
+      def redirect_ineligible_for_replacement
+        restart_journey(
+          "The teacher records are not eligible for replacement with the supplied TRN. " \
+          "This could be because another teacher redirects to the supplied TRN, " \
+          "or because the supplied TRN is missing or unchanged."
+        )
+      end
+
+      def redirect_ineligible_for_merge
+        restart_journey(
+          "The teacher records are not eligible for merge with the supplied TRN. " \
+          "This could be because both TRNs have induction records, or they " \
+          "have training periods with different contract periods, or there are " \
+          "overlapping ECT periods at different schools. "
+        )
+      end
+
+      def redirect_merge_destination_changed
+        restart_journey(
+          "The teacher records have changed. Enter the replacement TRN and review the records again."
+        )
+      end
+
+      def restart_journey(message)
         store.reset
 
         redirect_to admin_teacher_change_trn_wizard_enter_trn_path(@teacher),
-                    flash: { error: "The teacher records have changed. Enter the replacement TRN and review the records again." }
+                    flash: { error: message }
       end
 
       def reset_store_on_start

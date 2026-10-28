@@ -322,6 +322,8 @@ private
   end
 
   def given_two_teacher_records_with_school_history
+    @source_school = FactoryBot.create(:school)
+
     @destination = FactoryBot.create(
       :teacher,
       trn: @new_trn,
@@ -334,8 +336,9 @@ private
     @source_school_period = FactoryBot.create(
       :ect_at_school_period,
       teacher: @teacher,
+      school: @source_school,
       started_on: Date.new(2025, 9, 1),
-      finished_on: Date.new(2025, 12, 1)
+      finished_on: Date.new(2025, 10, 1)
     )
 
     @destination_school_period = FactoryBot.create(
@@ -343,6 +346,22 @@ private
       teacher: @destination,
       started_on: Date.new(2026, 1, 1),
       finished_on: nil
+    )
+
+    @overlapping_source_period = FactoryBot.create(
+      :ect_at_school_period,
+      teacher: @teacher,
+      school: @source_school,
+      started_on: Date.new(2025, 11, 1),
+      finished_on: Date.new(2025, 12, 31)
+    )
+
+    @overlapping_destination_period = FactoryBot.create(
+      :ect_at_school_period,
+      teacher: @destination,
+      school: @source_school,
+      started_on: Date.new(2025, 11, 1),
+      finished_on: Date.new(2025, 12, 1)
     )
   end
 
@@ -395,7 +414,7 @@ private
 
   def then_i_see_the_merge_success_page
     expect(
-      page.get_by_role("heading", name: "Records merged", exact: true)
+      page.get_by_role("heading", name: "Records merged for #{@teacher_name}", exact: true)
     ).to be_visible
 
     expect(
@@ -407,17 +426,26 @@ private
     expect(Teacher.exists?(@teacher.id)).to be(false)
     expect(@destination.reload.trn).to eq(@new_trn)
 
-    expect(@source_school_period.reload.teacher_id).to eq(@destination.id)
-    expect(@destination_school_period.reload.teacher_id).to eq(@destination.id)
-
-    expect(@source_school_period).to have_attributes(
+    expect(@source_school_period.reload).to have_attributes(
+      teacher_id: @destination.id,
       started_on: Date.new(2025, 9, 1),
-      finished_on: Date.new(2025, 12, 1)
+      finished_on: Date.new(2025, 10, 1)
     )
-    expect(@destination_school_period).to have_attributes(
+
+    expect(@destination_school_period.reload).to have_attributes(
+      teacher_id: @destination.id,
       started_on: Date.new(2026, 1, 1),
       finished_on: nil
     )
+
+    merged_period = @destination.ect_at_school_periods.where(school: @source_school).latest_first.first
+
+    expect(merged_period).to have_attributes(
+      started_on: Date.new(2025, 11, 1),
+      finished_on: Date.new(2025, 12, 31)
+    )
+    expect(ECTAtSchoolPeriod.exists?(@overlapping_source_period.id)).to be(false)
+    expect(@destination.ect_at_school_periods.count).to eq(3)
   end
 
   def when_i_view_the_destination_timeline
@@ -454,6 +482,8 @@ private
     expect(@destination.reload.trn).to eq(@new_trn)
     expect(@source_school_period.reload.teacher_id).to eq(@teacher.id)
     expect(@destination_school_period.reload.teacher_id).to eq(@destination.id)
+    expect(@overlapping_source_period.reload.teacher_id).to eq(@teacher.id)
+    expect(@overlapping_destination_period.reload.teacher_id).to eq(@destination.id)
 
     expect(
       @destination.events.where(event_type: "teacher_merged").exists?
