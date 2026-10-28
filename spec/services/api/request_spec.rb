@@ -71,7 +71,7 @@ RSpec.describe API::Request do
               "event_type" => "persist_api_request",
               "request_uuid" => uuid,
               "entity_table_name" => "api_requests",
-              "user_id" => lead_provider.id
+              "user_id" => lead_provider.short_name
             )
 
             data = event["data"]
@@ -161,7 +161,7 @@ RSpec.describe API::Request do
           "event_type" => "web_request",
           "response_status" => 429,
           "request_path" => "/api/v3/endpoints",
-          "user_id" => lead_provider.id
+          "user_id" => lead_provider.short_name
         }
         expect(DfE::Analytics::SendEvents).to have_received(:do).with(array_including(hash_including(expected_values)))
       end

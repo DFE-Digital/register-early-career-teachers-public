@@ -1,23 +1,22 @@
 describe API::AnalyticsUser do
-  subject { API::AnalyticsUser.new(lead_provider) }
-
-  let(:lead_provider) { FactoryBot.build(:lead_provider, id: 123) }
+  let(:analytics_user) { API::AnalyticsUser.new(lead_provider) }
+  let(:lead_provider) { FactoryBot.build(:lead_provider, short_name: "short") }
 
   describe "#lead_provider" do
-    it "returns the provided lead_provider" do
-      expect(subject.lead_provider).to eql(lead_provider)
-    end
+    subject { analytics_user.lead_provider }
+
+    it { is_expected.to eq(lead_provider) }
   end
 
   describe "#name" do
-    it "returns the lead provider's name" do
-      expect(subject.name).to be(lead_provider.name)
-    end
+    subject { analytics_user.name }
+
+    it { is_expected.to eq(lead_provider.name) }
   end
 
   describe "#fingerprint" do
-    it "returns lead_provider's fingerprint" do
-      expect(subject.fingerprint).to be(123)
-    end
+    subject { analytics_user.fingerprint }
+
+    it { is_expected.to eq(lead_provider.short_name) }
   end
 end

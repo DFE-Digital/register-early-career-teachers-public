@@ -84,7 +84,7 @@ RSpec.shared_examples "a rate limited endpoint", :rack_attack do |desc|
           }
 
           if path.starts_with?("/api/v3/")
-            expected_values["user_id"] = lead_provider.id
+            expected_values["user_id"] = lead_provider.short_name
           end
 
           expect(DfE::Analytics::SendEvents).to have_received(:perform_later).with(array_including(a_hash_including(expected_values)))
