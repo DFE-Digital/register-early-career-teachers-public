@@ -21,6 +21,48 @@
 #
 #     **bold** and _italic_ text
 
+- title: Changes to ECT funding eligibility
+  date: 2026-10-28
+  tags:
+    - data-update
+    - production-release
+    
+  body: |
+    We're updating how ECT funding eligibility is calculated and returned by the Participants API.
+
+    The `eligible_for_funding` field will now reflect an ECT's current eligibility status. If an appropriate body updates an ECT's record to show they are exempt from induction or have failed induction, their funding eligibility will be updated.
+
+    ## What’s changed
+
+    Previously, once an ECT became eligible for funding, the `eligible_for_funding` field would remain true.
+
+    After this change, the field will be updated if an appropriate body updates an ECT's record to show that the ECT:
+
+    - is exempt from induction
+    - has failed induction
+
+    In these cases, `eligible_for_funding` will return false.
+
+    ## Why we’ve made this change
+
+    In some cases, an ECT's induction status changes after they have already become eligible for funding.
+
+    Previously, the Participants API did not always reflect these changes. This could result in an ECT appearing eligible for funding when they were no longer eligible. This could also mean funding data did not match an ECT's current induction status.
+
+    This update ensures the API reflects an ECT's current eligibility status.
+
+    ## Who this applies to
+
+    This change affects organisations that use the Participants API and rely on the `eligible_for_funding` field.
+
+    The change only applies to ECTs. Mentor funding eligibility is unchanged.
+
+    ## What you need to do
+
+    Nothing. We've already updated the data for ECTs affected by this change.
+
+    If you use the `eligible_for_funding` field, be aware that it may now return false for ECTs whose induction status has changed after they became eligible for funding.
+
 - title: Improved handling of teacher reference number (TRN) corrections  
   date: 2026-09-16
   tags:
