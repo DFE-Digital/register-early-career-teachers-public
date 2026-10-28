@@ -9,7 +9,7 @@ describe API::OAuth::Authorizations::ExchangeCodeForToken do
 
   let(:code_verifier) { "code-verifier" }
   let(:authorization) { FactoryBot.create(:api_oauth_authorization, appropriate_body_period:, client:, code_verifier:, redirect_uri:) }
-  let(:author) { Events::OAuthClientAuthor.new(client:) }
+  let(:author) { Events::AppropriateBodyAPIAuthor.new(appropriate_body_period:) }
 
   context "when valid" do
     it "returns an authorization with a token and emits an event" do
@@ -20,8 +20,8 @@ describe API::OAuth::Authorizations::ExchangeCodeForToken do
 
       event = Event.with_event_type(:api_oauth_authorization_code_exchanged).sole
       expect(event.appropriate_body_period).to eq(appropriate_body_period)
-      expect(event.author_type).to eq("oauth_client")
-      expect(event.author_name).to eq(client.name)
+      expect(event.author_type).to eq("appropriate_body_api")
+      expect(event.author_name).to eq(appropriate_body_period.name)
 
       expect(authorization.token_expires_at).to eq(1.year.from_now)
       expect(authorization.token_digest).to be_present

@@ -19,7 +19,7 @@ module API::OAuth::Authorizations
   private
 
     def author
-      @author ||= Events::OAuthClientAuthor.new(client: authorization.client)
+      @author ||= Events::AppropriateBodyAPIAuthor.new(appropriate_body_period: authorization.appropriate_body_period)
     end
   end
 end

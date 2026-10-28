@@ -172,7 +172,7 @@ class Event < ApplicationRecord
 private
 
   def check_author_present
-    return if author_type.in?(%w[system lead_provider_api oauth_client])
+    return if author_type.in?(%w[system lead_provider_api appropriate_body_api])
     return if author_id.present? || author_email.present?
 
     errors.add(:base, "Author is missing")
