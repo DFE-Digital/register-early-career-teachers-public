@@ -80,9 +80,9 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
       )
       source_id = teacher.id
 
-      post admin_teacher_change_trn_wizard_confirm_merge_path(teacher),
+      post admin_teacher_change_trn_wizard_confirm_path(teacher),
            params: {
-             confirm_merge: {
+             confirm: {
                confirmed: "1",
                expected_trn: new_trn
              }
@@ -137,7 +137,39 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
     end
   end
 
+  shared_examples "confirming a TRN change" do
+    before do
+      post entry_path, params: { enter_trn: { trn: new_trn } }
+      post preview_path if merging
+    end
+
+    it "shows the appropriate confirmation form at the shared route" do
+      get confirm_path
+
+      expect(response).to have_http_status(:ok)
+      document = Nokogiri::HTML(response.body)
+      expect(document.at_css("form")["action"]).to eq(confirm_path)
+      expect(document.at_css('input[name="confirm[expected_trn]"]')["value"]).to eq(new_trn)
+      expect(response.body).to include(confirmation_message)
+    end
+
+    it "requires confirmation before updating either record" do
+      post confirm_path, params: { confirm: { confirmed: "0", expected_trn: new_trn } }
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include(confirmation_message)
+      expect(teacher.reload.trn).to eq("7654321")
+      expect(Teachers::SyncTeacherWithTRSJob).not_to have_been_enqueued
+      expect(Teachers::TRN::TRSSyncJob).not_to have_been_enqueued
+    end
+  end
+
   describe "changing a TRN" do
+    let(:merging) { false }
+    let(:confirmation_message) { "I confirm I want to change this teacher’s TRN" }
+
+    it_behaves_like "confirming a TRN change"
+
     it "requires confirmation, replaces the TRN and records the admin author" do
       get entry_path
 
@@ -152,21 +184,6 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
 
       expect(response).to have_http_status(:ok)
       expect(response.body).to include("7654321", new_trn, "Sarah Jones")
-
-      post confirm_path,
-           params: {
-             confirm: {
-               confirmed: "0",
-               expected_trn: new_trn
-             }
-           }
-
-      expect(response).to have_http_status(:unprocessable_content)
-      expect(response.body).to include(
-        "Confirm you want to change this teacher’s TRN"
-      )
-      expect(teacher.reload.trn).to eq("7654321")
-      expect(teacher.events.where(event_type: "teacher_trn_replaced")).to be_empty
 
       expect {
         post confirm_path,
@@ -328,6 +345,15 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
   end
 
   describe "previewing a merge" do
+    let(:merging) { true }
+    let(:confirmation_message) { "I confirm I want to merge these teacher records" }
+
+    let(:confirmation_path) do
+      admin_teacher_change_trn_wizard_confirmation_path(teacher.id)
+    end
+    let(:preview_path) do
+      admin_teacher_change_trn_wizard_merge_preview_path(teacher.id)
+    end
     let!(:destination) do
       FactoryBot.create(
         :teacher,
@@ -338,17 +364,7 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
       )
     end
 
-    let(:preview_path) do
-      admin_teacher_change_trn_wizard_merge_preview_path(teacher.id)
-    end
-
-    let(:confirm_merge_path) do
-      admin_teacher_change_trn_wizard_confirm_merge_path(teacher.id)
-    end
-
-    let(:records_merged_path) do
-      admin_teacher_change_trn_wizard_records_merged_path(teacher.id)
-    end
+    it_behaves_like "confirming a TRN change"
 
     it "shows both records without changing either teacher" do
       post entry_path, params: { enter_trn: { trn: new_trn } }
@@ -423,7 +439,7 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
       post entry_path, params: { enter_trn: { trn: new_trn } }
       post preview_path
 
-      expect(response).to redirect_to(confirm_merge_path)
+      expect(response).to redirect_to(confirm_path)
 
       follow_redirect!
 
@@ -434,9 +450,9 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
         new_trn
       )
 
-      post confirm_merge_path,
+      post confirm_path,
            params: {
-             confirm_merge: {
+             confirm: {
                confirmed: "0",
                expected_trn: new_trn
              }
@@ -451,16 +467,16 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
       expect(Teachers::TRN::TRSSyncJob).not_to have_been_enqueued
 
       expect {
-        post confirm_merge_path,
+        post confirm_path,
              params: {
-               confirm_merge: {
+               confirm: {
                  confirmed: "1",
                  expected_trn: new_trn
                }
              }
       }.to have_enqueued_job(Teachers::TRN::TRSSyncJob)
 
-      expect(response).to redirect_to(records_merged_path)
+      expect(response).to redirect_to(confirmation_path)
       expect(Teacher.exists?(source_id)).to be(false)
       expect(Teacher.exists?(destination.id)).to be(true)
 
@@ -478,7 +494,7 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
     it "does not merge again when confirmation is submitted twice" do
       source_id = teacher.id
       confirmation_params = {
-        confirm_merge: {
+        confirm: {
           confirmed: "1",
           expected_trn: new_trn
         }
@@ -486,17 +502,17 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
 
       post entry_path, params: { enter_trn: { trn: new_trn } }
       post preview_path
-      post confirm_merge_path, params: confirmation_params
+      post confirm_path, params: confirmation_params
 
-      expect(response).to redirect_to(records_merged_path)
+      expect(response).to redirect_to(confirmation_path)
       expect(Teacher.exists?(source_id)).to be(false)
       expect(destination.events.where(event_type: "teacher_merged").count).to eq(1)
       expect(Teachers::TRN::TRSSyncJob)
         .to have_been_enqueued.exactly(:once)
 
-      post confirm_merge_path, params: confirmation_params
+      post confirm_path, params: confirmation_params
 
-      expect(response).to redirect_to(records_merged_path)
+      expect(response).to redirect_to(confirmation_path)
       expect(Teacher.exists?(source_id)).to be(false)
       expect(Teacher.exists?(destination.id)).to be(true)
       expect(destination.events.where(event_type: "teacher_merged").count).to eq(1)
@@ -514,9 +530,9 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
       post preview_path
       destination.update!(trn: "3456789")
 
-      post confirm_merge_path,
+      post confirm_path,
            params: {
-             confirm_merge: {
+             confirm: {
                confirmed: "1",
                expected_trn: new_trn
              }
@@ -531,7 +547,7 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
       expect(destination.events.where(event_type: "teacher_merged")).to be_empty
       expect(Teachers::TRN::TRSSyncJob).not_to have_been_enqueued
 
-      get confirm_merge_path
+      get confirm_path
 
       expect(response).to redirect_to(entry_path)
     end
@@ -541,9 +557,9 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
       post preview_path
       teacher.update!(trs_response: "ok")
 
-      post confirm_merge_path,
+      post confirm_path,
            params: {
-             confirm_merge: {
+             confirm: {
                confirmed: "1",
                expected_trn: new_trn
              }
@@ -567,9 +583,9 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
 
       expect(response).to redirect_to(preview_path)
 
-      post confirm_merge_path,
+      post confirm_path,
            params: {
-             confirm_merge: {
+             confirm: {
                confirmed: "1",
                expected_trn: new_trn
              }
@@ -589,15 +605,15 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
       post entry_path, params: { enter_trn: { trn: new_trn } }
       post preview_path
 
-      expect(response).to redirect_to(confirm_merge_path)
+      expect(response).to redirect_to(confirm_path)
 
       post entry_path, params: { enter_trn: { trn: new_trn } }
 
       expect(response).to redirect_to(preview_path)
 
-      post confirm_merge_path,
+      post confirm_path,
            params: {
-             confirm_merge: {
+             confirm: {
                confirmed: "1",
                expected_trn: new_trn
              }
@@ -614,9 +630,9 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
       source_id = teacher.id
       destination_id = destination.id
 
-      post confirm_merge_path,
+      post confirm_path,
            params: {
-             confirm_merge: {
+             confirm: {
                confirmed: "1",
                expected_trn: new_trn
              }
@@ -650,17 +666,17 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
       post entry_path, params: { enter_trn: { trn: other_trn } }
       post preview_path
 
-      expect(response).to redirect_to(confirm_merge_path)
+      expect(response).to redirect_to(confirm_path)
 
-      post confirm_merge_path,
+      post confirm_path,
            params: {
-             confirm_merge: {
+             confirm: {
                confirmed: "1",
                expected_trn: new_trn
              }
            }
 
-      expect(response).to redirect_to(confirm_merge_path)
+      expect(response).to redirect_to(confirm_path)
       expect(flash[:error]).to eq(
         "The proposed TRN has changed. Review the updated details before continuing."
       )
@@ -690,7 +706,7 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
       expect(destination.events.where(event_type: "teacher_merged")).to be_empty
       expect(Teachers::TRN::TRSSyncJob).not_to have_been_enqueued
 
-      get confirm_merge_path
+      get confirm_path
 
       expect(response).to redirect_to(entry_path)
     end
@@ -712,7 +728,7 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
       expect(Event.where(event_type: "teacher_merged")).to be_empty
       expect(Teachers::TRN::TRSSyncJob).not_to have_been_enqueued
 
-      get confirm_merge_path
+      get confirm_path
 
       expect(response).to redirect_to(entry_path)
     end

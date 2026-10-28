@@ -4,6 +4,8 @@ module Admin
       class EnterTRNStep < Step
         attribute :trn, :string
 
+        delegate :merge_proposed?, to: :wizard
+
         validates :trn,
                   teacher_reference_number: true,
                   presence: {
@@ -14,7 +16,7 @@ module Admin
         def self.permitted_params = [:trn]
 
         def next_step
-          store.destination_teacher_id.present? ? :merge_preview : :confirm
+          merge_proposed? ? :merge_preview : :confirm
         end
 
         def save!

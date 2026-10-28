@@ -3,6 +3,7 @@ module Admin
     module ChangeTRNWizard
       class Wizard < ApplicationWizard
         class TeacherNotDeactivatedError < StandardError; end
+        class MergeProposalChangedError < StandardError; end
         class IneligibleForReplacementError < StandardError; end
         class IneligibleForMergeError < StandardError; end
         class MergeDestinationChangedError < StandardError; end
@@ -13,8 +14,6 @@ module Admin
           [{
             enter_trn: EnterTRNStep,
             merge_preview: MergePreviewStep,
-            confirm_merge: ConfirmMergeStep,
-            records_merged: RecordsMergedStep,
             confirm: ConfirmStep,
             confirmation: ConfirmationStep
           }]
@@ -25,16 +24,15 @@ module Admin
         end
 
         def allowed_steps
-          return [:records_merged] if store.records_merged
-          return [:confirmation] if store.trn_replaced
+          return [:confirmation] if store.records_processed.present?
           return [] unless teacher.trs_response_gone?
 
           allowed = [:enter_trn]
           return allowed if store.trn.blank?
 
-          if store.destination_teacher_id.present?
+          if merge_proposed?
             allowed << :merge_preview
-            allowed << :confirm_merge if store.merge_previewed
+            allowed << :confirm if store.merge_previewed
           else
             allowed << :confirm
           end
@@ -47,13 +45,13 @@ module Admin
         end
 
         def teacher_name
-          return store.source_teacher_name if store.records_merged
+          return store.source_teacher_name if records_merged?
 
           ::Teachers::Name.new(teacher).full_name
         end
 
         def destination
-          return if store.destination_teacher_id.blank?
+          return if replace_proposed?
 
           @destination ||= Teacher
             .where.not(id: teacher_id)
@@ -63,39 +61,6 @@ module Admin
             )
         rescue ActiveRecord::RecordNotFound
           raise MergeDestinationChangedError
-        end
-
-        def replace_trn!
-          teacher.with_lock do
-            raise TeacherNotDeactivatedError unless teacher.trs_response_gone?
-            raise IneligibleForReplacementError unless ::Teachers::TRN::Eligibility
-              .new(teacher:, new_trn: store.trn).can_be_replaced?
-
-            old_trn = teacher.trn
-
-            ::Teachers::TRN::Replace.new(teacher:, new_trn: store.trn, author:).replace!
-
-            store.old_trn = old_trn
-          end
-        end
-
-        def merge_trn!
-          teacher.with_lock do
-            destination.with_lock do
-              raise TeacherNotDeactivatedError unless teacher.trs_response_gone?
-              raise MergeDestinationChangedError unless destination.trn == store.trn
-              raise IneligibleForMergeError unless ::Teachers::TRN::Eligibility
-                .new(teacher:, new_trn: store.trn).can_be_merged?
-
-              old_trn = teacher.trn
-              source_teacher_name = teacher_name
-
-              ::Teachers::TRN::Merge.new(teacher:, new_trn: store.trn, author:).merge!
-
-              store.old_trn = old_trn
-              store.source_teacher_name = source_teacher_name
-            end
-          end
         end
 
         def allowed_step_path
@@ -116,7 +81,76 @@ module Admin
           step_path(current_step.previous_step)
         end
 
+        def merge_proposed?
+          store.destination_teacher_id.present?
+        end
+
+        def records_merged?
+          store.records_processed == "merged"
+        end
+
+        def update!
+          teacher.with_lock do
+            with_destination_lock do
+              raise TeacherNotDeactivatedError unless teacher.trs_response_gone?
+              raise MergeProposalChangedError unless destination_trn_matches_proposal?
+              raise IneligibleForMergeError if merge_proposed? && !eligible?
+              raise IneligibleForReplacementError if replace_proposed? && !eligible?
+
+              old_trn = teacher.trn
+              source_teacher_name = teacher_name
+
+              merge_proposed? ? merge! : replace!
+
+              store.old_trn = old_trn
+              store.source_teacher_name = source_teacher_name
+            end
+          end
+        end
+
       private
+
+        def destination_trn_matches_proposal?
+          return true unless merge_proposed?
+
+          store.trn.present? && destination.trn == store.trn
+        end
+
+        def with_destination_lock(&block)
+          if merge_proposed?
+            destination.with_lock(&block)
+          else
+            yield
+          end
+        end
+
+        def merge!
+          ::Teachers::TRN::Merge.new(teacher:, new_trn: store.trn, author:).merge!
+
+          store.records_processed = "merged"
+        end
+
+        def replace!
+          ::Teachers::TRN::Replace.new(teacher:, new_trn: store.trn, author:).replace!
+
+          store.records_processed = "replaced"
+        end
+
+        def replace_proposed?
+          !merge_proposed?
+        end
+
+        def eligible?
+          if merge_proposed?
+            eligibility.can_be_merged?
+          else
+            eligibility.can_be_replaced?
+          end
+        end
+
+        def eligibility
+          ::Teachers::TRN::Eligibility.new(teacher:, new_trn: store.trn)
+        end
 
         def teacher_overview_path
           Rails.application.routes.url_helpers.admin_teacher_path(teacher)
