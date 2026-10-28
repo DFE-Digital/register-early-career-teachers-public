@@ -65,7 +65,7 @@ FactoryBot.define do
       end
     end
 
-    trait :with_training_period do
+    trait :with_provider_led_training_period do
       transient do
         lead_provider { nil }
         delivery_partner { nil }

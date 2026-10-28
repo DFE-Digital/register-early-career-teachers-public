@@ -188,7 +188,7 @@ namespace :product_review do
 
     non_overlapping_ect = FactoryBot.create(
       :ect_at_school_period,
-      :with_training_period,
+      :with_provider_led_training_period,
       school: source_ect.school,
       teacher: source,
       started_on: "2026-07-01",
