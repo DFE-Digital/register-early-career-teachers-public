@@ -125,10 +125,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_000000) do
     t.bigint "school_id"
     t.bigint "teaching_school_hub_id"
     t.datetime "updated_at", null: false
-    t.uuid "external_id", default: -> { "gen_random_uuid()" }, null: false
     t.date "started_on"
     t.date "finished_on"
     t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on, '[]'::text)", stored: true
+    t.uuid "external_id", default: -> { "gen_random_uuid()" }, null: false
     t.index ["dfe_sign_in_organisation_id"], name: "index_appropriate_body_periods_on_dfe_sign_in_organisation_id", unique: true
     t.index ["external_id"], name: "index_appropriate_body_periods_on_external_id", unique: true
     t.index ["local_authority_id"], name: "index_appropriate_body_periods_on_local_authority_id"

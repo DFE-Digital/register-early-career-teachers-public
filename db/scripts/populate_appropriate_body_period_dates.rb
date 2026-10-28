@@ -11,10 +11,6 @@ class PopulateAppropriateBodyPeriodDates
     "local_authority" => {
       started_on: LocalAuthority::APPROPRIATE_BODY[:introduced_on],
       finished_on: LocalAuthority::APPROPRIATE_BODY[:retired_on]
-    },
-    "teaching_school_hub" => {
-      started_on: TeachingSchoolHub::APPROPRIATE_BODY[:introduced_on],
-      finished_on: nil
     }
   }.freeze
 
@@ -65,6 +61,7 @@ private
   def dates_for(appropriate_body_period)
     return NATIONAL_BODY_DATES.fetch(appropriate_body_period.name) if appropriate_body_period.national?
     return teaching_school_dates(appropriate_body_period) if appropriate_body_period.teaching_school?
+    return teaching_school_hub_dates(appropriate_body_period) if appropriate_body_period.teaching_school_hub?
 
     BODY_TYPE_DATES.fetch(appropriate_body_period.body_type)
   end
@@ -81,6 +78,19 @@ private
     {
       started_on: [school&.opened_on, School::APPROPRIATE_BODY[:introduced_on]].compact.max,
       finished_on: [school&.closed_on, School::APPROPRIATE_BODY[:retired_on]].compact.min
+    }
+  end
+
+  # A hub cannot act as an appropriate body before its provisioning school opened, opening date is the earliest start date.
+  #
+  # @param appropriate_body_period [AppropriateBodyPeriod]
+  # @return [Hash{Symbol => Date, nil}]
+  def teaching_school_hub_dates(appropriate_body_period)
+    school = appropriate_body_period.provisioning_school
+
+    {
+      started_on: [school&.opened_on, TeachingSchoolHub::APPROPRIATE_BODY[:introduced_on]].compact.max,
+      finished_on: nil
     }
   end
 

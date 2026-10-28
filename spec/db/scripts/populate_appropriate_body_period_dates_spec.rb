@@ -38,6 +38,17 @@ RSpec.describe PopulateAppropriateBodyPeriodDates do
             )
           end
         end
+
+        context "when the provisioning school opened after hubs were introduced" do
+          let(:school_dates) { { opened_on: Date.new(2021, 12, 1) } }
+
+          it "starts the period when the school opened" do
+            expect(appropriate_body_period.reload).to have_attributes(
+              started_on: school_dates[:opened_on],
+              finished_on: nil
+            )
+          end
+        end
       end
 
       context "with a teaching school" do
