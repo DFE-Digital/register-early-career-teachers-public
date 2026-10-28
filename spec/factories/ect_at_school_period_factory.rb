@@ -65,7 +65,7 @@ FactoryBot.define do
       end
     end
 
-    trait :with_training_period do
+    trait :with_provider_led_training_period do
       transient do
         lead_provider { nil }
         delivery_partner { nil }
@@ -73,8 +73,6 @@ FactoryBot.define do
       end
 
       after(:create) do |ect, evaluator|
-        next unless ect.provider_led_training_programme?
-
         selected_lead_provider = evaluator.lead_provider || FactoryBot.create(:lead_provider)
         selected_delivery_partner = evaluator.delivery_partner || FactoryBot.create(:delivery_partner)
         selected_contract_period = evaluator.contract_period || FactoryBot.create(:contract_period)

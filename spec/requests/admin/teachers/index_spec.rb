@@ -3,8 +3,8 @@ RSpec.shared_examples "common teacher index behavior" do
     let!(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Naruto", trs_last_name: "Uzumaki") }
     let!(:ect_contract_period) { FactoryBot.create(:contract_period, year: 2024) }
     let!(:mentor_contract_period) { FactoryBot.create(:contract_period, year: 2025) }
-    let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, :with_training_period, teacher:, contract_period: ect_contract_period) }
-    let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, :with_training_period, teacher:, contract_period: mentor_contract_period) }
+    let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, :with_provider_led_training_period, teacher:, contract_period: ect_contract_period) }
+    let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, :with_provider_led_training_period, teacher:, contract_period: mentor_contract_period) }
 
     it "renders role based rows with contract periods" do
       get "/admin/teachers"
@@ -123,8 +123,8 @@ RSpec.shared_examples "common teacher index behavior" do
       let!(:other_teacher) { FactoryBot.create(:teacher, api_id: "999e4567-e89b-12d3-a456-426614174999") }
       let!(:teacher_contract_period) { FactoryBot.create(:contract_period, year: 2024) }
       let!(:other_teacher_contract_period) { FactoryBot.create(:contract_period, year: 2024) }
-      let!(:teacher_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, :with_training_period, teacher:, contract_period: teacher_contract_period) }
-      let!(:other_teacher_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, :with_training_period, teacher: other_teacher, contract_period: other_teacher_contract_period) }
+      let!(:teacher_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, :with_provider_led_training_period, teacher:, contract_period: teacher_contract_period) }
+      let!(:other_teacher_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, :with_provider_led_training_period, teacher: other_teacher, contract_period: other_teacher_contract_period) }
 
       it "filters teachers by API participant ID" do
         get "/admin/teachers", params: { q: "123e4567-e89b-12d3-a456-426614174000" }

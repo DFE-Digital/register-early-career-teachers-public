@@ -26,7 +26,7 @@ RSpec.shared_context "it closes an induction" do
 
   let(:started_on) { induction_period&.started_on }
   let(:finished_on) { nil }
-  let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :with_training_period, teacher:, school:, started_on:, finished_on:) }
+  let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :with_provider_led_training_period, teacher:, school:, started_on:, finished_on:) }
 
   it "deletes the pending induction submission after a day" do
     freeze_time do

@@ -37,8 +37,8 @@ RSpec.describe Schedules::Find do
 
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:school) { FactoryBot.create(:school) }
-  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, :with_training_period, teacher:, school:) }
-  let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, :with_training_period, teacher:, school:) }
+  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher:, school:) }
+  let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:, school:) }
   let(:mentee) {}
 
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
@@ -235,7 +235,7 @@ RSpec.describe Schedules::Find do
             let(:started_on) { new_school_start_date }
             let(:old_school) { FactoryBot.create(:school) }
             let(:ect_at_old_school_period) { FactoryBot.create(:ect_at_school_period, :finished, teacher:, school: old_school, started_on: old_school_start_date, finished_on: old_school_end_date) }
-            let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, :with_training_period, teacher:, school:, started_on:) }
+            let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher:, school:, started_on:) }
 
             let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school: old_school) }
 
@@ -447,7 +447,7 @@ RSpec.describe Schedules::Find do
       before { travel_to provider_led_start_date }
 
       context "when the ECT started training in the 2021 contract period" do
-        let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, :with_training_period, teacher:, school:, started_on: Date.new(2021, 7, 1)) }
+        let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher:, school:, started_on: Date.new(2021, 7, 1)) }
         let(:contract_period_2021) { FactoryBot.create(:contract_period, :with_schedules, :with_payments_frozen, year: 2021) }
         let(:old_framework_agreement) { FactoryBot.create(:framework_agreement, contract_period: contract_period_2021) }
         let!(:old_training_period) do

@@ -7,10 +7,10 @@ RSpec.describe GIAS::Reconciliation::Close do
     let(:gias_school_can_be_closed?) { true }
     let(:gias_school_can_be_closed_after_split?) { false }
     let(:school) { gias_school.school }
-    let!(:mentors) { FactoryBot.create_list(:mentor_at_school_period, 3, :unfinished, :with_training_period, school:) }
-    let!(:ects) { FactoryBot.create_list(:ect_at_school_period, 3, :unfinished, :with_training_period, school:) }
-    let!(:unstarted_mentors) { FactoryBot.create_list(:mentor_at_school_period, 2, :with_training_period, school:, started_on: closed_on + 1.day) }
-    let!(:unstarted_ects) { FactoryBot.create_list(:ect_at_school_period, 2, :with_training_period, school:, started_on: closed_on + 1.day) }
+    let!(:mentors) { FactoryBot.create_list(:mentor_at_school_period, 3, :unfinished, :with_provider_led_training_period, school:) }
+    let!(:ects) { FactoryBot.create_list(:ect_at_school_period, 3, :unfinished, :with_provider_led_training_period, school:) }
+    let!(:unstarted_mentors) { FactoryBot.create_list(:mentor_at_school_period, 2, :with_provider_led_training_period, school:, started_on: closed_on + 1.day) }
+    let!(:unstarted_ects) { FactoryBot.create_list(:ect_at_school_period, 2, :with_provider_led_training_period, school:, started_on: closed_on + 1.day) }
     let(:mentor_finish_service) { instance_double(MentorAtSchoolPeriods::Finish) }
     let(:ect_finish_service) { instance_double(ECTAtSchoolPeriods::Finish) }
     let(:mentorship_finished_on) { nil }
@@ -130,8 +130,8 @@ RSpec.describe GIAS::Reconciliation::Close do
     end
 
     context "when there are no unstarted or ongoing periods" do
-      let!(:mentors) { FactoryBot.create_list(:mentor_at_school_period, 3, :with_training_period, school:, finished_on: Date.yesterday) }
-      let!(:ects) { FactoryBot.create_list(:ect_at_school_period, 3, :with_training_period, school:, finished_on: Date.yesterday) }
+      let!(:mentors) { FactoryBot.create_list(:mentor_at_school_period, 3, :with_provider_led_training_period, school:, finished_on: Date.yesterday) }
+      let!(:ects) { FactoryBot.create_list(:ect_at_school_period, 3, :with_provider_led_training_period, school:, finished_on: Date.yesterday) }
       let(:unstarted_mentors) { [] }
       let(:unstarted_ects) { [] }
       let(:mentorship_finished_on) { Date.yesterday }
@@ -189,8 +189,8 @@ RSpec.describe GIAS::Reconciliation::Close do
     context "when the school closed in the past" do
       let(:closed_on) { 1.week.ago.to_date }
 
-      let!(:mentor_started_on_last_day) { FactoryBot.create(:mentor_at_school_period, :with_training_period, school:, started_on: closed_on) }
-      let!(:ect_started_on_last_day) { FactoryBot.create(:ect_at_school_period, :with_training_period, school:, started_on: closed_on) }
+      let!(:mentor_started_on_last_day) { FactoryBot.create(:mentor_at_school_period, :with_provider_led_training_period, school:, started_on: closed_on) }
+      let!(:ect_started_on_last_day) { FactoryBot.create(:ect_at_school_period, :with_provider_led_training_period, school:, started_on: closed_on) }
 
       it { is_expected.to be_truthy }
 
