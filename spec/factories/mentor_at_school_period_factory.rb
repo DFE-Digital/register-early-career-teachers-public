@@ -49,8 +49,6 @@ FactoryBot.define do
       end
 
       after(:create) do |mentor, evaluator|
-        next unless mentor.provider_led_training_programme?
-
         selected_lead_provider = evaluator.lead_provider || FactoryBot.create(:lead_provider)
         selected_delivery_partner = evaluator.delivery_partner || FactoryBot.create(:delivery_partner)
         selected_contract_period = evaluator.contract_period || FactoryBot.create(:contract_period)
@@ -66,6 +64,7 @@ FactoryBot.define do
                                         lead_provider_delivery_partnership: lpdp)
 
         FactoryBot.create(:training_period,
+                          :for_mentor,
                           mentor_at_school_period: mentor,
                           school_partnership: partnership,
                           started_on: mentor.started_on,
