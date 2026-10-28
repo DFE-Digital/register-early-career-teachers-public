@@ -29,8 +29,79 @@ paths:
                 "$ref": "#/components/schemas/OAuthError"
         '429':
           description: Too many requests. Retry after the rate limit period has passed.
+  "/api/induction/v1/teachers/{teacher_trn}/claim":
+    post:
+      summary: Claim an early career teacher's induction
+      operationId: postAPIInductionV1TeachersTeacherTRNClaim
+      security:
+      - bearer: []
+      tags:
+      - Inductions
+      parameters:
+      - name: teacher_trn
+        in: path
+        description: The teacher reference number.
+        example: '1234567'
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: The early career teacher's induction was claimed
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Claim"
+        '400':
+          description: The request body is missing or is not a JSON object
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '401':
+          description: The access token is missing, unknown, expired or revoked. A
+            missing token returns no body.
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/OAuthError"
+        '404':
+          description: No teacher was found with the TRN and date of birth
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '409':
+          description: The teacher already has an ongoing induction period
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '422':
+          description: The claim is not valid or the teacher is not eligible for induction
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '503':
+          description: The Teaching Record System is unavailable. Try again later.
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '429':
+          description: Too many requests. Retry after the rate limit period has passed.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/ClaimRequest"
 components:
   securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+      description: OAuth 2.0 access token
     client_credentials:
       type: http
       scheme: basic
@@ -51,6 +122,61 @@ components:
           type: string
           description: The appropriate body name.
           example: Golden Leaf Teaching School Hub
+    Claim:
+      description: An appropriate body's claim on an early career teacher's induction.
+      type: object
+      required:
+      - trn
+      - full_name
+      - started_on
+      - training_programme
+      properties:
+        trn:
+          type: string
+          example: '1234567'
+          description: The teacher reference number.
+        full_name:
+          type: string
+          example: Kirk Van Houten
+          description: The teacher's name.
+        started_on:
+          type: string
+          format: date
+          example: '2026-01-04'
+          description: The date you are claiming the ECT from.
+        training_programme:
+          type: string
+          enum:
+          - provider_led
+          - school_led
+          example: school_led
+          description: The training programme under which you are registering this
+            claim.
+    Error:
+      description: The errors that stopped the request from succeeding.
+      type: object
+      required:
+      - errors
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            required:
+            - title
+            - detail
+            properties:
+              title:
+                type: string
+                example: Conflict
+                description: A short summary of the error, or the name of the invalid
+                  field.
+              detail:
+                type: string
+                example: The teacher has an ongoing induction period with another
+                  appropriate body
+                description: An explanation of the error.
+          description: The errors.
     OAuthError:
       description: An OAuth 2.0 error.
       type: object
@@ -61,3 +187,29 @@ components:
           type: string
           description: The OAuth 2.0 error code.
           example: invalid_token
+    ClaimRequest:
+      description: Claim an early career teacher's induction
+      type: object
+      required:
+      - date_of_birth
+      - started_on
+      - training_programme
+      properties:
+        date_of_birth:
+          description: The teacher's date of birth.
+          type: string
+          format: date
+          example: '2001-05-13'
+        started_on:
+          description: The date you are claiming the ECT from.
+          type: string
+          format: date
+          example: '2026-01-04'
+        training_programme:
+          description: The training programme under which you are registering this
+            claim.
+          type: string
+          enum:
+          - provider_led
+          - school_led
+          example: school_led

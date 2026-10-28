@@ -1,7 +1,7 @@
 module APIDocumentationHelpers
   def document_api(request, &block)
     verb, path = request.first
-    operation_id = "#{verb}#{path.split(%r{[/-]}).compact_blank.map(&:camelize).join}"
+    operation_id = "#{verb}#{path.split(%r{[/{}-]}).compact_blank.map(&:camelize).join}"
 
     path(path) do
       public_send(verb, nil) do
