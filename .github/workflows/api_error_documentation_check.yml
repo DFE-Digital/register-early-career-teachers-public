@@ -1,12 +1,7 @@
 name: "API error documentation check"
 on:
   workflow_call:
-    inputs:
-      ruby-version:
-        description: Ruby version
-        type: string
-        required: false
-        default: "4.0.9"
+
 jobs:
   api-error-documentation-check:
     name: Check API error documentation

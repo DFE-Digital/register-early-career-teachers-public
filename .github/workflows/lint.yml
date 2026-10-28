@@ -2,11 +2,6 @@ name: "Lint"
 on:
   workflow_call:
     inputs:
-      ruby-version:
-        description: Ruby version
-        type: string
-        required: false
-        default: "4.0.9"
       node-version:
         description: Node version
         type: string
@@ -34,7 +29,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: ${{ inputs.ruby-version }}
+          ruby-version: .ruby-version
           bundler-cache: true
 
       - name: Lint Ruby
@@ -110,7 +105,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: ${{ inputs.ruby-version }}
+          ruby-version: .ruby-version
           bundler-cache: true
 
       - name: Lint ERB Templates

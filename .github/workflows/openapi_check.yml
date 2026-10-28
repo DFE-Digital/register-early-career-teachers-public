@@ -1,12 +1,7 @@
 name: "OpenAPI Check"
 on:
   workflow_call:
-    inputs:
-      ruby-version:
-        description: Ruby version
-        type: string
-        required: false
-        default: "4.0.9"
+
 jobs:
   openapi-check:
     name: Check OpenAPI schema
