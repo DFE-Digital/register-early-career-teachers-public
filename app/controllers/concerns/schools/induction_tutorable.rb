@@ -3,12 +3,12 @@ module Schools
     extend ActiveSupport::Concern
 
     included do
-      before_action :start_journey, if: -> { current_step == :edit }
       before_action :initialize_wizard
       before_action :reject_incomplete_check_answers, only: :create, if: -> { current_step == :check_answers }
     end
 
     def new
+      prefill_from_school if current_step == :edit
       render current_step
     end
 
@@ -22,8 +22,10 @@ module Schools
 
   private
 
-    def start_journey
-      state_store.prefill_from_school
+    def prefill_from_school
+      step = @wizard.current_step
+      step.induction_tutor_name = step.induction_tutor_name.presence || school.induction_tutor_name
+      step.induction_tutor_email = step.induction_tutor_email.presence || school.induction_tutor_email
     end
 
     def reject_incomplete_check_answers

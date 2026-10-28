@@ -3,37 +3,6 @@ RSpec.describe Schools::InductionTutor::StateStore do
 
   let(:school) { FactoryBot.create(:school, :with_unconfirmed_induction_tutor) }
 
-  describe "#prefill_from_school" do
-    it "stores the school's induction tutor details" do
-      state_store.prefill_from_school
-
-      expect(state_store.read).to include(
-        induction_tutor_name: school.induction_tutor_name,
-        induction_tutor_email: school.induction_tutor_email
-      )
-    end
-
-    context "when the user has already entered details" do
-      before { state_store.write(induction_tutor_name: "New Name", induction_tutor_email: "new.name@example.com") }
-
-      it "keeps the entered details" do
-        state_store.prefill_from_school
-
-        expect(state_store.read).to include(induction_tutor_name: "New Name", induction_tutor_email: "new.name@example.com")
-      end
-    end
-
-    context "when the school has no induction tutor" do
-      let(:school) { FactoryBot.create(:school, :without_induction_tutor) }
-
-      it "stores blank details" do
-        state_store.prefill_from_school
-
-        expect(state_store.read).to include(induction_tutor_name: nil, induction_tutor_email: nil)
-      end
-    end
-  end
-
   describe "#details_confirmed?" do
     it { is_expected.not_to be_details_confirmed }
 
