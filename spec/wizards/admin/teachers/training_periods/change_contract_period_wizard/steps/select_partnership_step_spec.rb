@@ -26,8 +26,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Ste
       let(:school_partnership_id) { nil }
 
       it "is invalid with the correct error message" do
-        expect(step).not_to be_valid
-        expect(step.errors[:school_partnership_id]).to include("Select a partnership")
+        expect(step).to have_error(:school_partnership_id, "Select a partnership")
       end
     end
 
@@ -35,8 +34,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Ste
       let(:school_partnership_id) { other_school_partnership.id }
 
       it "is invalid with the correct error message" do
-        expect(step).not_to be_valid
-        expect(step.errors[:school_partnership_id]).to include("Select a partnership")
+        expect(step).to have_error(:school_partnership_id, "Select a partnership")
       end
     end
 

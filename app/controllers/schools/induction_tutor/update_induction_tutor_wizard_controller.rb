@@ -10,7 +10,7 @@ module Schools
       def reset_wizard
         return if request.referer.to_s.include?("/school/induction-tutor/update-induction-tutor/")
 
-        store.reset if current_step == :edit
+        state_store.clear if current_step == :edit
       end
     end
   end
