@@ -1,7 +1,9 @@
 module Teachers
   class MergeTRN
-    def initialize(teacher:)
+    def initialize(teacher:, new_trn: nil, author: nil)
       @teacher = teacher
+      @new_trn = new_trn
+      @author = author || Events::SystemAuthor.new
     end
 
     def merge!
@@ -17,11 +19,15 @@ module Teachers
         move_mentor_ineligibility_data
         record_teacher_id_change
         refresh_metadata
+        move_teacher_events
         record_merge_event
         teacher.destroy!
       end
 
-      TRSSyncJob.perform_later(teacher: destination, teacher_started_induction_on:)
+      TRSSyncJob.perform_later(
+        teacher: destination,
+        teacher_started_induction_on:
+      )
     end
 
     class TRSSyncJob < ApplicationJob
@@ -39,14 +45,18 @@ module Teachers
 
   private
 
-    attr_reader :teacher
+    attr_reader :teacher, :author
+
+    def new_trn
+      @new_trn ||= teacher.trs_redirected_to
+    end
 
     def destination
-      @destination ||= Teacher.find_by_trn(teacher.trs_redirected_to)
+      @destination ||= Teacher.find_by_trn(new_trn)
     end
 
     def eligible_for_merge?
-      Teachers::MergeTRN::Eligibility.new(teacher:).can_be_merged?
+      Teachers::MergeTRN::Eligibility.new(teacher:, new_trn: @new_trn).can_be_merged?
     end
 
     def overlapping_mentor_at_school_periods
@@ -84,6 +94,10 @@ module Teachers
     def move_induction_periods
       teacher.induction_periods.find_each { |period| period.update!(teacher: destination) }
       teacher.induction_extensions.find_each { |extension| extension.update!(teacher: destination) }
+    end
+
+    def move_teacher_events
+      teacher.events.update_all(teacher_id: destination.id)
     end
 
     def move_teacher_id_changes
@@ -135,10 +149,6 @@ module Teachers
 
     def record_merge_event
       Events::Record.record_teacher_trn_merged_event!(author:, source: teacher, destination:)
-    end
-
-    def author
-      Events::SystemAuthor.new
     end
   end
 end

@@ -148,6 +148,22 @@ RSpec.describe Teachers::MergeTRN do
   describe "#merge!" do
     subject(:merge!) { service.merge! }
 
+    context "when a replacement TRN is supplied for a deactivated teacher" do
+      subject(:service) { described_class.new(teacher:, new_trn: destination.trn) }
+
+      before { teacher.update!(trs_response: "gone", trs_redirected_to: nil) }
+
+      it "merges into the teacher with the supplied TRN" do
+        merge!
+
+        expect(Teacher.exists?(teacher.id)).to be(false)
+        expect(ect_at_school_period.reload.teacher).to eq(destination)
+        expect(described_class::TRSSyncJob).to have_been_enqueued.with(
+          teacher: destination, teacher_started_induction_on: nil
+        )
+      end
+    end
+
     context "when the destination has no overlapping records" do
       it "moves the at-school periods to the destination teacher" do
         merge!
@@ -418,6 +434,20 @@ RSpec.describe Teachers::MergeTRN do
           .from(0)
       end
 
+      it "preserves the source teacher’s timeline events on the destination" do
+        Events::Record.record_teacher_trn_replaced_event!(
+          teacher:,
+          author: Events::SystemAuthor.new,
+          old_trn: "1234567",
+          new_trn: teacher.trn
+        )
+        event = teacher.events.where(event_type: "teacher_trn_replaced").sole
+
+        merge!
+
+        expect(event.reload.teacher_id).to eq(destination.id)
+      end
+
       it "records a merge event" do
         merge!
 
@@ -514,7 +544,7 @@ RSpec.describe Teachers::MergeTRN do
 
     context "when the teachers cannot be merged" do
       before do
-        allow(Teachers::MergeTRN::Eligibility).to receive(:new).with(teacher:).and_return(double(can_be_merged?: false))
+        allow(Teachers::MergeTRN::Eligibility).to receive(:new).with(teacher:, new_trn: nil).and_return(double(can_be_merged?: false))
       end
 
       it "does not move any ect_at_school_periods" do

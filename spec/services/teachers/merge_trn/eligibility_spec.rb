@@ -3,19 +3,144 @@ RSpec.describe Teachers::MergeTRN::Eligibility do
 
   let(:teacher) { source }
 
-  describe "#can_be_merged?" do
-    subject(:can_be_merged) { described_class.new(teacher:).can_be_merged? }
+  describe "#can_be_replaced?" do
+    subject(:can_be_replaced) { described_class.new(teacher:, new_trn:).can_be_replaced? }
 
-    context "when a merge is not required" do
-      before { teacher.update!(trs_response: "ok") }
+    let(:teacher) { FactoryBot.create(:teacher, trs_response: status, trs_redirected_to:) }
+
+    context "when the teacher is redirected in TRS" do
+      let(:status) { "permanent_redirect" }
+      let(:trs_redirected_to) { "1234567" }
+      let(:new_trn) { nil }
+
+      it { is_expected.to be true }
+
+      context "when teacher is permanently redirected" do
+        before { FactoryBot.create(:teacher, trn: trs_redirected_to) }
+
+        it { is_expected.to be false }
+      end
+
+      context "when another teacher redirects to the target TRN" do
+        before { FactoryBot.create(:teacher, :merged_in_trs, trs_redirected_to:) }
+
+        it { is_expected.to be false }
+      end
+
+      context "when the redirected TRN is missing" do
+        let(:trs_redirected_to) { nil }
+
+        it { is_expected.to be false }
+      end
+    end
+
+    context "when the teacher is deactivated" do
+      let(:status) { "gone" }
+      let(:trs_redirected_to) { nil }
+
+      context "when a replacement TRN is supplied" do
+        let(:new_trn) { "2345678" }
+
+        it { is_expected.to be true }
+      end
+
+      context "when no replacement TRN is supplied" do
+        let(:new_trn) { nil }
+
+        it { is_expected.to be false }
+      end
+
+      context "when the replacement TRN is unchanged" do
+        let(:new_trn) { teacher.trn }
+
+        it { is_expected.to be false }
+      end
+
+      context "when the supplied TRN belongs to another teacher" do
+        before { FactoryBot.create(:teacher, trn: new_trn) }
+
+        let(:new_trn) { "2345678" }
+
+        it { is_expected.to be false }
+      end
+
+      context "when another teacher redirects to the supplied TRN" do
+        before { FactoryBot.create(:teacher, :merged_in_trs, trs_redirected_to: new_trn) }
+
+        let(:new_trn) { "2345678" }
+
+        it { is_expected.to be false }
+      end
+    end
+
+    context "when the teacher has an unsupported status and a target TRN" do
+      let(:status) { "ok" }
+      let(:trs_redirected_to) { nil }
+      let(:new_trn) { "2345678" }
 
       it { is_expected.to be false }
     end
+  end
 
-    context "when there is no redirected TRN" do
-      before { teacher.update!(trs_redirected_to: nil) }
+  describe "#can_be_merged?" do
+    subject(:can_be_merged) { described_class.new(teacher:, new_trn:).can_be_merged? }
 
-      it { is_expected.to be false }
+    let(:new_trn) { nil }
+
+    context "when the teacher is permanently redirected" do
+      before { teacher.update!(trs_response: "permanent_redirect") }
+
+      context "when there is no redirected TRN" do
+        before { teacher.update!(trs_redirected_to: nil) }
+
+        it { is_expected.to be false }
+      end
+
+      context "when there is a redirected TRN" do
+        before { teacher.update!(trs_redirected_to: destination.trn) }
+
+        it { is_expected.to be true }
+      end
+
+      context "when the redirected TRN does not exist in the system" do
+        before { teacher.update!(trs_redirected_to: "9999999") }
+
+        it { is_expected.to be false }
+      end
+
+      context "when the redirected TRN is the same as the teacher's TRN" do
+        before { teacher.update!(trs_redirected_to: teacher.trn) }
+
+        it { is_expected.to be false }
+      end
+    end
+
+    context "when the teacher is deactivated" do
+      before { teacher.update!(trs_response: "gone", trs_redirected_to: nil) }
+
+      context "when no new TRN is supplied" do
+        let(:new_trn) { nil }
+
+        it { is_expected.to be false }
+      end
+
+      context "when a new TRN for an existing teacher is supplied" do
+        let(:new_trn) { destination.trn }
+
+        it { is_expected.to be true }
+      end
+
+      context "when a new TRN for a non-existing teacher is supplied" do
+        let(:new_trn) { "8888888" }
+
+        it { is_expected.to be false }
+      end
+
+      context "when the supplied TRN is the same as the teacher's TRN" do
+        let(:new_trn) { teacher.trn }
+
+        it { is_expected.to be false }
+      end
     end
 
     context "when the destination does not exist" do

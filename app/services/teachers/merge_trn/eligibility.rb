@@ -1,29 +1,47 @@
 module Teachers
   class MergeTRN
     class Eligibility
-      def initialize(teacher:)
+      def initialize(teacher:, new_trn: nil)
         @teacher = teacher
+        @new_trn = new_trn
       end
 
       def can_be_merged?
         merge_required? &&
           destination.present? &&
+          destination.id != teacher.id &&
           at_most_one_teacher_has_induction_periods? &&
           ect_periods_at_different_schools_do_not_overlap? &&
           provider_led_training_periods_have_same_contract_period?(:mentor_training_periods) &&
           provider_led_training_periods_have_same_contract_period?(:ect_training_periods)
       end
 
+      def can_be_replaced?
+        merge_required? &&
+          new_trn != teacher.trn &&
+          destination.nil? &&
+          !another_teacher_redirected_to_destination?
+      end
+
     private
 
       attr_reader :teacher
 
+      def new_trn
+        @new_trn ||= teacher.trs_redirected_to
+      end
+
       def destination
-        @destination ||= Teacher.find_by_trn(teacher.trs_redirected_to)
+        @destination ||= Teacher.find_by_trn(new_trn)
       end
 
       def merge_required?
-        teacher.trs_response == "permanent_redirect" && teacher.trs_redirected_to.present?
+        (teacher.trs_response_gone? && @new_trn.present?) ||
+          (teacher.trs_response == "permanent_redirect" && teacher.trs_redirected_to.present?)
+      end
+
+      def another_teacher_redirected_to_destination?
+        Teacher.where.not(id: teacher.id).exists?(trs_redirected_to: new_trn)
       end
 
       def at_most_one_teacher_has_induction_periods?
