@@ -15,7 +15,7 @@ sidebar_position: 6
 
 
 <p class="govuk-body">
-We have both application-restricted endpoints and user-restricted endpoints in the API.
+The API has application-restricted endpoints and user-restricted endpoints. How you authenticate depends on which type you’re calling.
 </p>
 
 <%= govuk_table(html_attributes: { class: "govuk-!-font-size-16" }) do |table|
@@ -32,29 +32,29 @@ We have both application-restricted endpoints and user-restricted endpoints in t
       row.with_cell(text: "Application-restricted")
       row.with_cell(text: "HTTP Basic")
       row.with_cell(text: "Client ID and client secret")
-      row.with_cell(text: "Access endpoints that don’t require user authorisation or expose user-restricted data.")
+      row.with_cell(text: "Access endpoints that do not need authorisation from a user or give access to user-restricted data.")
     end
     body.with_row do |row|
       row.with_cell(text: "User-restricted")
       row.with_cell(text: "OAuth 2.0 Bearer")
       row.with_cell(text: "Access token")
-      row.with_cell(text: "Access protected organisation-specific data with authorisation from an organisation’s user.")
+      row.with_cell(text: "Access protected, organisation-specific data with authorisation from a user at that organisation.")
     end
   end
 end %>
 
 <h3 class="govuk-heading-m">Application-restricted endpoints</h3>
 <p class="govuk-body">
-Application-restricted endpoints authenticate the calling application without requiring authorisation from an end user. They do not provide access to user-restricted data.
+Application-restricted endpoints authenticate the calling application without needing authorisation from an end user. They do not give access to user-restricted data.
 </p>
 
 <p class="govuk-body">
-These endpoints require that you authenticate the request using <%= govuk_link_to("HTTP Basic Authentication", "https://www.rfc-editor.org/info/rfc7617/") %>
-with your client ID and client secret.  To do this, add an HTTP header containing your credentials in the form <code>client_id:client_secret</code>, Base64 encoded.
+To call these endpoints, use <%= govuk_link_to("HTTP Basic Authentication", "https://www.rfc-editor.org/info/rfc7617/") %> with your client ID and client secret.
+Join them with a colon (<code>client_id:client_secret</code>), Base64-encode the result, and send it in an <code>Authorization</code> header after the word <code>Basic</code>.
 </p>
 
 <p class="govuk-body">
-For example, if your client ID is <code>client123</code> and your secret is <code>supersecretvalue</code>, your Basic Authentication header would be:
+For example, if your client ID is <code>client123</code> and your secret is <code>supersecretvalue</code>, your header would be:
 
 <pre>
 <code>
@@ -67,7 +67,7 @@ Authorization: Basic Y2xpZW50MTIzOnN1cGVyc2VjcmV0dmFsdWU=
 
 
 <p class="govuk-body">
-We have a test <%= govuk_link_to("Hello API", api_hello_documentation_path, no_visited_state: true) %> where you can verify that you are correctly calling the API with your client credentials.
+You can check you’re calling the API correctly with your client credentials by using our test <%= govuk_link_to("Hello API", api_hello_documentation_path, no_visited_state: true) %>.
 </p>
 
 <h4 class="govuk-heading-s">Example request</h4>
@@ -82,22 +82,23 @@ curl -X GET <%= @api_base_url %>/hello/client \
 
 <h3 class="govuk-heading-m">User-restricted endpoints</h3>
 <p class="govuk-body">
-User-restricted endpoints give access to secure, personal data. To use them, your application must get permission from the end user.
+User-restricted endpoints give access to personal data. To use them, your application must get permission from the end user.
 </p>
 
 <p class="govuk-body">
-A user from each organisation you work with must authorise your application before we can give you an access token for that organisation.
-</p>
-<p class="govuk-body">
-How to obtain an access token is discussed in the earlier sections of this documentation starting with <%= govuk_link_to("How authorisation works", api_documentation_authorisation_page_path("how-authorisation-works"), no_visited_state: true) %>. 
+A user from each organisation you work with must authorise your application before we can give you an access token for that organisation. 
 </p>
 
 <p class="govuk-body">
-Once you have an access token you can access the user-restricted API endpoints. To do this, add an <code>Authorization</code> header to your request containing your access token as an OAuth 2.0 bearer token.
+To find out how to get an access token, start with <%= govuk_link_to("How authorisation works", api_documentation_authorisation_page_path("how-authorisation-works"), no_visited_state: true) %>. 
 </p>
 
 <p class="govuk-body">
-You can verify that you are calling the API correctly with your access token using our <%= govuk_link_to("Hello API", api_hello_documentation_path, no_visited_state: true) %>.
+Once you have an access token, add it to an <code>Authorization</code> header in your request as an OAuth 2.0 bearer token.
+</p>
+
+<p class="govuk-body">
+You can check you’re calling the API correctly with your access token by using our <%= govuk_link_to("Hello API", api_hello_documentation_path, no_visited_state: true) %>.
 </p>
 
 <h4 class="govuk-heading-s">Example request</h4>
