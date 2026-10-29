@@ -32,6 +32,7 @@ describe API::OAuth::Authorizations::RevocationRequest do
           author_type: "appropriate_body_api",
           happened_at: Time.zone.now,
           appropriate_body_period:,
+          oauth_client: client,
           heading: "Access token revoked by client '#{client.name}' for '#{appropriate_body_period.name}'"
         )
       end

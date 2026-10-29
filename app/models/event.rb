@@ -156,6 +156,9 @@ class Event < ApplicationRecord
 
   belongs_to :declaration
 
+  # OAuth client
+  belongs_to :oauth_client, class_name: "API::OAuth::Client"
+
   validates :heading, presence: true
   validates :happened_at, presence: true
   validates :event_type, presence: true, inclusion: { in: EVENT_TYPES }

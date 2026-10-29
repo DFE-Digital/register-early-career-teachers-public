@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_28_155219) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_29_092623) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -366,6 +366,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_28_155219) do
     t.datetime "updated_at", null: false
     t.integer "user_id"
     t.integer "zendesk_ticket_id"
+    t.bigint "oauth_client_id"
     t.index ["appropriate_body_period_id"], name: "index_events_on_appropriate_body_period_id"
     t.index ["author_email"], name: "index_events_on_author_email"
     t.index ["author_id"], name: "index_events_on_author_id"
@@ -380,6 +381,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_28_155219) do
     t.index ["lead_provider_id"], name: "index_events_on_lead_provider_id"
     t.index ["mentor_at_school_period_id"], name: "index_events_on_mentor_at_school_period_id"
     t.index ["mentorship_period_id"], name: "index_events_on_mentorship_period_id"
+    t.index ["oauth_client_id"], name: "index_events_on_oauth_client_id"
     t.index ["pending_induction_submission_batch_id"], name: "index_events_on_pending_induction_submission_batch_id"
     t.index ["school_id"], name: "index_events_on_school_id"
     t.index ["school_partnership_id"], name: "index_events_on_school_partnership_id"
@@ -1045,6 +1047,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_28_155219) do
   add_foreign_key "ect_at_school_periods", "schools"
   add_foreign_key "ect_at_school_periods", "schools", column: "reported_leaving_by_school_id"
   add_foreign_key "ect_at_school_periods", "teachers"
+  add_foreign_key "events", "api_oauth_clients", column: "oauth_client_id", on_delete: :nullify
   add_foreign_key "events", "appropriate_body_periods", on_delete: :nullify
   add_foreign_key "events", "contract_periods", primary_key: "year", on_delete: :nullify
   add_foreign_key "events", "declarations", on_delete: :nullify

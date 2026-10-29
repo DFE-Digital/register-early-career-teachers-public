@@ -22,6 +22,7 @@ describe API::OAuth::Authorizations::ExchangeCodeForToken do
       expect(event.appropriate_body_period).to eq(appropriate_body_period)
       expect(event.author_type).to eq("appropriate_body_api")
       expect(event.author_name).to eq(appropriate_body_period.name)
+      expect(event.oauth_client).to eq(client)
 
       expect(authorization.token_expires_at).to eq(1.year.from_now)
       expect(authorization.token_digest).to be_present

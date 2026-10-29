@@ -26,6 +26,7 @@ module Events
       statement_adjustment
       pending_induction_submission_batch
       declaration
+      oauth_client
     ].freeze
 
     attr_reader :author,
@@ -57,7 +58,8 @@ module Events
                 :metadata,
                 :zendesk_ticket_id,
                 :contract_period,
-                :band
+                :band,
+                :oauth_client
 
     def initialize(
       author:,
@@ -89,7 +91,8 @@ module Events
       metadata: nil,
       zendesk_ticket_id: nil,
       contract_period: nil,
-      band: nil
+      band: nil,
+      oauth_client: nil
     )
       @author = author
       @event_type = event_type
@@ -121,6 +124,7 @@ module Events
       @zendesk_ticket_id = zendesk_ticket_id
       @contract_period = contract_period
       @band = band
+      @oauth_client = oauth_client
     end
 
     def record_event!
@@ -916,8 +920,49 @@ module Events
       appropriate_body_period = authorization.appropriate_body_period
       heading = "#{client.name} was authorised by #{appropriate_body_period.name}"
       metadata = { client_name: client.name, client_id: client.client_id }
+      oauth_client = authorization.client
 
-      new(event_type:, author:, heading:, appropriate_body_period:, happened_at: Time.zone.now, metadata:).record_event!
+      new(event_type:,
+          author:,
+          heading:,
+          appropriate_body_period:,
+          happened_at: Time.zone.now,
+          oauth_client:,
+          metadata:).record_event!
+    end
+
+    def self.record_api_oauth_authorization_code_exchanged_event!(author:, authorization:)
+      event_type = :api_oauth_authorization_code_exchanged
+      heading = "Authorization code exchanged by client '#{authorization.client.name}' for '#{authorization.appropriate_body_period.name}'"
+      appropriate_body_period = authorization.appropriate_body_period
+      happened_at = authorization.code_exchanged_at
+      oauth_client = authorization.client
+
+      new(
+        event_type:,
+        author:,
+        heading:,
+        appropriate_body_period:,
+        happened_at:,
+        oauth_client:
+      ).record_event!
+    end
+
+    def self.record_api_oauth_access_token_revoked_event!(author:, authorization:)
+      event_type = :api_oauth_access_token_revoked
+      heading = "Access token revoked by client '#{authorization.client.name}' for '#{authorization.appropriate_body_period.name}'"
+      appropriate_body_period = authorization.appropriate_body_period
+      happened_at = authorization.revoked_at
+      oauth_client = authorization.client
+
+      new(
+        event_type:,
+        author:,
+        heading:,
+        appropriate_body_period:,
+        happened_at:,
+        oauth_client:
+      ).record_event!
     end
 
     # School Partnership Events
@@ -1660,36 +1705,6 @@ module Events
         lead_provider:,
         contract_period:,
         happened_at: Time.zone.now
-      ).record_event!
-    end
-
-    def self.record_api_oauth_authorization_code_exchanged_event!(author:, authorization:)
-      event_type = :api_oauth_authorization_code_exchanged
-      heading = "Authorization code exchanged by client '#{authorization.client.name}' for '#{authorization.appropriate_body_period.name}'"
-      appropriate_body_period = authorization.appropriate_body_period
-      happened_at = authorization.code_exchanged_at
-
-      new(
-        event_type:,
-        author:,
-        heading:,
-        appropriate_body_period:,
-        happened_at:
-      ).record_event!
-    end
-
-    def self.record_api_oauth_access_token_revoked_event!(author:, authorization:)
-      event_type = :api_oauth_access_token_revoked
-      heading = "Access token revoked by client '#{authorization.client.name}' for '#{authorization.appropriate_body_period.name}'"
-      appropriate_body_period = authorization.appropriate_body_period
-      happened_at = authorization.revoked_at
-
-      new(
-        event_type:,
-        author:,
-        heading:,
-        appropriate_body_period:,
-        happened_at:
       ).record_event!
     end
 
