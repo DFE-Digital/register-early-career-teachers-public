@@ -1,5 +1,5 @@
 locals {
-  snapshot_db_kv_secret_name = "${var.azure_resource_prefix}-${var.service_short}-${var.config_short}-pg-snapshot-database-url"
+  replica_database_url = var.read_replica_count != 0 ? module.postgres.read_replica_urls["replica-1"] : null
 }
 
 module "application_configuration" {
@@ -27,8 +27,8 @@ module "application_configuration" {
     local.bigquery_secrets,
     {
       DATABASE_URL         = module.postgres.url
-      REPLICA_DATABASE_URL = var.read_replica_count != 0 ? module.postgres.read_replica_urls["replica-1"] : null
-      BLAZER_DATABASE_URL  = var.environment == "production" ? module.infrastructure_secrets.map[local.snapshot_db_kv_secret_name] : module.postgres.url
+      REPLICA_DATABASE_URL = local.replica_database_url
+      BLAZER_DATABASE_URL  = var.environment == "production" ? local.replica_database_url : module.postgres.url
       REDIS_CACHE_URL      = module.redis-managed-cache.url
     }
   )
