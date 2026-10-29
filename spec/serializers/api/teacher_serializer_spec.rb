@@ -13,10 +13,14 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
       api_updated_at:
     )
   end
+  let(:eligible_for_funding) { false }
+  let(:eligibility_service) { instance_double(API::Teachers::EligibilityForFunding, eligible_for_funding:) }
 
   before do
     # Ensure other metadata exists for another lead provider.
     FactoryBot.create(:lead_provider)
+
+    allow(API::Teachers::EligibilityForFunding).to receive(:new).and_return(eligibility_service)
   end
 
   describe ".dependencies" do
@@ -245,15 +249,10 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
           end
 
           describe "`eligible_for_funding`" do
-            let(:eligibility_service) { instance_double(API::Teachers::EligibilityForFunding, eligible?: true) }
+            let(:eligible_for_funding) { true }
 
-            before do
-              allow(API::Teachers::EligibilityForFunding).to receive(:new).and_return(eligibility_service)
-            end
-
-            it "delegates to API::Teachers::EligibilityForFunding" do
-              expect(ect_enrolment["eligible_for_funding"]).to be(true)
-              expect(API::Teachers::EligibilityForFunding).to have_received(:new).with(teacher:, teacher_type: :ect)
+            it "serializes the value returned by API::Teachers::EligibilityForFunding" do
+              expect(ect_enrolment["eligible_for_funding"]).to be(eligible_for_funding)
             end
           end
 
@@ -471,15 +470,10 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
           end
 
           describe "`eligible_for_funding`" do
-            let(:eligibility_service) { instance_double(API::Teachers::EligibilityForFunding, eligible?: true) }
+            let(:eligible_for_funding) { false }
 
-            before do
-              allow(API::Teachers::EligibilityForFunding).to receive(:new).and_return(eligibility_service)
-            end
-
-            it "delegates to API::Teachers::EligibilityForFunding" do
-              expect(mentor_enrolment["eligible_for_funding"]).to be(true)
-              expect(API::Teachers::EligibilityForFunding).to have_received(:new).with(teacher:, teacher_type: :mentor)
+            it "serializes the value returned by API::Teachers::EligibilityForFunding" do
+              expect(mentor_enrolment["eligible_for_funding"]).to be(eligible_for_funding)
             end
           end
 
