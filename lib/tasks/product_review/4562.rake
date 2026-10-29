@@ -68,18 +68,16 @@ namespace :product_review do
       {
         name: "Mentor missing eligibility",
         role: :mentor,
-        training: true,
         expected: "Mentor eligibility becomes #{started_on}"
       },
       {
-        name: "Mentor without training",
+        name: "Mentor with training",
         role: :mentor,
-        expected: "Mentor eligibility remains unset"
+        expected: "Mentor eligibility becomes #{started_on}"
       },
       {
         name: "Mentor existing eligibility",
         role: :mentor,
-        training: true,
         attributes: {
           mentor_first_became_eligible_for_training_at: existing_eligible_at.in_time_zone
         },
@@ -112,14 +110,12 @@ namespace :product_review do
       {
         name: "Mentor with past induction",
         role: :mentor,
-        training: true,
         attributes: { trs_induction_start_date: started_on - 2.years },
         expected: "Mentor eligibility becomes #{started_on}; ECT eligibility remains unset"
       },
       {
         name: "Mentor ineligible with training",
         role: :mentor,
-        training: true,
         attributes: {
           mentor_became_ineligible_for_funding_on: existing_ineligible_on,
           mentor_became_ineligible_for_funding_reason: "started_not_completed"
@@ -195,6 +191,7 @@ namespace :product_review do
             )
 
             training_period.update!(finished_on:)
+            school_period.update!(finished_on:)
           end
         else
           teacher = FactoryBot.create(:teacher)
@@ -207,14 +204,14 @@ namespace :product_review do
             started_on:
           )
 
-          if scenario[:training]
-            FactoryBot.create(
-              :training_period,
-              :for_mentor,
-              mentor_at_school_period: school_period,
-              started_on:
-            )
-          end
+          FactoryBot.create(
+            :training_period,
+            :"for_#{role}",
+            "#{role}_at_school_period": school_period,
+            started_on: school_period.started_on,
+            finished_on: school_period.finished_on,
+            school_partnership:
+          )
         end
 
         unless scenario[:merged] == false
