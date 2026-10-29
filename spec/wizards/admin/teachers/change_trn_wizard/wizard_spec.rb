@@ -68,8 +68,8 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::Wizard do
 
   context "when the replacement service fails" do
     before do
-      service = instance_double(Teachers::ReplaceTRN)
-      allow(Teachers::ReplaceTRN).to receive(:new)
+      service = instance_double(Teachers::TRN::Replace)
+      allow(Teachers::TRN::Replace).to receive(:new)
         .with(teacher: wizard.teacher, new_trn: store.trn, author:).and_return(service)
       allow(service).to receive(:replace!).and_raise(ActiveRecord::RecordInvalid)
     end

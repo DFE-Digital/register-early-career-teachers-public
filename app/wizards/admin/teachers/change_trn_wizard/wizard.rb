@@ -39,12 +39,12 @@ module Admin
         def replace_trn!
           teacher.with_lock do
             raise TeacherNotDeactivatedError unless teacher.trs_response_gone?
-            raise IneligibleForReplacementError unless ::Teachers::MergeTRN::Eligibility
+            raise IneligibleForReplacementError unless ::Teachers::TRN::Eligibility
               .new(teacher:, new_trn: store.trn).can_be_replaced?
 
             old_trn = teacher.trn
 
-            ::Teachers::ReplaceTRN.new(teacher:, new_trn: store.trn, author:).replace!
+            ::Teachers::TRN::Replace.new(teacher:, new_trn: store.trn, author:).replace!
 
             store.old_trn = old_trn
           end
