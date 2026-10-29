@@ -18,6 +18,7 @@ module "application_configuration" {
   config_variables = merge(
     local.environment_variables,
     local.bigquery_variables,
+    local.airbyte_variables,
     {
       ENVIRONMENT_NAME = var.environment
       PGSSLMODE        = local.postgres_ssl_mode
@@ -25,6 +26,7 @@ module "application_configuration" {
   )
   secret_variables = merge(
     local.bigquery_secrets,
+    local.airbyte_secrets,
     {
       DATABASE_URL         = module.postgres.url
       REPLICA_DATABASE_URL = var.read_replica_count != 0 ? module.postgres.read_replica_urls["replica-1"] : null
