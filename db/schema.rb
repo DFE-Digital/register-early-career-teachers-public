@@ -125,6 +125,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_000000) do
     t.bigint "school_id"
     t.bigint "teaching_school_hub_id"
     t.datetime "updated_at", null: false
+    t.date "started_on"
+    t.date "finished_on"
+    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on, '[]'::text)", stored: true
     t.uuid "external_id", default: -> { "gen_random_uuid()" }, null: false
     t.index ["dfe_sign_in_organisation_id"], name: "index_appropriate_body_periods_on_dfe_sign_in_organisation_id", unique: true
     t.index ["external_id"], name: "index_appropriate_body_periods_on_external_id", unique: true
@@ -132,6 +135,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_000000) do
     t.index ["national_body_id"], name: "index_appropriate_body_periods_on_national_body_id"
     t.index ["school_id"], name: "index_appropriate_body_periods_on_school_id"
     t.index ["teaching_school_hub_id"], name: "index_appropriate_body_periods_on_teaching_school_hub_id"
+    t.check_constraint "finished_on >= started_on", name: "finished_on_not_before_started_on"
   end
 
   create_table "blazer_audits", force: :cascade do |t|
