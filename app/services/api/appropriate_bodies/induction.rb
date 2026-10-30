@@ -24,6 +24,10 @@ module API
         as_claim(Teacher.find_by!(trn:).ongoing_induction_period)
       rescue StandardError => e
         rescue_with_handler(e) || raise
+      # Purge the pending submission's TRS personal data on success or failure.
+      # Not a transaction: it would hold a connection open while we call TRS.
+      ensure
+        pending_induction_submission.touch(:delete_at) if pending_induction_submission&.persisted?
       end
 
       # def release!; end

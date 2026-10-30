@@ -16,6 +16,17 @@ RSpec.describe API::AppropriateBodies::Induction do
       expect(Teacher.find_by!(trn: "1234567").ongoing_induction_period.appropriate_body_period).to eq(appropriate_body)
     end
 
+    it "schedules the pending submission for deletion whether or not the claim succeeds" do
+      another_appropriate_body = FactoryBot.create(:appropriate_body_period, name: "Canvas Teaching School Hub")
+
+      induction.claim!(**claim_params)
+      expect { described_class.new(appropriate_body: another_appropriate_body, client:).claim!(**claim_params) }
+        .to raise_error(described_class::AlreadyClaimed)
+
+      expect(PendingInductionSubmission.ready_for_deletion.map(&:appropriate_body_period))
+        .to contain_exactly(appropriate_body, another_appropriate_body)
+    end
+
     it "raises a validation error when the claim is invalid" do
       expect { induction.claim!(**claim_params, date_of_birth: nil) }
         .to raise_error(described_class::Invalid, /Enter a date of birth/)
