@@ -51,6 +51,7 @@ describe "Admin changing a deactivated teacher's TRN" do
   it "allows cancellation from the entry page without changing the teacher" do
     when_i_start_the_change_trn_journey
     then_i_see_the_entry_page
+    then_the_replacement_trn_field_is_empty
 
     when_i_cancel_the_change
     then_i_return_to_the_teacher_overview
@@ -65,6 +66,63 @@ describe "Admin changing a deactivated teacher's TRN" do
     when_i_cancel_the_change
     then_i_return_to_the_teacher_overview
     then_the_teacher_is_unchanged
+  end
+
+  context "when the replacement TRN already belongs to another RECT record" do
+    before do
+      given_two_teacher_records_with_school_history
+    end
+
+    it "merges the records, preserves school history and shows the timeline event" do
+      when_i_start_the_change_trn_journey
+      when_i_enter_the_replacement_trn
+      then_i_see_the_merge_preview
+      then_both_records_are_unchanged
+
+      when_i_continue_to_merge_confirmation
+      then_i_see_the_merge_confirmation
+
+      when_i_confirm_the_merge
+      then_i_see_the_merge_success_page
+      then_the_records_are_merged
+
+      when_i_return_to_the_teacher_list
+      then_i_see_the_teacher_list
+
+      when_i_view_the_destination_timeline
+      then_i_see_the_merge_event
+    end
+
+    it "requires confirmation before merging" do
+      when_i_start_the_change_trn_journey
+      when_i_enter_the_replacement_trn
+      when_i_continue_to_merge_confirmation
+
+      when_i_submit_without_confirming
+      then_i_see_the_merge_confirmation_error
+      then_both_records_are_unchanged
+    end
+
+    it "allows cancellation from the merge preview" do
+      when_i_start_the_change_trn_journey
+      when_i_enter_the_replacement_trn
+      then_i_see_the_merge_preview
+
+      when_i_cancel_the_change
+      then_i_return_to_the_teacher_overview
+      then_both_records_are_unchanged
+    end
+
+    it "allows cancellation from merge confirmation" do
+      when_i_start_the_change_trn_journey
+      when_i_enter_the_replacement_trn
+      when_i_continue_to_merge_confirmation
+      then_i_see_the_merge_confirmation
+
+      when_i_cancel_the_change
+      then_i_return_to_the_teacher_overview
+      then_both_records_are_unchanged
+    end
   end
 
 private
@@ -112,6 +170,12 @@ private
       name: "Change the TRN for this deactivated record",
       exact: true
     ).click
+  end
+
+  def then_the_replacement_trn_field_is_empty
+    expect(
+      page.get_by_label("Enter the new TRN", exact: true)
+    ).to have_value("")
   end
 
   def then_i_see_the_entry_page
@@ -254,6 +318,175 @@ private
     )
     expect(
       @teacher.events.where(event_type: "teacher_trn_replaced").exists?
+    ).to be(false)
+  end
+
+  def given_two_teacher_records_with_school_history
+    @source_school = FactoryBot.create(:school)
+
+    @destination = FactoryBot.create(
+      :teacher,
+      trn: @new_trn,
+      trs_response: "ok",
+      trs_first_name: "Bruce",
+      trs_last_name: "Wayne"
+    )
+    @destination_name = Teachers::Name.new(@destination).full_name
+
+    @source_school_period = FactoryBot.create(
+      :ect_at_school_period,
+      teacher: @teacher,
+      school: @source_school,
+      started_on: Date.new(2025, 9, 1),
+      finished_on: Date.new(2025, 10, 1)
+    )
+
+    @destination_school_period = FactoryBot.create(
+      :ect_at_school_period,
+      teacher: @destination,
+      started_on: Date.new(2026, 1, 1),
+      finished_on: nil
+    )
+
+    @overlapping_source_period = FactoryBot.create(
+      :ect_at_school_period,
+      teacher: @teacher,
+      school: @source_school,
+      started_on: Date.new(2025, 11, 1),
+      finished_on: Date.new(2025, 12, 31)
+    )
+
+    @overlapping_destination_period = FactoryBot.create(
+      :ect_at_school_period,
+      teacher: @destination,
+      school: @source_school,
+      started_on: Date.new(2025, 11, 1),
+      finished_on: Date.new(2025, 12, 1)
+    )
+  end
+
+  def then_i_see_the_merge_preview
+    expect(
+      page.get_by_role(
+        "heading",
+        name: "Check teacher records before merging",
+        exact: true
+      )
+    ).to be_visible
+
+    expect(page.get_by_text(@old_trn, exact: true)).to be_visible
+    expect(page.get_by_text(@new_trn, exact: true)).to be_visible
+
+    expect(
+      page.get_by_text(@source_school_period.school.name, exact: true).first
+    ).to be_visible
+
+    expect(
+      page.get_by_text(@destination_school_period.school.name, exact: true).first
+    ).to be_visible
+  end
+
+  def when_i_continue_to_merge_confirmation
+    page.get_by_role("button", name: "Continue", exact: true).click
+  end
+
+  def then_i_see_the_merge_confirmation
+    expect(
+      page.get_by_role(
+        "heading",
+        name: "Confirm merge for #{@teacher_name}",
+        exact: true
+      )
+    ).to be_visible
+
+    expect(page.get_by_text(@old_trn, exact: true)).to be_visible
+    expect(page.get_by_text(@new_trn, exact: true)).to be_visible
+  end
+
+  def when_i_confirm_the_merge
+    page.get_by_label(
+      "I confirm I want to merge these teacher records",
+      exact: true
+    ).check
+
+    page.get_by_role("button", name: "Confirm", exact: true).click
+  end
+
+  def then_i_see_the_merge_success_page
+    expect(
+      page.get_by_role("heading", name: "Records merged for #{@teacher_name}", exact: true)
+    ).to be_visible
+
+    expect(
+      page.get_by_role("link", name: "Back to teachers", exact: true)
+    ).to be_visible
+  end
+
+  def then_the_records_are_merged
+    expect(Teacher.exists?(@teacher.id)).to be(false)
+    expect(@destination.reload.trn).to eq(@new_trn)
+
+    expect(@source_school_period.reload).to have_attributes(
+      teacher_id: @destination.id,
+      started_on: Date.new(2025, 9, 1),
+      finished_on: Date.new(2025, 10, 1)
+    )
+
+    expect(@destination_school_period.reload).to have_attributes(
+      teacher_id: @destination.id,
+      started_on: Date.new(2026, 1, 1),
+      finished_on: nil
+    )
+
+    merged_period = @destination.ect_at_school_periods.where(school: @source_school).latest_first.first
+
+    expect(merged_period).to have_attributes(
+      started_on: Date.new(2025, 11, 1),
+      finished_on: Date.new(2025, 12, 31)
+    )
+    expect(ECTAtSchoolPeriod.exists?(@overlapping_source_period.id)).to be(false)
+    expect(@destination.ect_at_school_periods.count).to eq(3)
+  end
+
+  def when_i_view_the_destination_timeline
+    page.goto(admin_teacher_path(@destination))
+    page.get_by_role("link", name: "Timeline", exact: true).click
+  end
+
+  def then_i_see_the_merge_event
+    expect(
+      page.get_by_text(
+        "Records were merged into #{@destination_name} from #{@teacher_name}",
+        exact: true
+      )
+    ).to be_visible
+
+    event = @destination.events.where(event_type: "teacher_merged").sole
+
+    expect(event.author_type).to eq("dfe_staff_user")
+  end
+
+  def then_i_see_the_merge_confirmation_error
+    expect(
+      page.get_by_role(
+        "link",
+        name: "Confirm you want to merge these teacher records",
+        exact: true
+      )
+    ).to be_visible
+  end
+
+  def then_both_records_are_unchanged
+    then_the_teacher_is_unchanged
+
+    expect(@destination.reload.trn).to eq(@new_trn)
+    expect(@source_school_period.reload.teacher_id).to eq(@teacher.id)
+    expect(@destination_school_period.reload.teacher_id).to eq(@destination.id)
+    expect(@overlapping_source_period.reload.teacher_id).to eq(@teacher.id)
+    expect(@overlapping_destination_period.reload.teacher_id).to eq(@destination.id)
+
+    expect(
+      @destination.events.where(event_type: "teacher_merged").exists?
     ).to be(false)
   end
 end

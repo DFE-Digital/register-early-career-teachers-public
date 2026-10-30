@@ -14,7 +14,7 @@
   <p class="govuk-body">
     <%= govuk_link_to(
       "Change the TRN for this deactivated record",
-      admin_teacher_change_trn_wizard_enter_trn_path(@teacher)
+      admin_teacher_change_trn_wizard_enter_trn_path(@teacher, start: true)
     ) %>
   </p>
 <% end %>
