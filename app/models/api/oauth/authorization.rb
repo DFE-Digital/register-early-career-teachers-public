@@ -16,6 +16,7 @@ class API::OAuth::Authorization < ApplicationRecord
   scope :with_token, ->(token) { where(token_digest: Digest::SHA256.hexdigest(token)) }
 
   delegate :name, to: :appropriate_body_period, allow_nil: true, prefix: :appropriate_body
+  alias_method :appropriate_body, :appropriate_body_period
 
   def active? = token_active? && not_revoked?
 

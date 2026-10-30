@@ -30,6 +30,22 @@ RSpec.shared_context "test TRS API returns a deactivated teacher" do
   end
 end
 
+RSpec.shared_context "test TRS API is unavailable" do
+  before do
+    allow(TRS::APIClient).to receive(:new).and_return(
+      TRS::TestAPIClient.new(raise_api_request_error: true)
+    )
+  end
+end
+
+RSpec.shared_context "test TRS API times out" do
+  before do
+    allow(TRS::APIClient).to receive(:new).and_return(
+      TRS::TestAPIClient.new(raise_timeout: true)
+    )
+  end
+end
+
 RSpec.shared_context "test TRS API returns a teacher and then nothing" do
   before do
     allow(TRS::APIClient).to receive(:new).and_return(

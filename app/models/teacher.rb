@@ -162,6 +162,8 @@ class Teacher < ApplicationRecord
     Teachers::MentorFundingEligibility.new(trn:).eligible?
   end
 
+  def full_name = Teachers::Name.new(self).full_name
+
   def syncable_with_trs?
     trs_response.nil? || trs_response_ok?
   end
