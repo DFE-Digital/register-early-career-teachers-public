@@ -36,7 +36,7 @@ module API
 
     private
 
-      # TODO: change to AppropriateBodyVendorAuthor
+      # TODO: change to AppropriateBodyAPIAuthor
       def author = Events::OAuthClientAuthor.new(client:)
 
       def import_from_trs!(pending_induction_submission:)
