@@ -1,4 +1,6 @@
-class ApplicationWizardStep < DfE::Wizard::Step
+class ApplicationWizardStep
+  include DfE::Wizard::Step
+
   include ActiveModel::Attributes
   include ActiveRecord::AttributeAssignment
 
