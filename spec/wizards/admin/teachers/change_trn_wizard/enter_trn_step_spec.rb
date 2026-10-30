@@ -29,6 +29,7 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::EnterTRNStep do
 
   before do
     allow(wizard).to receive(:merge_proposed?) { store.destination_teacher_id.present? }
+    allow(wizard).to receive(:ineligible_for_merge?).and_return(false)
     allow(TRS::APIClient).to receive(:build).and_return(api_client)
     allow(api_client).to receive(:find_teacher)
       .with(trn: "0012345")
@@ -189,6 +190,16 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::EnterTRNStep do
 
           expect(store.destination_teacher_id).to eq(destination.id)
           expect(step.next_step).to eq(:merge_preview)
+        end
+
+        context "when the records cannot be merged" do
+          before { allow(wizard).to receive(:ineligible_for_merge?).and_return(true) }
+
+          it "continues to the cannot use TRN page" do
+            expect(step.save!).to be(true)
+
+            expect(step.next_step).to eq(:cannot_use_trn)
+          end
         end
       end
 

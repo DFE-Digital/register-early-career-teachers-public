@@ -11,6 +11,10 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
   let(:entry_path) { admin_teacher_change_trn_wizard_enter_trn_path(teacher) }
   let(:confirm_path) { admin_teacher_change_trn_wizard_confirm_path(teacher) }
 
+  let(:cannot_use_trn_path) do
+    admin_teacher_change_trn_wizard_cannot_use_trn_path(teacher)
+  end
+
   let(:confirmation_path) do
     admin_teacher_change_trn_wizard_confirmation_path(teacher)
   end
@@ -379,6 +383,25 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
 
     it_behaves_like "confirming a TRN change"
 
+    context "when the records cannot be merged" do
+      before do
+        FactoryBot.create(:induction_period, teacher:)
+        FactoryBot.create(:induction_period, teacher: destination)
+
+        post entry_path, params: { enter_trn: { trn: new_trn } }
+      end
+
+      it "shows the cannot use TRN page" do
+        expect(response).to redirect_to(cannot_use_trn_path)
+
+        follow_redirect!
+
+        expect(response).to have_http_status(:ok)
+      end
+
+      it_behaves_like "does not merge the teacher records"
+    end
+
     it "shows both records without changing either teacher" do
       post entry_path, params: { enter_trn: { trn: new_trn } }
 
@@ -586,14 +609,8 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
                params: { confirm: { confirmed: "1", expected_trn: new_trn } }
         end
 
-        it "returns to TRN entry with an explanation" do
-          expect(response).to redirect_to(entry_path)
-          expect(flash[:error]).to eq(
-            "The teacher records are not eligible for merge with the supplied TRN. " \
-            "This could be because both TRNs have induction records, or they " \
-            "have training periods with different contract periods, or there are " \
-            "overlapping ECT periods at different schools. "
-          )
+        it "shows the cannot use TRN page" do
+          expect(response).to redirect_to(cannot_use_trn_path)
 
           get confirm_path
 
