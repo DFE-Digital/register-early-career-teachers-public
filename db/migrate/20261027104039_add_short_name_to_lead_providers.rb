@@ -2,21 +2,19 @@ class AddShortNameToLeadProviders < ActiveRecord::Migration[8.1]
   def up
     add_column :lead_providers, :short_name, :string
 
-    short_names = {
+    LeadProvider.find_each do |lead_provider|
+      lead_provider.assign_short_name
+      lead_provider.save!
+    end
+
+    # Specific short names for lead providers that do not
+    # follow the standard short name convention.
+    short_name_overrides = {
       "Ambition Institute" => "ambition",
-      "Best Practice Network" => "bpn",
-      "Capita" => "capita",
-      "Education Development Trust" => "edt",
-      "National Institute of Teaching" => "niot",
-      "Teach First" => "tf",
-      "UCL Institute of Education" => "ucl",
-      # Staging lead providers
-      "Reuse – Lead Provider One" => "reuse",
-      "Reuse – Lead Provider X (not available in target year)" => "reusex"
     }
 
-    LeadProvider.find_each do |lead_provider|
-      lead_provider.update!(short_name: short_names.fetch(lead_provider.name))
+    LeadProvider.where(name: short_name_overrides.keys).find_each do |lead_provider|
+      lead_provider.update!(short_name: short_name_overrides.fetch(lead_provider.name))
     end
 
     change_column_null :lead_providers, :short_name, false
