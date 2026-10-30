@@ -372,6 +372,69 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
     end
   end
 
+  describe "merge preview" do
+    subject(:rendered) do
+      render_inline(described_class.new(training_period:, merge_preview: true, show_actions: false, show_api_row: true))
+    end
+
+    shared_examples "a training period preview" do
+      it "omits a missing end date" do
+        expect(rendered).not_to have_css("dt", text: "End date", exact_text: true)
+      end
+
+      context "when the period has ended" do
+        before { training_period.update!(finished_on: training_period.started_on + 1.month) }
+
+        it "shows the recorded end date" do
+          expect(rendered).to have_css("dt", text: "End date", exact_text: true)
+          expect(rendered).to have_css("dd", text: training_period.finished_on.to_fs(:govuk))
+        end
+      end
+    end
+
+    context "for a provider-led ECT" do
+      let(:training_period) do
+        FactoryBot.create(:training_period, :for_ect, :provider_led, :unfinished,
+                          ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished))
+      end
+
+      it_behaves_like "a training period preview"
+
+      it "labels the induction programme" do
+        expect(rendered).to have_css("dt", text: "Induction programme")
+        expect(rendered).not_to have_css("dt", text: "Training programme")
+      end
+    end
+
+    context "for a school-led ECT" do
+      let(:training_period) do
+        FactoryBot.create(:training_period, :school_led, :unfinished,
+                          ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished))
+      end
+
+      it_behaves_like "a training period preview"
+
+      it "labels the induction programme" do
+        expect(rendered).to have_css("dt", text: "Induction programme")
+        expect(rendered).not_to have_css("dt", text: "Training programme")
+      end
+    end
+
+    context "for a mentor" do
+      let(:training_period) do
+        FactoryBot.create(:training_period, :for_mentor, :provider_led, :unfinished,
+                          mentor_at_school_period: FactoryBot.create(:mentor_at_school_period, :unfinished))
+      end
+
+      it_behaves_like "a training period preview"
+
+      it "omits the programme row" do
+        expect(rendered).not_to have_css("dt", text: "Induction programme")
+        expect(rendered).not_to have_css("dt", text: "Training programme")
+      end
+    end
+  end
+
   describe "#rows" do
     context "when the training programme type is unexpected" do
       let(:training_period) do
