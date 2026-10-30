@@ -1,10 +1,9 @@
 RSpec.describe Teachers::TRN::Replace do
   describe "#replace!" do
-    subject(:replace) { described_class.new(teacher:, new_trn:, author:).replace! }
+    subject(:replace) { described_class.new(teacher:, author:).replace! }
 
     let(:old_trn) { "654321" }
     let(:replacement_trn) { "123456" }
-    let(:new_trn) { nil }
     let(:author) { nil }
 
     shared_examples "a TRN replacement" do
@@ -33,21 +32,6 @@ RSpec.describe Teachers::TRN::Replace do
       it "queues a TRS refresh" do
         expect { replace }
           .to have_enqueued_job(Teachers::SyncTeacherWithTRSJob).with(teacher:)
-      end
-
-      it "does not repeat a replacement through a stale teacher instance" do
-        stale_teacher = teacher
-
-        described_class.new(teacher: Teacher.find(teacher.id), new_trn:).replace!
-        described_class.new(teacher: stale_teacher, new_trn: "8888888").replace!
-
-        expect(teacher.reload).to have_attributes(
-          trn: replacement_trn,
-          trs_response: "ok",
-          trs_redirected_to: nil
-        )
-        expect(teacher.events.where(event_type: "teacher_trn_replaced").count).to eq(1)
-        expect(Teachers::SyncTeacherWithTRSJob).to have_been_enqueued.exactly(:once)
       end
 
       context "when an admin author is supplied" do
@@ -100,36 +84,94 @@ RSpec.describe Teachers::TRN::Replace do
       end
     end
 
-    context "when replacement is ineligible" do
-      let(:teacher) { FactoryBot.create(:teacher, :deactivated_in_trs, trn: old_trn) }
-      let(:new_trn) { replacement_trn }
-      let(:eligibility) { instance_double(Teachers::TRN::Eligibility, can_be_replaced?: false) }
-
-      before do
-        allow(Teachers::TRN::Eligibility).to receive(:new)
-          .with(teacher:, new_trn:).and_return(eligibility)
-      end
-
-      it "leaves the record untouched without recording an event or scheduling a refresh" do
-        expect { replace }.not_to(change { teacher.reload.attributes })
-        expect(teacher.events.where(event_type: "teacher_trn_replaced")).to be_empty
-        expect(Teachers::SyncTeacherWithTRSJob).not_to have_been_enqueued
-      end
-    end
-
     context "when the teacher has a TRS permanent redirect" do
       let(:teacher) do
         FactoryBot.create(:teacher, :merged_in_trs, trn: old_trn, trs_redirected_to: replacement_trn)
       end
 
       include_examples "a TRN replacement"
+
+      context "when a different explicit TRN is also supplied" do
+        let(:new_trn) { "8888888" }
+
+        it "uses the trs_redirected_to value for the update" do
+          replace
+
+          expect(teacher.reload.trn).to eq(replacement_trn)
+          expect(teacher.events.where(event_type: "teacher_trn_replaced").sole.metadata)
+            .to include("new_trn" => replacement_trn)
+        end
+      end
+
+      context "when replacement is ineligible" do
+        let(:eligibility) { instance_double(Teachers::TRN::Eligibility, can_be_replaced?: false) }
+
+        before do
+          allow(Teachers::TRN::Eligibility).to receive(:new)
+            .with(teacher:).and_return(eligibility)
+        end
+
+        it "leaves the record untouched without recording an event or scheduling a refresh" do
+          expect { replace }.not_to(change { teacher.reload.attributes })
+          expect(teacher.events.where(event_type: "teacher_trn_replaced")).to be_empty
+          expect(Teachers::SyncTeacherWithTRSJob).not_to have_been_enqueued
+        end
+      end
     end
 
     context "when the teacher is deactivated" do
+      subject(:replace) { described_class.new(teacher:, new_trn:, author:).replace! }
+
       let(:teacher) { FactoryBot.create(:teacher, :deactivated_in_trs, trn: old_trn) }
       let(:new_trn) { replacement_trn }
 
       include_examples "a TRN replacement"
+
+      it "does not repeat a replacement through a stale teacher instance" do
+        stale_teacher = teacher
+
+        described_class.new(teacher: Teacher.find(teacher.id), new_trn:).replace!
+        described_class.new(teacher: stale_teacher, new_trn: "8888888").replace!
+
+        expect(teacher.reload).to have_attributes(
+          trn: replacement_trn,
+          trs_response: "ok",
+          trs_redirected_to: nil
+        )
+        expect(teacher.events.where(event_type: "teacher_trn_replaced").count).to eq(1)
+        expect(Teachers::SyncTeacherWithTRSJob).to have_been_enqueued.exactly(:once)
+      end
+
+      context "when the teacher has a trs_redirected_to value" do
+        let(:teacher) do
+          FactoryBot.create(:teacher, :deactivated_in_trs, trn: old_trn, trs_redirected_to: "8888888")
+        end
+
+        let(:new_trn) { replacement_trn }
+
+        it "uses the supplied value for the update" do
+          replace
+
+          expect(teacher.reload.trn).to eq(replacement_trn)
+          expect(teacher.events.where(event_type: "teacher_trn_replaced").sole.metadata)
+            .to include("new_trn" => replacement_trn)
+        end
+      end
+
+      context "when replacement is ineligible" do
+        let(:eligibility) { instance_double(Teachers::TRN::Eligibility, can_be_replaced?: false) }
+
+        before do
+          allow(Teachers::TRN::Eligibility).to receive(:new)
+            .with(teacher:, new_trn:).and_return(eligibility)
+        end
+
+        it "leaves the record untouched without recording an event or scheduling a refresh" do
+          expect { replace }.not_to(change { teacher.reload.attributes })
+          expect(teacher.events.where(event_type: "teacher_trn_replaced")).to be_empty
+          expect(Teachers::SyncTeacherWithTRSJob).not_to have_been_enqueued
+        end
+      end
     end
   end
 end

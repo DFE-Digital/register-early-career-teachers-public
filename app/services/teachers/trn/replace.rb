@@ -3,19 +3,20 @@ module Teachers
     class Replace
       def initialize(teacher:, new_trn: nil, author: nil)
         @teacher = teacher
-        @author = author || Events::SystemAuthor.new
         @new_trn = new_trn
+        @author = author || Events::SystemAuthor.new
       end
 
       def replace!
         teacher.with_lock do
-          return unless Teachers::TRN::Eligibility.new(teacher:, new_trn: @new_trn).can_be_replaced?
+          return unless eligibility.can_be_replaced?
 
           ActiveRecord::Base.transaction do
             old_trn = teacher.trn
+            replacement_trn = new_trn
 
             teacher.update!(
-              trn: new_trn,
+              trn: replacement_trn,
               trs_redirected_to: nil,
               trs_response: "ok"
             )
@@ -24,7 +25,7 @@ module Teachers
               teacher:,
               author:,
               old_trn:,
-              new_trn:
+              new_trn: replacement_trn
             )
           end
         end
@@ -37,7 +38,17 @@ module Teachers
       attr_reader :teacher, :author
 
       def new_trn
-        @new_trn ||= teacher.trs_redirected_to
+        return teacher.trs_redirected_to if teacher.trs_response_permanent_redirect?
+
+        @new_trn
+      end
+
+      def eligibility
+        if teacher.trs_response_permanent_redirect?
+          Teachers::TRN::Eligibility.new(teacher:)
+        else
+          Teachers::TRN::Eligibility.new(teacher:, new_trn:)
+        end
       end
     end
   end

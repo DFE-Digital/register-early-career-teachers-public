@@ -145,24 +145,16 @@ RSpec.describe Teachers::TRN::Merge do
   let(:overlapping_period_started_on) { Date.new(2025, 5, 1) }
   let(:overlapping_period_finished_on) { Date.new(2025, 7, 30) }
 
+  let(:eligibility) { double(can_be_merged?: true) }
+
+  before do
+    allow(Teachers::TRN::Eligibility).to receive(:new)
+      .with(teacher:)
+      .and_return(eligibility)
+  end
+
   describe "#merge!" do
     subject(:merge!) { service.merge! }
-
-    context "when a replacement TRN is supplied for a deactivated teacher" do
-      subject(:service) { described_class.new(teacher:, new_trn: destination.trn) }
-
-      before { teacher.update!(trs_response: "gone", trs_redirected_to: nil) }
-
-      it "merges into the teacher with the supplied TRN" do
-        merge!
-
-        expect(Teacher.exists?(teacher.id)).to be(false)
-        expect(ect_at_school_period.reload.teacher).to eq(destination)
-        expect(Teachers::TRN::TRSSyncJob).to have_been_enqueued.with(
-          teacher: destination, teacher_started_induction_on: nil
-        )
-      end
-    end
 
     context "when the destination has no overlapping records" do
       it "moves the at-school periods to the destination teacher" do
@@ -543,9 +535,7 @@ RSpec.describe Teachers::TRN::Merge do
     end
 
     context "when the teachers cannot be merged" do
-      before do
-        allow(Teachers::TRN::Eligibility).to receive(:new).with(teacher:, new_trn: nil).and_return(double(can_be_merged?: false))
-      end
+      let(:eligibility) { double(can_be_merged?: false) }
 
       it "does not move any ect_at_school_periods" do
         expect { merge! }.not_to(change { teacher.reload.ect_at_school_periods.map(&:teacher_id) })
@@ -664,6 +654,22 @@ RSpec.describe Teachers::TRN::Merge do
         expect { merge! }
         .to raise_error(Teachers::TRN::TrainingPeriods::Merge::CannotMergePeriods)
         .and not_have_enqueued_job(Teachers::TRN::TRSSyncJob)
+      end
+    end
+
+    context "when the source changes after it was loaded" do
+      before do
+        teacher
+        Teacher.find(teacher.id).update!(trs_response: "ok", trs_redirected_to: nil)
+      end
+
+      it "refreshes the source before checking eligibility" do
+        merge!
+
+        expect(Teacher.exists?(teacher.id)).to be(true)
+        expect(ect_at_school_period.reload.teacher).to eq(teacher)
+        expect(destination.events.where(event_type: "teacher_merged")).to be_empty
+        expect(Teachers::TRN::TRSSyncJob).not_to have_been_enqueued
       end
     end
   end
