@@ -7,7 +7,7 @@ paths:
   "/api/induction/v1/appropriate-bodies":
     get:
       summary: List appropriate bodies
-      operationId: getAPIInductionV1AppropriateBodies
+      operationId: getAppropriateBodies
       security:
       - client_credentials: []
       tags:
