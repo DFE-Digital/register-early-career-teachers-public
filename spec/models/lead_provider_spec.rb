@@ -28,7 +28,9 @@ describe LeadProvider do
     subject { FactoryBot.build(:lead_provider) }
 
     it { is_expected.to validate_presence_of(:name) }
-    it { is_expected.to validate_uniqueness_of(:name) }
+    it { is_expected.to validate_presence_of(:short_name) }
+    it { is_expected.to validate_uniqueness_of(:name).case_insensitive }
+    it { is_expected.to validate_uniqueness_of(:short_name).case_insensitive }
     it { is_expected.to validate_uniqueness_of(:ecf_id).case_insensitive.allow_nil }
     it { is_expected.to allow_values(true, false).for(:vat_registered) }
     it { is_expected.not_to allow_values(nil, "").for(:vat_registered) }
@@ -45,10 +47,61 @@ describe LeadProvider do
   end
 
   describe "normalizing" do
-    subject { FactoryBot.build(:lead_provider, name: " Some lead provider ") }
+    subject { FactoryBot.build(:lead_provider, name: " Some lead provider ", short_name: " sLp ") }
 
     it "removes leading and trailing spaces from the name" do
       expect(subject.name).to eql("Some lead provider")
+    end
+
+    it "removes leading and trailing spaces and downcases the short name" do
+      expect(subject.short_name).to eql("slp")
+    end
+  end
+
+  describe "#assign_short_name" do
+    subject(:assign_short_name) { lead_provider.assign_short_name }
+
+    context "when the name is several words" do
+      let(:lead_provider) { LeadProvider.new(name: "Some lead provider", short_name: nil) }
+
+      it { expect { lead_provider.assign_short_name }.to change(lead_provider, :short_name).to("slp") }
+    end
+
+    context "when the name is only one word" do
+      let(:lead_provider) { LeadProvider.new(name: "Provider", short_name: nil) }
+
+      it { expect { lead_provider.assign_short_name }.to change(lead_provider, :short_name).to("provider") }
+    end
+
+    context "when the name is nil" do
+      let(:lead_provider) { LeadProvider.new(name: nil) }
+
+      it { expect { lead_provider.assign_short_name }.not_to change(lead_provider, :short_name) }
+    end
+
+    context "when the name is an empty string" do
+      let(:lead_provider) { LeadProvider.new(name: "") }
+
+      it { expect { lead_provider.assign_short_name }.not_to change(lead_provider, :short_name) }
+    end
+
+    context "when the short name is already set" do
+      let(:lead_provider) { LeadProvider.new(name: "Some lead provider", short_name: "Custom") }
+
+      before { lead_provider.name = "Another name" }
+
+      it { expect { lead_provider.assign_short_name }.not_to change(lead_provider, :short_name) }
+    end
+  end
+
+  describe "#name=" do
+    subject { lead_provider.short_name }
+
+    let(:lead_provider) { LeadProvider.new(name: "Some lead provider") }
+
+    it "assigns the short name based on the new name" do
+      lead_provider.name = "Another lead provider"
+      expect(lead_provider.short_name).to eq("alp")
     end
   end
 end

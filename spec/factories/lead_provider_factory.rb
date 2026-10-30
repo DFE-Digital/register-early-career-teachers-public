@@ -1,6 +1,8 @@
 FactoryBot.define do
   factory(:lead_provider) do
-    sequence(:name) { |n| "Lead Provider #{n}" }
+    # Keep the default as a single word without spaces, or the
+    # short_name will end up conflicting.
+    sequence(:name) { |n| "LeadProvider#{n}" }
     ecf_id { SecureRandom.uuid }
     vat_registered { true }
 
