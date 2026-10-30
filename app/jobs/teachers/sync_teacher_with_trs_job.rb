@@ -14,9 +14,9 @@ module Teachers
       return unless status == :teacher_merged
 
       if Teacher.exists?(trn: teacher.trs_redirected_to)
-        Teachers::MergeTRN.new(teacher:).merge!
+        Teachers::TRN::Merge.new(teacher:).merge!
       else
-        Teachers::ReplaceTRN.new(teacher:).replace!
+        Teachers::TRN::Replace.new(teacher:).replace!
       end
     end
   end

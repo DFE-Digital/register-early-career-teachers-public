@@ -5,10 +5,13 @@ module Admin
 
       FORM_KEY_PREFIX = "admin_teachers_change_trn_wizard"
 
-      rescue_from ::Teachers::ReplaceTRN::TeacherNotDeactivatedError,
+      rescue_from Admin::Teachers::ChangeTRNWizard::Wizard::TeacherNotDeactivatedError,
                   with: :redirect_teacher_not_deactivated
       rescue_from Admin::Teachers::ChangeTRNWizard::ConfirmStep::ProposedTRNChangedError,
                   with: :redirect_proposed_trn_changed
+
+      rescue_from Admin::Teachers::ChangeTRNWizard::Wizard::IneligibleForReplacementError,
+                  with: :redirect_ineligible_for_replacement
 
       before_action :set_teacher
       before_action :initialize_wizard
@@ -65,6 +68,17 @@ module Admin
         redirect_to admin_teacher_change_trn_wizard_confirm_path(@teacher),
                     flash: {
                       error: "The proposed TRN has changed. Review the updated details before continuing."
+                    }
+      end
+
+      def redirect_ineligible_for_replacement
+        store.reset
+
+        redirect_to admin_teacher_change_trn_wizard_enter_trn_path(@teacher),
+                    flash: {
+                      error: "The teacher records are not eligible for replacement with the supplied TRN. " \
+                             "This could be because another teacher redirects to the supplied TRN, " \
+                             "or because the supplied TRN is missing or unchanged."
                     }
       end
 

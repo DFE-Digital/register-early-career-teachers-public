@@ -2,6 +2,9 @@ module Admin
   module Teachers
     module ChangeTRNWizard
       class Wizard < ApplicationWizard
+        class TeacherNotDeactivatedError < StandardError; end
+        class IneligibleForReplacementError < StandardError; end
+
         attr_accessor :store, :teacher_id, :author
 
         steps do
@@ -34,14 +37,17 @@ module Admin
         end
 
         def replace_trn!
-          old_trn = teacher.trn
+          teacher.with_lock do
+            raise TeacherNotDeactivatedError unless teacher.trs_response_gone?
+            raise IneligibleForReplacementError unless ::Teachers::TRN::Eligibility
+              .new(teacher:, new_trn: store.trn).can_be_replaced?
 
-          ::Teachers::ReplaceTRN.new(
-            teacher:,
-            author:
-          ).replace_deactivated!(new_trn: store.trn)
+            old_trn = teacher.trn
 
-          store.old_trn = old_trn
+            ::Teachers::TRN::Replace.new(teacher:, new_trn: store.trn, author:).replace!
+
+            store.old_trn = old_trn
+          end
         end
 
         def allowed_step_path
