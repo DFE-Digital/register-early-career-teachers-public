@@ -25,6 +25,42 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
     )
   end
 
+  shared_examples "confirming a TRN change" do
+    before do
+      post entry_path, params: { enter_trn: { trn: new_trn } }
+      post preview_path if merging
+    end
+
+    it "shows the appropriate confirmation form at the shared route" do
+      get confirm_path
+
+      expect(response).to have_http_status(:ok)
+      document = Nokogiri::HTML(response.body)
+      expect(document.at_css("form")["action"]).to eq(confirm_path)
+      expect(document.at_css('input[name="confirm[expected_trn]"]')["value"]).to eq(new_trn)
+      expect(response.body).to include(confirmation_message)
+    end
+
+    it "requires confirmation before updating either record" do
+      post confirm_path, params: { confirm: { confirmed: "0", expected_trn: new_trn } }
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include(confirmation_message)
+      expect(teacher.reload.trn).to eq("7654321")
+      expect(Teachers::SyncTeacherWithTRSJob).not_to have_been_enqueued
+      expect(Teachers::TRN::TRSSyncJob).not_to have_been_enqueued
+    end
+  end
+
+  shared_examples "does not merge the teacher records" do
+    it "leaves the teacher records unchanged without recording or scheduling a merge" do
+      expect(teacher.reload.trn).to eq("7654321")
+      expect(destination.reload.trn).to eq(expected_destination_trn)
+      expect(destination.events.where(event_type: "teacher_merged")).to be_empty
+      expect(Teachers::TRN::TRSSyncJob).not_to have_been_enqueued
+    end
+  end
+
   before do
     allow(TRS::APIClient).to receive(:build).and_return(api_client)
     allow(api_client).to receive(:find_teacher)
@@ -134,33 +170,6 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
           "Change the TRN for this deactivated record"
         )
       end
-    end
-  end
-
-  shared_examples "confirming a TRN change" do
-    before do
-      post entry_path, params: { enter_trn: { trn: new_trn } }
-      post preview_path if merging
-    end
-
-    it "shows the appropriate confirmation form at the shared route" do
-      get confirm_path
-
-      expect(response).to have_http_status(:ok)
-      document = Nokogiri::HTML(response.body)
-      expect(document.at_css("form")["action"]).to eq(confirm_path)
-      expect(document.at_css('input[name="confirm[expected_trn]"]')["value"]).to eq(new_trn)
-      expect(response.body).to include(confirmation_message)
-    end
-
-    it "requires confirmation before updating either record" do
-      post confirm_path, params: { confirm: { confirmed: "0", expected_trn: new_trn } }
-
-      expect(response).to have_http_status(:unprocessable_content)
-      expect(response.body).to include(confirmation_message)
-      expect(teacher.reload.trn).to eq("7654321")
-      expect(Teachers::SyncTeacherWithTRSJob).not_to have_been_enqueued
-      expect(Teachers::TRN::TRSSyncJob).not_to have_been_enqueued
     end
   end
 
@@ -351,9 +360,13 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
     let(:confirmation_path) do
       admin_teacher_change_trn_wizard_confirmation_path(teacher.id)
     end
+
     let(:preview_path) do
       admin_teacher_change_trn_wizard_merge_preview_path(teacher.id)
     end
+
+    let(:expected_destination_trn) { new_trn }
+
     let!(:destination) do
       FactoryBot.create(
         :teacher,
@@ -387,49 +400,84 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
       expect(destination.events.where(event_type: "teacher_merged")).to be_empty
     end
 
-    it "shows school periods, training periods and declarations for both records" do
-      histories = [teacher, destination].map do |record|
-        create_teacher_history(teacher: record)
-      end
+    context "when previewing teacher history" do
+      let(:document) { Nokogiri::HTML(response.body) }
+      let(:columns) { document.css(".govuk-grid-column-one-half") }
 
-      post entry_path, params: { enter_trn: { trn: new_trn } }
-      follow_redirect!
+      shared_examples "a teacher history column" do
+        before do
+          FactoryBot.create(:declaration, :"with_#{role}", teacher: record, started_on: Date.new(2025, 9, 1))
+          post entry_path, params: { enter_trn: { trn: new_trn } }
+          follow_redirect!
+        end
 
-      expect(response).to have_http_status(:ok)
+        it "is on a page with two columns, shown before the teachers are updated" do
+          expect(response).to have_http_status(:ok)
+          expect(columns.size).to eq(2)
+          expect(teacher.reload.trn).to eq("7654321")
+          expect(destination.reload.trn).to eq(new_trn)
+        end
 
-      document = Nokogiri::HTML(response.body)
-      columns = document.css(".govuk-grid-column-one-half")
+        it "shows the teacher’s name, TRN, school periods, training periods and non-voided declarations" do
+          expect(column.text).to include(record.trn)
+          expect(column.text).to include(Teachers::Name.new(record).full_name)
 
-      expect(columns.size).to eq(2)
+          if record == teacher
+            expect(column.text).to include("School periods that will merge", "Training periods that will merge")
+          end
 
-      histories.each_with_index do |history, index|
-        column = columns[index]
+          if record == destination
+            expect(column.text).to include("Existing school periods", "Existing training periods")
+          end
 
-        expect(column.text).to include(
-          history[:teacher].trn,
-          history[:school].name,
-          index.zero? ? "School periods that will merge" : "Existing school periods",
-          index.zero? ? "Training periods that will merge" : "Existing training periods",
-          "Declarations"
-        )
+          record.public_send("#{role}_at_school_periods").each do |period|
+            expect(column.text).to include(period.school.name)
+          end
 
-        history[:declarations].each do |declaration|
-          expect(column.text).to include(
-            declaration.training_period.lead_provider_name,
-            declaration.api_id
-          )
+          record.public_send("#{role}_training_periods").each do |period|
+            expect(column.text).to include(period.lead_provider_name)
+          end
 
-          expect(declaration.reload.training_period.teacher_id)
-            .to eq(history[:teacher].id)
+          record.public_send("#{role}_declarations").each do |declaration|
+            expect(column.text).to include(declaration.api_id)
+            expect(declaration.training_period.teacher_id).to eq(record.id)
+          end
+
+          expect(document.css("a").map { |link| link.text.strip }).not_to include("Void declaration", "Move to a different partnership")
         end
       end
 
-      expect(teacher.reload.trn).to eq("7654321")
-      expect(destination.reload.trn).to eq(new_trn)
+      context "when the source has ECT periods" do
+        let(:record) { teacher }
+        let(:column) { columns.first }
+        let(:role) { :ect }
 
-      expect(
-        document.css("a").map { |link| link.text.strip }
-      ).not_to include("Void declaration", "Move to a different partnership")
+        it_behaves_like "a teacher history column"
+      end
+
+      context "when the destination has ECT periods" do
+        let(:record) { destination }
+        let(:column) { columns.last }
+        let(:role) { :ect }
+
+        it_behaves_like "a teacher history column"
+      end
+
+      context "when the source has mentor periods" do
+        let(:record) { teacher }
+        let(:column) { columns.first }
+        let(:role) { :mentor }
+
+        it_behaves_like "a teacher history column"
+      end
+
+      context "when the destination has mentor periods" do
+        let(:record) { destination }
+        let(:column) { columns.last }
+        let(:role) { :mentor }
+
+        it_behaves_like "a teacher history column"
+      end
     end
 
     it "merges the records and shows success after deleting the source" do
@@ -525,190 +573,291 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
       expect(response.body).to include("Records merged")
     end
 
-    it "returns to TRN entry when the destination changes during confirmation" do
-      post entry_path, params: { enter_trn: { trn: new_trn } }
-      post preview_path
-      destination.update!(trn: "3456789")
+    context "when merge confirmation is rejected" do
+      context "when both teachers have induction records" do
+        before do
+          FactoryBot.create(:induction_period, teacher:)
+          post entry_path, params: { enter_trn: { trn: new_trn } }
+          post preview_path
 
-      post confirm_path,
-           params: {
-             confirm: {
-               confirmed: "1",
-               expected_trn: new_trn
-             }
-           }
+          FactoryBot.create(:induction_period, teacher: destination)
 
-      expect(response).to redirect_to(entry_path)
-      expect(flash[:error]).to eq(
-        "The teacher records have changed. Enter the replacement TRN and review the records again."
-      )
-      expect(teacher.reload.trn).to eq("7654321")
-      expect(destination.reload.trn).to eq("3456789")
-      expect(destination.events.where(event_type: "teacher_merged")).to be_empty
-      expect(Teachers::TRN::TRSSyncJob).not_to have_been_enqueued
+          post confirm_path,
+               params: { confirm: { confirmed: "1", expected_trn: new_trn } }
+        end
 
-      get confirm_path
+        it "returns to TRN entry with an explanation" do
+          expect(response).to redirect_to(entry_path)
+          expect(flash[:error]).to eq(
+            "The teacher records are not eligible for merge with the supplied TRN. " \
+            "This could be because both TRNs have induction records, or they " \
+            "have training periods with different contract periods, or there are " \
+            "overlapping ECT periods at different schools. "
+          )
 
-      expect(response).to redirect_to(entry_path)
+          get confirm_path
+
+          expect(response).to redirect_to(entry_path)
+        end
+
+        it_behaves_like "does not merge the teacher records"
+      end
+
+      context "when the wizard raises TeacherNotDeactivatedError" do
+        let(:wizard_store) { FactoryBot.build(:session_repository) }
+        let(:wizard) do
+          instance_double(
+            Admin::Teachers::ChangeTRNWizard::Wizard,
+            store: wizard_store,
+            allowed_steps: [:confirm],
+            allowed_step?: true
+          )
+        end
+
+        before do
+          post entry_path, params: { enter_trn: { trn: new_trn } }
+          post preview_path
+
+          wizard_store.trn = new_trn
+          step = Admin::Teachers::ChangeTRNWizard::ConfirmStep.new(
+            wizard:, confirmed: "1", expected_trn: new_trn
+          )
+          allow(wizard).to receive(:current_step).and_return(step)
+          allow(wizard).to receive(:update!).and_raise(
+            Admin::Teachers::ChangeTRNWizard::Wizard::TeacherNotDeactivatedError
+          )
+          allow(Admin::Teachers::ChangeTRNWizard::Wizard).to receive(:new).and_return(wizard)
+
+          post confirm_path,
+               params: { confirm: { confirmed: "1", expected_trn: new_trn } }
+        end
+
+        it "redirects to the teacher overview with an explanation" do
+          expect(response).to redirect_to(admin_teacher_path(teacher))
+          expect(flash[:error]).to eq(
+            "This teacher record is no longer deactivated."
+          )
+        end
+
+        it_behaves_like "does not merge the teacher records"
+      end
+
+      context "when the wizard raises MergeProposalChangedError" do
+        let(:wizard_store) { FactoryBot.build(:session_repository) }
+        let(:wizard) do
+          instance_double(
+            Admin::Teachers::ChangeTRNWizard::Wizard,
+            store: wizard_store,
+            allowed_steps: [:confirm],
+            allowed_step?: true
+          )
+        end
+
+        before do
+          post entry_path, params: { enter_trn: { trn: new_trn } }
+          post preview_path
+
+          wizard_store.trn = new_trn
+          step = Admin::Teachers::ChangeTRNWizard::ConfirmStep.new(
+            wizard:, confirmed: "1", expected_trn: new_trn
+          )
+          allow(wizard).to receive(:current_step).and_return(step)
+          allow(wizard).to receive(:update!).and_raise(
+            Admin::Teachers::ChangeTRNWizard::Wizard::MergeProposalChangedError
+          )
+          allow(Admin::Teachers::ChangeTRNWizard::Wizard).to receive(:new).and_return(wizard)
+
+          post confirm_path,
+               params: { confirm: { confirmed: "1", expected_trn: new_trn } }
+        end
+
+        it "returns to TRN entry with an explanation" do
+          expect(response).to redirect_to(entry_path)
+          expect(flash[:error]).to eq(
+            "The teacher records have changed. Enter the replacement TRN and review the records again."
+          )
+        end
+
+        it_behaves_like "does not merge the teacher records"
+      end
+
+      context "when the destination changes during confirmation" do
+        let(:expected_destination_trn) { "3456789" }
+
+        before do
+          post entry_path, params: { enter_trn: { trn: new_trn } }
+          post preview_path
+          destination.update!(trn: "3456789")
+
+          post confirm_path,
+               params: {
+                 confirm: {
+                   confirmed: "1",
+                   expected_trn: new_trn
+                 }
+               }
+        end
+
+        it "returns to TRN entry with an explanation" do
+          expect(response).to redirect_to(entry_path)
+          expect(flash[:error]).to eq(
+            "The teacher records have changed. Enter the replacement TRN and review the records again."
+          )
+
+          get confirm_path
+
+          expect(response).to redirect_to(entry_path)
+        end
+
+        it_behaves_like "does not merge the teacher records"
+      end
+
+      context "when the source is reactivated before confirmation" do
+        before do
+          post entry_path, params: { enter_trn: { trn: new_trn } }
+          post preview_path
+          teacher.update!(trs_response: "ok")
+
+          post confirm_path,
+               params: {
+                 confirm: {
+                   confirmed: "1",
+                   expected_trn: new_trn
+                 }
+               }
+        end
+
+        it "redirects to the teacher overview with an explanation" do
+          expect(response).to redirect_to(admin_teacher_path(teacher))
+          expect(flash[:error]).to eq(
+            "This teacher record is no longer deactivated."
+          )
+        end
+
+        it_behaves_like "does not merge the teacher records"
+      end
     end
 
-    it "returns to the teacher overview when the merge reports the source is no longer deactivated" do
-      post entry_path, params: { enter_trn: { trn: new_trn } }
-      post preview_path
-      teacher.update!(trs_response: "ok")
+    context "when confirmation is submitted before the preview" do
+      before do
+        post entry_path, params: { enter_trn: { trn: new_trn } }
 
-      post confirm_path,
-           params: {
-             confirm: {
-               confirmed: "1",
-               expected_trn: new_trn
+        post confirm_path,
+             params: {
+               confirm: {
+                 confirmed: "1",
+                 expected_trn: new_trn
+               }
              }
-           }
+      end
 
-      expect(response).to redirect_to(admin_teacher_path(teacher))
-      expect(flash[:error]).to eq(
-        "This teacher record is no longer deactivated."
-      )
-      expect(teacher.reload.trn).to eq("7654321")
-      expect(destination.reload.trn).to eq(new_trn)
-      expect(destination.events.where(event_type: "teacher_merged")).to be_empty
-      expect(Teachers::TRN::TRSSyncJob).not_to have_been_enqueued
+      it "requires the preview before allowing merge confirmation" do
+        expect(response).to redirect_to(preview_path)
+      end
+
+      it_behaves_like "does not merge the teacher records"
     end
 
-    it "requires the preview before allowing merge confirmation" do
-      source_id = teacher.id
-      destination_id = destination.id
+    context "when the TRN is submitted again after preview" do
+      before do
+        post entry_path, params: { enter_trn: { trn: new_trn } }
+        post preview_path
 
-      post entry_path, params: { enter_trn: { trn: new_trn } }
+        post entry_path, params: { enter_trn: { trn: new_trn } }
 
-      expect(response).to redirect_to(preview_path)
-
-      post confirm_path,
-           params: {
-             confirm: {
-               confirmed: "1",
-               expected_trn: new_trn
+        post confirm_path,
+             params: {
+               confirm: {
+                 confirmed: "1",
+                 expected_trn: new_trn
+               }
              }
-           }
+      end
 
-      expect(response).to redirect_to(preview_path)
-      expect(Teacher.exists?(source_id)).to be(true)
-      expect(Teacher.exists?(destination_id)).to be(true)
-      expect(destination.events.where(event_type: "teacher_merged")).to be_empty
-      expect(Teachers::TRN::TRSSyncJob).not_to have_been_enqueued
+      it "requires another preview after submitting the TRN again" do
+        expect(response).to redirect_to(preview_path)
+      end
+
+      it_behaves_like "does not merge the teacher records"
     end
 
-    it "requires another preview after submitting the TRN again" do
-      source_id = teacher.id
-      destination_id = destination.id
-
-      post entry_path, params: { enter_trn: { trn: new_trn } }
-      post preview_path
-
-      expect(response).to redirect_to(confirm_path)
-
-      post entry_path, params: { enter_trn: { trn: new_trn } }
-
-      expect(response).to redirect_to(preview_path)
-
-      post confirm_path,
-           params: {
-             confirm: {
-               confirmed: "1",
-               expected_trn: new_trn
+    context "when confirmation is submitted without a replacement TRN" do
+      before do
+        post confirm_path,
+             params: {
+               confirm: {
+                 confirmed: "1",
+                 expected_trn: new_trn
+               }
              }
-           }
+      end
 
-      expect(response).to redirect_to(preview_path)
-      expect(Teacher.exists?(source_id)).to be(true)
-      expect(Teacher.exists?(destination_id)).to be(true)
-      expect(destination.events.where(event_type: "teacher_merged")).to be_empty
-      expect(Teachers::TRN::TRSSyncJob).not_to have_been_enqueued
+      it "prevents merging without first entering a replacement TRN" do
+        expect(response).to redirect_to(entry_path)
+      end
+
+      it_behaves_like "does not merge the teacher records"
     end
 
-    it "prevents merging without first entering a replacement TRN" do
-      source_id = teacher.id
-      destination_id = destination.id
+    context "when the replacement TRN changes after review" do
+      let(:other_trn) { "3456789" }
+      let!(:other_destination) { FactoryBot.create(:teacher, trn: other_trn, trs_response: "ok") }
 
-      post confirm_path,
-           params: {
-             confirm: {
-               confirmed: "1",
-               expected_trn: new_trn
+      before do
+        allow(api_client).to receive(:find_teacher)
+          .with(trn: other_trn)
+          .and_return(trs_teacher)
+
+        post entry_path, params: { enter_trn: { trn: new_trn } }
+        post preview_path
+        follow_redirect!
+
+        post entry_path, params: { enter_trn: { trn: other_trn } }
+        post preview_path
+
+        post confirm_path,
+             params: {
+               confirm: {
+                 confirmed: "1",
+                 expected_trn: new_trn
+               }
              }
-           }
+      end
 
-      expect(response).to redirect_to(entry_path)
-      expect(Teacher.exists?(source_id)).to be(true)
-      expect(Teacher.exists?(destination_id)).to be(true)
-      expect(destination.events.where(event_type: "teacher_merged")).to be_empty
-      expect(Teachers::TRN::TRSSyncJob).not_to have_been_enqueued
+      it "requires another review when the replacement TRN changes" do
+        expect(response).to redirect_to(confirm_path)
+        expect(flash[:error]).to eq(
+          "The proposed TRN has changed. Review the updated details before continuing."
+        )
+        expect(other_destination.reload.trn).to eq(other_trn)
+        expect(other_destination.events.where(event_type: "teacher_merged")).to be_empty
+      end
+
+      it_behaves_like "does not merge the teacher records"
     end
 
-    it "requires another review when the replacement TRN changes" do
-      other_trn = "3456789"
-      other_destination = FactoryBot.create(
-        :teacher,
-        trn: other_trn,
-        trs_response: "ok"
-      )
+    context "when the destination TRN changes before preview" do
+      let(:expected_destination_trn) { "3456789" }
 
-      allow(api_client).to receive(:find_teacher)
-        .with(trn: other_trn)
-        .and_return(trs_teacher)
+      before do
+        post entry_path, params: { enter_trn: { trn: new_trn } }
+        destination.update!(trn: expected_destination_trn)
 
-      post entry_path, params: { enter_trn: { trn: new_trn } }
-      post preview_path
-      follow_redirect!
+        get preview_path
+      end
 
-      expect(response).to have_http_status(:ok)
+      it "returns to TRN entry with an explanation and clears the proposal" do
+        expect(response).to redirect_to(entry_path)
+        expect(flash[:error]).to eq(
+          "The teacher records have changed. Enter the replacement TRN and review the records again."
+        )
 
-      post entry_path, params: { enter_trn: { trn: other_trn } }
-      post preview_path
+        get confirm_path
 
-      expect(response).to redirect_to(confirm_path)
+        expect(response).to redirect_to(entry_path)
+      end
 
-      post confirm_path,
-           params: {
-             confirm: {
-               confirmed: "1",
-               expected_trn: new_trn
-             }
-           }
-
-      expect(response).to redirect_to(confirm_path)
-      expect(flash[:error]).to eq(
-        "The proposed TRN has changed. Review the updated details before continuing."
-      )
-      expect(teacher.reload.trn).to eq("7654321")
-      expect(destination.reload.trn).to eq(new_trn)
-      expect(other_destination.reload.trn).to eq(other_trn)
-      expect(destination.events.where(event_type: "teacher_merged")).to be_empty
-      expect(other_destination.events.where(event_type: "teacher_merged")).to be_empty
-      expect(Teachers::TRN::TRSSyncJob).not_to have_been_enqueued
-    end
-
-    it "returns to TRN entry when the destination TRN changes" do
-      source_id = teacher.id
-
-      post entry_path, params: { enter_trn: { trn: new_trn } }
-
-      destination.update!(trn: "3456789")
-
-      get preview_path
-
-      expect(response).to redirect_to(entry_path)
-      expect(flash[:error]).to eq(
-        "The teacher records have changed. Enter the replacement TRN and review the records again."
-      )
-      expect(Teacher.exists?(source_id)).to be(true)
-      expect(destination.reload.trn).to eq("3456789")
-      expect(destination.events.where(event_type: "teacher_merged")).to be_empty
-      expect(Teachers::TRN::TRSSyncJob).not_to have_been_enqueued
-
-      get confirm_path
-
-      expect(response).to redirect_to(entry_path)
+      it_behaves_like "does not merge the teacher records"
     end
 
     it "returns to TRN entry when the destination is deleted" do
@@ -768,49 +917,5 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
         "This teacher record is no longer deactivated."
       )
     end
-  end
-
-private
-
-  def create_teacher_history(teacher:)
-    school = FactoryBot.create(:school)
-    school_partnership = FactoryBot.create(
-      :school_partnership,
-      :for_year,
-      year: 2025,
-      school:
-    )
-
-    declarations = %i[ect mentor].map do |role|
-      school_period = FactoryBot.create(
-        :"#{role}_at_school_period",
-        teacher:,
-        school:,
-        started_on: Date.new(2025, 9, 1),
-        finished_on: nil
-      )
-
-      training_period = FactoryBot.create(
-        :training_period,
-        :"for_#{role}",
-        :with_framework_agreement,
-        "#{role}_at_school_period": school_period,
-        school_partnership:,
-        started_on: Date.new(2025, 9, 1),
-        finished_on: nil
-      )
-
-      FactoryBot.create(
-        :declaration,
-        training_period:,
-        evidenced_at: Time.zone.local(2025, 10, 1)
-      )
-    end
-
-    {
-      teacher:,
-      school:,
-      declarations:
-    }
   end
 end
