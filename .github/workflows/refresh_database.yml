@@ -62,8 +62,8 @@ jobs:
         shell: bash
         run: make ci ${{ inputs.target_environment }} get-cluster-credentials
 
-      - name: Clear User OTP tokens
+      - name: Clear User OTP tokens and relaunch server for a fresh database connection
         shell: bash
         run: |
           kubectl -n cpd-production exec deployment/cpd-ec2-${{ inputs.target_environment }}-web -- /bin/sh -c "cd /app && bundle exec rails runner \"User.update_all(otp_secret: nil)\""
-
+          kubectl -n cpd-production exec deployment/cpd-ec2-${{ inputs.target_environment }}-web -- /bin/sh -c "cd /app && bundle exec rails restart"
