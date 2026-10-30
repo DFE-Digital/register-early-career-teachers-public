@@ -7,7 +7,7 @@ paths:
   "/api/hello/client":
     get:
       summary: Check your client credentials identify your API client
-      operationId: getAPIHelloClient
+      operationId: getClient
       security:
       - client_credentials: []
       tags:
@@ -30,7 +30,7 @@ paths:
   "/api/hello/user":
     get:
       summary: Check your access token identifies an appropriate body
-      operationId: getAPIHelloUser
+      operationId: getUser
       security:
       - bearer: []
       tags:
@@ -54,7 +54,7 @@ paths:
   "/api/hello/world":
     get:
       summary: Check you can call an open API endpoint
-      operationId: getAPIHelloWorld
+      operationId: getWorld
       security: []
       tags:
       - Hello world
