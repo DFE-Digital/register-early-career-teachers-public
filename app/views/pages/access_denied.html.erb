@@ -1,9 +1,9 @@
 <%
   page_data(
-    title: @organisation_name.present? ?
+    title: @dfe_sign_in_organisation_details.name.present? ?
       "You do not have approved access to this service from your school or organisation" :
       "You cannot use this service until you have DfE Sign-in account access to a school or organisation"
   )
 %>
 
-<%= render @organisation_name.present? ? '/pages/access_denied/with_organisation' : '/pages/access_denied/without_organisation' %>
+<%= render @dfe_sign_in_organisation_details.name.present? ? '/pages/access_denied/with_organisation' : '/pages/access_denied/without_organisation' %>
