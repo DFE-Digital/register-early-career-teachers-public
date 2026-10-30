@@ -13,6 +13,7 @@ module Admin
         steps do
           [{
             enter_trn: EnterTRNStep,
+            cannot_use_trn: CannotUseTRNStep,
             merge_preview: MergePreviewStep,
             confirm: ConfirmStep,
             confirmation: ConfirmationStep
@@ -27,7 +28,7 @@ module Admin
           return [:confirmation] if store.records_processed.present?
           return [] unless teacher.trs_response_gone?
 
-          allowed = [:enter_trn]
+          allowed = %i[cannot_use_trn enter_trn]
           return allowed if store.trn.blank?
 
           if merge_proposed?
@@ -83,6 +84,10 @@ module Admin
 
         def merge_proposed?
           store.destination_teacher_id.present?
+        end
+
+        def ineligible_for_merge?
+          merge_proposed? && !eligibility.can_be_merged?
         end
 
         def records_merged?

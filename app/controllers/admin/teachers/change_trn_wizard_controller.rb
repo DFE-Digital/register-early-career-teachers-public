@@ -15,7 +15,7 @@ module Admin
       rescue_from Admin::Teachers::ChangeTRNWizard::Wizard::IneligibleForReplacementError,
                   with: :redirect_ineligible_for_replacement
       rescue_from Admin::Teachers::ChangeTRNWizard::Wizard::IneligibleForMergeError,
-                  with: :redirect_ineligible_for_merge
+                  with: :redirect_cannot_use_trn
 
       before_action :set_teacher
       before_action :reset_store_on_start, only: :new
@@ -86,13 +86,10 @@ module Admin
         )
       end
 
-      def redirect_ineligible_for_merge
-        restart_journey(
-          "The teacher records are not eligible for merge with the supplied TRN. " \
-          "This could be because both TRNs have induction records, or they " \
-          "have training periods with different contract periods, or there are " \
-          "overlapping ECT periods at different schools. "
-        )
+      def redirect_cannot_use_trn
+        store.reset
+
+        redirect_to admin_teacher_change_trn_wizard_cannot_use_trn_path(@teacher)
       end
 
       def redirect_merge_destination_changed
