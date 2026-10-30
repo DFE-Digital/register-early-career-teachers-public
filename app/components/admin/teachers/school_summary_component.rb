@@ -57,11 +57,13 @@ module Admin
           summary_row("School start date", school_period.started_on&.to_fs(:govuk))
         ]
 
-        if !merge_preview || school_period.finished_on.present?
+        unless merge_preview && school_period.finished_on.blank?
           rows << summary_row("School end date", end_date_text)
         end
 
-        rows << summary_row("Email address", email_text) unless merge_preview
+        unless merge_preview
+          rows << summary_row("Email address", email_text)
+        end
 
         rows
       end
@@ -126,14 +128,18 @@ module Admin
         teacher = role == :mentor ? mentorship_period.mentor&.teacher : mentorship_period.mentee&.teacher
         return unless teacher
 
-        name = teacher_full_name(teacher)
-        name = govuk_link_to(name, admin_teacher_path(teacher)) unless merge_preview
-
         [
-          name,
+          name(teacher),
           mentorship_period.started_on.to_fs(:govuk),
           mentorship_end_date_text(mentorship_period)
         ]
+      end
+
+      def name(teacher)
+        name = teacher_full_name(teacher)
+        name = govuk_link_to(name, admin_teacher_path(teacher)) unless merge_preview
+
+        name
       end
 
       def mentorship_end_date_text(mentorship_period)
@@ -142,8 +148,9 @@ module Admin
 
       def working_pattern_text
         text = WORKING_PATTERNS[school_period.working_pattern&.to_sym] || "Not available"
+        text = text.tr("-", " ") if merge_preview
 
-        merge_preview ? text.tr("-", " ") : text
+        text
       end
 
       def summary_row(label, value, html: false)

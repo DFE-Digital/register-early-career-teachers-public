@@ -300,6 +300,69 @@ RSpec.describe Admin::Teachers::SchoolSummaryComponent, type: :component do
     end
   end
 
+  describe "merge preview" do
+    subject(:rendered) { render_inline(described_class.new(school_period:, merge_preview: true)) }
+
+    shared_examples "a school period preview" do
+      it "shows the school title without a link" do
+        expect(rendered).to have_css("h4", text: school_period.school.name)
+        expect(rendered).not_to have_link(school_period.school.name)
+      end
+
+      it "omits the email and missing end date rows" do
+        expect(rendered).not_to have_css("dt", text: "Email address")
+        expect(rendered).not_to have_css("dt", text: "School end date")
+      end
+
+      it "shows linked mentorship teacher without a link" do
+        name = Teachers::Name.new(mentorship_link_teacher).full_name
+
+        expect(rendered).to have_css("td", text: name)
+        expect(rendered).not_to have_link(name)
+      end
+
+      context "when the period has ended" do
+        before { school_period.update!(finished_on: school_period.started_on + 1.month) }
+
+        it "shows the recorded end date" do
+          expect(rendered).to have_css("dt", text: "School end date")
+          expect(rendered).to have_css("dd", text: school_period.finished_on.to_fs(:govuk))
+        end
+      end
+    end
+
+    context "for an ECT" do
+      let(:school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, working_pattern: "full_time") }
+      let!(:mentorship) do
+        FactoryBot.create(:mentorship_period, mentee: school_period,
+                                              started_on: school_period.started_on, finished_on: school_period.started_on + 2.weeks)
+      end
+
+      let(:mentorship_link_teacher) { mentorship.mentor.teacher }
+
+      it_behaves_like "a school period preview"
+
+      it "uses spaces in the working pattern" do
+        expect(rendered).to have_css("dd", text: "Full time")
+        expect(rendered).not_to have_css("dd", text: "Full-time")
+      end
+    end
+
+    context "for a mentor" do
+      let(:school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished) }
+      let!(:mentorship) do
+        mentee = FactoryBot.create(:ect_at_school_period, :unfinished,
+                                   school: school_period.school, started_on: school_period.started_on)
+        FactoryBot.create(:mentorship_period, mentor: school_period, mentee:,
+                                              started_on: school_period.started_on, finished_on: school_period.started_on + 2.weeks)
+      end
+
+      let(:mentorship_link_teacher) { mentorship.mentee.teacher }
+
+      it_behaves_like "a school period preview"
+    end
+  end
+
   describe "#rows" do
     let(:school_period) { double("school period") }
 
