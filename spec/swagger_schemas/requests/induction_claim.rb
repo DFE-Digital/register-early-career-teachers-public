@@ -19,7 +19,7 @@ INDUCTION_CLAIM_REQUEST = {
       description: "The training programme under which you are registering this claim.",
       type: :string,
       enum: TRAINING_PROGRAMME.keys,
-      example: "school_led",
+      example: TRAINING_PROGRAMME.keys.first,
     },
   },
 }.freeze
