@@ -28,10 +28,11 @@ describe API::OAuth::Authorizations::RevocationRequest do
         expect { service.revoke! }.to change(Event, :count).by(1)
 
         expect(Event.with_event_type(:api_oauth_access_token_revoked).sole).to have_attributes(
-          author_name: authorization.client.name,
-          author_type: "oauth_client",
+          author_name: appropriate_body_period.name,
+          author_type: "appropriate_body_api",
           happened_at: Time.zone.now,
           appropriate_body_period:,
+          oauth_client: client,
           heading: "Access token revoked by client '#{client.name}' for '#{appropriate_body_period.name}'"
         )
       end

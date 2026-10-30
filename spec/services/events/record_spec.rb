@@ -2090,7 +2090,46 @@ RSpec.describe Events::Record do
           appropriate_body_period:,
           event_type: "oauth_authorization_created",
           happened_at: Time.zone.now,
+          oauth_client: authorization.client,
           metadata: { client_name: authorization.client.name, client_id: authorization.client.client_id }.as_json,
+          **author_params
+        )
+      end
+    end
+  end
+
+  describe ".record_api_oauth_authorization_code_exchanged_event!" do
+    let(:authorization) { FactoryBot.create(:api_oauth_authorization, appropriate_body_period:, code_exchanged_at: Time.zone.now) }
+
+    it "records an event with the correct values" do
+      freeze_time do
+        Events::Record.record_api_oauth_authorization_code_exchanged_event!(author:, authorization:)
+
+        expect(Event.sole).to have_attributes(
+          heading: "Authorization code exchanged by client '#{authorization.client.name}' for '#{authorization.appropriate_body_period.name}'",
+          appropriate_body_period:,
+          event_type: "api_oauth_authorization_code_exchanged",
+          happened_at: authorization.code_exchanged_at,
+          oauth_client: authorization.client,
+          **author_params
+        )
+      end
+    end
+  end
+
+  describe ".record_api_oauth_access_token_revoked_event!" do
+    let(:authorization) { FactoryBot.create(:api_oauth_authorization, appropriate_body_period:, revoked_at: 1.hour.ago) }
+
+    it "records an event with the correct values" do
+      freeze_time do
+        Events::Record.record_api_oauth_access_token_revoked_event!(author:, authorization:)
+
+        expect(Event.sole).to have_attributes(
+          heading: "Access token revoked by client '#{authorization.client.name}' for '#{authorization.appropriate_body_period.name}'",
+          appropriate_body_period:,
+          event_type: "api_oauth_access_token_revoked",
+          happened_at: authorization.revoked_at,
+          oauth_client: authorization.client,
           **author_params
         )
       end
