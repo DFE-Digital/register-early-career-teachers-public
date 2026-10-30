@@ -87,6 +87,42 @@ RSpec.describe Teachers::TRN::Eligibility do
 
     let(:new_trn) { nil }
 
+    context "when a destination is supplied" do
+      subject(:can_be_merged) { described_class.new(teacher:, new_trn:, destination:).can_be_merged? }
+
+      it "uses the supplied destination without looking it up again" do
+        teacher
+        destination
+        expect(Teacher).not_to receive(:find_by_trn)
+
+        expect(can_be_merged).to be(true)
+      end
+
+      context "when the destination no longer has the redirected TRN" do
+        before { destination.update!(trn: "8888888") }
+
+        it { is_expected.to be false }
+      end
+
+      context "when the teacher is deactivated and a new TRN is supplied" do
+        let(:new_trn) { destination.trn }
+
+        before { teacher.update!(trs_response: "gone", trs_redirected_to: nil) }
+
+        it { is_expected.to be true }
+
+        context "when the supplied destination has a different TRN" do
+          let(:new_trn) { "7777777" }
+
+          before { FactoryBot.create(:teacher, trn: new_trn) }
+
+          it "rejects the supplied destination even if another teacher has the requested TRN" do
+            expect(can_be_merged).to be(false)
+          end
+        end
+      end
+    end
+
     context "when the teacher is permanently redirected" do
       before { teacher.update!(trs_response: "permanent_redirect") }
 

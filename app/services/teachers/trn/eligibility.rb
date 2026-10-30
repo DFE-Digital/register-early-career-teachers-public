@@ -1,15 +1,17 @@
 module Teachers
   module TRN
     class Eligibility
-      def initialize(teacher:, new_trn: nil)
+      def initialize(teacher:, new_trn: nil, destination: nil)
         @teacher = teacher
         @new_trn = new_trn
+        @destination = destination
       end
 
       def can_be_merged?
         merge_required? &&
           destination.present? &&
-          destination.id != teacher.id &&
+          destination_has_expected_trn? &&
+          source_and_destination_are_different? &&
           at_most_one_teacher_has_induction_periods? &&
           ect_periods_at_different_schools_do_not_overlap? &&
           provider_led_training_periods_have_same_contract_period?(:mentor_training_periods) &&
@@ -18,8 +20,8 @@ module Teachers
 
       def can_be_replaced?
         merge_required? &&
-          new_trn != teacher.trn &&
           destination.nil? &&
+          source_and_destination_are_different? &&
           !another_teacher_redirected_to_destination?
       end
 
@@ -28,7 +30,7 @@ module Teachers
       attr_reader :teacher
 
       def new_trn
-        @new_trn ||= teacher.trs_redirected_to
+        @new_trn || teacher.trs_redirected_to
       end
 
       def destination
@@ -38,6 +40,14 @@ module Teachers
       def merge_required?
         (teacher.trs_response_gone? && @new_trn.present?) ||
           (teacher.trs_response == "permanent_redirect" && teacher.trs_redirected_to.present?)
+      end
+
+      def destination_has_expected_trn?
+        destination.trn == new_trn
+      end
+
+      def source_and_destination_are_different?
+        new_trn != teacher.trn
       end
 
       def another_teacher_redirected_to_destination?

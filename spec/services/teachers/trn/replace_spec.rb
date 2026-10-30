@@ -1,4 +1,15 @@
 RSpec.describe Teachers::TRN::Replace do
+  describe "#initialize" do
+    let(:teacher) { FactoryBot.build(:teacher) }
+
+    ["", "   "].each do |new_trn|
+      it "rejects a blank TRN supplied as #{new_trn.inspect}" do
+        expect { described_class.new(teacher:, new_trn:) }
+          .to raise_error(ArgumentError, "new_trn must not be blank when supplied")
+      end
+    end
+  end
+
   describe "#replace!" do
     subject(:replace) { described_class.new(teacher:, new_trn:, author:).replace! }
 

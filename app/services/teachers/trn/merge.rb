@@ -2,27 +2,37 @@ module Teachers
   module TRN
     class Merge
       def initialize(teacher:, new_trn: nil, author: nil)
+        raise ArgumentError, "new_trn must not be blank when supplied" if new_trn.blank? && !new_trn.nil?
+
         @teacher = teacher
         @new_trn = new_trn
         @author = author || Events::SystemAuthor.new
       end
 
       def merge!
-        return unless eligible_for_merge?
+        teacher_started_induction_on = nil
 
-        teacher_started_induction_on = teacher.induction_periods.minimum(:started_on)
+        teacher.with_lock do
+          return unless destination
 
-        ActiveRecord::Base.transaction do
-          move_school_periods
-          move_induction_periods
-          move_teacher_events
-          move_teacher_id_changes
-          move_data
-          move_mentor_ineligibility_data
-          record_teacher_id_change
-          refresh_metadata
-          record_merge_event
-          teacher.destroy!
+          destination.with_lock do
+            return unless eligibility.can_be_merged?
+
+            teacher_started_induction_on = teacher.induction_periods.minimum(:started_on)
+
+            ActiveRecord::Base.transaction do
+              move_school_periods
+              move_induction_periods
+              move_teacher_events
+              move_teacher_id_changes
+              move_data
+              move_mentor_ineligibility_data
+              record_teacher_id_change
+              refresh_metadata
+              record_merge_event
+              teacher.destroy!
+            end
+          end
         end
 
         TRSSyncJob.perform_later(
@@ -36,15 +46,15 @@ module Teachers
       attr_reader :teacher, :author
 
       def new_trn
-        @new_trn ||= teacher.trs_redirected_to
+        @new_trn || teacher.trs_redirected_to
       end
 
       def destination
         @destination ||= Teacher.find_by_trn(new_trn)
       end
 
-      def eligible_for_merge?
-        Teachers::TRN::Eligibility.new(teacher:, new_trn: @new_trn).can_be_merged?
+      def eligibility
+        Teachers::TRN::Eligibility.new(teacher:, new_trn: @new_trn, destination:)
       end
 
       def overlapping_mentor_at_school_periods

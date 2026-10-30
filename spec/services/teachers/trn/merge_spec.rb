@@ -145,8 +145,65 @@ RSpec.describe Teachers::TRN::Merge do
   let(:overlapping_period_started_on) { Date.new(2025, 5, 1) }
   let(:overlapping_period_finished_on) { Date.new(2025, 7, 30) }
 
+  describe "#initialize" do
+    ["", "   "].each do |new_trn|
+      it "rejects a blank TRN supplied as #{new_trn.inspect}" do
+        expect { described_class.new(teacher:, new_trn:) }
+          .to raise_error(ArgumentError, "new_trn must not be blank when supplied")
+      end
+    end
+  end
+
   describe "#merge!" do
     subject(:merge!) { service.merge! }
+
+    context "when the source changes after it was loaded" do
+      before do
+        teacher
+        Teacher.find(teacher.id).update!(trs_response: "ok", trs_redirected_to: nil)
+      end
+
+      it "refreshes the source before checking eligibility" do
+        merge!
+
+        expect(Teacher.exists?(teacher.id)).to be(true)
+        expect(ect_at_school_period.reload.teacher).to eq(teacher)
+        expect(destination.events.where(event_type: "teacher_merged")).to be_empty
+        expect(Teachers::TRN::TRSSyncJob).not_to have_been_enqueued
+      end
+    end
+
+    context "when the destination changes after it was loaded" do
+      before do
+        allow(Teacher).to receive(:find_by_trn).with(destination.trn).and_return(destination)
+        Teacher.find(destination.id).update!(trn: "8888888")
+      end
+
+      it "refreshes the destination and rejects a changed TRN" do
+        merge!
+
+        expect(Teacher.exists?(teacher.id)).to be(true)
+        expect(destination.trn).to eq("8888888")
+        expect(ect_at_school_period.reload.teacher).to eq(teacher)
+        expect(destination.events.where(event_type: "teacher_merged")).to be_empty
+        expect(Teachers::TRN::TRSSyncJob).not_to have_been_enqueued
+      end
+    end
+
+    context "when destination data changes after it was loaded" do
+      before do
+        allow(Teacher).to receive(:find_by_trn).with(destination.trn).and_return(destination)
+        Teacher.find(destination.id).update!(mentor_first_became_eligible_for_training_at: Date.new(2020, 1, 1))
+      end
+
+      it "preserves the latest destination data when merging" do
+        merge!
+
+        expect(Teacher.exists?(teacher.id)).to be(false)
+        expect(destination.reload.mentor_first_became_eligible_for_training_at).to eq(Date.new(2020, 1, 1))
+        expect(Teachers::TRN::TRSSyncJob).to have_been_enqueued.exactly(:once)
+      end
+    end
 
     context "when a replacement TRN is supplied for a deactivated teacher" do
       subject(:service) { described_class.new(teacher:, new_trn: destination.trn) }
@@ -544,7 +601,7 @@ RSpec.describe Teachers::TRN::Merge do
 
     context "when the teachers cannot be merged" do
       before do
-        allow(Teachers::TRN::Eligibility).to receive(:new).with(teacher:, new_trn: nil).and_return(double(can_be_merged?: false))
+        allow(Teachers::TRN::Eligibility).to receive(:new).with(teacher:, new_trn: nil, destination:).and_return(double(can_be_merged?: false))
       end
 
       it "does not move any ect_at_school_periods" do
