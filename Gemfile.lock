@@ -538,7 +538,9 @@ GEM
       actionpack (>= 7.0.0)
       activesupport (>= 7.0.0)
       rack
-    prosopite (2.2.0)
+    prosopite (2.5.0)
+      activerecord (>= 6.1)
+      railties (>= 6.1)
     pry (0.16.0)
       coderay (~> 1.1)
       method_source (~> 1.0)
