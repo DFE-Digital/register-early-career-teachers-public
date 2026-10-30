@@ -13,7 +13,7 @@ class API::Induction::V1::ClaimSerializer < Blueprinter::Base
   schema_field(
     :full_name,
     type: :string,
-    example: "Kirk Van Houten",
+    example: "John Doe",
     description: "The teacher's name."
   )
 
@@ -29,7 +29,7 @@ class API::Induction::V1::ClaimSerializer < Blueprinter::Base
     :training_programme,
     type: :string,
     enum: TRAINING_PROGRAMME.keys,
-    example: "school_led",
+    example: TRAINING_PROGRAMME.keys.first,
     description: "The training programme under which you are registering this claim."
   )
 end
