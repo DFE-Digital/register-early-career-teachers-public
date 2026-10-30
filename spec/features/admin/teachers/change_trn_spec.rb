@@ -123,9 +123,42 @@ describe "Admin changing a deactivated teacher's TRN" do
       then_i_return_to_the_teacher_overview
       then_both_records_are_unchanged
     end
+
+    context "when the records cannot be merged" do
+      before do
+        given_both_records_have_induction_periods
+      end
+
+      it "tells me I cannot use the TRN" do
+        when_i_start_the_change_trn_journey
+        when_i_enter_the_replacement_trn
+        then_i_see_the_cannot_use_trn_page
+        then_both_records_are_unchanged
+
+        when_i_go_back_to_the_teacher
+        then_i_return_to_the_teacher_overview
+      end
+    end
   end
 
 private
+
+  def given_both_records_have_induction_periods
+    FactoryBot.create(:induction_period, teacher: @teacher)
+    FactoryBot.create(:induction_period, teacher: @destination)
+  end
+
+  def then_i_see_the_cannot_use_trn_page
+    expect(
+      page.get_by_role("heading", name: "You cannot use this TRN", exact: true)
+    ).to be_visible
+
+    expect(page.get_by_text("Contact the development team.", exact: true)).to be_visible
+  end
+
+  def when_i_go_back_to_the_teacher
+    page.get_by_role("link", name: "Back to #{@teacher_name}", exact: true).click
+  end
 
   def given_a_teacher_with_a_deactivated_trn
     @old_trn = "7654321"

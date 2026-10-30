@@ -1,0 +1,20 @@
+<% page_data(
+  title: "You cannot use this TRN",
+  backlink_href: @wizard.previous_step_path
+) %>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <p class="govuk-body">
+      Contact the development team.
+    </p>
+
+    <p class="govuk-body">
+      <%= govuk_link_to(
+        "Back to #{@wizard.teacher_name}",
+        admin_teacher_path(@teacher),
+        no_visited_state: true
+      ) %>
+    </p>
+  </div>
+</div>

@@ -1,11 +1,17 @@
 namespace :product_review do
-  desc "Set up teacher records with training, mentorships and declarations for merging (#4329)"
-  task :deactivated_teacher_merge, %i[source_trn destination_trn mentor_trn] => :environment do |_task, args|
+  desc "Set up teacher records with training, mentorships and declarations for merging (#4329), " \
+       "or records that cannot be merged when scenario is cannot_merge (#4330)"
+  task :deactivated_teacher_merge, %i[source_trn destination_trn mentor_trn scenario] => :environment do |_task, args|
     abort("Only available for non-production environments") if Rails.env.production?
 
     source_trn = args[:source_trn].presence || "0000431"
     destination_trn = args[:destination_trn].presence
     mentor_trn = args[:mentor_trn].presence || "0000433"
+    cannot_merge = args[:scenario] == "cannot_merge"
+
+    if args[:scenario].present? && !cannot_merge
+      abort("Unknown scenario #{args[:scenario].inspect}. The only scenario is cannot_merge")
+    end
 
     if destination_trn.blank?
       unless Rails.application.config.enable_fake_trs_api
@@ -30,6 +36,7 @@ namespace :product_review do
     end
 
     school = School.find_by!(urn: 1_759_427)
+    other_school = School.find_by!(urn: 3_375_958)
     contract_period = ContractPeriod.find_by!(year: 2025)
     lead_provider = LeadProvider.find_by!(name: "Teach First")
 
@@ -126,14 +133,30 @@ namespace :product_review do
           delivery_partner_when_created: training_period.delivery_partner
         )
       end
+
+      if cannot_merge
+        ECTAtSchoolPeriod.create!(
+          teacher: source,
+          school: other_school,
+          working_pattern: "full_time",
+          started_on: Date.new(2026, 1, 1),
+          finished_on: nil
+        )
+      end
     end
 
     puts "Created deactivated source: #{source.trn} (teacher #{source.id})"
     puts "Created active destination: #{destination.trn} (teacher #{destination.id})"
     puts "Created mentor: #{mentor.trn} (teacher #{mentor.id})"
     puts "Created three school periods, training periods, mentorships and declarations."
+
+    if cannot_merge
+      puts "Created an overlapping school period for the source at #{other_school.name}, so the records cannot be merged."
+    end
+
     puts "Open /admin/teachers/#{source.id}"
     puts "Choose 'Change the TRN for this deactivated record'."
     puts "Enter replacement TRN: #{destination.trn}"
+    puts "Expect to see 'You cannot use this TRN'." if cannot_merge
   end
 end
