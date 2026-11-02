@@ -34,4 +34,30 @@ RSpec.describe API::AppropriateBodies::Induction do
         .to raise_error(described_class::Invalid, /Enter a date of birth/)
     end
   end
+
+  describe "#pass!" do
+    let(:teacher) { FactoryBot.create(:teacher, :with_name) }
+    let!(:induction_period) { FactoryBot.create(:induction_period, :unfinished, teacher:, appropriate_body_period: appropriate_body) }
+    let(:finished_on) { 1.day.ago.to_date }
+
+    it "records the pass and returns the outcome" do
+      outcome = induction.pass!(trn: teacher.trn, finished_on:, number_of_terms: 3)
+
+      expect(outcome.symbolize_keys).to eq(trn: teacher.trn, full_name: "John Keating", finished_on:, number_of_terms: 3.0, outcome: "pass")
+      expect(induction_period.reload).to be_pass_outcome
+      expect(Event.where(teacher:, event_type: "teacher_passes_induction").sole).to have_attributes(oauth_client: client)
+    end
+
+    it "raises not found when the teacher has no ongoing induction with the appropriate body" do
+      another_appropriate_body = FactoryBot.create(:appropriate_body_period, name: "Canvas Teaching School Hub")
+
+      expect { described_class.new(appropriate_body: another_appropriate_body, client:).pass!(trn: teacher.trn, finished_on:, number_of_terms: 3) }
+        .to raise_error(described_class::TeacherNotFound)
+    end
+
+    it "raises a validation error when the pass is invalid" do
+      expect { induction.pass!(trn: teacher.trn, finished_on:) }
+        .to raise_error(described_class::Invalid, /Enter a number of terms/)
+    end
+  end
 end

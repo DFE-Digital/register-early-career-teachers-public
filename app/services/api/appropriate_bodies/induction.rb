@@ -1,6 +1,7 @@
 module API
   module AppropriateBodies
     class Induction
+      include ::AppropriateBodies
       include ::AppropriateBodies::ClaimAnECT
       include Errors
 
@@ -30,9 +31,16 @@ module API
         pending_induction_submission.touch(:delete_at) if pending_induction_submission&.persisted?
       end
 
-      # def release!; end
+      def pass!(trn:, finished_on: nil, number_of_terms: nil)
+        teacher = find_claimed_teacher!(trn:)
+        record_pass!(teacher:, finished_on:, number_of_terms:)
 
-      # def pass!; end
+        as_outcome(teacher.reload.finished_induction_period)
+      rescue StandardError => e
+        rescue_with_handler(e) || raise
+      end
+
+      # def release!; end
 
     private
 
@@ -53,7 +61,18 @@ module API
         register_ect.register({ started_on:, training_programme: }) or raise Invalid, claim_errors(pending_induction_submission:)
       end
 
+      def find_claimed_teacher!(trn:)
+        ECTs.new(appropriate_body).current.find_by(trn:) or raise TeacherNotFound, "Nothing could be found for the provided details"
+      end
+
+      def record_pass!(teacher:, finished_on:, number_of_terms:)
+        record_pass = RecordPass.new(teacher:, appropriate_body_period:, author:)
+        record_pass.call(finished_on:, number_of_terms:)
+      end
+
       def as_claim(induction_period) = induction_period.slice(:trn, :full_name, :started_on, :training_programme)
+
+      def as_outcome(induction_period) = induction_period.slice(:trn, :full_name, :finished_on, :number_of_terms, :outcome)
     end
   end
 end
