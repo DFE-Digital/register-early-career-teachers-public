@@ -6,7 +6,12 @@ module Sessions
       end
 
       def missing? = details.empty?
-      def access_requestable? = !missing? && role_ids.any?
+
+      def access_requestable?
+        return false unless Rails.application.config.enable_dfe_sign_in_access_requests
+
+        !missing? && role_ids.any?
+      end
 
       def name = details["dfe_sign_in_organisation_name"]
       def organisation_id = details["dfe_sign_in_organisation_id"]
