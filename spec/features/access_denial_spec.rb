@@ -1,4 +1,10 @@
 RSpec.describe "Access denial" do
+  before do
+    allow(Rails.application.config)
+      .to receive(:enable_dfe_sign_in_access_requests)
+      .and_return(true)
+  end
+
   context "when the user has not completed onboarding with DfE Sign In" do
     # DSI response includes neither UUID nor URN
     before do

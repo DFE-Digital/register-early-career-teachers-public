@@ -1,4 +1,10 @@
 RSpec.describe "DfE Sign-in access requests" do
+  before do
+    allow(Rails.application.config)
+      .to receive(:enable_dfe_sign_in_access_requests)
+      .and_return(true)
+  end
+
   describe "POST #create" do
     subject(:access_request) do
       post sessions_access_request_path
