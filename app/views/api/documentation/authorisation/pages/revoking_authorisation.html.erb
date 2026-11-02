@@ -13,18 +13,42 @@ sidebar_position: 8
   )
 %>
 
-
-<%= govuk_notification_banner(title_text: "Note") do %>
-  <p>
-  We need to add how an end user can do this once the journey is built
-  </p>
-<% end %>
-
 <p class="govuk-body">
-You can revoke an authorisation if you need to, for example if the access token has been leaked. 
+You can revoke an authorisation if you need to, for example if the access token has been leaked. This is done either via the API 
+or by signing-in to the Register early career teachers service as an appropriate body user.
 </p>
 
-<h3 class="govuk-heading-s">Send the request</h3>
+<h2 class="govuk-heading-m">Revoking access as an appropriate body user</h3>
+
+<p class="govuk-body">
+The <strong>Manage data access</strong> page displays a list of applications that have been given access to the appropriate body’s data.
+</p>
+
+<%= image_tag("documentation/authorisation/manage-data-access.png", width: "650px", alt: "Manage data access screen", class: "govuk-!-margin-top-2 govuk-!-margin-bottom-6") %>
+
+<p class="govuk-body">
+To revoke access, click the <strong>Remove access</strong> link alongside the application you wish to revoke.
+</p>
+
+<p class="govuk-body">
+You will then be prompted to confirm you want to remove access.
+</p>
+
+<%= image_tag("documentation/authorisation/confirm-remove-access.png", width: "650px", alt: "Confirm removal of access screen", class: "govuk-!-margin-top-2 govuk-!-margin-bottom-6") %>
+
+
+<p class="govuk-body">
+Click on the <strong>Confirm remove access</strong> button to remove the application’s access.
+</p>
+
+<p class="govuk-body">
+You will shown a confirmation page when this has been done.
+</p>
+
+<%= image_tag("documentation/authorisation/access-removed.png", width: "650px", alt: "Access removed screen", class: "govuk-!-margin-top-2 govuk-!-margin-bottom-6") %>
+
+
+<h2 class="govuk-heading-m">Revoking access from the API</h3>
 
 <p class="govuk-body">
 To revoke an access token, send an HTTP POST request to our revoke endpoint.
