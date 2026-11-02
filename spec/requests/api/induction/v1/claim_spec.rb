@@ -23,9 +23,10 @@ RSpec.describe "POST /api/induction/v1/teachers/:trn/claim", type: :request do
     )
     expect(Teacher.find_by!(trn:).ongoing_induction_period.appropriate_body_period).to eq(appropriate_body_period)
     expect(Event.where(event_type: "induction_period_opened").sole).to have_attributes(
-      author_type: "oauth_client",
-      author_name: authorization.client.name,
-      appropriate_body_period_id: appropriate_body_period.id
+      author_type: "appropriate_body_api",
+      author_name: "Golden Leaf Teaching School Hub",
+      appropriate_body_period_id: appropriate_body_period.id,
+      oauth_client: authorization.client
     )
   end
 

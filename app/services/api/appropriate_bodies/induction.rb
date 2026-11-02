@@ -36,8 +36,7 @@ module API
 
     private
 
-      # TODO: change to AppropriateBodyAPIAuthor
-      def author = Events::OAuthClientAuthor.new(client:)
+      def author = Events::AppropriateBodyAPIAuthor.new(appropriate_body_period:, oauth_client: client)
 
       def import_from_trs!(pending_induction_submission:)
         find_ect = FindECT.new(appropriate_body_period:, pending_induction_submission:)

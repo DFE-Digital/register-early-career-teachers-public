@@ -11,9 +11,11 @@ RSpec.describe API::AppropriateBodies::Induction do
   describe "#claim!" do
     it "registers the ECT with the appropriate body and returns the claim" do
       claim = induction.claim!(**claim_params)
+      teacher = Teacher.find_by!(trn: "1234567")
 
       expect(claim.symbolize_keys).to eq(trn: "1234567", full_name: "Kirk Van Houten", started_on:, training_programme: "school_led")
-      expect(Teacher.find_by!(trn: "1234567").ongoing_induction_period.appropriate_body_period).to eq(appropriate_body)
+      expect(teacher.ongoing_induction_period.appropriate_body_period).to eq(appropriate_body)
+      expect(Event.where(teacher:)).to be_present.and all(have_attributes(oauth_client: client))
     end
 
     it "schedules the pending submission for deletion whether or not the claim succeeds" do
