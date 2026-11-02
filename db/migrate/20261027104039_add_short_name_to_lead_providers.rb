@@ -12,11 +12,11 @@ class AddShortNameToLeadProviders < ActiveRecord::Migration[8.1]
       "UCL Institute of Education" => "ucl",
       # Staging lead providers
       "Reuse – Lead Provider One" => "reuse",
-      "Reuse – Lead Provider X (not available in target year)" => "reusex"
+      "Reuse – Lead Provider X (not available in target year)" => "reuse-x"
     }
 
     LeadProvider.find_each do |lead_provider|
-      lead_provider.update!(short_name: short_names.fetch(lead_provider.name))
+      lead_provider.update!(short_name: short_names[lead_provider.name] || lead_provider.name.parameterize)
     end
 
     change_column_null :lead_providers, :short_name, false

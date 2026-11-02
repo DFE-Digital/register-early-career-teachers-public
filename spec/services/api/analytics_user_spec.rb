@@ -1,6 +1,6 @@
 describe API::AnalyticsUser do
   let(:analytics_user) { API::AnalyticsUser.new(lead_provider) }
-  let(:lead_provider) { FactoryBot.build(:lead_provider, short_name: "short") }
+  let(:lead_provider) { FactoryBot.create(:lead_provider) }
 
   describe "#lead_provider" do
     subject { analytics_user.lead_provider }
@@ -17,6 +17,6 @@ describe API::AnalyticsUser do
   describe "#fingerprint" do
     subject { analytics_user.fingerprint }
 
-    it { is_expected.to eq(lead_provider.short_name) }
+    it { expect(subject).to eq(lead_provider.id) }
   end
 end

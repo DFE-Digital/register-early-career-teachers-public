@@ -8,6 +8,6 @@ module API
 
     delegate :name, to: :lead_provider
 
-    def fingerprint = lead_provider.short_name
+    def fingerprint = lead_provider.id
   end
 end

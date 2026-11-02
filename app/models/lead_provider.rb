@@ -21,16 +21,4 @@ class LeadProvider < ApplicationRecord
   normalizes :name, with: -> { it.squish }
 
   touch -> { training_periods }, when_changing: %i[name], timestamp_attribute: :api_transfer_updated_at
-
-  def name=(name)
-    super
-
-    return if name.blank?
-
-    self.short_name ||= if name.include?(" ")
-                          name.downcase.split.map(&:first).join
-                        else
-                          name.downcase
-                        end
-  end
 end
