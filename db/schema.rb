@@ -499,8 +499,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_29_092623) do
     t.string "name", null: false
     t.datetime "updated_at", null: false
     t.boolean "vat_registered", default: true, null: false
+    t.string "short_name", null: false
     t.index ["ecf_id"], name: "index_lead_providers_on_ecf_id", unique: true
     t.index ["name"], name: "index_lead_providers_on_name", unique: true
+    t.index ["short_name"], name: "index_lead_providers_on_short_name", unique: true
   end
 
   create_table "local_authorities", force: :cascade do |t|

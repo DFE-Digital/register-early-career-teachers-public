@@ -3,8 +3,8 @@ module Seeds
     BASE_URN = 9_100_100
     SCHEDULE_IDENTIFIER = "ecf-standard-september"
 
-    LEAD_PROVIDER_REUSABLE_NAME = "Reuse – Lead Provider One"
-    LEAD_PROVIDER_NOT_AVAILABLE_IN_TARGET_YEAR_NAME = "Reuse – Lead Provider X (not available in target year)"
+    LEAD_PROVIDER_REUSABLE = { name: "Reuse – Lead Provider One", short_name: "reuse" }.freeze
+    LEAD_PROVIDER_NOT_AVAILABLE_IN_TARGET_YEAR = { name: "Reuse – Lead Provider X (not available in target year)", short_name: "reuse-x" }.freeze
     DELIVERY_PARTNER_REUSABLE_NAME = "Reuse – Delivery Partner One"
     DELIVERY_PARTNER_NOT_REUSABLE_NAME = "Reuse – Delivery Partner Two"
     PREFERRED_APPROPRIATE_BODY_NAME = "Reuse scenario – Golden Leaf Teaching School Hub"
@@ -65,8 +65,8 @@ module Seeds
     end
 
     def ensure_reference_data!
-      LeadProvider.find_or_create_by!(name: LEAD_PROVIDER_REUSABLE_NAME)
-      LeadProvider.find_or_create_by!(name: LEAD_PROVIDER_NOT_AVAILABLE_IN_TARGET_YEAR_NAME)
+      LeadProvider.find_or_create_by!(**LEAD_PROVIDER_REUSABLE)
+      LeadProvider.find_or_create_by!(**LEAD_PROVIDER_NOT_AVAILABLE_IN_TARGET_YEAR)
       DeliveryPartner.find_or_create_by!(name: DELIVERY_PARTNER_REUSABLE_NAME)
       DeliveryPartner.find_or_create_by!(name: DELIVERY_PARTNER_NOT_REUSABLE_NAME)
     end
@@ -79,11 +79,11 @@ module Seeds
     end
 
     def reusable_lead_provider
-      @reusable_lead_provider ||= LeadProvider.find_by!(name: LEAD_PROVIDER_REUSABLE_NAME)
+      @reusable_lead_provider ||= LeadProvider.find_by!(name: LEAD_PROVIDER_REUSABLE[:name])
     end
 
     def lead_provider_not_available_in_target_year
-      @lead_provider_not_available_in_target_year ||= LeadProvider.find_by!(name: LEAD_PROVIDER_NOT_AVAILABLE_IN_TARGET_YEAR_NAME)
+      @lead_provider_not_available_in_target_year ||= LeadProvider.find_by!(name: LEAD_PROVIDER_NOT_AVAILABLE_IN_TARGET_YEAR[:name])
     end
 
     def reusable_delivery_partner

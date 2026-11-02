@@ -28,7 +28,9 @@ describe LeadProvider do
     subject { FactoryBot.build(:lead_provider) }
 
     it { is_expected.to validate_presence_of(:name) }
+    it { is_expected.to validate_presence_of(:short_name) }
     it { is_expected.to validate_uniqueness_of(:name) }
+    it { is_expected.to validate_uniqueness_of(:short_name) }
     it { is_expected.to validate_uniqueness_of(:ecf_id).case_insensitive.allow_nil }
     it { is_expected.to allow_values(true, false).for(:vat_registered) }
     it { is_expected.not_to allow_values(nil, "").for(:vat_registered) }

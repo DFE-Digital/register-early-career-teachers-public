@@ -350,6 +350,7 @@
   :contract_periods:
   - range
   :lead_providers:
+  - short_name
   - ecf_id
   :statement_adjustments:
   - ecf_id
