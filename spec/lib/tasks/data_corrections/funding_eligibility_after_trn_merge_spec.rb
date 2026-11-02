@@ -41,7 +41,7 @@ describe "Data Corrections tasks" do
     let(:dry_run) { false }
     let(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, year:, framework_agreement:) }
     let(:school) { school_partnership.school }
-    let(:payment_statement) { FactoryBot.create(:statement) }
+    let(:payment_statement) { FactoryBot.create(:statement, deadline_date: Date.tomorrow) }
     let(:other_statement) { FactoryBot.create(:statement) }
     let(:framework_agreement) { payment_statement.framework_agreement }
     let(:contract) { payment_statement.contract }
