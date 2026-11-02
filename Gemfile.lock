@@ -282,7 +282,7 @@ GEM
       activemodel (>= 7.2)
       activesupport (>= 7.2)
       html-attributes-utils (~> 1)
-    govuk_markdown (2.0.4)
+    govuk_markdown (2.0.5)
       activesupport
       redcarpet
     gyoku (1.4.0)
