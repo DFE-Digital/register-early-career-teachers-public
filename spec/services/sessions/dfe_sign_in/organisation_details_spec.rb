@@ -1,6 +1,14 @@
 RSpec.describe Sessions::DfESignIn::OrganisationDetails do
   subject(:organisation_details) { described_class.new(session_details) }
 
+  before do
+    allow(Rails.application.config)
+      .to receive(:enable_dfe_sign_in_access_requests)
+      .and_return(:access_requests_enabled)
+  end
+
+  let(:access_requests_enabled) { true }
+
   let(:session_details) do
     {
       "dfe_sign_in_organisation_id" => dfe_sign_in_organisation_id,
@@ -34,6 +42,12 @@ RSpec.describe Sessions::DfESignIn::OrganisationDetails do
   end
 
   describe "#access_requestable?" do
+    context "when access requests are disabled" do
+      let(:access_requests_enabled) { false }
+
+      it { is_expected.not_to be_access_requestable }
+    end
+
     context "when details are blank" do
       let(:session_details) { nil }
 
