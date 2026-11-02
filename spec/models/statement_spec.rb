@@ -11,7 +11,9 @@ describe Statement do
   end
 
   describe "validations" do
-    subject { FactoryBot.create(:statement, allow_creation_with_past_deadline_date: false) }
+    subject { FactoryBot.create(:statement, allow_creation_with_past_deadline_date: false, contract_period:) }
+
+    let(:contract_period) { FactoryBot.create(:contract_period, :next) }
 
     it { is_expected.to validate_presence_of(:contract).with_message("Contract is required") }
     it { is_expected.to validate_presence_of(:fee_type).with_message("Enter a fee type") }
