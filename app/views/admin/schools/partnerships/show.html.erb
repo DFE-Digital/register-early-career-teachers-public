@@ -6,7 +6,7 @@
   breadcrumbs: @breadcrumbs
 ) %>
 
-<%= render 'admin/schools/impersonate_button' %>
+<%= render 'admin/schools/impersonate_button', school: @school %>
 
 <%= render Navigation::SecondaryNavigationComponent.new(
   items: @navigation_items
