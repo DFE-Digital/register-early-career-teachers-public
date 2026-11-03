@@ -4,7 +4,7 @@ module Sessions
       class UnknownUserEmail < Sessions::User::InvalidSession; end
 
       include Fingerprint
-      include Sessions::ImpersonateSchoolUser
+      include Sessions::ImpersonateOrganisationUser
 
       USER_TYPE = :dfe_staff_user
       PROVIDER = :otp

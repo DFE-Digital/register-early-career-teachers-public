@@ -10,7 +10,7 @@
     <div class="govuk-width-container">
       <div class="govuk-!-display-none-print">
         <%= render TimeTravellerComponent.new %>
-        <%= render Admin::ImpersonationBannerComponent.new(user: current_user, school: @school) %>
+        <%= render Admin::ImpersonationBannerComponent.new(user: current_user) %>
         <%= yield(:backlink_or_breadcrumb) %>
       </div>
 

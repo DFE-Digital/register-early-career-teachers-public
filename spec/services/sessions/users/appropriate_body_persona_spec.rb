@@ -114,4 +114,12 @@ RSpec.describe Sessions::Users::AppropriateBodyPersona do
   describe "#user" do
     it { expect(appropriate_body_persona.user).to be_nil }
   end
+
+  describe "dfe_sign_in_user_id" do
+    subject(:dfe_sign_in_user_id) do
+      appropriate_body_persona.dfe_sign_in_user_id
+    end
+
+    it { is_expected.to be_nil }
+  end
 end
