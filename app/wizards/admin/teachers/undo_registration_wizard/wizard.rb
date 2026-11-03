@@ -1,165 +1,66 @@
-module Admin
-  module Teachers
-    module UndoRegistrationWizard
-      class Wizard < ApplicationWizard
-        attr_accessor :store, :teacher_id, :author
+module Admin::Teachers::UndoRegistrationWizard
+  class Wizard
+    include DfE::Wizard
 
-        steps do
-          [{
-            start: StartStep,
-            select_school_period: SelectSchoolPeriodStep,
-            confirm: ConfirmStep,
-            confirmation: ConfirmationStep
-          }]
-        end
+    def self.routes = %i[start select_school_period confirm confirmation]
 
-        def self.step?(step_name) = Array(steps).first[step_name].present?
+    def steps_processor
+      DfE::Wizard::StepsProcessor::Graph.draw(self, predicate_caller: state_store) do |graph|
+        graph.add_node :start, Steps::StartStep
+        graph.add_node :select_school_period, Steps::SelectSchoolPeriodStep
+        graph.add_node :confirm, Steps::ConfirmStep
+        graph.add_node :confirmation, Steps::ConfirmationStep
 
-        def allowed_steps
-          return [:confirmation] if store.registration_undone
-          return [] if at_school_periods.empty?
-
-          steps = [:start]
-
-          if at_school_periods.many?
-            steps << :select_school_period
-            return steps if selected_at_school_period.blank?
-          end
-
-          return [] unless undoable?
-
-          steps << :confirm
-        end
-
-        def allowed_step_path
-          allowed_step = allowed_steps.last
-
-          return teacher_school_path unless allowed_step
-
-          step_path(allowed_step)
-        end
-
-        def teacher
-          @teacher ||= Teacher.find(teacher_id)
-        end
-
-        def teacher_name
-          ::Teachers::Name.new(teacher).full_name
-        end
-
-        def ect_at_school_periods
-          @ect_at_school_periods ||= teacher.ect_at_school_periods
-            .includes(:school, :school_reported_appropriate_body)
-            .order(started_on: :desc)
-        end
-
-        def mentor_at_school_periods
-          @mentor_at_school_periods ||= teacher.mentor_at_school_periods
-            .includes(:school)
-            .order(started_on: :desc)
-        end
-
-        def at_school_periods
-          @at_school_periods ||= ect_at_school_periods + mentor_at_school_periods
-        end
-
-        def at_school_period
-          return selected_at_school_period if selected_at_school_period
-
-          at_school_periods.first if at_school_periods.one?
-        end
-
-        def at_school_period_from_gid(at_school_period_gid)
-          at_school_periods.find { |at_school_period| at_school_period.to_global_id.to_s == at_school_period_gid }
-        end
-
-        def periods_will_be_closed?
-          return @periods_will_be_closed if defined?(@periods_will_be_closed)
-
-          @periods_will_be_closed = undo_registration.periods_will_be_closed?
-        end
-
-        delegate :finish_date_for, :undoable?, to: :undo_registration
-
-        def undo_registration!(
-          expected_action:,
-          expected_training_period_ids:,
-          expected_mentorship_period_ids:,
-          expected_at_school_period_gid:
+        graph.root :start
+        graph.add_conditional_edge(
+          from: :start,
+          when: :multiple_school_periods?,
+          then: :select_school_period,
+          else: :confirm
         )
-          undo_registration.undo!(
-            expected_action:,
-            expected_training_period_ids:,
-            expected_mentorship_period_ids:,
-            expected_at_school_period_gid:
-          )
-        end
-
-        delegate :undo_action, to: :store
-
-        def affected_training_periods
-          @affected_training_periods ||= periods_affected(
-            at_school_period.training_periods.includes(
-              :schedule,
-              :school_partnership,
-              :lead_provider,
-              :delivery_partner,
-              :contract_period,
-              :expression_of_interest_lead_provider,
-              :expression_of_interest_contract_period
-            )
-          )
-        end
-
-        def affected_mentorship_periods
-          @affected_mentorship_periods ||= periods_affected(
-            at_school_period.mentorship_periods.includes(mentor: :teacher, mentee: :teacher)
-          )
-        end
-
-        def current_step_path
-          step_path(current_step_name)
-        end
-
-        def next_step_path
-          step_path(current_step.next_step)
-        end
-
-        def previous_step_path
-          step_path(current_step.previous_step)
-        end
-
-      private
-
-        def teacher_school_path
-          Rails.application.routes.url_helpers.admin_teacher_school_path(teacher)
-        end
-
-        def undo_registration
-          @undo_registration ||= ::Teachers::UndoRegistration.new(
-            author:,
-            at_school_period:,
-            reason: :registered_in_error
-          )
-        end
-
-        def selected_at_school_period
-          @selected_at_school_period ||= at_school_period_from_gid(store.at_school_period_gid)
-        end
-
-        def periods_affected(periods)
-          periods_will_be_closed? ? periods.unfinished : periods
-        end
-
-        def step_path(step_name)
-          return if step_name.blank?
-
-          Rails.application.routes.url_helpers.public_send(
-            "admin_teacher_undo_registration_wizard_#{step_name}_path",
-            teacher_id
-          )
-        end
+        graph.add_edge from: :select_school_period, to: :confirm
+        graph.add_edge from: :confirm, to: :confirmation
       end
+    end
+
+    def steps_operator
+      DfE::Wizard::StepsOperator::Builder.draw(wizard: self, callable: state_store) do |builder|
+        builder.on_step(:confirm, use: [DfE::Wizard::Operations::Validate, Operations::UndoRegistration])
+      end
+    end
+
+    def route_strategy
+      DfE::Wizard::RouteStrategy::ConfigurableRoutes.new(
+        wizard: self,
+        namespace: "admin_teacher_undo_registration_wizard"
+      ) do |routes|
+        routes.default_path_arguments = { teacher_id: teacher.id }
+      end
+    end
+
+    delegate :teacher,
+             :teacher_name,
+             :ect_at_school_periods,
+             :mentor_at_school_periods,
+             :at_school_periods,
+             :at_school_period,
+             :at_school_period_from_gid,
+             :periods_will_be_closed?,
+             :finish_date_for,
+             :affected_training_periods,
+             :affected_mentorship_periods,
+             :undo_action,
+             :registration_undone?,
+             :journey_available?,
+             to: :state_store
+
+    def furthest_valid_step_path
+      step_id = root_step
+      while valid?(step_id) && (next_step_id = steps_processor.next_step(step_id))
+        step_id = next_step_id
+      end
+
+      resolve_step_path(step_id)
     end
   end
 end
