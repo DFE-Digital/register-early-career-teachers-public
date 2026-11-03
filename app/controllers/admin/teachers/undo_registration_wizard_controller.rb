@@ -5,14 +5,13 @@ module Admin
 
       FORM_KEY_PREFIX = "admin_teachers_undo_registration_wizard"
 
-      include WizardStoreRescuable
-
       rescue_from ::Teachers::UndoRegistration::ConfirmationMismatchError,
                   with: :redirect_confirmation_mismatch
 
       before_action :set_teacher
       before_action :reset_store_on_entry
       before_action :initialize_wizard
+      before_action :ensure_journey_available
       before_action :check_allowed_step
 
       def new
@@ -20,7 +19,7 @@ module Admin
       end
 
       def create
-        if @wizard.valid_step? && @wizard.current_step.save!
+        if @wizard.save_current_step
           redirect_to @wizard.next_step_path
         else
           render current_step, status: :unprocessable_content
@@ -35,11 +34,20 @@ module Admin
         @teacher = Teacher.find(params[:teacher_id])
       end
 
-      def check_allowed_step
-        return if @wizard.allowed_step?
-        return redirect_no_periods_to_close if @wizard.allowed_steps.empty?
+      def ensure_journey_available
+        return if @wizard.registration_undone? || @wizard.journey_available?
 
-        redirect_to @wizard.allowed_step_path
+        redirect_no_periods_to_close
+      end
+
+      def check_allowed_step
+        if @wizard.registration_undone?
+          return if current_step == :confirmation
+
+          return redirect_to @wizard.resolve_step_path(:confirmation)
+        end
+
+        redirect_to @wizard.furthest_valid_step_path unless @wizard.valid_path_to_current_step?
       end
 
       def redirect_no_periods_to_close
@@ -53,7 +61,7 @@ module Admin
       end
 
       def store
-        @store ||= SessionRepository.new(session:, form_key:)
+        @store ||= DfE::Wizard::Repository::Session.new(session:, key: form_key)
       end
 
       def form_key
@@ -61,25 +69,18 @@ module Admin
       end
 
       def current_step
-        @current_step ||= begin
-          step = step_name_from_path
-          return :not_found unless wizard_class.step?(step)
-
-          step
-        end
-      end
-
-      def step_name_from_path
-        request.path.split("/").last.underscore.to_sym
+        @current_step ||= request.path.split("/").last.underscore.to_sym
       end
 
       def initialize_wizard
         @wizard = wizard_class.new(
           current_step:,
-          step_params: params,
-          author: current_user,
-          teacher_id: @teacher.id,
-          store:
+          current_step_params: params,
+          state_store: UndoRegistrationWizard::StateStore.new(
+            repository: store,
+            teacher: @teacher,
+            author: current_user
+          )
         )
       end
 
@@ -91,7 +92,7 @@ module Admin
         return unless current_step == :start
         return if request.referer.to_s.include?("/undo-registration/")
 
-        store.reset
+        store.clear
       end
     end
   end
