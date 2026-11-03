@@ -1,0 +1,9 @@
+<%= govuk_summary_card(title: govuk_link_to(name, admin_teaching_school_hub_path(teaching_school_hub)), heading_level: 3) do %>
+  <% if periods.any? %>
+    <% periods.each do |appropriate_body_period| %>
+      <%= render Admin::AppropriateBodies::DescriptionComponent.new(appropriate_body_period:) %>
+    <% end %>
+  <% else %>
+    <p class="govuk-body">No appropriate body periods yet</p>
+  <% end %>
+<% end %>

@@ -10,8 +10,8 @@ RSpec.describe ECTAtSchoolPeriods::AppropriateBody do
     )
   end
 
-  describe "#name" do
-    subject(:name) { service.name }
+  describe "#display_name" do
+    subject(:display_name) { service.display_name }
 
     context "when there is a school reported appropriate body" do
       let(:school_reported_appropriate_body) do
@@ -21,7 +21,7 @@ RSpec.describe ECTAtSchoolPeriods::AppropriateBody do
       context "and there is no induction period" do
         let!(:induction_period) { nil }
 
-        it { is_expected.to eq(school_reported_appropriate_body.name) }
+        it { is_expected.to eq(school_reported_appropriate_body.display_name) }
       end
 
       context "and there is an induction period but it is not ongoing" do
@@ -34,7 +34,7 @@ RSpec.describe ECTAtSchoolPeriods::AppropriateBody do
           )
         end
 
-        it { is_expected.to eq(school_reported_appropriate_body.name) }
+        it { is_expected.to eq(school_reported_appropriate_body.display_name) }
       end
 
       context "and there is an ongoing induction period but it started " \
@@ -48,7 +48,7 @@ RSpec.describe ECTAtSchoolPeriods::AppropriateBody do
           )
         end
 
-        it { is_expected.to eq(school_reported_appropriate_body.name) }
+        it { is_expected.to eq(school_reported_appropriate_body.display_name) }
       end
 
       context "and there is an ongoing induction period but it started " \
@@ -62,7 +62,7 @@ RSpec.describe ECTAtSchoolPeriods::AppropriateBody do
           )
         end
 
-        it { is_expected.to eq(school_reported_appropriate_body.name) }
+        it { is_expected.to eq(school_reported_appropriate_body.display_name) }
       end
 
       context "and there is an ongoing induction period that started " \
@@ -76,7 +76,7 @@ RSpec.describe ECTAtSchoolPeriods::AppropriateBody do
           )
         end
 
-        it { is_expected.to eq(induction_period.appropriate_body_period.name) }
+        it { is_expected.to eq(induction_period.appropriate_body_period.display_name) }
       end
     end
 
@@ -141,7 +141,7 @@ RSpec.describe ECTAtSchoolPeriods::AppropriateBody do
           )
         end
 
-        it { is_expected.to eq(induction_period.appropriate_body_period.name) }
+        it { is_expected.to eq(induction_period.appropriate_body_period.display_name) }
       end
     end
   end

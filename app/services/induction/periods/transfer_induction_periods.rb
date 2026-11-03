@@ -18,7 +18,7 @@ module Induction::Periods
       induction_period.started_on
       induction_period.finished_on
       appropriate_body_period.id
-      appropriate_body_period.name
+      appropriate_body_period.display_name
       teacher.trn
       heading
       body
@@ -57,7 +57,14 @@ module Induction::Periods
     end
 
     def event_body_context
-      "Automated correction from #{current_appropriate_body.name} to #{new_appropriate_body.name} on #{Date.current}"
+      "Automated correction from #{current_appropriate_body.display_name} to #{new_appropriate_body.display_name} on #{Date.current}"
+    end
+
+    def corrected_heading(heading)
+      old_name = current_appropriate_body.display_name
+      return heading if old_name.blank?
+
+      heading.gsub(old_name, new_appropriate_body.display_name)
     end
 
     def export_summary_for(records, headers: EVENT_TABLE_HEADERS)
@@ -80,7 +87,7 @@ module Induction::Periods
     end
 
     def csv_file_name
-      "#{csv_file_path}/#{current_appropriate_body.name} to #{new_appropriate_body.name} on #{cut_off_date}.csv"
+      "#{csv_file_path}/#{current_appropriate_body.display_name} to #{new_appropriate_body.display_name} on #{cut_off_date}.csv"
     end
 
     def fetch_value(record, attr)

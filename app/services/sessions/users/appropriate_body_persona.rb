@@ -30,7 +30,7 @@ module Sessions
         }
       end
 
-      def organisation_name = appropriate_body_period.name
+      def organisation_name = appropriate_body_period.display_name
 
       # @return [Hash] session data
       def to_h

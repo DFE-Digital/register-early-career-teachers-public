@@ -6,10 +6,11 @@ module Schools
         def next_step = :confirmation
 
         def old_appropriate_body_name
-          old_appropriate_body_period&.name || "Not reported"
+          old_appropriate_body_period&.display_name || "Not reported"
         end
 
-        delegate :name, to: :new_appropriate_body_period, prefix: :new_appropriate_body
+        def new_appropriate_body_name = new_appropriate_body_period.display_name
+
         delegate :school, to: :ect_at_school_period
 
         def save!

@@ -244,7 +244,7 @@ describe AppropriateBodyPeriod do
     describe "name", skip: "during data cleanse" do
       subject(:appropriate_body_period) { FactoryBot.build(:appropriate_body_period) }
 
-      it { is_expected.to validate_uniqueness_of(:name) }
+      it { is_expected.to validate_uniqueness_of(:name).allow_nil }
     end
 
     it "does not allow a retired type to contain today" do
@@ -575,13 +575,6 @@ describe AppropriateBodyPeriod do
   describe "#name" do
     let(:national_body) { FactoryBot.create(:national_body) }
 
-    it "allows duplicate names (temp during data cleanse)" do
-      described_class.create!(name: "Shared name", started_on: Date.new(2021, 9, 1), body_type: "national", national_body:)
-
-      expect { described_class.create!(name: "Shared name", started_on: Date.new(2021, 9, 1), body_type: "national", national_body:) }
-        .to change(described_class, :count).by(1)
-    end
-
     it "may be omitted" do
       expect { described_class.create!(name: nil, started_on: Date.new(2021, 9, 1), body_type: "national", national_body:) }
         .to change(described_class, :count).by(1)
@@ -610,6 +603,90 @@ describe AppropriateBodyPeriod do
     it "lists lead schools and regions collapsing multi-region schools" do
       expect(appropriate_body_period.lead_schools).to contain_exactly(school)
       expect(appropriate_body_period.regions).to contain_exactly(region, other_region)
+    end
+  end
+
+  describe "#display_name" do
+    subject(:display_name) { appropriate_body_period.display_name }
+
+    let(:teaching_school_hub) do
+      FactoryBot.create(:teaching_school_hub, name: "Bright Futures Teaching School Hub")
+    end
+    let(:provisioning_school) do
+      FactoryBot.create(:school, gias_school: FactoryBot.create(:gias_school, name: "Provisioning School"))
+    end
+    let(:appropriate_body_period) do
+      FactoryBot.create(:appropriate_body_period, name:, teaching_school_hub:, provisioning_school:)
+    end
+
+    context "when the period has a name of its own" do
+      let(:name) { "Star Institute" }
+
+      it "prefers it to the parent organisation name" do
+        expect(display_name).to eq("Star Institute")
+      end
+
+      context "when the period is a legacy teaching school that has since been renamed" do
+        let(:appropriate_body_period) do
+          FactoryBot.create(:appropriate_body_period, :teaching_school, name:, provisioning_school:)
+        end
+
+        it "shows the name the school had then, and not the school's name now" do
+          expect(display_name).to eq("Star Institute")
+        end
+      end
+    end
+
+    context "when the period has no name of its own" do
+      let(:name) { nil }
+
+      it "delegates to the teaching school hub" do
+        expect(display_name).to eq("Bright Futures Teaching School Hub")
+      end
+
+      context "when the period is backed by a national body" do
+        let(:national_body) { FactoryBot.create(:national_body, name: "National Body X") }
+        let(:appropriate_body_period) do
+          FactoryBot.create(:appropriate_body_period, :national, name: nil, national_body:)
+        end
+
+        it "delegates to the national body" do
+          expect(display_name).to eq("National Body X")
+        end
+      end
+
+      context "when the period is backed by a local authority" do
+        let(:local_authority) { FactoryBot.create(:local_authority, name: "Some Local Authority") }
+        let(:appropriate_body_period) do
+          FactoryBot.create(:appropriate_body_period, :local_authority, name: nil, local_authority:)
+        end
+
+        it "delegates to the local authority" do
+          expect(display_name).to eq("Some Local Authority")
+        end
+      end
+
+      context "when the period is a legacy teaching school" do
+        let(:appropriate_body_period) do
+          FactoryBot.create(:appropriate_body_period, :teaching_school, name: nil, provisioning_school:)
+        end
+
+        it "delegates to the provisioning school" do
+          expect(display_name).to eq("Provisioning School")
+        end
+      end
+
+      context "when the period has no parent organisation" do
+        let(:appropriate_body_period) do
+          # A legacy row: the current rules require a parent organisation, so write it without validations.
+          FactoryBot.build(:appropriate_body_period, name: nil, teaching_school_hub: nil, provisioning_school: nil)
+                    .tap { |period| period.save!(validate: false) }
+        end
+
+        it "returns nil" do
+          expect(display_name).to be_nil
+        end
+      end
     end
   end
 end

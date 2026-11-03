@@ -111,7 +111,8 @@ class ECTAtSchoolPeriod < ApplicationRecord
     includes(teacher: { current_or_next_induction_period: :appropriate_body_period })
   }
 
-  def school_reported_appropriate_body_name = school_reported_appropriate_body&.name
+  # @return [String] AppropriateBodyPeriod#name may be nil
+  def school_reported_appropriate_body_name = school_reported_appropriate_body&.display_name
 
   def school_reported_appropriate_body_type = school_reported_appropriate_body&.body_type
 
