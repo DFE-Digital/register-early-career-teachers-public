@@ -45,6 +45,7 @@ namespace :api do
         resources :appropriate_bodies, only: :index, path: "appropriate-bodies"
         resources :teachers, only: [], param: :trn do
           resource :claim, only: :create
+          resource :pass, only: :create
         end
       end
     end

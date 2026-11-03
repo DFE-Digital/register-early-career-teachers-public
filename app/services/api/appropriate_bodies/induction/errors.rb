@@ -47,6 +47,14 @@ module API
             raise NotEligible, "The teacher has not been awarded QTS"
           end
 
+          rescue_from ActiveModel::ValidationError do |exception|
+            raise Invalid, exception.model.errors
+          end
+
+          rescue_from ActiveRecord::RecordInvalid do |exception|
+            raise Invalid, exception.record.errors
+          end
+
           rescue_from TRS::Errors::APIRequestError, Faraday::Error do
             raise TRSUnavailable, "The Teaching Record System is unavailable. Try again later."
           end
