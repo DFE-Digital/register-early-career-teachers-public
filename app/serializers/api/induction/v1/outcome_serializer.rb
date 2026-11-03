@@ -35,7 +35,7 @@ class API::Induction::V1::OutcomeSerializer < Blueprinter::Base
   schema_field(
     :outcome,
     type: :string,
-    enum: INDUCTION_OUTCOMES.keys,
+    enum: InductionPeriod.outcomes.keys,
     example: "pass",
     description: "The outcome of the induction."
   )

@@ -262,8 +262,8 @@ components:
         outcome:
           type: string
           enum:
-          - pass
           - fail
+          - pass
           example: pass
           description: The outcome of the induction.
     OAuthError:
