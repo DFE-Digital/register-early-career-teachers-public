@@ -341,3 +341,4 @@ shared:
   - zendesk_ticket_id
   - declaration_id
   - contract_period_id
+  - oauth_client_id

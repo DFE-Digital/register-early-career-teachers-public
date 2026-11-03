@@ -21,6 +21,7 @@ DECLARATION_CREATE_REQUEST = {
         declaration_date: "2021-05-31T02:21:32.000Z",
         course_identifier: "ecf-induction",
         evidence_held: "training-event-attended",
+        cohort: "2025",
       },
     },
   },

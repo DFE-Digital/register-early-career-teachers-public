@@ -8,6 +8,8 @@ module TRS
       raise_not_found: false,
       raise_deactivated: false,
       raise_merged: false,
+      raise_api_request_error: false,
+      raise_timeout: false,
       induction_status: nil,
       has_qts: true,
       has_itt: true,
@@ -19,6 +21,8 @@ module TRS
       @raise_not_found = raise_not_found
       @raise_deactivated = raise_deactivated
       @raise_merged = raise_merged
+      @raise_api_request_error = raise_api_request_error
+      @raise_timeout = raise_timeout
       @induction_status = induction_status
       @has_qts = has_qts
       @has_itt = has_itt
@@ -30,6 +34,8 @@ module TRS
       raise(TRS::Errors::TeacherNotFound, "Teacher with TRN #{trn} not found") if @raise_not_found
       raise(TRS::Errors::TeacherDeactivated, "Teacher with TRN #{trn} deactivated") if @raise_deactivated
       raise(TRS::Errors::TeacherMerged.new(trn:, redirected_to: MERGED_TRN_REDIRECTS_TO)) if @raise_merged
+      raise(TRS::Errors::APIRequestError, "500 Internal Server Error") if @raise_api_request_error
+      raise(Faraday::TimeoutError, "execution expired") if @raise_timeout
 
       build_trs_teacher(trn:, date_of_birth:, national_insurance_number:)
     end

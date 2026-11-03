@@ -28,6 +28,11 @@ DECLARATION_PRE2025_STARTED_ATTRIBUTES = {
       enum: %w[ecf-induction ecf-mentor],
       example: "ecf-induction",
     },
+    cohort: {
+      description: "The cohort, for example, 2021 or 2025, the declaration is for. If not provided, the declaration will be made against the participant's most recent training with you.",
+      type: :string,
+      example: "2025",
+    },
   },
 }.freeze
 
@@ -66,6 +71,11 @@ DECLARATION_PRE2025_RETAINED_ATTRIBUTES = {
       type: :string,
       enum: %w[training-event-attended self-study-material-completed other],
       example: "training-event-attended",
+    },
+    cohort: {
+      description: "The cohort, for example, 2021 or 2025, the declaration is for. If not provided, the declaration will be made against the participant's most recent training with you.",
+      type: :string,
+      example: "2025",
     },
   },
 }.freeze
@@ -106,6 +116,11 @@ DECLARATION_PRE2025_COMPLETED_ATTRIBUTES = {
       enum: %w[training-event-attended self-study-material-completed other],
       example: "training-event-attended",
     },
+    cohort: {
+      description: "The cohort, for example, 2021 or 2025, the declaration is for. If not provided, the declaration will be made against the participant's most recent training with you.",
+      type: :string,
+      example: "2025",
+    },
   },
 }.freeze
 
@@ -144,6 +159,11 @@ DECLARATION_PRE2025_EXTENDED_ATTRIBUTES = {
       type: :string,
       enum: %w[training-event-attended self-study-material-completed other],
       example: "training-event-attended",
+    },
+    cohort: {
+      description: "The cohort, for example, 2021 or 2025, the declaration is for. If not provided, the declaration will be made against the participant's most recent training with you.",
+      type: :string,
+      example: "2025",
     },
   },
 }.freeze

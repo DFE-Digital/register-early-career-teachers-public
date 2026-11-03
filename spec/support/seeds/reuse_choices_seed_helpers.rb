@@ -22,11 +22,11 @@ module Seeds
     end
 
     def reuse_reference_lead_provider
-      LeadProvider.find_by!(name: Seeds::ReuseChoices::LEAD_PROVIDER_REUSABLE_NAME)
+      LeadProvider.find_by!(name: Seeds::ReuseChoices::LEAD_PROVIDER_REUSABLE[:name])
     end
 
     def reuse_reference_lead_provider_not_available
-      LeadProvider.find_by!(name: Seeds::ReuseChoices::LEAD_PROVIDER_NOT_AVAILABLE_IN_TARGET_YEAR_NAME)
+      LeadProvider.find_by!(name: Seeds::ReuseChoices::LEAD_PROVIDER_NOT_AVAILABLE_IN_TARGET_YEAR[:name])
     end
 
     def reuse_reference_delivery_partner

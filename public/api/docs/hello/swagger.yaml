@@ -7,11 +7,11 @@ paths:
   "/api/hello/client":
     get:
       summary: Check your client credentials identify your API client
-      operationId: getAPIHelloClient
       security:
       - client_credentials: []
       tags:
       - Hello world
+      operationId: getClient
       responses:
         '200':
           description: The API client the credentials belong to
@@ -30,11 +30,11 @@ paths:
   "/api/hello/user":
     get:
       summary: Check your access token identifies an appropriate body
-      operationId: getAPIHelloUser
       security:
       - bearer: []
       tags:
       - Hello world
+      operationId: getUser
       responses:
         '200':
           description: The appropriate body the access token was issued to
@@ -54,10 +54,10 @@ paths:
   "/api/hello/world":
     get:
       summary: Check you can call an open API endpoint
-      operationId: getAPIHelloWorld
       security: []
       tags:
       - Hello world
+      operationId: getWorld
       responses:
         '200':
           description: A static greeting

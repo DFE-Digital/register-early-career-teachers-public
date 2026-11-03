@@ -1625,6 +1625,12 @@ components:
               type: string
               nullable: false
               example: Example Provider
+            cohort:
+              description: The cohort, for example, 2021 or 2025, which the declaration
+                is funded by.
+              type: string
+              nullable: false
+              example: '2025'
     DeclarationCreate:
       description: A participant declaration.
       type: object
@@ -1766,6 +1772,12 @@ components:
               type: string
               nullable: false
               example: Example Provider
+            cohort:
+              description: The cohort, for example, 2021 or 2025, which the declaration
+                is funded by.
+              type: string
+              nullable: false
+              example: '2025'
     DeclarationsFilter:
       description: Refine participant declarations to return.
       type: object
@@ -1831,6 +1843,7 @@ components:
             declaration_date: '2021-05-31T02:21:32.000Z'
             course_identifier: ecf-induction
             evidence_held: training-event-attended
+            cohort: '2025'
     DeclarationCreateResponse:
       description: A participant declaration.
       type: object
@@ -1888,6 +1901,12 @@ components:
           - ecf-induction
           - ecf-mentor
           example: ecf-induction
+        cohort:
+          description: The cohort, for example, 2021 or 2025, the declaration is for.
+            If not provided, the declaration will be made against the participant's
+            most recent training with you.
+          type: string
+          example: '2025'
     DeclarationPre2025RetainedAttributes:
       description: An ECF participant retained declaration
       type: object
@@ -1935,6 +1954,12 @@ components:
           - self-study-material-completed
           - other
           example: training-event-attended
+        cohort:
+          description: The cohort, for example, 2021 or 2025, the declaration is for.
+            If not provided, the declaration will be made against the participant's
+            most recent training with you.
+          type: string
+          example: '2025'
     DeclarationPre2025CompletedAttributes:
       description: An ECF completed participant declaration
       type: object
@@ -1979,6 +2004,12 @@ components:
           - self-study-material-completed
           - other
           example: training-event-attended
+        cohort:
+          description: The cohort, for example, 2021 or 2025, the declaration is for.
+            If not provided, the declaration will be made against the participant's
+            most recent training with you.
+          type: string
+          example: '2025'
     DeclarationPre2025ExtendedAttributes:
       description: An ECF extended participant declaration
       type: object
@@ -2025,6 +2056,12 @@ components:
           - self-study-material-completed
           - other
           example: training-event-attended
+        cohort:
+          description: The cohort, for example, 2021 or 2025, the declaration is for.
+            If not provided, the declaration will be made against the participant's
+            most recent training with you.
+          type: string
+          example: '2025'
     DeclarationPost2024ECTDataRequest:
       description: A participant declaration data request for ECT participants from
         cohort 2025 onwards
@@ -2085,6 +2122,12 @@ components:
           - materials-engaged-with-offline
           - other
           example: training-event-attended
+        cohort:
+          description: The cohort, for example, 2021 or 2025, the declaration is for.
+            If not provided, the declaration will be made against the participant's
+            most recent training with you.
+          type: string
+          example: '2025'
     DeclarationPost2024ECTRetainedAttributes:
       description: An ECT retained declaration
       type: object
@@ -2137,6 +2180,12 @@ components:
           - 75-percent-engagement-met
           - 75-percent-engagement-met-reduced-induction
           example: training-event-attended
+        cohort:
+          description: The cohort, for example, 2021 or 2025, the declaration is for.
+            If not provided, the declaration will be made against the participant's
+            most recent training with you.
+          type: string
+          example: '2025'
     DeclarationPost2024ECTCompletedAttributes:
       description: An ECT completed declaration
       type: object
@@ -2180,6 +2229,12 @@ components:
           - 75-percent-engagement-met-reduced-induction
           - one-term-induction
           example: 75-percent-engagement-met
+        cohort:
+          description: The cohort, for example, 2021 or 2025, the declaration is for.
+            If not provided, the declaration will be made against the participant's
+            most recent training with you.
+          type: string
+          example: '2025'
     DeclarationPost2024ECTExtendedAttributes:
       description: An ECT extended declaration
       type: object
@@ -2226,6 +2281,12 @@ components:
           - materials-engaged-with-offline
           - other
           example: training-event-attended
+        cohort:
+          description: The cohort, for example, 2021 or 2025, the declaration is for.
+            If not provided, the declaration will be made against the participant's
+            most recent training with you.
+          type: string
+          example: '2025'
     DeclarationPost2024MentorDataRequest:
       description: A participant declaration data request for mentor participants
         from cohort 2025 onwards
@@ -2283,6 +2344,12 @@ components:
           - materials-engaged-with-offline
           - other
           example: training-event-attended
+        cohort:
+          description: The cohort, for example, 2021 or 2025, the declaration is for.
+            If not provided, the declaration will be made against the participant's
+            most recent training with you.
+          type: string
+          example: '2025'
     DeclarationPost2024MentorCompletedAttributes:
       description: A mentor completed declaration
       type: object
@@ -2325,6 +2392,12 @@ components:
           - 75-percent-engagement-met
           - 75-percent-engagement-met-reduced-induction
           example: 75-percent-engagement-met
+        cohort:
+          description: The cohort, for example, 2021 or 2025, the declaration is for.
+            If not provided, the declaration will be made against the participant's
+            most recent training with you.
+          type: string
+          example: '2025'
     DeliveryPartner:
       description: A delivery partner.
       type: object

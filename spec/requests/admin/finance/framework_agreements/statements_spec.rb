@@ -129,7 +129,7 @@ RSpec.describe "Admin finance framework agreement statements", type: :request do
       end
 
       context "when the contract period is not frozen" do
-        let(:contract_period) { FactoryBot.create(:contract_period, :current) }
+        let(:contract_period) { FactoryBot.create(:contract_period, :next) }
 
         it "allows the create" do
           expect {

@@ -16,6 +16,7 @@
 
 | Attribute | Message | Cause |
 | --- | --- | --- |
+| contract_period_year | The '#/contract_period_year' you have entered is not associated with this teacher. Change the teacher's schedule to the correct cohort, or try again with a different cohort. | When training periods exist in different cohorts for the same lead provider. |
 | contract_period_year | You cannot submit declarations for the <contract period year> contract period. The funding contract for this contract period has ended. Get in touch if you need to discuss this with us. | When teacher's latest ongoing training period is in a frozen contract period and teacher is eligible for funding. |
 | contract_period_year | You cannot submit declarations for the <contract period year> contract period. The funding contract for this contract period has ended. Get in touch if you need to discuss this with us. | When teacher's latest ongoing training period is in a frozen contract period but declaration targets non-frozen. |
 | contract_period_year | You cannot submit declarations for the <contract period year> contract period. The funding contract for this contract period has ended. Get in touch if you need to discuss this with us. | When teacher's latest ongoing training period is in a frozen contract period but teacher is not eligible for funding. |

@@ -35,6 +35,7 @@ describe API::OAuth::Authorizations::Create do
       expect(authorization.code).to be_present
       expect(event.appropriate_body_period).to eq(appropriate_body_period)
       expect(event.author_email).to eq(author.email)
+      expect(event.oauth_client).to eq(client)
       expect(event.metadata).to eq("client_name" => client.name, "client_id" => client.client_id)
     end
   end

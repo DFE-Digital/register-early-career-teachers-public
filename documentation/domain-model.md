@@ -337,6 +337,7 @@ erDiagram
     string name
     datetime updated_at
     boolean vat_registered
+    string short_name
   }
   InductionPeriod {
     integer id
@@ -475,6 +476,7 @@ erDiagram
     integer school_id
     integer teaching_school_hub_id
     datetime updated_at
+    uuid external_id
   }
   AppropriateBodyPeriod }o--|| DfESignInOrganisation : belongs_to
   AppropriateBodyPeriod }o--|| School : belongs_to
