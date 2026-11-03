@@ -28,8 +28,9 @@ Configure all `DFE_SIGN_IN_` environment variables.
 - [Staging](https://pp-manage.signin.education.gov.uk/services/79907828-CF78-4D49-B433-4F255EE904E7)
 - [Production](https://manage.signin.education.gov.uk/services/xxx)
 
-NB: The UUID of an organisation is different across environments and seed data
-needs to accommodate this to work effectively.
+> [!NOTE]
+> The UUID of an organisation is different across `test`, `pp`, and `prod` environments
+> and seed data needs to accommodate this to work effectively.
 
 ## Implementation
 
@@ -85,9 +86,10 @@ team members can be invited or request access.
 or both roles `AppropriateBodyUser` and `SchoolUser`. On the live service a user with both
 roles is a School Induction Tutor (SIT).
 
-A user with both roles will first land on RECT as a school user but can switch in service to RIAB.
+A user with both roles will first enter the website via the RECT service but can switch
+to RIAB using a link in the header.
 
-In RIAB the school (lead) appears as `STEP Ahead Teaching School Hub`.
+In RIAB the provisioning school appears as `STEP Ahead Teaching School Hub`.
 
 - TYPE: `Establishment`
 - URN: `141666`
@@ -105,6 +107,20 @@ The service's `Internal User Group` assigns the `DfEUser` role.
 - [Local development](https://test-manage.signin.education.gov.uk/services/08F10A15-020A-4798-9375-ED381024BE78/organisations/9C5849E3-94F5-41BA-B1A9-0D68EF34C765/users)
 - [Staging](https://pp-manage.signin.education.gov.uk/services/79907828-CF78-4D49-B433-4F255EE904E7/organisations/B9E087EE-914D-435A-952A-1774D906EEFF/users)
 - [Production](https://manage.signin.education.gov.uk/services/xxx/organisations/xxx/users)
+
+## Authentication response
+
+DfE Sign-In identifies an organisation with a UUID and, for a school establishment, a URN.
+The two sub-services join on different keys, so one organisation can act in both:
+
+| Sub-service | Record | Role |
+| --- | --- | --- |
+| RECT | URN matched to a `School` | `SchoolUser` |
+| RIAB | UUID matched to an `AppropriateBodyPeriod` | `AppropriateBodyUser` |
+
+- Only active appropriate body periods have a DfE Sign-In UUID, legacy bodies cannot authenticate.
+- An organisation with no URN is a national body, and can only be an appropriate body.
+- `DfESignInOrganisation` records hold pertinent data from callbacks.
 
 ## Sessions
 
