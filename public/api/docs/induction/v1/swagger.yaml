@@ -7,11 +7,11 @@ paths:
   "/api/induction/v1/appropriate-bodies":
     get:
       summary: List appropriate bodies
-      operationId: getAPIInductionV1AppropriateBodies
       security:
       - client_credentials: []
       tags:
       - Appropriate bodies
+      operationId: getAppropriateBodies
       responses:
         '200':
           description: Appropriate bodies
@@ -32,11 +32,11 @@ paths:
   "/api/induction/v1/teachers/{teacher_trn}/claim":
     post:
       summary: Claim an early career teacher's induction
-      operationId: postAPIInductionV1TeachersTeacherTRNClaim
       security:
       - bearer: []
       tags:
       - Inductions
+      operationId: postTeacherClaim
       parameters:
       - name: teacher_trn
         in: path

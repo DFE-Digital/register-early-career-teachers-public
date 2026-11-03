@@ -8,6 +8,7 @@ RSpec.describe "Hello user endpoint", openapi_spec: "hello/swagger.yaml", type: 
   document_api(get: "/api/hello/user") do
     described_as "Check your access token identifies an appropriate body"
     tagged_as "Hello world"
+    identified_as "getUser"
     secured_by :bearer
 
     responds_with 200, "The appropriate body the access token was issued to" do

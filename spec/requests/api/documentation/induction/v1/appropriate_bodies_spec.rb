@@ -9,6 +9,7 @@ RSpec.describe "Induction appropriate bodies endpoint", openapi_spec: "induction
   document_api(get: "/api/induction/v1/appropriate-bodies") do
     described_as "List appropriate bodies"
     tagged_as "Appropriate bodies"
+    identified_as "getAppropriateBodies"
     secured_by :client_credentials
 
     responds_with 200, "Appropriate bodies" do
