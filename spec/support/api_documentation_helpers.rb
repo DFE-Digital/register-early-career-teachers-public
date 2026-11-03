@@ -8,6 +8,7 @@ module APIDocumentationHelpers
         security []
 
         instance_exec(&block)
+        ensure_required_metadata!
       end
     end
   end
@@ -38,5 +39,21 @@ module APIDocumentationHelpers
 
   def serialized_using(serializer, include_namespace: false)
     schema serializer.openapi_ref(include_namespace:)
+  end
+
+private
+
+  def ensure_required_metadata!
+    operation = metadata[:operation] || {}
+
+    missing = {
+      described_as: operation[:summary],
+      tagged_as: operation[:tags],
+      identified_as: operation[:operationId]
+    }.filter_map { |helper, value| helper if value.blank? }
+
+    return if missing.empty?
+
+    raise ArgumentError, "API documentation must specify #{missing.join(', ')}"
   end
 end
