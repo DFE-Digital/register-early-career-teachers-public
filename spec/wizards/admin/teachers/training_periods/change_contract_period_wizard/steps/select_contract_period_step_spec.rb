@@ -27,7 +27,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Ste
 
       it "is invalid with the correct error message" do
         expect(step).not_to be_valid
-        expect(step.errors[:contract_period_year]).to include("Select a new contract period")
+        expect(step).to have_error(:contract_period_year, "Select a new contract period")
       end
     end
 
@@ -36,7 +36,7 @@ RSpec.describe Admin::Teachers::TrainingPeriods::ChangeContractPeriodWizard::Ste
 
       it "is invalid with the correct error message" do
         expect(step).not_to be_valid
-        expect(step.errors[:contract_period_year]).to include("Select a new contract period")
+        expect(step).to have_error(:contract_period_year, "Select a new contract period")
       end
     end
 
