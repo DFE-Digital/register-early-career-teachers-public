@@ -262,7 +262,6 @@ components:
         outcome:
           type: string
           enum:
-          - fail
           - pass
           example: pass
           description: The outcome of the induction.
