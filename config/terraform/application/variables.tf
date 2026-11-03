@@ -147,6 +147,12 @@ variable "run_as_non_root" {
 }
 
 locals {
+  gcp_project       = "ecf-bq"
+  gcp_keyring       = "ecf-key-ring"
+  gcp_key           = "ecf-key"
+  gcp_taxonomy_id   = 6302091323314055162
+  gcp_policy_tag_id = 301313311867345339
+
   postgres_ssl_mode = var.enable_postgres_ssl ? "require" : "disable"
 
   environment_variables = yamldecode(file("${path.module}/config/${var.config}.yml"))

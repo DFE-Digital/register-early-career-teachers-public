@@ -74,6 +74,9 @@ DfE::Analytics.configure do |config|
   #
   config.azure_federated_auth = ENV.include? "GOOGLE_CLOUD_CREDENTIALS"
 
+  # Perform airbyte checks on startup and allow airbyte config generation
+  config.airbyte_enabled = ENV["ENABLE_AIRBYTE"] == "true"
+
   # Client Id of the app in azure
   #
   # config.azure_client_id = ENV['AZURE_CLIENT_ID']
