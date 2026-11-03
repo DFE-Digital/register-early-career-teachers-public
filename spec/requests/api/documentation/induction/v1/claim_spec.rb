@@ -12,6 +12,7 @@ RSpec.describe "Induction claims endpoint", openapi_spec: "induction/v1/swagger.
   document_api(post: "/api/induction/v1/teachers/{teacher_trn}/claim") do
     described_as "Claim an early career teacher's induction"
     tagged_as "Inductions"
+    identified_as "postTeacherClaim"
     secured_by :bearer
     consumes "application/json"
 
