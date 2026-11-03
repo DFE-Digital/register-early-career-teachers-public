@@ -49,11 +49,6 @@ variable "deploy_azure_backing_services" {
   description = "Deploy real Azure backing services like databases, as opposed to containers inside of AKS"
 }
 
-variable "deploy_snapshot_database" {
-  type    = string
-  default = false
-}
-
 variable "enable_postgres_ssl" {
   default     = true
   description = "Enforce SSL connection from the client side"
@@ -114,17 +109,8 @@ variable "postgres_server_version" {
   default = "18"
 }
 
-variable "postgres_snapshot_server_version" {
-  type    = string
-  default = "18"
-}
-
 variable "postgres_flexible_server_sku" {
   type    = string
-  default = "B_Standard_B1ms"
-}
-
-variable "postgres_snapshot_flexible_server_sku" {
   default = "B_Standard_B1ms"
 }
 

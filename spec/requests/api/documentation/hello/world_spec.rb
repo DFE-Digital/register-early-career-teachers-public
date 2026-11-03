@@ -4,6 +4,7 @@ RSpec.describe "Hello world endpoint", openapi_spec: "hello/swagger.yaml", type:
   document_api(get: "/api/hello/world") do
     described_as "Check you can call an open API endpoint"
     tagged_as "Hello world"
+    identified_as "getWorld"
 
     responds_with 200, "A static greeting" do
       serialized_using API::Hello::WorldSerializer

@@ -132,7 +132,7 @@ GEM
       railties (>= 7.2)
       safely_block (>= 1)
     blueprinter (1.3.0)
-    bootsnap (1.26.0)
+    bootsnap (1.26.1)
       msgpack (~> 1.5)
     brakeman (8.1.0)
       racc
@@ -156,7 +156,7 @@ GEM
     cri (2.15.12)
     cssbundling-rails (1.4.3)
       railties (>= 6.0.0)
-    csv (3.3.6)
+    csv (3.3.7)
     date (3.5.1)
     ddmetrics (1.1.0)
     ddplugin (1.0.3)
@@ -186,7 +186,7 @@ GEM
       railties (>= 6.1.0)
     faker (3.8.0)
       i18n (>= 1.8.11, < 2)
-    faraday (2.15.0)
+    faraday (2.15.1)
       faraday-net_http (>= 2.0, < 3.6)
       json
       logger
@@ -282,14 +282,14 @@ GEM
       activemodel (>= 7.2)
       activesupport (>= 7.2)
       html-attributes-utils (~> 1)
-    govuk_markdown (2.0.4)
+    govuk_markdown (2.0.5)
       activesupport
       redcarpet
     gyoku (1.4.0)
       builder (>= 2.1.2)
       rexml (~> 3.0)
     hashdiff (1.2.1)
-    hashie (5.1.0)
+    hashie (5.2.0)
       logger
     herb (0.11.1-aarch64-linux-gnu)
     herb (0.11.1-aarch64-linux-musl)
@@ -397,7 +397,7 @@ GEM
       railties (>= 7.1)
       stimulus-rails
       turbo-rails
-    msgpack (1.8.4)
+    msgpack (1.8.7)
     multi_json (1.21.2)
     multi_xml (0.6.0)
     multipart-post (2.4.1)
@@ -482,11 +482,11 @@ GEM
     oj (3.17.7)
       bigdecimal (>= 3.0)
       ostruct (>= 0.2)
-    omniauth (2.1.4)
-      hashie (>= 3.4.6)
+    omniauth (2.3.1)
+      hashie (>= 3.5.2)
       logger
-      rack (>= 2.2.3)
-      rack-protection
+      rack (>= 2.2.8)
+      rack-protection (>= 2.2.0)
     omniauth-rails_csrf_protection (2.0.1)
       actionpack (>= 4.2)
       omniauth (~> 2.0)
@@ -538,7 +538,9 @@ GEM
       actionpack (>= 7.0.0)
       activesupport (>= 7.0.0)
       rack
-    prosopite (2.2.0)
+    prosopite (2.5.0)
+      activerecord (>= 6.1)
+      railties (>= 6.1)
     pry (0.16.0)
       coderay (~> 1.1)
       method_source (~> 1.0)
@@ -638,7 +640,7 @@ GEM
       concurrent-ruby (~> 1.0)
     retriable (4.2.0)
     rexml (3.4.4)
-    rotp (6.3.0)
+    rotp (6.4.0)
     rouge (4.5.1)
     rspec (3.13.2)
       rspec-core (~> 3.13.0)

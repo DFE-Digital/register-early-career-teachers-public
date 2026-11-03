@@ -14,6 +14,7 @@ module API
       super
       payload[:current_user_class] = current_lead_provider&.class&.name
       payload[:current_user_id] = current_lead_provider&.id
+      payload[:current_user_short_name] = current_lead_provider&.short_name
     end
   end
 end

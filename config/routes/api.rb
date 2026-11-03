@@ -43,6 +43,9 @@ namespace :api do
     namespace :induction do
       namespace :v1 do
         resources :appropriate_bodies, only: :index, path: "appropriate-bodies"
+        resources :teachers, only: [], param: :trn do
+          resource :claim, only: :create
+        end
       end
     end
 

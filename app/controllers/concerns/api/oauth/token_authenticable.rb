@@ -5,6 +5,8 @@ module API::OAuth::TokenAuthenticable
   included do
     before_action :authenticate
     attr_reader :current_authorization
+
+    delegate :appropriate_body, :client, to: :current_authorization, private: true
   end
 
 private

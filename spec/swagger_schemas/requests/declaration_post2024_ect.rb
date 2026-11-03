@@ -34,6 +34,11 @@ DECLARATION_POST2024_ECT_STARTED_ATTRIBUTES = {
       enum: %w[training-event-attended self-study-material-completed materials-engaged-with-offline other],
       example: "training-event-attended",
     },
+    cohort: {
+      description: "The cohort, for example, 2021 or 2025, the declaration is for. If not provided, the declaration will be made against the participant's most recent training with you.",
+      type: :string,
+      example: "2025",
+    },
   },
 }.freeze
 
@@ -72,6 +77,11 @@ DECLARATION_POST2024_ECT_RETAINED_ATTRIBUTES = {
       type: :string,
       enum: %w[training-event-attended self-study-material-completed materials-engaged-with-offline other 75-percent-engagement-met 75-percent-engagement-met-reduced-induction],
       example: "training-event-attended",
+    },
+    cohort: {
+      description: "The cohort, for example, 2021 or 2025, the declaration is for. If not provided, the declaration will be made against the participant's most recent training with you.",
+      type: :string,
+      example: "2025",
     },
   },
 }.freeze
@@ -112,6 +122,11 @@ DECLARATION_POST2024_ECT_COMPLETED_ATTRIBUTES = {
       enum: %w[75-percent-engagement-met 75-percent-engagement-met-reduced-induction one-term-induction],
       example: "75-percent-engagement-met",
     },
+    cohort: {
+      description: "The cohort, for example, 2021 or 2025, the declaration is for. If not provided, the declaration will be made against the participant's most recent training with you.",
+      type: :string,
+      example: "2025",
+    },
   },
 }.freeze
 
@@ -150,6 +165,11 @@ DECLARATION_POST2024_ECT_EXTENDED_ATTRIBUTES = {
       type: :string,
       enum: %w[training-event-attended self-study-material-completed materials-engaged-with-offline other],
       example: "training-event-attended",
+    },
+    cohort: {
+      description: "The cohort, for example, 2021 or 2025, the declaration is for. If not provided, the declaration will be made against the participant's most recent training with you.",
+      type: :string,
+      example: "2025",
     },
   },
 }.freeze

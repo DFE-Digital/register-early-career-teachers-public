@@ -36,7 +36,8 @@ module API
           declaration_type: create_declaration_params[:declaration_type],
           evidence_type: create_declaration_params[:evidence_held],
           teacher_api_id: create_declaration_params[:participant_id],
-          teacher_type:
+          teacher_type:,
+          contract_period_year: create_declaration_params[:cohort]
         })
 
         respond_with_service(service:, action: :create)
@@ -57,7 +58,7 @@ module API
     private
 
       def create_declaration_params
-        params.require(:data).expect({ attributes: %i[participant_id declaration_type declaration_date course_identifier evidence_held] })
+        params.require(:data).expect({ attributes: %i[participant_id declaration_type declaration_date course_identifier evidence_held cohort] })
       end
 
       def lead_provider_declarations_query(filters: {})

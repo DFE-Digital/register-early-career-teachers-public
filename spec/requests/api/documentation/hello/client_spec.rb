@@ -7,6 +7,7 @@ RSpec.describe "Hello client endpoint", openapi_spec: "hello/swagger.yaml", type
   document_api(get: "/api/hello/client") do
     described_as "Check your client credentials identify your API client"
     tagged_as "Hello world"
+    identified_as "getClient"
     secured_by :client_credentials
 
     responds_with 200, "The API client the credentials belong to" do

@@ -41,7 +41,7 @@ module API::OAuth::Authorizations
     end
 
     def record_event!
-      author = Events::OAuthClientAuthor.new(client: authorization.client)
+      author = Events::AppropriateBodyAPIAuthor.new(appropriate_body_period: authorization.appropriate_body_period)
       Events::Record.record_api_oauth_authorization_code_exchanged_event!(author:, authorization:)
     end
   end

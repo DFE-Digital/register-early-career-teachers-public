@@ -119,6 +119,12 @@ DECLARATION = {
           nullable: false,
           example: "Example Provider",
         },
+        cohort: {
+          description: "The cohort, for example, 2021 or 2025, which the declaration is funded by.",
+          type: :string,
+          nullable: false,
+          example: "2025",
+        },
       },
     },
   },

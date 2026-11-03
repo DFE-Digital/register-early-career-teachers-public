@@ -167,6 +167,11 @@ RSpec.configure do |config|
       paths: {},
       components: {
         securitySchemes: {
+          bearer: {
+            type: :http,
+            scheme: :bearer,
+            description: "OAuth 2.0 access token",
+          },
           client_credentials: {
             type: :http,
             scheme: :basic,
@@ -175,7 +180,10 @@ RSpec.configure do |config|
         },
         schemas: {
           **API::Induction::V1::AppropriateBodySerializer.openapi_schema_definition,
+          **API::Induction::V1::ClaimSerializer.openapi_schema_definition,
+          **API::Induction::V1::ErrorSerializer.openapi_schema_definition,
           **API::OAuth::ErrorSerializer.openapi_schema_definition(include_namespace: true),
+          ClaimRequest: INDUCTION_CLAIM_REQUEST,
         },
       },
     },

@@ -1,17 +1,19 @@
 module APIDocumentationHelpers
   def document_api(request, &block)
     verb, path = request.first
-    operation_id = "#{verb}#{path.split(%r{[/-]}).compact_blank.map(&:camelize).join}"
 
     path(path) do
       public_send(verb, nil) do
         produces "application/json"
-        operationId operation_id
         security []
 
         instance_exec(&block)
       end
     end
+  end
+
+  def identified_as(identifier)
+    operationId identifier
   end
 
   def described_as(summary)

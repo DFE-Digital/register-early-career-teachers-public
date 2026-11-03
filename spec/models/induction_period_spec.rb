@@ -20,6 +20,11 @@ RSpec.describe InductionPeriod do
     it { is_expected.to have_many(:events) }
   end
 
+  describe "delegations" do
+    it { is_expected.to delegate_method(:trn).to(:teacher) }
+    it { is_expected.to delegate_method(:full_name).to(:teacher) }
+  end
+
   describe "validations" do
     subject { FactoryBot.build(:induction_period) }
 
