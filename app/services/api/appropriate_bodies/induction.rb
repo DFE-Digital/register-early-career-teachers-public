@@ -35,7 +35,7 @@ module API
         teacher = find_claimed_teacher!(trn:)
         record_pass!(teacher:, finished_on:, number_of_terms:)
 
-        as_outcome(teacher.reload.finished_induction_period)
+        as_outcome(teacher.finished_induction_period)
       rescue StandardError => e
         rescue_with_handler(e) || raise
       end
