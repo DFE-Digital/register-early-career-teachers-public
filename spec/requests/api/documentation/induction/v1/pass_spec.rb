@@ -10,6 +10,7 @@ RSpec.describe "Induction passes endpoint", openapi_spec: "induction/v1/swagger.
   document_api(post: "/api/induction/v1/teachers/{teacher_trn}/pass") do
     described_as "Pass an early career teacher's induction"
     tagged_as "Inductions"
+    identified_as "postTeacherPass"
     secured_by :bearer
     consumes "application/json"
 

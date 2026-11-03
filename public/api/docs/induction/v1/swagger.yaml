@@ -99,11 +99,11 @@ paths:
   "/api/induction/v1/teachers/{teacher_trn}/pass":
     post:
       summary: Pass an early career teacher's induction
-      operationId: postAPIInductionV1TeachersTeacherTRNPass
       security:
       - bearer: []
       tags:
       - Inductions
+      operationId: postTeacherPass
       parameters:
       - name: teacher_trn
         in: path
