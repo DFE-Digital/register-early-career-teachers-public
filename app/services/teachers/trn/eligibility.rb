@@ -7,7 +7,7 @@ module Teachers
       end
 
       def can_be_merged?
-        merge_required? &&
+        trn_correction_requested? &&
           destination.present? &&
           source_and_destination_are_different? &&
           at_most_one_teacher_has_induction_periods? &&
@@ -17,7 +17,7 @@ module Teachers
       end
 
       def can_be_replaced?
-        merge_required? &&
+        trn_correction_requested? &&
           destination.nil? &&
           source_and_destination_are_different? &&
           !another_teacher_redirected_to_destination?
@@ -37,9 +37,16 @@ module Teachers
         @destination ||= Teacher.find_by_trn(new_trn)
       end
 
-      def merge_required?
-        (teacher.trs_response_gone? && @new_trn.present?) ||
-          (teacher.trs_response_permanent_redirect? && teacher.trs_redirected_to.present?)
+      def trn_correction_requested?
+        deactivated_and_supplied_trn? || redirected_and_persisted_trn?
+      end
+
+      def deactivated_and_supplied_trn?
+        teacher.trs_response_gone? && @new_trn.present?
+      end
+
+      def redirected_and_persisted_trn?
+        teacher.trs_response_permanent_redirect? && teacher.trs_redirected_to.present?
       end
 
       def source_and_destination_are_different?

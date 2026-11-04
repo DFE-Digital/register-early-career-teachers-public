@@ -8,29 +8,21 @@ module Teachers
       end
 
       def merge!
-        teacher_started_induction_on = nil
+        return unless eligibility.can_be_merged?
 
-        teacher.with_lock do
-          return unless destination
+        teacher_started_induction_on = teacher.induction_periods.minimum(:started_on)
 
-          destination.with_lock do
-            return unless eligibility.can_be_merged?
-
-            teacher_started_induction_on = teacher.induction_periods.minimum(:started_on)
-
-            ActiveRecord::Base.transaction do
-              move_school_periods
-              move_induction_periods
-              move_teacher_events
-              move_teacher_id_changes
-              move_data
-              move_mentor_ineligibility_data
-              record_teacher_id_change
-              refresh_metadata
-              record_merge_event
-              teacher.destroy!
-            end
-          end
+        ActiveRecord::Base.transaction do
+          move_school_periods
+          move_induction_periods
+          move_teacher_events
+          move_teacher_id_changes
+          move_data
+          move_mentor_ineligibility_data
+          record_teacher_id_change
+          refresh_metadata
+          record_merge_event
+          teacher.destroy!
         end
 
         TRSSyncJob.perform_later(
@@ -54,11 +46,7 @@ module Teachers
       end
 
       def eligibility
-        if teacher.trs_response_permanent_redirect?
-          Teachers::TRN::Eligibility.new(teacher:)
-        else
-          Teachers::TRN::Eligibility.new(teacher:, new_trn:)
-        end
+        Teachers::TRN::Eligibility.new(teacher:, new_trn:)
       end
 
       def overlapping_mentor_at_school_periods
