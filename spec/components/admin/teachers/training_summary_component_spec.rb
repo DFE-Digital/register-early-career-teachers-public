@@ -310,6 +310,34 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
           href: admin_teacher_training_period_change_contract_period_wizard_select_contract_period_path(training_period.teacher.id, training_period.id)
         )
       end
+
+      context "when actions are hidden" do
+        subject(:rendered) do
+          render_inline(
+            described_class.new(
+              training_period:,
+              show_api_row: true,
+              show_actions: false
+            )
+          )
+        end
+
+        it "does not show the contract period change link" do
+          expect(rendered_content).not_to have_link(
+            "Change",
+            href: admin_teacher_training_period_change_contract_period_wizard_select_contract_period_path(
+              training_period.teacher.id,
+              training_period.id
+            )
+          )
+        end
+
+        it "does not show the move partnership link" do
+          expect(rendered_content).not_to have_link(
+            "Move to a different partnership"
+          )
+        end
+      end
     end
 
     context "when the training period is an eligible mentor period" do
@@ -340,6 +368,69 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
 
       it "does not show a change link for the contract period row" do
         expect(rendered_content).not_to have_link("Change")
+      end
+    end
+  end
+
+  describe "merge preview" do
+    subject(:rendered) do
+      render_inline(described_class.new(training_period:, merge_preview: true, show_actions: false, show_api_row: true))
+    end
+
+    shared_examples "a training period preview" do
+      it "omits a missing end date" do
+        expect(rendered).not_to have_css("dt", text: "End date", exact_text: true)
+      end
+
+      context "when the period has ended" do
+        before { training_period.update!(finished_on: training_period.started_on + 1.month) }
+
+        it "shows the recorded end date" do
+          expect(rendered).to have_css("dt", text: "End date", exact_text: true)
+          expect(rendered).to have_css("dd", text: training_period.finished_on.to_fs(:govuk))
+        end
+      end
+    end
+
+    context "for a provider-led ECT" do
+      let(:training_period) do
+        FactoryBot.create(:training_period, :for_ect, :provider_led, :unfinished,
+                          ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished))
+      end
+
+      it_behaves_like "a training period preview"
+
+      it "labels the induction programme" do
+        expect(rendered).to have_css("dt", text: "Induction programme")
+        expect(rendered).not_to have_css("dt", text: "Training programme")
+      end
+    end
+
+    context "for a school-led ECT" do
+      let(:training_period) do
+        FactoryBot.create(:training_period, :school_led, :unfinished,
+                          ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished))
+      end
+
+      it_behaves_like "a training period preview"
+
+      it "labels the induction programme" do
+        expect(rendered).to have_css("dt", text: "Induction programme")
+        expect(rendered).not_to have_css("dt", text: "Training programme")
+      end
+    end
+
+    context "for a mentor" do
+      let(:training_period) do
+        FactoryBot.create(:training_period, :for_mentor, :provider_led, :unfinished,
+                          mentor_at_school_period: FactoryBot.create(:mentor_at_school_period, :unfinished))
+      end
+
+      it_behaves_like "a training period preview"
+
+      it "omits the programme row" do
+        expect(rendered).not_to have_css("dt", text: "Induction programme")
+        expect(rendered).not_to have_css("dt", text: "Training programme")
       end
     end
   end

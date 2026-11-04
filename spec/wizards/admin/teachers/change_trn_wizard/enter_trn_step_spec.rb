@@ -12,7 +12,8 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::EnterTRNStep do
     instance_double(
       Admin::Teachers::ChangeTRNWizard::Wizard,
       store:,
-      teacher:
+      teacher:,
+      teacher_id: teacher.id
     )
   end
 
@@ -27,6 +28,7 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::EnterTRNStep do
   end
 
   before do
+    allow(wizard).to receive(:merge_proposed?) { store.destination_teacher_id.present? }
     allow(TRS::APIClient).to receive(:build).and_return(api_client)
     allow(api_client).to receive(:find_teacher)
       .with(trn: "0012345")
@@ -164,6 +166,46 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::EnterTRNStep do
         expect(store.trn).to be_nil
         expect(store.trs_first_name).to be_nil
         expect(store.trs_last_name).to be_nil
+      end
+    end
+
+    describe "#next_step" do
+      context "when the replacement TRN is unused in RECT" do
+        it "continues to replacement confirmation" do
+          expect(step.save!).to be(true)
+
+          expect(step.next_step).to eq(:confirm)
+          expect(store.destination_teacher_id).to be_nil
+        end
+      end
+
+      context "when the replacement TRN belongs to another teacher" do
+        let!(:destination) do
+          FactoryBot.create(:teacher, trn: "0012345", trs_response: "ok")
+        end
+
+        it "stores the destination and continues to the merge preview" do
+          expect(step.save!).to be(true)
+
+          expect(store.destination_teacher_id).to eq(destination.id)
+          expect(step.next_step).to eq(:merge_preview)
+        end
+      end
+
+      context "when the entered TRN belongs to the source teacher" do
+        let(:teacher) do
+          FactoryBot.create(:teacher, :deactivated_in_trs, trn: "0012345")
+        end
+
+        it "rejects the TRN without selecting a merge destination" do
+          expect(step.save!).to be(false)
+
+          expect(step.errors[:trn]).to include(
+            "Enter a different teacher reference number (TRN)"
+          )
+          expect(api_client).not_to have_received(:find_teacher)
+          expect(store.destination_teacher_id).to be_nil
+        end
       end
     end
   end

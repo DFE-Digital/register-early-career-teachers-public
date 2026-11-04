@@ -5,10 +5,11 @@ module Admin
 
       class UnexpectedSchoolPeriodError < StandardError; end
 
-      attr_reader :school_period
+      attr_reader :school_period, :merge_preview
 
-      def initialize(school_period:)
+      def initialize(school_period:, merge_preview: false)
         @school_period = school_period
+        @merge_preview = merge_preview
       end
 
       def call
@@ -31,7 +32,12 @@ module Admin
     private
 
       def card_title
-        govuk_link_to(school_period.school.name, admin_school_overview_path(school_period.school.urn))
+        return school_period.school.name if merge_preview
+
+        govuk_link_to(
+          school_period.school.name,
+          admin_school_overview_path(school_period.school.urn)
+        )
       end
 
       def rows
@@ -46,12 +52,20 @@ module Admin
       end
 
       def base_rows
-        [
+        rows = [
           summary_row("School URN", school_period.school.urn),
-          summary_row("School start date", school_period.started_on&.to_fs(:govuk)),
-          summary_row("School end date", end_date_text),
-          summary_row("Email address", email_text)
+          summary_row("School start date", school_period.started_on&.to_fs(:govuk))
         ]
+
+        unless merge_preview && school_period.finished_on.blank?
+          rows << summary_row("School end date", end_date_text)
+        end
+
+        unless merge_preview
+          rows << summary_row("Email address", email_text)
+        end
+
+        rows
       end
 
       def ect_rows
@@ -115,10 +129,17 @@ module Admin
         return unless teacher
 
         [
-          govuk_link_to(teacher_full_name(teacher), admin_teacher_path(teacher)),
+          name(teacher),
           mentorship_period.started_on.to_fs(:govuk),
           mentorship_end_date_text(mentorship_period)
         ]
+      end
+
+      def name(teacher)
+        name = teacher_full_name(teacher)
+        name = govuk_link_to(name, admin_teacher_path(teacher)) unless merge_preview
+
+        name
       end
 
       def mentorship_end_date_text(mentorship_period)
@@ -126,7 +147,10 @@ module Admin
       end
 
       def working_pattern_text
-        WORKING_PATTERNS[school_period.working_pattern&.to_sym] || "Not available"
+        text = WORKING_PATTERNS[school_period.working_pattern&.to_sym] || "Not available"
+        text = text.tr("-", " ") if merge_preview
+
+        text
       end
 
       def summary_row(label, value, html: false)

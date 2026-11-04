@@ -1,0 +1,42 @@
+<% page_data(
+  title: "Check teacher records before merging",
+  backlink_href: @wizard.previous_step_path
+) %>
+
+<p class="govuk-body">
+  The new TRN exists in the service. Records will be merged.
+</p>
+
+<div class="govuk-grid-row app-merge-preview">
+  <div class="govuk-grid-column-one-half">
+    <h2 class="govuk-heading-m">Deactivated record</h2>
+
+    <%= render "teacher_record",
+      teacher: @wizard.teacher,
+      merging: true %>
+  </div>
+
+  <div class="govuk-grid-column-one-half app-merge-preview__destination">
+    <h2 class="govuk-heading-m">Active record being merged with</h2>
+
+    <%= render "teacher_record",
+      teacher: @wizard.destination,
+      merging: false %>
+  </div>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |form| %>
+      <%= form.govuk_submit "Continue" %>
+    <% end %>
+
+    <p class="govuk-body">
+      <%= govuk_link_to(
+        "Cancel and go back to #{@wizard.teacher_name}",
+        admin_teacher_path(@teacher),
+        no_visited_state: true
+      ) %>
+    </p>
+  </div>
+</div>

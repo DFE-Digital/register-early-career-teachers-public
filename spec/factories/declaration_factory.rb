@@ -102,6 +102,7 @@ FactoryBot.define do
 
     trait :with_ect do
       transient do
+        teacher { create(:teacher) }
         school_partnership { nil }
         training_period { nil }
         framework_agreement { nil }
@@ -119,7 +120,7 @@ FactoryBot.define do
         payment_status = evaluator.payment_status
         clawback_status = evaluator.clawback_status
 
-        teacher = create(:teacher)
+        teacher = evaluator.teacher
         school = school_partnership.school
         framework_agreement = school_partnership.framework_agreement
 
@@ -169,6 +170,7 @@ FactoryBot.define do
 
     trait :with_mentor do
       transient do
+        teacher { create(:teacher) }
         school_partnership { nil }
         training_period { nil }
         framework_agreement { nil }
@@ -181,13 +183,13 @@ FactoryBot.define do
       end
 
       after(:build) do |declaration, evaluator|
-        school_partnership = evaluator.school_partnership
+        school_partnership = evaluator.school_partnership || create(:school_partnership)
         declaration.declaration_type = evaluator.declaration_type
         evaluator.payment_status
         payment_status = evaluator.payment_status
         clawback_status = evaluator.clawback_status
 
-        teacher = create(:teacher)
+        teacher = evaluator.teacher
         school = school_partnership.school
         framework_agreement = school_partnership.framework_agreement
 
