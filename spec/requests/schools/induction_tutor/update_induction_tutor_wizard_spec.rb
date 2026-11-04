@@ -121,6 +121,16 @@ describe "Schools::InductionTutor::UpdateInductionTutorWizardController" do
       context "when the details are valid" do
         let(:params) { { edit: { induction_tutor_name: "New Name", induction_tutor_email: "new.name@gmail.com" } } }
 
+        it "allows check answers to be resubmitted" do
+          post(path_for_step("edit"), params:)
+          post path_for_step("check-answers")
+
+          expect { post path_for_step("check-answers") }
+            .to change(Event, :count).by(1)
+
+          expect(response).to redirect_to(path_for_step("confirmation"))
+        end
+
         it "updates the details" do
           FactoryBot.create(:contract_period, :current)
 

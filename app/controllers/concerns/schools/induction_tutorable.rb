@@ -29,7 +29,7 @@ module Schools
     end
 
     def reject_incomplete_check_answers
-      return if @wizard.valid_path_to_current_step?
+      return if state_store.read.present? && !state_store.details_confirmed?
 
       redirect_to @wizard.resolve_step_path(@wizard.root_step), flash: { error: WizardStoreRescuable::EMPTY_STORE_FLASH_MESSAGE }
     end
