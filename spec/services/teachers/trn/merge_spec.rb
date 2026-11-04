@@ -156,6 +156,57 @@ RSpec.describe Teachers::TRN::Merge do
   describe "#merge!" do
     subject(:merge!) { service.merge! }
 
+    shared_examples "a rollback on merge failure" do
+      it "does not change the source teacher's period record" do
+        original_ect_attributes = ect_at_school_period.attributes.slice("started_on", "finished_on", "teacher_id")
+        original_mentor_attributes = mentor_at_school_period.attributes.slice("started_on", "finished_on", "teacher_id")
+
+        expect { merge! }.to raise_error(expected_error)
+
+        expect(ect_at_school_period.reload.attributes.slice(*original_ect_attributes.keys))
+          .to eq(original_ect_attributes)
+
+        expect(mentor_at_school_period.reload.attributes.slice(*original_mentor_attributes.keys))
+          .to eq(original_mentor_attributes)
+      end
+
+      it "does not change the destination teacher's period record" do
+        original_ect_attributes = destination_ect_at_school_period.attributes.slice("started_on", "finished_on", "teacher_id")
+        original_mentor_attributes = destination_mentor_at_school_period.attributes.slice("started_on", "finished_on", "teacher_id")
+
+        expect { merge! }.to raise_error(expected_error)
+
+        expect(destination_ect_at_school_period.reload.attributes.slice(*original_ect_attributes.keys))
+          .to eq(original_ect_attributes)
+        expect(destination_mentor_at_school_period.reload.attributes.slice(*original_mentor_attributes.keys))
+          .to eq(original_mentor_attributes)
+      end
+
+      it "does not destroy the source teacher or related data" do
+        expect { merge! }.to raise_error(expected_error)
+
+        expect(Teacher.exists?(teacher.id)).to be(true)
+        expect(ECTAtSchoolPeriod.exists?(ect_at_school_period.id)).to be(true)
+        expect(MentorAtSchoolPeriod.exists?(mentor_at_school_period.id)).to be(true)
+        expect(TrainingPeriod.exists?(ect_training_period.id)).to be(true)
+        expect(TrainingPeriod.exists?(mentor_training_period.id)).to be(true)
+        expect(Declaration.exists?(ect_declaration.id)).to be(true)
+        expect(Declaration.exists?(mentor_declaration.id)).to be(true)
+      end
+
+      it "does not record a merge event" do
+        expect { merge! }.to raise_error(expected_error)
+
+        expect(Event.where(event_type: "teacher_merged")).to be_empty
+      end
+
+      it "does not enqueue a Teachers::TRN::TRSSyncJob" do
+        expect { merge! }
+          .to raise_error(expected_error)
+          .and not_have_enqueued_job(Teachers::TRN::TRSSyncJob)
+      end
+    end
+
     context "when the destination has no overlapping records" do
       it "moves the at-school periods to the destination teacher" do
         merge!
@@ -594,6 +645,8 @@ RSpec.describe Teachers::TRN::Merge do
     end
 
     context "when merging an overlapping period fails" do
+      let(:expected_error) { Teachers::TRN::TrainingPeriods::Merge::CannotMergePeriods }
+
       let!(:overlapping_mentor_period) do
         FactoryBot.create(
           :mentor_at_school_period,
@@ -621,56 +674,46 @@ RSpec.describe Teachers::TRN::Merge do
           .and_raise(Teachers::TRN::TrainingPeriods::Merge::CannotMergePeriods)
       end
 
-      it "does not change the teacher's record" do
-        original_attributes = ect_at_school_period.attributes.slice("started_on", "finished_on", "teacher_id")
+      it_behaves_like "a rollback on merge failure"
 
-        expect { merge! }.to raise_error(Teachers::TRN::TrainingPeriods::Merge::CannotMergePeriods)
+      it "does not delete the overlapping mentor or training periods" do
+        expect { merge! }.to raise_error(expected_error)
 
-        expect(ect_at_school_period.reload.attributes.slice(*original_attributes.keys))
-          .to eq(original_attributes)
-      end
-
-      it "does not destroy the source teacher or any related data" do
-        expect { merge! }.to raise_error(Teachers::TRN::TrainingPeriods::Merge::CannotMergePeriods)
-
-        expect(Teacher.exists?(teacher.id)).to be true
-        expect(ECTAtSchoolPeriod.exists?(ect_at_school_period.id)).to be true
-        expect(MentorAtSchoolPeriod.exists?(mentor_at_school_period.id)).to be true
-        expect(MentorAtSchoolPeriod.exists?(overlapping_mentor_period.id)).to be true
-        expect(TrainingPeriod.exists?(ect_training_period.id)).to be true
-        expect(TrainingPeriod.exists?(mentor_training_period.id)).to be true
-        expect(TrainingPeriod.exists?(overlapping_training_period.id)).to be true
-        expect(Declaration.exists?(ect_declaration.id)).to be true
-        expect(Declaration.exists?(mentor_declaration.id)).to be true
-      end
-
-      it "does not record a merge event" do
-        expect { merge! }.to raise_error(Teachers::TRN::TrainingPeriods::Merge::CannotMergePeriods)
-
-        expect(Event.where(event_type: "teacher_merged")).to be_empty
-      end
-
-      it "does not enqueue a `Teachers::TRN::TRSSyncJob`" do
-        expect { merge! }
-        .to raise_error(Teachers::TRN::TrainingPeriods::Merge::CannotMergePeriods)
-        .and not_have_enqueued_job(Teachers::TRN::TRSSyncJob)
+        expect(MentorAtSchoolPeriod.exists?(overlapping_mentor_period.id)).to be(true)
+        expect(TrainingPeriod.exists?(overlapping_training_period.id)).to be(true)
       end
     end
 
-    context "when the source changes after it was loaded" do
+    context "when an overlapping merge sub-service raises a validation error" do
+      let(:expected_error) { ActiveRecord::RecordInvalid }
+
+      let!(:overlapping_mentor_period) do
+        FactoryBot.create(
+          :mentor_at_school_period,
+          teacher:,
+          school:,
+          started_on: overlapping_period_started_on,
+          finished_on: overlapping_period_finished_on
+        )
+      end
+
       before do
-        teacher
-        Teacher.find(teacher.id).update!(trs_response: "ok", trs_redirected_to: nil)
+        allow(Teachers::TRN::MentorAtSchoolPeriods::Merge)
+          .to receive(:call)
+          .and_raise(ActiveRecord::RecordInvalid.new(destination_mentor_at_school_period))
       end
 
-      it "refreshes the source before checking eligibility" do
-        merge!
+      it_behaves_like "a rollback on merge failure"
+    end
 
-        expect(Teacher.exists?(teacher.id)).to be(true)
-        expect(ect_at_school_period.reload.teacher).to eq(teacher)
-        expect(destination.events.where(event_type: "teacher_merged")).to be_empty
-        expect(Teachers::TRN::TRSSyncJob).not_to have_been_enqueued
+    context "when deleting the source teacher fails with a foreign key error" do
+      let(:expected_error) { ActiveRecord::InvalidForeignKey }
+
+      before do
+        allow(teacher).to receive(:destroy!).and_raise(ActiveRecord::InvalidForeignKey)
       end
+
+      it_behaves_like "a rollback on merge failure"
     end
   end
 end

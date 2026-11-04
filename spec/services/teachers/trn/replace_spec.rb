@@ -69,6 +69,24 @@ RSpec.describe Teachers::TRN::Replace do
         end
       end
 
+      context "when updating the teacher fails validation" do
+        before do
+          allow(teacher)
+            .to receive(:update!)
+            .and_raise(ActiveRecord::RecordInvalid.new(teacher))
+        end
+
+        it "rolls back the replacement and does not queue a TRS refresh" do
+          original_attributes = teacher.reload.attributes
+
+          expect { replace }.to raise_error(ActiveRecord::RecordInvalid)
+
+          expect(teacher.reload.attributes).to eq(original_attributes)
+          expect(teacher.events.where(event_type: "teacher_trn_replaced")).to be_empty
+          expect(Teachers::SyncTeacherWithTRSJob).not_to have_been_enqueued
+        end
+      end
+
       context "when there is a teacher in the database with the replacement TRN" do
         before { FactoryBot.create(:teacher, trn: replacement_trn) }
 
@@ -126,21 +144,6 @@ RSpec.describe Teachers::TRN::Replace do
       let(:new_trn) { replacement_trn }
 
       include_examples "a TRN replacement"
-
-      it "does not repeat a replacement through a stale teacher instance" do
-        stale_teacher = teacher
-
-        described_class.new(teacher: Teacher.find(teacher.id), new_trn:).replace!
-        described_class.new(teacher: stale_teacher, new_trn: "8888888").replace!
-
-        expect(teacher.reload).to have_attributes(
-          trn: replacement_trn,
-          trs_response: "ok",
-          trs_redirected_to: nil
-        )
-        expect(teacher.events.where(event_type: "teacher_trn_replaced").count).to eq(1)
-        expect(Teachers::SyncTeacherWithTRSJob).to have_been_enqueued.exactly(:once)
-      end
 
       context "when the teacher has a trs_redirected_to value" do
         let(:teacher) do

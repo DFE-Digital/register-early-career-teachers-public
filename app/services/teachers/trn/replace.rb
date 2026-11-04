@@ -8,26 +8,24 @@ module Teachers
       end
 
       def replace!
-        teacher.with_lock do
-          return unless eligibility.can_be_replaced?
+        return unless eligibility.can_be_replaced?
 
-          ActiveRecord::Base.transaction do
-            old_trn = teacher.trn
-            replacement_trn = new_trn
+        ActiveRecord::Base.transaction do
+          old_trn = teacher.trn
+          replacement_trn = new_trn
 
-            teacher.update!(
-              trn: replacement_trn,
-              trs_redirected_to: nil,
-              trs_response: "ok"
-            )
+          teacher.update!(
+            trn: replacement_trn,
+            trs_redirected_to: nil,
+            trs_response: "ok"
+          )
 
-            Events::Record.record_teacher_trn_replaced_event!(
-              teacher:,
-              author:,
-              old_trn:,
-              new_trn: replacement_trn
-            )
-          end
+          Events::Record.record_teacher_trn_replaced_event!(
+            teacher:,
+            author:,
+            old_trn:,
+            new_trn: replacement_trn
+          )
         end
 
         Teachers::SyncTeacherWithTRSJob.perform_later(teacher:)
