@@ -37,10 +37,11 @@ module Admin
         end
 
         def replace_trn!
-          teacher.with_lock do
+          ActiveRecord::Base.transaction do
+            teacher.lock!
+
             raise TeacherNotDeactivatedError unless teacher.trs_response_gone?
-            raise IneligibleForReplacementError unless ::Teachers::TRN::Eligibility
-              .new(teacher:, new_trn: store.trn).can_be_replaced?
+            raise IneligibleForReplacementError unless eligibility.can_be_replaced?
 
             old_trn = teacher.trn
 
@@ -69,6 +70,10 @@ module Admin
         end
 
       private
+
+        def eligibility
+          ::Teachers::TRN::Eligibility.new(teacher:, new_trn: store.trn)
+        end
 
         def teacher_overview_path
           Rails.application.routes.url_helpers.admin_teacher_path(teacher)
