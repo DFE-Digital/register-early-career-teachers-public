@@ -96,5 +96,9 @@ RSpec.describe Schools::InductionTutor::ConfirmExistingInductionTutorWizard::Ope
     it "does not record any events" do
       expect { operation.execute }.not_to change(Event, :count)
     end
+
+    it "does not send any emails" do
+      expect { operation.execute }.not_to have_enqueued_mail
+    end
   end
 end
