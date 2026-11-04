@@ -1,5 +1,5 @@
 provider "google" {
-  project = "ecf-bq"
+  project = local.gcp_project
 }
 
 module "dfe_analytics" {
@@ -11,10 +11,10 @@ module "dfe_analytics" {
   namespace             = var.namespace
   service_short         = "ecf2"
   environment           = var.environment
-  gcp_keyring           = "ecf-key-ring"
-  gcp_key               = "ecf-key"
-  gcp_taxonomy_id       = 6302091323314055162
-  gcp_policy_tag_id     = 301313311867345339
+  gcp_keyring           = local.gcp_keyring
+  gcp_key               = local.gcp_key
+  gcp_taxonomy_id       = local.gcp_taxonomy_id
+  gcp_policy_tag_id     = local.gcp_policy_tag_id
 
   gcp_table_deletion_protection = var.gcp_table_deletion_protection
 }
