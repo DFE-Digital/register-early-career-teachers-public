@@ -19,6 +19,14 @@ describe TRS::FakeAPIClient do
         expect(trs_teacher).to be_a(TRS::Teacher)
       end
 
+      it "has a first name" do
+        expect(trs_teacher.trs_first_name).to be_present
+      end
+
+      it "has a last name" do
+        expect(trs_teacher.trs_last_name).to be_present
+      end
+
       it "returns a teacher with a qts_awarded_on date" do
         expect(trs_teacher.trs_qts_awarded_on).not_to be_nil
       end
