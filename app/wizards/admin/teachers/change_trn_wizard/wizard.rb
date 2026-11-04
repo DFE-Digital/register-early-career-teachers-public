@@ -93,21 +93,20 @@ module Admin
         def update!
           ActiveRecord::Base.transaction do
             teacher.lock!
+            destination.lock! if merge_proposed?
 
-            with_destination_lock do
-              raise TeacherNotDeactivatedError unless teacher.trs_response_gone?
-              raise MergeProposalChangedError unless destination_trn_matches_proposal?
-              raise IneligibleForMergeError if merge_proposed? && !eligible?
-              raise IneligibleForReplacementError if replace_proposed? && !eligible?
+            raise TeacherNotDeactivatedError unless teacher.trs_response_gone?
+            raise MergeProposalChangedError unless destination_trn_matches_proposal?
+            raise IneligibleForMergeError if merge_proposed? && !eligible?
+            raise IneligibleForReplacementError if replace_proposed? && !eligible?
 
-              old_trn = teacher.trn
-              source_teacher_name = teacher_name
+            old_trn = teacher.trn
+            source_teacher_name = teacher_name
 
-              merge_proposed? ? merge! : replace!
+            merge_proposed? ? merge! : replace!
 
-              store.old_trn = old_trn
-              store.source_teacher_name = source_teacher_name
-            end
+            store.old_trn = old_trn
+            store.source_teacher_name = source_teacher_name
           end
         end
 
@@ -117,14 +116,6 @@ module Admin
           return true unless merge_proposed?
 
           store.trn.present? && destination.trn == store.trn
-        end
-
-        def with_destination_lock(&block)
-          if merge_proposed?
-            destination.with_lock(&block)
-          else
-            yield
-          end
         end
 
         def merge!

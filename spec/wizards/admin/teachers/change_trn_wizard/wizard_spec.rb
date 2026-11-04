@@ -1,11 +1,12 @@
 RSpec.describe Admin::Teachers::ChangeTRNWizard::Wizard do
   subject { wizard.update! }
 
-  let(:teacher) { FactoryBot.create(:teacher, :deactivated_in_trs) }
-  let(:destination) { FactoryBot.create(:teacher, trs_response: "ok") }
+  let(:teacher) { FactoryBot.create(:teacher, :deactivated_in_trs, trn: old_trn) }
   let(:author) { FactoryBot.create(:dfe_user, role: "user_manager") }
   let(:store) { FactoryBot.build(:session_repository) }
-  let(:wizard) { described_class.new(teacher_id: teacher.id, author:, store:, current_step: :confirm) }
+  let(:wizard) do
+    described_class.new(teacher_id: teacher.id, author:, store:, current_step: :confirm)
+  end
 
   shared_examples "it does not change the TRN" do
     it "rejects replacement without storing success details" do
@@ -20,6 +21,11 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::Wizard do
       expect(Teachers::SyncTeacherWithTRSJob).not_to have_been_enqueued
     end
   end
+
+  let(:old_trn) { "1234567" }
+  let(:new_trn) { "7654321" }
+
+ 
 
   describe "#teacher_name" do
     before { store.source_teacher_name = "Previously stored name" }
@@ -46,22 +52,18 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::Wizard do
 
   describe "replacement" do
     before do
+      store.trn = new_trn
       store.destination_teacher_id = nil
-      store.trn = "2345678"
     end
 
     it "replaces the TRN and stores the original TRN" do
-      old_trn = teacher.trn
-      source_name = Teachers::Name.new(teacher).full_name
-      destination.destroy!
-
       subject
 
       expect(teacher.reload.trn).to eq(store.trn)
       expect(store.old_trn).to eq(old_trn)
       expect(store.records_processed).to eq("replaced")
-      expect(store.source_teacher_name).to eq(source_name)
-      expect(wizard.teacher_name).to eq(source_name)
+      expect(teacher.events.where(event_type: "teacher_trn_replaced").sole)
+        .to have_attributes(author.event_author_params.merge(author_type: "dfe_staff_user"))
       expect(Teachers::SyncTeacherWithTRSJob).to have_been_enqueued
     end
 
@@ -131,7 +133,38 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::Wizard do
       let(:expected_error) { described_class::IneligibleForReplacementError }
 
       before do
-        FactoryBot.create(:teacher, :merged_in_trs, trs_redirected_to: store.trn)
+        other_teacher.update!(trn: store.trn)
+      end
+
+      include_examples "it does not change the TRN"
+    end
+    
+    context "when the replacement is ineligible" do
+      let(:eligibility) { instance_double(Teachers::TRN::Eligibility, can_be_replaced?: false) }
+
+      before do
+        allow(Teachers::TRN::Eligibility).to receive(:new).and_return(eligibility)
+      end
+
+      it "rejects replacement without storing success details" do
+        expect { subject }.to raise_error(described_class::IneligibleForReplacementError)
+
+        expect(teacher.reload.trn).to eq(old_trn)
+        expect(store.old_trn).to be_nil
+        expect(Teachers::SyncTeacherWithTRSJob).not_to have_been_enqueued
+      end
+    end
+
+    context "when the replacement service fails" do
+      let(:service) { instance_double(Teachers::TRN::Replace) }
+
+      before do
+        allow(Teachers::TRN::Replace).to receive(:new)
+          .with(teacher: wizard.teacher, new_trn: store.trn, author:).and_return(service)
+        allow(service).to receive(:replace!) do
+          wizard.teacher.update!(trn: new_trn)
+          raise ActiveRecord::RecordInvalid, wizard.teacher
+        end
       end
 
       include_examples "it does not change the TRN"
@@ -254,9 +287,8 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::Wizard do
       let(:expected_error) { described_class::IneligibleForMergeError }
 
       before do
-        allow(Teachers::TRN::Merge).to receive(:new)
-          .with(teacher: wizard.teacher, new_trn: store.trn, author:).and_return(service)
-        allow(service).to receive(:merge!).and_raise(described_class::IneligibleForMergeError)
+        wizard.teacher
+        teacher.update!(trs_response: "ok")
       end
 
       it_behaves_like "it does not change the TRN"
@@ -277,14 +309,35 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::Wizard do
       let(:expected_error) { described_class::IneligibleForMergeError }
 
       before do
-        FactoryBot.create(:induction_period, teacher:)
-        allow(wizard.destination).to receive(:with_lock).and_wrap_original do |with_lock, &block|
-          FactoryBot.create(:induction_period, teacher: destination)
-          with_lock.call(&block)
-        end
+        allow(Teachers::TRN::Eligibility).to receive(:new).and_return(eligibility)
       end
 
       it_behaves_like "it does not change the TRN"
+    end
+
+    context "when the merge service raises after changing a record" do
+      let(:service) { instance_double(Teachers::TRN::Merge) }
+      let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
+
+      before do
+        allow(Teachers::TRN::Merge).to receive(:new)
+          .with(teacher: wizard.teacher, new_trn: store.trn, author:).and_return(service)
+        allow(service).to receive(:merge!) do
+          ect_at_school_period.update!(teacher: destination)
+          raise ActiveRecord::InvalidForeignKey
+        end
+      end
+
+      it "propagates the error and rolls back changes without storing success details" do
+        expect { subject }.to raise_error(ActiveRecord::InvalidForeignKey)
+
+        expect(ect_at_school_period.reload.teacher_id).to eq(teacher.id)
+        expect(Teacher.exists?(teacher.id)).to be(true)
+        expect(store.records_processed).to be_nil
+        expect(store.old_trn).to be_nil
+        expect(store.source_teacher_name).to be_nil
+        expect(Teachers::TRN::TRSSyncJob).not_to have_been_enqueued
+      end
     end
 
     context "when the destination changes after it was loaded" do
