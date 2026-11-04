@@ -60,4 +60,30 @@ RSpec.describe API::AppropriateBodies::Induction do
         .to raise_error(described_class::Invalid, /Enter a number of terms/)
     end
   end
+
+  describe "#release!" do
+    let(:teacher) { FactoryBot.create(:teacher, :with_name) }
+    let!(:induction_period) { FactoryBot.create(:induction_period, :unfinished, teacher:, appropriate_body_period: appropriate_body) }
+    let(:finished_on) { 1.day.ago.to_date }
+
+    it "records the release and returns the released induction" do
+      release = induction.release!(trn: teacher.trn, finished_on:, number_of_terms: 3)
+
+      expect(release.symbolize_keys).to eq(trn: teacher.trn, full_name: "John Keating", finished_on:, number_of_terms: 3.0)
+      expect(induction_period.reload).to have_attributes(finished_on:, outcome: nil)
+      expect(Event.where(teacher:, event_type: "induction_period_closed").sole).to have_attributes(oauth_client: client)
+    end
+
+    it "raises not found when the teacher has no ongoing induction with the appropriate body" do
+      another_appropriate_body = FactoryBot.create(:appropriate_body_period, name: "Canvas Teaching School Hub")
+
+      expect { described_class.new(appropriate_body: another_appropriate_body, client:).release!(trn: teacher.trn, finished_on:, number_of_terms: 3) }
+        .to raise_error(described_class::TeacherNotFound)
+    end
+
+    it "raises a validation error when the release is invalid" do
+      expect { induction.release!(trn: teacher.trn, finished_on:) }
+        .to raise_error(described_class::Invalid, /Enter a number of terms/)
+    end
+  end
 end

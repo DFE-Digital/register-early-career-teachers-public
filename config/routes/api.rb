@@ -46,6 +46,7 @@ namespace :api do
         resources :teachers, only: [], param: :trn do
           resource :claim, only: :create
           resource :pass, only: :create
+          resource :release, only: :create
         end
       end
     end

@@ -40,7 +40,14 @@ module API
         rescue_with_handler(e) || raise
       end
 
-      # def release!; end
+      def release!(trn:, finished_on: nil, number_of_terms: nil)
+        teacher = find_claimed_teacher!(trn:)
+        record_release!(teacher:, finished_on:, number_of_terms:)
+
+        as_release(teacher.last_induction_period)
+      rescue StandardError => e
+        rescue_with_handler(e) || raise
+      end
 
     private
 
@@ -70,9 +77,16 @@ module API
         record_pass.call(finished_on:, number_of_terms:)
       end
 
+      def record_release!(teacher:, finished_on:, number_of_terms:)
+        record_release = RecordRelease.new(teacher:, appropriate_body_period:, author:)
+        record_release.call(finished_on:, number_of_terms:)
+      end
+
       def as_claim(induction_period) = induction_period.slice(:trn, :full_name, :started_on, :training_programme)
 
       def as_outcome(induction_period) = induction_period.slice(:trn, :full_name, :finished_on, :number_of_terms, :outcome)
+
+      def as_release(induction_period) = induction_period.slice(:trn, :full_name, :finished_on, :number_of_terms)
     end
   end
 end
