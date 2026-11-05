@@ -194,9 +194,15 @@ module Schools
     end
 
     def training_period_started_on
-      if training_programme == "provider_led" &&
-          ContractPeriods::Reassignment.new(training_period: previous_provider_led_training_period).required?
-        [ect_at_school_period.started_on, contract_period.started_on].max
+      previous_period = store&.previous_training_period
+
+      if ContractPeriods::Reassignment.new(training_period: previous_period).required?
+        date_contract_period = ContractPeriods::ForECTRegistration.new(
+          started_on:,
+          previous_training_period: previous_period
+        ).call
+
+        [ect_at_school_period.started_on, date_contract_period.started_on].max
       else
         [ect_at_school_period.started_on, Date.current].max
       end

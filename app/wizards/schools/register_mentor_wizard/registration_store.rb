@@ -27,6 +27,7 @@ module Schools
                :mentor_at_school_periods,
                :previous_school_mentor_at_school_periods,
                :previous_training_period,
+               :previous_provider_led_training_period,
                :previous_confirmed_training_period,
                :latest_registration_choice,
                :ect,
