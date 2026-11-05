@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_29_092623) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_05_164117) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -86,6 +86,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_29_092623) do
     t.string "token_digest"
     t.datetime "token_expires_at"
     t.datetime "updated_at", null: false
+    t.string "granted_by_name"
+    t.string "granted_by_dfe_sign_in_user_id"
     t.index ["appropriate_body_period_id"], name: "index_api_oauth_authorizations_on_appropriate_body_period_id"
     t.index ["client_id"], name: "index_api_oauth_authorizations_on_client_id"
     t.index ["code_digest"], name: "index_api_oauth_authorizations_on_code_digest", unique: true

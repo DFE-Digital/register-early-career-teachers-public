@@ -37,6 +37,10 @@ RSpec.describe Sessions::Users::AppropriateBodyPersona do
     it { expect(appropriate_body_persona.dfe_analytics_user_id).to be_nil }
   end
 
+  describe "#dfe_sign_in_user_id" do
+    it { expect(appropriate_body_persona.dfe_sign_in_user_id).to be_nil }
+  end
+
   describe "#provider" do
     it { expect(appropriate_body_persona.provider).to be(:persona) }
   end
