@@ -29,7 +29,7 @@ module Navigation
     end
 
     def navigation_area
-      if current_path.start_with?("/api/docs/training")
+      if current_path.start_with?("/api/docs/training") && !current_path.start_with?("/api/docs/training/v4")
         :training_api_documentation
       elsif current_path.start_with?("/api/docs")
         :api_documentation
@@ -73,7 +73,7 @@ module Navigation
           { text: "Home", href: "/api/docs" },
           { text: "Authorisation", href: api_documentation_authorisation_path, active_when: api_documentation_authorisation_path },
           { text: "Hello API", href: api_hello_documentation_path, active_when: api_hello_documentation_path },
-          { text: "Training API", href: api_docs_training_guidance_path, active_when: api_docs_training_guidance_path },
+          { text: "Training API", href: api_training_v4_documentation_path, active_when: api_training_v4_documentation_path },
           { text: "Induction API", href: api_induction_v1_documentation_path, active_when: api_induction_v1_documentation_path },
         ]
       }
