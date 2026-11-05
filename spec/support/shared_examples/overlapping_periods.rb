@@ -164,7 +164,7 @@ RSpec.shared_examples "it moves non-overlapping training_periods" do
     end
 
     it "does not call the Merge service" do
-      expect(Teachers::MergeTRN::TrainingPeriods::Merge).not_to receive(:call)
+      expect(Teachers::TRN::TrainingPeriods::Merge).not_to receive(:call)
       service
     end
   end
@@ -195,16 +195,16 @@ RSpec.shared_examples "it merges overlapping training periods" do
     end
 
     it "calls the Merge service for overlapping training periods" do
-      allow(Teachers::MergeTRN::TrainingPeriods::Overlapping).to receive(:find).and_call_original
+      allow(Teachers::TRN::TrainingPeriods::Overlapping).to receive(:find).and_call_original
 
-      expect(Teachers::MergeTRN::TrainingPeriods::Merge).to receive(:call).with(
+      expect(Teachers::TRN::TrainingPeriods::Merge).to receive(:call).with(
         periods: contain_exactly(training_period, overlapping_training_period),
         destination:
       )
 
       service
 
-      expect(Teachers::MergeTRN::TrainingPeriods::Overlapping).to have_received(:find).with(
+      expect(Teachers::TRN::TrainingPeriods::Overlapping).to have_received(:find).with(
         periods: contain_exactly(training_period, overlapping_training_period)
       )
     end
@@ -261,7 +261,7 @@ RSpec.shared_examples "it moves non-overlapping mentorship_periods" do
     end
 
     it "does not call the Merge service for overlapping mentorship periods" do
-      expect(Teachers::MergeTRN::MentorshipPeriods::Merge).not_to receive(:call)
+      expect(Teachers::TRN::MentorshipPeriods::Merge).not_to receive(:call)
       service
     end
   end

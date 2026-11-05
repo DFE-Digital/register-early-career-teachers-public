@@ -231,6 +231,27 @@ RSpec.describe "Admin::Teachers::ChangeTRNWizardController", type: :request do
       expect(Teachers::SyncTeacherWithTRSJob).not_to have_been_enqueued
     end
 
+    it "returns to TRN entry when the replacement TRN becomes occupied after review" do
+      post entry_path, params: { enter_trn: { trn: new_trn } }
+      FactoryBot.create(:teacher, trn: new_trn)
+
+      expect {
+        post confirm_path, params: { confirm: { confirmed: "1", expected_trn: new_trn } }
+      }.not_to(change { teacher.reload.trn })
+
+      expect(response).to redirect_to(entry_path)
+      expect(flash[:error]).to eq(
+        "The teacher records are not eligible for replacement with the supplied TRN. " \
+        "This could be because another teacher redirects to the supplied TRN, " \
+        "or because the supplied TRN is missing or unchanged."
+      )
+      expect(Teachers::SyncTeacherWithTRSJob).not_to have_been_enqueued
+
+      get confirm_path
+
+      expect(response).to redirect_to(entry_path)
+    end
+
     it "clears an earlier proposal when an invalid TRN is submitted" do
       post entry_path, params: { enter_trn: { trn: new_trn } }
 

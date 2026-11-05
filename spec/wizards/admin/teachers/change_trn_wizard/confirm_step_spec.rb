@@ -54,12 +54,12 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::ConfirmStep do
     context "when replacement fails" do
       before do
         allow(wizard).to receive(:replace_trn!)
-          .and_raise(::Teachers::ReplaceTRN::TeacherNotDeactivatedError)
+          .and_raise(Admin::Teachers::ChangeTRNWizard::Wizard::TeacherNotDeactivatedError)
       end
 
       it "does not mark the journey as complete" do
         expect { step.save! }
-          .to raise_error(::Teachers::ReplaceTRN::TeacherNotDeactivatedError)
+          .to raise_error(Admin::Teachers::ChangeTRNWizard::Wizard::TeacherNotDeactivatedError)
 
         expect(store.trn_replaced).to be_nil
       end
@@ -72,7 +72,7 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::ConfirmStep do
         expect(wizard).not_to receive(:replace_trn!)
 
         expect { step.save! }
-          .to raise_error(described_class::ProposedTRNChangedError)
+          .to raise_error(Admin::Teachers::ChangeTRNWizard::Wizard::ProposedTRNChangedError)
 
         expect(store.trn_replaced).to be_nil
       end
@@ -85,7 +85,7 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::ConfirmStep do
         expect(wizard).not_to receive(:replace_trn!)
 
         expect { step.save! }
-          .to raise_error(described_class::ProposedTRNChangedError)
+          .to raise_error(Admin::Teachers::ChangeTRNWizard::Wizard::ProposedTRNChangedError)
 
         expect(store.trn_replaced).to be_nil
       end

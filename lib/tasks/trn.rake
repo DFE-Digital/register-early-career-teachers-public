@@ -7,7 +7,7 @@ namespace :trn do
 
     teachers.each do |teacher|
       Rails.logger.info("Replacing TRN for teacher with TRN #{teacher.trn} and replacement TRN #{teacher.trs_redirected_to}")
-      Teachers::ReplaceTRN.new(teacher:).replace!
+      Teachers::TRN::Replace.new(teacher:).replace!
     end
   end
 end
