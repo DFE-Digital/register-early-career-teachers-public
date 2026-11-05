@@ -32,17 +32,19 @@ module Schools
 
           @registration_contract_period ||= ContractPeriods::ForECTRegistration.new(
             started_on: start_date,
-            previous_training_period:
+            previous_training_period: previous_provider_led_training_period
           ).call
         end
 
         def lead_provider_partnerships_for_contract_period(school:)
           contract_period = registration_contract_period
+          return SchoolPartnership.none unless contract_period && school
 
-          return SchoolPartnership.none unless previous_lead_provider && contract_period && school
+          provider = lead_provider || previous_provider_led_training_period&.lead_provider
+          return SchoolPartnership.none unless provider
 
           SchoolPartnerships::Search
-            .new(school:, lead_provider: previous_lead_provider, contract_period:)
+            .new(school:, lead_provider: provider, contract_period:)
             .school_partnerships
         end
 
@@ -92,6 +94,24 @@ module Schools
             .new(order: :started_on)
             .training_periods(ect_id: previous_ect_at_school_period.id)
             .last
+        end
+
+        def previous_provider_led_training_period
+          start_date = registration_store.normalized_start_date
+          return unless start_date
+          return @previous_provider_led_training_period if defined?(@previous_provider_led_training_period)
+
+          @previous_provider_led_training_period = begin
+            periods = TrainingPeriod
+              .joins(ect_at_school_period: :teacher)
+              .where(teachers: { trn: registration_store.trn })
+              .provider_led_training_programme
+              .where("training_periods.started_on <= ?", start_date)
+
+            periods = periods.where.not(ect_at_school_period_id: ect_at_school_period.id) if ect_at_school_period
+
+            periods.reorder(started_on: :desc, id: :desc).first
+          end
         end
 
         def previous_appropriate_body

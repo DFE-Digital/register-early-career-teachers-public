@@ -59,7 +59,7 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
       expression_of_interest_id:,
       started_on:
     ).tap do |previous_training_period|
-      allow(step.ect).to receive(:previous_training_period).and_return(previous_training_period)
+      allow(step.ect).to receive(:previous_provider_led_training_period).and_return(previous_training_period)
     end
   end
 
@@ -512,10 +512,12 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
 
         context "with a start date on the last day of the next contract period, when today is the end of the current period" do
           let(:upcoming_contract_period) { FactoryBot.create(:contract_period, :next) }
+          let(:registering_teacher) { FactoryBot.create(:teacher) }
 
           let(:store) do
             FactoryBot.build(
               :session_repository,
+              trn: registering_teacher.trn,
               use_previous_ect_choices:,
               start_date: upcoming_contract_period.finished_on
             )
@@ -527,16 +529,64 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
 
           before { travel_to current_contract_period.finished_on }
 
-          it "is allowed" do
+          it "checks the provider is available in the new ECT's registration year" do
+            expect(step.registration_contract_period).to eq(upcoming_contract_period)
+
             expect(FrameworkAgreement)
               .to receive(:exists?)
-              .with(
-                contract_period_year: previous_contract_period.year,
-                lead_provider_id: previous_year_framework_agreement.lead_provider_id
-              )
+              .with(contract_period_year: upcoming_contract_period.year, lead_provider_id: lead_provider.id)
               .and_call_original
 
             expect(step.allowed?).to be(true)
+          end
+
+          context "when the registering ECT has earlier provider-led training at another school" do
+            let(:previous_school) { FactoryBot.create(:school) }
+            let(:own_lead_provider) { FactoryBot.create(:lead_provider) }
+
+            let(:own_framework_agreement) do
+              FactoryBot.create(
+                :framework_agreement,
+                lead_provider: own_lead_provider,
+                contract_period: current_contract_period
+              )
+            end
+
+            let!(:own_ect_period) do
+              FactoryBot.create(
+                :ect_at_school_period,
+                teacher: registering_teacher,
+                school: previous_school,
+                started_on: current_contract_period.started_on,
+                finished_on: current_contract_period.finished_on
+              )
+            end
+
+            before do
+              FactoryBot.create(
+                :training_period,
+                ect_at_school_period: own_ect_period,
+                training_programme: "provider_led",
+                expression_of_interest: own_framework_agreement,
+                school_partnership: nil,
+                started_on: own_ect_period.started_on,
+                finished_on: own_ect_period.finished_on
+              )
+            end
+
+            it "checks the school's provider in the registering ECT's own contract year" do
+              expect(step.registration_contract_period).to eq(current_contract_period)
+
+              expect(FrameworkAgreement)
+                .to receive(:exists?)
+                .with(
+                  contract_period_year: current_contract_period.year,
+                  lead_provider_id: lead_provider.id
+                )
+                .and_call_original
+
+              expect(step.allowed?).to be(true)
+            end
           end
         end
 

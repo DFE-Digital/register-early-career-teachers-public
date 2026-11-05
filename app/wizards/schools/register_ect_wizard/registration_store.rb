@@ -17,7 +17,7 @@ module Schools
                :contract_start_date,
                :lead_provider,
                :previous_ect_at_school_period,
-               :previous_training_period,
+               :previous_provider_led_training_period,
                to: :queries
 
       delegate :full_name,
