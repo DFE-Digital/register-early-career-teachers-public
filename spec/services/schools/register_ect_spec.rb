@@ -203,7 +203,7 @@ RSpec.describe Schools::RegisterECT do
             Schools::RegisterECTWizard::RegistrationStore.new(repository)
           end
 
-          it "does not treat the newly created training period as previous training" do
+          it "uses the registration contract period when there is no previous training history" do
             service.register!
 
             training_period = service.ect_at_school_period.training_periods.sole
@@ -518,7 +518,7 @@ RSpec.describe Schools::RegisterECT do
             )
           end
 
-          it "uses the backdated start and the reassigned contract period" do
+          it "starts provider-led training on the registration day and uses the reassigned contract period" do
             service.register!
 
             training_period = service.ect_at_school_period.training_periods.sole
