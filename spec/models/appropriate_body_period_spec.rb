@@ -240,7 +240,23 @@ describe AppropriateBodyPeriod do
     end
   end
 
-  describe "body type validations" do
+  describe "validations" do
+    describe "name", skip: "during data cleanse" do
+      subject(:appropriate_body_period) { FactoryBot.build(:appropriate_body_period) }
+
+      it { is_expected.to validate_uniqueness_of(:name) }
+    end
+
+    it "does not allow a retired type to contain today" do
+      %i[local_authority teaching_school].each do |trait|
+        period = FactoryBot.build(:appropriate_body_period, trait,
+                                  started_on: Time.zone.today,
+                                  finished_on: nil)
+
+        expect(period).not_to be_valid
+      end
+    end
+
     context "when the type is local authority" do
       subject(:appropriate_body_period) do
         FactoryBot.build(:appropriate_body_period, :local_authority,
@@ -252,6 +268,26 @@ describe AppropriateBodyPeriod do
       let(:finished_on) { Date.new(2023, 9, 1) }
 
       it { is_expected.to be_valid }
+
+      it "requires a local authority" do
+        appropriate_body_period.local_authority = nil
+        expect(appropriate_body_period).to have_error(:local_authority, "can't be blank")
+      end
+
+      it "rejects a provisioning school" do
+        appropriate_body_period.provisioning_school = FactoryBot.create(:school)
+        expect(appropriate_body_period).to have_error(:provisioning_school, "must be blank")
+      end
+
+      it "rejects a teaching school hub" do
+        appropriate_body_period.teaching_school_hub = FactoryBot.create(:teaching_school_hub)
+        expect(appropriate_body_period).to have_error(:teaching_school_hub, "must be blank")
+      end
+
+      it "rejects a national body" do
+        appropriate_body_period.national_body = FactoryBot.create(:national_body)
+        expect(appropriate_body_period).to have_error(:national_body, "must be blank")
+      end
 
       context "when it starts before 31 August 2012" do
         let(:started_on) { Date.new(2012, 8, 30) }
@@ -289,13 +325,29 @@ describe AppropriateBodyPeriod do
       end
     end
 
-    it "does not allow a retired type to contain today" do
-      %i[local_authority teaching_school].each do |trait|
-        period = FactoryBot.build(:appropriate_body_period, trait,
-                                  started_on: Time.zone.today,
-                                  finished_on: nil)
+    context "when the type is national" do
+      subject(:appropriate_body_period) { FactoryBot.build(:appropriate_body_period, :national) }
 
-        expect(period).not_to be_valid
+      it { is_expected.to be_valid }
+
+      it "requires a national body" do
+        appropriate_body_period.national_body = nil
+        expect(appropriate_body_period).to have_error(:national_body, "can't be blank")
+      end
+
+      it "rejects a provisioning school" do
+        appropriate_body_period.provisioning_school = FactoryBot.create(:school)
+        expect(appropriate_body_period).to have_error(:provisioning_school, "must be blank")
+      end
+
+      it "rejects a teaching school hub" do
+        appropriate_body_period.teaching_school_hub = FactoryBot.create(:teaching_school_hub)
+        expect(appropriate_body_period).to have_error(:teaching_school_hub, "must be blank")
+      end
+
+      it "rejects a local authority" do
+        appropriate_body_period.local_authority = FactoryBot.create(:local_authority)
+        expect(appropriate_body_period).to have_error(:local_authority, "must be blank")
       end
     end
 
@@ -310,6 +362,26 @@ describe AppropriateBodyPeriod do
       let(:provisioning_school) { FactoryBot.create(:school) }
       let(:started_on) { Date.new(2021, 9, 1) }
       let(:finished_on) { nil }
+
+      it "requires a teaching school hub" do
+        appropriate_body_period.teaching_school_hub = nil
+        expect(appropriate_body_period).to have_error(:teaching_school_hub, "can't be blank")
+      end
+
+      it "requires a provisioning school" do
+        appropriate_body_period.provisioning_school = nil
+        expect(appropriate_body_period).to have_error(:provisioning_school, "can't be blank")
+      end
+
+      it "rejects a local authority" do
+        appropriate_body_period.local_authority = FactoryBot.create(:local_authority)
+        expect(appropriate_body_period).to have_error(:local_authority, "must be blank")
+      end
+
+      it "rejects a national body" do
+        appropriate_body_period.national_body = FactoryBot.create(:national_body)
+        expect(appropriate_body_period).to have_error(:national_body, "must be blank")
+      end
 
       context "when it starts before 1 September 2021" do
         let(:started_on) { Date.new(2021, 8, 31) }
@@ -379,6 +451,26 @@ describe AppropriateBodyPeriod do
       let(:provisioning_school) { FactoryBot.create(:school) }
       let(:started_on) { Date.new(2010, 9, 1) }
       let(:finished_on) { Date.new(2021, 8, 31) }
+
+      it "requires a provisioning school" do
+        appropriate_body_period.provisioning_school = nil
+        expect(appropriate_body_period).to have_error(:provisioning_school, "can't be blank")
+      end
+
+      it "rejects a teaching school hub" do
+        appropriate_body_period.teaching_school_hub = FactoryBot.create(:teaching_school_hub)
+        expect(appropriate_body_period).to have_error(:teaching_school_hub, "must be blank")
+      end
+
+      it "rejects a local authority" do
+        appropriate_body_period.local_authority = FactoryBot.create(:local_authority)
+        expect(appropriate_body_period).to have_error(:local_authority, "must be blank")
+      end
+
+      it "rejects a national body" do
+        appropriate_body_period.national_body = FactoryBot.create(:national_body)
+        expect(appropriate_body_period).to have_error(:national_body, "must be blank")
+      end
 
       context "when it starts before 1 September 1999" do
         let(:started_on) { Date.new(1999, 8, 31) }
@@ -451,7 +543,7 @@ describe AppropriateBodyPeriod do
       context "when there is no provisioning school" do
         let(:provisioning_school) { nil }
 
-        it { is_expected.to be_valid }
+        it { is_expected.to have_error(:provisioning_school, "can't be blank") }
       end
 
       context "when it starts after 31 August 2021" do
@@ -480,22 +572,18 @@ describe AppropriateBodyPeriod do
     end
   end
 
-  describe "validations", skip: "during data cleanse" do
-    subject(:appropriate_body_period) { FactoryBot.build(:appropriate_body_period) }
-
-    it { is_expected.to validate_uniqueness_of(:name) }
-  end
-
   describe "#name" do
-    it "allows duplicate names (temp during data cleanse)" do
-      described_class.create!(name: "Shared name", started_on: Date.new(2021, 9, 1))
+    let(:national_body) { FactoryBot.create(:national_body) }
 
-      expect { described_class.create!(name: "Shared name", started_on: Date.new(2021, 9, 1)) }
+    it "allows duplicate names (temp during data cleanse)" do
+      described_class.create!(name: "Shared name", started_on: Date.new(2021, 9, 1), body_type: "national", national_body:)
+
+      expect { described_class.create!(name: "Shared name", started_on: Date.new(2021, 9, 1), body_type: "national", national_body:) }
         .to change(described_class, :count).by(1)
     end
 
     it "may be omitted" do
-      expect { described_class.create!(name: nil, started_on: Date.new(2021, 9, 1)) }
+      expect { described_class.create!(name: nil, started_on: Date.new(2021, 9, 1), body_type: "national", national_body:) }
         .to change(described_class, :count).by(1)
     end
   end
@@ -508,7 +596,7 @@ describe AppropriateBodyPeriod do
     end
   end
 
-  describe "lead schools and regions" do
+  describe "teaching school hub regional awards" do
     let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, :teaching_school_hub) }
     let(:school) { FactoryBot.create(:school) }
     let(:region) { FactoryBot.create(:region) }
