@@ -182,7 +182,7 @@ RSpec.configure do |config|
           **API::Induction::V1::AppropriateBodySerializer.openapi_schema_definition,
           **API::Induction::V1::ClaimSerializer.openapi_schema_definition,
           **API::Induction::V1::ErrorSerializer.openapi_schema_definition,
-          **API::Induction::V1::OutcomeSerializer.openapi_schema_definition,
+          **API::Induction::V1::PassSerializer.openapi_schema_definition,
           **API::Induction::V1::ReleaseSerializer.openapi_schema_definition,
           **API::OAuth::ErrorSerializer.openapi_schema_definition(include_namespace: true),
           ClaimRequest: INDUCTION_CLAIM_REQUEST,

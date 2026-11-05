@@ -1,10 +1,10 @@
 INDUCTION_PASS_REQUEST = {
   description: "Pass an early career teacher's induction",
   type: :object,
-  required: %w[completed_on number_of_terms],
+  required: %w[passed_on number_of_terms],
   properties: {
-    completed_on: {
-      description: "The date the ECT completed their induction.",
+    passed_on: {
+      description: "The date the ECT passed their induction.",
       type: :string,
       format: :date,
       example: "2026-07-20",

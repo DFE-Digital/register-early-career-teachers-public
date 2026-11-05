@@ -7,15 +7,15 @@ module API
 
         def create
           induction = API::AppropriateBodies::Induction.new(appropriate_body:, client:)
-          outcome = induction.pass!(**pass_params)
+          pass = induction.pass!(**pass_params)
 
-          render json: API::Induction::V1::OutcomeSerializer.render(outcome), status: :ok
+          render json: API::Induction::V1::PassSerializer.render(pass), status: :ok
         end
 
       private
 
         def pass_params
-          params.expect(pass: %i[completed_on number_of_terms])
+          params.expect(pass: %i[passed_on number_of_terms])
                 .merge(trn: params[:teacher_trn]).to_h.symbolize_keys
         end
       end

@@ -118,7 +118,7 @@ paths:
           content:
             application/json:
               schema:
-                "$ref": "#/components/schemas/Outcome"
+                "$ref": "#/components/schemas/Pass"
         '400':
           description: The request body is missing or is not a JSON object
           content:
@@ -287,15 +287,14 @@ components:
                   appropriate body
                 description: An explanation of the error.
           description: The errors.
-    Outcome:
-      description: The outcome recorded for an early career teacher's induction.
+    Pass:
+      description: An appropriate body's pass of an early career teacher's induction.
       type: object
       required:
       - trn
       - full_name
-      - completed_on
+      - passed_on
       - number_of_terms
-      - outcome
       properties:
         trn:
           type: string
@@ -305,21 +304,15 @@ components:
           type: string
           example: John Doe
           description: The teacher's name.
-        completed_on:
+        passed_on:
           type: string
           format: date
           example: '2026-07-20'
-          description: The date the ECT completed their induction.
+          description: The date the ECT passed their induction.
         number_of_terms:
           type: number
           example: 3
           description: The number of terms the ECT completed with you.
-        outcome:
-          type: string
-          enum:
-          - pass
-          example: pass
-          description: The outcome of the induction.
     Release:
       description: An appropriate body's release of an early career teacher's induction.
       type: object
@@ -386,11 +379,11 @@ components:
       description: Pass an early career teacher's induction
       type: object
       required:
-      - completed_on
+      - passed_on
       - number_of_terms
       properties:
-        completed_on:
-          description: The date the ECT completed their induction.
+        passed_on:
+          description: The date the ECT passed their induction.
           type: string
           format: date
           example: '2026-07-20'

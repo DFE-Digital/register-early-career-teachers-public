@@ -31,11 +31,11 @@ module API
         pending_induction_submission.touch(:delete_at) if pending_induction_submission&.persisted?
       end
 
-      def pass!(trn:, completed_on: nil, number_of_terms: nil)
+      def pass!(trn:, passed_on: nil, number_of_terms: nil)
         teacher = find_claimed_teacher!(trn:)
-        record_pass!(teacher:, finished_on: completed_on, number_of_terms:)
+        record_pass!(teacher:, finished_on: passed_on, number_of_terms:)
 
-        as_outcome(teacher.finished_induction_period)
+        as_pass(teacher.finished_induction_period)
       rescue StandardError => e
         rescue_with_handler(e) || raise
       end
@@ -87,9 +87,9 @@ module API
           .symbolize_keys.transform_keys(started_on: :claimed_from)
       end
 
-      def as_outcome(induction_period)
-        induction_period.slice(:trn, :full_name, :finished_on, :number_of_terms, :outcome)
-          .symbolize_keys.transform_keys(finished_on: :completed_on)
+      def as_pass(induction_period)
+        induction_period.slice(:trn, :full_name, :finished_on, :number_of_terms)
+          .symbolize_keys.transform_keys(finished_on: :passed_on)
       end
 
       def as_release(induction_period)
