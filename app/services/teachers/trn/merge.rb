@@ -87,7 +87,7 @@ module Teachers
       end
 
       def move_teacher_events
-        teacher.events.update_all(teacher_id: destination.id)
+        teacher.events.find_each { |event| event.update!(teacher: destination) }
       end
 
       def move_teacher_id_changes
