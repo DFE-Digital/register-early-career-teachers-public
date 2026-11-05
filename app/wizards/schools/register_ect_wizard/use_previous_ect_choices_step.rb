@@ -165,7 +165,12 @@ module Schools
         return unless training_period
         return if training_period.started_on > contract_period.finished_on
 
-        return training_period if training_period.expression_of_interest_id.present?
+        previous_eoi = FrameworkAgreement.find_by(
+          id: training_period.expression_of_interest_id,
+          lead_provider_id: school.last_chosen_lead_provider.id
+        )
+
+        return training_period if previous_eoi
 
         most_recent_school_eoi_training_period(contract_period)
       end

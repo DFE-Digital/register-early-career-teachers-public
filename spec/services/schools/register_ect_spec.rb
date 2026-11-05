@@ -673,6 +673,7 @@ RSpec.describe Schools::RegisterECT do
 
         context "when school-led training at another school intervenes before registration" do
           let(:started_on) { Date.new(2026, 9, 11) }
+          let(:intermediate_finished_on) { Date.new(2026, 8, 31) }
 
           let!(:contract_period) do
             FactoryBot.create(:contract_period, :with_schedules, year: 2026)
@@ -694,7 +695,7 @@ RSpec.describe Schools::RegisterECT do
               teacher:,
               school: intermediate_school,
               started_on: Date.new(2025, 9, 1),
-              finished_on: Date.new(2026, 8, 31)
+              finished_on: intermediate_finished_on
             )
           end
 
@@ -704,7 +705,7 @@ RSpec.describe Schools::RegisterECT do
               :school_led,
               ect_at_school_period: intermediate_ect_period,
               started_on: Date.new(2025, 9, 1),
-              finished_on: Date.new(2026, 8, 31)
+              finished_on: intermediate_finished_on
             )
           end
 
@@ -737,6 +738,37 @@ RSpec.describe Schools::RegisterECT do
 
             expect(new_training_period.schedule.contract_period)
               .to eq(previous_contract_period)
+          end
+
+          context "when two school-led periods intervene before registration" do
+            let(:intermediate_finished_on) { Date.new(2026, 3, 31) }
+
+            before do
+              second_intermediate_period = FactoryBot.create(
+                :ect_at_school_period,
+                teacher:,
+                school: FactoryBot.create(:school),
+                started_on: Date.new(2026, 4, 1),
+                finished_on: Date.new(2026, 8, 31)
+              )
+
+              FactoryBot.create(
+                :training_period,
+                :school_led,
+                ect_at_school_period: second_intermediate_period,
+                started_on: second_intermediate_period.started_on,
+                finished_on: second_intermediate_period.finished_on
+              )
+            end
+
+            it "retains the earlier provider-led contract period for the EOI and schedule" do
+              service.register!
+
+              training_period = service.ect_at_school_period.training_periods.sole
+
+              expect(training_period.expression_of_interest.contract_period).to eq(previous_contract_period)
+              expect(training_period.schedule.contract_period).to eq(previous_contract_period)
+            end
           end
 
           context "when the new school has a matching partnership in the earlier contract period" do
