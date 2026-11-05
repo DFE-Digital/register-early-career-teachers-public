@@ -424,6 +424,38 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
           end
         end
 
+        context "and only the ECT's previous lead provider is available in the reassigned year" do
+          let(:previous_lead_provider) { FactoryBot.create(:lead_provider) }
+
+          let(:previous_eoi) do
+            FactoryBot.create(
+              :framework_agreement,
+              lead_provider: previous_lead_provider,
+              contract_period: frozen_contract_period
+            )
+          end
+
+          let(:previous_training_period) do
+            reassignable_provider_led_training_period(
+              step,
+              contract_period: frozen_contract_period,
+              expression_of_interest_id: previous_eoi.id
+            )
+          end
+
+          before do
+            FactoryBot.create(
+              :framework_agreement,
+              lead_provider: previous_lead_provider,
+              contract_period: reassigned_contract_period
+            )
+          end
+
+          it "does not offer to reuse the school's last chosen provider" do
+            expect(step.allowed?).to be(false)
+          end
+        end
+
         context "and the school has a recent EOI for a different LP than the last chosen LP" do
           let!(:different_lead_provider) { FactoryBot.create(:lead_provider) }
           let!(:active_different_lp_2024) do
