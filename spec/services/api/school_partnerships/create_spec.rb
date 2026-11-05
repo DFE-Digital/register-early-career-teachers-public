@@ -36,64 +36,50 @@ RSpec.describe API::SchoolPartnerships::Create, type: :model do
     context "when the contract period year does not exist" do
       let(:contract_period_year) { contract_period.year - 1 }
 
-      it "is invalid" do
-        expect(service).to be_invalid
-        expect(service.errors[:contract_period_year]).to eq(["The '#/contract_period_year' you have entered is invalid. Check contract period details and try again."])
-      end
+      it { is_expected.to be_invalid }
+      it { is_expected.to have_api_error(:contract_period_year, "The '#/contract_period_year' you have entered is invalid. Check contract period details and try again.") }
     end
 
     context "when the contract period year is not enabled" do
       let(:contract_period) { FactoryBot.create(:contract_period, :previous, enabled: false) }
 
-      it "is invalid" do
-        expect(service).to be_invalid
-        expect(service.errors[:contract_period_year]).to eq(["You cannot create this partnership as the contract period is closed."])
-      end
+      it { is_expected.to be_invalid }
+      it { is_expected.to have_api_error(:contract_period_year, "You cannot create this partnership as the contract period is closed.") }
     end
 
     context "when the contract period has not started" do
       let(:contract_period) { FactoryBot.create(:contract_period, :next) }
 
-      it "is invalid" do
-        expect(service).to be_invalid
-        expect(service.errors[:contract_period_year]).to eq(["You cannot create a partnership for a future contract period."])
-      end
+      it { is_expected.to be_invalid }
+      it { is_expected.to have_api_error(:contract_period_year, "You cannot create a partnership for a future contract period.") }
     end
 
     context "when the lead provider does not exist" do
       let(:lead_provider_id) { -1 }
 
-      it "is invalid" do
-        expect(service).to be_invalid
-        expect(service.errors[:lead_provider_id]).to eq(["Enter a '#/lead_provider_id'."])
-      end
+      it { is_expected.to be_invalid }
+      it { is_expected.to have_api_error(:lead_provider_id, "Enter a '#/lead_provider_id'.") }
     end
 
     context "when the school does not exist" do
       let(:school_api_id) { SecureRandom.uuid }
 
-      it "is invalid" do
-        expect(service).to be_invalid
-        expect(service.errors[:school_api_id]).to eq(["The '#/school_api_id' you have entered is invalid. Check school details and try again. Contact the DfE for support if you are unable to find the '#/school_api_id'."])
-      end
+      it { is_expected.to be_invalid }
+      it { is_expected.to have_api_error(:school_api_id, "The '#/school_api_id' you have entered is invalid. Check school details and try again. Contact the DfE for support if you are unable to find the '#/school_api_id'.") }
     end
 
     context "when the school is not eligible" do
       let(:school) { FactoryBot.create(:school, :ineligible) }
 
-      it "is invalid" do
-        expect(service).to be_invalid
-        expect(service.errors[:school_api_id]).to eq(["The school you have entered is currently ineligible for DfE funding. Contact the school for more information."])
-      end
+      it { is_expected.to be_invalid }
+      it { is_expected.to have_api_error(:school_api_id, "The school you have entered is currently ineligible for DfE funding. Contact the school for more information.") }
     end
 
     context "when a school partnership already exists for the lead provider and contract period" do
       before { FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:) }
 
-      it "is invalid" do
-        expect(service).to be_invalid
-        expect(service.errors[:school_api_id]).to eq(["You are already in a confirmed partnership with this school for the entered contract period."])
-      end
+      it { is_expected.to be_invalid }
+      it { is_expected.to have_api_error(:school_api_id, "You are already in a confirmed partnership with this school for the entered contract period.") }
     end
 
     context "when a school partnership already exists for the lead provider and a different contract period" do
@@ -123,10 +109,8 @@ RSpec.describe API::SchoolPartnerships::Create, type: :model do
     context "when the delivery partner does not exist" do
       let(:delivery_partner_api_id) { SecureRandom.uuid }
 
-      it "is invalid" do
-        expect(service).to be_invalid
-        expect(service.errors[:delivery_partner_api_id]).to eq(["The '#/delivery_partner_api_id' you have entered is invalid. Check delivery partner details and try again."])
-      end
+      it { is_expected.to be_invalid }
+      it { is_expected.to have_api_error(:delivery_partner_api_id, "The '#/delivery_partner_api_id' you have entered is invalid. Check delivery partner details and try again.") }
     end
 
     context "when a lead provider delivery partnership does not exist" do
@@ -141,10 +125,8 @@ RSpec.describe API::SchoolPartnerships::Create, type: :model do
     context "when the induction programme choice is school_led", :with_metadata do
       before { Metadata::SchoolContractPeriod.bypass_update_restrictions { school.contract_period_metadata.update!(induction_programme_choice: :school_led) } }
 
-      it "is invalid" do
-        expect(service).to be_invalid
-        expect(service.errors[:school_api_id]).to eq(["This school has only registered school-led teachers. Contact the school for more information."])
-      end
+      it { is_expected.to be_invalid }
+      it { is_expected.to have_api_error(:school_api_id, "This school has only registered school-led teachers. Contact the school for more information.") }
     end
 
     context "when the induction programme choice is not_yet_known", :with_metadata do

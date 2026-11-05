@@ -53,6 +53,29 @@
 | lead_provider_id | Enter a '#/lead_provider_id'. | When lead_provider_id is missing. |
 | lead_provider_id | The '#/lead_provider_id' you have entered is invalid. | When lead provider does not exist. |
 
+## SchoolPartnerships → Create
+
+| Attribute | Message | Cause |
+| --- | --- | --- |
+| contract_period_year | The '#/contract_period_year' you have entered is invalid. Check contract period details and try again. | When the contract period year does not exist. |
+| contract_period_year | You cannot create a partnership for a future contract period. | When the contract period has not started. |
+| contract_period_year | You cannot create this partnership as the contract period is closed. | When the contract period year is not enabled. |
+| delivery_partner_api_id | The '#/delivery_partner_api_id' you have entered is invalid. Check delivery partner details and try again. | When the delivery partner does not exist. |
+| lead_provider_id | Enter a '#/lead_provider_id'. | When the lead provider does not exist. |
+| school_api_id | The '#/school_api_id' you have entered is invalid. Check school details and try again. Contact the DfE for support if you are unable to find the '#/school_api_id'. | When the school does not exist. |
+| school_api_id | The school you have entered is currently ineligible for DfE funding. Contact the school for more information. | When the school is not eligible. |
+| school_api_id | This school has only registered school-led teachers. Contact the school for more information. | When the induction programme choice is school_led. |
+| school_api_id | You are already in a confirmed partnership with this school for the entered contract period. | When a school partnership already exists for the lead provider and contract period. |
+
+## SchoolPartnerships → Update
+
+| Attribute | Message | Cause |
+| --- | --- | --- |
+| delivery_partner_api_id | The '#/delivery_partner_api_id' you have entered is invalid. Check delivery partner details and try again. | When the delivery partner does not exist. |
+| delivery_partner_api_id | The entered delivery partner is not recognised to be working in partnership with you for the given contract period. Contact the DfE for more information. | When the lead provider delivery partnership does not exist. |
+| delivery_partner_api_id | We are unable to process this request. You are already confirmed to be in partnership with the entered delivery partner. Contact the DfE for support. | When the change in delivery partner would result in a duplicate school partnership. |
+| school_partnership_id | The '#/school_partnership_id' you have entered is invalid. Check partnership details and try again. | When the school partnership does not exist. |
+
 ## Teachers → ChangeSchedule
 
 | Attribute | Message | Cause |
