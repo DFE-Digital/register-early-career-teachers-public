@@ -1,4 +1,4 @@
-module ProductionLogFilter
+module SemanticLoggerFilter
   def self.call(log)
     name = log.name.to_s
     message = log.message.to_s
