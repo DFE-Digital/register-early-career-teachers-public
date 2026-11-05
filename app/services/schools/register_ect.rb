@@ -194,7 +194,8 @@ module Schools
     end
 
     def training_period_started_on
-      if ContractPeriods::Reassignment.new(training_period: previous_training_period).required?
+      if training_programme == "provider_led" &&
+          ContractPeriods::Reassignment.new(training_period: previous_provider_led_training_period).required?
         [ect_at_school_period.started_on, contract_period.started_on].max
       else
         [ect_at_school_period.started_on, Date.current].max
@@ -204,16 +205,16 @@ module Schools
     def contract_period
       @contract_period ||= ContractPeriods::ForECTRegistration.new(
         started_on:,
-        previous_training_period:
+        previous_training_period: previous_provider_led_training_period
       ).call
     end
 
-    def previous_training_period
-      store&.previous_training_period
+    def previous_provider_led_training_period
+      store&.previous_provider_led_training_period
     end
 
     def preserved_contract_period
-      return nil unless previous_training_period
+      return nil unless previous_provider_led_training_period
       return nil unless contract_period == previous_contract_period
 
       contract_period
@@ -221,14 +222,14 @@ module Schools
 
     def previous_contract_period
       @previous_contract_period ||=
-        previous_training_period.contract_period ||
-        previous_training_period.expression_of_interest&.contract_period ||
-        previous_training_period.school_partnership&.framework_agreement&.contract_period ||
-        previous_training_period.schedule&.contract_period
+        previous_provider_led_training_period.contract_period ||
+        previous_provider_led_training_period.expression_of_interest&.contract_period ||
+        previous_provider_led_training_period.school_partnership&.framework_agreement&.contract_period ||
+        previous_provider_led_training_period.schedule&.contract_period
     end
 
     def schedule
-      previous_training_period&.schedule if preserved_contract_period
+      previous_provider_led_training_period&.schedule if preserved_contract_period
     end
   end
 end
