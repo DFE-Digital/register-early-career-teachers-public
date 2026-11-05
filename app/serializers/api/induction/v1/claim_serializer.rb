@@ -18,7 +18,7 @@ class API::Induction::V1::ClaimSerializer < Blueprinter::Base
   )
 
   schema_field(
-    :started_on,
+    :claimed_from,
     type: :string,
     format: :date,
     example: "2026-01-04",

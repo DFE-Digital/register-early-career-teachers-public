@@ -15,7 +15,7 @@ module API
       private
 
         def pass_params
-          params.expect(pass: %i[finished_on number_of_terms])
+          params.expect(pass: %i[completed_on number_of_terms])
                 .merge(trn: params[:teacher_trn]).to_h.symbolize_keys
         end
       end

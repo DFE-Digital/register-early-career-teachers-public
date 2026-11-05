@@ -1,7 +1,7 @@
 INDUCTION_CLAIM_REQUEST = {
   description: "Claim an early career teacher's induction",
   type: :object,
-  required: %w[date_of_birth started_on training_programme],
+  required: %w[date_of_birth claimed_from training_programme],
   properties: {
     date_of_birth: {
       description: "The teacher's date of birth.",
@@ -9,7 +9,7 @@ INDUCTION_CLAIM_REQUEST = {
       format: :date,
       example: "2001-05-13",
     },
-    started_on: {
+    claimed_from: {
       description: "The date you are claiming the ECT from.",
       type: :string,
       format: :date,

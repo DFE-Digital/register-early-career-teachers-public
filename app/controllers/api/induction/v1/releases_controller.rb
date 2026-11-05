@@ -15,7 +15,7 @@ module API
       private
 
         def release_params
-          params.expect(release: %i[finished_on number_of_terms])
+          params.expect(release: %i[released_on number_of_terms])
                 .merge(trn: params[:teacher_trn]).to_h.symbolize_keys
         end
       end

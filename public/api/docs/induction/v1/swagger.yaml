@@ -238,7 +238,7 @@ components:
       required:
       - trn
       - full_name
-      - started_on
+      - claimed_from
       - training_programme
       properties:
         trn:
@@ -249,7 +249,7 @@ components:
           type: string
           example: John Doe
           description: The teacher's name.
-        started_on:
+        claimed_from:
           type: string
           format: date
           example: '2026-01-04'
@@ -293,7 +293,7 @@ components:
       required:
       - trn
       - full_name
-      - finished_on
+      - completed_on
       - number_of_terms
       - outcome
       properties:
@@ -305,11 +305,11 @@ components:
           type: string
           example: John Doe
           description: The teacher's name.
-        finished_on:
+        completed_on:
           type: string
           format: date
           example: '2026-07-20'
-          description: The date the induction finished.
+          description: The date the ECT completed their induction.
         number_of_terms:
           type: number
           example: 3
@@ -326,7 +326,7 @@ components:
       required:
       - trn
       - full_name
-      - finished_on
+      - released_on
       - number_of_terms
       properties:
         trn:
@@ -337,7 +337,7 @@ components:
           type: string
           example: John Doe
           description: The teacher's name.
-        finished_on:
+        released_on:
           type: string
           format: date
           example: '2026-07-20'
@@ -361,7 +361,7 @@ components:
       type: object
       required:
       - date_of_birth
-      - started_on
+      - claimed_from
       - training_programme
       properties:
         date_of_birth:
@@ -369,7 +369,7 @@ components:
           type: string
           format: date
           example: '2001-05-13'
-        started_on:
+        claimed_from:
           description: The date you are claiming the ECT from.
           type: string
           format: date
@@ -386,11 +386,11 @@ components:
       description: Pass an early career teacher's induction
       type: object
       required:
-      - finished_on
+      - completed_on
       - number_of_terms
       properties:
-        finished_on:
-          description: The date the induction finished.
+        completed_on:
+          description: The date the ECT completed their induction.
           type: string
           format: date
           example: '2026-07-20'
@@ -402,10 +402,10 @@ components:
       description: Release an early career teacher
       type: object
       required:
-      - finished_on
+      - released_on
       - number_of_terms
       properties:
-        finished_on:
+        released_on:
           description: The date the ECT was released.
           type: string
           format: date

@@ -7,7 +7,7 @@ RSpec.describe "Induction claims endpoint", openapi_spec: "induction/v1/swagger.
   let(:authorization) { FactoryBot.create(:api_oauth_authorization, :with_token, appropriate_body_period:) }
   let(:Authorization) { bearer_auth_headers(authorization:).fetch("Authorization") }
   let(:teacher_trn) { "1234567" }
-  let(:claim) { { date_of_birth: "2001-05-13", started_on: 1.month.ago.to_date.iso8601, training_programme: "school_led" } }
+  let(:claim) { { date_of_birth: "2001-05-13", claimed_from: 1.month.ago.to_date.iso8601, training_programme: "school_led" } }
 
   document_api(post: "/api/induction/v1/teachers/{teacher_trn}/claim") do
     described_as "Claim an early career teacher's induction"

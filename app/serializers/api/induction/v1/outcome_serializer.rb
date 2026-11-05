@@ -18,11 +18,11 @@ class API::Induction::V1::OutcomeSerializer < Blueprinter::Base
   )
 
   schema_field(
-    :finished_on,
+    :completed_on,
     type: :string,
     format: :date,
     example: "2026-07-20",
-    description: "The date the induction finished."
+    description: "The date the ECT completed their induction."
   )
 
   schema_field(

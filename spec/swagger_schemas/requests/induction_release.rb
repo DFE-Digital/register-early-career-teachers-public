@@ -1,9 +1,9 @@
 INDUCTION_RELEASE_REQUEST = {
   description: "Release an early career teacher",
   type: :object,
-  required: %w[finished_on number_of_terms],
+  required: %w[released_on number_of_terms],
   properties: {
-    finished_on: {
+    released_on: {
       description: "The date the ECT was released.",
       type: :string,
       format: :date,

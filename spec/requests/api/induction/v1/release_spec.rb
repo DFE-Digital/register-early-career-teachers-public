@@ -4,8 +4,8 @@ RSpec.describe "POST /api/induction/v1/teachers/:trn/release", type: :request do
   let(:teacher) { FactoryBot.create(:teacher, :with_name) }
   let!(:induction_period) { FactoryBot.create(:induction_period, :unfinished, teacher:, appropriate_body_period:) }
   let(:trn) { teacher.trn }
-  let(:finished_on) { 1.day.ago.to_date }
-  let(:params) { { finished_on: finished_on.iso8601, number_of_terms: 3 } }
+  let(:released_on) { 1.day.ago.to_date }
+  let(:params) { { released_on: released_on.iso8601, number_of_terms: 3 } }
 
   def release(params: self.params, headers: bearer_auth_headers(authorization:))
     post("/api/induction/v1/teachers/#{trn}/release", params:, headers:, as: :json)
@@ -18,10 +18,10 @@ RSpec.describe "POST /api/induction/v1/teachers/:trn/release", type: :request do
     expect(response.parsed_body).to eq(
       "trn" => trn,
       "full_name" => "John Keating",
-      "finished_on" => finished_on.iso8601,
+      "released_on" => released_on.iso8601,
       "number_of_terms" => 3.0
     )
-    expect(induction_period.reload).to have_attributes(finished_on:, number_of_terms: 3, outcome: nil)
+    expect(induction_period.reload).to have_attributes(finished_on: released_on, number_of_terms: 3, outcome: nil)
     expect(Event.where(event_type: "induction_period_closed").sole).to have_attributes(
       author_type: "appropriate_body_api",
       author_name: "Golden Leaf Teaching School Hub",
@@ -91,7 +91,7 @@ RSpec.describe "POST /api/induction/v1/teachers/:trn/release", type: :request do
   end
 
   context "when the finish date is in the future" do
-    let(:finished_on) { 1.day.from_now.to_date }
+    let(:released_on) { 1.day.from_now.to_date }
 
     it "is unprocessable" do
       release

@@ -18,7 +18,7 @@ class API::Induction::V1::ReleaseSerializer < Blueprinter::Base
   )
 
   schema_field(
-    :finished_on,
+    :released_on,
     type: :string,
     format: :date,
     example: "2026-07-20",

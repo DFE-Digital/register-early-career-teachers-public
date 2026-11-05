@@ -5,7 +5,7 @@ RSpec.describe "Induction passes endpoint", openapi_spec: "induction/v1/swagger.
   let(:authorization) { FactoryBot.create(:api_oauth_authorization, :with_token, appropriate_body_period:) }
   let(:Authorization) { bearer_auth_headers(authorization:).fetch("Authorization") }
   let(:teacher_trn) { FactoryBot.create(:induction_period, :unfinished, appropriate_body_period:).trn }
-  let(:pass) { { finished_on: 1.day.ago.to_date.iso8601, number_of_terms: 3 } }
+  let(:pass) { { completed_on: 1.day.ago.to_date.iso8601, number_of_terms: 3 } }
 
   document_api(post: "/api/induction/v1/teachers/{teacher_trn}/pass") do
     described_as "Pass an early career teacher's induction"
