@@ -146,7 +146,7 @@ Run the narrowest useful checks while developing, then the relevant CI checks fo
 ```bash
 bundle exec rspec path/to/spec.rb
 bundle exec rubocop path/to/changed_file.rb
-bundle exec rake rswag:spec:swaggerize
+bundle exec rake rswag:specs:swaggerize
 bundle exec rake erd:generate
 git diff --check
 ```
