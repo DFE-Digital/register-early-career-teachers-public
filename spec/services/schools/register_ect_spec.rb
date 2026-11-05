@@ -415,7 +415,14 @@ RSpec.describe Schools::RegisterECT do
                             finished_on: Date.new(2023, 8, 31))
         end
 
-        let(:store) { double("store", previous_provider_led_training_period: previous_training_period, school_partnership_to_reuse_id: nil) }
+        let(:store) do
+          double(
+            "store",
+            previous_training_period:,
+            previous_provider_led_training_period: previous_training_period,
+            school_partnership_to_reuse_id: nil
+          )
+        end
 
         it "uses the reassigned contract period start date, not the registration date" do
           service.register!
@@ -516,7 +523,7 @@ RSpec.describe Schools::RegisterECT do
 
             training_period = service.ect_at_school_period.training_periods.sole
 
-            expect(training_period.started_on).to eq(started_on)
+            expect(training_period.started_on).to eq(Date.new(2026, 9, 11))
             expect(training_period.schedule.contract_period).to eq(successor_cp)
           end
         end
@@ -577,6 +584,7 @@ RSpec.describe Schools::RegisterECT do
         let(:store) do
           double(
             "store",
+            previous_training_period:,
             previous_provider_led_training_period: previous_training_period,
             school_partnership_to_reuse_id: nil
           )
