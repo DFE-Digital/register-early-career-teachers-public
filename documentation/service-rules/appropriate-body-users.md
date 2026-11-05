@@ -196,7 +196,7 @@ Once the teacher has failed they cannot be claimed by another appropriate body.
 * **Number of terms**
   - must be present
   - must have a maximum of 1 decimal place
-  - must be between 0.1 and 16
+  - must be between 0 and 16
 * **Teacher has been notified of failure** (failure only)
   - must be checked
 * **Date teacher was notified of failure** (failure only)
