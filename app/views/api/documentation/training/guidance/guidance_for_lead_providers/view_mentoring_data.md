@@ -1,6 +1,6 @@
 ---
 title: View mentoring data
-sidebar_position: 16
+sidebar_position: 11
 ---
 
 The mentorship endpoints allow lead providers to view mentoring information linked to early career teachers (ECTs) and mentors.
