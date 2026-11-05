@@ -91,8 +91,8 @@ RSpec.describe PopulateAppropriateBodyPeriodDates do
 
         it "starts the period when they were introduced and finishes when they were retired" do
           expect(appropriate_body_period.reload).to have_attributes(
-            started_on: Date.new(2012, 8, 31),
-            finished_on: Date.new(2023, 9, 1)
+            started_on: Date.new(1999, 9, 1),
+            finished_on: Date.new(2024, 8, 1)
           )
         end
 
@@ -112,8 +112,8 @@ RSpec.describe PopulateAppropriateBodyPeriodDates do
 
           it "overwrites the dates" do
             expect(appropriate_body_period.reload).to have_attributes(
-              started_on: Date.new(2012, 8, 31),
-              finished_on: Date.new(2023, 9, 1)
+              started_on: Date.new(1999, 9, 1),
+              finished_on: Date.new(2024, 8, 1)
             )
           end
         end
@@ -156,8 +156,8 @@ RSpec.describe PopulateAppropriateBodyPeriodDates do
 
         expect(teaching_school.reload).to have_attributes(started_on: nil, finished_on: nil)
         expect(local_authority.reload).to have_attributes(
-          started_on: LocalAuthority::APPROPRIATE_BODY[:introduced_on],
-          finished_on: LocalAuthority::APPROPRIATE_BODY[:retired_on]
+          started_on: LocalAuthority::ACTED_AS_APPROPRIATE_BODY_DATES[:introduced_on],
+          finished_on: LocalAuthority::ACTED_AS_APPROPRIATE_BODY_DATES[:retired_on]
         )
         expect(File).to exist(csv_path)
       end
@@ -190,8 +190,8 @@ RSpec.describe PopulateAppropriateBodyPeriodDates do
           "name" => appropriate_body_period.name,
           "body_type" => "local_authority",
           "provisioning_school_urn" => nil,
-          "started_on" => "2012-08-31",
-          "finished_on" => "2023-09-01"
+          "started_on" => "1999-09-01",
+          "finished_on" => "2024-08-01"
         }
       )
     end

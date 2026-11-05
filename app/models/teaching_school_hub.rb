@@ -5,8 +5,7 @@
 # similar.
 #
 class TeachingSchoolHub < ApplicationRecord
-  # Hubs became appropriate bodies in 2021 and are ongoing
-  APPROPRIATE_BODY = {
+  ACTED_AS_APPROPRIATE_BODY_DATES = {
     introduced_on: Date.new(2021, 9, 1),
     retired_on: nil,
   }.freeze

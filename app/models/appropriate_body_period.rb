@@ -92,7 +92,7 @@ private
   end
 
   def no_overlapping_periods_for_same_provisioning_school
-    return if started_on.nil?
+    return if started_on.blank?
 
     overlap_validation(name: "appropriate body")
   end
@@ -100,7 +100,7 @@ private
   def started_on_or_after_local_authority_body_introduced
     return if started_on.blank?
 
-    introduced_on = ::LocalAuthority::APPROPRIATE_BODY[:introduced_on]
+    introduced_on = ::LocalAuthority::ACTED_AS_APPROPRIATE_BODY_DATES[:introduced_on]
     return if started_on >= introduced_on
 
     errors.add(:started_on, "Local authority appropriate bodies must start on or after #{introduced_on.to_fs(:govuk)}")
@@ -109,7 +109,7 @@ private
   def finished_on_or_before_local_authority_body_retired
     return if unfinished?
 
-    retired_on = ::LocalAuthority::APPROPRIATE_BODY[:retired_on]
+    retired_on = ::LocalAuthority::ACTED_AS_APPROPRIATE_BODY_DATES[:retired_on]
     return if finished_on <= retired_on
 
     errors.add(:finished_on, "Local authority appropriate bodies must finish on or before #{retired_on.to_fs(:govuk)}")
@@ -118,7 +118,7 @@ private
   def started_on_or_before_local_authority_body_retired
     return if started_on.blank?
 
-    retired_on = ::LocalAuthority::APPROPRIATE_BODY[:retired_on]
+    retired_on = ::LocalAuthority::ACTED_AS_APPROPRIATE_BODY_DATES[:retired_on]
     return if started_on <= retired_on
 
     errors.add(:started_on, "A local authority appropriate body must start on or before #{retired_on.to_fs(:govuk)}")
@@ -127,7 +127,7 @@ private
   def started_on_or_after_teaching_school_hub_body_introduced
     return if started_on.blank?
 
-    introduced_on = ::TeachingSchoolHub::APPROPRIATE_BODY[:introduced_on]
+    introduced_on = ::TeachingSchoolHub::ACTED_AS_APPROPRIATE_BODY_DATES[:introduced_on]
     return if started_on >= introduced_on
 
     errors.add(:started_on, "Teaching school hub appropriate bodies must start on or after #{introduced_on.to_fs(:govuk)}")
@@ -136,7 +136,7 @@ private
   def started_on_or_after_teaching_school_body_introduced
     return if started_on.blank?
 
-    introduced_on = ::School::APPROPRIATE_BODY[:introduced_on]
+    introduced_on = ::School::ACTED_AS_APPROPRIATE_BODY_DATES[:introduced_on]
     return if started_on >= introduced_on
 
     errors.add(:started_on, "Teaching school appropriate bodies must start on or after #{introduced_on.to_fs(:govuk)}")
@@ -145,7 +145,7 @@ private
   def finished_on_or_before_teaching_school_body_retired
     return if unfinished?
 
-    retired_on = ::School::APPROPRIATE_BODY[:retired_on]
+    retired_on = ::School::ACTED_AS_APPROPRIATE_BODY_DATES[:retired_on]
     return if finished_on <= retired_on
 
     errors.add(:finished_on, "Teaching school appropriate bodies must finish on or before #{retired_on.to_fs(:govuk)}")
@@ -154,7 +154,7 @@ private
   def started_on_or_before_teaching_school_body_retired
     return if started_on.blank?
 
-    retired_on = ::School::APPROPRIATE_BODY[:retired_on]
+    retired_on = ::School::ACTED_AS_APPROPRIATE_BODY_DATES[:retired_on]
     return if started_on <= retired_on
 
     errors.add(:started_on, "Teaching school appropriate bodies must start on or before #{retired_on.to_fs(:govuk)}")

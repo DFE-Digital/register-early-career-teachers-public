@@ -2,10 +2,7 @@ class School < ApplicationRecord
   include GIASHelpers
   include DeclarativeUpdates
 
-  # Teaching Schools acted as appropriate bodies between these dates.
-  # Teaching School Hubs replaced them on 1 September 2021.
-  # Each school started and finished on its own date.
-  APPROPRIATE_BODY = {
+  ACTED_AS_APPROPRIATE_BODY_DATES = {
     introduced_on: Date.new(1999, 9, 1),
     retired_on: Date.new(2021, 8, 31),
   }.freeze

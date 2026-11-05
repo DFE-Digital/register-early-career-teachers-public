@@ -443,8 +443,8 @@ appropriate_body_periods.each do |data|
 
     appropriate_body_period.update!(
       local_authority:,
-      started_on: LocalAuthority::APPROPRIATE_BODY[:introduced_on],
-      finished_on: LocalAuthority::APPROPRIATE_BODY[:retired_on]
+      started_on: LocalAuthority::ACTED_AS_APPROPRIATE_BODY_DATES[:introduced_on],
+      finished_on: LocalAuthority::ACTED_AS_APPROPRIATE_BODY_DATES[:retired_on]
     )
 
   end
@@ -461,7 +461,7 @@ appropriate_body_periods.each do |data|
 
     appropriate_body_period.update!(
       teaching_school_hub:,
-      started_on: TeachingSchoolHub::APPROPRIATE_BODY[:introduced_on],
+      started_on: TeachingSchoolHub::ACTED_AS_APPROPRIATE_BODY_DATES[:introduced_on],
       finished_on: nil
     )
 
@@ -484,8 +484,8 @@ appropriate_body_periods.each do |data|
       end
 
       # 4. Teaching School pre-2021.
-      baseline_started_on = [provisioning_school.opened_on, School::APPROPRIATE_BODY[:introduced_on]].compact.max
-      baseline_finished_on = [provisioning_school.closed_on, School::APPROPRIATE_BODY[:retired_on]].compact.min
+      baseline_started_on = [provisioning_school.opened_on, School::ACTED_AS_APPROPRIATE_BODY_DATES[:introduced_on]].compact.max
+      baseline_finished_on = [provisioning_school.closed_on, School::ACTED_AS_APPROPRIATE_BODY_DATES[:retired_on]].compact.min
 
       FactoryBot.create(:appropriate_body_period, :inactive,
                         name: school_name + " (closed)",
@@ -522,8 +522,8 @@ appropriate_body_periods.each do |data|
   if body_type == "teaching_school"
     appropriate_body_period.update!(
       body_type: "teaching_school",
-      started_on: School::APPROPRIATE_BODY[:introduced_on],
-      finished_on: School::APPROPRIATE_BODY[:retired_on]
+      started_on: School::ACTED_AS_APPROPRIATE_BODY_DATES[:introduced_on],
+      finished_on: School::ACTED_AS_APPROPRIATE_BODY_DATES[:retired_on]
     )
   end
 

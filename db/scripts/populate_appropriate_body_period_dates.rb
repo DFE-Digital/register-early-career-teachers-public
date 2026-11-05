@@ -9,8 +9,8 @@ require "csv"
 class PopulateAppropriateBodyPeriodDates
   BODY_TYPE_DATES = {
     "local_authority" => {
-      started_on: LocalAuthority::APPROPRIATE_BODY[:introduced_on],
-      finished_on: LocalAuthority::APPROPRIATE_BODY[:retired_on]
+      started_on: LocalAuthority::ACTED_AS_APPROPRIATE_BODY_DATES[:introduced_on],
+      finished_on: LocalAuthority::ACTED_AS_APPROPRIATE_BODY_DATES[:retired_on]
     }
   }.freeze
 
@@ -76,8 +76,8 @@ private
     school = appropriate_body_period.provisioning_school
 
     {
-      started_on: [school&.opened_on, School::APPROPRIATE_BODY[:introduced_on]].compact.max,
-      finished_on: [school&.closed_on, School::APPROPRIATE_BODY[:retired_on]].compact.min
+      started_on: [school&.opened_on, School::ACTED_AS_APPROPRIATE_BODY_DATES[:introduced_on]].compact.max,
+      finished_on: [school&.closed_on, School::ACTED_AS_APPROPRIATE_BODY_DATES[:retired_on]].compact.min
     }
   end
 
@@ -89,7 +89,7 @@ private
     school = appropriate_body_period.provisioning_school
 
     {
-      started_on: [school&.opened_on, TeachingSchoolHub::APPROPRIATE_BODY[:introduced_on]].compact.max,
+      started_on: [school&.opened_on, TeachingSchoolHub::ACTED_AS_APPROPRIATE_BODY_DATES[:introduced_on]].compact.max,
       finished_on: nil
     }
   end

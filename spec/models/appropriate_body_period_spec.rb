@@ -248,32 +248,32 @@ describe AppropriateBodyPeriod do
                          finished_on:)
       end
 
-      let(:started_on) { Date.new(2012, 8, 31) }
-      let(:finished_on) { Date.new(2023, 9, 1) }
+      let(:started_on) { Date.new(1999, 9, 1) }
+      let(:finished_on) { Date.new(2024, 8, 1) }
 
       it { is_expected.to be_valid }
 
-      context "when it starts before 31 August 2012" do
-        let(:started_on) { Date.new(2012, 8, 30) }
+      context "when it starts before 1 September 1999" do
+        let(:started_on) { Date.new(1999, 8, 31) }
 
-        it { is_expected.to have_error(:started_on, "Local authority appropriate bodies must start on or after 31 August 2012") }
+        it { is_expected.to have_error(:started_on, "Local authority appropriate bodies must start on or after 1 September 1999") }
       end
 
-      context "when it finishes after 1 September 2023" do
-        let(:finished_on) { Date.new(2023, 9, 2) }
+      context "when it finishes after 1 August 2024" do
+        let(:finished_on) { Date.new(2024, 8, 2) }
 
-        it { is_expected.to have_error(:finished_on, "Local authority appropriate bodies must finish on or before 1 September 2023") }
+        it { is_expected.to have_error(:finished_on, "Local authority appropriate bodies must finish on or before 1 August 2024") }
       end
 
-      context "when it starts after 1 September 2023" do
-        let(:started_on) { Date.new(2023, 9, 2) }
-        let(:finished_on) { Date.new(2023, 9, 2) }
+      context "when it starts after 1 August 2024" do
+        let(:started_on) { Date.new(2024, 8, 2) }
+        let(:finished_on) { Date.new(2024, 8, 2) }
 
-        it { is_expected.to have_error(:started_on, "A local authority appropriate body must start on or before 1 September 2023") }
+        it { is_expected.to have_error(:started_on, "A local authority appropriate body must start on or before 1 August 2024") }
       end
 
-      context "when it starts on 1 September 2023" do
-        let(:started_on) { Date.new(2023, 9, 1) }
+      context "when it starts on 1 August 2024" do
+        let(:started_on) { Date.new(2024, 8, 1) }
 
         it { is_expected.to be_valid }
       end

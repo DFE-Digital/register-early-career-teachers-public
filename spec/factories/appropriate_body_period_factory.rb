@@ -47,7 +47,7 @@ FactoryBot.define do
     trait :teaching_school_hub do
       body_type { "teaching_school_hub" }
       association :provisioning_school, factory: :school
-      started_on { TeachingSchoolHub::APPROPRIATE_BODY[:introduced_on] }
+      started_on { TeachingSchoolHub::ACTED_AS_APPROPRIATE_BODY_DATES[:introduced_on] }
       finished_on { nil }
     end
 
@@ -55,15 +55,15 @@ FactoryBot.define do
       inactive
       body_type { "teaching_school" }
       association :provisioning_school, factory: :school
-      started_on { School::APPROPRIATE_BODY[:introduced_on] }
-      finished_on { School::APPROPRIATE_BODY[:retired_on] }
+      started_on { School::ACTED_AS_APPROPRIATE_BODY_DATES[:introduced_on] }
+      finished_on { School::ACTED_AS_APPROPRIATE_BODY_DATES[:retired_on] }
     end
 
     trait :local_authority do
       inactive
       body_type { "local_authority" }
-      started_on { LocalAuthority::APPROPRIATE_BODY[:introduced_on] }
-      finished_on { LocalAuthority::APPROPRIATE_BODY[:retired_on] }
+      started_on { LocalAuthority::ACTED_AS_APPROPRIATE_BODY_DATES[:introduced_on] }
+      finished_on { LocalAuthority::ACTED_AS_APPROPRIATE_BODY_DATES[:retired_on] }
     end
   end
 end
