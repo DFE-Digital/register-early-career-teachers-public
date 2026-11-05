@@ -1,5 +1,4 @@
 require "active_support/core_ext/integer/time"
-require Rails.root.join("lib/production_log_filter")
 
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
@@ -68,7 +67,7 @@ Rails.application.configure do
     appenders.add(
       io: $stdout,
       formatter: :json,
-      filter: ->(log) { ProductionLogFilter.call(log) }
+      filter: ->(log) { SemanticLoggerFilter.call(log) }
     )
   end
   config.active_record.logger = nil # Don't log SQL
