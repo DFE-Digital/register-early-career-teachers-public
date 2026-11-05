@@ -8,6 +8,18 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::Wizard do
 
   before { store.trn = "2345678" }
 
+  shared_examples "it does not replace the TRN" do
+    it "rejects replacement without storing success details" do
+      old_trn = teacher.trn
+
+      expect { replace_trn }.to raise_error(expected_error)
+
+      expect(teacher.reload.trn).to eq(old_trn)
+      expect(store.old_trn).to be_nil
+      expect(Teachers::SyncTeacherWithTRSJob).not_to have_been_enqueued
+    end
+  end
+
   it "replaces the TRN and stores the original TRN" do
     old_trn = teacher.trn
 
@@ -26,43 +38,30 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::Wizard do
       teacher.update!(trs_response: "ok")
     end
 
-    it "refreshes the source under the lock and rejects replacement" do
-      expect { replace_trn }.to raise_error(described_class::TeacherNotDeactivatedError)
+    let(:expected_error) { described_class::TeacherNotDeactivatedError }
 
-      expect(store.old_trn).to be_nil
-      expect(Teachers::SyncTeacherWithTRSJob).not_to have_been_enqueued
-    end
+    include_examples "it does not replace the TRN"
   end
 
   context "when the replacement is ineligible" do
-    shared_examples "an ineligible replacement" do
-      it "rejects replacement without storing success details" do
-        old_trn = teacher.trn
-
-        expect { replace_trn }.to raise_error(described_class::IneligibleForReplacementError)
-
-        expect(teacher.reload.trn).to eq(old_trn)
-        expect(store.old_trn).to be_nil
-        expect(Teachers::SyncTeacherWithTRSJob).not_to have_been_enqueued
-      end
-    end
+    let(:expected_error) { described_class::IneligibleForReplacementError }
 
     context "when the replacement TRN is unchanged" do
       before { store.trn = teacher.trn }
 
-      include_examples "an ineligible replacement"
+      include_examples "it does not replace the TRN"
     end
 
     context "when another teacher redirects to the replacement TRN" do
       before { FactoryBot.create(:teacher, :merged_in_trs, trs_redirected_to: store.trn) }
 
-      include_examples "an ineligible replacement"
+      include_examples "it does not replace the TRN"
     end
 
     context "when the replacement TRN belongs to another teacher" do
       before { FactoryBot.create(:teacher, trn: store.trn) }
 
-      include_examples "an ineligible replacement"
+      include_examples "it does not replace the TRN"
     end
   end
 
@@ -74,11 +73,23 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::Wizard do
       allow(service).to receive(:replace!).and_raise(ActiveRecord::RecordInvalid)
     end
 
-    it "does not store success details" do
-      expect { replace_trn }.to raise_error(ActiveRecord::RecordInvalid)
+    let(:expected_error) { ActiveRecord::RecordInvalid }
 
-      expect(store.old_trn).to be_nil
-      expect(Teachers::SyncTeacherWithTRSJob).not_to have_been_enqueued
+    include_examples "it does not replace the TRN"
+  end
+
+  context "when eligibility raises a resolver error" do
+    before do
+      eligibility = instance_double(Teachers::TRN::Eligibility)
+      allow(Teachers::TRN::Eligibility).to receive(:new)
+        .with(teacher: wizard.teacher, new_trn: store.trn)
+        .and_return(eligibility)
+      allow(eligibility).to receive(:can_be_replaced?)
+        .and_raise(Teachers::TRN::Resolver::ProposedTRNError)
     end
+
+    let(:expected_error) { described_class::ProposedTRNChangedError }
+
+    include_examples "it does not replace the TRN"
   end
 end

@@ -7,7 +7,7 @@ module Admin
 
       rescue_from Admin::Teachers::ChangeTRNWizard::Wizard::TeacherNotDeactivatedError,
                   with: :redirect_teacher_not_deactivated
-      rescue_from Admin::Teachers::ChangeTRNWizard::ConfirmStep::ProposedTRNChangedError,
+      rescue_from Admin::Teachers::ChangeTRNWizard::Wizard::ProposedTRNChangedError,
                   with: :redirect_proposed_trn_changed
 
       rescue_from Admin::Teachers::ChangeTRNWizard::Wizard::IneligibleForReplacementError,

@@ -35,11 +35,7 @@ module Teachers
 
       attr_reader :teacher, :author
 
-      def new_trn
-        return teacher.trs_redirected_to if teacher.trs_response_permanent_redirect?
-
-        @new_trn
-      end
+      delegate :new_trn, to: :resolver
 
       def destination
         @destination ||= Teacher.find_by_trn(new_trn)
@@ -47,6 +43,10 @@ module Teachers
 
       def eligibility
         Teachers::TRN::Eligibility.new(teacher:, new_trn:)
+      end
+
+      def resolver
+        @resolver ||= Teachers::TRN::Resolver.new(teacher:, proposed_trn: @new_trn)
       end
 
       def overlapping_mentor_at_school_periods

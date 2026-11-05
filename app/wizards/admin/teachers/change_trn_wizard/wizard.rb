@@ -4,6 +4,7 @@ module Admin
       class Wizard < ApplicationWizard
         class TeacherNotDeactivatedError < StandardError; end
         class IneligibleForReplacementError < StandardError; end
+        class ProposedTRNChangedError < StandardError; end
 
         attr_accessor :store, :teacher_id, :author
 
@@ -49,6 +50,8 @@ module Admin
 
             store.old_trn = old_trn
           end
+        rescue ::Teachers::TRN::Resolver::ProposedTRNError
+          raise ProposedTRNChangedError
         end
 
         def allowed_step_path

@@ -645,26 +645,6 @@ RSpec.describe Teachers::TRN::Merge do
       end
     end
 
-    context "when a different explicit TRN is also supplied" do
-      subject(:service) { described_class.new(teacher:, new_trn: "8888888") }
-
-      it "uses the trs_redirected_to value for the merge destination" do
-        merge!
-
-        expect(ect_at_school_period.reload.teacher).to eq(destination)
-        expect(mentor_at_school_period.reload.teacher).to eq(destination)
-      end
-
-      it "records a merge event that references the redirected destination TRN" do
-        merge!
-
-        event = Event.where(event_type: "teacher_merged").sole
-
-        expect(event.body).to include("TRN #{destination.trn}")
-        expect(event.body).not_to include("TRN 8888888")
-      end
-    end
-
     context "when merging an overlapping period fails" do
       let(:expected_error) { Teachers::TRN::TrainingPeriods::Merge::CannotMergePeriods }
 
@@ -732,6 +712,20 @@ RSpec.describe Teachers::TRN::Merge do
 
       before do
         allow(teacher).to receive(:destroy!).and_raise(ActiveRecord::InvalidForeignKey)
+      end
+
+      it_behaves_like "a rollback on merge failure"
+    end
+
+    context "when the teacher is permanently redirected but trs_redirected_to is missing" do
+      let(:expected_error) { Teachers::TRN::Resolver::ProposedTRNError }
+      let(:teacher) do
+        FactoryBot.create(
+          :teacher,
+          :merged_in_trs,
+          trn: source_trn,
+          trs_redirected_to: nil
+        )
       end
 
       it_behaves_like "a rollback on merge failure"

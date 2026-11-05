@@ -27,26 +27,16 @@ module Teachers
 
       attr_reader :teacher
 
-      def new_trn
-        return teacher.trs_redirected_to if teacher.trs_response_permanent_redirect?
-
-        @new_trn
-      end
+      delegate :new_trn, to: :resolver
 
       def destination
         @destination ||= Teacher.find_by_trn(new_trn)
       end
 
       def trn_correction_requested?
-        deactivated_and_supplied_trn? || redirected_and_persisted_trn?
-      end
+        return false unless teacher.trs_response_permanent_redirect? || teacher.trs_response_gone?
 
-      def deactivated_and_supplied_trn?
-        teacher.trs_response_gone? && @new_trn.present?
-      end
-
-      def redirected_and_persisted_trn?
-        teacher.trs_response_permanent_redirect? && teacher.trs_redirected_to.present?
+        new_trn.present?
       end
 
       def source_and_destination_are_different?
@@ -93,6 +83,10 @@ module Teachers
         return [] if periods.blank?
 
         periods.joins(relationship).distinct.pluck(:year)
+      end
+
+      def resolver
+        @resolver ||= Teachers::TRN::Resolver.new(teacher:, proposed_trn: @new_trn)
       end
     end
   end
