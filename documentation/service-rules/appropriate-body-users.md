@@ -16,35 +16,22 @@ Appropriate bodies are responsible for informing DfE when:
 * an early career teacher completes their induction
 * extensions are added to an early career teacher's induction
 
-## How the service works for appropriate bodies
-
-1. [Signing in](#signing-in)
-2. [Viewing early career teachers](#viewing-early-career-teachers)
-3. [Finding and claiming new early career teachers](#finding-and-claiming-new-early-career-teachers)
-4. [Releasing an early career teacher](#releasing-an-early-career-teacher)
-5. [Passing an early career teacher’s induction](#passing-an-early-career-teacher-39-s-induction)
-6. [Failing an early career teacher's induction](#failing-an-early-career-teacher-39-s-induction)
-7. [Extensions](#extensions)
-8. [Processing multiple ECTs](#processing-multiple-ects)
-
 ## Signing in
 
 Appropriate body users sign in with [DfE Sign-in](https://services.signin.education.gov.uk/), an [OpenID Connect](https://openid.net/developers/how-connect-works/)-based [single sign-on](https://en.wikipedia.org/wiki/Single_sign-on) service used by DfE.
 
-The users, accounts, credentials and links to organisations are managed by DfE Sign-in, the application has no record of them.
+The users, accounts, credentials and links to organisations are managed by DfE Sign-in, the application does not save their account details.
+
+When they make changes in the system, the name and email address of the user is stamped on an event record for auditing purposes.
 
 ### How signing-in works
 
-1. a user visits the service and when they try to access a restricted page (i.e., by clicking the 'Start now' button) they are redirected to the DfE Sign-in login page
-2. they enter their username and password and are then redirected back to the application with an [ID token param](https://jwt.io/) on the URL
-3. we decode this token and it contains information on who the person is and which organisation they're associated with, which looks something like the example below
-4. we check our list of appropriate bodies for an `dfe_sign_in_organisation_id` that matches the `organisation->id`
-5. we then call the [DfE Sign-in API](https://github.com/DFE-Digital/login.dfe.public-api?tab=readme-ov-file#get-roles-for-service) to ensure that the person has the role:
-    * name: `Register ECTs`
-    * code: `AppropriateBodyUser`
-6. if they do, we've confirmed they are belong to the appropriate body and have the right access level, create a user session and redirect them to the appropriate body home page
+1. appropriate body users who visit our service are directed to log in with [DfE Sign-in](https://services.signin.education.gov.uk/)
+2. when they're redirected back to us we receive a `organisation.id` which we use to find their appropriate body by matching it to the `dfe_sign_in_organisation_id` field in our database
+3. we call the [DfE Sign-in API](https://github.com/DFE-Digital/login.dfe.public-api?tab=readme-ov-file#get-roles-for-service) to ensure they have the role `AppropriateBodyUser` in the service `Register ECTs`
+4. if they do they're allowed to access the service
 
-Example user info returned by DfE Sign-in:
+### Example user info returned by DfE Sign-in
 
 ```
 {
@@ -57,63 +44,57 @@ Example user info returned by DfE Sign-in:
   "family_name": "Darling",
   "email": "clarissa@nickelodeon.com"
 }
+
 ```
 
-#### When users aren't linked to an organisation
-#### When users are linked to an organisation but don't have the right role
+### When there is no matching organisation or role
 
+When the `dfe_sign_in_organisation_id` is blank the user will be redirected to the 'access denied' page with [information on how to request access to an organisation](https://github.com/DFE-Digital/register-early-career-teachers-public/blob/5ee0dc66c4a70f0a1bd86ecb329eac2947644550/app/views/pages/access_denied/_without_organisation.md.erb).
+
+When the `dfe_sign_in_organisation_id` is present but the user doesn't have the `AppropriateBodyUser` role, they will be redirected to the 'access denied' page with [information on how to request the right role](https://github.com/DFE-Digital/register-early-career-teachers-public/blob/5ee0dc66c4a70f0a1bd86ecb329eac2947644550/app/views/pages/access_denied/_with_organisation.md.erb).
 
 ## Viewing early career teachers
 
-### The current ECT list
+When an appropriate body user logs in they'll see:
 
-When an appropriate body user logs in they'll see a list of their current ECTs.
+* links to find and claim new ECTs
+* links to record outcomes for existing ECTs
+* a link to check data submitted by schools
+* a list of current ECTs claimed by the appropriate body, searchable by name or TRN
 
-They can search the list by name and TRN. When 7 digit numbers are detected in the search string they will take precedence over any text.
+## Claiming early career teachers
 
-They can also [find and claim](#claiming-a-new-early-career-teacher) new ECTs by clicking the 'Find and claim an ECT' button.
+Appropriate bodies must inform us they are taking responsibility for an early career teacher's induction by claiming them.
 
-Clicking on 'Show' in an ECT's summary card will take users to the [the view page for that ECT](#the-current-ect-view).
+Claiming an early career teacher opens an `InductionPeriod` for that teacher. Teachers can only have one induction period at a time.
 
-### The current ECT view
+There are two ways to claim an early career teacher:
 
-The view page shows details about the selected ECT, including their:
+### Claiming a single early career teacher
 
-* TRN
-* name
-* extensions
-* initial teacher training record summary
-* a list of their induction periods
+The claim process is started by clicking 'Find and claim a new ECT' from the appropriate body home page.
 
-From this page the user can:
+It has 3 steps:
 
-* [pass their induction](#passing-an-early-career-teacher-39-s-induction)
-* [fail their induction](#failing-an-early-career-teacher-39-s-induction)
-* [release the ECT](#releasing-an-early-career-teacher)
+1. finding the teacher's record using their TRN and date of birth
+2. confirming the teacher's details are correct
+3. entering the date the appropriate body took responsibility for the teacher's induction and the induction programme type
 
-## Finding and claiming new early career teachers
+### Claiming multiple early career teachers at once
 
-When an appropriate body takes over the care of a early career teacher they inform us by registering them.
+Lots of appropriate bodies use third party software to manage their ECTs. They can avoid having to claim their ECTs one at a time by uploading a CSV.
 
-The registration process takes place with the following steps:
+The process is started by clicking 'Claim multiple ECTs' from the appropriate body home page.
 
-1. Identifying the teacher using the [TRS API](https://preprod.teacher-qualifications-api.education.gov.uk/swagger/index.html) using the following pieces of information:
-    * [TRN](https://www.gov.uk/guidance/teacher-reference-number-trn)
-    * Date of birth
-2. Confirming the details returned by the TRS API belong to the person we expect, this page shows the teacher's:
-    * name
-    * date of birth
-    * email address
-    * [QTS](https://www.gov.uk/guidance/qualified-teacher-status-qts) award date
-    * QTS status
-    * induction start date
-    * induction status
-    * [initial teacher training](https://www.gov.uk/government/collections/initial-teacher-training) provider
-    * initial teacher training end date
-    * [alerts](https://www.gov.uk/government/collections/teacher-misconduct)
-3. Asking for more details about the induction:
-    * the date the ECT began their induction with the appropriate body
-    * what induction programme type (Provider-led or School-led) they’re doing
+Before they start they need to have compiled a CSV file using [the provided template](https://github.com/DFE-Digital/register-early-career-teachers-public/blob/main/public/bulk-claims-template.csv?plain=1).
+
+#### Example CSV
+
+```csv
+"TRN","Date of birth","Induction programme","Induction period start date"
+1234567,"1990-01-01","provider_led","2024-09-01"
+2345678,"2001-02-02","school_led","2025-10-01"
+```
 
 ### Validation
 
@@ -123,13 +104,16 @@ The registration process takes place with the following steps:
 * **Date of birth**
   - must be present
   - the teacher must be between 18 and 100 years old
-* **Induction start date**
+* **Induction period start date**
   - must be present
-  - must be after the QTS award date
+  - must be after the teacher's QTS award date
 * **Induction programme**
-  - must be either `provider_led` or `school_led` (enforced in the database)
+  - must be present
+  - must be either `provider_led` or `school_led`
 
-### Early exits
+### Invalid claims
+
+Some ECTs cannot be claimed. The reasons are:
 
 #### Induction already completed
 
@@ -151,126 +135,77 @@ The first appropriate body must [release them](#releasing-an-early-career-teache
 
 #### Prohibited from teaching
 
-Teachers who have been prohibited from teaching aren't permitted to receive receive induction.
+Teachers who have been prohibited from teaching aren't permitted to receive induction.
 
-## Releasing an early career teacher
+## Passing, failing and releasing early career teachers
 
-When an ECT finishes an induction at an appropriate body before they have fully completed their induction, the appropriate body informs DfE by releasing them.
+All early career teachers that have an ongoing `InductionPeriod` will be listed on the appropriate body's home page.
 
-The release process takes place with the following steps:
+The `InductionPeriod` can be finished in one of three ways:
 
-1. From the view ECT screen click 'Release'
-2. Release the ECT by entering the following information:
-    * The end date of the induction period
-    * The number of terms carried out during the induction period
-3. When submitted the current (open) induction period is updated with the provided end date and number of terms. This closes the induction period and leaves the ECT free to be claimed by another appropriate body.
+1. **release** - the appropriate body is no longer responsible for the teacher's induction
+2. **passing** - the teacher has successfully completed their induction
+3. **failing** - the teacher wasn't successful in their induction (this happens **very rarely**, a few times per year)
 
-### Validation
+All of them follow a similar process and need:
 
-* **Induction period end date**
-  - must be present
-  - must be later than the induction start date
-  - must not overlap with another induction period
-* **Number of terms**
-  - must be present
-  - partial terms must be entered as decimals
-  - value must be between 0 and 16 weeks
+1. the date the induction period ended (the day the teacher was released, passed or failed)
+2. the number of full time equivalent (FTE) terms the teacher completed
 
-## Passing an early career teacher's induction
+### Releasing an early career teacher
 
-Most inductions end successfully. When the induction is complete the appropriate body informs DfE by recording a pass.
+Releasing an early career teacher:
 
-The pass process takes place with the following steps:
+* finishes their current induction period
+* removes them from the appropriate body's list of ECTs
 
-1. From the view ECT screen click 'Pass induction'
-2. Pass the ECT by entering the following information:
-    * The end date of the induction period
-    * The number of terms carried out during the induction period
-3. When submitted the current (open) induction period is updated with the provided end date and number of terms. This closes the induction period. The 'Passed' state and induction completion date are written to the teacher's record via the TRS API.
+It doesn't affect the teacher's record in the TRS.
 
-### Validation
+Once the teacher has been released, they can be claimed by another appropriate body.
 
-* **Induction period end date**
-  - must be present
-  - must be later than the induction start date
-  - must not overlap with another induction period
-* **Number of terms**
-  - must be present
-  - partial terms must be entered as decimals
-  - value must be between 0 and 16 weeks
+### Passing an early career teacher's induction
 
-## Failing an early career teacher's induction
+Marking an early career teacher as having passed their induction:
 
-Some inductions end unsuccessfully. When the induction is complete the appropriate body informs DfE by recording a fail.
+* finishes their current induction period
+* removes them from the appropriate body's list of early career teachers
+* updates their record in the TRS and sets their induction status to `Passed` and their completion date to the current day
 
-The fail process takes place with the following steps:
+Once the teacher has passed they cannot be claimed by another appropriate body.
 
-1. From the view ECT screen click 'Fail induction'
-2. Fail the ECT by entering the following information:
-    * The end date of the induction period
-    * The number of terms carried out during the induction period
-3. When submitted the current (open) induction period is updated with the provided end date and number of terms. This closes the induction period. The 'Failed' state and induction completion date are written to the teacher's record via the TRS API.
+### Failing an early career teacher's induction
+
+Marking an early career teacher as having failed their induction:
+
+* finishes their current induction period
+* removes them from the appropriate body's list of early career teachers
+* updates their record in the TRS and sets their induction status to `Failed` and their completion date to the current day
+
+The failure process has two additional questions:
+
+* has the teacher been notified that they have failed their induction?
+* when was the teacher notified that they have failed their induction?
+
+Once the teacher has failed they cannot be claimed by another appropriate body.
 
 ### Validation
 
 * **Induction period end date**
   - must be present
-  - must be later than the induction start date
-  - must not overlap with another induction period
+  - must be later than the period's start date
 * **Number of terms**
   - must be present
-  - partial terms must be entered as decimals
-  - value must be between 0 and 16 weeks
+  - must have a maximum of 1 decimal place
+  - must be between 0.1 and 16
+* **Teacher has been notified of failure** (failure only)
+  - must be checked
+* **Date teacher was notified of failure** (failure only)
+  - must not be in the future
+  - must be on ot after the induction period end date
 
-## Extensions
+### Releasing or passing multiple early career teachers at once
 
-An ECT's induction must be extended if it is [interrupted by more than 30 working days for ad hoc purposes](/policy/induction-arrangements-for-school-teachers-in-england#para-8-1).
-
-An ECT's induction may be extended if:
-- It is interrupted by statutory maternity, paternity, adoption, shared parental, parental bereavement or carer’s leave
-- The ECT is determined not to have met the Teaching Standards when they were due to complete their induction, and an Appropriate Body makes a decision that an extension to their induction is appropriate.
-
-Appropriate Bodies only need to record the latter type of extension on the service, where an induction has been extended due to the ECT failing to meet the Teaching Standards. ECTs are able to appeal this type of extension.
-
-
-Extensions are recorded at the teacher level, **induction periods are not extended**.
-
-The extension record just holds the number of terms.
-
-The number of terms value refers to full time equivalent (FTE) terms.
-
-The number of extensions must be:
-  - present
-  - a numeric value
-  - between 0.1 and 16 (used to keep the value sensible, not a policy-enforced limit)
-  - 0 or 1 decimal place (1 and 1.5 are valid, 1.25 is not)
-
-There is no validation preventing a teacher having an unlimited number of extensions.
-
-### Viewing extensions
-
-When an ECT has extensions the view ECT screen displays the sum of all extensions and has a 'View' link that takes you to the extensions page.
-
-When an ECT has no extensions the view ECT screen shows 'None' and has a 'Add' link that takes you to the extensions page.
-
-### Adding an extension
-
-1. From the view ECT screen click 'Add' or 'View' in the 'Extensions' row
-2. Click the 'Add extension' button
-3. Enter a number in the 'Number of terms' field. The number must adhere to the validation rules above.
-4. Click 'Add extension'
-
-### Editing an extension
-
-1. From the view ECT screen click 'Add' or 'View' in the 'Extensions' row
-2. Click the 'Edit' link next to the extension you intend to modify
-3. Enter a number in the 'Number of terms' field. The number must adhere to the validation rules above.
-4. Click 'Update extension'
-
-
-## Processing multiple ECTs
-
-Appropriate Bodies can upload files and process multiple claims, outcomes or releases at a time.
+Appropriate Bodies can upload files and process multiple claims, outcomes or releases at a time using a CSV file.
 
 Files must:
 
@@ -282,19 +217,37 @@ Files must:
 - not contain duplicate TRNs
 - satisfy existing validation criteria for induction periods
 
-### Templates
 
-Every column is mandatory.
+#### Example CSV
 
-#### Claims
+```csv
+TRN,Date of birth,Induction period end date,Number of terms,Outcome
+1234567,"1990-01-01","2025-04-04",2,release
+2345678,"2001-02-02","2026-10-10",6,pass
+```
 
-`TRN,Date of birth,Induction programme,Induction period start date`
-
-#### Actions - pass or release outcomes
-
-`TRN,Date of birth,Induction period end date,Number of terms,Outcome`
 
 #### Errors
 
 Optionally, an `Error message` column is supported.
 Unprocessable ECTs can be downloaded as a CSV with actionable feedback on why the task was not completed.
+
+## Extensions
+
+An ECT's induction [must be extended](https://register-ects-service-manual.education.gov.uk/policy/induction-for-early-career-teachers/#para-3-6) when it is interrupted by 30 or more FTE working days in a year.
+
+Extensions are recorded at the teacher level as a number of FTE terms, **induction periods are not extended**.
+
+Extension data is not sent to the TRS.
+
+Once added, extensions can be edited but not deleted.
+
+### Validation
+
+* **Number of FTE terms**
+  - must be present
+  - must be a numeric value
+  - must be between 0.1 and 16 (used to keep the value sensible, not a policy-enforced limit)
+  - must have 0 or 1 decimal place (`1` and `1.5` are valid, `1.25` is not)
+
+There is no limit to the number of extensions a teacher can have.
