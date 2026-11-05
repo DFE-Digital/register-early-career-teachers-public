@@ -14,41 +14,40 @@ sidebar_position: 8
 %>
 
 <p class="govuk-body">
-You can revoke an authorisation if you need to, for example if the access token has been leaked. This is done either via the API 
-or by signing-in to the Register early career teachers service as an appropriate body user.
+You can revoke authorisation, for example if an access token has been leaked. You can do this using the API, or an appropriate body user can do it by signing in to the Register early career teachers service.
 </p>
 
-<h2 class="govuk-heading-m">Revoking access as an appropriate body user</h3>
+<h2 class="govuk-heading-m">Removing access as an appropriate body user</h3>
 
 <p class="govuk-body">
-The <strong>Manage data access</strong> page displays a list of applications that have been given access to the appropriate body’s data.
+The <strong>Manage data access</strong> page lists the applications that have access to send the appropriate body’s data to DfE.
 </p>
 
 <%= image_tag("documentation/authorisation/manage-data-access.png", width: "650px", alt: "Manage data access screen", class: "govuk-!-margin-top-2 govuk-!-margin-bottom-6") %>
 
 <p class="govuk-body">
-To revoke access, click the <strong>Remove access</strong> link alongside the application you wish to revoke.
+To remove an application’s access, select <strong>Remove access</strong> next to it.
 </p>
 
 <p class="govuk-body">
-You will then be prompted to confirm you want to remove access.
+You’ll then be asked to confirm.
 </p>
 
 <%= image_tag("documentation/authorisation/confirm-remove-access.png", width: "650px", alt: "Confirm removal of access screen", class: "govuk-!-margin-top-2 govuk-!-margin-bottom-6") %>
 
 
 <p class="govuk-body">
-Click on the <strong>Confirm remove access</strong> button to remove the application’s access.
+Select <strong>Confirm remove access</strong>.
 </p>
 
 <p class="govuk-body">
-You will shown a confirmation page when this has been done.
+You’ll see a confirmation page.
 </p>
 
 <%= image_tag("documentation/authorisation/access-removed.png", width: "650px", alt: "Access removed screen", class: "govuk-!-margin-top-2 govuk-!-margin-bottom-6") %>
 
 
-<h2 class="govuk-heading-m">Revoking access from the API</h3>
+<h2 class="govuk-heading-m">Revoking an access token using the API</h3>
 
 <p class="govuk-body">
 To revoke an access token, send an HTTP POST request to our revoke endpoint.
@@ -73,7 +72,7 @@ Authorization: Basic Y2xpZW50MTIzOnN1cGVyc2VjcmV0dmFsdWU=
 <%= govuk_warning_text(text: "Do not include your client ID or client secret in the body of the request.") %>
 
 <p class="govuk-body">
-Put the other parameters in the request body, not in additional request headers.
+Put the <code>token</code> parameter in the request body, not in additional request headers.
 </p>
 
 <%= govuk_table do |table|
@@ -105,7 +104,7 @@ curl -X POST <%= @api_base_url %>/oauth/revoke \
 <h3 class="govuk-heading-s">Response</h3>
 
 <p class="govuk-body">
-If the request is successful, we return HTTP status 200 with an empty body. You can no longer use the access token.
+If the request is successful, we return HTTP status 200 with an empty body. The access token will no longer work.
 </p>
 
 
