@@ -13,5 +13,6 @@ RSpec.describe "admin/organisations/index.html.erb" do
     expect(rendered).to have_link("Lead providers", href: admin_lead_providers_path)
     expect(rendered).to have_link("Delivery partners", href: admin_delivery_partners_path)
     expect(rendered).to have_link("Teaching school hubs", href: admin_teaching_school_hubs_path)
+    expect(rendered).to have_link("Induction platforms", href: admin_induction_platforms_path)
   end
 end
