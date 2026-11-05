@@ -4,8 +4,8 @@ RSpec.describe "POST /api/induction/v1/teachers/:trn/pass", type: :request do
   let(:teacher) { FactoryBot.create(:teacher, :with_name) }
   let!(:induction_period) { FactoryBot.create(:induction_period, :unfinished, teacher:, appropriate_body_period:) }
   let(:trn) { teacher.trn }
-  let(:finished_on) { 1.day.ago.to_date }
-  let(:params) { { finished_on: finished_on.iso8601, number_of_terms: 3 } }
+  let(:passed_on) { 1.day.ago.to_date }
+  let(:params) { { passed_on: passed_on.iso8601, number_of_terms: 3 } }
 
   def pass(params: self.params, headers: bearer_auth_headers(authorization:))
     post("/api/induction/v1/teachers/#{trn}/pass", params:, headers:, as: :json)
@@ -18,11 +18,10 @@ RSpec.describe "POST /api/induction/v1/teachers/:trn/pass", type: :request do
     expect(response.parsed_body).to eq(
       "trn" => trn,
       "full_name" => "John Keating",
-      "finished_on" => finished_on.iso8601,
-      "number_of_terms" => 3.0,
-      "outcome" => "pass"
+      "passed_on" => passed_on.iso8601,
+      "number_of_terms" => 3.0
     )
-    expect(induction_period.reload).to have_attributes(finished_on:, number_of_terms: 3, outcome: "pass")
+    expect(induction_period.reload).to have_attributes(finished_on: passed_on, number_of_terms: 3, outcome: "pass")
     expect(Event.where(event_type: "teacher_passes_induction").sole).to have_attributes(
       author_type: "appropriate_body_api",
       author_name: "Golden Leaf Teaching School Hub",
@@ -92,7 +91,7 @@ RSpec.describe "POST /api/induction/v1/teachers/:trn/pass", type: :request do
   end
 
   context "when the finish date is in the future" do
-    let(:finished_on) { 1.day.from_now.to_date }
+    let(:passed_on) { 1.day.from_now.to_date }
 
     it "is unprocessable" do
       pass

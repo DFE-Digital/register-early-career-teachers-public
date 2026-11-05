@@ -15,12 +15,12 @@ module API
         @client = client
       end
 
-      def claim!(trn:, date_of_birth: nil, started_on: nil, training_programme: nil)
+      def claim!(trn:, date_of_birth: nil, claimed_from: nil, training_programme: nil)
         pending_induction_submission = appropriate_body.pending_induction_submissions.build(trn:, date_of_birth:)
 
         import_from_trs!(pending_induction_submission:)
         begin_claim!(pending_induction_submission:)
-        register!(pending_induction_submission:, started_on:, training_programme:)
+        register!(pending_induction_submission:, started_on: claimed_from, training_programme:)
 
         as_claim(Teacher.find_by!(trn:).ongoing_induction_period)
       rescue StandardError => e
@@ -31,16 +31,23 @@ module API
         pending_induction_submission.touch(:delete_at) if pending_induction_submission&.persisted?
       end
 
-      def pass!(trn:, finished_on: nil, number_of_terms: nil)
+      def pass!(trn:, passed_on: nil, number_of_terms: nil)
         teacher = find_claimed_teacher!(trn:)
-        record_pass!(teacher:, finished_on:, number_of_terms:)
+        record_pass!(teacher:, finished_on: passed_on, number_of_terms:)
 
-        as_outcome(teacher.finished_induction_period)
+        as_pass(teacher.finished_induction_period)
       rescue StandardError => e
         rescue_with_handler(e) || raise
       end
 
-      # def release!; end
+      def release!(trn:, released_on: nil, number_of_terms: nil)
+        teacher = find_claimed_teacher!(trn:)
+        record_release!(teacher:, finished_on: released_on, number_of_terms:)
+
+        as_release(teacher.last_induction_period)
+      rescue StandardError => e
+        rescue_with_handler(e) || raise
+      end
 
     private
 
@@ -70,9 +77,25 @@ module API
         record_pass.call(finished_on:, number_of_terms:)
       end
 
-      def as_claim(induction_period) = induction_period.slice(:trn, :full_name, :started_on, :training_programme)
+      def record_release!(teacher:, finished_on:, number_of_terms:)
+        record_release = RecordRelease.new(teacher:, appropriate_body_period:, author:)
+        record_release.call(finished_on:, number_of_terms:)
+      end
 
-      def as_outcome(induction_period) = induction_period.slice(:trn, :full_name, :finished_on, :number_of_terms, :outcome)
+      def as_claim(induction_period)
+        induction_period.slice(:trn, :full_name, :started_on, :training_programme)
+          .symbolize_keys.transform_keys(started_on: :claimed_from)
+      end
+
+      def as_pass(induction_period)
+        induction_period.slice(:trn, :full_name, :finished_on, :number_of_terms)
+          .symbolize_keys.transform_keys(finished_on: :passed_on)
+      end
+
+      def as_release(induction_period)
+        induction_period.slice(:trn, :full_name, :finished_on, :number_of_terms)
+          .symbolize_keys.transform_keys(finished_on: :released_on)
+      end
     end
   end
 end

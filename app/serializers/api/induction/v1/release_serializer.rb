@@ -1,7 +1,7 @@
-class API::Induction::V1::OutcomeSerializer < Blueprinter::Base
+class API::Induction::V1::ReleaseSerializer < Blueprinter::Base
   include SelfDocumentable
 
-  schema description: "The outcome recorded for an early career teacher's induction."
+  schema description: "An appropriate body's release of an early career teacher's induction."
 
   schema_field(
     :trn,
@@ -18,11 +18,11 @@ class API::Induction::V1::OutcomeSerializer < Blueprinter::Base
   )
 
   schema_field(
-    :finished_on,
+    :released_on,
     type: :string,
     format: :date,
     example: "2026-07-20",
-    description: "The date the induction finished."
+    description: "The date the ECT was released."
   )
 
   schema_field(
@@ -30,13 +30,5 @@ class API::Induction::V1::OutcomeSerializer < Blueprinter::Base
     type: :number,
     example: 3,
     description: "The number of terms the ECT completed with you."
-  )
-
-  schema_field(
-    :outcome,
-    type: :string,
-    enum: %w[pass],
-    example: "pass",
-    description: "The outcome of the induction."
   )
 end

@@ -15,7 +15,7 @@ module API
       private
 
         def claim_params
-          params.expect(claim: %i[date_of_birth started_on training_programme])
+          params.expect(claim: %i[date_of_birth claimed_from training_programme])
                 .merge(trn: params[:teacher_trn]).to_h.symbolize_keys
         end
       end
