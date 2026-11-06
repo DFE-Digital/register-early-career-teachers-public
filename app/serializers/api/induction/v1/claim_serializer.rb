@@ -1,5 +1,5 @@
 class API::Induction::V1::ClaimSerializer < Blueprinter::Base
-  include SelfDocumentable
+  include SelfDocumentable::Serializer
 
   schema description: "An appropriate body's claim on an early career teacher's induction."
 

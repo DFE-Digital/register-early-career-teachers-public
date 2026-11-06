@@ -15,7 +15,7 @@ RSpec.describe "Induction releases endpoint", openapi_spec: "induction/v1/swagge
     consumes "application/json"
 
     parameter name: :teacher_trn, in: :path, type: :string, description: "The teacher reference number.", example: "1234567"
-    parameter name: :release, in: :body, schema: { "$ref": "#/components/schemas/ReleaseRequest" }
+    request_body_using API::Induction::V1::ReleaseRequest
 
     responds_with 200, "The early career teacher was released" do
       serialized_using API::Induction::V1::ReleaseSerializer

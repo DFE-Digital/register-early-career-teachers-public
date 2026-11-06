@@ -1,5 +1,5 @@
 class API::Induction::V1::ReleaseSerializer < Blueprinter::Base
-  include SelfDocumentable
+  include SelfDocumentable::Serializer
 
   schema description: "An appropriate body's release of an early career teacher's induction."
 

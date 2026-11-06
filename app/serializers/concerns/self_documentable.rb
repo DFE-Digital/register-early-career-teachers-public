@@ -11,12 +11,8 @@ module SelfDocumentable
       self.openapi_description = description
     end
 
-    def schema_field(name, required: true, **schema, &block)
-      serialized_name = schema.delete(:name) || name
-
-      self.openapi_fields = openapi_fields.merge(serialized_name => { required:, schema: })
-
-      field(name, name: serialized_name, &block)
+    def schema_field(name, required: true, **schema)
+      self.openapi_fields = openapi_fields.merge(name => { required:, schema: })
     end
 
     def openapi_schema
