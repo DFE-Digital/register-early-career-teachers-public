@@ -1,10 +1,10 @@
-RSpec.describe SelfDocumentable do
+RSpec.describe SelfDocumentable::Serializer do
   subject(:self_documentable) { API::Hello::UserSerializer }
 
   let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Golden Leaf Teaching School Hub") }
   let(:authorization) { FactoryBot.create(:api_oauth_authorization, :with_token, appropriate_body_period:) }
 
-  it { is_expected.to include(SelfDocumentable) }
+  it { is_expected.to include(SelfDocumentable::Serializer) }
 
   it "builds an OpenAPI schema from the declared fields" do
     expect(self_documentable.openapi_schema).to eq(

@@ -1,5 +1,5 @@
 class API::Hello::WorldSerializer < Blueprinter::Base
-  include SelfDocumentable
+  include SelfDocumentable::Serializer
 
   schema description: "Test API for unrestricted API."
 

@@ -358,23 +358,23 @@ components:
       - training_programme
       properties:
         date_of_birth:
-          description: The teacher's date of birth.
           type: string
           format: date
           example: '2001-05-13'
+          description: The teacher's date of birth.
         claimed_from:
-          description: The date you are claiming the ECT from.
           type: string
           format: date
           example: '2026-01-04'
+          description: The date you are claiming the ECT from.
         training_programme:
-          description: The training programme under which you are registering this
-            claim.
           type: string
           enum:
           - provider_led
           - school_led
           example: provider_led
+          description: The training programme under which you are registering this
+            claim.
     PassRequest:
       description: Pass an early career teacher's induction
       type: object
@@ -383,14 +383,14 @@ components:
       - number_of_terms
       properties:
         passed_on:
-          description: The date the ECT passed their induction.
           type: string
           format: date
           example: '2026-07-20'
+          description: The date the ECT passed their induction.
         number_of_terms:
-          description: The number of terms the ECT completed with you.
           type: number
           example: 3
+          description: The number of terms the ECT completed with you.
     ReleaseRequest:
       description: Release an early career teacher
       type: object
@@ -399,11 +399,11 @@ components:
       - number_of_terms
       properties:
         released_on:
-          description: The date the ECT was released.
           type: string
           format: date
           example: '2026-07-20'
+          description: The date the ECT was released.
         number_of_terms:
-          description: The number of terms the ECT completed with you.
           type: number
           example: 3
+          description: The number of terms the ECT completed with you.

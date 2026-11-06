@@ -17,7 +17,7 @@ RSpec.describe "Induction claims endpoint", openapi_spec: "induction/v1/swagger.
     consumes "application/json"
 
     parameter name: :teacher_trn, in: :path, type: :string, description: "The teacher reference number.", example: "1234567"
-    parameter name: :claim, in: :body, schema: { "$ref": "#/components/schemas/ClaimRequest" }
+    request_body_using API::Induction::V1::ClaimRequest
 
     responds_with 201, "The early career teacher's induction was claimed" do
       serialized_using API::Induction::V1::ClaimSerializer

@@ -1,5 +1,5 @@
 class API::Induction::V1::ErrorSerializer < Blueprinter::Base
-  include SelfDocumentable
+  include SelfDocumentable::Serializer
 
   schema description: "The errors that stopped the request from succeeding."
 
