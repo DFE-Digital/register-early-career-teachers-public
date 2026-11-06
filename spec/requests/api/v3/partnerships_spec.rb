@@ -74,6 +74,7 @@ RSpec.describe "Partnerships API", :with_touches, type: :request do
   describe "#update" do
     let(:path) { api_v3_partnership_path(resource.api_id) }
     let(:service) { API::SchoolPartnerships::Update }
+    let(:service_action) { :update }
     let(:resource_type) { SchoolPartnership }
     let(:resource) { travel_to(3.days.ago) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) } }
     let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:) }
