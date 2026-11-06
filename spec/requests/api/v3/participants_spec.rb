@@ -65,6 +65,7 @@ RSpec.describe "Participants API", :with_touches, type: :request do
     let(:contract_period) { FactoryBot.create(:contract_period) }
     let(:contract_period_year) { contract_period.year.to_s }
     let(:course_identifier) { "ecf-induction" }
+    let(:service_action) { :change_schedule }
     let(:service_args) do
       {
         lead_provider_id: lead_provider.id,
@@ -139,6 +140,7 @@ RSpec.describe "Participants API", :with_touches, type: :request do
     let(:resource) { travel_to(3.days.ago) { create_resource(framework_agreement:) } }
     let(:reason) { service::DEFERRAL_REASONS.sample }
     let(:course_identifier) { "ecf-induction" }
+    let(:service_action) { :defer }
     let(:service_args) do
       {
         lead_provider_id: lead_provider.id,
@@ -170,6 +172,7 @@ RSpec.describe "Participants API", :with_touches, type: :request do
     let(:resource_type) { Teacher }
     let(:resource) { travel_to(3.days.ago) {  create_resource(framework_agreement:, training_status: :withdrawn) } }
     let(:course_identifier) { "ecf-induction" }
+    let(:service_action) { :resume }
     let(:service_args) do
       {
         lead_provider_id: lead_provider.id,
@@ -200,6 +203,7 @@ RSpec.describe "Participants API", :with_touches, type: :request do
     let(:resource) { travel_to(3.days.ago) { create_resource(framework_agreement:) } }
     let(:reason) { service::WITHDRAWAL_REASONS.sample }
     let(:course_identifier) { "ecf-mentor" }
+    let(:service_action) { :withdraw }
     let(:service_args) do
       {
         lead_provider_id: lead_provider.id,

@@ -81,6 +81,7 @@ RSpec.describe "Partnerships API", :with_touches, type: :request do
       other_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, framework_agreement:)
       other_delivery_partnership.delivery_partner
     end
+    let(:service_action) { :update }
     let(:service_args) do
       {
         school_partnership_id: resource.id,
