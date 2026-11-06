@@ -191,6 +191,29 @@ RSpec.configure do |config|
         },
       },
     },
+    "training/v4/swagger.yaml" => {
+      openapi: "3.0.1",
+      info: {
+        title: "Training API",
+        version: "v4",
+      },
+      paths: {},
+      components: {
+        securitySchemes: {
+          bearer: {
+            type: :http,
+            scheme: :bearer,
+            description: "OAuth 2.0 access token",
+          },
+          client_credentials: {
+            type: :http,
+            scheme: :basic,
+            description: "OAuth 2.0 client ID and secret",
+          },
+        },
+        schemas: {},
+      },
+    },
   }
 
   # Specify the format of the output Swagger file when running 'rswag:specs:swaggerize'.
