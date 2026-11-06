@@ -15,4 +15,10 @@ describe SemanticLoggerFilter do
 
     expect(SemanticLoggerFilter.call(log_entry)).to be(false)
   end
+
+  it "excludes messages containing Solid Queue details from ordinary loggers" do
+    log_entry = log.new(name: "Teacher", message: "SolidQueue job arguments: teacher@example.com")
+
+    expect(SemanticLoggerFilter.call(log_entry)).to be(false)
+  end
 end
