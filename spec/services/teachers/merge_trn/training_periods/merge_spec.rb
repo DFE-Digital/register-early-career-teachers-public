@@ -35,12 +35,22 @@ RSpec.describe Teachers::MergeTRN::TrainingPeriods::Merge do
     it_behaves_like "it merges periods"
 
     context "when there are declarations" do
-      let!(:declaration) { FactoryBot.create(:declaration, training_period: first_period) }
+      let!(:declaration) { FactoryBot.create(:declaration, :no_payment, :started, training_period: first_period) }
 
       it "reassigns the training_period to the destination period's teacher" do
         first_period.reload
 
         expect { service }.to change { declaration.reload.training_period }.to(destination_period)
+      end
+
+      context "when there are multiple, billable declarations of the same type" do
+        let!(:conflicting_declaration) { FactoryBot.create(:declaration, :eligible, :started, training_period: destination_period) }
+
+        it "does not allow merging (this is the correct handling!)" do
+          first_period.reload
+
+          expect { service }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: A billable/changeable declaration with the same type and training period already exists.")
+        end
       end
     end
 

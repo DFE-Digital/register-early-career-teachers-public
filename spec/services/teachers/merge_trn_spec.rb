@@ -149,6 +149,30 @@ RSpec.describe Teachers::MergeTRN do
     subject(:merge!) { service.merge! }
 
     context "when the destination has no overlapping records" do
+      context "when both teachers have billable declarations of the same type" do
+        let!(:ect_declaration) do
+          FactoryBot.create(:declaration, :eligible, :started, training_period: ect_training_period)
+        end
+
+        let!(:destination_declaration) do
+          FactoryBot.create(:declaration, :eligible, :started, training_period: destination_ect_training_period)
+        end
+
+        it "merges successfully but leaves declarations that cannot be marked as payable (this is a bug!)" do
+          merge!
+
+          expect(destination.ect_declarations.billable_or_changeable.where(declaration_type: :started))
+            .to contain_exactly(ect_declaration, destination_declaration)
+          expect(ect_declaration.reload.training_period_id).to eq(ect_training_period.id)
+          expect(destination_declaration.reload.training_period_id).to eq(destination_ect_training_period.id)
+
+          [ect_declaration, destination_declaration].each do |declaration|
+            expect { Declaration.find(declaration.id).mark_as_payable! }
+              .to raise_error(StateMachines::InvalidTransition, /A billable\/changeable declaration with the same type and training period already exists/)
+          end
+        end
+      end
+
       it "moves the at-school periods to the destination teacher" do
         merge!
 
