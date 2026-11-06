@@ -181,6 +181,58 @@ RSpec.describe "Admin::Schools::AddPartnershipWizardController", type: :request 
 
       expect(response).to redirect_to(path_for_step("select-lead-provider"))
     end
+
+    it "requires new selections after changing the contract period" do
+      post path_for_step("select-contract-period"),
+           params: { select_contract_period: { contract_period_year: contract_period.year } }
+
+      post path_for_step("select-lead-provider"),
+           params: { select_lead_provider: { framework_agreement_id: framework_agreement.id } }
+
+      post path_for_step("select-delivery-partner"),
+           params: { select_delivery_partner: { delivery_partner_id: delivery_partner.id } }
+
+      post path_for_step("select-contract-period"),
+           params: { select_contract_period: { contract_period_year: other_contract_period.year } },
+           headers: { "HTTP_REFERER" => path_for_step("check-answers") }
+
+      get path_for_step("check-answers")
+
+      expect(response).to redirect_to(path_for_step("select-lead-provider"))
+    end
+
+    it "requires a new delivery partner after changing the lead provider" do
+      new_framework_agreement = FactoryBot.create(
+        :framework_agreement,
+        contract_period:,
+        lead_provider: other_lead_provider
+      )
+
+      post path_for_step("select-contract-period"),
+           params: { select_contract_period: { contract_period_year: contract_period.year } }
+
+      post path_for_step("select-lead-provider"),
+           params: { select_lead_provider: { framework_agreement_id: framework_agreement.id } }
+
+      post path_for_step("select-delivery-partner"),
+           params: { select_delivery_partner: { delivery_partner_id: delivery_partner.id } }
+
+      post path_for_step("select-lead-provider"),
+           params: { select_lead_provider: { framework_agreement_id: new_framework_agreement.id } },
+           headers: { "HTTP_REFERER" => path_for_step("check-answers") }
+
+      get path_for_step("check-answers")
+
+      expect(response).to redirect_to(path_for_step("select-delivery-partner"))
+    end
+
+    it "redirects to contract period selection when confirming with an empty session" do
+      expect {
+        post path_for_step("check-answers"), params: { check_answers: {} }
+      }.not_to change(SchoolPartnership, :count)
+
+      expect(response).to redirect_to(path_for_step("select-contract-period"))
+    end
   end
 
 private
