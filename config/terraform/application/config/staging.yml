@@ -23,7 +23,7 @@ DFE_SIGN_IN_REQUEST_ORGANISATION_URL: "https://pp-services.signin.education.gov.
 DFE_SIGN_IN_MY_SERVICES_URL: "https://pp-services.signin.education.gov.uk/my-services"
 SERVICE_URL: "https://staging.register-early-career-teachers.education.gov.uk"
 DFE_ANALYTICS_ENABLED: true
-ENABLE_AIRBYTE: false
+ENABLE_AIRBYTE: true
 TRS_API_BASE_URL: "https://preprod.teacher-qualifications-api.education.gov.uk"
 TRS_API_VERSION: "20260120"
 RAILS_ENV: staging
