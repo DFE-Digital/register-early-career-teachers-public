@@ -59,6 +59,7 @@ RSpec.describe "Participants API", :with_touches, type: :request do
   describe "#change_schedule" do
     let(:path) { change_schedule_api_v3_participant_path(resource.api_id) }
     let(:service) { API::Teachers::ChangeSchedule }
+    let(:service_action) { :change_schedule }
     let(:resource_type) { Teacher }
     let!(:resource) { create_resource(framework_agreement:) }
     let(:schedule_identifier) { FactoryBot.create(:schedule, contract_period:).identifier }
@@ -135,6 +136,7 @@ RSpec.describe "Participants API", :with_touches, type: :request do
   describe "#defer" do
     let(:path) { defer_api_v3_participant_path(resource.api_id) }
     let(:service) { API::Teachers::Defer }
+    let(:service_action) { :defer }
     let(:resource_type) { Teacher }
     let(:resource) { travel_to(3.days.ago) { create_resource(framework_agreement:) } }
     let(:reason) { service::DEFERRAL_REASONS.sample }
@@ -167,6 +169,7 @@ RSpec.describe "Participants API", :with_touches, type: :request do
   describe "#resume" do
     let(:path) { resume_api_v3_participant_path(resource.api_id) }
     let(:service) { API::Teachers::Resume }
+    let(:service_action) { :resume }
     let(:resource_type) { Teacher }
     let(:resource) { travel_to(3.days.ago) {  create_resource(framework_agreement:, training_status: :withdrawn) } }
     let(:course_identifier) { "ecf-induction" }
@@ -196,6 +199,7 @@ RSpec.describe "Participants API", :with_touches, type: :request do
   describe "#withdraw" do
     let(:path) { withdraw_api_v3_participant_path(resource.api_id) }
     let(:service) { API::Teachers::Withdraw }
+    let(:service_action) { :withdraw }
     let(:resource_type) { Teacher }
     let(:resource) { travel_to(3.days.ago) { create_resource(framework_agreement:) } }
     let(:reason) { service::WITHDRAWAL_REASONS.sample }

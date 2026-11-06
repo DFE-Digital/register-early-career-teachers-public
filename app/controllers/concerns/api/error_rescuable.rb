@@ -8,9 +8,19 @@ module API
       rescue_from ActionController::BadRequest, with: :bad_request_response
       rescue_from ActionController::ParameterMissing, with: :parameters_missing_response
       rescue_from ArgumentError, with: :bad_request_response
+      rescue_from ActiveRecord::RecordInvalid, with: :unhandled_record_invalid_response
     end
 
   private
+
+    def unhandled_record_invalid_response
+      render json: {
+        errors: [{
+          title: "Unprocessable content",
+          detail: "We could not process this request. Check the details and try again. Contact the DfE for support if the problem persists."
+        }]
+      }, status: :unprocessable_content
+    end
 
     def unpermitted_parameter_response(exception)
       render json: { errors: API::Errors::Response.new(title: "Unpermitted parameters", messages: exception.params).call }, status: :unprocessable_content

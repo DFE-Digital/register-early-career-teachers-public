@@ -190,6 +190,7 @@ RSpec.describe "Declarations API", :with_metadata, type: :request do
       context "when the declaration is in a `voidable` status: #{status}" do
         let(:resource) { travel_to(3.days.from_now) { create_resource(framework_agreement:, declaration_trait: status.to_sym) } }
         let(:service) { API::Declarations::Void }
+        let(:service_action) { :void }
 
         it_behaves_like "a token authenticated endpoint", :put
         it_behaves_like "an API update endpoint", accepts_request_body: false
@@ -200,6 +201,7 @@ RSpec.describe "Declarations API", :with_metadata, type: :request do
     context "when the declaration is in `paid` status" do
       let(:resource) { travel_to(3.days.from_now) { create_resource(framework_agreement:, declaration_trait: :paid) } }
       let(:service) { API::Declarations::Clawback }
+      let(:service_action) { :clawback }
 
       before do
         # Ensure a future dated output fee statement exists for the clawback to appear on.

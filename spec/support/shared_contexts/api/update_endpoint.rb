@@ -29,6 +29,32 @@ RSpec.shared_examples "an API update endpoint" do |example_options|
     expect(response.body).to eq({ errors: [{ title: "attr", detail: "message" }] }.to_json)
   end
 
+  it "returns a 422 response if underlying models have errors" do
+    error = ActiveRecord::RecordInvalid.new(resource_type.new)
+    service_double = instance_double(service, valid?: true)
+    allow(service).to receive(:new).and_return(service_double)
+    allow(service_double).to receive(service_action).and_raise(error)
+
+    authenticated_api_put(path, params:)
+
+    expect(response).to have_http_status(:unprocessable_content)
+    expect(response.content_type).to eql("application/json; charset=utf-8")
+    expect(response.body).to eq({
+      errors: [{
+        title: "Unprocessable content",
+        detail: "We could not process this request. Check the details and try again. Contact the DfE for support if the problem persists."
+      }]
+    }.to_json)
+  end
+
+  it "does not rescue other service errors" do
+    service_double = instance_double(service, valid?: true)
+    allow(service).to receive(:new).and_return(service_double)
+    allow(service_double).to receive(service_action).and_raise(ActiveRecord::RecordNotUnique)
+
+    expect { authenticated_api_put(path, params:) }.to raise_error(ActiveRecord::RecordNotUnique)
+  end
+
   unless example_options && example_options[:accepts_request_body] == false
     it "returns a 400 response if the request body is malformed" do
       authenticated_api_put(path, params: { not_a_valid: :body })
