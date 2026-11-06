@@ -9,3 +9,12 @@
 <%= render 'admin/teachers/navigation', navigation_items: @navigation_items %>
 
 <%= render Admin::Teachers::OverviewSummaryComponent.new(teacher: @teacher) %>
+
+<% if @teacher.trs_response_gone? && current_user.can_manage_users? %>
+  <p class="govuk-body">
+    <%= govuk_link_to(
+      "Change the TRN for this deactivated record",
+      admin_teacher_change_trn_wizard_enter_trn_path(@teacher)
+    ) %>
+  </p>
+<% end %>

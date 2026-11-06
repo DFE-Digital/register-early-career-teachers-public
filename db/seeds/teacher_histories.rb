@@ -252,3 +252,11 @@ _jodie_comer = teacher(next_trn, "Jodie Comer") do
     mentorship_period(hugh_grant, "2026-09-01")
   end
 end
+
+_saoirse_ronan = teacher(next_trn, "Saoirse Ronan", :deactivated_in_trs) do
+  description("Deactivated TRN: admin can replace it with an unused active TRN")
+
+  ect_at_school_period(abbey_grove_school, "2026-09-01") do
+    school_led_training_period("2026-09-01")
+  end
+end

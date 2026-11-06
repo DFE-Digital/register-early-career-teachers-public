@@ -79,6 +79,12 @@ namespace :admin do
         concerns :wizardable, wizard: Admin::Teachers::UndoRegistrationWizard
       end
 
+      namespace :change_trn_wizard,
+                path: "change-trn",
+                controller: "/admin/teachers/change_trn_wizard" do
+        concerns :wizardable, wizard: Admin::Teachers::ChangeTRNWizard
+      end
+
       resources :training_periods, only: [], path: "training-periods" do
         resource :partnership, only: %i[new create], controller: :training_partnerships do
           get :no_other_partnerships, path: "no-other-partnerships"
