@@ -60,17 +60,17 @@ Rails.application.configure do
   config.log_tags = [:request_id]
   config.semantic_logger.application = "" # No need to send the application name as logstash reads it from Cloud Foundry log tags
   config.semantic_logger.backtrace_level = :fatal # Only attach backtraces at :fatal so error/warn lines stay small enough for Logit ingestion
-  config.rails_semantic_logger.add_file_appender = false # Don't log to file, only STDOUT
-  config.rails_semantic_logger.filter = proc do |log|
-    # Ignore DfE Analytic events to reduce log output
-    analytics_event = !(log.name == "DfE::Analytics::SendEvents" || log.message&.include?("DfE::Analytics::SendEvents"))
-    # Job arguments often contain PII
-    solid_queue_job = log.message&.include?("SolidQueue")
-
-    analytics_event || solid_queue_job
+  # Declaring a custom appender replaces the default file appender. Filtering now
+  # applies to STDOUT; analytics and Solid Queue messages are excluded because
+  # job messages can contain PII (the previous filter did not affect STDOUT).
+  config.rails_semantic_logger.appenders do |appenders|
+    appenders.add(
+      io: $stdout,
+      formatter: :json,
+      filter: ->(log) { SemanticLoggerFilter.call(log) }
+    )
   end
   config.active_record.logger = nil # Don't log SQL
-  config.semantic_logger.add_appender(io: $stdout, formatter: :json) # Log to STDOUT JSON-formatted logs
 
   # "info" includes generic and useful information about system operation, but avoids logging too much
   # information to avoid inadvertent exposure of personally identifiable information (PII). If you
