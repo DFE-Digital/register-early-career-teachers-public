@@ -14,10 +14,7 @@ module API
 
       private
 
-        def pass_params
-          params.expect(pass: %i[passed_on number_of_terms])
-                .merge(trn: params[:teacher_trn]).to_h.symbolize_keys
-        end
+        def pass_params = API::Induction::V1::PassRequest.parse(params)
       end
     end
   end

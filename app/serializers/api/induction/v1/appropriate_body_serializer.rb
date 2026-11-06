@@ -1,5 +1,5 @@
 class API::Induction::V1::AppropriateBodySerializer < Blueprinter::Base
-  include SelfDocumentable
+  include SelfDocumentable::Serializer
 
   schema description: "An appropriate body."
 

@@ -1,5 +1,5 @@
 class API::Hello::ClientSerializer < Blueprinter::Base
-  include SelfDocumentable
+  include SelfDocumentable::Serializer
 
   schema description: "Test API for APIs restricted by the client credentials."
 

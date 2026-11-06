@@ -1,5 +1,5 @@
 class API::Induction::V1::PassSerializer < Blueprinter::Base
-  include SelfDocumentable
+  include SelfDocumentable::Serializer
 
   schema description: "An appropriate body's pass of an early career teacher's induction."
 

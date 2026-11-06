@@ -37,6 +37,10 @@ module APIDocumentationHelpers
     end
   end
 
+  def request_body_using(request)
+    parameter name: request.param_key, in: :body, schema: request.openapi_ref
+  end
+
   def serialized_using(serializer, include_namespace: false)
     schema serializer.openapi_ref(include_namespace:)
   end

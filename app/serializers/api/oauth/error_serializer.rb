@@ -1,5 +1,5 @@
 class API::OAuth::ErrorSerializer < Blueprinter::Base
-  include SelfDocumentable
+  include SelfDocumentable::Serializer
 
   schema description: "An OAuth 2.0 error."
 

@@ -15,7 +15,7 @@ RSpec.describe "Induction passes endpoint", openapi_spec: "induction/v1/swagger.
     consumes "application/json"
 
     parameter name: :teacher_trn, in: :path, type: :string, description: "The teacher reference number.", example: "1234567"
-    parameter name: :pass, in: :body, schema: { "$ref": "#/components/schemas/PassRequest" }
+    request_body_using API::Induction::V1::PassRequest
 
     responds_with 200, "The early career teacher's induction was passed" do
       serialized_using API::Induction::V1::PassSerializer
