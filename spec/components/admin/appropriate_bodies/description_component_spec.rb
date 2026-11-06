@@ -1,7 +1,7 @@
 RSpec.describe Admin::AppropriateBodies::DescriptionComponent, type: :component do
   subject(:component) { described_class.new(appropriate_body_period:) }
 
-  let(:teaching_school_hub) { FactoryBot.create(:teaching_school_hub, name: "Star Teaching School Hub") }
+  let(:teaching_school_hub) { FactoryBot.create(:teaching_school_hub, name: "Acme TSH") }
   let(:provisioning_school) do
     FactoryBot.create(
       :school,
@@ -38,11 +38,11 @@ RSpec.describe Admin::AppropriateBodies::DescriptionComponent, type: :component 
     end
 
     context "when a custom trading name is in use" do
-      let(:name) { "Star Institute" }
+      let(:name) { "Acme TSH East" }
 
       it "leaves the trading name to the template" do
-        expect(component.description).not_to include("Star Institute")
-        expect(component.description).not_to include("Star Teaching School Hub")
+        expect(component.description).not_to include("Acme TSH East")
+        expect(component.description).not_to include("Acme TSH")
       end
     end
 
@@ -162,10 +162,12 @@ RSpec.describe Admin::AppropriateBodies::DescriptionComponent, type: :component 
 
     context "when the hub has more than one appropriate body" do
       before do
-        FactoryBot.create(:appropriate_body_period, :teaching_school_hub,
-                          teaching_school_hub:,
-                          provisioning_school:,
-                          name: "Second Period")
+        # A hub with more than one active period now requires a name on each. This row predates that
+        # rule, and the component still has to render it, so write it without validations.
+        FactoryBot.build(:appropriate_body_period, :teaching_school_hub,
+                         teaching_school_hub:,
+                         provisioning_school:,
+                         name: "Acme TSH West").save!(validate: false)
 
         render_inline(component)
       end
@@ -182,11 +184,18 @@ RSpec.describe Admin::AppropriateBodies::DescriptionComponent, type: :component 
     context "when the hub has more than one appropriate body but this one has no name of its own" do
       let(:name) { nil }
 
+      # A hub with more than one active period now requires a name on each. This row predates that
+      # rule, and the component still has to render it, so write it without validations.
+      let(:appropriate_body_period) do
+        FactoryBot.build(:appropriate_body_period, teaching_school_hub:, provisioning_school:, name:)
+                  .tap { |period| period.save!(validate: false) }
+      end
+
       before do
         FactoryBot.create(:appropriate_body_period, :teaching_school_hub,
                           teaching_school_hub:,
                           provisioning_school:,
-                          name: "Second Period")
+                          name: "Acme TSH West")
 
         render_inline(component)
       end

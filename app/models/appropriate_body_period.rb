@@ -1,7 +1,6 @@
 # An AppropriateBodyPeriod is not "the appropriate body". It is the
 # time-bound pairing of a parent organisation (TeachingSchoolHub,
-# NationalBody, LocalAuthority, or a legacy TeachingSchool linked through a
-# School foreign key), a provisioning lead school, and the regions awarded to
+# NationalBody, LocalAuthority, or a legacy teaching School), a provisioning lead school, and the regions awarded to
 # that pairing for a period of time.
 #
 # The parent entity carries the canonical name. This model carries the DfE
@@ -14,7 +13,6 @@
 # trading name to separate concurrent periods, or the historic name of a
 # Teaching School, whose school record has since been renamed.
 #
-# TODO: make #name nullable; stop using it as a canonical lookup key.
 class AppropriateBodyPeriod < ApplicationRecord
   # Enums
   enum :body_type, {
@@ -57,6 +55,12 @@ class AppropriateBodyPeriod < ApplicationRecord
   # Scopes
   scope :active, -> { where.not(dfe_sign_in_organisation_id: nil) }
   scope :inactive, -> { where(dfe_sign_in_organisation_id: nil) }
+  scope :overlapping_in_the_same_teaching_school_hub, ->(period) {
+    teaching_school_hub
+      .where(teaching_school_hub_id: period.teaching_school_hub_id)
+      .where.not(id: period.id)
+      .overlapping_with(period)
+  }
 
   # Normalizations
   normalizes :name, with: -> { it.squish }
@@ -74,6 +78,7 @@ class AppropriateBodyPeriod < ApplicationRecord
 
   # National Body
   with_options if: :national? do
+    validates :name, uniqueness: true, allow_nil: true
     validates :national_body, presence: true
     validates :provisioning_school, absence: true
     validates :teaching_school_hub, absence: true
@@ -87,10 +92,12 @@ class AppropriateBodyPeriod < ApplicationRecord
     validates :national_body, absence: true
     validates :local_authority, absence: true
     validate :started_on_or_after_teaching_school_hub_body_introduced
+    validate :name_is_present_and_unique_within_the_teaching_school_hub
   end
 
   # Teaching School
   with_options if: :teaching_school? do
+    validates :name, uniqueness: true, allow_nil: true
     validates :provisioning_school, presence: true
     validates :national_body, absence: true
     validates :teaching_school_hub, absence: true
@@ -103,6 +110,7 @@ class AppropriateBodyPeriod < ApplicationRecord
 
   # Local Authority
   with_options if: :local_authority? do
+    validates :name, uniqueness: true, allow_nil: true
     validates :local_authority, presence: true
     validates :national_body, absence: true
     validates :teaching_school_hub, absence: true
@@ -126,6 +134,22 @@ class AppropriateBodyPeriod < ApplicationRecord
   def active? = dfe_sign_in_organisation_id.present?
 
 private
+
+  def name_is_present_and_unique_within_the_teaching_school_hub
+    return if teaching_school_hub_id.blank? || started_on.blank?
+
+    concurrent = self.class.overlapping_in_the_same_teaching_school_hub(self)
+    return unless concurrent.exists?
+
+    if name.blank?
+      errors.add(:name, "Another active appropriate body in the teaching school hub exists, choose a name.")
+      return
+    end
+
+    if concurrent.where(name:).exists?
+      errors.add(:name, "Another active appropriate body in the teaching school hub uses this name.")
+    end
+  end
 
   # No two periods for one provisioning school may overlap.
   def siblings
