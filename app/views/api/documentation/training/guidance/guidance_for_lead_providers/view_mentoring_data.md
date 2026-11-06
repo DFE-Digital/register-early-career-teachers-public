@@ -3,6 +3,9 @@ title: View mentoring data
 sidebar_position: 11
 ---
 
+> [!WARN]
+> The mentorship endpoints covered by this guidance are currently only available in the sandbox environment for testing. They are not currently available in the production environment.
+
 The mentorship endpoints allow lead providers to view mentoring information linked to early career teachers (ECTs) and mentors.
 
 This data helps providers understand mentor relationships and determine what support a mentor may need.
@@ -17,12 +20,6 @@ An ECT can only have one active mentoring period at a time. However, an ECT may 
 
 Providers should consider all returned mentoring periods when deciding what support a mentor may need.
 
-For example, a mentor:
-
-* with only expired mentoring periods does not require access to a provider's platform to support an ECT
-* with expired mentoring periods and a current mentoring period may still require access to support an ECT
-* may require access both to support an ECT and to complete their own mentor training
-
 ## Mentoring period fields
 
 A mentoring period represents the time an ECT and mentor were linked together.
@@ -36,8 +33,8 @@ The mentorship endpoints return the following fields.
 | `finished_on` | Date the mentoring period ended. This will be `null` for a current mentoring period |
 | `updated_at` | Date and time the mentoring period was last updated |
 | `school_urn` | URN of the school where the ECT is being mentored |
-| `ect_participant_id` | Identifier for the ECT training record |
-| `mentor_participant_id` | Identifier for the mentor training record |
+| `ect_participant_id` | Identifier for the ECT participant. This matches the `id` returned by the participant endpoint |
+| `mentor_participant_id` | Identifier for the mentor participant. This matches the `mentor_id` returned by the participant endpoint |
 | `mentor_email` | Email address recorded for the mentor during the mentoring period |
 | `mentor_full_name` | Name recorded for the mentor during the mentoring period |
 | `mentorship_status` | Indicates whether a mentor requires access to a provider's platform to support an ECT |
@@ -57,6 +54,8 @@ This status is used when the `mentorship_status_reason` is `mentorship_expired`.
 | -------- | -------- | -------- |
 | `no_access_required` | `mentorship_expired` | The mentoring period has expired and the mentor does not require access to support the ECT |
 
+A mentor may still require access to a provider's platform if they have another current mentoring period supporting a different ECT. Providers should consider all mentoring periods returned for a mentor before deciding what access the mentor requires.
+
 ### Available to train
 
 A mentoring period with a `mentorship_status` of `available_to_train` means the mentor has ongoing or future training with the provider making the request.
@@ -72,6 +71,8 @@ Providers can use participant and participant declaration data to understand mor
 A mentoring period with a `mentorship_status` of `access_and_support_only` means the mentor requires access to a provider's platform to support the ECT.
 
 The value in `mentorship_status_reason` explains why the mentor has this status.
+
+A mentor may have multiple mentoring periods with different statuses. Providers should consider all mentoring periods returned for a mentor when deciding what support or platform access the mentor requires.
 
 | Status reason | Definition |
 | -------- | -------- |
