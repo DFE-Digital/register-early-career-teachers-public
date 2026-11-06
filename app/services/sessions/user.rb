@@ -40,6 +40,7 @@ module Sessions
     def dfe_user? = false
     def school_user? = false
     def dfe_user_impersonating_school_user? = false
+    def dfe_user_impersonating_appropriate_body_user? = false
 
     # @return [String] all user types except DfE Sign In
     def sign_out_path
