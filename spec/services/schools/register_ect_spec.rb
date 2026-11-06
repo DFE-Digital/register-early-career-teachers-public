@@ -186,6 +186,33 @@ RSpec.describe Schools::RegisterECT do
           end
         end
 
+        context "when registering today with no previous training history" do
+          let(:started_on) { Date.current }
+
+          let(:store) do
+            repository = FactoryBot.build(
+              :session_repository,
+              trn:,
+              school_urn: school.urn,
+              start_date: started_on.to_s,
+              training_programme:,
+              lead_provider_id: lead_provider.id,
+              school_partnership_to_reuse_id: nil
+            )
+
+            Schools::RegisterECTWizard::RegistrationStore.new(repository)
+          end
+
+          it "uses the registration contract period when there is no previous training history" do
+            service.register!
+
+            training_period = service.ect_at_school_period.training_periods.sole
+
+            expect(training_period.expression_of_interest).to eq(framework_agreement)
+            expect(training_period.schedule.contract_period).to eq(contract_period)
+          end
+        end
+
         context "when a Teacher has multiple ECT periods at different schools" do
           let(:school_one) { FactoryBot.create(:school) }
           let(:school_two) { FactoryBot.create(:school) }
@@ -388,7 +415,14 @@ RSpec.describe Schools::RegisterECT do
                             finished_on: Date.new(2023, 8, 31))
         end
 
-        let(:store) { double("store", previous_training_period:, school_partnership_to_reuse_id: nil) }
+        let(:store) do
+          double(
+            "store",
+            previous_training_period:,
+            previous_provider_led_training_period: previous_training_period,
+            school_partnership_to_reuse_id: nil
+          )
+        end
 
         it "uses the reassigned contract period start date, not the registration date" do
           service.register!
@@ -398,6 +432,100 @@ RSpec.describe Schools::RegisterECT do
 
           expect(training_period.started_on).to eq(successor_cp.started_on)
           expect(training_period.started_on).not_to eq(Date.current)
+        end
+
+        context "when the new registration is school-led after intervening school-led training" do
+          let(:training_programme) { "school_led" }
+          let(:lead_provider) { nil }
+          let(:framework_agreement) { nil }
+          let(:started_on) { Date.new(2026, 9, 1) }
+
+          let(:store) do
+            repository = FactoryBot.build(
+              :session_repository,
+              trn:,
+              school_urn: school.urn,
+              start_date: started_on.to_s,
+              training_programme:
+            )
+
+            Schools::RegisterECTWizard::RegistrationStore.new(repository)
+          end
+
+          before do
+            travel_to(Date.new(2026, 9, 11))
+
+            intermediate_period = FactoryBot.create(
+              :ect_at_school_period,
+              teacher:,
+              school: FactoryBot.create(:school),
+              started_on: Date.new(2025, 9, 1),
+              finished_on: Date.new(2026, 8, 31)
+            )
+
+            FactoryBot.create(
+              :training_period,
+              :school_led,
+              ect_at_school_period: intermediate_period,
+              started_on: intermediate_period.started_on,
+              finished_on: intermediate_period.finished_on
+            )
+          end
+
+          it "starts backdated school-led training on the day the registration is submitted" do
+            service.register!
+
+            training_period = service.ect_at_school_period.training_periods.sole
+            expect(training_period.started_on).to eq(Date.new(2026, 9, 11))
+          end
+        end
+
+        context "when the new registration is provider-led after intervening school-led training" do
+          let(:training_programme) { "provider_led" }
+          let(:started_on) { Date.new(2026, 9, 1) }
+
+          let(:store) do
+            repository = FactoryBot.build(
+              :session_repository,
+              trn:,
+              school_urn: school.urn,
+              start_date: started_on.to_s,
+              training_programme:,
+              lead_provider_id: lead_provider.id,
+              school_partnership_to_reuse_id: nil
+            )
+
+            Schools::RegisterECTWizard::RegistrationStore.new(repository)
+          end
+
+          before do
+            travel_to(Date.new(2026, 9, 11))
+
+            intermediate_period = FactoryBot.create(
+              :ect_at_school_period,
+              teacher:,
+              school: FactoryBot.create(:school),
+              started_on: Date.new(2025, 9, 1),
+              finished_on: Date.new(2026, 8, 31)
+            )
+
+            FactoryBot.create(
+              :training_period,
+              :school_led,
+              ect_at_school_period: intermediate_period,
+              started_on: intermediate_period.started_on,
+              finished_on: intermediate_period.finished_on
+            )
+          end
+
+          it "starts provider-led training on the registration day and uses the reassigned contract period" do
+            service.register!
+
+            training_period = service.ect_at_school_period.training_periods.sole
+
+            expect(training_period.started_on).to eq(Date.new(2026, 9, 11))
+            expect(training_period.schedule.contract_period).to eq(successor_cp)
+          end
         end
       end
 
@@ -457,6 +585,7 @@ RSpec.describe Schools::RegisterECT do
           double(
             "store",
             previous_training_period:,
+            previous_provider_led_training_period: previous_training_period,
             school_partnership_to_reuse_id: nil
           )
         end
@@ -539,6 +668,136 @@ RSpec.describe Schools::RegisterECT do
             expect(new_training_period.school_partnership).to be_nil
             expect(new_training_period.expression_of_interest.contract_period)
               .to eq(previous_contract_period)
+          end
+        end
+
+        context "when school-led training at another school intervenes before registration" do
+          let(:started_on) { Date.new(2026, 9, 11) }
+          let(:intermediate_finished_on) { Date.new(2026, 8, 31) }
+
+          let!(:contract_period) do
+            FactoryBot.create(:contract_period, :with_schedules, year: 2026)
+          end
+
+          let!(:current_framework_agreement) do
+            FactoryBot.create(
+              :framework_agreement,
+              lead_provider:,
+              contract_period:
+            )
+          end
+
+          let(:intermediate_school) { FactoryBot.create(:school) }
+
+          let!(:intermediate_ect_period) do
+            FactoryBot.create(
+              :ect_at_school_period,
+              teacher:,
+              school: intermediate_school,
+              started_on: Date.new(2025, 9, 1),
+              finished_on: intermediate_finished_on
+            )
+          end
+
+          let!(:intermediate_training_period) do
+            FactoryBot.create(
+              :training_period,
+              :school_led,
+              ect_at_school_period: intermediate_ect_period,
+              started_on: Date.new(2025, 9, 1),
+              finished_on: intermediate_finished_on
+            )
+          end
+
+          let(:store) do
+            repository = FactoryBot.build(
+              :session_repository,
+              trn:,
+              school_urn: school.urn,
+              start_date: started_on.to_s,
+              training_programme:,
+              lead_provider_id: lead_provider.id,
+              school_partnership_to_reuse_id: nil
+            )
+
+            Schools::RegisterECTWizard::RegistrationStore.new(repository)
+          end
+
+          before do
+            travel_to(Time.zone.local(2026, 9, 11, 12))
+          end
+
+          it "retains the earlier provider-led contract period after intervening school-led training" do
+            service.register!
+
+            new_training_period =
+              service.ect_at_school_period.training_periods.sole
+
+            expect(new_training_period.expression_of_interest.contract_period)
+              .to eq(previous_contract_period)
+
+            expect(new_training_period.schedule.contract_period)
+              .to eq(previous_contract_period)
+          end
+
+          context "when two school-led periods intervene before registration" do
+            let(:intermediate_finished_on) { Date.new(2026, 3, 31) }
+
+            before do
+              second_intermediate_period = FactoryBot.create(
+                :ect_at_school_period,
+                teacher:,
+                school: FactoryBot.create(:school),
+                started_on: Date.new(2026, 4, 1),
+                finished_on: Date.new(2026, 8, 31)
+              )
+
+              FactoryBot.create(
+                :training_period,
+                :school_led,
+                ect_at_school_period: second_intermediate_period,
+                started_on: second_intermediate_period.started_on,
+                finished_on: second_intermediate_period.finished_on
+              )
+            end
+
+            it "retains the earlier provider-led contract period for the EOI and schedule" do
+              service.register!
+
+              training_period = service.ect_at_school_period.training_periods.sole
+
+              expect(training_period.expression_of_interest.contract_period).to eq(previous_contract_period)
+              expect(training_period.schedule.contract_period).to eq(previous_contract_period)
+            end
+          end
+
+          context "when the new school has a matching partnership in the earlier contract period" do
+            let!(:matching_partnership) do
+              FactoryBot.create(
+                :school_partnership,
+                school:,
+                lead_provider_delivery_partnership: previous_lead_provider_delivery_partnership
+              )
+            end
+
+            it "finds the matching partnership in the wizard after intervening school-led training" do
+              queries = Schools::RegisterECTWizard::RegistrationStore::Queries.new(
+                registration_store: store
+              )
+
+              expect(queries.lead_provider_partnerships_for_contract_period(school:))
+                .to contain_exactly(matching_partnership)
+            end
+
+            it "registers the ECT with the matching partnership and earlier schedule" do
+              service.register!
+
+              training_period = service.ect_at_school_period.training_periods.sole
+
+              expect(training_period.school_partnership).to eq(matching_partnership)
+              expect(training_period.expression_of_interest).to be_nil
+              expect(training_period.schedule.contract_period).to eq(previous_contract_period)
+            end
           end
         end
       end

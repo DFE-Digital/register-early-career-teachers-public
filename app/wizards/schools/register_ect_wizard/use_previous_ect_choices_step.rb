@@ -57,7 +57,7 @@ module Schools
 
         ContractPeriods::ForECTRegistration.new(
           started_on: start_date,
-          previous_training_period: ect.previous_training_period
+          previous_training_period: ect.previous_provider_led_training_period
         ).call
       end
 
@@ -112,7 +112,7 @@ module Schools
       end
 
       def payments_frozen_reassignment?
-        previous_period = ect.previous_training_period
+        previous_period = ect.previous_provider_led_training_period
         return false unless previous_period
 
         assigned_period = previous_period.contract_period || previous_period.expression_of_interest_contract_period
@@ -161,12 +161,16 @@ module Schools
       end
 
       def previous_eoi_training_period_for_reassignment(contract_period)
-        training_period = ect.previous_training_period
+        training_period = ect.previous_provider_led_training_period
         return unless training_period
-        return unless training_period.provider_led_training_programme?
         return if training_period.started_on > contract_period.finished_on
 
-        return training_period if training_period.expression_of_interest_id.present?
+        previous_eoi = FrameworkAgreement.find_by(
+          id: training_period.expression_of_interest_id,
+          lead_provider_id: school.last_chosen_lead_provider.id
+        )
+
+        return training_period if previous_eoi
 
         most_recent_school_eoi_training_period(contract_period)
       end
