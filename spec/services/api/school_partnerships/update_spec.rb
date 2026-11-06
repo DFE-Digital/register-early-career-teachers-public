@@ -22,37 +22,29 @@ RSpec.describe API::SchoolPartnerships::Update, type: :model do
     context "when the delivery partner does not exist" do
       let(:delivery_partner_api_id) { SecureRandom.uuid }
 
-      it "is invalid" do
-        expect(service).to be_invalid
-        expect(service.errors[:delivery_partner_api_id]).to eq(["The '#/delivery_partner_api_id' you have entered is invalid. Check delivery partner details and try again."])
-      end
+      it { is_expected.to be_invalid }
+      it { is_expected.to have_api_error(:delivery_partner_api_id, "The '#/delivery_partner_api_id' you have entered is invalid. Check delivery partner details and try again.") }
     end
 
     context "when the school partnership does not exist" do
       let(:school_partnership_id) { -1 }
 
-      it "is invalid" do
-        expect(service).to be_invalid
-        expect(service.errors[:school_partnership_id]).to eq(["The '#/school_partnership_id' you have entered is invalid. Check partnership details and try again."])
-      end
+      it { is_expected.to be_invalid }
+      it { is_expected.to have_api_error(:school_partnership_id, "The '#/school_partnership_id' you have entered is invalid. Check partnership details and try again.") }
     end
 
     context "when the lead provider delivery partnership does not exist" do
       let(:delivery_partner_api_id) { FactoryBot.create(:delivery_partner).api_id }
 
-      it "is invalid" do
-        expect(service).to be_invalid
-        expect(service.errors[:delivery_partner_api_id]).to eq(["The entered delivery partner is not recognised to be working in partnership with you for the given contract period. Contact the DfE for more information."])
-      end
+      it { is_expected.to be_invalid }
+      it { is_expected.to have_api_error(:delivery_partner_api_id, "The entered delivery partner is not recognised to be working in partnership with you for the given contract period. Contact the DfE for more information.") }
     end
 
     context "when the change in delivery partner would result in a duplicate school partnership" do
       before { FactoryBot.create(:school_partnership, school: school_partnership.school, lead_provider_delivery_partnership:) }
 
-      it "is invalid" do
-        expect(service).to be_invalid
-        expect(service.errors[:delivery_partner_api_id]).to eq(["We are unable to process this request. You are already confirmed to be in partnership with the entered delivery partner. Contact the DfE for support."])
-      end
+      it { is_expected.to be_invalid }
+      it { is_expected.to have_api_error(:delivery_partner_api_id, "We are unable to process this request. You are already confirmed to be in partnership with the entered delivery partner. Contact the DfE for support.") }
     end
 
     context "guarded error messages" do
