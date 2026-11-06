@@ -573,6 +573,160 @@ describe AppropriateBodyPeriod do
     end
   end
 
+  describe "naming a hub that runs concurrent periods" do
+    let(:teaching_school_hub) { FactoryBot.create(:teaching_school_hub, name: "Acme TSH") }
+
+    def hub_period(name:, hub: teaching_school_hub, **attributes)
+      FactoryBot.build(:appropriate_body_period, :teaching_school_hub,
+                       teaching_school_hub: hub,
+                       provisioning_school: FactoryBot.create(:school),
+                       name:,
+                       **attributes)
+    end
+
+    context "when the hub has one period" do
+      it "does not require a name" do
+        expect(hub_period(name: nil)).to be_valid
+      end
+
+      it "allows an existing period to lose its name" do
+        period = hub_period(name: "Acme TSH East")
+        period.save!
+
+        period.update!(name: nil)
+
+        expect(period.reload.name).to be_nil
+      end
+
+      it "allows a new hub to start with an unnamed first period" do
+        hub = FactoryBot.create(:teaching_school_hub, name: "New TSH")
+        period = FactoryBot.build(:appropriate_body_period, :teaching_school_hub,
+                                  teaching_school_hub: hub,
+                                  provisioning_school: FactoryBot.create(:school),
+                                  name: nil)
+
+        period.save!
+
+        expect(period.reload.name).to be_nil
+        expect(hub.appropriate_body_periods.count).to eq(1)
+      end
+    end
+
+    context "when another period for the hub overlaps it" do
+      before do
+        hub_period(name: "Acme TSH East",
+                   started_on: Date.new(2021, 9, 1),
+                   finished_on: nil).save!
+      end
+
+      it "requires a name" do
+        expect(hub_period(name: nil,
+                          started_on: Date.new(2022, 9, 1),
+                          finished_on: nil)).to have_error(
+                            :name,
+                            "Another active appropriate body in the teaching school hub exists, choose a name."
+                          )
+      end
+
+      it "accepts a name that tells the two periods apart" do
+        expect(hub_period(name: "Acme TSH West",
+                          started_on: Date.new(2022, 9, 1),
+                          finished_on: nil)).to be_valid
+      end
+
+      it "stops a named period losing its name by update" do
+        period = hub_period(name: "Acme TSH West",
+                            started_on: Date.new(2022, 9, 1),
+                            finished_on: nil)
+        period.save!
+        period.name = nil
+
+        expect(period).not_to be_valid
+      end
+    end
+
+    context "when the name of an earlier period is reused" do
+      before do
+        hub_period(name: "Acme TSH East",
+                   started_on: Date.new(2021, 9, 1),
+                   finished_on: Date.new(2021, 12, 31)).save!
+      end
+
+      it "is allowed, because the two periods never run at the same time" do
+        expect(hub_period(name: "Acme TSH East",
+                          started_on: Date.new(2022, 1, 1),
+                          finished_on: nil)).to be_valid
+      end
+
+      # The factory finds or initialises by name, so a duplicate has to be built without it.
+      def duplicate_period
+        AppropriateBodyPeriod.new(body_type: "teaching_school_hub",
+                                  teaching_school_hub:,
+                                  provisioning_school: FactoryBot.create(:school),
+                                  name: "Acme TSH East",
+                                  started_on: Date.new(2021, 10, 1),
+                                  finished_on: nil,
+                                  dfe_sign_in_organisation_id: SecureRandom.uuid)
+      end
+
+      it "is refused when the periods overlap" do
+        expect(duplicate_period).to have_error(
+          :name,
+          "Another active appropriate body in the teaching school hub uses this name."
+        )
+      end
+
+      it "is refused by the database when validations are skipped" do
+        expect { duplicate_period.save!(validate: false) }
+          .to raise_error(ActiveRecord::StatementInvalid, /appropriate_body_periods_unique_names_for_concurrent_periods/)
+      end
+    end
+
+    context "when the earlier period for the hub finished before this one started" do
+      before do
+        hub_period(name: "Acme TSH East",
+                   started_on: Date.new(2021, 9, 1),
+                   finished_on: Date.new(2021, 12, 31)).save!
+      end
+
+      it "does not require a name, because the periods never run at the same time" do
+        expect(hub_period(name: nil,
+                          started_on: Date.new(2022, 1, 1),
+                          finished_on: nil)).to be_valid
+      end
+    end
+
+    context "when another hub uses the same name at the same time" do
+      before do
+        hub_period(name: "Acme TSH East",
+                   hub: FactoryBot.create(:teaching_school_hub, name: "Other TSH"),
+                   started_on: Date.new(2021, 9, 1),
+                   finished_on: nil).save!
+      end
+
+      it "is allowed, because the two hubs are unrelated" do
+        expect(hub_period(name: "Acme TSH East",
+                          started_on: Date.new(2021, 9, 1),
+                          finished_on: nil)).to be_valid
+      end
+    end
+
+    context "when the overlapping period belongs to a different hub" do
+      before do
+        hub_period(name: "Other TSH North",
+                   hub: FactoryBot.create(:teaching_school_hub, name: "Other TSH"),
+                   started_on: Date.new(2021, 9, 1),
+                   finished_on: nil).save!
+      end
+
+      it "does not require a name" do
+        expect(hub_period(name: nil,
+                          started_on: Date.new(2021, 9, 1),
+                          finished_on: nil)).to be_valid
+      end
+    end
+  end
+
   describe "#display_name" do
     subject(:display_name) { appropriate_body_period.display_name }
 
