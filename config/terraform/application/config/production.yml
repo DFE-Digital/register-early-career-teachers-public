@@ -19,7 +19,7 @@ DFE_SIGN_IN_REQUEST_ORGANISATION_URL: "https://services.signin.education.gov.uk/
 DFE_SIGN_IN_MY_SERVICES_URL: "https://services.signin.education.gov.uk/my-services"
 SERVICE_URL: "https://www.register-early-career-teachers.education.gov.uk"
 DFE_ANALYTICS_ENABLED: true
-ENABLE_AIRBYTE: false
+ENABLE_AIRBYTE: true
 TRS_API_BASE_URL: "https://teacher-qualifications-api.education.gov.uk"
 TRS_API_VERSION: "20260120"
 RAILS_ENV: production
