@@ -270,17 +270,17 @@ namespace :product_review do
       puts "---------------"
 
       destination = Teacher.find_by_trn(source.trs_redirected_to)
-      eligibility = Teachers::MergeTRN::Eligibility.new(teacher: source).can_be_merged?
+      eligibility = Teachers::TRN::Eligibility.new(teacher: source).can_be_merged?
 
       if eligibility
         puts "Teacher can be merged"
         puts "Attempting to merge TRN #{source.trn} into TRN #{destination.trn}"
 
         begin
-          Teachers::MergeTRN.new(teacher: source).merge!
+          Teachers::TRN::Merge.new(teacher: source).merge!
 
           puts "Teacher merged"
-        rescue Teachers::MergeTRN::MentorshipPeriods::Merge::CannotMergePeriods, Teachers::MergeTRN::TrainingPeriods::Merge::CannotMergePeriods => e
+        rescue Teachers::TRN::MentorshipPeriods::Merge::CannotMergePeriods, Teachers::TRN::TrainingPeriods::Merge::CannotMergePeriods => e
           puts "Cannot merge mentorship periods: #{e.message}"
         end
       end
