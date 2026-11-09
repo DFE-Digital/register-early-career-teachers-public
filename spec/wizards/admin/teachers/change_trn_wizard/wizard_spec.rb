@@ -28,6 +28,11 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::Wizard do
   describe "#ineligible_for_merge?" do
     subject { wizard }
 
+    before do
+      store.trn = destination.trn
+      store.destination_teacher_id = destination.id
+    end
+
     context "when the records can be merged" do
       it { is_expected.not_to be_ineligible_for_merge }
     end
@@ -44,6 +49,7 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::Wizard do
     context "when no merge is proposed" do
       before do
         store.destination_teacher_id = nil
+        store.trn = new_trn
         FactoryBot.create(:induction_period, teacher:)
       end
 
