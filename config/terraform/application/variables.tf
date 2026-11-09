@@ -189,3 +189,9 @@ variable "pg_airbyte_enabled" {
   default     = false
   description = "Whether to enable wal replication for Airbyte to connect to the Postgres database"
 }
+
+# wal_threshold is read by the database-replication-monitor workflow, not by terraform
+variable "wal_threshold" {
+  default     = null
+  description = "WAL size in bytes above which the monitor workflow drops the Airbyte replication slot"
+}
