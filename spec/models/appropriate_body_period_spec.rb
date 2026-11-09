@@ -272,7 +272,7 @@ describe AppropriateBodyPeriod do
         it { is_expected.to have_error(:started_on, "A local authority appropriate body must start on or before 31 August 2024") }
       end
 
-      context "when it starts on the 31 Augist 2024" do
+      context "when it starts on 31 August 2024" do
         let(:started_on) { Date.new(2024, 8, 31) }
 
         it { is_expected.to be_valid }
