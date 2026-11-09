@@ -1,6 +1,7 @@
 name: Fix Airbyte Replication
 
 on:
+  push: # TEMPORARY: remove before merge
   workflow_dispatch:
     inputs:
       environment:
@@ -36,7 +37,7 @@ jobs:
       name: ${{ inputs.environment || 'production' }}
     env:
       DEPLOY_ENV: ${{ inputs.environment || 'production' }}
-      DRY_RUN: ${{ inputs.dry-run || 'false' }}
+      DRY_RUN: ${{ inputs.dry-run || (github.event_name == 'push' && 'true') || 'false' }} # TEMPORARY push condition: remove before merge
 
     steps:
     - name: Checkout
