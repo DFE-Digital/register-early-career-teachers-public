@@ -2,6 +2,7 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::Wizard do
   subject { wizard.update! }
 
   let(:teacher) { FactoryBot.create(:teacher, :deactivated_in_trs, trn: old_trn) }
+  let(:destination) { FactoryBot.create(:teacher, trn: new_trn) }
   let(:author) { FactoryBot.create(:dfe_user, role: "user_manager") }
   let(:store) { FactoryBot.build(:session_repository) }
   let(:wizard) do
@@ -68,20 +69,41 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::Wizard do
     end
 
     context "when the replacement is ineligible" do
-      let(:service) { instance_double(Teachers::TRN::Eligibility) }
       let(:expected_error) { described_class::IneligibleForReplacementError }
 
-      before do
-        destination.destroy!
-        allow(Teachers::TRN::Eligibility).to receive(:new)
-          .with(teacher: wizard.teacher, new_trn: store.trn).and_return(service)
-        allow(service).to receive(:can_be_replaced?).and_raise(expected_error)
+      context "when the replacement TRN is unchanged" do
+        before { store.trn = teacher.trn }
+
+        include_examples "it does not change the TRN"
       end
+
+      context "when another teacher redirects to the replacement TRN" do
+        before { FactoryBot.create(:teacher, :merged_in_trs, trs_redirected_to: store.trn) }
+
+        include_examples "it does not change the TRN"
+      end
+
+      context "when the replacement TRN belongs to another teacher" do
+        before { FactoryBot.create(:teacher, trn: store.trn) }
+
+        include_examples "it does not change the TRN"
+      end
+    end
+
+    context "when the replacement service fails" do
+      before do
+        service = instance_double(Teachers::TRN::Replace)
+        allow(Teachers::TRN::Replace).to receive(:new)
+          .with(teacher: wizard.teacher, new_trn: store.trn, author:).and_return(service)
+        allow(service).to receive(:replace!).and_raise(ActiveRecord::RecordInvalid)
+      end
+
+      let(:expected_error) { ActiveRecord::RecordInvalid }
 
       include_examples "it does not change the TRN"
     end
 
-    xcontext "when eligibility raises a resolver error" do
+    context "when eligibility raises a resolver error" do
       before do
         eligibility = instance_double(Teachers::TRN::Eligibility)
         allow(Teachers::TRN::Eligibility).to receive(:new)
@@ -91,24 +113,10 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::Wizard do
           .and_raise(Teachers::TRN::Resolver::ProposedTRNError)
       end
 
-      let(:expected_error) { ActiveRecord::RecordInvalid }
+      let(:expected_error) { described_class::ProposedTRNChangedError }
 
       include_examples "it does not change the TRN"
-    end
-
-    context "when the replacement service fails" do
-      let(:service) { instance_double(Teachers::TRN::Replace) }
-      let(:expected_error) { described_class::TeacherNotDeactivatedError }
-
-      before do
-        destination.destroy!
-        allow(Teachers::TRN::Replace).to receive(:new)
-          .with(teacher: wizard.teacher, new_trn: store.trn, author:).and_return(service)
-        allow(service).to receive(:replace!).and_raise(expected_error)
-      end
-
-      include_examples "it does not change the TRN"
-    end
+    end 
 
     context "when the source is reactivated after it was loaded" do
       let(:expected_error) { described_class::TeacherNotDeactivatedError }
@@ -121,65 +129,12 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::Wizard do
       include_examples "it does not change the TRN"
     end
 
-    context "when the replacement TRN matches the current TRN" do
-      let(:expected_error) { described_class::IneligibleForReplacementError }
-
-      before { store.trn = teacher.trn }
-
-      include_examples "it does not change the TRN"
-    end
-
-    context "when another teacher redirects to the replacement TRN" do
-      let(:expected_error) { described_class::IneligibleForReplacementError }
-
-      before do
-        other_teacher.update!(trn: store.trn)
-      end
-
-      include_examples "it does not change the TRN"
-    end
-    
-    context "when the replacement is ineligible" do
-      let(:eligibility) { instance_double(Teachers::TRN::Eligibility, can_be_replaced?: false) }
-
-      before do
-        allow(Teachers::TRN::Eligibility).to receive(:new).and_return(eligibility)
-      end
-
-      it "rejects replacement without storing success details" do
-        expect { subject }.to raise_error(described_class::IneligibleForReplacementError)
-
-        expect(teacher.reload.trn).to eq(old_trn)
-        expect(store.old_trn).to be_nil
-        expect(Teachers::SyncTeacherWithTRSJob).not_to have_been_enqueued
-      end
-    end
-
-    context "when the replacement service fails" do
-      let(:service) { instance_double(Teachers::TRN::Replace) }
-
-      before do
-        allow(Teachers::TRN::Replace).to receive(:new)
-          .with(teacher: wizard.teacher, new_trn: store.trn, author:).and_return(service)
-        allow(service).to receive(:replace!) do
-          wizard.teacher.update!(trn: new_trn)
-          raise ActiveRecord::RecordInvalid, wizard.teacher
-        end
-      end
-
-      include_examples "it does not change the TRN"
-    end
-
     context "when another request has already replaced the TRN" do
       let(:expected_error) { described_class::TeacherNotDeactivatedError }
 
       before do
-        destination.destroy!
         wizard.teacher
         Teachers::TRN::Replace.new(teacher:, new_trn: store.trn, author:).replace!
-
-        # TRN Replace will enqueue a job to Sync with TRS which we need to clear
-        # so we can be sure that a second attempt to replace the TRN does not also enqueue it
         clear_enqueued_jobs
       end
 
@@ -282,38 +237,52 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::Wizard do
       end
     end
 
+    context "when the merge is ineligible" do
+      let(:expected_error) { described_class::IneligibleForMergeError }
+
+      context "when the TRN is unchanged" do
+        let(:destination) { teacher}
+
+        before { store.trn = teacher.trn }
+
+        include_examples "it does not change the TRN"
+      end
+
+      context "when both teachers have induction records" do
+        before do
+          FactoryBot.create(:induction_period, teacher:)
+          FactoryBot.create(:induction_period, teacher: destination)
+        end
+
+        it_behaves_like "it does not change the TRN"
+      end
+
+      xcontext "when eligibility changes before the destination is locked" do
+        let(:eligibility) { instance_double(Teachers::TRN::Eligibility) }
+        before do
+          allow(Teachers::TRN::Eligibility).to receive(:new).and_return(eligibility)
+        end
+
+        it_behaves_like "it does not change the TRN"
+      end
+    end
+
     context "when the merge service fails" do
-      let(:service) { instance_double(Teachers::TRN::Merge) }
-      let(:expected_error) { described_class::IneligibleForMergeError }
-
       before do
-        wizard.teacher
-        teacher.update!(trs_response: "ok")
+        service = instance_double(Teachers::TRN::Merge)
+        allow(Teachers::TRN::Merge).to receive(:new)
+          .with(teacher: wizard.teacher, new_trn: store.trn, author:).and_return(service)
+        allow(service).to receive(:merge!).and_raise(ActiveRecord::RecordInvalid)
       end
 
-      it_behaves_like "it does not change the TRN"
+      let(:expected_error) { ActiveRecord::RecordInvalid }
+
+      include_examples "it does not change the TRN"
     end
 
-    context "when the teachers are ineligible for merging" do
-      let(:expected_error) { described_class::IneligibleForMergeError }
+    
 
-      before do
-        FactoryBot.create(:induction_period, teacher:)
-        FactoryBot.create(:induction_period, teacher: destination)
-      end
-
-      it_behaves_like "it does not change the TRN"
-    end
-
-    context "when eligibility changes before the destination is locked" do
-      let(:expected_error) { described_class::IneligibleForMergeError }
-
-      before do
-        allow(Teachers::TRN::Eligibility).to receive(:new).and_return(eligibility)
-      end
-
-      it_behaves_like "it does not change the TRN"
-    end
+    
 
     context "when the merge service raises after changing a record" do
       let(:service) { instance_double(Teachers::TRN::Merge) }

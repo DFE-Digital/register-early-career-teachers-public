@@ -107,6 +107,8 @@ module Admin
 
             store.old_trn = old_trn
             store.source_teacher_name = source_teacher_name
+          rescue ::Teachers::TRN::Resolver::ProposedTRNError
+            raise ProposedTRNChangedError
           end
         end
 
