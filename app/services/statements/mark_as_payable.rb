@@ -17,7 +17,9 @@ module Statements
     end
 
     def self.check_forthcoming_statements!
-      next_deadline_date = Statement.where(deadline_date: Date.tomorrow..).minimum(:deadline_date)
+      next_deadline_date = Statement.where(status: "open", fee_type: "output", deadline_date: Date.tomorrow..).minimum(:deadline_date)
+
+      return unless next_deadline_date
 
       forthcoming_statements = Statements::Search.new(
         status: "open",
