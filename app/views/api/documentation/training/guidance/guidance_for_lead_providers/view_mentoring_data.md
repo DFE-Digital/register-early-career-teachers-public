@@ -10,6 +10,23 @@ The mentorship endpoints allow lead providers to view mentoring information link
 
 This data helps providers understand mentor relationships and determine what support a mentor may need.
 
+## Retrieve multiple mentoring periods
+
+Providers can use the `GET /mentorships` endpoint to retrieve mentorship periods.
+
+The endpoint supports the following filters.
+
+| Filter | Definition |
+| -------- | -------- |
+| `role` | Filter mentorship periods by participant role |
+| `updated_since` | Return only mentorship periods updated since the specified date |
+
+## Retrieve a participant's mentoring periods
+
+Providers can use the `GET /participants/:id/mentorships` endpoint to retrieve all mentoring periods for a specific participant.
+
+The `role` and `updated_since` filters can also be applied when using this endpoint.
+
 ## Which mentoring periods are returned
 
 For an ECT training record, the endpoint returns mentoring periods that are relevant to both the ECT and the provider making the request.
@@ -52,7 +69,7 @@ This status is used when the `mentorship_status_reason` is `mentorship_expired`.
 
 | Status | Status reason | Definition |
 | -------- | -------- | -------- |
-| `no_access_required` | `mentorship_expired` | The mentoring period has expired and the mentor does not require access to support the ECT |
+| `no_access_required` | `mentorship_expired` | The mentor no longer requires access to the provider's platform to support the ECT because the mentoring period has ended |
 
 A mentor may still require access to a provider's platform if they have another current mentoring period supporting a different ECT. Providers should consider all mentoring periods returned for a mentor before deciding what access the mentor requires.
 
@@ -76,7 +93,7 @@ A mentor may have multiple mentoring periods with different statuses. Providers 
 
 | Status reason | Definition |
 | -------- | -------- |
-| `completed_training` | The mentor has completed ERO, ECF or ECTP training. This also includes mentors considered fully trained even if they did not receive all 6 ECF declarations |
-| `mentor_training_elsewhere` | The mentor is linked to a different provider for training |
-| `mentor_not_currently_training` | The mentor has not completed training and may resume training in future |
-| `no_known_training_access_only` | The mentor has not been registered for training with any provider while at the school and is not considered to have completed training |
+| `completed_training` | The mentor has completed ERO, ECF or ECTP training, including mentors who are considered fully trained even if they did not receive all 6 ECF declarations |
+| `mentor_training_elsewhere` | The mentor is currently training with a different provider |
+| `mentor_not_currently_training` | The mentor has not completed training and is not currently training with a provider, but may resume training in the future |
+| `no_known_training` | The mentor is not known to have trained with any provider while at the school and is not considered to have completed training |
