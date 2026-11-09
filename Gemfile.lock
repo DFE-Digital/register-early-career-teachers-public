@@ -506,6 +506,7 @@ GEM
       validate_url
       webfinger (~> 2.0)
     os (1.1.4)
+    ostruct (0.6.3)
     pagy (9.4.0)
     parallel (1.28.0)
     parser (3.3.11.1)
@@ -891,6 +892,7 @@ DEPENDENCIES
   omniauth
   omniauth-rails_csrf_protection
   omniauth_openid_connect
+  ostruct
   pg (~> 1.7)
   pg_query
   playwright-ruby-client (~> 1.64)
