@@ -91,6 +91,9 @@ Rails.application.configure do
 
   # Use a real queuing backend for Active Job (and separate queues per environment).
   config.active_job.queue_adapter = :solid_queue
+  # Don't log job arguments as they can contain PII. Lifecycle, failure and retry
+  # logs are still emitted, just without the arguments.
+  config.active_job.log_arguments = false
   # config.active_job.queue_name_prefix = "ecf2_production"
   # Remove finished solid queue jobs from database after a week
   config.solid_queue.clear_finished_jobs_after = 1.week

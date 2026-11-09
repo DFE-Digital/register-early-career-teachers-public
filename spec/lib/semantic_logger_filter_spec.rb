@@ -19,8 +19,8 @@ describe SemanticLoggerFilter do
   it "excludes ActiveJob arguments in the structured payload" do
     log_entry = log.new(
       name: "ActiveJob",
-      message: "Enqueued ExampleJob (job-id) to SolidQueue(default)",
-      payload: { arguments: ["teacher@example.com"] }
+      message: "Enqueued ExampleJob (Job ID: job-id) to SolidQueue(default)",
+      payload: { job_class: "ExampleJob", arguments: JSON.pretty_generate(["teacher@example.com"]) }
     )
 
     expect(SemanticLoggerFilter.call(log_entry)).to be(false)
@@ -38,5 +38,38 @@ describe SemanticLoggerFilter do
 
     expect(SemanticLoggerFilter.call(failure)).to be(true)
     expect(SemanticLoggerFilter.call(retrying)).to be(true)
+  end
+
+  [
+    ["argument logging is disabled", ""],
+    ["the job has no arguments", "[]"]
+  ].each do |description, arguments|
+    context "when #{description}" do
+      it "allows ActiveJob failure and retry entries with a structured payload" do
+        failure = log.new(
+          name: "ActiveJob",
+          message: "Error performing GIASImportJob (Job ID: job-id) to SolidQueue(default) in 12.3ms",
+          payload: { job_class: "GIASImportJob", arguments: }
+        )
+        retrying = log.new(
+          name: "ActiveJob",
+          message: "Retrying GIASImportJob (Job ID: job-id) to SolidQueue(default) after 2 attempts in 30 seconds, due to a Net::ReadTimeout (Net::ReadTimeout).",
+          payload: { job_class: "GIASImportJob", executions: 2, wait: 30, arguments: }
+        )
+
+        expect(SemanticLoggerFilter.call(failure)).to be(true)
+        expect(SemanticLoggerFilter.call(retrying)).to be(true)
+      end
+    end
+  end
+
+  it "excludes ActiveJob retry entries when arguments are logged" do
+    retrying = log.new(
+      name: "ActiveJob",
+      message: "Retrying ExampleJob (Job ID: job-id) to SolidQueue(default) after 2 attempts in 30 seconds.",
+      payload: { "job_class" => "ExampleJob", "arguments" => JSON.pretty_generate(["teacher@example.com"]) }
+    )
+
+    expect(SemanticLoggerFilter.call(retrying)).to be(false)
   end
 end
