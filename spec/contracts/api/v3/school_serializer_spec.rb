@@ -1,0 +1,89 @@
+describe API::V3::SchoolSerializer, type: :serializer do
+  subject(:response) do
+    options = { contract_period_year: contract_period.year, lead_provider_id: lead_provider.id }
+    JSON.parse(described_class.render(school, **options))
+  end
+
+  let(:lead_provider) { FactoryBot.create(:lead_provider) }
+  let(:contract_period) { FactoryBot.create(:contract_period) }
+  let(:gias_school) { FactoryBot.create(:gias_school, primary_contact_email:) }
+  let(:primary_contact_email) { "head@school.example.com" }
+  let(:school) { FactoryBot.create(:school, :with_induction_tutor, created_at:) }
+  let!(:contract_period_metadata) { FactoryBot.create(:school_contract_period_metadata, school:, contract_period:, api_updated_at:) }
+  let!(:lead_provider_contract_period_metadata) do
+    FactoryBot.create(:school_lead_provider_contract_period_metadata,
+                      school:,
+                      lead_provider:,
+                      contract_period:,
+                      expression_of_interest_or_school_partnership: true)
+  end
+  let(:created_at) { Time.utc(2023, 7, 1, 12, 0, 0) }
+  let(:api_updated_at) { Time.utc(2023, 7, 2, 12, 0, 0) }
+
+  before do
+    # Ensure other metadata exists.
+    other_contract_period = FactoryBot.create(:contract_period, year: contract_period.year + 1)
+    other_lead_provider = FactoryBot.create(:lead_provider)
+
+    FactoryBot.create(:school_contract_period_metadata, school:, contract_period: other_contract_period)
+    FactoryBot.create(:school_lead_provider_contract_period_metadata, school:, contract_period: other_contract_period, lead_provider: other_lead_provider)
+  end
+
+  describe ".dependencies" do
+    it "includes all dependencies required by the serializer" do
+      school_with_dependencies = School
+        .strict_loading
+        .includes(described_class.dependencies)
+        .find(school.id)
+
+      options = {
+        contract_period_year: contract_period.year,
+        lead_provider_id: lead_provider.id,
+      }
+
+      expect { described_class.render(school_with_dependencies, **options) }.not_to raise_error
+    end
+  end
+
+  describe "core attributes" do
+    it "serializes correctly" do
+      expect(response["id"]).to eq(school.api_id)
+      expect(response["type"]).to eq("school")
+    end
+  end
+
+  describe "nested attributes" do
+    subject(:attributes) { response["attributes"] }
+
+    it "serializes correctly" do
+      expect(attributes["name"]).to eq(school.name)
+      expect(attributes["urn"]).to eq(school.urn.to_s)
+      expect(attributes["cohort"]).to eq(contract_period.year.to_s)
+      expect(attributes["in_partnership"]).to eq(school.school_partnerships.any? { |sp| sp.lead_provider_delivery_partnership.framework_agreement.contract_period_year == contract_period.year })
+      expect(attributes["induction_programme_choice"]).to eq(contract_period_metadata.induction_programme_choice)
+      expect(attributes["expression_of_interest"]).to eq(lead_provider_contract_period_metadata.expression_of_interest_or_school_partnership)
+      expect(attributes["induction_tutor_name"]).not_to be_nil
+      expect(attributes["induction_tutor_name"]).to eq(school.induction_tutor_name)
+      expect(attributes["induction_tutor_email"]).not_to be_nil
+      expect(attributes["induction_tutor_email"]).to eq(school.induction_tutor_email)
+      expect(attributes["created_at"]).to eq(school.created_at.utc.rfc3339)
+      expect(attributes["updated_at"]).to eq(contract_period_metadata.api_updated_at.utc.rfc3339)
+    end
+
+    context "when the induction tutor is not present on the school" do
+      let(:school) do
+        FactoryBot.create(:school,
+                          gias_school:,
+                          induction_tutor_name: nil,
+                          induction_tutor_email: nil,
+                          induction_tutor_last_nominated_in: nil,
+                          created_at:)
+      end
+
+      it "uses the GIAS contact email" do
+        expect(attributes["induction_tutor_name"]).to be_nil
+        expect(attributes["induction_tutor_email"]).to eq(primary_contact_email)
+      end
+    end
+  end
+end

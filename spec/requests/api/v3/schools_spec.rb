@@ -2,7 +2,7 @@ RSpec.describe "Schools API", :with_metadata, type: :request do
   let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
   let(:lead_provider) { framework_agreement.lead_provider }
   let(:contract_period) { framework_agreement.contract_period }
-  let(:serializer) { API::SchoolSerializer }
+  let(:serializer) { API::V3::SchoolSerializer }
   let(:serializer_options) { { contract_period_year: contract_period.id, lead_provider_id: lead_provider.id } }
 
   def create_resource(framework_agreement:)

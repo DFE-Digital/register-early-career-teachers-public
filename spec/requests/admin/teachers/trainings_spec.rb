@@ -2,7 +2,7 @@ RSpec.describe "Admin::Teachers::Training", type: :request do
   let(:teacher) { FactoryBot.create(:teacher) }
 
   before do
-    allow(API::TeacherSerializer)
+    allow(API::V3::TeacherSerializer)
     .to receive(:render)
     .with(
       teacher,

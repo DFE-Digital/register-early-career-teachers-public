@@ -1,5 +1,5 @@
 RSpec.describe "Participants API", :with_touches, type: :request do
-  let(:serializer) { API::TeacherSerializer }
+  let(:serializer) { API::V3::TeacherSerializer }
   let(:serializer_options) { { lead_provider_id: lead_provider.id } }
   let(:query) { API::Teachers::Query }
   let(:framework_agreement) { FactoryBot.create(:framework_agreement) }

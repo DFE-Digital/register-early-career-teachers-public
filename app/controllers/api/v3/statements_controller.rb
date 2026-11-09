@@ -47,7 +47,7 @@ module API
       end
 
       def serializer
-        API::StatementSerializer
+        API::V3::StatementSerializer
       end
     end
   end

@@ -1,5 +1,5 @@
 # Ensure changes to `participants_currently_training` in the
-# API::SchoolPartnershipSerializer are reflected in the `updated_at`.
+# API::V3::SchoolPartnershipSerializer are reflected in the `updated_at`.
 #
 # Job is scheduled to run daily at 12:01am.
 class TouchSchoolPartnershipForParticipantsCurrentlyTrainingJob < RecurringJob

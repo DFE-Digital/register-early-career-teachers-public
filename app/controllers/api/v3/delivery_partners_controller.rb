@@ -53,7 +53,7 @@ module API
       end
 
       def serializer
-        API::DeliveryPartnerSerializer
+        API::V3::DeliveryPartnerSerializer
       end
     end
   end

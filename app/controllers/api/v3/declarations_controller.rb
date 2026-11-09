@@ -100,7 +100,7 @@ module API
       end
 
       def serializer
-        API::DeclarationSerializer
+        API::V3::DeclarationSerializer
       end
     end
   end
