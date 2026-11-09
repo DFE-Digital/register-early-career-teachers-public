@@ -1,5 +1,5 @@
 describe SemanticLoggerFilter do
-  let(:log) { Struct.new(:name, :message, keyword_init: true) }
+  let(:log) { Struct.new(:name, :message, :payload, keyword_init: true) }
 
   it "allows ordinary log messages" do
     expect(SemanticLoggerFilter.call(log.new(name: "Teacher", message: "Teacher updated"))).to be(true)
@@ -12,6 +12,16 @@ describe SemanticLoggerFilter do
 
   it "excludes Solid Queue messages containing job arguments" do
     log_entry = log.new(name: "SolidQueue::Job", message: "Enqueued email with arguments: teacher@example.com")
+
+    expect(SemanticLoggerFilter.call(log_entry)).to be(false)
+  end
+
+  it "excludes ActiveJob arguments in the structured payload" do
+    log_entry = log.new(
+      name: "ActiveJob",
+      message: "Enqueued ExampleJob (job-id) to SolidQueue(default)",
+      payload: { arguments: ["teacher@example.com"] }
+    )
 
     expect(SemanticLoggerFilter.call(log_entry)).to be(false)
   end
