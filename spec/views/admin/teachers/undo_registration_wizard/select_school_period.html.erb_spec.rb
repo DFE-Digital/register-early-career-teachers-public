@@ -6,11 +6,12 @@ RSpec.describe "admin/teachers/undo_registration_wizard/select_school_period.htm
       trs_last_name: "Goku"
     )
   end
-  let(:store) { FactoryBot.build(:session_repository) }
+  let(:state_store) do
+    Admin::Teachers::UndoRegistrationWizard::StateStore.new(teacher:, author: instance_double(User))
+  end
   let(:wizard) do
     Admin::Teachers::UndoRegistrationWizard::Wizard.new(
-      store:,
-      teacher_id: teacher.id,
+      state_store:,
       current_step: :select_school_period
     )
   end

@@ -1,10 +1,11 @@
 RSpec.describe "admin/teachers/undo_registration_wizard/start.html.erb" do
   let(:teacher) { FactoryBot.create(:teacher) }
-  let(:store) { FactoryBot.build(:session_repository) }
+  let(:state_store) do
+    Admin::Teachers::UndoRegistrationWizard::StateStore.new(teacher:, author: instance_double(User))
+  end
   let(:wizard) do
     Admin::Teachers::UndoRegistrationWizard::Wizard.new(
-      store:,
-      teacher_id: teacher.id,
+      state_store:,
       current_step: :start
     )
   end
