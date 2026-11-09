@@ -92,7 +92,7 @@ RSpec.describe PopulateAppropriateBodyPeriodDates do
         it "starts the period when they were introduced and finishes when they were retired" do
           expect(appropriate_body_period.reload).to have_attributes(
             started_on: Date.new(1999, 9, 1),
-            finished_on: Date.new(2024, 8, 1)
+            finished_on: Date.new(2024, 8, 31)
           )
         end
 
@@ -113,7 +113,7 @@ RSpec.describe PopulateAppropriateBodyPeriodDates do
           it "overwrites the dates" do
             expect(appropriate_body_period.reload).to have_attributes(
               started_on: Date.new(1999, 9, 1),
-              finished_on: Date.new(2024, 8, 1)
+              finished_on: Date.new(2024, 8, 31)
             )
           end
         end
@@ -191,7 +191,7 @@ RSpec.describe PopulateAppropriateBodyPeriodDates do
           "body_type" => "local_authority",
           "provisioning_school_urn" => nil,
           "started_on" => "1999-09-01",
-          "finished_on" => "2024-08-01"
+          "finished_on" => "2024-08-31"
         }
       )
     end
