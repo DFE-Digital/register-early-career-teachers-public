@@ -479,9 +479,8 @@ GEM
       stringio
     notifications-ruby-client (6.4.0)
       jwt (>= 1.5, < 4)
-    oj (3.17.7)
+    oj (3.17.8)
       bigdecimal (>= 3.0)
-      ostruct (>= 0.2)
     omniauth (2.3.1)
       hashie (>= 3.5.2)
       logger
@@ -893,6 +892,7 @@ DEPENDENCIES
   omniauth
   omniauth-rails_csrf_protection
   omniauth_openid_connect
+  ostruct
   pg (~> 1.7)
   pg_query
   playwright-ruby-client (~> 1.64)
