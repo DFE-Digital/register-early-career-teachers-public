@@ -16,6 +16,20 @@ module Statements
       end
     end
 
+    def self.check_forthcoming_statements!
+      next_deadline_date = Statement.where(deadline_date: Date.tomorrow..).minimum(:deadline_date)
+
+      forthcoming_statements = Statements::Search.new(
+        status: "open",
+        deadline_date: next_deadline_date,
+        order: :deadline_date
+      ).statements
+
+      forthcoming_statements.find_each do |statement|
+        new(statement).check_for_errors!
+      end
+    end
+
     def initialize(statement)
       @statement = statement
     end
@@ -33,10 +47,23 @@ module Statements
       end
     end
 
+    def check_for_errors!
+      raise StatementNotOpenError, "Cannot mark statement as payable: statement is #{statement.status}" unless statement.open?
+
+      bad_declarations = eligible_declarations.reject(&:valid?)
+
+      bad_declarations.each do |declaration|
+        Sentry.with_scope do |scope|
+          scope.set_context("errors", declaration.errors) if scope
+          Sentry.capture_message("[MarkAsPayable-Check] - Declaration [#{declaration.id}] invalid on statement [#{statement.id}]")
+        end
+      end
+    end
+
   private
 
     def eligible_declarations
-      statement.payment_declarations.payment_status_eligible
+      @eligible_declarations ||= statement.payment_declarations.payment_status_eligible
     end
 
     def record_declaration_payable_event!(declaration)
