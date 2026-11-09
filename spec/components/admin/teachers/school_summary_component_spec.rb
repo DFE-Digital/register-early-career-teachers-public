@@ -341,11 +341,6 @@ RSpec.describe Admin::Teachers::SchoolSummaryComponent, type: :component do
       let(:mentorship_link_teacher) { mentorship.mentor.teacher }
 
       it_behaves_like "a school period preview"
-
-      it "uses spaces in the working pattern" do
-        expect(rendered).to have_css("dd", text: "Full time")
-        expect(rendered).not_to have_css("dd", text: "Full-time")
-      end
     end
 
     context "for a mentor" do

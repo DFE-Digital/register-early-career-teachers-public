@@ -147,10 +147,7 @@ module Admin
       end
 
       def working_pattern_text
-        text = WORKING_PATTERNS[school_period.working_pattern&.to_sym] || "Not available"
-        text = text.tr("-", " ") if merge_preview
-
-        text
+        WORKING_PATTERNS[school_period.working_pattern&.to_sym] || "Not available"
       end
 
       def summary_row(label, value, html: false)

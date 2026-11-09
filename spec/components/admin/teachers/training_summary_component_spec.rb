@@ -401,11 +401,6 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
       end
 
       it_behaves_like "a training period preview"
-
-      it "labels the induction programme" do
-        expect(rendered).to have_css("dt", text: "Induction programme")
-        expect(rendered).not_to have_css("dt", text: "Training programme")
-      end
     end
 
     context "for a school-led ECT" do
@@ -414,11 +409,6 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
       end
 
       it_behaves_like "a training period preview"
-
-      it "labels the induction programme" do
-        expect(rendered).to have_css("dt", text: "Induction programme")
-        expect(rendered).not_to have_css("dt", text: "Training programme")
-      end
     end
 
     context "for a mentor" do
@@ -428,8 +418,7 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
 
       it_behaves_like "a training period preview"
 
-      it "omits the programme row" do
-        expect(rendered).not_to have_css("dt", text: "Induction programme")
+      it "omits the training programme row" do
         expect(rendered).not_to have_css("dt", text: "Training programme")
       end
     end

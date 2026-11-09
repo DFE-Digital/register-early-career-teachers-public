@@ -72,7 +72,7 @@ module Admin
       def school_led_rows
         [
           summary_row("School", training_school_name),
-          summary_row(training_programme_label, TRAINING_PROGRAMME[training_period.training_programme]),
+          summary_row("Training programme", TRAINING_PROGRAMME[training_period.training_programme]),
           summary_row("Start date", start_date_text),
           end_date_row
         ].compact
@@ -150,14 +150,10 @@ module Admin
         summary_row("End date", end_date_text)
       end
 
-      def training_programme_label
-        merge_preview ? "Induction programme" : "Training programme"
-      end
-
       def training_programme_row
         return if training_period.for_mentor?
 
-        summary_row(training_programme_label, TRAINING_PROGRAMME[training_period.training_programme])
+        summary_row("Training programme", TRAINING_PROGRAMME[training_period.training_programme])
       end
 
       def api_response_row
