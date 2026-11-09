@@ -609,6 +609,73 @@ RSpec.describe Schools::RegisterECT do
           expect(new_training_period.schedule.contract_period.year).to eq(2024)
         end
 
+        context "when previous provider-led training starts on the future transfer date" do
+          let(:overridden_current_date) { Date.new(2026, 8, 1) }
+          let(:started_on) { Date.new(2026, 9, 1) }
+
+          let!(:contract_period) do
+            FactoryBot.create(:contract_period, :with_schedules, year: 2026)
+          end
+
+          let!(:current_framework_agreement) do
+            FactoryBot.create(
+              :framework_agreement,
+              lead_provider:,
+              contract_period:
+            )
+          end
+
+          let(:previous_ect_period) do
+            FactoryBot.create(
+              :ect_at_school_period,
+              teacher:,
+              school: previous_school,
+              started_on: Date.new(2024, 9, 1),
+              finished_on: nil
+            )
+          end
+
+          let!(:previous_training_period) do
+            FactoryBot.create(
+              :training_period,
+              ect_at_school_period: previous_ect_period,
+              training_programme: "provider_led",
+              school_partnership: previous_school_partnership,
+              schedule: previous_schedule,
+              started_on:,
+              finished_on: nil
+            )
+          end
+
+          let(:store) do
+            repository = FactoryBot.build(
+              :session_repository,
+              trn:,
+              school_urn: school.urn,
+              start_date: started_on.to_s,
+              training_programme:,
+              lead_provider_id: lead_provider.id,
+              school_partnership_to_reuse_id: nil
+            )
+
+            Schools::RegisterECTWizard::RegistrationStore.new(repository)
+          end
+
+          it "retains the same-day provider-led contract period when submission closes the previous placement" do
+            service.register!
+
+            new_training_period = service.ect_at_school_period.training_periods.sole
+
+            expect(TrainingPeriod.exists?(previous_training_period.id)).to be(false)
+            expect(previous_ect_period.reload.finished_on).to eq(started_on.yesterday)
+
+            expect(new_training_period.started_on).to eq(started_on)
+            expect(new_training_period.school_partnership).to be_nil
+            expect(new_training_period.expression_of_interest).to eq(previous_framework_agreement)
+            expect(new_training_period.schedule.contract_period).to eq(previous_contract_period)
+          end
+        end
+
         context "when the new school has a matching partnership in the previous contract period" do
           let!(:new_school_partnership) do
             FactoryBot.create(

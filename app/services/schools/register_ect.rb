@@ -51,6 +51,7 @@ module Schools
         create_teacher!
         not_registered_as_an_ect!
         update_school_last_choices!
+        preserve_training_history!
         finish_previous_ect_period!
         @ect_at_school_period = start_at_school!
         create_training_period!
@@ -191,6 +192,14 @@ module Schools
           author:,
           current_contract_period_year: contract_period.year
         )
+    end
+
+    def preserve_training_history!
+      return unless training_programme == "provider_led"
+
+      contract_period
+      preserved_contract_period
+      schedule
     end
 
     def training_period_started_on
