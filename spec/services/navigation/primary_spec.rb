@@ -128,6 +128,35 @@ describe Navigation::Primary, type: :component do
         it { is_expected.to eql(expected_visible_items) }
       end
 
+      context "when looking at the Training API v3 documentation" do
+        let(:current_path) { "/api/docs/training/v3" }
+        let(:expected_visible_items) do
+          {
+            "Home" => "/api/docs/training/guidance",
+            "Swagger API documentation" => "/api/docs/training/v3",
+            "Release notes" => "/api/docs/training/guidance/release-notes",
+            "Guidance" => "/api/docs/training/guidance/guidance-for-lead-providers"
+          }
+        end
+
+        it { is_expected.to eql(expected_visible_items) }
+      end
+
+      context "when looking at the Training API v4 documentation" do
+        let(:current_path) { "/api/docs/training/v4" }
+        let(:expected_visible_items) do
+          {
+            "Home" => "/api/docs",
+            "Authorisation" => "/api/docs/authorisation",
+            "Hello API" => "/api/docs/hello",
+            "Training API" => "/api/docs/training/v4",
+            "Induction API" => "/api/docs/induction/v1"
+          }
+        end
+
+        it { is_expected.to eql(expected_visible_items) }
+      end
+
       describe "Areas and sections" do
         describe "appropriate_body_user" do
           subject { instance.send(:items_by_area).fetch(:appropriate_body_user) }
@@ -190,7 +219,7 @@ describe Navigation::Primary, type: :component do
                 { text: "Home", href: "/api/docs" },
                 { text: "Authorisation", href: "/api/docs/authorisation", active_when: "/api/docs/authorisation" },
                 { text: "Hello API", href: "/api/docs/hello", active_when: "/api/docs/hello" },
-                { text: "Training API", href: "/api/docs/training/guidance", active_when: "/api/docs/training/guidance" },
+                { text: "Training API", href: "/api/docs/training/v4", active_when: "/api/docs/training/v4" },
                 { text: "Induction API", href: "/api/docs/induction/v1", active_when: "/api/docs/induction/v1" },
               ]
             )
