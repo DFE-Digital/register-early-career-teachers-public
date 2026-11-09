@@ -1,4 +1,4 @@
-class API::Teachers::SchoolTransferSerializer < Blueprinter::Base
+class API::V3::Teachers::SchoolTransferSerializer < Blueprinter::Base
   def self.dependencies
     [
       {

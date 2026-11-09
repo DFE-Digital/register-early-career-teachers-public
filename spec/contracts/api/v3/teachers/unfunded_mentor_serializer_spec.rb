@@ -1,4 +1,4 @@
-describe API::Teachers::UnfundedMentorSerializer, type: :serializer do
+describe API::V3::Teachers::UnfundedMentorSerializer, type: :serializer do
   include MentorshipPeriodHelpers
 
   subject(:response) do

@@ -1,7 +1,7 @@
 RSpec.describe "Unfunded mentors API", type: :request do
   include MentorshipPeriodHelpers
 
-  let(:serializer) { API::Teachers::UnfundedMentorSerializer }
+  let(:serializer) { API::V3::Teachers::UnfundedMentorSerializer }
   let(:serializer_options) { { lead_provider_id: lead_provider.id } }
   let(:query) { API::Teachers::UnfundedMentors::Query }
   let(:framework_agreement) { FactoryBot.create(:framework_agreement) }

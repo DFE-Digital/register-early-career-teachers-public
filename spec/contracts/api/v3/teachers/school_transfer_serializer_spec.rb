@@ -1,4 +1,4 @@
-RSpec.describe API::Teachers::SchoolTransferSerializer, type: :serializer do
+RSpec.describe API::V3::Teachers::SchoolTransferSerializer, type: :serializer do
   include SchoolTransferHelpers
 
   subject(:response) do

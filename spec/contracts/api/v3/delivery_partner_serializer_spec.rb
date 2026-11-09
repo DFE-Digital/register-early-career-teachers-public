@@ -1,4 +1,4 @@
-describe API::DeliveryPartnerSerializer, type: :serializer do
+describe API::V3::DeliveryPartnerSerializer, type: :serializer do
   subject(:response) do
     options = { lead_provider_id: lead_provider.id }
     JSON.parse(described_class.render(delivery_partner, **options))

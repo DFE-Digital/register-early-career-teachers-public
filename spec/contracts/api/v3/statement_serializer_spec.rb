@@ -1,4 +1,4 @@
-describe API::StatementSerializer, type: :serializer do
+describe API::V3::StatementSerializer, type: :serializer do
   subject(:response) { JSON.parse(described_class.render(statement)) }
 
   let(:framework_agreement) { FactoryBot.create(:framework_agreement, contract_period:) }

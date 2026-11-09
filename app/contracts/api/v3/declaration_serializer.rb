@@ -1,4 +1,4 @@
-class API::DeclarationSerializer < Blueprinter::Base
+class API::V3::DeclarationSerializer < Blueprinter::Base
   def self.dependencies
     [
       :payment_statement,

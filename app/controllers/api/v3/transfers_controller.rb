@@ -25,7 +25,7 @@ module API
         school_transfer_filters = lead_provider_filter.merge(filters).compact
         included_associations = { included_associations: serializer.dependencies }
 
-        Teachers::SchoolTransfers::Query.new(**school_transfer_filters.merge(included_associations))
+        API::Teachers::SchoolTransfers::Query.new(**school_transfer_filters.merge(included_associations))
       end
 
       def lead_provider_filter
@@ -53,7 +53,7 @@ module API
       end
 
       def serializer
-        API::Teachers::SchoolTransferSerializer
+        API::V3::Teachers::SchoolTransferSerializer
       end
     end
   end

@@ -1,4 +1,4 @@
-class API::StatementSerializer < Blueprinter::Base
+class API::V3::StatementSerializer < Blueprinter::Base
   def self.dependencies
     %i[
       framework_agreement

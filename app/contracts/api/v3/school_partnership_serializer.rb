@@ -1,4 +1,4 @@
-class API::SchoolPartnershipSerializer < Blueprinter::Base
+class API::V3::SchoolPartnershipSerializer < Blueprinter::Base
   def self.dependencies
     [
       :delivery_partner,

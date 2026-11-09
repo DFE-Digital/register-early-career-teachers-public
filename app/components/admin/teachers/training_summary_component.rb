@@ -167,7 +167,7 @@ module Admin
       end
 
       def serialized_teacher
-        API::TeacherSerializer.render(teacher, root: "data", **{ lead_provider_id: lead_provider.id })
+        API::V3::TeacherSerializer.render(teacher, root: "data", **{ lead_provider_id: lead_provider.id })
       rescue Enumerable::SoleItemExpectedError
         nil
       end

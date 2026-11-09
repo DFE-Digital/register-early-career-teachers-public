@@ -1,4 +1,4 @@
-describe API::DeclarationSerializer, type: :serializer do
+describe API::V3::DeclarationSerializer, type: :serializer do
   include MentorshipPeriodHelpers
 
   subject(:response) do

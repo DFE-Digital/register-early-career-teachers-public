@@ -1,4 +1,4 @@
-class API::SchoolSerializer < Blueprinter::Base
+class API::V3::SchoolSerializer < Blueprinter::Base
   def self.dependencies
     [
       :gias_school,

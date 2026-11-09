@@ -1,4 +1,4 @@
-class API::TeacherSerializer < Blueprinter::Base
+class API::V3::TeacherSerializer < Blueprinter::Base
   def self.dependencies
     [
       :teacher_id_changes,
@@ -170,7 +170,7 @@ class API::TeacherSerializer < Blueprinter::Base
     field(:api_updated_at, name: :updated_at)
 
     association :ecf_enrolments, blueprint: TrainingPeriodSerializer do |teacher, options|
-      metadata = ::API::TeacherSerializer.lead_provider_metadata(teacher:, options:)
+      metadata = ::API::V3::TeacherSerializer.lead_provider_metadata(teacher:, options:)
       [[metadata.latest_ect_training_period, teacher, metadata], [metadata.latest_mentor_training_period, teacher, metadata]].reject { |period, _| period.nil? }
     end
 

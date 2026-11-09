@@ -1,5 +1,5 @@
 RSpec.describe "Declarations API", :with_metadata, type: :request do
-  let(:serializer) { API::DeclarationSerializer }
+  let(:serializer) { API::V3::DeclarationSerializer }
   let(:serializer_options) { { lead_provider_id: lead_provider.id } }
   let(:query) { API::Declarations::Query }
   let(:framework_agreement) { FactoryBot.create(:framework_agreement) }

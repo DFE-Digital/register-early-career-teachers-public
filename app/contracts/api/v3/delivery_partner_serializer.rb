@@ -1,4 +1,4 @@
-class API::DeliveryPartnerSerializer < Blueprinter::Base
+class API::V3::DeliveryPartnerSerializer < Blueprinter::Base
   def self.dependencies
     %i[framework_agreements]
   end

@@ -92,7 +92,7 @@ module API
       end
 
       def serializer
-        API::SchoolPartnershipSerializer
+        API::V3::SchoolPartnershipSerializer
       end
     end
   end
