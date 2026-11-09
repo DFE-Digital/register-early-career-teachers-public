@@ -28,6 +28,11 @@ production:
     queue: default
     schedule: every day at 00:01 UTC
 
+  check_forthcoming_statements_for_errors:
+    class: Statements::CheckForthcomingStatementsJob
+    queue: default
+    schedule: every day at 2am UTC
+
   mark_statements_as_payable:
     class: Statements::MarkAsPayableJob
     queue: default
