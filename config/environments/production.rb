@@ -61,8 +61,8 @@ Rails.application.configure do
   config.semantic_logger.application = "" # No need to send the application name as logstash reads it from Cloud Foundry log tags
   config.semantic_logger.backtrace_level = :fatal # Only attach backtraces at :fatal so error/warn lines stay small enough for Logit ingestion
   # Declaring a custom appender replaces the default file appender. Filtering now
-  # applies to STDOUT; analytics and Solid Queue messages are excluded because
-  # job messages can contain PII (the previous filter did not affect STDOUT).
+  # applies to STDOUT; analytics and Solid Queue messages containing job
+  # arguments are excluded because they can contain PII.
   config.rails_semantic_logger.appenders do |appenders|
     appenders.add(
       io: $stdout,
