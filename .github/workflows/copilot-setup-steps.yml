@@ -8,6 +8,9 @@ on:
   pull_request:
     paths:
       - .github/workflows/copilot-setup-steps.yml
+      - .github/actions/prepare-app-env/**
+      - .ruby-version
+      - .node-version
 
 jobs:
   # The job MUST be called `copilot-setup-steps` or Copilot will not use it.
