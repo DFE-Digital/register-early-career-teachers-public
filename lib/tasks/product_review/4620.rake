@@ -75,7 +75,7 @@ namespace :product_review do
         framework_agreement_id: ambition_agreement.id
       }
     )
-      abort("Cannot set up Delilah's EOI test: Grange Hill already has a 2024 Ambition Institute partnership.")
+      abort("Cannot set up Ditto's EOI test: Grange Hill already has a 2024 Ambition Institute partnership.")
     end
 
     if FrameworkAgreement.exists?(
@@ -113,11 +113,12 @@ namespace :product_review do
     ]
 
     scenarios = [
-      # PL (2024) -> SL -> PL, matching partnership
+      # 1. PL (2024) -> SL -> PL, matching partnership.
       {
-        trn: "3002586",
-        first_name: "Chloe",
-        last_name: "Nolan",
+        trn: "3012247",
+        first_name: "Butterfree",
+        last_name: "Barnaby",
+        no_qts: true,
         periods: [
           provider_led_2024.merge(
             school_partnership: brookfield_partnership
@@ -126,11 +127,12 @@ namespace :product_review do
         ]
       },
 
-      # PL (2024) -> SL -> PL, expression of interest fallback
+      # 2. PL (2024) -> SL -> PL, expression of interest fallback.
       {
-        trn: "3002585",
-        first_name: "Delilah",
-        last_name: "Frost",
+        trn: "3012246",
+        first_name: "Ditto",
+        last_name: "Debbie",
+        no_qts: true,
         periods: [
           provider_led_2024.merge(
             expression_of_interest: ambition_agreement
@@ -139,11 +141,11 @@ namespace :product_review do
         ]
       },
 
-      # PL (2024) -> SL -> SL -> PL
+      # 3. PL (2024) -> SL -> SL -> PL.
       {
-        trn: "3002584",
-        first_name: "Theo",
-        last_name: "Willis",
+        trn: "3002582",
+        first_name: "Robson",
+        last_name: "Scottie",
         periods: [
           provider_led_2024.merge(
             school_partnership: brookfield_partnership
@@ -159,19 +161,21 @@ namespace :product_review do
         ]
       },
 
-      # PL (frozen 2022) -> SL -> PL (reassigned to 2024)
+      # 4. PL (frozen 2022) -> SL -> PL (reassigned to 2024).
       {
-        trn: "3002583",
-        first_name: "Marvin",
-        last_name: "Fuller",
+        trn: "3012245",
+        first_name: "Squirtle",
+        last_name: "Samuels",
+        no_qts: true,
         periods: frozen_history
       },
 
-      # PL (2023) -> SL -> PL (2025) -> PL, retain 2025
+      # 5. PL (2023) -> SL -> PL (2025) -> PL, retain 2025.
       {
-        trn: "3002576",
-        first_name: "Daisy",
-        last_name: "Dudley",
+        trn: "3012243",
+        first_name: "Clefairy",
+        last_name: "Cuddles",
+        no_qts: true,
         periods: [
           {
             school: brookfield,
@@ -193,7 +197,7 @@ namespace :product_review do
         ]
       },
 
-      # SL -> PL, use the registration year
+      # 6. SL -> PL, use the registration year.
       {
         trn: "3002577",
         first_name: "Jonas",
@@ -201,7 +205,7 @@ namespace :product_review do
         periods: [school_led_2025]
       },
 
-      # PL -> PL, previous PL starts on the reported school start date
+      # 7. PL -> PL, previous PL starts on the reported school start date.
       {
         trn: "3002578",
         first_name: "Cynthia",
@@ -214,11 +218,12 @@ namespace :product_review do
         ]
       },
 
-      # PL -> PL, previous PL starts after the reported school start date
+      # 8. PL -> PL, previous PL starts after the reported school start date.
       {
-        trn: "3002579",
-        first_name: "Taylor",
-        last_name: "Hawkins",
+        trn: "3012242",
+        first_name: "Jigglypuff",
+        last_name: "Jewels",
+        no_qts: true,
         periods: [
           provider_led_2024.merge(
             finished_on: nil,
@@ -227,11 +232,13 @@ namespace :product_review do
         ]
       },
 
-      # PL (frozen 2022, provider A) -> SL -> PL
+      # 9. PL (frozen 2022, provider A) -> SL -> PL.
+      # Greyfriars last chose provider B, which has no 2024 agreement.
       {
-        trn: "3002580",
-        first_name: "Muhammed",
-        last_name: "Ali",
+        trn: "3012241",
+        first_name: "Ash",
+        last_name: "Ketchum",
+        no_qts: true,
         periods: frozen_history,
         configure_reuse_school: true
       }
@@ -247,8 +254,11 @@ namespace :product_review do
         teacher = Teacher.find_or_create_by!(trn: scenario.fetch(:trn)) do |record|
           record.trs_first_name = scenario.fetch(:first_name)
           record.trs_last_name = scenario.fetch(:last_name)
-          record.trs_qts_awarded_on = Date.new(first_started_on.year, 7, 1)
-          record.trs_induction_status = "RequiredToComplete"
+
+          unless scenario[:no_qts]
+            record.trs_qts_awarded_on = Date.new(first_started_on.year, 7, 1)
+            record.trs_induction_status = "RequiredToComplete"
+          end
         end
 
         teacher.lock!
