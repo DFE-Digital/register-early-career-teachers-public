@@ -60,17 +60,17 @@ Rails.application.configure do
   config.log_tags = [:request_id]
   config.semantic_logger.application = "" # No need to send the application name as logstash reads it from Cloud Foundry log tags
   config.semantic_logger.backtrace_level = :fatal # Only attach backtraces at :fatal so error/warn lines stay small enough for Logit ingestion
-  config.rails_semantic_logger.add_file_appender = false # Don't log to file, only STDOUT
-  config.rails_semantic_logger.filter = proc do |log|
-    # Ignore DfE Analytic events to reduce log output
-    analytics_event = !(log.name == "DfE::Analytics::SendEvents" || log.message&.include?("DfE::Analytics::SendEvents"))
-    # Job arguments often contain PII
-    solid_queue_job = log.message&.include?("SolidQueue")
-
-    analytics_event || solid_queue_job
+  # Declaring a custom appender replaces the default file appender. Filtering now
+  # applies to STDOUT; analytics and Solid Queue messages containing job
+  # arguments are excluded because they can contain PII.
+  config.rails_semantic_logger.appenders do |appenders|
+    appenders.add(
+      io: $stdout,
+      formatter: :json,
+      filter: ->(log) { SemanticLoggerFilter.call(log) }
+    )
   end
   config.active_record.logger = nil # Don't log SQL
-  config.semantic_logger.add_appender(io: $stdout, formatter: :json) # Log to STDOUT JSON-formatted logs
 
   # "info" includes generic and useful information about system operation, but avoids logging too much
   # information to avoid inadvertent exposure of personally identifiable information (PII). If you
@@ -91,6 +91,9 @@ Rails.application.configure do
 
   # Use a real queuing backend for Active Job (and separate queues per environment).
   config.active_job.queue_adapter = :solid_queue
+  # Don't log job arguments as they can contain PII. Lifecycle, failure and retry
+  # logs are still emitted, just without the arguments.
+  config.active_job.log_arguments = false
   # config.active_job.queue_name_prefix = "ecf2_production"
   # Remove finished solid queue jobs from database after a week
   config.solid_queue.clear_finished_jobs_after = 1.week
