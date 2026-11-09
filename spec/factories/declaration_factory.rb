@@ -102,7 +102,7 @@ FactoryBot.define do
 
     trait :with_ect do
       transient do
-        teacher { create(:teacher) }
+        teacher { association(:teacher) }
         school_partnership { nil }
         training_period { nil }
         framework_agreement { nil }
@@ -170,7 +170,7 @@ FactoryBot.define do
 
     trait :with_mentor do
       transient do
-        teacher { create(:teacher) }
+        teacher { association(:teacher) }
         school_partnership { nil }
         training_period { nil }
         framework_agreement { nil }

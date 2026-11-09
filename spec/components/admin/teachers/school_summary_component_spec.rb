@@ -322,7 +322,7 @@ RSpec.describe Admin::Teachers::SchoolSummaryComponent, type: :component do
       end
 
       context "when the period has ended" do
-        before { school_period.update!(finished_on: school_period.started_on + 1.month) }
+        before { school_period.finish! }
 
         it "shows the recorded end date" do
           expect(rendered).to have_css("dt", text: "School end date")

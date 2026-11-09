@@ -377,13 +377,16 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
       render_inline(described_class.new(training_period:, merge_preview: true, show_actions: false, show_api_row: true))
     end
 
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished) }
+    let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished) }
+
     shared_examples "a training period preview" do
       it "omits a missing end date" do
         expect(rendered).not_to have_css("dt", text: "End date", exact_text: true)
       end
 
       context "when the period has ended" do
-        before { training_period.update!(finished_on: training_period.started_on + 1.month) }
+        before { training_period.finish! }
 
         it "shows the recorded end date" do
           expect(rendered).to have_css("dt", text: "End date", exact_text: true)
@@ -394,8 +397,7 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
 
     context "for a provider-led ECT" do
       let(:training_period) do
-        FactoryBot.create(:training_period, :for_ect, :provider_led, :unfinished,
-                          ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished))
+        FactoryBot.create(:training_period, :for_ect, :provider_led, :unfinished, ect_at_school_period:)
       end
 
       it_behaves_like "a training period preview"
@@ -408,8 +410,7 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
 
     context "for a school-led ECT" do
       let(:training_period) do
-        FactoryBot.create(:training_period, :school_led, :unfinished,
-                          ect_at_school_period: FactoryBot.create(:ect_at_school_period, :unfinished))
+        FactoryBot.create(:training_period, :school_led, :unfinished, ect_at_school_period:)
       end
 
       it_behaves_like "a training period preview"
@@ -422,8 +423,7 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
 
     context "for a mentor" do
       let(:training_period) do
-        FactoryBot.create(:training_period, :for_mentor, :provider_led, :unfinished,
-                          mentor_at_school_period: FactoryBot.create(:mentor_at_school_period, :unfinished))
+        FactoryBot.create(:training_period, :for_mentor, :provider_led, :unfinished, mentor_at_school_period:)
       end
 
       it_behaves_like "a training period preview"

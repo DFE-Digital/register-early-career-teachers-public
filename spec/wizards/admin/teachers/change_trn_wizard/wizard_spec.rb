@@ -2,6 +2,8 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::Wizard do
   subject { wizard.update! }
 
   let(:teacher) { FactoryBot.create(:teacher, :deactivated_in_trs, trn: old_trn) }
+  let(:old_trn) { "1234567" }
+  let(:new_trn) { "7654321" }
   let(:destination) { FactoryBot.create(:teacher, trn: new_trn) }
   let(:author) { FactoryBot.create(:dfe_user, role: "user_manager") }
   let(:store) { FactoryBot.build(:session_repository) }
@@ -22,11 +24,6 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::Wizard do
       expect(Teachers::SyncTeacherWithTRSJob).not_to have_been_enqueued
     end
   end
-
-  let(:old_trn) { "1234567" }
-  let(:new_trn) { "7654321" }
-
- 
 
   describe "#teacher_name" do
     before { store.source_teacher_name = "Previously stored name" }
@@ -116,7 +113,7 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::Wizard do
       let(:expected_error) { described_class::ProposedTRNChangedError }
 
       include_examples "it does not change the TRN"
-    end 
+    end
 
     context "when the source is reactivated after it was loaded" do
       let(:expected_error) { described_class::TeacherNotDeactivatedError }
@@ -178,7 +175,7 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::Wizard do
       expect(event.reload.teacher_id).to eq(destination.id)
     end
 
-    xcontext "when eligibility raises a resolver error" do
+    context "when eligibility raises a resolver error" do
       before do
         eligibility = instance_double(Teachers::TRN::Eligibility)
         allow(Teachers::TRN::Eligibility).to receive(:new)
@@ -188,7 +185,7 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::Wizard do
           .and_raise(Teachers::TRN::Resolver::ProposedTRNError)
       end
 
-      let(:expected_error) { ActiveRecord::RecordInvalid }
+      let(:expected_error) { described_class::ProposedTRNChangedError }
 
       include_examples "it does not change the TRN"
     end
@@ -241,7 +238,8 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::Wizard do
       let(:expected_error) { described_class::IneligibleForMergeError }
 
       context "when the TRN is unchanged" do
-        let(:destination) { teacher}
+        let(:destination) { teacher }
+        let(:expected_error) { described_class::MergeDestinationChangedError }
 
         before { store.trn = teacher.trn }
 
@@ -257,13 +255,22 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::Wizard do
         it_behaves_like "it does not change the TRN"
       end
 
-      xcontext "when eligibility changes before the destination is locked" do
-        let(:eligibility) { instance_double(Teachers::TRN::Eligibility) }
+      context "when eligibility changes before the destination is locked" do
         before do
-          allow(Teachers::TRN::Eligibility).to receive(:new).and_return(eligibility)
+          FactoryBot.create(:induction_period, teacher:)
+          allow(wizard.destination).to receive(:lock!) do
+            FactoryBot.create(:induction_period, teacher: destination)
+            wizard.destination
+          end
         end
 
-        it_behaves_like "it does not change the TRN"
+        it "checks eligibility after acquiring the destination lock" do
+          expect { subject }.to raise_error(described_class::IneligibleForMergeError)
+
+          expect(Teacher.exists?(teacher.id)).to be(true)
+          expect(store.records_processed).to be_nil
+          expect(Teachers::TRN::TRSSyncJob).not_to have_been_enqueued
+        end
       end
     end
 
@@ -279,10 +286,6 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::Wizard do
 
       include_examples "it does not change the TRN"
     end
-
-    
-
-    
 
     context "when the merge service raises after changing a record" do
       let(:service) { instance_double(Teachers::TRN::Merge) }
