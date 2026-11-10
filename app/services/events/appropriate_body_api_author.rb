@@ -13,4 +13,7 @@ class Events::AppropriateBodyAPIAuthor
       oauth_client:,
     }.compact
   end
+
+  def dfe_user? = false
+  def appropriate_body_user? = true
 end

@@ -1,0 +1,178 @@
+RSpec.describe API::V3::Teachers::SchoolTransferSerializer, type: :serializer do
+  include SchoolTransferHelpers
+
+  subject(:response) do
+    options = { lead_provider_id: lead_provider.id }
+    JSON.parse(described_class.render(teacher, **options))
+  end
+
+  let(:lead_provider) { FactoryBot.create(:lead_provider) }
+  let(:other_lead_provider) { FactoryBot.create(:lead_provider) }
+  let(:teacher) { FactoryBot.create(:teacher) }
+  let(:leaving_school_period) { teacher.ect_at_school_periods.order(:started_on).first }
+  let(:leaving_training_period) { leaving_school_period.latest_training_period }
+  let(:leaving_school) { leaving_school_period.school }
+  let(:joining_school_period) { teacher.ect_at_school_periods.order(:started_on).last }
+  let(:joining_training_period) { joining_school_period.earliest_training_period }
+  let(:joining_school) { joining_school_period.school }
+
+  describe ".dependencies" do
+    it "includes all dependencies required by the serializer" do
+      build_new_provider_transfer(teacher:, leaving_lead_provider: lead_provider)
+
+      teacher_with_dependencies = Teacher
+        .strict_loading
+        .includes(described_class.dependencies)
+        .find(teacher.id)
+
+      expect { described_class.render(teacher_with_dependencies, lead_provider_id: lead_provider.id) }.not_to raise_error
+    end
+  end
+
+  describe "core attributes" do
+    before do
+      build_new_provider_transfer(teacher:, leaving_lead_provider: lead_provider, joining_lead_provider: other_lead_provider)
+    end
+
+    it "serializes correctly" do
+      expect(response["id"]).to eq(teacher.api_id)
+      expect(response["type"]).to eq("participant-transfer")
+    end
+  end
+
+  describe "nested attributes" do
+    subject(:attributes) { response["attributes"] }
+
+    context "when there is a transfer with both leaving and joining training periods" do
+      before do
+        build_new_provider_transfer(teacher:, leaving_lead_provider: lead_provider, joining_lead_provider: other_lead_provider)
+
+        leaving_training_period.update!(api_transfer_updated_at: 3.days.ago)
+        joining_training_period.update!(api_transfer_updated_at: 5.days.ago)
+      end
+
+      it "serializes correctly" do
+        expect(attributes["updated_at"]).to eq(leaving_training_period.api_transfer_updated_at.utc.rfc3339)
+        expect(attributes["transfers"].size).to eq(1)
+
+        transfer = attributes["transfers"].first
+        expect(transfer["training_record_id"]).to eq(teacher.api_ect_training_record_id)
+        expect(transfer["transfer_type"]).to eq("new_provider")
+        expect(transfer["status"]).to eq("complete")
+        expect(transfer["created_at"]).to eq(leaving_training_period.created_at.utc.rfc3339)
+
+        leaving = transfer["leaving"]
+        expect(leaving["school_urn"]).to be_present
+        expect(leaving["school_urn"]).to eq(leaving_school.urn.to_s)
+        expect(leaving["provider"]).to be_present
+        expect(leaving["provider"]).to eq(lead_provider.name)
+        expect(leaving["date"]).to be_present
+        expect(leaving["date"]).to eq(leaving_training_period.finished_on.to_fs(:api))
+        joining = transfer["joining"]
+        expect(joining["school_urn"]).to be_present
+        expect(joining["school_urn"]).to eq(joining_school.urn.to_s)
+        expect(joining["provider"]).to be_present
+        expect(joining["provider"]).to eq(other_lead_provider.name)
+        expect(joining["date"]).to be_present
+        expect(joining_training_period.started_on).not_to eq(joining_training_period.finished_on)
+        expect(joining["date"]).to eq(joining_training_period.started_on.to_fs(:api))
+      end
+    end
+
+    context "when there is a transfer with a school-led joining training period" do
+      before do
+        build_new_provider_transfer(teacher:, leaving_lead_provider: lead_provider)
+
+        leaving_training_period.update!(api_transfer_updated_at: 3.days.ago)
+        joining_training_period.update!(api_transfer_updated_at: 1.day.ago)
+      end
+
+      it "serializes correctly" do
+        expect(attributes["updated_at"]).to eq(joining_training_period.api_transfer_updated_at.utc.rfc3339)
+        expect(attributes["transfers"].size).to eq(1)
+
+        transfer = attributes["transfers"].first
+        expect(transfer["training_record_id"]).to eq(teacher.api_ect_training_record_id)
+        expect(transfer["transfer_type"]).to eq("new_provider")
+        expect(transfer["status"]).to eq("complete")
+        expect(transfer["created_at"]).to eq(leaving_training_period.created_at.utc.rfc3339)
+
+        leaving = transfer["leaving"]
+        expect(leaving["school_urn"]).to be_present
+        expect(leaving["school_urn"]).to eq(leaving_school.urn.to_s)
+        expect(leaving["provider"]).to be_present
+        expect(leaving["provider"]).to eq(lead_provider.name)
+        expect(leaving["date"]).to be_present
+        expect(leaving["date"]).to eq(leaving_training_period.finished_on.to_fs(:api))
+        joining = transfer["joining"]
+        expect(joining["school_urn"]).to be_present
+        expect(joining["school_urn"]).to eq(joining_school.urn.to_s)
+        expect(joining["provider"]).to be_nil
+        expect(joining["date"]).to be_present
+        expect(joining_training_period.started_on).not_to eq(joining_training_period.finished_on)
+        expect(joining["date"]).to eq(joining_training_period.started_on.to_fs(:api))
+      end
+    end
+
+    context "when there is a transfer with an ongoing joining training period" do
+      before do
+        build_new_provider_transfer(teacher:, leaving_lead_provider: lead_provider)
+        joining_training_period.update!(finished_on: nil, api_transfer_updated_at: 2.days.ago)
+        leaving_training_period.update!(api_transfer_updated_at: 3.days.ago)
+      end
+
+      it "serializes correctly" do
+        expect(attributes["updated_at"]).to eq(joining_training_period.api_transfer_updated_at.utc.rfc3339)
+        expect(attributes["transfers"].size).to eq(1)
+
+        transfer = attributes["transfers"].first
+        expect(transfer["training_record_id"]).to eq(teacher.api_ect_training_record_id)
+        expect(transfer["transfer_type"]).to eq("new_provider")
+        expect(transfer["status"]).to eq("complete")
+        expect(transfer["created_at"]).to eq(leaving_training_period.created_at.utc.rfc3339)
+
+        leaving = transfer["leaving"]
+        expect(leaving["school_urn"]).to be_present
+        expect(leaving["school_urn"]).to eq(leaving_school.urn.to_s)
+        expect(leaving["provider"]).to be_present
+        expect(leaving["provider"]).to eq(lead_provider.name)
+        expect(leaving["date"]).to be_present
+        expect(leaving["date"]).to eq(leaving_training_period.finished_on.to_fs(:api))
+
+        joining = transfer["joining"]
+        expect(joining["school_urn"]).to be_present
+        expect(joining["school_urn"]).to eq(joining_school.urn.to_s)
+        expect(joining["provider"]).to be_nil
+        expect(joining["date"]).to eq(joining_training_period.started_on.to_fs(:api))
+      end
+    end
+
+    context "when there is a transfer without a joining_training_period" do
+      before do
+        build_unknown_transfer_for_finished_school_period(teacher:, lead_provider:)
+        leaving_training_period.update!(api_transfer_updated_at: 3.days.ago)
+      end
+
+      it "serializes correctly" do
+        expect(attributes["updated_at"]).to eq(leaving_training_period.api_transfer_updated_at.utc.rfc3339)
+        expect(attributes["transfers"].size).to eq(1)
+
+        transfer = attributes["transfers"].first
+        expect(transfer["training_record_id"]).to eq(teacher.api_ect_training_record_id)
+        expect(transfer["transfer_type"]).to eq("unknown")
+        expect(transfer["status"]).to eq("complete")
+        expect(transfer["created_at"]).to eq(leaving_training_period.created_at.utc.rfc3339)
+
+        leaving = transfer["leaving"]
+        expect(leaving["school_urn"]).to be_present
+        expect(leaving["school_urn"]).to eq(leaving_school.urn.to_s)
+        expect(leaving["provider"]).to be_present
+        expect(leaving["provider"]).to eq(lead_provider.name)
+        expect(leaving["date"]).to be_present
+        expect(leaving["date"]).to eq(leaving_training_period.finished_on.to_fs(:api))
+        joining = transfer["joining"]
+        expect(joining).to be_nil
+      end
+    end
+  end
+end

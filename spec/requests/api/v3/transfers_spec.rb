@@ -1,7 +1,7 @@
 RSpec.describe "Participant transfers API", type: :request do
   include SchoolTransferHelpers
 
-  let(:serializer) { API::Teachers::SchoolTransferSerializer }
+  let(:serializer) { API::V3::Teachers::SchoolTransferSerializer }
   let(:serializer_options) { { lead_provider_id: lead_provider.id } }
   let(:query) { API::Teachers::SchoolTransfers::Query }
   let(:framework_agreement) { FactoryBot.create(:framework_agreement) }

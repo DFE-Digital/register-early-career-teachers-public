@@ -12,6 +12,7 @@ SENTRY_ENVIRONMENT: migration
 ENABLE_PERSONAS: false
 SERVICE_URL: "https://cpd-ec2-migration-web.teacherservices.cloud"
 DFE_ANALYTICS_ENABLED: false
+ENABLE_AIRBYTE: false
 TRS_API_BASE_URL: "https://preprod.teacher-qualifications-api.education.gov.uk"
 TRS_API_VERSION: "20260120"
 ENCRYPTION_PRIMARY_KEY: migration_primary_key

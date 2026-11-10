@@ -2,6 +2,11 @@ class School < ApplicationRecord
   include GIASHelpers
   include DeclarativeUpdates
 
+  ACTED_AS_APPROPRIATE_BODY_DATES = {
+    introduced_on: Date.new(1999, 9, 1),
+    retired_on: Date.new(2021, 8, 31),
+  }.freeze
+
   # Enums
   enum :last_chosen_training_programme,
        { provider_led: "provider_led",

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_29_092623) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_30_171516) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -30,7 +30,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_29_092623) do
   create_enum "declaration_types", ["started", "retained-1", "retained-2", "retained-3", "retained-4", "completed", "extended-1", "extended-2", "extended-3"]
   create_enum "deferral_reasons", ["bereavement", "long_term_sickness", "parental_leave", "career_break", "other"]
   create_enum "dfe_role_type", ["admin", "user_manager", "finance", "product_team"]
-  create_enum "event_author_types", ["appropriate_body_user", "school_user", "dfe_staff_user", "system", "lead_provider_api", "oauth_client", "appropriate_body_api"]
+  create_enum "event_author_types", ["appropriate_body_user", "school_user", "dfe_staff_user", "system", "lead_provider_api", "appropriate_body_api"]
   create_enum "evidence_types", ["training-event-attended", "self-study-material-completed", "materials-engaged-with-offline", "75-percent-engagement-met", "75-percent-engagement-met-reduced-induction", "one-term-induction", "other"]
   create_enum "fee_types", ["output", "service"]
   create_enum "gias_school_statuses", ["open", "closed", "proposed_to_close", "proposed_to_open"]
@@ -125,6 +125,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_29_092623) do
     t.bigint "school_id"
     t.bigint "teaching_school_hub_id"
     t.datetime "updated_at", null: false
+    t.date "started_on"
+    t.date "finished_on"
+    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on, '[]'::text)", stored: true
     t.uuid "external_id", default: -> { "gen_random_uuid()" }, null: false
     t.index ["dfe_sign_in_organisation_id"], name: "index_appropriate_body_periods_on_dfe_sign_in_organisation_id", unique: true
     t.index ["external_id"], name: "index_appropriate_body_periods_on_external_id", unique: true
@@ -132,6 +135,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_29_092623) do
     t.index ["national_body_id"], name: "index_appropriate_body_periods_on_national_body_id"
     t.index ["school_id"], name: "index_appropriate_body_periods_on_school_id"
     t.index ["teaching_school_hub_id"], name: "index_appropriate_body_periods_on_teaching_school_hub_id"
+    t.check_constraint "finished_on >= started_on", name: "finished_on_not_before_started_on"
   end
 
   create_table "blazer_audits", force: :cascade do |t|

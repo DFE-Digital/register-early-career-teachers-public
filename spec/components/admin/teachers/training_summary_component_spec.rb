@@ -236,7 +236,7 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
 
     context "when the API raises an error" do
       before do
-        allow(API::TeacherSerializer)
+        allow(API::V3::TeacherSerializer)
         .to receive(:render)
         .and_raise(Enumerable::SoleItemExpectedError)
 

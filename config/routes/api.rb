@@ -45,6 +45,8 @@ namespace :api do
         resources :appropriate_bodies, only: :index, path: "appropriate-bodies"
         resources :teachers, only: [], param: :trn do
           resource :claim, only: :create
+          resource :pass, only: :create
+          resource :release, only: :create
         end
       end
     end
@@ -52,6 +54,7 @@ namespace :api do
     get "docs", to: "documentation#show", as: :documentation
     resource :hello_documentation, only: :show, path: "docs/hello", controller: "hello/documentations"
     resource :induction_v1_documentation, only: :show, path: "docs/induction/v1", controller: "induction/v1/documentations"
+    resource :training_v4_documentation, only: :show, path: "docs/training/v4", controller: "training/v4/documentations"
     get "docs/authorisation", to: redirect("/api/docs/authorisation/how-authorisation-works"), as: :documentation_authorisation
     get "docs/authorisation/*page", to: "documentation/authorisation#page", as: :documentation_authorisation_page
   end
@@ -69,7 +72,6 @@ namespace :api do
 
         get "*page", to: "guidance#page", as: :guidance_page
       end
-
       get "v3", to: "v3/documentation#index", as: :documentation
     end
   end

@@ -14,10 +14,7 @@ module API
 
       private
 
-        def claim_params
-          params.expect(claim: %i[date_of_birth started_on training_programme])
-                .merge(trn: params[:teacher_trn]).to_h.symbolize_keys
-        end
+        def claim_params = API::Induction::V1::ClaimRequest.parse(params)
       end
     end
   end

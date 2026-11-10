@@ -65,7 +65,7 @@ module API
       end
 
       def serializer
-        API::SchoolSerializer
+        API::V3::SchoolSerializer
       end
     end
   end

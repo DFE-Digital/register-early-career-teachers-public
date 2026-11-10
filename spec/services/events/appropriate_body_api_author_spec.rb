@@ -22,4 +22,10 @@ RSpec.describe Events::AppropriateBodyAPIAuthor do
       })
     end
   end
+
+  it "acts as an appropriate body user" do
+    author = described_class.new(appropriate_body_period:)
+
+    expect(author).to have_attributes(dfe_user?: false, appropriate_body_user?: true)
+  end
 end

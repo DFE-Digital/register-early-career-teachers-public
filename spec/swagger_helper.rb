@@ -182,9 +182,36 @@ RSpec.configure do |config|
           **API::Induction::V1::AppropriateBodySerializer.openapi_schema_definition,
           **API::Induction::V1::ClaimSerializer.openapi_schema_definition,
           **API::Induction::V1::ErrorSerializer.openapi_schema_definition,
+          **API::Induction::V1::PassSerializer.openapi_schema_definition,
+          **API::Induction::V1::ReleaseSerializer.openapi_schema_definition,
           **API::OAuth::ErrorSerializer.openapi_schema_definition(include_namespace: true),
-          ClaimRequest: INDUCTION_CLAIM_REQUEST,
+          **API::Induction::V1::ClaimRequest.openapi_schema_definition,
+          **API::Induction::V1::PassRequest.openapi_schema_definition,
+          **API::Induction::V1::ReleaseRequest.openapi_schema_definition,
         },
+      },
+    },
+    "training/v4/swagger.yaml" => {
+      openapi: "3.0.1",
+      info: {
+        title: "Training API",
+        version: "v4",
+      },
+      paths: {},
+      components: {
+        securitySchemes: {
+          bearer: {
+            type: :http,
+            scheme: :bearer,
+            description: "OAuth 2.0 access token",
+          },
+          client_credentials: {
+            type: :http,
+            scheme: :basic,
+            description: "OAuth 2.0 client ID and secret",
+          },
+        },
+        schemas: {},
       },
     },
   }

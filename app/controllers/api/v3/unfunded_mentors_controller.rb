@@ -49,7 +49,7 @@ module API
       end
 
       def serializer
-        API::Teachers::UnfundedMentorSerializer
+        API::V3::Teachers::UnfundedMentorSerializer
       end
 
       def updated_at_attribute

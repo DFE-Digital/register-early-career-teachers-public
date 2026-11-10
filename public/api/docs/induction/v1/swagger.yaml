@@ -96,6 +96,116 @@ paths:
           application/json:
             schema:
               "$ref": "#/components/schemas/ClaimRequest"
+  "/api/induction/v1/teachers/{teacher_trn}/pass":
+    post:
+      summary: Pass an early career teacher's induction
+      security:
+      - bearer: []
+      tags:
+      - Inductions
+      operationId: postTeacherPass
+      parameters:
+      - name: teacher_trn
+        in: path
+        description: The teacher reference number.
+        example: '1234567'
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: The early career teacher's induction was passed
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Pass"
+        '400':
+          description: The request body is missing or is not a JSON object
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '401':
+          description: The access token is missing, unknown, expired or revoked. A
+            missing token returns no body.
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/OAuthError"
+        '404':
+          description: No teacher with the TRN has an ongoing induction with you
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '422':
+          description: The induction could not be passed
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '429':
+          description: Too many requests. Retry after the rate limit period has passed.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/PassRequest"
+  "/api/induction/v1/teachers/{teacher_trn}/release":
+    post:
+      summary: Release an early career teacher
+      security:
+      - bearer: []
+      tags:
+      - Inductions
+      operationId: postTeacherRelease
+      parameters:
+      - name: teacher_trn
+        in: path
+        description: The teacher reference number.
+        example: '1234567'
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: The early career teacher was released
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Release"
+        '400':
+          description: The request body is missing or is not a JSON object
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '401':
+          description: The access token is missing, unknown, expired or revoked. A
+            missing token returns no body.
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/OAuthError"
+        '404':
+          description: No teacher with the TRN has an ongoing induction with you
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '422':
+          description: The early career teacher could not be released
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '429':
+          description: Too many requests. Retry after the rate limit period has passed.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/ReleaseRequest"
 components:
   securitySchemes:
     bearer:
@@ -128,7 +238,7 @@ components:
       required:
       - trn
       - full_name
-      - started_on
+      - claimed_from
       - training_programme
       properties:
         trn:
@@ -139,7 +249,7 @@ components:
           type: string
           example: John Doe
           description: The teacher's name.
-        started_on:
+        claimed_from:
           type: string
           format: date
           example: '2026-01-04'
@@ -177,6 +287,58 @@ components:
                   appropriate body
                 description: An explanation of the error.
           description: The errors.
+    Pass:
+      description: An appropriate body's pass of an early career teacher's induction.
+      type: object
+      required:
+      - trn
+      - full_name
+      - passed_on
+      - number_of_terms
+      properties:
+        trn:
+          type: string
+          example: '1234567'
+          description: The teacher reference number.
+        full_name:
+          type: string
+          example: John Doe
+          description: The teacher's name.
+        passed_on:
+          type: string
+          format: date
+          example: '2026-07-20'
+          description: The date the ECT passed their induction.
+        number_of_terms:
+          type: number
+          example: 3
+          description: The number of terms the ECT completed with you.
+    Release:
+      description: An appropriate body's release of an early career teacher's induction.
+      type: object
+      required:
+      - trn
+      - full_name
+      - released_on
+      - number_of_terms
+      properties:
+        trn:
+          type: string
+          example: '1234567'
+          description: The teacher reference number.
+        full_name:
+          type: string
+          example: John Doe
+          description: The teacher's name.
+        released_on:
+          type: string
+          format: date
+          example: '2026-07-20'
+          description: The date the ECT was released.
+        number_of_terms:
+          type: number
+          example: 3
+          description: The number of terms the ECT completed with you.
     OAuthError:
       description: An OAuth 2.0 error.
       type: object
@@ -192,24 +354,56 @@ components:
       type: object
       required:
       - date_of_birth
-      - started_on
+      - claimed_from
       - training_programme
       properties:
         date_of_birth:
-          description: The teacher's date of birth.
           type: string
           format: date
           example: '2001-05-13'
-        started_on:
-          description: The date you are claiming the ECT from.
+          description: The teacher's date of birth.
+        claimed_from:
           type: string
           format: date
           example: '2026-01-04'
+          description: The date you are claiming the ECT from.
         training_programme:
-          description: The training programme under which you are registering this
-            claim.
           type: string
           enum:
           - provider_led
           - school_led
           example: provider_led
+          description: The training programme under which you are registering this
+            claim.
+    PassRequest:
+      description: Pass an early career teacher's induction
+      type: object
+      required:
+      - passed_on
+      - number_of_terms
+      properties:
+        passed_on:
+          type: string
+          format: date
+          example: '2026-07-20'
+          description: The date the ECT passed their induction.
+        number_of_terms:
+          type: number
+          example: 3
+          description: The number of terms the ECT completed with you.
+    ReleaseRequest:
+      description: Release an early career teacher
+      type: object
+      required:
+      - released_on
+      - number_of_terms
+      properties:
+        released_on:
+          type: string
+          format: date
+          example: '2026-07-20'
+          description: The date the ECT was released.
+        number_of_terms:
+          type: number
+          example: 3
+          description: The number of terms the ECT completed with you.

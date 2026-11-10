@@ -33,7 +33,7 @@ module API
       def change_schedule
         validate_change_schedule_params!
 
-        service = Teachers::ChangeSchedule.new(
+        service = API::Teachers::ChangeSchedule.new(
           **lead_provider_filter,
           teacher_api_id: teacher.api_id,
           teacher_type:,
@@ -147,7 +147,7 @@ module API
       end
 
       def serializer
-        API::TeacherSerializer
+        API::V3::TeacherSerializer
       end
     end
   end
