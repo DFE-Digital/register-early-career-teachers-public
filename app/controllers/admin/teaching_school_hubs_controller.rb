@@ -2,8 +2,8 @@ class Admin::TeachingSchoolHubsController < AdminController
   layout "full"
 
   def index
-    @hubs_with_concurrent_appropriate_body_periods, @other_hubs =
-      hubs.order(:name).partition(&:concurrent_appropriate_body_periods?)
+    @hubs_with_multiple_appropriate_body_periods, @other_hubs =
+      hubs.order(:name).partition(&:has_multiple_active_appropriate_body_periods?)
   end
 
   def show

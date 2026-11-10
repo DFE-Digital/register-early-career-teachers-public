@@ -83,52 +83,53 @@ RSpec.describe TeachingSchoolHub do
     end
   end
 
-  describe "#concurrent_appropriate_body_periods?" do
-    subject(:concurrent) { teaching_school_hub.concurrent_appropriate_body_periods? }
+  describe "#has_multiple_active_appropriate_body_periods?" do
+    subject(:teaching_school_hub) { FactoryBot.create(:teaching_school_hub) }
 
-    let(:teaching_school_hub) { FactoryBot.create(:teaching_school_hub) }
-    let(:school) { FactoryBot.create(:school, :eligible) }
+    let(:provisioning_school) { FactoryBot.create(:school, :eligible) }
+
     let(:first_period) do
-      FactoryBot.create(
-        :appropriate_body_period,
-        :teaching_school_hub,
-        teaching_school_hub:,
-        provisioning_school: school,
-        name: "First Period"
-      )
+      FactoryBot.create(:appropriate_body_period, :teaching_school_hub,
+                        teaching_school_hub:,
+                        provisioning_school:,
+                        name: "First Period")
+    end
+    let(:second_period) do
+      FactoryBot.create(:appropriate_body_period, :teaching_school_hub,
+                        teaching_school_hub:,
+                        provisioning_school:,
+                        name: "Second Period")
+    end
+    let(:inactive_second_period) do
+      FactoryBot.create(:appropriate_body_period, :teaching_school_hub,
+                        teaching_school_hub:,
+                        provisioning_school:,
+                        name: "Second Period",
+                        finished_on: 1.year.ago)
     end
 
-    it "is false when the hub has a single active period" do
-      first_period
+    context "when the hub has a single active period" do
+      before { first_period }
 
-      expect(concurrent).to be(false)
+      it { is_expected.not_to have_multiple_active_appropriate_body_periods }
     end
 
-    it "is true when the hub has more than one active period" do
-      first_period
-      FactoryBot.create(
-        :appropriate_body_period,
-        :teaching_school_hub,
-        teaching_school_hub:,
-        provisioning_school: school,
-        name: "Second Period"
-      )
+    context "when the hub has more than one active period" do
+      before do
+        first_period
+        second_period
+      end
 
-      expect(concurrent).to be(true)
+      it { is_expected.to have_multiple_active_appropriate_body_periods }
     end
 
-    it "is false when only one of the periods has a DfE Sign-in organisation" do
-      first_period
-      FactoryBot.create(
-        :appropriate_body_period,
-        :teaching_school_hub,
-        :inactive,
-        teaching_school_hub:,
-        provisioning_school: school,
-        name: "Second Period"
-      )
+    context "when the hub has active and inactive periods" do
+      before do
+        first_period
+        inactive_second_period
+      end
 
-      expect(concurrent).to be(false)
+      it { is_expected.not_to have_multiple_active_appropriate_body_periods }
     end
   end
 end

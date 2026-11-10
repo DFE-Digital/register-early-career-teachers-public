@@ -26,9 +26,12 @@ module Admin
       end
 
       # @return [Boolean]
-      def concurrent? = named? && (teaching_school_hub&.concurrent_appropriate_body_periods? || false)
+      def distinct_period_names? = named? && hub_has_multiple_periods?
 
     private
+
+      # @return [Boolean]
+      def hub_has_multiple_periods? = teaching_school_hub&.has_multiple_active_appropriate_body_periods? || false
 
       # @return [Boolean] LA or TS, only NB and TSH are operational
       def legacy_body?
