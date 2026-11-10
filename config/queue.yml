@@ -74,6 +74,9 @@ review:
 
 staging:
   <<: *non_production
+  dispatchers:
+    - polling_interval: 1
+      batch_size: 500
 
 sandbox:
   <<: *non_production
