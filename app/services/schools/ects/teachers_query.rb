@@ -10,10 +10,10 @@ module Schools::ECTs
         .search
         .strict_loading
         .preload(
-          ongoing_induction_period: :appropriate_body_period,
+          ongoing_induction_period: { appropriate_body_period: AppropriateBodyPeriod.body_type_associations },
           current_or_next_ect_at_school_period: [
             :school,
-            :school_reported_appropriate_body,
+            { school_reported_appropriate_body: AppropriateBodyPeriod.body_type_associations },
             {
               current_or_next_mentorship_period: { mentor: :teacher },
               upcoming_mentorship_periods: { mentor: :teacher },
