@@ -4,7 +4,7 @@ module Admin
       class EnterTRNStep < Step
         attribute :trn, :string
 
-        delegate :merge_proposed?, to: :wizard
+        delegate :merge_proposed?, :ineligible_for_merge?, to: :wizard
 
         validates :trn,
                   teacher_reference_number: true,
@@ -16,7 +16,13 @@ module Admin
         def self.permitted_params = [:trn]
 
         def next_step
-          merge_proposed? ? :merge_preview : :confirm
+          if ineligible_for_merge?
+            :cannot_use_trn
+          elsif merge_proposed?
+            :merge_preview
+          else
+            :confirm
+          end
         end
 
         def save!
