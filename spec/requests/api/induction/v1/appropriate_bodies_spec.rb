@@ -15,6 +15,20 @@ RSpec.describe "GET /api/induction/v1/appropriate-bodies", type: :request do
     ])
   end
 
+  it "names each period with no name of its own after its body type record, with no query per row" do
+    %i[teaching_school_hub national local_authority teaching_school].each do |body_type|
+      abp = FactoryBot.create(:appropriate_body_period, body_type)
+      # Factory initializes by name
+      abp.update_columns(name: nil, dfe_sign_in_organisation_id: SecureRandom.uuid)
+    end
+
+    get "/api/induction/v1/appropriate-bodies", headers: basic_auth_headers(client:)
+
+    expect(response).to have_http_status(:ok)
+    expect(response.parsed_body.pluck("name")).to match_array(AppropriateBodyPeriod.active.map(&:display_name))
+    expect(response.parsed_body.pluck("name")).to all(be_present)
+  end
+
   it "rejects bad client credentials" do
     get "/api/induction/v1/appropriate-bodies", headers: basic_auth_headers(client:, secret: "wrong")
     expect(response).to have_http_status(:unauthorized)
