@@ -195,11 +195,15 @@ module Schools
     end
 
     def preserve_training_history!
-      return unless training_programme == "provider_led"
+      return unless provider_led?
 
       contract_period
       preserved_contract_period
       schedule
+    end
+
+    def provider_led?
+      training_programme == "provider_led"
     end
 
     def training_period_started_on
