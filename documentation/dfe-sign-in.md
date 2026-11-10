@@ -115,7 +115,7 @@ The two sub-services join on different keys, so one organisation can act in both
 
 | Sub-service | Record | Role |
 | --- | --- | --- |
-| RECT | URN matched to a `School` | `SchoolUser` |
+| RECT | URN matched to a `School` or `GIAS::School` | `SchoolUser` |
 | RIAB | UUID matched to an `AppropriateBodyPeriod` | `AppropriateBodyUser` |
 
 - Only active appropriate body periods have a DfE Sign-In UUID, legacy bodies cannot authenticate.
