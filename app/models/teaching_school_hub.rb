@@ -24,7 +24,5 @@ class TeachingSchoolHub < ApplicationRecord
     end
   end
 
-  def concurrent_appropriate_body_periods?
-    appropriate_body_periods.count(&:active?) > 1
-  end
+  def has_multiple_active_appropriate_body_periods? = appropriate_body_periods.count(&:active?) > 1
 end

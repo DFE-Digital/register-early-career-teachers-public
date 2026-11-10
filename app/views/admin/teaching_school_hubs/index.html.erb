@@ -3,13 +3,13 @@
   backlink_href: admin_organisations_path,
 ) %>
 
-<% if @hubs_with_concurrent_appropriate_body_periods.any? %>
+<% if @hubs_with_multiple_appropriate_body_periods.any? %>
   <h2 class="govuk-heading-m">More than one active appropriate body</h2>
   <p class="govuk-body">
     Multiple provisioning schools within the organisation.
   </p>
 
-  <%= render Admin::TeachingSchoolHubs::SummaryCardComponent.with_collection(@hubs_with_concurrent_appropriate_body_periods) %>
+  <%= render Admin::TeachingSchoolHubs::SummaryCardComponent.with_collection(@hubs_with_multiple_appropriate_body_periods) %>
 <% end %>
 
 <% if @other_hubs.any? %>
