@@ -21,9 +21,9 @@ private
     return "not used" unless Rails.cache.is_a?(ActiveSupport::Cache::RedisCacheStore)
 
     "connected" if Rails.cache.redis.with(&:ping) == "PONG"
-  rescue RedisClient::CannotConnectError
+  rescue Redis::CannotConnectError
     "cannot connect"
-  rescue RedisClient::Error
+  rescue Redis::BaseError
     "error connecting"
   end
 end

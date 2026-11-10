@@ -39,7 +39,7 @@ RSpec.describe "Health check" do
     describe "Redis" do
       context "when Redis is not connected" do
         before do
-          allow(Rails.cache.redis).to receive(:with).and_raise(RedisClient::CannotConnectError)
+          allow(Rails.cache.redis).to receive(:with).and_raise(Redis::CannotConnectError)
         end
 
         it "returns 'not connected'" do
@@ -51,7 +51,7 @@ RSpec.describe "Health check" do
 
       context "when Redis errors while connected" do
         before do
-          allow(Rails.cache.redis).to receive(:with).and_raise(RedisClient::Error)
+          allow(Rails.cache.redis).to receive(:with).and_raise(Redis::BaseError)
         end
 
         it "returns 'error connecting'" do
