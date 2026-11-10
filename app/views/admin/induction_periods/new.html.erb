@@ -13,9 +13,9 @@
       <%= content_for(:error_summary) { f.govuk_error_summary } %>
 
       <%= f.govuk_collection_select(:appropriate_body_period_id,
-                                    AppropriateBodyPeriod.select(:id, :name).all,
+                                    AppropriateBodyPeriod.with_display_names.sort_by { it.display_name.to_s },
                                     :id,
-                                    :name,
+                                    :display_name,
                                     label: { text: "Which appropriate body was this induction period completed with" },
                                     options: { include_blank: true },
                                     class: "autocomplete"

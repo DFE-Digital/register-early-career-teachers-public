@@ -7,12 +7,12 @@ module AppropriateBodies
     end
 
     def self.istip
-      new(::NationalBody::ISTIP).search.first ||
+      AppropriateBodyPeriod.national.joins(:national_body).find_by(national_bodies: { name: ::NationalBody::ISTIP }) ||
         raise(ActiveRecord::RecordNotFound, "ISTIP appropriate body period not found!")
     end
 
     def self.esp
-      new(::NationalBody::ESP).search.first ||
+      AppropriateBodyPeriod.national.joins(:national_body).find_by(national_bodies: { name: ::NationalBody::ESP }) ||
         raise(ActiveRecord::RecordNotFound, "ESP appropriate body period not found!")
     end
 
@@ -20,6 +20,9 @@ module AppropriateBodies
       @scope.find_by(dfe_sign_in_organisation_id:)
     end
 
+    # Only ABPs with a DSI UUID are currently surfaced meaning the majority are hidden.
+    # Moving to body_type specific search so ABP names can be treated differently in the future
+    # for teaching school hubs.
     def search
       query = if @query_string.blank?
                 @scope.all

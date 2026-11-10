@@ -727,6 +727,16 @@ describe AppropriateBodyPeriod do
     end
   end
 
+  describe ".with_display_names" do
+    it "loads linked body records for #display_name" do
+      %i[national local_authority teaching_school teaching_school_hub].each do |body_type|
+        FactoryBot.create(:appropriate_body_period, body_type).tap { it.update!(name: nil) }
+      end
+
+      expect { described_class.with_display_names.strict_loading.map(&:display_name) }.not_to raise_error
+    end
+  end
+
   describe "#display_name" do
     subject(:display_name) { appropriate_body_period.display_name }
 

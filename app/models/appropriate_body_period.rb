@@ -62,8 +62,12 @@ class AppropriateBodyPeriod < ApplicationRecord
       .overlapping_with(period)
   }
 
+  scope :with_display_names, -> {
+    includes(:teaching_school_hub, :national_body, :local_authority, provisioning_school: :gias_school)
+  }
+
   # Normalizations
-  normalizes :name, with: -> { it.squish }
+  normalizes :name, with: -> { it.squish.presence }
 
   # Validations
   validates :name, uniqueness: true, allow_nil: true
