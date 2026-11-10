@@ -190,7 +190,7 @@ RSpec.describe Statements::MarkAsPayable do
     it "does not modify the declarations" do
       expect {
         subject.report_invalid_declarations
-      }.not_to(change(declaration, :attributes))
+      }.not_to(change { declaration.reload.attributes })
     end
 
     context "when a declaration is not valid" do
