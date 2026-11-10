@@ -55,6 +55,7 @@ RSpec.describe Admin::TeachingSchoolHubs::SummaryCardComponent, type: :component
 
       it "names each period, so concurrent bodies can be told apart" do
         expect(rendered_content).to have_selector("strong", text: "Acme TSH East:")
+        expect(rendered_content).to have_selector("strong", text: "Acme TSH West:")
       end
 
       it "names the hub once, not once per period" do
