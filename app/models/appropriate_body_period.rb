@@ -153,7 +153,7 @@ private
       return
     end
 
-    if concurrent.where(name:).exists?
+    if concurrent.with_display_names.any? { it.display_name.eql?(display_name) }
       errors.add(:name, "Another active appropriate body in the teaching school hub uses this name.")
     end
   end

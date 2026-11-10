@@ -654,6 +654,25 @@ describe AppropriateBodyPeriod do
       end
     end
 
+    context "when the teaching school hub name and appropriate body period name collide" do
+      let(:period_1) { hub_period(name: teaching_school_hub.name, started_on: Date.yesterday, finished_on: nil) }
+      let(:period_2) { hub_period(name: teaching_school_hub.name, started_on: Date.yesterday, finished_on: nil) }
+
+      before do
+        period_1.save!
+        period_1.update!(name: nil)
+      end
+
+      it "enforces a unique name" do
+        # period_1 has no name and is therefore named by the hub
+        expect(period_1.display_name).to eq(teaching_school_hub.name)
+        # period_2 has the same name as the hub and therefore collides with period_1
+        expect(period_2.display_name).to eq(teaching_school_hub.name)
+
+        expect(period_2).to have_error(:name, "Another active appropriate body in the teaching school hub uses this name.")
+      end
+    end
+
     context "when the name of an earlier period is reused" do
       before do
         hub_period(name: "Acme TSH East",
