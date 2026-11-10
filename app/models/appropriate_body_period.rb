@@ -24,6 +24,10 @@ class AppropriateBodyPeriod < ApplicationRecord
     message: "Must be local authority, national, teaching school hub or teaching school"
   }
 
+  def self.body_type_associations
+    [:teaching_school_hub, :national_body, :local_authority, { provisioning_school: :gias_school }]
+  end
+
   include Interval
 
   # Associations
@@ -62,9 +66,7 @@ class AppropriateBodyPeriod < ApplicationRecord
       .overlapping_with(period)
   }
 
-  scope :with_display_names, -> {
-    includes(:teaching_school_hub, :national_body, :local_authority, provisioning_school: :gias_school)
-  }
+  scope :with_display_names, -> { includes(*body_type_associations) }
 
   # Normalizations
   normalizes :name, with: -> { it.squish.presence }
