@@ -12,7 +12,7 @@
       <%= @wizard.teacher_name %> has more than one school period. Select the period to undo.
     </p>
 
-    <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |form| %>
+    <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path, scope: @wizard.current_step_name) do |form| %>
       <%= content_for(:error_summary) { form.govuk_error_summary } %>
 
       <%= form.govuk_radio_buttons_fieldset(

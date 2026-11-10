@@ -1,319 +1,119 @@
 RSpec.describe Admin::Teachers::UndoRegistrationWizard::Wizard do
-  let(:store) { FactoryBot.build(:session_repository) }
+  subject(:wizard) { described_class.new(state_store:, current_step:) }
+
+  let(:state_store) do
+    Admin::Teachers::UndoRegistrationWizard::StateStore.new(teacher:, author: instance_double(User))
+  end
   let(:teacher) { FactoryBot.create(:teacher) }
-  let(:author) { instance_double(User) }
   let(:current_step) { :start }
-  let(:wizard) do
-    described_class.new(
-      author:,
-      store:,
-      teacher_id: teacher.id,
-      current_step:
+  let!(:at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher:) }
+
+  def path_for(step)
+    Rails.application.routes.url_helpers.public_send(
+      "admin_teacher_undo_registration_wizard_#{step}_path", teacher
     )
   end
 
-  describe ".step?" do
-    it "returns true for a configured step" do
-      expect(described_class.step?(:start)).to be(true)
-    end
+  it { is_expected.to have_root_step(:start) }
 
-    it "returns false for an unknown step" do
-      expect(described_class.step?(:unknown)).to be(false)
-    end
+  it "defines a route for every step" do
+    expect(described_class.routes).to match_array(wizard.step_definitions.keys)
   end
 
-  describe "#allowed_steps" do
-    subject { wizard.allowed_steps }
-
-    context "when the teacher has no at school periods" do
-      it "does not allow the undo registration journey" do
-        expect(wizard.allowed_steps).to be_empty
-        expect(wizard.allowed_step_path)
-          .to eq(Rails.application.routes.url_helpers.admin_teacher_school_path(teacher))
-      end
-    end
-
-    context "when the teacher has one ECT at school period" do
-      before { FactoryBot.create(:ect_at_school_period, teacher:) }
-
-      it { is_expected.to eq(%i[start confirm]) }
-    end
-
-    context "when the teacher has one mentor at school period" do
-      before { FactoryBot.create(:mentor_at_school_period, teacher:) }
-
-      it { is_expected.to eq(%i[start confirm]) }
-    end
-
-    context "when the registration has no open periods to close" do
-      let!(:at_school_period) do
-        FactoryBot.create(
-          :ect_at_school_period,
-          teacher:,
-          started_on: 2.years.ago.to_date,
-          finished_on: 1.year.ago.to_date
-        )
-      end
-      let!(:training_period) do
-        FactoryBot.create(
-          :training_period,
-          :for_ect,
-          ect_at_school_period: at_school_period,
-          started_on: 18.months.ago.to_date,
-          finished_on: 1.year.ago.to_date
-        )
-      end
-
-      before { FactoryBot.create(:declaration, :eligible, training_period:) }
-
-      it "does not allow the undo registration journey" do
-        expect(wizard.allowed_steps).to be_empty
-        expect(wizard.allowed_step_path)
-          .to eq(Rails.application.routes.url_helpers.admin_teacher_school_path(teacher))
-      end
-    end
-
-    context "when the teacher has multiple ECT at school periods" do
-      before do
-        FactoryBot.create(
-          :ect_at_school_period,
-          teacher:,
-          started_on: 2.years.ago.to_date,
-          finished_on: 1.year.ago.to_date
-        )
-        FactoryBot.create(:ect_at_school_period, teacher:, started_on: 6.months.ago.to_date, finished_on: nil)
-      end
-
-      it { is_expected.to eq(%i[start select_school_period]) }
-    end
-
-    context "when the teacher has multiple mentor at school periods" do
-      before do
-        FactoryBot.create(
-          :mentor_at_school_period,
-          teacher:,
-          started_on: 2.years.ago.to_date,
-          finished_on: 1.year.ago.to_date
-        )
-        FactoryBot.create(:mentor_at_school_period, teacher:, started_on: 6.months.ago.to_date, finished_on: nil)
-      end
-
-      it { is_expected.to eq(%i[start select_school_period]) }
-    end
-
-    context "when the teacher has both ECT and mentor at school periods" do
-      before do
-        FactoryBot.create(:ect_at_school_period, teacher:)
-        FactoryBot.create(:mentor_at_school_period, teacher:)
-      end
-
-      it { is_expected.to eq(%i[start select_school_period]) }
-    end
-
-    context "when the teacher has selected one of multiple school periods" do
-      let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
-
-      before do
-        FactoryBot.create(:mentor_at_school_period, teacher:)
-        store.at_school_period_gid = ect_at_school_period.to_global_id.to_s
-      end
-
-      it { is_expected.to eq(%i[start select_school_period confirm]) }
-    end
-
-    context "when the registration has been undone" do
-      before { store.registration_undone = true }
-
-      it { is_expected.to eq([:confirmation]) }
-    end
+  it "resolves step paths for the teacher" do
+    expect(wizard).to resolve_step(:confirm).to(path_for(:confirm))
   end
 
-  describe "#at_school_period" do
-    subject { wizard.at_school_period }
-
-    context "when the teacher has one ECT at school period" do
-      let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
-
-      it { is_expected.to eq(ect_at_school_period) }
-    end
-
-    context "when the teacher has one mentor at school period" do
-      let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:) }
-
-      it { is_expected.to eq(mentor_at_school_period) }
-    end
-
-    context "when the teacher has no at school periods" do
-      it { is_expected.to be_nil }
-    end
-
-    context "when the teacher has multiple at school periods" do
-      before do
-        FactoryBot.create(:ect_at_school_period, teacher:)
-        FactoryBot.create(:mentor_at_school_period, teacher:)
-      end
-
-      it { is_expected.to be_nil }
-    end
-
-    context "when the teacher has multiple at school periods and one has been selected" do
-      let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:) }
-
-      before do
-        FactoryBot.create(:ect_at_school_period, teacher:)
-        store.at_school_period_gid = mentor_at_school_period.to_global_id.to_s
-      end
-
-      it { is_expected.to eq(mentor_at_school_period) }
-    end
-
-    context "when the selected school period belongs to another teacher" do
-      let!(:other_school_period) { FactoryBot.create(:ect_at_school_period) }
-
-      before do
-        FactoryBot.create(:ect_at_school_period, teacher:)
-        FactoryBot.create(:mentor_at_school_period, teacher:)
-        store.at_school_period_gid = other_school_period.to_global_id.to_s
-      end
-
-      it { is_expected.to be_nil }
-    end
-  end
-
-  describe "#at_school_periods" do
-    let!(:older_ect_at_school_period) do
-      FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2023, 9, 1))
-    end
-    let!(:newer_ect_at_school_period) do
-      FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2024, 9, 1))
-    end
-    let!(:older_mentor_at_school_period) do
-      FactoryBot.create(:mentor_at_school_period, teacher:, started_on: Date.new(2023, 9, 1))
-    end
-    let!(:newer_mentor_at_school_period) do
-      FactoryBot.create(:mentor_at_school_period, teacher:, started_on: Date.new(2024, 9, 1))
-    end
-
-    it "returns school periods by type and most recent start date" do
-      expect(wizard.at_school_periods).to eq(
-        [
-          newer_ect_at_school_period,
-          older_ect_at_school_period,
-          newer_mentor_at_school_period,
-          older_mentor_at_school_period
-        ]
+  describe "operations" do
+    it "runs validation followed by the undo operation" do
+      expect(wizard).to have_step_operations(
+        confirm: [DfE::Wizard::Operations::Validate, Admin::Teachers::UndoRegistrationWizard::Operations::UndoRegistration]
       )
     end
   end
 
-  describe "#teacher_name" do
-    it "returns the teachers full name" do
-      expect(wizard.teacher_name).to eq(::Teachers::Name.new(teacher).full_name)
+  describe "navigation" do
+    it { is_expected.to have_next_step(:confirm).from(:start) }
+    it { is_expected.to have_previous_step(:start).from(:confirm) }
+    it { is_expected.to have_next_step(:confirmation).from(:confirm) }
+
+    context "when the teacher has multiple school periods" do
+      let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:) }
+
+      it { is_expected.to have_next_step(:select_school_period).from(:start) }
+      it { is_expected.to have_next_step(:confirm).from(:select_school_period) }
+      it { is_expected.to have_previous_step(:start).from(:select_school_period) }
+      it { is_expected.to have_previous_step(:select_school_period).from(:confirm) }
     end
   end
 
-  describe "#undo_registration!" do
-    let!(:at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
-    let(:undo_registration) { instance_double(::Teachers::UndoRegistration) }
+  describe "#valid_path_to_current_step?" do
+    it "allows the confirm form when the teacher has one school period" do
+      wizard.current_step_name = :confirm
 
-    before do
-      allow(::Teachers::UndoRegistration).to receive(:new).with(
-        author:,
-        at_school_period:,
-        reason: :registered_in_error
-      ).and_return(undo_registration)
+      expect(wizard).to be_valid_path_to_current_step
     end
 
-    it "undoes the registration for the selected school period" do
-      expect(undo_registration).to receive(:undo!).with(
-        expected_action: "close",
-        expected_training_period_ids: [1],
-        expected_mentorship_period_ids: [2],
-        expected_at_school_period_gid: at_school_period.to_global_id.to_s
-      )
+    it "blocks the success page when the confirm form has not been completed" do
+      wizard.current_step_name = :confirmation
 
-      wizard.undo_registration!(
-        expected_action: "close",
-        expected_training_period_ids: [1],
-        expected_mentorship_period_ids: [2],
-        expected_at_school_period_gid: at_school_period.to_global_id.to_s
-      )
-    end
-  end
-
-  describe "#affected_training_periods" do
-    let!(:at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, teacher:) }
-    let!(:finished_training_period) do
-      FactoryBot.create(
-        :training_period,
-        :for_ect,
-        ect_at_school_period: at_school_period,
-        started_on: 10.months.ago.to_date,
-        finished_on: 8.months.ago.to_date
-      )
-    end
-    let!(:unfinished_training_period) do
-      FactoryBot.create(
-        :training_period,
-        :for_ect,
-        :unfinished,
-        ect_at_school_period: at_school_period,
-        started_on: 6.months.ago.to_date
-      )
+      expect(wizard).not_to be_valid_path_to_current_step
     end
 
-    context "when the periods will be closed" do
-      before do
-        FactoryBot.create(:declaration, :eligible, training_period: unfinished_training_period)
-      end
-
-      it "includes only unfinished periods" do
-        expect(wizard.affected_training_periods).to contain_exactly(unfinished_training_period)
-      end
-    end
-
-    context "when the periods will be deleted" do
-      it "includes every associated period" do
-        expect(wizard.affected_training_periods).to contain_exactly(finished_training_period, unfinished_training_period)
-      end
-
-      it "preloads associations used by the training period summary" do
-        training_period = wizard.affected_training_periods.first
-
-        %i[
-          schedule
-          school_partnership
-          lead_provider
-          delivery_partner
-          contract_period
-          expression_of_interest_lead_provider
-          expression_of_interest_contract_period
-        ].each do |association|
-          expect(training_period.association(association)).to be_loaded
-        end
-      end
-    end
-  end
-
-  describe "step paths" do
-    let(:url_helpers) { Rails.application.routes.url_helpers }
-
-    it "returns the current step path" do
-      expect(wizard.current_step_path)
-        .to eq(url_helpers.admin_teacher_undo_registration_wizard_start_path(teacher))
-    end
-
-    it "returns the next step path" do
-      expect(wizard.next_step_path)
-        .to eq(url_helpers.admin_teacher_undo_registration_wizard_confirm_path(teacher))
-    end
-
-    context "on the confirm step" do
+    context "when the teacher has multiple school periods" do
+      let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:) }
       let(:current_step) { :confirm }
 
-      it "returns the previous step path" do
-        expect(wizard.previous_step_path)
-          .to eq(url_helpers.admin_teacher_undo_registration_wizard_start_path(teacher))
+      it "requires a selection" do
+        expect(wizard).not_to be_valid_path_to_current_step
+      end
+
+      it "allows the confirm form after a valid school period is selected" do
+        state_store.write(at_school_period_gid: mentor_at_school_period.to_global_id.to_s)
+
+        expect(wizard).to be_valid_path_to_current_step
+      end
+
+      it "rejects a selection belonging to another teacher" do
+        other_school_period = FactoryBot.create(:ect_at_school_period)
+        state_store.write(at_school_period_gid: other_school_period.to_global_id.to_s)
+
+        expect(wizard).not_to be_valid_path_to_current_step
+      end
+    end
+
+    context "when the teacher has one school period but visits the selection step" do
+      let(:current_step) { :select_school_period }
+
+      it "does not allow access" do
+        expect(wizard).not_to be_valid_path_to_current_step
+      end
+    end
+  end
+
+  describe "#furthest_valid_step_path" do
+    subject { wizard.furthest_valid_step_path }
+
+    it { is_expected.to eq(path_for(:confirm)) }
+
+    context "when the teacher has multiple school periods" do
+      let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, teacher:) }
+
+      it { is_expected.to eq(path_for(:select_school_period)) }
+
+      context "when the teacher has selected one of multiple school periods" do
+        before { state_store.write(at_school_period_gid: mentor_at_school_period.to_global_id.to_s) }
+
+        it { is_expected.to eq(path_for(:confirm)) }
+      end
+
+      context "when the selected school period belongs to another teacher" do
+        before do
+          other_school_period = FactoryBot.create(:ect_at_school_period)
+          state_store.write(at_school_period_gid: other_school_period.to_global_id.to_s)
+        end
+
+        it { is_expected.to eq(path_for(:select_school_period)) }
       end
     end
   end

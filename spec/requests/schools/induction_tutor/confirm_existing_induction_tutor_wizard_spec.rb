@@ -109,6 +109,15 @@ describe "Schools::InductionTutor::ConfirmExistingInductionTutorWizardController
 
           expect(response).to redirect_to(path_for_step("confirmation"))
         end
+
+        it "does not allow check answers to be submitted" do
+          post(path_for_step("edit"), params:)
+
+          expect { post path_for_step("check-answers") }
+            .not_to(change { school.reload.attributes })
+
+          expect(response).to redirect_to(path_for_step("edit"))
+        end
       end
 
       context "when the current details changed" do

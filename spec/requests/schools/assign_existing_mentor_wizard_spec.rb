@@ -19,14 +19,14 @@ RSpec.describe "Assign existing mentor wizard" do
                       school_partnership:)
   end
 
-  def kickoff_wizard!
+  def kickoff_wizard!(mentor_at_school_period = mentor)
     allow(Teachers::MentorFundingEligibility).to receive(:new)
-      .with(trn: mentor.teacher.trn)
+      .with(trn: mentor_at_school_period.teacher.trn)
       .and_return(instance_double(Teachers::MentorFundingEligibility, eligible?: true))
 
     post(
       "/school/ects/#{ect.id}/mentorship",
-      params: { schools_assign_mentor_form: { mentor_id: mentor.id } }
+      params: { schools_assign_mentor_form: { mentor_id: mentor_at_school_period.id } }
     )
   end
 
@@ -40,9 +40,9 @@ RSpec.describe "Assign existing mentor wizard" do
       before { sign_in_as(:school_user, school:) }
 
       context "when the wizard is not yet started" do
-        it "redirects to the root path" do
+        it "redirects to the ECTs home page" do
           subject
-          expect(response).to redirect_to(root_path)
+          expect(response).to redirect_to(schools_ects_home_path)
         end
       end
 
@@ -78,9 +78,9 @@ RSpec.describe "Assign existing mentor wizard" do
     it_behaves_like "a route blocked when the registration window is closed"
 
     context "when the wizard is not started" do
-      it "redirects to the root path" do
+      it "redirects to the ECTs home page" do
         subject
-        expect(response).to redirect_to(root_path)
+        expect(response).to redirect_to(schools_ects_home_path)
       end
     end
 
@@ -90,6 +90,51 @@ RSpec.describe "Assign existing mentor wizard" do
       it "redirects to the confirmation step" do
         subject
         expect(response).to redirect_to(schools_assign_existing_mentor_wizard_confirmation_path)
+      end
+    end
+
+    context "when selecting a different lead provider" do
+      let(:lead_provider) { FactoryBot.create(:lead_provider) }
+      let(:params) { { lead_provider: { lead_provider_id: lead_provider.id } } }
+
+      before do
+        FactoryBot.create(:framework_agreement, lead_provider:, contract_period:)
+        kickoff_wizard!
+        post schools_assign_existing_mentor_wizard_lead_provider_path, params:
+      end
+
+      it "trains the mentor with the selected lead provider and redirects to the confirmation step" do
+        expect(response).to redirect_to(schools_assign_existing_mentor_wizard_confirmation_path)
+        expect(mentor.training_periods.sole.expression_of_interest.lead_provider).to eq(lead_provider)
+      end
+
+      it "renders the confirmation step" do
+        follow_redirect!
+
+        expect(response).to have_http_status(:ok)
+      end
+
+      context "when no lead provider is selected" do
+        let(:params) { {} }
+
+        it "re-renders the step with an error and does not assign the mentor" do
+          expect(response).to have_http_status(:unprocessable_content)
+          expect(response.body).to include("Select a lead provider to contact your school")
+          expect(mentor.mentorship_periods).to be_empty
+        end
+      end
+
+      context "when the wizard is started again for another mentor" do
+        let(:other_mentor) { FactoryBot.create(:mentor_at_school_period, :unfinished, school:, started_on:) }
+
+        before { kickoff_wizard!(other_mentor) }
+
+        it "does not preselect the previously selected lead provider" do
+          get schools_assign_existing_mentor_wizard_lead_provider_path
+
+          expect(response.body).to include(Teachers::Name.new(other_mentor.teacher).full_name)
+          expect(response.body).not_to include('checked="checked"')
+        end
       end
     end
 
