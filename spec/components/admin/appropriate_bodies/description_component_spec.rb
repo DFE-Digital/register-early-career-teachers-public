@@ -156,7 +156,7 @@ RSpec.describe Admin::AppropriateBodies::DescriptionComponent, type: :component 
       end
 
       it "omits the name, which would repeat the page heading" do
-        expect(rendered_content).not_to have_selector("strong")
+        expect(rendered_content).not_to have_text("#{component.display_name}:")
       end
     end
 

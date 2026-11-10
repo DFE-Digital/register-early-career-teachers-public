@@ -118,8 +118,6 @@ RSpec.describe Admin::Schools::OverviewComponent, type: :component do
 
   describe "teaching school hubs" do
     context "when the school is not a provisioning lead school" do
-      let(:dfe_sign_in_organisation) { FactoryBot.create(:dfe_sign_in_organisation, urn: school.urn) }
-
       before do
         render_inline(component)
       end

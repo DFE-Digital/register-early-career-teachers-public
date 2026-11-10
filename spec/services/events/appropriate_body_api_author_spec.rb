@@ -23,6 +23,24 @@ RSpec.describe Events::AppropriateBodyAPIAuthor do
     end
   end
 
+  context "when the period has no name of its own" do
+    let(:teaching_school_hub) do
+      FactoryBot.create(:teaching_school_hub, name: "Bright Futures Teaching School Hub")
+    end
+
+    let(:appropriate_body_period) do
+      FactoryBot.create(:appropriate_body_period, :teaching_school_hub,
+                        name: nil,
+                        teaching_school_hub:)
+    end
+
+    it "names the author after the organisation the period belongs to" do
+      author = described_class.new(appropriate_body_period:)
+
+      expect(author.event_author_params).to include(author_name: "Bright Futures Teaching School Hub")
+    end
+  end
+
   it "acts as an appropriate body user" do
     author = described_class.new(appropriate_body_period:)
 
