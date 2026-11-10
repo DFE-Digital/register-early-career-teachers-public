@@ -193,7 +193,7 @@ appropriate body.
 At present two organisations operate in this manner:
 
 - `Star Teaching School Hub Network` with two bodies **Birmingham South** (one lead school) and **Pennine Lancashire** (three lead schools).
-- `Five Counties Teaching School Hub Alliance` with two bodies **Somerset** (one lead school) and **South Glos/BANES** (one lead school).
+- `Five Counties Teaching School Hub Alliance` with two bodies **Somerset** (two regions, one lead school) and **South Glos/BANES** (one lead school).
 
 ## Trading display names
 
