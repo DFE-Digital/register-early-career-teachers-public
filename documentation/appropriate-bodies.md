@@ -152,7 +152,7 @@ erDiagram
   Region {
     bigint id
     string code
-    string districts
+    string[] districts
   }
   RegionAward {
     bigint id
@@ -181,7 +181,7 @@ erDiagram
 ## Large hubs
 
 When an establishment wins multiple regional awards it will operate across multiple lead schools.
-It is at the organisation's discretion which of these will be responsible for for providing appropriate body services.
+It is at the organisation's discretion which of these will be responsible for providing appropriate body services.
 
 A large hub could therefore form a group represented as **one hub with several concurrent periods**.
 Each period operating as its own appropriate body and referred to as a hub in its own right.
@@ -193,7 +193,7 @@ appropriate body.
 At present two organisations operate in this manner:
 
 - `Star Teaching School Hub Network` with two bodies **Birmingham South** (one lead school) and **Pennine Lancashire** (three lead schools).
-- `Five Counties Teaching School Hub Alliance` with two bodies **Somerset** (two lead schools) and **South Glos/BANES** (one lead school).
+- `Five Counties Teaching School Hub Alliance` with two bodies **Somerset** (one lead school) and **South Glos/BANES** (one lead school).
 
 ## Trading display names
 
