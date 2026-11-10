@@ -143,6 +143,7 @@ private
 
   def name_is_present_and_unique_within_the_teaching_school_hub
     return if teaching_school_hub_id.blank? || started_on.blank?
+    return if invalid_date_order?
 
     concurrent = self.class.overlapping_in_the_same_teaching_school_hub(self)
     return unless concurrent.exists?
