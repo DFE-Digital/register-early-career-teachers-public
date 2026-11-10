@@ -634,6 +634,15 @@ describe AppropriateBodyPeriod do
                           finished_on: nil)).to be_valid
       end
 
+      it "fails fast if a date range is invalid" do
+        period = hub_period(name: nil,
+                            started_on: Date.new(2024, 1, 1),
+                            finished_on: Date.new(2023, 1, 1))
+
+        expect { period.valid? }.not_to raise_error
+        expect(period).to have_error(:finished_on, "The end date must be later than the start date (1 January 2024)")
+      end
+
       it "stops a named period losing its name by update" do
         period = hub_period(name: "Acme TSH West",
                             started_on: Date.new(2022, 9, 1),
