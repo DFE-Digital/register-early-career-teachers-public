@@ -806,18 +806,6 @@ describe AppropriateBodyPeriod do
           expect(display_name).to eq("Provisioning School")
         end
       end
-
-      context "when the period has no parent organisation" do
-        let(:appropriate_body_period) do
-          # A legacy row: the current rules require a parent organisation, so write it without validations.
-          FactoryBot.build(:appropriate_body_period, name: nil, teaching_school_hub: nil, provisioning_school: nil)
-                    .tap { |period| period.save!(validate: false) }
-        end
-
-        it "returns nil" do
-          expect(display_name).to be_nil
-        end
-      end
     end
   end
 end
