@@ -77,6 +77,7 @@ module "web_application" {
   max_memory = var.webapp_memory_max
 
   enable_logit    = var.enable_logit
+  enable_gcp_wif  = var.airbyte_enabled
   run_as_non_root = var.run_as_non_root
 
   # Uncomment this when we want traffic to be redirected to the maintenance
