@@ -23,7 +23,7 @@ private
     "connected" if Rails.cache.redis.with(&:ping) == "PONG"
   rescue Redis::CannotConnectError
     "cannot connect"
-  rescue Redis::BaseError
+  rescue Redis::BaseError, ConnectionPool::TimeoutError
     "error connecting"
   end
 end
