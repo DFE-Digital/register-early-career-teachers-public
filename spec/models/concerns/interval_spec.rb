@@ -77,6 +77,14 @@ describe Interval do
       it "does not return periods outside the specified date range" do
         expect(DummyMentor.overlapping_with(FakePeriod.new("2022-01-01", "2022-12-31"))).to be_empty
       end
+
+      it "returns a period whose end date is the start of the given range" do
+        expect(DummyMentor.overlapping_with(FakePeriod.new("2023-06-01", "2023-06-30"))).to include(period_1)
+      end
+
+      it "returns a period whose start date is the end of the given range" do
+        expect(DummyMentor.overlapping_with(FakePeriod.new("2023-06-01", "2023-07-01"))).to include(period_2)
+      end
     end
 
     describe ".unfinished" do
