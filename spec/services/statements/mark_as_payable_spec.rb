@@ -43,10 +43,10 @@ RSpec.describe Statements::MarkAsPayable do
     end
   end
 
-  describe ".check_forthcoming_statements!" do
+  describe ".check_open_statements_for_errors" do
     let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
 
-    let!(:past_statement) do
+    let!(:paid_statement) do
       FactoryBot.create(:statement, :paid, deadline_date: 1.month.ago, payment_date: 3.weeks.ago, framework_agreement:)
     end
 
@@ -58,21 +58,17 @@ RSpec.describe Statements::MarkAsPayable do
       FactoryBot.create(:statement, :open, deadline_date: 1.month.from_now, payment_date: 6.weeks.from_now, framework_agreement:)
     end
 
-    let!(:future_statement) do
-      FactoryBot.create(:statement, :open, deadline_date: 2.months.from_now, payment_date: 10.weeks.from_now, framework_agreement:)
-    end
-
-    it "validates only the statements for the next deadline_date" do
+    it "validates only open statements" do
       instance = instance_double(described_class)
-      expect(instance).to receive(:check_for_errors!).once
+      allow(described_class).to receive(:new).and_return(instance)
 
-      allow(described_class).to receive(:new).with(forthcoming_statement).and_return(instance)
+      expect(instance).to receive(:report_invalid_declarations).twice
 
-      expect(described_class).not_to receive(:new).with(past_statement)
-      expect(described_class).not_to receive(:new).with(past_statement_but_open)
-      expect(described_class).not_to receive(:new).with(future_statement)
+      expect(described_class).not_to receive(:new).with(paid_statement)
+      expect(described_class).to receive(:new).with(past_statement_but_open)
+      expect(described_class).to receive(:new).with(forthcoming_statement)
 
-      described_class.check_forthcoming_statements!
+      described_class.check_open_statements_for_errors
     end
   end
 
@@ -176,7 +172,7 @@ RSpec.describe Statements::MarkAsPayable do
     end
   end
 
-  describe "#check_for_errors!" do
+  describe "#report_invalid_declarations" do
     subject { described_class.new(statement) }
 
     let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
@@ -185,55 +181,25 @@ RSpec.describe Statements::MarkAsPayable do
     end
     let(:declaration) { FactoryBot.create(:declaration, :eligible, framework_agreement:, payment_statement: statement) }
 
-    %i[payable paid].each do |status|
-      it "raises StatementNotOpenError when statement is #{status}" do
-        statement = FactoryBot.create(
-          :statement,
-          status,
-          deadline_date: 1.day.ago,
-          payment_date: Time.zone.now,
-          framework_agreement:
-        )
-
-        expect { described_class.new(statement).check_for_errors! }.to raise_error(
-          Statements::StatementNotOpenError,
-          "Cannot mark statement as payable: statement is #{status}"
-        )
-      end
-    end
-
     it "does not modify the statement" do
       expect {
-        subject.check_for_errors!
-      }.not_to(change { statement })
-    end
-
-    it "validates payment declarations" do
-      # because rubocop won't allow us to use allow/receive/return on the subject
-      subject.instance_variable_set(:@eligible_declarations, [declaration])
-
-      expect(declaration).to receive(:valid?).once
-      subject.check_for_errors!
+        subject.report_invalid_declarations
+      }.not_to(change(statement, :attributes))
     end
 
     it "does not modify the declarations" do
       expect {
-        subject.check_for_errors!
-      }.not_to(change { declaration })
+        subject.report_invalid_declarations
+      }.not_to(change(declaration, :attributes))
     end
 
     context "when a declaration is not valid" do
-      before do
-        allow(declaration).to receive(:valid?).and_return(false)
-        declaration.errors.add(:mentorship_period, "Mentorship period must belong to the trainee")
-        # because rubocop won't allow us to use allow/receive/return on the subject
-        subject.instance_variable_set(:@eligible_declarations, [declaration])
-      end
-
       it "records a Sentry message" do
+        declaration.update_columns(mentorship_period_id: FactoryBot.create(:mentorship_period).id)
+
         expect(Sentry).to receive(:capture_message)
           .with("[MarkAsPayable-Check] - Declaration [#{declaration.id}] invalid on statement [#{statement.id}]")
-        subject.check_for_errors!
+        subject.report_invalid_declarations
       end
     end
   end

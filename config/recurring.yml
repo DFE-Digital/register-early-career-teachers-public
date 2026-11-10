@@ -28,8 +28,8 @@ production:
     queue: default
     schedule: every day at 00:01 UTC
 
-  check_forthcoming_statements_for_errors:
-    class: Statements::CheckForthcomingStatementsJob
+  check_open_statements_for_errors:
+    class: Statements::CheckOpenStatementsForErrorsJob
     queue: default
     schedule: every day at 2am UTC
 
