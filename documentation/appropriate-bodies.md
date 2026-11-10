@@ -180,7 +180,7 @@ erDiagram
 
 ## Large hubs
 
-When an establishment wins multiple regional awards it will operate across multiple lead schools.
+When an establishment wins multiple regional awards it may operate across multiple lead schools.
 It is at the organisation's discretion which of these will be responsible for providing appropriate body services.
 
 A large hub could therefore form a group represented as **one hub with several concurrent periods**.
