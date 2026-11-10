@@ -60,6 +60,18 @@ RSpec.describe "Health check" do
           expect(JSON.parse(response.body).fetch("redis")).to eql("error connecting")
         end
       end
+
+      context "when Redis isn't used" do
+        before do
+          allow(Rails.cache).to receive(:is_a?).with(ActiveSupport::Cache::RedisCacheStore).and_return(false)
+        end
+
+        it "returns 'not used'" do
+          get "/healthcheck"
+
+          expect(JSON.parse(response.body).fetch("redis")).to eql("not used")
+        end
+      end
     end
   end
 end
