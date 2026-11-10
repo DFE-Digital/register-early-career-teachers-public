@@ -1,0 +1,60 @@
+<%
+  school_periods = (
+    teacher.ect_at_school_periods.to_a +
+    teacher.mentor_at_school_periods.to_a
+  ).sort_by(&:started_on)
+
+  training_periods = (
+    teacher.ect_training_periods.to_a +
+    teacher.mentor_training_periods.to_a
+  ).sort_by(&:started_on)
+
+  declarations = (
+    teacher.ect_declarations.to_a +
+    teacher.mentor_declarations.to_a
+  ).uniq(&:id).sort_by(&:evidenced_at)
+%>
+
+<%= govuk_summary_list(actions: false) do |summary_list| %>
+  <% summary_list.with_row do |row| %>
+    <% row.with_key(text: "Name") %>
+    <% row.with_value(text: teacher_full_name(teacher)) %>
+  <% end %>
+
+  <% summary_list.with_row do |row| %>
+    <% row.with_key(text: "TRN") %>
+    <% row.with_value(text: teacher.trn) %>
+  <% end %>
+<% end %>
+
+<h3 class="govuk-heading-s"><%= merging ? "School periods that will merge" : "Existing school periods" %></h3>
+
+<% if school_periods.empty? %>
+  <p class="govuk-body">No school periods recorded.</p>
+<% else %>
+  <% school_periods.each do |school_period| %>
+    <%= render Admin::Teachers::SchoolSummaryComponent.new(school_period:, merge_preview: true) %>
+  <% end %>
+<% end %>
+
+<h3 class="govuk-heading-s"><%= merging ? "Training periods that will merge" : "Existing training periods" %></h3>
+
+<% if training_periods.empty? %>
+  <p class="govuk-body">No training periods recorded.</p>
+<% else %>
+  <% training_periods.each do |training_period| %>
+    <%= render Admin::Teachers::TrainingSummaryComponent.new(training_period:, show_actions: false, merge_preview: true) %>
+  <% end %>
+<% end %>
+
+<h3 class="govuk-heading-s">Declarations</h3>
+
+<% if declarations.empty? %>
+  <p class="govuk-body">No declarations recorded.</p>
+<% else %>
+  <% declarations.each do |declaration| %>
+    <%= render "admin/teachers/declarations/declaration",
+      declaration:,
+      show_actions: false %>
+  <% end %>
+<% end %>

@@ -1,0 +1,68 @@
+<% page_data(
+  title: "Confirm merge for #{@wizard.teacher_name}",
+  error: @wizard.current_step.errors.present?,
+  backlink_href: @wizard.previous_step_path
+) %>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <p class="govuk-body">
+      School periods and related data from the deactivated record will be
+      merged into the active record.
+    </p>
+
+    <p class="govuk-body">
+      The active record will keep its current data.
+    </p>
+
+    <p class="govuk-body">
+      The deactivated TRN will be deleted from this service.
+    </p>
+
+    <%= govuk_summary_list(actions: false) do |summary_list| %>
+      <% summary_list.with_row do |row| %>
+        <% row.with_key(text: "Deactivated TRN") %>
+        <% row.with_value(text: @wizard.teacher.trn) %>
+      <% end %>
+
+      <% summary_list.with_row do |row| %>
+        <% row.with_key(text: "Active TRN being merged with") %>
+        <% row.with_value(text: @wizard.destination.trn) %>
+      <% end %>
+    <% end %>
+
+    <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |form| %>
+      <%= content_for(:error_summary) { form.govuk_error_summary } %>
+      <%= form.hidden_field :expected_trn, value: @wizard.store.trn %>
+
+      <%= form.govuk_check_boxes_fieldset(
+        :confirmed,
+        multiple: false,
+        legend: { text: "Confirm merge", hidden: true }
+      ) do %>
+        <%= form.govuk_check_box(
+          :confirmed,
+          "1",
+          "0",
+          link_errors: true,
+          multiple: false,
+          label: { text: "I confirm I want to merge these teacher records" }
+        ) %>
+      <% end %>
+
+      <%= govuk_warning_text do %>
+        This action cannot be undone.
+      <% end %>
+
+      <%= form.govuk_submit "Confirm", warning: true %>
+    <% end %>
+
+    <p class="govuk-body">
+      <%= govuk_link_to(
+        "Cancel and go back to #{@wizard.teacher_name}",
+        admin_teacher_path(@teacher),
+        no_visited_state: true
+      ) %>
+    </p>
+  </div>
+</div>

@@ -3,14 +3,18 @@ module Admin
     module ChangeTRNWizard
       class Wizard < ApplicationWizard
         class TeacherNotDeactivatedError < StandardError; end
+        class MergeProposalChangedError < StandardError; end
         class IneligibleForReplacementError < StandardError; end
+        class IneligibleForMergeError < StandardError; end
         class ProposedTRNChangedError < StandardError; end
+        class MergeDestinationChangedError < StandardError; end
 
         attr_accessor :store, :teacher_id, :author
 
         steps do
           [{
             enter_trn: EnterTRNStep,
+            merge_preview: MergePreviewStep,
             confirm: ConfirmStep,
             confirmation: ConfirmationStep
           }]
@@ -21,11 +25,19 @@ module Admin
         end
 
         def allowed_steps
-          return [:confirmation] if store.trn_replaced
+          return [:confirmation] if store.records_processed.present?
           return [] unless teacher.trs_response_gone?
 
           allowed = [:enter_trn]
-          allowed << :confirm if store.trn.present?
+          return allowed if store.trn.blank?
+
+          if merge_proposed?
+            allowed << :merge_preview
+            allowed << :confirm if store.merge_previewed
+          else
+            allowed << :confirm
+          end
+
           allowed
         end
 
@@ -34,24 +46,22 @@ module Admin
         end
 
         def teacher_name
+          return store.source_teacher_name if records_merged?
+
           ::Teachers::Name.new(teacher).full_name
         end
 
-        def replace_trn!
-          ActiveRecord::Base.transaction do
-            teacher.lock!
+        def destination
+          return if replace_proposed?
 
-            raise TeacherNotDeactivatedError unless teacher.trs_response_gone?
-            raise IneligibleForReplacementError unless eligibility.can_be_replaced?
-
-            old_trn = teacher.trn
-
-            ::Teachers::TRN::Replace.new(teacher:, new_trn: store.trn, author:).replace!
-
-            store.old_trn = old_trn
-          end
-        rescue ::Teachers::TRN::Resolver::ProposedTRNError
-          raise ProposedTRNChangedError
+          @destination ||= Teacher
+            .where.not(id: teacher_id)
+            .find_by!(
+              id: store.destination_teacher_id,
+              trn: store.trn
+            )
+        rescue ActiveRecord::RecordNotFound
+          raise MergeDestinationChangedError
         end
 
         def allowed_step_path
@@ -72,7 +82,67 @@ module Admin
           step_path(current_step.previous_step)
         end
 
+        def merge_proposed?
+          store.destination_teacher_id.present?
+        end
+
+        def records_merged?
+          store.records_processed == "merged"
+        end
+
+        def update!
+          ActiveRecord::Base.transaction do
+            teacher.lock!
+            destination.lock! if merge_proposed?
+
+            raise TeacherNotDeactivatedError unless teacher.trs_response_gone?
+            raise MergeProposalChangedError unless destination_trn_matches_proposal?
+            raise IneligibleForMergeError if merge_proposed? && !eligible?
+            raise IneligibleForReplacementError if replace_proposed? && !eligible?
+
+            old_trn = teacher.trn
+            source_teacher_name = teacher_name
+
+            merge_proposed? ? merge! : replace!
+
+            store.old_trn = old_trn
+            store.source_teacher_name = source_teacher_name
+          rescue ::Teachers::TRN::Resolver::ProposedTRNError
+            raise ProposedTRNChangedError
+          end
+        end
+
       private
+
+        def destination_trn_matches_proposal?
+          return true unless merge_proposed?
+
+          store.trn.present? && destination.trn == store.trn
+        end
+
+        def merge!
+          ::Teachers::TRN::Merge.new(teacher:, new_trn: store.trn, author:).merge!
+
+          store.records_processed = "merged"
+        end
+
+        def replace!
+          ::Teachers::TRN::Replace.new(teacher:, new_trn: store.trn, author:).replace!
+
+          store.records_processed = "replaced"
+        end
+
+        def replace_proposed?
+          !merge_proposed?
+        end
+
+        def eligible?
+          if merge_proposed?
+            eligibility.can_be_merged?
+          else
+            eligibility.can_be_replaced?
+          end
+        end
 
         def eligibility
           ::Teachers::TRN::Eligibility.new(teacher:, new_trn: store.trn)
