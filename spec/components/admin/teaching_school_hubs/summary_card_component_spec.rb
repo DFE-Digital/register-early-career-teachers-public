@@ -61,6 +61,13 @@ RSpec.describe Admin::TeachingSchoolHubs::SummaryCardComponent, type: :component
       it "names the hub once, not once per period" do
         expect(page).to have_link(teaching_school_hub.name, count: 1)
       end
+
+      it "gives each period a label of its own" do
+        labels = page.all("strong").map { it.text.delete_suffix(":") }
+
+        expect(labels.size).to eq(2)
+        expect(labels.uniq).to eq(labels)
+      end
     end
 
     context "when one of those periods has no name of its own" do
