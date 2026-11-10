@@ -3,8 +3,7 @@ title: View mentoring data
 sidebar_position: 11
 ---
 
-> [!WARN]
-> The mentorship endpoints covered by this guidance are currently only available in the sandbox environment for testing. They are not currently available in the production environment.
+> **Warning:** The mentorship endpoints described in this guidance are currently available for testing in the sandbox environment only. They are not available in production.
 
 The mentorship endpoints allow lead providers to view mentoring information linked to early career teachers (ECTs) and mentors.
 
