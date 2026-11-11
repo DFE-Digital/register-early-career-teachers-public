@@ -19,7 +19,7 @@ describe Queries::RangeQueries do
   describe ".containing_range" do
     subject { FakeRangeQueryClass.containing_range(start, finish) }
 
-    let(:clause) { %{"a_fake_table"."range" @> daterange(?, ?)} }
+    let(:clause) { %{"a_fake_table"."range" @> daterange(?, ?, '[]')} }
 
     it { is_expected.to eql([clause, start, finish]) }
   end
@@ -27,7 +27,7 @@ describe Queries::RangeQueries do
   describe ".overlapping_with_range" do
     subject { FakeRangeQueryClass.overlapping_with_range(start, finish) }
 
-    let(:clause) { %{"a_fake_table"."range" && daterange(?, ?)} }
+    let(:clause) { %{"a_fake_table"."range" && daterange(?, ?, '[]')} }
 
     it { is_expected.to eql([clause, start, finish]) }
   end

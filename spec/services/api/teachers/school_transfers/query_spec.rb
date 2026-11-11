@@ -178,19 +178,36 @@ RSpec.describe API::Teachers::SchoolTransfers::Query do
 
           let(:updated_since) { 11.days.ago }
 
-          before do
-            school_period = teacher1.latest_ect_at_school_period
+          let(:school_period) { teacher1.latest_ect_at_school_period }
+          let(:earliest_training_period) { school_period.earliest_training_period }
+          let(:latest_training_period) { school_period.latest_training_period }
 
+          let(:interim_training_period) do
             FactoryBot.create(
               :training_period,
               :for_ect,
               :provider_led,
-              started_on: 1.day.after(school_period.earliest_training_period.finished_on),
-              finished_on: school_period.latest_training_period.started_on,
+              started_on: 1.day.after(earliest_training_period.finished_on),
+              finished_on: 1.day.before(latest_training_period.started_on),
               ect_at_school_period: school_period,
-              school_partnership: school_period.earliest_training_period.school_partnership,
+              school_partnership: earliest_training_period.school_partnership,
               api_transfer_updated_at: 1.day.after(updated_since)
             )
+          end
+
+          # End the earliest training period one day sooner to make room for a one-day interim period.
+          #
+          #                 D-3       D-2       D-1        D0       D+1
+          #              ──────────────────────────────┬────────────────────
+          #   helper                 earliest          │       latest
+          #              ──────────────────────────────┴────────────────────
+          #
+          #              ────────────────────┬─────────┬────────────────────
+          #   this spec         earliest     │ interim │       latest
+          #              ────────────────────┴─────────┴────────────────────
+          before do
+            earliest_training_period.update!(finished_on: 2.days.before(latest_training_period.started_on))
+            interim_training_period
           end
 
           it { is_expected.not_to include(teacher1) }

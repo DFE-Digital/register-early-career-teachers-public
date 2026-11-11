@@ -34,7 +34,7 @@ RSpec.describe "schools/ects/show.html.erb" do
     FactoryBot.create(:ect_at_school_period, :state_funded_school,
                       teacher:,
                       started_on: "2024-01-11",
-                      finished_on: "2025-01-11",
+                      finished_on: "2025-01-10",
                       school: previous_school,
                       email: "previous-address@whale.com")
     assign(:ect_at_school_period, current_ect_period)

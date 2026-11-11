@@ -123,7 +123,7 @@ describe MentorAtSchoolPeriod do
         :training_period,
         :for_mentor,
         started_on: 2.years.ago,
-        finished_on: 1.year.ago,
+        finished_on: 1.year.ago - 1.day,
         mentor_at_school_period:
       )
     end

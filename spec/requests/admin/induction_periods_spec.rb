@@ -296,7 +296,7 @@ RSpec.describe "Admin::InductionPeriodsController", type: :request do
       end
 
       let(:started_on) { 12.months.ago }
-      let(:finished_on) { 9.months.ago }
+      let(:finished_on) { 9.months.ago - 1.day }
       let(:params) do
         {
           induction_period: {
