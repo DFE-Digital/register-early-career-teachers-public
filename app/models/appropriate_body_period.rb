@@ -45,7 +45,6 @@ class AppropriateBodyPeriod < ApplicationRecord
   normalizes :name, with: -> { it.squish }
 
   # Validations
-  # TODO: after date population on production add a migration to set NOT NULL on started_on
   validates :started_on, presence: true
 
   # Teaching School Hub or Teaching School
@@ -101,14 +100,11 @@ class AppropriateBodyPeriod < ApplicationRecord
 
 private
 
-  # FIXME: return to commented query when started_on is NOT NULL and production is populated
-  #
   # No two periods for one provisioning school may overlap.
   def siblings
     return self.class.none if school_id.nil?
 
-    # self.class.where(school_id:).excluding(self)
-    self.class.where(school_id:).excluding(self).where.not(started_on: nil, finished_on: nil).where.not(body_type:)
+    self.class.where(school_id:).excluding(self)
   end
 
   def no_overlapping_periods_for_same_provisioning_school
