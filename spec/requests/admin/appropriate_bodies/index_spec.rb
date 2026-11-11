@@ -29,7 +29,7 @@ RSpec.describe "Viewing the appropriate bodies index", type: :request do
       end
 
       it "omits inactive appropriate bodies" do
-        FactoryBot.create(:appropriate_body_period, :inactive, name: "Captain Retired")
+        FactoryBot.create(:appropriate_body_period, :cannot_sign_in, name: "Captain Retired")
 
         get "/admin/organisations/appropriate-bodies"
 
@@ -38,7 +38,7 @@ RSpec.describe "Viewing the appropriate bodies index", type: :request do
       end
 
       it "includes inactive appropriate bodies when asked for" do
-        FactoryBot.create(:appropriate_body_period, :inactive, name: "Captain Retired")
+        FactoryBot.create(:appropriate_body_period, :cannot_sign_in, name: "Captain Retired")
 
         get "/admin/organisations/appropriate-bodies?show_inactive=1"
 
@@ -71,7 +71,7 @@ RSpec.describe "Viewing the appropriate bodies index", type: :request do
         end
 
         it "omits inactive appropriate bodies" do
-          FactoryBot.create(:appropriate_body_period, :inactive, name: "Captain Hooked")
+          FactoryBot.create(:appropriate_body_period, :cannot_sign_in, name: "Captain Hooked")
 
           get "/admin/organisations/appropriate-bodies?q=Hook"
 
@@ -81,7 +81,7 @@ RSpec.describe "Viewing the appropriate bodies index", type: :request do
         end
 
         it "includes inactive appropriate bodies when asked for" do
-          FactoryBot.create(:appropriate_body_period, :inactive, name: "Captain Hooked")
+          FactoryBot.create(:appropriate_body_period, :cannot_sign_in, name: "Captain Hooked")
 
           get "/admin/organisations/appropriate-bodies?q=Hook&show_inactive=1"
 
