@@ -129,14 +129,17 @@ describe AppropriateBodyPeriod do
 
     describe "overlap validation" do
       subject(:appropriate_body_period) do
-        FactoryBot.build(:appropriate_body_period, :teaching_school_hub, provisioning_school:, started_on:, finished_on:)
+        FactoryBot.build(:appropriate_body_period, :teaching_school_hub,
+                         provisioning_school:,
+                         started_on:,
+                         finished_on:)
       end
 
       let(:provisioning_school) { FactoryBot.create(:school) }
       let(:started_on) { Date.new(2022, 9, 1) }
       let(:finished_on) { nil }
 
-      context "when a period for the same school overlaps" do
+      context "when a teaching school hub period for the same provisioning school overlaps" do
         before do
           FactoryBot.create(:appropriate_body_period, :teaching_school_hub,
                             provisioning_school:,
@@ -144,8 +147,7 @@ describe AppropriateBodyPeriod do
                             finished_on: Date.new(2023, 8, 31))
         end
 
-        it "rejects a period that overlaps another of the same body type",
-           skip: "skipped until teaching school periods are closed and #siblings logic changed" do
+        it "raises an error" do
           expect(appropriate_body_period).to have_error(:started_on, "Start date cannot overlap another appropriate body period")
         end
       end
@@ -172,34 +174,6 @@ describe AppropriateBodyPeriod do
 
         it { is_expected.to be_valid }
       end
-
-      context "when the start date is unknown" do
-        before do
-          FactoryBot.create(:appropriate_body_period, :teaching_school_hub,
-                            provisioning_school:,
-                            started_on: Date.new(2021, 9, 1),
-                            finished_on: Date.new(2023, 8, 31))
-        end
-
-        let(:started_on) { nil }
-        let(:finished_on) { Date.new(2022, 8, 31) }
-
-        it "skips the overlap check, because there is no lower bound" do
-          expect(appropriate_body_period).not_to have_error(:started_on, "Start date cannot overlap another appropriate body period")
-        end
-      end
-
-      context "when the school also holds a period with no dates" do
-        before do
-          undated_period = FactoryBot.build(:appropriate_body_period, :teaching_school_hub,
-                                            provisioning_school:, started_on: nil, finished_on: nil)
-          undated_period.save!(validate: false)
-        end
-
-        it "does not report an overlap, because an undated period has no bounds" do
-          expect(appropriate_body_period).to be_valid
-        end
-      end
     end
 
     describe "scopes" do
@@ -213,21 +187,14 @@ describe AppropriateBodyPeriod do
                           started_on: Date.new(2015, 9, 1),
                           finished_on: Date.new(2021, 8, 31))
       end
-      # A production row holds no dates until the date-population script runs,
-      # so write the row without validations.
-      let(:undated_period) do
-        period = FactoryBot.build(:appropriate_body_period, :inactive, started_on: nil)
-        period.save!(validate: false)
-        period
-      end
 
       it "separates finished and unfinished periods" do
-        expect(described_class.unfinished).to contain_exactly(current_period, undated_period)
+        expect(described_class.unfinished).to contain_exactly(current_period)
         expect(described_class.finished).to contain_exactly(closed_period)
       end
 
-      it "reports a period with no dates as current, because nothing bounds it" do
-        expect(described_class.contains_today).to contain_exactly(current_period, undated_period)
+      it "reports an open-ended period as current" do
+        expect(described_class.contains_today).to contain_exactly(current_period)
       end
 
       it "finds the period containing a given date" do

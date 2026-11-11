@@ -8,11 +8,11 @@ module Queries
       end
 
       def containing_range(start, finish, range_column: "range")
-        [%("#{table_name}"."#{range_column}" @> daterange(?, ?)), start, finish]
+        [%("#{table_name}"."#{range_column}" @> daterange(?, ?, '[]')), start, finish]
       end
 
       def overlapping_with_range(start, finish, range_column: "range")
-        [%("#{table_name}"."#{range_column}" && daterange(?, ?)), start, finish]
+        [%("#{table_name}"."#{range_column}" && daterange(?, ?, '[]')), start, finish]
       end
     end
   end

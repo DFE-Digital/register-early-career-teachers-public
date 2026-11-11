@@ -12,7 +12,7 @@ describe Induction::TeacherInformation do
   end
 
   let(:induction_period_finished_two_years_ago) do
-    FactoryBot.create(:induction_period, teacher:, started_on: 3.years.ago, finished_on: 2.years.ago)
+    FactoryBot.create(:induction_period, teacher:, started_on: 3.years.ago, finished_on: 2.years.ago - 1.day)
   end
 
   it { is_expected.to delegate_method(:first_induction_period).to(:teacher) }

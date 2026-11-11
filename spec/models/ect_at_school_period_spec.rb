@@ -241,7 +241,7 @@ describe ECTAtSchoolPeriod do
           :training_period,
           :for_ect,
           started_on: 2.years.ago,
-          finished_on: 1.year.ago,
+          finished_on: 1.year.ago - 1.day,
           ect_at_school_period:
         )
       end
@@ -400,7 +400,7 @@ describe ECTAtSchoolPeriod do
           mentee: ect_at_school_period,
           mentor: mentor_at_school_period,
           started_on: latest_mentorship_period.started_on - 6.months,
-          finished_on: latest_mentorship_period.started_on
+          finished_on: latest_mentorship_period.started_on - 1.day
         )
       end
 
@@ -914,7 +914,7 @@ describe ECTAtSchoolPeriod do
     let!(:period_2) { FactoryBot.create(:ect_at_school_period, :state_funded_school, teacher:, started_on: "2023-06-02", finished_on: "2024-01-01") }
     let!(:period_3) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, teacher:, school:, started_on: "2024-01-02", finished_on: nil) }
     let!(:teacher_2_period) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, school:, started_on: "2023-02-01", finished_on: "2023-07-01") }
-    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, teacher:, school:, started_on: "2022-01-01", finished_on: period_1.started_on) }
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, teacher:, school:, started_on: "2022-01-01", finished_on: period_1.started_on - 1.day) }
 
     it "returns ect periods only for the specified instance's teacher excluding the instance" do
       expect(ect_at_school_period.siblings).to match_array([period_1, period_2, period_3])

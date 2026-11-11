@@ -303,7 +303,7 @@ RSpec.describe Metadata::Handlers::Teacher do
             :training_period,
             :for_ect,
             started_on: ect_at_school_period.started_on,
-            finished_on: ect_training_period1.started_on,
+            finished_on: ect_training_period1.started_on - 1.day,
             ect_at_school_period:,
             school_partnership: school_partnership1
           )

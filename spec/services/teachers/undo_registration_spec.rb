@@ -439,7 +439,7 @@ RSpec.describe Teachers::UndoRegistration do
             :ect_at_school_period,
             teacher: ect_at_school_period.teacher,
             started_on: 2.years.ago.to_date,
-            finished_on: 1.year.ago.to_date
+            finished_on: 1.year.ago.to_date - 1.day
           )
         end
 

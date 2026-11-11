@@ -127,7 +127,7 @@ RSpec.describe "AppropriateBodies::InductionPeriodsController", type: :request d
 
       context "when dates would cause overlap" do
         before do
-          FactoryBot.create(:induction_period, teacher:, started_on: 1.year.ago, finished_on: 9.months.ago)
+          FactoryBot.create(:induction_period, teacher:, started_on: 1.year.ago, finished_on: 9.months.ago - 1.day)
         end
 
         let(:started_on) { 10.months.ago.to_date }
