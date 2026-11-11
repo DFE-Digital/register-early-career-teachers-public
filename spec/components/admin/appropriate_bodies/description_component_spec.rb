@@ -2,16 +2,12 @@ RSpec.describe Admin::AppropriateBodies::DescriptionComponent, type: :component 
   subject(:component) { described_class.new(appropriate_body_period:) }
 
   let(:teaching_school_hub) { FactoryBot.create(:teaching_school_hub, name: "Acme TSH") }
-  let(:provisioning_school) do
-    FactoryBot.create(
-      :school,
-      :eligible,
-      gias_school: FactoryBot.create(:gias_school, name: "Provisioning School", urn: 100_001)
-    )
-  end
+  let(:provisioning_school_1) { FactoryBot.create(:school, :eligible) }
+
+  let(:provisioning_school_2) { FactoryBot.create(:school, :eligible) }
   let(:name) { teaching_school_hub.name }
   let(:appropriate_body_period) do
-    FactoryBot.create(:appropriate_body_period, teaching_school_hub:, provisioning_school:, name:)
+    FactoryBot.create(:appropriate_body_period, teaching_school_hub:, provisioning_school: provisioning_school_1, name:)
   end
 
   describe "#description" do
@@ -20,12 +16,12 @@ RSpec.describe Admin::AppropriateBodies::DescriptionComponent, type: :component 
       let(:region_north) { FactoryBot.create(:region, code: "R2", districts: %w[North]) }
 
       before do
-        FactoryBot.create(:region_award, appropriate_body_period:, region: region_west_east, school: provisioning_school)
-        FactoryBot.create(:region_award, appropriate_body_period:, region: region_north, school: provisioning_school)
+        FactoryBot.create(:region_award, appropriate_body_period:, region: region_west_east, school: provisioning_school_1)
+        FactoryBot.create(:region_award, appropriate_body_period:, region: region_north, school: provisioning_school_1)
       end
 
       it "includes the provisioning school" do
-        expect(component.description).to include("Provisioned by Provisioning School")
+        expect(component.description).to include("Provisioned by #{provisioning_school_1.name}")
       end
 
       it "counts the awarded regions" do
@@ -50,7 +46,7 @@ RSpec.describe Admin::AppropriateBodies::DescriptionComponent, type: :component 
       let(:region_north) { FactoryBot.create(:region, code: "R2", districts: %w[North]) }
 
       before do
-        FactoryBot.create(:region_award, appropriate_body_period:, region: region_north, school: provisioning_school)
+        FactoryBot.create(:region_award, appropriate_body_period:, region: region_north, school: provisioning_school_1)
       end
 
       it "uses the singular" do
@@ -108,8 +104,8 @@ RSpec.describe Admin::AppropriateBodies::DescriptionComponent, type: :component 
         FactoryBot.create(
           :appropriate_body_period,
           :teaching_school,
-          provisioning_school:,
-          name: provisioning_school.name
+          provisioning_school: provisioning_school_1,
+          name: provisioning_school_1.name
         )
       end
 
@@ -125,9 +121,9 @@ RSpec.describe Admin::AppropriateBodies::DescriptionComponent, type: :component 
     let(:region_south) { FactoryBot.create(:region, code: "R3", districts: %w[South]) }
 
     before do
-      FactoryBot.create(:region_award, appropriate_body_period:, region: region_west_east, school: provisioning_school)
-      FactoryBot.create(:region_award, appropriate_body_period:, region: region_north, school: provisioning_school)
-      FactoryBot.create(:region_award, appropriate_body_period:, region: region_south, school: provisioning_school)
+      FactoryBot.create(:region_award, appropriate_body_period:, region: region_west_east, school: provisioning_school_1)
+      FactoryBot.create(:region_award, appropriate_body_period:, region: region_north, school: provisioning_school_1)
+      FactoryBot.create(:region_award, appropriate_body_period:, region: region_south, school: provisioning_school_1)
     end
 
     context "when the period is backed by a teaching school hub" do
@@ -138,7 +134,7 @@ RSpec.describe Admin::AppropriateBodies::DescriptionComponent, type: :component 
 
     context "when an award has been deactivated" do
       before do
-        FactoryBot.create(:region_award, :deactivated, appropriate_body_period:, school: provisioning_school)
+        FactoryBot.create(:region_award, :deactivated, appropriate_body_period:, school: provisioning_school_1)
       end
 
       it "counts only the active awards" do
@@ -166,7 +162,7 @@ RSpec.describe Admin::AppropriateBodies::DescriptionComponent, type: :component 
         # rule, and the component still has to render it, so write it without validations.
         FactoryBot.build(:appropriate_body_period, :teaching_school_hub,
                          teaching_school_hub:,
-                         provisioning_school:,
+                         provisioning_school: provisioning_school_2,
                          name: "Acme TSH West").save!(validate: false)
 
         render_inline(component)
@@ -187,14 +183,14 @@ RSpec.describe Admin::AppropriateBodies::DescriptionComponent, type: :component 
       # A hub with more than one active period now requires a name on each. This row predates that
       # rule, and the component still has to render it, so write it without validations.
       let(:appropriate_body_period) do
-        FactoryBot.build(:appropriate_body_period, teaching_school_hub:, provisioning_school:, name:)
+        FactoryBot.build(:appropriate_body_period, teaching_school_hub:, provisioning_school: provisioning_school_1, name:)
                   .tap { |period| period.save!(validate: false) }
       end
 
       before do
         FactoryBot.create(:appropriate_body_period, :teaching_school_hub,
                           teaching_school_hub:,
-                          provisioning_school:,
+                          provisioning_school: provisioning_school_2,
                           name: "Acme TSH West")
 
         render_inline(component)
