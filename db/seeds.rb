@@ -3,9 +3,10 @@ Rails.root.glob("db/seeds/support/{*.rb,teacher_histories/*.rb,builders/*.rb}").
 priority_seeds = %w[
   contract_periods
   lead_providers
-  appropriate_body_periods
-  delivery_partners
+  regions
   schools
+  appropriate_bodies
+  delivery_partners
   gias_data
   lead_provider_delivery_partnerships
   school_partnerships

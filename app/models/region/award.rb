@@ -14,14 +14,16 @@ class Region::Award < ApplicationRecord
             uniqueness: {
               conditions: -> { active },
               message: "is already linked to an active lead school"
-            }
+            },
+            if: :active?
 
   validates :region_id,
             uniqueness: {
               scope: :appropriate_body_period_id,
               conditions: -> { active },
               message: "is already linked to this appropriate body"
-            }
+            },
+            if: :active?
 
   def active? = deactivated_at.nil?
 end

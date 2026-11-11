@@ -12,15 +12,25 @@ brookfield_school = School.find_by!(urn: 2_976_163)
 ashford_independent_school = School.find_by!(urn: 9_123_458)
 
 # Appropriate bodies
-south_yorkshire_studio_hub = AppropriateBodyPeriod.find_by!(name: "South Yorkshire Studio Hub")
-golden_leaf_teaching_school_hub = AppropriateBodyPeriod.find_by!(name: "Golden Leaf Teaching School Hub")
-umber_teaching_school_hub = AppropriateBodyPeriod.find_by!(name: "Umber Teaching School Hub")
+#
+# Teaching school hubs
+golden_leaf_teaching_school_hub = appropriate_body_period_for(TeachingSchoolHub.find_by!(name: "Golden Leaf Teaching School Hub"))
+umber_teaching_school_hub = appropriate_body_period_for(TeachingSchoolHub.find_by!(name: "Umber Teaching School Hub"))
+
+# National body
+istip = appropriate_body_period_for(NationalBody.find_by!(name: NationalBody::ISTIP))
+
+# Local authority
+oldshire_local_authority = appropriate_body_period_for(LocalAuthority.find_by!(name: "Oldshire Local Authority"))
+
+# Teaching school
+frame_university_london = appropriate_body_period_for(School.find_by!(urn: 9_400_001))
 
 def teacher(...) = TeacherHistories::TeacherBuilder.teacher(...)
 def next_trn = (sprintf("%07d", @trns.next))
 
 _caroline_quentin = teacher(next_trn, "Caroline Quentin") do
-  induction_period(south_yorkshire_studio_hub, "2024-09-05")
+  induction_period(umber_teaching_school_hub, "2024-09-05")
 
   ect_at_school_period(ashford_independent_school, "2024-09-01") do
     school_led_training_period("2024-09-01")
@@ -147,7 +157,7 @@ _anthony_hopkins = teacher(next_trn, "Anthony Hopkins") do
 end
 
 _harriet_walter = teacher(next_trn, "Harriet Walter") do
-  induction_period(south_yorkshire_studio_hub, "2022-09-24 -> 2025-04-23")
+  induction_period(golden_leaf_teaching_school_hub, "2022-09-24 -> 2025-04-23")
   induction_period(golden_leaf_teaching_school_hub, "2025-05-18")
 
   ect_at_school_period(brookfield_school, "2022-09-04") do
@@ -259,4 +269,34 @@ _saoirse_ronan = teacher(next_trn, "Saoirse Ronan", :deactivated_in_trs) do
   ect_at_school_period(abbey_grove_school, "2026-09-01") do
     school_led_training_period("2026-09-01")
   end
+end
+
+# Induction at a legacy appropriate body
+# ----------------------------------------------------------------------------
+# An induction period may sit at any body type, not only at a hub. These three teachers
+# show the shapes that still exist in production data: a national body, a local
+# authority, and a teaching school that acted as an appropriate body in its own right.
+
+_induction_at_a_national_body = teacher(next_trn, "Imelda Staunton") do
+  description("Induction at a national body, before the teacher moved to a hub")
+
+  induction_period(istip, "2013-09-02 -> 2014-07-18")
+
+  ect_at_school_period(brookfield_school, "2013-09-02 -> 2014-07-18")
+end
+
+_induction_at_a_local_authority = teacher(next_trn, "Timothy Spall") do
+  description("Induction at a local authority, which retired as an appropriate body in 2024")
+
+  induction_period(oldshire_local_authority, "2019-09-02 -> 2020-07-17")
+
+  ect_at_school_period(abbey_grove_school, "2019-09-02 -> 2020-07-17")
+end
+
+_induction_at_a_teaching_school = teacher(next_trn, "Brenda Blethyn") do
+  description("Induction at a teaching school, which retired as an appropriate body in 2021")
+
+  induction_period(frame_university_london, "2019-09-02 -> 2020-07-17")
+
+  ect_at_school_period(ashford_independent_school, "2019-09-02 -> 2020-07-17")
 end

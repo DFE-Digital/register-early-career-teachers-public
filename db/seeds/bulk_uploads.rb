@@ -1,6 +1,6 @@
 print_seed_info("Bulk uploads", blank_lines_before: 1, colour: :green)
 
-umber = AppropriateBodyPeriod.find_by!(name: "Umber Teaching School Hub")
+umber = appropriate_body_period_for(TeachingSchoolHub.find_by!(name: "Umber Teaching School Hub"))
 
 claim_data = [
   { trn: "3000100", date_of_birth: "1990-03-15", training_programme: "provider-led", started_on: "2025-01-30" },
