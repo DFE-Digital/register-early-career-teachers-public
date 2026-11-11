@@ -3,7 +3,16 @@ title: View mentoring data
 sidebar_position: 11
 ---
 
-> **Warning:** The mentorship endpoints described in this guidance are currently available for testing in the sandbox environment only. They are not available in production.
+<div class="govuk-notification-banner" role="region" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+  <div class="govuk-notification-banner__header">
+    <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+      Important
+    </h2>
+  </div>
+  <div class="govuk-notification-banner__content">
+    <p class="govuk-notification-banner__heading">
+      The mentorship endpoints described in this guidance are currently available for testing in the sandbox environment only. They are not available in production.
+    </p>
 
 The mentorship endpoints allow lead providers to view mentoring information linked to early career teachers (ECTs) and mentors.
 
@@ -96,3 +105,7 @@ A mentor may have multiple mentoring periods with different statuses. Providers 
 | `mentor_training_elsewhere` | The mentor is currently training with a different provider |
 | `mentor_not_currently_training` | The mentor has not completed training and is not currently training with a provider, but may resume training in the future |
 | `no_known_training` | The mentor is not known to have trained with any provider while at the school and is not considered to have completed training |
+
+If a mentor has a status reason of `mentor_training_elsewhere` and the school wants the mentor to train with the same provider as the ECT, the lead provider must ask the school's induction tutor to update the mentor's lead provider in Register early career teachers (RECT). Once this has been done, the mentor's training details will be available through the API.
+
+If a mentor has a status reason of `mentor_not_currently_training`, the provider can resume the mentor's training using the `PUT /resume` endpoint. Before doing this, the provider should check that the mentor is visible in the `GET /participants` response and has a status of deferred or withdrawn.
