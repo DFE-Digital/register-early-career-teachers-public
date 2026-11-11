@@ -5,7 +5,7 @@ module IntegrationSupport
     before_action :resume_api_client_connection, only: %i[show update delete destroy]
 
     def new
-      @appropriate_body_periods = AppropriateBodyPeriod.order(:name)
+      @appropriate_body_periods = AppropriateBodyPeriod.with_display_names.sort_by(&:display_name)
       @clients = API::OAuth::Client.order(:name)
       client = @clients.find_by(client_id: params[:client_id]) || @clients.first
       @api_client_connection = APIClientConnection.new(
