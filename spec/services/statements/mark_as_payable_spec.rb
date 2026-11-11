@@ -181,22 +181,43 @@ RSpec.describe Statements::MarkAsPayable do
     end
     let(:declaration) { FactoryBot.create(:declaration, :eligible, framework_agreement:, payment_statement: statement) }
 
-    it "does not modify the statement" do
-      expect {
-        subject.report_invalid_declarations
-      }.not_to(change(statement, :attributes))
-    end
+    context "when the declaration is valid" do
+      it "does not modify the statement" do
+        expect {
+          subject.report_invalid_declarations
+        }.not_to(change(statement, :attributes))
+      end
 
-    it "does not modify the declarations" do
-      expect {
+      it "does not modify the declarations" do
+        expect {
+          subject.report_invalid_declarations
+        }.not_to(change { declaration.reload.attributes })
+      end
+
+      it "does not record a sentry message" do
+        expect(Sentry).not_to receive(:capture_message)
         subject.report_invalid_declarations
-      }.not_to(change { declaration.reload.attributes })
+      end
     end
 
     context "when a declaration is not valid" do
-      it "records a Sentry message" do
+      before do
         declaration.update_columns(mentorship_period_id: FactoryBot.create(:mentorship_period).id)
+      end
 
+      it "does not modify the statement" do
+        expect {
+          subject.report_invalid_declarations
+        }.not_to(change(statement, :attributes))
+      end
+
+      it "does not modify the declarations" do
+        expect {
+          subject.report_invalid_declarations
+        }.not_to(change { declaration.reload.attributes })
+      end
+
+      it "records a Sentry message" do
         expect(Sentry).to receive(:capture_message)
           .with("[MarkAsPayable-Check] - Declaration [#{declaration.id}] invalid on statement [#{statement.id}]")
         subject.report_invalid_declarations
