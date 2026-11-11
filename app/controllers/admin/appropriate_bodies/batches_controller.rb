@@ -8,7 +8,9 @@ module Admin::AppropriateBodies
 
     def index
       query = PendingInductionSubmissionBatch
-        .includes(:appropriate_body_period, :pending_induction_submissions)
+        .includes({ appropriate_body_period: AppropriateBodyPeriod.body_type_associations },
+                  :pending_induction_submissions)
+        .strict_loading
         .for_appropriate_body_period(@appropriate_body)
         .order(created_at: :desc)
 

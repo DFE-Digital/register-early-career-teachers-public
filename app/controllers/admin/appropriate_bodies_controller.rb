@@ -20,7 +20,7 @@ module Admin
   private
 
     def appropriate_bodies
-      scope = ::AppropriateBodies::Search.new(params[:q]).search.with_display_names
+      scope = ::AppropriateBodies::Search.new(params[:q]).search
 
       @show_inactive ? scope : scope.active
     end
