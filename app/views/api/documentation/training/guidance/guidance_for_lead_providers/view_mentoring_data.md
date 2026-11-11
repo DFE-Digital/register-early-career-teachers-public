@@ -106,6 +106,6 @@ A mentor may have multiple mentoring periods with different statuses. Providers 
 | `mentor_not_currently_training` | The mentor has not completed training and is not currently training with a provider, but may resume training in the future |
 | `no_known_training` | The mentor is not known to have trained with any provider while at the school and is not considered to have completed training |
 
-If a mentor has a status reason of `mentor_training_elsewhere` and the school wants the mentor to train with the same provider as the ECT, the lead provider must ask the school's induction tutor to update the mentor's lead provider in Register early career teachers (RECT). Once this has been done, the mentor's training details will be available through the API.
+A lead provider may want a mentor with a status reason of `mentor_training_elsewhere` to train with them instead. To do this, they need to ask the school’s induction tutor to sign in to Register early career teachers and change the mentor’s lead provider. Once this change has been made, the mentor’s training details will be updated and made available to the lead provider through the API.
 
-If a mentor has a status reason of `mentor_not_currently_training`, the provider can resume the mentor's training using the `PUT /resume` endpoint. Before doing this, the provider should check that the mentor is visible in the `GET /participants` response and has a status of deferred or withdrawn.
+If a mentor has a status reason of `mentor_not_currently_training`, the lead provider can resume the mentor's training using the `PUT /resume` endpoint. Before doing this, the provider should check that the mentor is visible in the `GET /participants` response and has a status of deferred or withdrawn.
