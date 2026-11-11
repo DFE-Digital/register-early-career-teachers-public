@@ -15,7 +15,7 @@ RSpec.describe "GET /api/induction/v1/appropriate-bodies", type: :request do
     end
 
     before do
-      FactoryBot.create(:appropriate_body_period, :inactive, name: "Oldshire Local Authority")
+      FactoryBot.create(:appropriate_body_period, :cannot_sign_in, name: "Oldshire Local Authority")
     end
 
     context "with and without appropriate body period names" do

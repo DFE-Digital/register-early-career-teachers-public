@@ -68,7 +68,7 @@ describe Schools::ECTs::ChangeAppropriateBodyWizard::EditStep do
 
   describe "#appropriate_bodies_except_current" do
     let!(:other_appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
-    let!(:inactive_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, :inactive) }
+    let!(:inactive_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, :cannot_sign_in) }
     let!(:national_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, :istip) }
 
     it "does not include inactive appropriate bodies" do

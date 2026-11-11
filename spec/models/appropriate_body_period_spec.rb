@@ -28,7 +28,7 @@ describe AppropriateBodyPeriod do
     before do
       FactoryBot.create(:appropriate_body_period, :national)
       FactoryBot.create(:appropriate_body_period, :teaching_school_hub)
-      FactoryBot.create(:appropriate_body_period, :teaching_school_hub, :inactive)
+      FactoryBot.create(:appropriate_body_period, :teaching_school_hub, :cannot_sign_in)
       FactoryBot.create(:appropriate_body_period, :local_authority)
     end
 

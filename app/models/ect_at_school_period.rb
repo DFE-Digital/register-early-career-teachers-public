@@ -108,7 +108,7 @@ class ECTAtSchoolPeriod < ApplicationRecord
       .where.not(id: claimed_by_different_appropriate_body)
   }
   scope :with_teacher_current_induction_period_appropriate_body, -> {
-    includes(teacher: { current_or_next_induction_period: :appropriate_body_period })
+    includes(teacher: { current_or_next_induction_period: { appropriate_body_period: AppropriateBodyPeriod.body_type_associations } })
   }
 
   # @return [String] AppropriateBodyPeriod#name may be nil

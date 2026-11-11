@@ -76,7 +76,7 @@ RSpec.describe "admin/appropriate_bodies/index.html.erb" do
   end
 
   context "when de-designated appropriate bodies are included" do
-    let(:appropriate_bodies) { [FactoryBot.create(:appropriate_body_period, :inactive, name: "Captain Retired")] }
+    let(:appropriate_bodies) { [FactoryBot.create(:appropriate_body_period, :cannot_sign_in, name: "Captain Retired")] }
 
     before { assign(:show_inactive, true) }
 

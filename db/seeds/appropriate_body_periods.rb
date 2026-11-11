@@ -489,7 +489,7 @@ appropriate_body_periods.each do |data|
       baseline_started_on = [provisioning_school.opened_on, School::ACTED_AS_APPROPRIATE_BODY_DATES[:introduced_on]].compact.max
       baseline_finished_on = [provisioning_school.closed_on, School::ACTED_AS_APPROPRIATE_BODY_DATES[:retired_on]].compact.min
 
-      FactoryBot.create(:appropriate_body_period, :inactive,
+      FactoryBot.create(:appropriate_body_period, :cannot_sign_in,
                         name: school_name + " (closed)",
                         body_type: "teaching_school",
                         started_on: data[:teaching_school_started_on] || baseline_started_on,
