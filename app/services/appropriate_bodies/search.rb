@@ -20,8 +20,7 @@ module AppropriateBodies
       @scope.find_by(dfe_sign_in_organisation_id:)
     end
 
-    # Only ABPs with a DSI UUID are currently surfaced meaning the majority are hidden.
-    # Moving to body_type specific search so ABP names can be treated differently in the future
+    # Maybe moving to body_type specific search so ABP names can be treated differently in the future
     # for teaching school hubs.
     def search
       query = if @query_string.blank?
@@ -30,7 +29,7 @@ module AppropriateBodies
                 @scope.where("name ILIKE ?", "%#{@query_string}%")
               end
 
-      query.order(name: "asc")
+      query.with_display_names.strict_loading.order(name: "asc")
     end
   end
 end
