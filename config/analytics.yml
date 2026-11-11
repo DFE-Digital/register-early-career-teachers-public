@@ -71,6 +71,7 @@ shared:
     - api_unfunded_mentor_updated_at
     - anonymised_at
     - anonymisation_reason
+    - ect_engagement_threshold_claimed
   :users:
     - id
     - name
