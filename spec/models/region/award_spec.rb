@@ -52,6 +52,17 @@ RSpec.describe Region::Award, type: :model do
         expect(other_award).to have_error(:region_id, "is already linked to this appropriate body")
       end
 
+      it "cannot reactivate a closed award while the region is held by an active body" do
+        deactivated = FactoryBot.create(:region_award, :deactivated, appropriate_body_period:, school:, region:)
+        FactoryBot.create(:region_award,
+                          appropriate_body_period: other_appropriate_body_period,
+                          school: other_school,
+                          region:)
+
+        expect { deactivated.update!(deactivated_at: nil) }
+          .to raise_error(ActiveRecord::RecordInvalid, /already linked to an active lead school/)
+      end
+
       it "allows a lead school to return to an appropriate body for a region it held before" do
         FactoryBot.create(:region_award, :deactivated, appropriate_body_period:, school:, region:)
 
@@ -70,6 +81,16 @@ RSpec.describe Region::Award, type: :model do
 
         expect(described_class.where(region:).count).to be(2)
         expect(described_class.active).to contain_exactly(current)
+      end
+
+      it "keeps a closed award editable while the region is held by another body" do
+        closed = FactoryBot.create(:region_award, :deactivated, appropriate_body_period:, school:, region:)
+        FactoryBot.create(:region_award,
+                          appropriate_body_period: other_appropriate_body_period,
+                          school: other_school,
+                          region:)
+
+        expect { closed.update!(deactivation_reason: "corrected reason") }.not_to raise_error
       end
 
       it "allows a lead school to hold several regions at once" do
