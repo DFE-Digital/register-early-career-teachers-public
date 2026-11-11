@@ -179,7 +179,7 @@ RSpec.describe Statements::MarkAsPayable do
     let(:statement) do
       FactoryBot.create(:statement, :open, deadline_date: 1.day.from_now, payment_date: 2.days.from_now, framework_agreement:)
     end
-    let(:declaration) { FactoryBot.create(:declaration, :eligible, framework_agreement:, payment_statement: statement) }
+    let!(:declaration) { FactoryBot.create(:declaration, :eligible, framework_agreement:, payment_statement: statement) }
 
     context "when the declaration is valid" do
       it "does not modify the statement" do
