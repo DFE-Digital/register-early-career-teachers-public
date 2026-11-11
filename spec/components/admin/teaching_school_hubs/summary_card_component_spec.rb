@@ -4,20 +4,16 @@ RSpec.describe Admin::TeachingSchoolHubs::SummaryCardComponent, type: :component
   subject(:component) { described_class.new(teaching_school_hub:) }
 
   let(:teaching_school_hub) { FactoryBot.create(:teaching_school_hub, name: "Acme TSH") }
-  let(:provisioning_school) do
-    FactoryBot.create(
-      :school,
-      :eligible,
-      gias_school: FactoryBot.create(:gias_school, name: "Provisioning School", urn: 100_001)
-    )
-  end
+  let(:provisioning_school_1) { FactoryBot.create(:school, :eligible) }
+
+  let(:provisioning_school_2) { FactoryBot.create(:school, :eligible) }
 
   describe "rendered template" do
     context "when the hub has one appropriate body period" do
       before do
         FactoryBot.create(:appropriate_body_period, :teaching_school_hub,
                           teaching_school_hub:,
-                          provisioning_school:,
+                          provisioning_school: provisioning_school_1,
                           name: nil)
 
         render_inline(component)
@@ -30,7 +26,7 @@ RSpec.describe Admin::TeachingSchoolHubs::SummaryCardComponent, type: :component
 
       it "describes the body, naming its provisioning school" do
         expect(rendered_content).to have_selector("p.govuk-body",
-                                                  text: "Provisioned by #{provisioning_school.name}")
+                                                  text: "Provisioned by #{provisioning_school_1.name}")
       end
     end
 
@@ -38,11 +34,11 @@ RSpec.describe Admin::TeachingSchoolHubs::SummaryCardComponent, type: :component
       before do
         FactoryBot.create(:appropriate_body_period, :teaching_school_hub,
                           teaching_school_hub:,
-                          provisioning_school:,
+                          provisioning_school: provisioning_school_1,
                           name: "Acme TSH West")
         FactoryBot.create(:appropriate_body_period, :teaching_school_hub,
                           teaching_school_hub:,
-                          provisioning_school:,
+                          provisioning_school: provisioning_school_2,
                           name: "Acme TSH East")
 
         render_inline(component)
@@ -74,13 +70,13 @@ RSpec.describe Admin::TeachingSchoolHubs::SummaryCardComponent, type: :component
       before do
         FactoryBot.create(:appropriate_body_period, :teaching_school_hub,
                           teaching_school_hub:,
-                          provisioning_school:,
+                          provisioning_school: provisioning_school_1,
                           name: "Acme TSH East")
         # A hub with more than one active period now requires a name on each. This row predates that
         # rule, and the card still has to render it, so write it without validations.
         FactoryBot.build(:appropriate_body_period, :teaching_school_hub,
                          teaching_school_hub:,
-                         provisioning_school:,
+                         provisioning_school: provisioning_school_1,
                          name: nil).save!(validate: false)
 
         render_inline(component)

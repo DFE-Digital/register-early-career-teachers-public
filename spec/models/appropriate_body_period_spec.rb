@@ -771,9 +771,7 @@ describe AppropriateBodyPeriod do
     let(:teaching_school_hub) do
       FactoryBot.create(:teaching_school_hub, name: "Bright Futures Teaching School Hub")
     end
-    let(:provisioning_school) do
-      FactoryBot.create(:school, gias_school: FactoryBot.create(:gias_school, name: "Provisioning School"))
-    end
+    let(:provisioning_school) { FactoryBot.create(:school) }
     let(:appropriate_body_period) do
       FactoryBot.create(:appropriate_body_period, name:, teaching_school_hub:, provisioning_school:)
     end
@@ -800,7 +798,7 @@ describe AppropriateBodyPeriod do
       let(:name) { nil }
 
       it "delegates to the teaching school hub" do
-        expect(display_name).to eq("Bright Futures Teaching School Hub")
+        expect(display_name).to eq(teaching_school_hub.name)
       end
 
       context "when the period is backed by a national body" do
@@ -810,7 +808,7 @@ describe AppropriateBodyPeriod do
         end
 
         it "delegates to the national body" do
-          expect(display_name).to eq("National Body X")
+          expect(display_name).to eq(national_body.name)
         end
       end
 
@@ -821,7 +819,7 @@ describe AppropriateBodyPeriod do
         end
 
         it "delegates to the local authority" do
-          expect(display_name).to eq("Some Local Authority")
+          expect(display_name).to eq(local_authority.name)
         end
       end
 
@@ -831,7 +829,7 @@ describe AppropriateBodyPeriod do
         end
 
         it "delegates to the provisioning school" do
-          expect(display_name).to eq("Provisioning School")
+          expect(display_name).to eq(provisioning_school.name)
         end
       end
     end

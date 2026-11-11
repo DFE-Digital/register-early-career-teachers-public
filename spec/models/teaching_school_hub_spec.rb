@@ -21,53 +21,45 @@ RSpec.describe TeachingSchoolHub do
     subject(:region_codes) { teaching_school_hub.region_codes }
 
     let(:teaching_school_hub) { FactoryBot.create(:teaching_school_hub) }
-    let(:school) { FactoryBot.create(:school, :eligible) }
+    let(:provisioning_school_1) { FactoryBot.create(:school, :eligible) }
+    let(:provisioning_school_2) { FactoryBot.create(:school, :eligible) }
+    let(:provisioning_school_3) { FactoryBot.create(:school, :eligible) }
     let(:region_north) { FactoryBot.create(:region, code: "R1") }
     let(:region_south) { FactoryBot.create(:region, code: "R2") }
 
     let(:first_period) do
-      FactoryBot.create(
-        :appropriate_body_period,
-        :teaching_school_hub,
-        teaching_school_hub:,
-        provisioning_school: school,
-        name: "First Period"
-      )
+      FactoryBot.create(:appropriate_body_period, :teaching_school_hub,
+                        teaching_school_hub:,
+                        provisioning_school: provisioning_school_1,
+                        name: "First Body")
     end
 
     let(:second_period) do
-      FactoryBot.create(
-        :appropriate_body_period,
-        :teaching_school_hub,
-        teaching_school_hub:,
-        provisioning_school: school,
-        name: "Second Period"
-      )
+      FactoryBot.create(:appropriate_body_period, :teaching_school_hub,
+                        teaching_school_hub:,
+                        provisioning_school: provisioning_school_2,
+                        name: "Second Body")
     end
 
     before do
-      FactoryBot.create(:region_award, appropriate_body_period: first_period, region: region_north, school:)
-      FactoryBot.create(:region_award, appropriate_body_period: second_period, region: region_south, school:)
+      FactoryBot.create(:region_award, appropriate_body_period: first_period, region: region_north, school: provisioning_school_1)
+      FactoryBot.create(:region_award, appropriate_body_period: second_period, region: region_south, school: provisioning_school_2)
     end
 
     it "combines the codes across every period" do
       expect(region_codes).to contain_exactly("R1", "R2")
     end
 
-    it "does not include codes awarded to another hub" do
-      other_period = FactoryBot.create(
-        :appropriate_body_period,
-        :teaching_school_hub,
-        teaching_school_hub: FactoryBot.create(:teaching_school_hub),
-        provisioning_school: school,
-        name: "Other Period"
-      )
-      FactoryBot.create(
-        :region_award,
-        appropriate_body_period: other_period,
-        region: FactoryBot.create(:region, code: "R9"),
-        school:
-      )
+    it "does not include codes awarded to another hub body" do
+      other_hub = FactoryBot.create(:teaching_school_hub)
+      other_hub_body = FactoryBot.create(:appropriate_body_period, :teaching_school_hub,
+                                         teaching_school_hub: other_hub,
+                                         provisioning_school: provisioning_school_3,
+                                         name: nil)
+      FactoryBot.create(:region_award,
+                        appropriate_body_period: other_hub_body,
+                        region: FactoryBot.create(:region, code: "R9"),
+                        school: provisioning_school_1)
 
       expect(region_codes).to contain_exactly("R1", "R2")
     end
@@ -86,25 +78,26 @@ RSpec.describe TeachingSchoolHub do
   describe "#has_multiple_active_appropriate_body_periods?" do
     subject(:teaching_school_hub) { FactoryBot.create(:teaching_school_hub) }
 
-    let(:provisioning_school) { FactoryBot.create(:school, :eligible) }
+    let(:provisioning_school_1) { FactoryBot.create(:school, :eligible) }
+    let(:provisioning_school_2) { FactoryBot.create(:school, :eligible) }
 
     let(:first_period) do
       FactoryBot.create(:appropriate_body_period, :teaching_school_hub,
                         teaching_school_hub:,
-                        provisioning_school:,
-                        name: "First Period")
+                        provisioning_school: provisioning_school_1,
+                        name: "First Body")
     end
     let(:second_period) do
       FactoryBot.create(:appropriate_body_period, :teaching_school_hub,
                         teaching_school_hub:,
-                        provisioning_school:,
-                        name: "Second Period")
+                        provisioning_school: provisioning_school_2,
+                        name: "Second Body")
     end
     let(:inactive_second_period) do
-      FactoryBot.create(:appropriate_body_period, :teaching_school_hub,
+      FactoryBot.create(:appropriate_body_period, :teaching_school_hub, :cannot_sign_in,
                         teaching_school_hub:,
-                        provisioning_school:,
-                        name: "Second Period",
+                        provisioning_school: provisioning_school_2,
+                        name: "Second Body",
                         finished_on: 1.year.ago)
     end
 
