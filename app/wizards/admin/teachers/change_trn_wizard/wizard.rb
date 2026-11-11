@@ -114,6 +114,12 @@ module Admin
             store.source_teacher_name = source_teacher_name
           rescue ::Teachers::TRN::Resolver::ProposedTRNError
             raise ProposedTRNChangedError
+          rescue ActiveRecord::RecordInvalid
+            raise IneligibleForMergeError if merge_proposed?
+            raise IneligibleForReplacementError if replace_proposed?
+          rescue ::Teachers::TRN::TrainingPeriods::Merge::CannotMergePeriods,
+                 ::Teachers::TRN::MentorshipPeriods::Merge::CannotMergePeriods
+            raise IneligibleForMergeError
           end
         end
 

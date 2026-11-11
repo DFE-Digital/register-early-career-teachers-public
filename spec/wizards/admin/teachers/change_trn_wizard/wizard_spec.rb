@@ -127,7 +127,7 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::Wizard do
         allow(service).to receive(:replace!).and_raise(ActiveRecord::RecordInvalid)
       end
 
-      let(:expected_error) { ActiveRecord::RecordInvalid }
+      let(:expected_error) { described_class::IneligibleForReplacementError }
 
       include_examples "it does not change the TRN"
     end
@@ -314,7 +314,37 @@ RSpec.describe Admin::Teachers::ChangeTRNWizard::Wizard do
         allow(service).to receive(:merge!).and_raise(ActiveRecord::RecordInvalid)
       end
 
-      let(:expected_error) { ActiveRecord::RecordInvalid }
+      let(:expected_error) { described_class::IneligibleForMergeError }
+
+      include_examples "it does not change the TRN"
+    end
+
+    context "when the merge service reports incompatible training periods" do
+      before do
+        service = instance_double(Teachers::TRN::Merge)
+        allow(Teachers::TRN::Merge).to receive(:new)
+          .with(teacher: wizard.teacher, new_trn: store.trn, author:).and_return(service)
+        allow(service).to receive(:merge!).and_raise(
+          Teachers::TRN::TrainingPeriods::Merge::CannotMergePeriods
+        )
+      end
+
+      let(:expected_error) { described_class::IneligibleForMergeError }
+
+      include_examples "it does not change the TRN"
+    end
+
+    context "when the merge service reports incompatible mentorship periods" do
+      before do
+        service = instance_double(Teachers::TRN::Merge)
+        allow(Teachers::TRN::Merge).to receive(:new)
+          .with(teacher: wizard.teacher, new_trn: store.trn, author:).and_return(service)
+        allow(service).to receive(:merge!).and_raise(
+          Teachers::TRN::MentorshipPeriods::Merge::CannotMergePeriods
+        )
+      end
+
+      let(:expected_error) { described_class::IneligibleForMergeError }
 
       include_examples "it does not change the TRN"
     end
