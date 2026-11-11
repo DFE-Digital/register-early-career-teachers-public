@@ -10,9 +10,9 @@ sidebar_position: 11
     </h2>
   </div>
   <div class="govuk-notification-banner__content">
-    <p class="govuk-notification-banner__heading">
-      The mentorship endpoints described in this guidance are currently available for testing in the sandbox environment only. They are not available in production.
-    </p>
+    The mentorship endpoints described in this guidance are currently available for testing in the sandbox environment only. They are not available in production.
+  </div>
+</div>
 
 The mentorship endpoints allow lead providers to view mentoring information linked to early career teachers (ECTs) and mentors.
 
