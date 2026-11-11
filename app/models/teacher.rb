@@ -118,6 +118,9 @@ class Teacher < ApplicationRecord
   validates :anonymisation_reason, presence: true, if: -> { anonymised_at.present? }
   validates :anonymised_at, presence: true, if: -> { anonymisation_reason.present? }
 
+  # NOTE: this would probably need the validation rules around when this is allowed to be `true` vs `false`
+  validates :ect_engagement_threshold_claimed, presence: true
+
   # Scopes
   scope :search, ->(query_string) {
     where(

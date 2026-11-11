@@ -14,6 +14,7 @@ namespace :api do
         put :defer
         put :resume
         put :withdraw
+        put :engagement_threshold_met
         get :transfers, to: "transfers#show"
       end
 
