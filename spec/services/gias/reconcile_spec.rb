@@ -20,11 +20,11 @@ RSpec.describe GIAS::Reconcile, type: :service do
 
     context "when there are schools to reconcile" do
       let(:urns) { [20_001, 20_002, 20_003, 20_005, 20_006, 20_007] }
-      let(:open_gias_school) { FactoryBot.create(:gias_school, status: "open", urn: 20_001) }
+      let(:open_gias_school) { FactoryBot.create(:gias_school, status: "open", urn: 20_001, opened_on: Date.new(2024, 1, 1)) }
       let(:replaced_gias_school) { FactoryBot.create(:gias_school, :closed, urn: 20_002) }
       let(:merged_gias_school) { FactoryBot.create(:gias_school, :closed, urn: 20_003) }
       let(:closed_gias_school) { FactoryBot.create(:gias_school, :closed, urn: 20_005) }
-      let(:successor_gias_school_1) { FactoryBot.create(:gias_school, status: "open", urn: 20_006) }
+      let(:successor_gias_school_1) { FactoryBot.create(:gias_school, status: "open", urn: 20_006, opened_on: 1.day.from_now) }
       let(:successor_gias_school_2) { FactoryBot.create(:gias_school, status: "open", urn: 20_007) }
 
       before do
@@ -191,7 +191,10 @@ RSpec.describe GIAS::Reconcile, type: :service do
             level: :info,
             extra: hash_including(urn: 20_004,
                                   status: "closed",
+                                  opened_on: nil,
                                   closed_on: Date.current,
+                                  urns_to_reconcile: urns,
+                                  urns_remaining: array_including(20_004),
                                   predecessor_urns: [],
                                   successor_urns: [20_006, 20_007])
           ).once
@@ -201,7 +204,10 @@ RSpec.describe GIAS::Reconcile, type: :service do
             level: :info,
             extra: hash_including(urn: 20_006,
                                   status: "open",
+                                  opened_on: 1.day.from_now.to_date,
                                   closed_on: nil,
+                                  urns_to_reconcile: urns,
+                                  urns_remaining: array_including(20_006),
                                   predecessor_urns: [20_004],
                                   successor_urns: [])
           ).once
@@ -210,9 +216,11 @@ RSpec.describe GIAS::Reconcile, type: :service do
             "Could not reconcile school with URN 20007",
             level: :info,
             extra: hash_including(urn: 20_007,
-
                                   status: "open",
+                                  opened_on: nil,
                                   closed_on: nil,
+                                  urns_to_reconcile: urns,
+                                  urns_remaining: array_including(20_007),
                                   predecessor_urns: [20_004],
                                   successor_urns: [])
           ).once
@@ -257,7 +265,10 @@ RSpec.describe GIAS::Reconcile, type: :service do
             .with(instance_of(StandardError),
                   extra: hash_including(urn: 20_001,
                                         status: "open",
+                                        opened_on: Date.new(2024, 1, 1),
                                         closed_on: nil,
+                                        urns_to_reconcile: urns,
+                                        urns_remaining: array_including(20_001),
                                         predecessor_urns: [],
                                         successor_urns: [])).once
 

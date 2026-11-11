@@ -324,7 +324,7 @@ monsters_college = FactoryBot.create(:gias_school, :with_school, :closed, closed
   describe_school(school)
 end
 
-school_of_excellence = FactoryBot.create(:gias_school, :with_school, status: :open, opened_on: Date.new(2026, 4, 30), urn: 9_123_501, name: "Michael Wazowski School of Excellence").tap do |school|
+school_of_excellence = FactoryBot.create(:gias_school, :with_school, status: :open, opened_on: nil, urn: 9_123_501, name: "Michael Wazowski School of Excellence").tap do |school|
   describe_school(school)
 end
 

@@ -168,7 +168,7 @@ RSpec.describe GIAS::Reconciliation::Eligibility do
         context "when the successor has no opened_on date" do
           let(:opened_on) { nil }
 
-          it { is_expected.to be false }
+          it { is_expected.to be true }
         end
       end
 
@@ -287,7 +287,7 @@ RSpec.describe GIAS::Reconciliation::Eligibility do
         context "when the successor has no opened_on date" do
           let(:opened_on) { nil }
 
-          it { is_expected.to be false }
+          it { is_expected.to be true }
         end
       end
 

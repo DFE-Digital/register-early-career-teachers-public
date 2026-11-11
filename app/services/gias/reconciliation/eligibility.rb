@@ -88,9 +88,9 @@ module GIAS::Reconciliation
     end
 
     def successor_opening_soon?
-      return false if successor.opened_on.blank?
+      return false unless successor.proposed_to_open_status?
 
-      successor.proposed_to_open_status? && successor.opened_on <= Date.current + OPENING_SOON_DAYS
+      successor.opened_on.blank? || successor.opened_on <= Date.current + OPENING_SOON_DAYS
     end
 
     def successors
