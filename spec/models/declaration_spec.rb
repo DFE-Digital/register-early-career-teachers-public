@@ -127,6 +127,7 @@ describe Declaration do
         declaration = FactoryBot.create(:declaration)
         training_period = declaration.training_period
 
+        # Fails on Postgres v17 and earlier as they raise a PG::ForeignKeyViolation.
         expect { training_period.delete }.to raise_error(ActiveRecord::StatementInvalid, /PG::RestrictViolation/)
       end
 
