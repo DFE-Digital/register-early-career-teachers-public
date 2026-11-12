@@ -127,7 +127,8 @@ describe Declaration do
         declaration = FactoryBot.create(:declaration)
         training_period = declaration.training_period
 
-        expect { training_period.delete }.to raise_error(ActiveRecord::StatementInvalid, /PG::RestrictViolation/)
+        # Postgres 17 and earlier raises ForeignKeyViolation, Postgres 18+ raises RestrictViolation
+        expect { training_period.delete }.to raise_error(ActiveRecord::StatementInvalid, /PG::(?:ForeignKeyViolation|RestrictViolation)/)
       end
 
       it "allows destroying a training period that has declarations via callback" do
