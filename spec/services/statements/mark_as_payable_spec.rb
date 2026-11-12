@@ -43,6 +43,35 @@ RSpec.describe Statements::MarkAsPayable do
     end
   end
 
+  describe ".check_open_statements_for_errors" do
+    let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
+
+    let!(:paid_statement) do
+      FactoryBot.create(:statement, :paid, deadline_date: 1.month.ago, payment_date: 3.weeks.ago, framework_agreement:)
+    end
+
+    let!(:past_statement_but_open) do
+      FactoryBot.create(:statement, :open, deadline_date: 1.day.ago, payment_date: Time.zone.now, framework_agreement:)
+    end
+
+    let!(:forthcoming_statement) do
+      FactoryBot.create(:statement, :open, deadline_date: 1.month.from_now, payment_date: 6.weeks.from_now, framework_agreement:)
+    end
+
+    it "validates only open statements" do
+      instance = instance_double(described_class)
+      allow(described_class).to receive(:new).and_return(instance)
+
+      expect(instance).to receive(:report_invalid_declarations).twice
+
+      expect(described_class).not_to receive(:new).with(paid_statement)
+      expect(described_class).to receive(:new).with(past_statement_but_open)
+      expect(described_class).to receive(:new).with(forthcoming_statement)
+
+      described_class.check_open_statements_for_errors
+    end
+  end
+
   describe "#mark!" do
     subject { described_class.new(statement) }
 
@@ -140,6 +169,59 @@ RSpec.describe Statements::MarkAsPayable do
       expect { subject.mark! }.to raise_error(StandardError)
       expect(declaration.reload.payment_status).to eq("eligible")
       expect(statement.reload).to be_open
+    end
+  end
+
+  describe "#report_invalid_declarations" do
+    subject { described_class.new(statement) }
+
+    let(:framework_agreement) { FactoryBot.create(:framework_agreement) }
+    let(:statement) do
+      FactoryBot.create(:statement, :open, deadline_date: 1.day.from_now, payment_date: 2.days.from_now, framework_agreement:)
+    end
+    let!(:declaration) { FactoryBot.create(:declaration, :eligible, framework_agreement:, payment_statement: statement) }
+
+    context "when the declaration is valid" do
+      it "does not modify the statement" do
+        expect {
+          subject.report_invalid_declarations
+        }.not_to(change(statement, :attributes))
+      end
+
+      it "does not modify the declarations" do
+        expect {
+          subject.report_invalid_declarations
+        }.not_to(change { declaration.reload.attributes })
+      end
+
+      it "does not record a sentry message" do
+        expect(Sentry).not_to receive(:capture_message)
+        subject.report_invalid_declarations
+      end
+    end
+
+    context "when a declaration is not valid" do
+      before do
+        declaration.update_columns(mentorship_period_id: FactoryBot.create(:mentorship_period).id)
+      end
+
+      it "does not modify the statement" do
+        expect {
+          subject.report_invalid_declarations
+        }.not_to(change(statement, :attributes))
+      end
+
+      it "does not modify the declarations" do
+        expect {
+          subject.report_invalid_declarations
+        }.not_to(change { declaration.reload.attributes })
+      end
+
+      it "records a Sentry message" do
+        expect(Sentry).to receive(:capture_message)
+          .with("[MarkAsPayable-Check] - Declaration [#{declaration.id}] invalid on statement [#{statement.id}]")
+        subject.report_invalid_declarations
+      end
     end
   end
 end
