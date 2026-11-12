@@ -16,6 +16,12 @@ module Statements
       end
     end
 
+    def self.check_open_statements_for_errors
+      Statement.with_status(:open).find_each do |statement|
+        new(statement).report_invalid_declarations
+      end
+    end
+
     def initialize(statement)
       @statement = statement
     end
@@ -30,6 +36,17 @@ module Statements
         end
         statement.mark_as_payable!
         record_statement_payable_event!
+      end
+    end
+
+    def report_invalid_declarations
+      eligible_declarations.find_each do |declaration|
+        next if declaration.valid?
+
+        Sentry.with_scope do |scope|
+          scope.set_context("errors", declaration.errors.messages) if scope
+          Sentry.capture_message("[MarkAsPayable-Check] - Declaration [#{declaration.id}] invalid on statement [#{statement.id}]")
+        end
       end
     end
 

@@ -1,6 +1,7 @@
 module GIAS
   class Reconcile
     def initialize(urns)
+      @urns_remaining = urns.dup
       @urns_to_reconcile = urns.dup
     end
 
@@ -12,19 +13,19 @@ module GIAS
 
       log_failures
 
-      urns_to_reconcile
+      urns_remaining
     end
 
   private
 
-    attr_accessor :urns_to_reconcile
+    attr_accessor :urns_remaining
 
     def replace!
       gias_schools_to_reconcile.find_each do |gias_school|
         capture_error(gias_school) do
           if GIAS::Reconciliation::Replace.replace!(gias_school)
-            urns_to_reconcile.delete(gias_school.urn)
-            urns_to_reconcile.delete(gias_school.successor.urn)
+            urns_remaining.delete(gias_school.urn)
+            urns_remaining.delete(gias_school.successor.urn)
           end
         end
       end
@@ -34,8 +35,8 @@ module GIAS
       gias_schools_to_reconcile.find_each do |gias_school|
         capture_error(gias_school) do
           if GIAS::Reconciliation::Merge.merge!(gias_school)
-            urns_to_reconcile.delete(gias_school.urn)
-            urns_to_reconcile.delete(gias_school.successor.urn)
+            urns_remaining.delete(gias_school.urn)
+            urns_remaining.delete(gias_school.successor.urn)
           end
         end
       end
@@ -45,7 +46,7 @@ module GIAS
       gias_schools_to_reconcile.find_each do |gias_school|
         capture_error(gias_school) do
           if GIAS::Reconciliation::Open.open!(gias_school)
-            urns_to_reconcile.delete(gias_school.urn)
+            urns_remaining.delete(gias_school.urn)
           end
         end
       end
@@ -55,7 +56,7 @@ module GIAS
       gias_schools_to_reconcile.find_each do |gias_school|
         capture_error(gias_school) do
           if GIAS::Reconciliation::Close.close!(gias_school)
-            urns_to_reconcile.delete(gias_school.urn)
+            urns_remaining.delete(gias_school.urn)
           end
         end
       end
@@ -71,7 +72,10 @@ module GIAS
       {
         urn: gias_school.urn,
         status: gias_school.status,
+        opened_on: gias_school.opened_on,
         closed_on: gias_school.closed_on,
+        urns_to_reconcile: @urns_to_reconcile,
+        urns_remaining:,
         predecessor_urns: gias_school.predecessors&.pluck(:urn),
         successor_urns: gias_school.successors&.pluck(:urn)
       }
@@ -90,7 +94,7 @@ module GIAS
     end
 
     def gias_schools_to_reconcile
-      GIAS::School.where(urn: urns_to_reconcile)
+      GIAS::School.where(urn: urns_remaining)
     end
   end
 end
