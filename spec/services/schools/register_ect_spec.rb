@@ -674,6 +674,38 @@ RSpec.describe Schools::RegisterECT do
             expect(new_training_period.expression_of_interest).to eq(previous_framework_agreement)
             expect(new_training_period.schedule.contract_period).to eq(previous_contract_period)
           end
+
+          context "when the previous contract period is frozen" do
+            let(:previous_contract_period) do
+              FactoryBot.create(:contract_period, :with_payments_frozen, year: 2022)
+            end
+
+            let(:successor_contract_period) do
+              FactoryBot.create(:contract_period, :with_extended_schedule, year: 2024)
+            end
+
+            let!(:successor_framework_agreement) do
+              FactoryBot.create(
+                :framework_agreement,
+                lead_provider:,
+                contract_period: successor_contract_period
+              )
+            end
+
+            it "uses the 2024 EOI and extended schedule after closing the previous ECT at school period" do
+              service.register!
+
+              new_training_period = service.ect_at_school_period.training_periods.sole
+
+              expect(TrainingPeriod.exists?(previous_training_period.id)).to be(false)
+              expect(previous_ect_period.reload.finished_on).to eq(started_on.yesterday)
+
+              expect(new_training_period.school_partnership).to be_nil
+              expect(new_training_period.expression_of_interest).to eq(successor_framework_agreement)
+              expect(new_training_period.schedule.contract_period).to eq(successor_contract_period)
+              expect(new_training_period.schedule.identifier).to eq("ecf-extended-september")
+            end
+          end
         end
 
         context "when the new school has a matching partnership in the previous contract period" do

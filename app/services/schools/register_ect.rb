@@ -197,13 +197,23 @@ module Schools
     end
 
     def assign_contract_period_and_schedule
-      previous_training_period = store&.previous_provider_led_training_period
+      previous_training_period = previous_provider_led_training_period
+      reassignment = ContractPeriods::Reassignment.new(training_period: previous_training_period)
 
       @contract_period = ContractPeriods::ForECTRegistration.new(
         started_on:,
-        previous_training_period:
+        previous_training_period:,
+        reassignment:
       ).call
 
+      if reassignment.required?
+        @schedule = @contract_period.schedules.find_by!(identifier: "ecf-extended-september")
+      else
+        retain_previous_contract_period_and_schedule(previous_training_period)
+      end
+    end
+
+    def retain_previous_contract_period_and_schedule(previous_training_period)
       return unless previous_training_period
       return unless @contract_period == previous_contract_period(previous_training_period)
 
