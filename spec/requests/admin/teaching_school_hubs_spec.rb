@@ -10,7 +10,7 @@ RSpec.describe "Admin::TeachingSchoolHubsController", type: :request do
     FactoryBot.create(:appropriate_body_period, :teaching_school_hub,
                       teaching_school_hub:,
                       provisioning_school: provisioning_school_1,
-                      name: teaching_school_hub.name)
+                      name: nil)
   end
 
   before do
@@ -39,7 +39,7 @@ RSpec.describe "Admin::TeachingSchoolHubsController", type: :request do
       it "returns http success" do
         get "/admin/organisations/teaching-school-hubs"
         expect(response).to have_http_status(:success)
-        expect(response.body).to include(appropriate_body_period.name)
+        expect(response.body).to include(appropriate_body_period.display_name)
       end
 
       it "says when a hub has no appropriate body periods yet" do
@@ -119,7 +119,7 @@ RSpec.describe "Admin::TeachingSchoolHubsController", type: :request do
 
       it "returns http success" do
         expect(response).to have_http_status(:success)
-        expect(response.body).to include(appropriate_body_period.name)
+        expect(response.body).to include(appropriate_body_period.display_name)
         expect(response.body).to include(provisioning_school_1.name)
         expect(response.body).to include(lead_school.name)
         expect(response.body).to include("West and East")

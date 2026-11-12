@@ -5,7 +5,7 @@ RSpec.describe Admin::AppropriateBodies::DescriptionComponent, type: :component 
   let(:provisioning_school_1) { FactoryBot.create(:school, :eligible) }
 
   let(:provisioning_school_2) { FactoryBot.create(:school, :eligible) }
-  let(:name) { teaching_school_hub.name }
+  let(:name) { nil }
   let(:appropriate_body_period) do
     FactoryBot.create(:appropriate_body_period, teaching_school_hub:, provisioning_school: provisioning_school_1, name:)
   end
@@ -157,14 +157,13 @@ RSpec.describe Admin::AppropriateBodies::DescriptionComponent, type: :component 
     end
 
     context "when the hub has more than one appropriate body" do
-      before do
-        # A hub with more than one active period now requires a name on each. This row predates that
-        # rule, and the component still has to render it, so write it without validations.
-        FactoryBot.build(:appropriate_body_period, :teaching_school_hub,
-                         teaching_school_hub:,
-                         provisioning_school: provisioning_school_2,
-                         name: "Acme TSH West").save!(validate: false)
+      let(:name) { "Acme TSH East" }
 
+      before do
+        FactoryBot.create(:appropriate_body_period, :teaching_school_hub,
+                          teaching_school_hub:,
+                          provisioning_school: provisioning_school_2,
+                          name: "Acme TSH West")
         render_inline(component)
       end
 

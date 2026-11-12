@@ -50,8 +50,10 @@ module Sessions
     end
 
     def appropriate_bodies
-      @appropriate_bodies ||= AppropriateBodyPeriod.where(name: appropriate_body_names)
-                                                   .index_by(&:name)
+      @appropriate_bodies ||= TeachingSchoolHub.where(name: appropriate_body_names)
+                                               .includes(:appropriate_body_periods)
+                                               .flat_map(&:appropriate_body_periods)
+                                               .index_by(&:display_name)
     end
 
     def appropriate_body_names
