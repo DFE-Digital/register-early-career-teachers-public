@@ -652,19 +652,11 @@ describe AppropriateBodyPeriod do
       end
     end
 
-    context "when the teaching school hub name and appropriate body period name collide" do
-      let(:period_1) { hub_period(name: nil) }
-      let(:period_2) { hub_period(name: teaching_school_hub.name) }
+    context "when the name of a teaching school hub is used" do
+      it "is invalid", skip: !Rails.application.config.nullable_appropriate_body_period_names do
+        abp = hub_period(name: teaching_school_hub.name)
 
-      before { period_1.save! }
-
-      it "enforces a unique name" do
-        # period_1 has no name and is therefore named by the hub
-        expect(period_1.display_name).to eq(teaching_school_hub.name)
-        # period_2 has the same name as the hub and therefore collides with period_1
-        expect(period_2.display_name).to eq(teaching_school_hub.name)
-
-        expect(period_2).to have_error(:name, "is already in use.")
+        expect(abp).to have_error(:name, "is used by a teaching school hub")
       end
     end
 

@@ -75,6 +75,10 @@ class AppropriateBodyPeriod < ApplicationRecord
   validates :started_on, presence: true
   validate :name_is_unique_among_overlapping_periods
 
+  # TODO: changes to how the admin console appropriate bodies page search works must be made before names can be nullified
+  validate :name_is_not_a_teaching_school_hub_name,
+           if: -> { Rails.application.config.nullable_appropriate_body_period_names }
+
   # Teaching School Hub or Teaching School
   with_options if: :provisioning_school do
     validate :no_overlapping_periods_for_same_provisioning_school
@@ -137,6 +141,13 @@ class AppropriateBodyPeriod < ApplicationRecord
   def active? = dfe_sign_in_organisation_id.present?
 
 private
+
+  def name_is_not_a_teaching_school_hub_name
+    return if name.blank?
+    return unless TeachingSchoolHub.exists?(name:)
+
+    errors.add(:name, "is used by a teaching school hub")
+  end
 
   def name_is_unique_among_overlapping_periods
     return if display_name.blank? || started_on.blank?
