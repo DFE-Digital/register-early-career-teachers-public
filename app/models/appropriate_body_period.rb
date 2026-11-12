@@ -72,8 +72,8 @@ class AppropriateBodyPeriod < ApplicationRecord
   normalizes :name, with: -> { it.squish.presence }
 
   # Validations
-  validates :name, uniqueness: true, allow_nil: true
   validates :started_on, presence: true
+  validate :name_is_unique_among_overlapping_periods
 
   # Teaching School Hub or Teaching School
   with_options if: :provisioning_school do
@@ -84,7 +84,6 @@ class AppropriateBodyPeriod < ApplicationRecord
 
   # National Body
   with_options if: :national? do
-    validates :name, uniqueness: true, allow_nil: true
     validates :national_body, presence: true
     validates :provisioning_school, absence: true
     validates :teaching_school_hub, absence: true
@@ -98,12 +97,11 @@ class AppropriateBodyPeriod < ApplicationRecord
     validates :national_body, absence: true
     validates :local_authority, absence: true
     validate :started_on_or_after_teaching_school_hub_body_introduced
-    validate :name_is_present_and_unique_within_the_teaching_school_hub
+    validate :name_is_required_if_the_hub_operates_multiple_appropriate_bodies
   end
 
   # Teaching School
   with_options if: :teaching_school? do
-    validates :name, uniqueness: true, allow_nil: true
     validates :provisioning_school, presence: true
     validates :national_body, absence: true
     validates :teaching_school_hub, absence: true
@@ -116,7 +114,6 @@ class AppropriateBodyPeriod < ApplicationRecord
 
   # Local Authority
   with_options if: :local_authority? do
-    validates :name, uniqueness: true, allow_nil: true
     validates :local_authority, presence: true
     validates :national_body, absence: true
     validates :teaching_school_hub, absence: true
@@ -141,21 +138,24 @@ class AppropriateBodyPeriod < ApplicationRecord
 
 private
 
-  def name_is_present_and_unique_within_the_teaching_school_hub
-    return if teaching_school_hub_id.blank? || started_on.blank?
+  def name_is_unique_among_overlapping_periods
+    return if display_name.blank? || started_on.blank?
     return if invalid_date_order?
 
-    concurrent = self.class.overlapping_in_the_same_teaching_school_hub(self)
-    return unless concurrent.exists?
+    overlapping_periods = self.class.overlapping_with(self)
+    overlapping_periods = overlapping_periods.excluding(self) if persisted?
 
-    if name.blank?
-      errors.add(:name, "Another active appropriate body in the teaching school hub exists, choose a name.")
-      return
-    end
+    return if overlapping_periods.with_display_names.none? { it.display_name.eql?(display_name) }
 
-    if concurrent.with_display_names.any? { it.display_name.eql?(display_name) }
-      errors.add(:name, "Another active appropriate body in the teaching school hub uses this name.")
-    end
+    errors.add(:name, "is already in use.")
+  end
+
+  def name_is_required_if_the_hub_operates_multiple_appropriate_bodies
+    return if teaching_school_hub_id.blank? || name.present? || started_on.blank?
+    return if invalid_date_order?
+    return unless self.class.overlapping_in_the_same_teaching_school_hub(self).exists?
+
+    errors.add(:name, "Another active appropriate body in the teaching school hub exists, choose a name.")
   end
 
   # No two periods for one provisioning school may overlap.
