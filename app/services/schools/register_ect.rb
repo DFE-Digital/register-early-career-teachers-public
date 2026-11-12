@@ -207,7 +207,7 @@ module Schools
       ).call
 
       if reassignment.required?
-        @schedule = @contract_period.schedules.find_by!(identifier: "ecf-extended-september")
+        @schedule = @contract_period.schedules.find_by!(identifier: reassignment.schedule_identifier)
       else
         retain_previous_contract_period_and_schedule(previous_training_period)
       end
