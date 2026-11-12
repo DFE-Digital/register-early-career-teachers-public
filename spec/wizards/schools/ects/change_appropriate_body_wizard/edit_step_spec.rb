@@ -68,7 +68,7 @@ describe Schools::ECTs::ChangeAppropriateBodyWizard::EditStep do
 
   describe "#appropriate_bodies_except_current" do
     let!(:other_appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
-    let!(:inactive_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, :inactive) }
+    let!(:inactive_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, :cannot_sign_in) }
     let!(:national_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, :istip) }
 
     it "does not include inactive appropriate bodies" do
@@ -100,6 +100,26 @@ describe Schools::ECTs::ChangeAppropriateBodyWizard::EditStep do
 
       it "returns active appropriate bodies which can be selected" do
         expect(current_step.appropriate_bodies_except_current).to contain_exactly(other_appropriate_body_period, appropriate_body_period)
+      end
+    end
+
+    context "when the other period has no name of its own" do
+      let(:school_reported_appropriate_body) do
+        FactoryBot.create(:appropriate_body_period, :teaching_school_hub, name: "Current Body")
+      end
+      let!(:appropriate_body_period) do
+        FactoryBot.create(
+          :appropriate_body_period,
+          :teaching_school_hub,
+          name: nil,
+          teaching_school_hub: FactoryBot.create(:teaching_school_hub, name: "Bright Futures Teaching School Hub")
+        )
+      end
+      let!(:other_appropriate_body_period) { nil }
+
+      it "offers the other period, named by its parent organisation" do
+        expect(current_step.appropriate_bodies_except_current.map(&:display_name))
+          .to contain_exactly("Bright Futures Teaching School Hub")
       end
     end
   end

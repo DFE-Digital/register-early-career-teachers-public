@@ -5,9 +5,13 @@ module API
         include API::OAuth::ClientAuthenticable
 
         def index
-          appropriate_bodies = AppropriateBodyPeriod.active.order(:name)
-
           render json: API::Induction::V1::AppropriateBodySerializer.render(appropriate_bodies)
+        end
+
+      private
+
+        def appropriate_bodies
+          AppropriateBodyPeriod.active.with_display_names.strict_loading.sort_by(&:display_name)
         end
       end
     end

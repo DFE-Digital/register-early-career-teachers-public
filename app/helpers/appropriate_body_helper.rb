@@ -2,7 +2,7 @@ module AppropriateBodyHelper
   FormChoice = Data.define(:identifier, :name)
 
   def appropriate_bodies_options_for_collection
-    AppropriateBodyPeriod.teaching_school_hub.active.select(:id, :name)
+    AppropriateBodyPeriod.teaching_school_hub.active.includes(:teaching_school_hub)
   end
 
   # @return [Array<FormChoice>]

@@ -1,4 +1,6 @@
 RSpec.describe Admin::Schools::OverviewComponent, type: :component do
+  include Rails.application.routes.url_helpers
+
   let(:school) { FactoryBot.create(:school, :without_induction_tutor) }
   let(:component) { described_class.new(school:) }
 
@@ -110,6 +112,46 @@ RSpec.describe Admin::Schools::OverviewComponent, type: :component do
 
       it 'returns "Not available"' do
         expect(component.address).to eq("Not available")
+      end
+    end
+  end
+
+  describe "teaching school hubs" do
+    context "when the school is not a provisioning lead school" do
+      before do
+        render_inline(component)
+      end
+
+      it "says not set" do
+        expect(rendered_content).to have_css(".govuk-summary-list__row", text: "Not set")
+      end
+    end
+
+    context "when the school is a provisioning lead school" do
+      let(:teaching_school_hub) { FactoryBot.create(:teaching_school_hub, name: "My Hub") }
+      let(:dfe_sign_in_organisation) { FactoryBot.create(:dfe_sign_in_organisation, urn: school.urn) }
+      let!(:appropriate_body_period) do
+        FactoryBot.create(:appropriate_body_period, :teaching_school_hub,
+                          name: nil,
+                          teaching_school_hub:,
+                          dfe_sign_in_organisation:)
+      end
+
+      before do
+        school.update!(last_chosen_appropriate_body: appropriate_body_period)
+        render_inline(component)
+      end
+
+      it "names the school's provisioned hub" do
+        expect(rendered_content).to have_css(".govuk-summary-list__row", text: /Lead school for.*My Hub/m)
+      end
+
+      it "links to that appropriate body" do
+        expect(rendered_content).to have_link("View", href: admin_appropriate_body_path(appropriate_body_period))
+      end
+
+      it "names the last chosen appropriate body" do
+        expect(rendered_content).to have_css(".govuk-summary-list__row", text: /Last chosen appropriate body.*My Hub/m)
       end
     end
   end

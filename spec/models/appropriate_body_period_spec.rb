@@ -28,7 +28,7 @@ describe AppropriateBodyPeriod do
     before do
       FactoryBot.create(:appropriate_body_period, :national)
       FactoryBot.create(:appropriate_body_period, :teaching_school_hub)
-      FactoryBot.create(:appropriate_body_period, :teaching_school_hub, :inactive)
+      FactoryBot.create(:appropriate_body_period, :teaching_school_hub, :cannot_sign_in)
       FactoryBot.create(:appropriate_body_period, :local_authority)
     end
 
@@ -211,7 +211,7 @@ describe AppropriateBodyPeriod do
     describe "name", skip: "during data cleanse" do
       subject(:appropriate_body_period) { FactoryBot.build(:appropriate_body_period) }
 
-      it { is_expected.to validate_uniqueness_of(:name) }
+      it { is_expected.to validate_uniqueness_of(:name).allow_nil }
     end
 
     it "does not allow a retired type to contain today" do
@@ -542,13 +542,6 @@ describe AppropriateBodyPeriod do
   describe "#name" do
     let(:national_body) { FactoryBot.create(:national_body) }
 
-    it "allows duplicate names (temp during data cleanse)" do
-      described_class.create!(name: "Shared name", started_on: Date.new(2021, 9, 1), body_type: "national", national_body:)
-
-      expect { described_class.create!(name: "Shared name", started_on: Date.new(2021, 9, 1), body_type: "national", national_body:) }
-        .to change(described_class, :count).by(1)
-    end
-
     it "may be omitted" do
       expect { described_class.create!(name: nil, started_on: Date.new(2021, 9, 1), body_type: "national", national_body:) }
         .to change(described_class, :count).by(1)
@@ -577,6 +570,271 @@ describe AppropriateBodyPeriod do
     it "lists lead schools and regions collapsing multi-region schools" do
       expect(appropriate_body_period.lead_schools).to contain_exactly(school)
       expect(appropriate_body_period.regions).to contain_exactly(region, other_region)
+    end
+  end
+
+  describe "naming a hub that runs concurrent periods" do
+    let(:teaching_school_hub) { FactoryBot.create(:teaching_school_hub, name: "Acme TSH") }
+    let(:other_hub) { FactoryBot.create(:teaching_school_hub, name: "Other TSH") }
+
+    let(:started_on) { TeachingSchoolHub::ACTED_AS_APPROPRIATE_BODY_DATES[:introduced_on] }
+
+    def hub_period(name:, hub: teaching_school_hub, started_on: self.started_on, **attributes)
+      AppropriateBodyPeriod.new(body_type: "teaching_school_hub",
+                                teaching_school_hub: hub,
+                                provisioning_school: FactoryBot.create(:school),
+                                dfe_sign_in_organisation_id: SecureRandom.uuid,
+                                name:,
+                                started_on:,
+                                **attributes)
+    end
+
+    context "when the hub has one period" do
+      it "does not require a name" do
+        expect(hub_period(name: nil)).to be_valid
+      end
+
+      it "allows an existing period to lose its name" do
+        abp = hub_period(name: "Acme TSH East")
+        abp.save!
+
+        abp.update!(name: nil)
+
+        expect(abp.reload.name).to be_nil
+      end
+
+      it "allows a new hub to start with an unnamed first period" do
+        hub = FactoryBot.create(:teaching_school_hub, name: "New TSH")
+        period = FactoryBot.build(:appropriate_body_period, :teaching_school_hub,
+                                  teaching_school_hub: hub,
+                                  provisioning_school: FactoryBot.create(:school),
+                                  name: nil)
+
+        period.save!
+
+        expect(period.reload.name).to be_nil
+        expect(hub.appropriate_body_periods.count).to eq(1)
+      end
+    end
+
+    context "when another period for the hub overlaps it" do
+      before do
+        hub_period(name: "Acme TSH East").save!
+      end
+
+      it "requires a name" do
+        abp = hub_period(name: nil, started_on: Date.new(2022, 9, 1))
+
+        expect(abp).to have_error(:name, "Another active appropriate body in the teaching school hub exists, choose a name.")
+      end
+
+      it "requires a distinct name from other active periods" do
+        same_name_abp = hub_period(name: "Acme TSH East")
+        expect(same_name_abp).to be_invalid
+
+        new_name_abp = hub_period(name: "Acme TSH West")
+        expect(new_name_abp).to be_valid
+      end
+
+      it "fails fast if a date range is invalid" do
+        abp = hub_period(name: nil, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2023, 1, 1))
+
+        expect { abp.valid? }.not_to raise_error
+        expect(abp).to have_error(:finished_on, "The end date must be later than the start date (1 January 2024)")
+      end
+
+      it "stops a named period losing its name by update" do
+        abp = hub_period(name: "Acme TSH West", started_on: Date.new(2022, 9, 1))
+        abp.save!
+        abp.name = nil
+
+        expect(abp).not_to be_valid
+      end
+    end
+
+    context "when the teaching school hub name and appropriate body period name collide" do
+      let(:period_1) { hub_period(name: nil) }
+      let(:period_2) { hub_period(name: teaching_school_hub.name) }
+
+      before { period_1.save! }
+
+      it "enforces a unique name" do
+        # period_1 has no name and is therefore named by the hub
+        expect(period_1.display_name).to eq(teaching_school_hub.name)
+        # period_2 has the same name as the hub and therefore collides with period_1
+        expect(period_2.display_name).to eq(teaching_school_hub.name)
+
+        expect(period_2).to have_error(:name, "is already in use.")
+      end
+    end
+
+    context "when the name of an earlier period is reused" do
+      before do
+        hub_period(name: "Acme TSH East",
+                   finished_on: Date.new(2021, 12, 31)).save!
+      end
+
+      it "is valid when the periods do not overlap" do
+        abp = hub_period(name: "Acme TSH East", started_on: Date.new(2022, 1, 1))
+
+        expect(abp).to be_valid
+      end
+
+      it "is invalid when the periods overlap" do
+        abp = hub_period(name: "Acme TSH East", started_on: Date.new(2021, 10, 1))
+
+        expect(abp).to have_error(:name, "is already in use.")
+      end
+
+      it "is refused by the database when validations are skipped" do
+        abp = hub_period(name: "Acme TSH East", started_on: Date.new(2021, 10, 1))
+
+        expect { abp.save!(validate: false) }.to raise_error(ActiveRecord::StatementInvalid, /appropriate_body_periods_unique_names_for_concurrent_periods/)
+      end
+    end
+
+    context "when the earlier period for the hub finished before this one started" do
+      before do
+        hub_period(name: "Acme TSH East", finished_on: Date.new(2021, 12, 31)).save!
+      end
+
+      it "does not require a name, because the periods never run at the same time" do
+        abp = hub_period(name: nil, started_on: Date.new(2022, 1, 1))
+
+        expect(abp).to be_valid
+      end
+    end
+
+    context "when another hub uses the same name at the same time" do
+      before do
+        hub_period(name: "Acme TSH East", hub: other_hub).save!
+      end
+
+      it "is refused, because a name may be used only once at a time" do
+        abp = hub_period(name: "Acme TSH East")
+
+        expect(abp).to have_error(:name, "is already in use.")
+      end
+    end
+
+    context "when a period of another type uses the same name at the same time" do
+      before do
+        AppropriateBodyPeriod.new(body_type: "national",
+                                  national_body: FactoryBot.create(:national_body, name: "Acme TSH East"),
+                                  name: "Acme TSH East",
+                                  started_on: Date.new(2021, 9, 1),
+                                  dfe_sign_in_organisation_id: SecureRandom.uuid).save!
+      end
+
+      it "is refused, because the name is in use at the same time" do
+        abp = hub_period(name: "Acme TSH East")
+
+        expect(abp).to have_error(:name, "is already in use.")
+      end
+    end
+
+    context "when the overlapping period belongs to a different hub" do
+      before do
+        hub_period(name: "Other TSH North",
+                   hub: other_hub).save!
+      end
+
+      it "does not require a name" do
+        expect(hub_period(name: nil)).to be_valid
+      end
+    end
+
+    context "when only a period of another type overlaps" do
+      before do
+        AppropriateBodyPeriod.new(body_type: "national",
+                                  national_body: FactoryBot.create(:national_body),
+                                  started_on: Date.new(2021, 9, 1),
+                                  dfe_sign_in_organisation_id: SecureRandom.uuid).save!
+      end
+
+      it "does not require a name, because the hub has no other period" do
+        expect(hub_period(name: nil)).to be_valid
+      end
+    end
+  end
+
+  describe ".with_display_names" do
+    it "loads linked body records for #display_name" do
+      %i[national local_authority teaching_school teaching_school_hub].each do |body_type|
+        FactoryBot.create(:appropriate_body_period, body_type).tap { it.update!(name: nil) }
+      end
+
+      expect { described_class.with_display_names.strict_loading.map(&:display_name) }.not_to raise_error
+    end
+  end
+
+  describe "#display_name" do
+    subject(:display_name) { appropriate_body_period.display_name }
+
+    let(:teaching_school_hub) do
+      FactoryBot.create(:teaching_school_hub, name: "Bright Futures Teaching School Hub")
+    end
+    let(:provisioning_school) { FactoryBot.create(:school) }
+    let(:appropriate_body_period) do
+      FactoryBot.create(:appropriate_body_period, name:, teaching_school_hub:, provisioning_school:)
+    end
+
+    context "when the period has a name of its own" do
+      let(:name) { "Star Institute" }
+
+      it "prefers it to the parent organisation name" do
+        expect(display_name).to eq("Star Institute")
+      end
+
+      context "when the period is a legacy teaching school that has since been renamed" do
+        let(:appropriate_body_period) do
+          FactoryBot.create(:appropriate_body_period, :teaching_school, name:, provisioning_school:)
+        end
+
+        it "shows the name the school had then, and not the school's name now" do
+          expect(display_name).to eq("Star Institute")
+        end
+      end
+    end
+
+    context "when the period has no name of its own" do
+      let(:name) { nil }
+
+      it "delegates to the teaching school hub" do
+        expect(display_name).to eq(teaching_school_hub.name)
+      end
+
+      context "when the period is backed by a national body" do
+        let(:national_body) { FactoryBot.create(:national_body, name: "National Body X") }
+        let(:appropriate_body_period) do
+          FactoryBot.create(:appropriate_body_period, :national, name: nil, national_body:)
+        end
+
+        it "delegates to the national body" do
+          expect(display_name).to eq(national_body.name)
+        end
+      end
+
+      context "when the period is backed by a local authority" do
+        let(:local_authority) { FactoryBot.create(:local_authority, name: "Some Local Authority") }
+        let(:appropriate_body_period) do
+          FactoryBot.create(:appropriate_body_period, :local_authority, name: nil, local_authority:)
+        end
+
+        it "delegates to the local authority" do
+          expect(display_name).to eq(local_authority.name)
+        end
+      end
+
+      context "when the period is a legacy teaching school" do
+        let(:appropriate_body_period) do
+          FactoryBot.create(:appropriate_body_period, :teaching_school, name: nil, provisioning_school:)
+        end
+
+        it "delegates to the provisioning school" do
+          expect(display_name).to eq(provisioning_school.name)
+        end
+      end
     end
   end
 end

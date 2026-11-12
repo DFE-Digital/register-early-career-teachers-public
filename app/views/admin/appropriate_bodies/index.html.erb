@@ -33,7 +33,7 @@
 
     <% @appropriate_bodies.each do |appropriate_body| %>
       <%=
-        govuk_summary_card(title: govuk_link_to(appropriate_body.name, admin_appropriate_body_path(appropriate_body))) do |card|
+        govuk_summary_card(title: govuk_link_to(appropriate_body.display_name, admin_appropriate_body_path(appropriate_body))) do |card|
           card.with_summary_list do |summary_list|
             unless appropriate_body.active?
               summary_list.with_row do |row|

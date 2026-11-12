@@ -74,6 +74,22 @@ RSpec.describe Schools::ECTs::TeachersQuery do
       it { expect(result.current_or_next_ect_at_school_period.latest_training_period.association(:expression_of_interest_lead_provider)).to be_loaded }
       it { expect(result.current_or_next_ect_at_school_period.latest_training_period.association(:delivery_partner)).to be_loaded }
 
+      describe "the records each appropriate body period takes its name from" do
+        let!(:ect_at_school_period) do
+          FactoryBot.create(:ect_at_school_period, :unfinished, :teaching_school_hub_ab, school:)
+        end
+
+        %i[teaching_school_hub national_body local_authority provisioning_school].each do |association|
+          it "preloads #{association} for the period that claimed the induction" do
+            expect(result.ongoing_induction_period.appropriate_body_period.association(association)).to be_loaded
+          end
+
+          it "preloads #{association} for the period the school reported" do
+            expect(result.current_or_next_ect_at_school_period.school_reported_appropriate_body.association(association)).to be_loaded
+          end
+        end
+      end
+
       describe "lead provider name" do
         subject(:lead_provider_name) do
           result.current_or_next_ect_at_school_period.latest_lead_provider_name

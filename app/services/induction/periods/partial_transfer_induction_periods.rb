@@ -33,7 +33,7 @@ module Induction::Periods
             event.update!(
               appropriate_body_period: new_appropriate_body,
               induction_period: new_induction_period,
-              heading: event.heading.gsub(current_appropriate_body.name, new_appropriate_body.name),
+              heading: corrected_heading(event.heading),
               body: event_body_context
             )
           end
@@ -75,7 +75,7 @@ module Induction::Periods
         induction_period:,
         teacher: induction_period.teacher,
         happened_at: induction_period.finished_on,
-        heading: "#{teacher_full_name(induction_period.teacher)} was released by #{current_appropriate_body.name}",
+        heading: "#{teacher_full_name(induction_period.teacher)} was released by #{current_appropriate_body.display_name}",
         event_type: "induction_period_closed",
         author_type: "system",
         body: event_body_context
@@ -90,7 +90,7 @@ module Induction::Periods
         induction_period:,
         teacher: induction_period.teacher,
         happened_at: induction_period.started_on,
-        heading: "#{teacher_full_name(induction_period.teacher)} was claimed by #{new_appropriate_body.name}",
+        heading: "#{teacher_full_name(induction_period.teacher)} was claimed by #{new_appropriate_body.display_name}",
         event_type: "induction_period_opened",
         author_type: "system",
         body: event_body_context

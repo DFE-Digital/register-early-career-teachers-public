@@ -1,6 +1,6 @@
 <%
   page_data(
-    title: smart_quotes(@appropriate_body.name + "'s timeline"),
+    title: smart_quotes("#{@appropriate_body.display_name}'s timeline"),
     caption_size: 'm',
     error: false,
     backlink_href: admin_appropriate_body_path(@appropriate_body)

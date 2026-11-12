@@ -14,4 +14,15 @@ class TeachingSchoolHub < ApplicationRecord
   has_many :lead_schools, through: :appropriate_body_periods, source: :lead_schools
 
   validates :name, presence: true, uniqueness: true
+
+  normalizes :name, with: -> { it.squish }
+
+  # @return [Array<String>]
+  def region_codes
+    appropriate_body_periods.flat_map do |period|
+      period.region_awards.select(&:active?).map { |award| award.region.code }
+    end
+  end
+
+  def has_multiple_active_appropriate_body_periods? = appropriate_body_periods.count(&:active?) > 1
 end

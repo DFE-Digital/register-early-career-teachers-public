@@ -328,6 +328,17 @@ RSpec.describe "Admin::InductionPeriodsController", type: :request do
       expect(response.body).to include("Add induction period for")
     end
 
+    it "lists teaching school hub appropriate body periods by display_name not name" do
+      teaching_school_hub = FactoryBot.create(:teaching_school_hub, name: "Brand New TSH")
+      FactoryBot.create(:appropriate_body_period, :teaching_school_hub,
+                        name: nil,
+                        teaching_school_hub:)
+
+      get new_admin_teacher_induction_period_path(teacher)
+
+      expect(Capybara.string(response.body)).to have_css("select option", text: "Brand New TSH")
+    end
+
     it "shows the form" do
       get new_admin_teacher_induction_period_path(teacher)
       expect(response.body).to include("Which appropriate body was this induction period completed with")

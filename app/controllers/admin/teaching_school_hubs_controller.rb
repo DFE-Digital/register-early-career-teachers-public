@@ -2,15 +2,22 @@ class Admin::TeachingSchoolHubsController < AdminController
   layout "full"
 
   def index
-    @teaching_school_hubs = TeachingSchoolHub.order(:name)
+    @hubs_with_multiple_appropriate_body_periods, @other_hubs =
+      hubs.order(:name).partition(&:has_multiple_active_appropriate_body_periods?)
   end
 
   def show
-    @teaching_school_hub = TeachingSchoolHub.includes(
+    @teaching_school_hub = hubs.find(params[:id])
+  end
+
+private
+
+  def hubs
+    TeachingSchoolHub.strict_loading.includes(
       appropriate_body_periods: [
         { provisioning_school: :gias_school },
         { region_awards: [:region, { school: :gias_school }] }
       ]
-    ).find(params[:id])
+    )
   end
 end

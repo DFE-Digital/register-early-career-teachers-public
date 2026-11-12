@@ -11,11 +11,11 @@ FactoryBot.define do
     association :provisioning_school, factory: :school
     started_on { 1.year.ago }
 
-    trait :inactive do
+    trait :cannot_sign_in do
       dfe_sign_in_organisation_id { nil }
     end
 
-    trait :active do
+    trait :can_sign_in do
       association :dfe_sign_in_organisation
     end
 
@@ -46,7 +46,7 @@ FactoryBot.define do
 
     trait :nta do
       national
-      inactive
+      cannot_sign_in
       name { NationalBody::NTA }
       association :national_body, name: NationalBody::NTA
       started_on { Date.new(2013, 8, 31) }
@@ -62,7 +62,7 @@ FactoryBot.define do
     end
 
     trait :teaching_school do
-      inactive
+      cannot_sign_in
       body_type { "teaching_school" }
       association :provisioning_school, factory: :school
       teaching_school_hub { nil }
@@ -71,7 +71,7 @@ FactoryBot.define do
     end
 
     trait :local_authority do
-      inactive
+      cannot_sign_in
       body_type { "local_authority" }
       association :local_authority
       teaching_school_hub { nil }

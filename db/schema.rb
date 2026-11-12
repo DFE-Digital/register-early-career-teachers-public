@@ -10,8 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_06_081929) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_06_123206) do
   # These are extensions that must be enabled in order to support this database
+  enable_extension "btree_gist"
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -136,6 +137,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_06_081929) do
     t.index ["school_id"], name: "index_appropriate_body_periods_on_school_id"
     t.index ["teaching_school_hub_id"], name: "index_appropriate_body_periods_on_teaching_school_hub_id"
     t.check_constraint "finished_on >= started_on", name: "finished_on_not_before_started_on"
+    t.exclusion_constraint "teaching_school_hub_id WITH =, name WITH =, range WITH &&", using: :gist, name: "appropriate_body_periods_unique_names_for_concurrent_periods"
   end
 
   create_table "blazer_audits", force: :cascade do |t|

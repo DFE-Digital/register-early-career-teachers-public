@@ -15,6 +15,22 @@ describe AppropriateBodies::Search do
         end
       end
 
+      context "when ISTIP period name is nullified" do
+        let!(:istip) { FactoryBot.create(:appropriate_body_period, :istip, name: nil) }
+
+        it "finds it by the national body name" do
+          expect(subject).to eq(istip)
+        end
+      end
+
+      context "when ISTIP period name is overridden" do
+        let!(:istip) { FactoryBot.create(:appropriate_body_period, :istip, name: "Renamed Period") }
+
+        it "still finds it by the national body name" do
+          expect(subject).to eq(istip)
+        end
+      end
+
       context "when ISTIP has not been registered" do
         it "raises an exception" do
           expect { subject }.to raise_error(ActiveRecord::RecordNotFound, "ISTIP appropriate body period not found!")
@@ -29,6 +45,14 @@ describe AppropriateBodies::Search do
         let!(:esp) { FactoryBot.create(:appropriate_body_period, :esp) }
 
         it "returns it" do
+          expect(subject).to eq(esp)
+        end
+      end
+
+      context "when ESP period name is nullified" do
+        let!(:esp) { FactoryBot.create(:appropriate_body_period, :esp, name: nil) }
+
+        it "finds it by the national body name" do
           expect(subject).to eq(esp)
         end
       end

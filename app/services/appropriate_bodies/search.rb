@@ -7,12 +7,12 @@ module AppropriateBodies
     end
 
     def self.istip
-      new(::NationalBody::ISTIP).search.first ||
+      AppropriateBodyPeriod.national.joins(:national_body).find_by(national_bodies: { name: ::NationalBody::ISTIP }) ||
         raise(ActiveRecord::RecordNotFound, "ISTIP appropriate body period not found!")
     end
 
     def self.esp
-      new(::NationalBody::ESP).search.first ||
+      AppropriateBodyPeriod.national.joins(:national_body).find_by(national_bodies: { name: ::NationalBody::ESP }) ||
         raise(ActiveRecord::RecordNotFound, "ESP appropriate body period not found!")
     end
 
@@ -20,6 +20,8 @@ module AppropriateBodies
       @scope.find_by(dfe_sign_in_organisation_id:)
     end
 
+    # Maybe moving to body_type specific search so ABP names can be treated differently in the future
+    # for teaching school hubs.
     def search
       query = if @query_string.blank?
                 @scope.all
@@ -27,7 +29,7 @@ module AppropriateBodies
                 @scope.where("name ILIKE ?", "%#{@query_string}%")
               end
 
-      query.order(name: "asc")
+      query.with_display_names.strict_loading.order(name: "asc")
     end
   end
 end

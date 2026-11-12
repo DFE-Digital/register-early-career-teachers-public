@@ -26,7 +26,7 @@ namespace :extensions do
       appropriate_body_period = AppropriateBodyPeriod.find(appropriate_body_period_id)
       induction_extension = InductionExtension.find(induction_extension_id)
       full_name = Teachers::Name.new(teacher).full_name
-      logger.info "#{appropriate_body_period.name} extended #{full_name}'s induction by #{induction_extension.number_of_terms}"
+      logger.info "#{appropriate_body_period.display_name} extended #{full_name}'s induction by #{induction_extension.number_of_terms}"
 
       Events::Record.record_induction_extension_created_event!(
         author:,

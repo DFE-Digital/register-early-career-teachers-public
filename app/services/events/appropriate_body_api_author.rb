@@ -9,7 +9,7 @@ class Events::AppropriateBodyAPIAuthor
   def event_author_params
     {
       author_type: :appropriate_body_api,
-      author_name: appropriate_body_period.name,
+      author_name: appropriate_body_period.display_name,
       oauth_client:,
     }.compact
   end

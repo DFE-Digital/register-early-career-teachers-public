@@ -1,0 +1,7 @@
+<p class="govuk-body">
+  <% if distinct_period_names? %>
+    <strong><%= display_name %>:</strong> <%= description %>
+  <% else %>
+    <%= description %>
+  <% end %>
+</p>
