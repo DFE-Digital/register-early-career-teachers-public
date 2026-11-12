@@ -51,7 +51,7 @@ module Schools
         create_teacher!
         not_registered_as_an_ect!
         update_school_last_choices!
-        preserve_training_history!
+        assign_contract_period_and_schedule if provider_led?
         finish_previous_ect_period!
         @ect_at_school_period = start_at_school!
         create_training_period!
@@ -65,6 +65,8 @@ module Schools
     end
 
   private
+
+    attr_reader :contract_period, :preserved_contract_period, :schedule
 
     def already_registered_as_an_ect?
       teacher.ect_at_school_periods.where(school:).unfinished.exists?
@@ -194,12 +196,19 @@ module Schools
         )
     end
 
-    def preserve_training_history!
-      return unless provider_led?
+    def assign_contract_period_and_schedule
+      previous_training_period = store&.previous_provider_led_training_period
 
-      contract_period
-      preserved_contract_period
-      schedule
+      @contract_period = ContractPeriods::ForECTRegistration.new(
+        started_on:,
+        previous_training_period:
+      ).call
+
+      return unless previous_training_period
+      return unless @contract_period == previous_contract_period(previous_training_period)
+
+      @preserved_contract_period = @contract_period
+      @schedule = previous_training_period.schedule
     end
 
     def provider_led?
@@ -221,34 +230,15 @@ module Schools
       end
     end
 
-    def contract_period
-      @contract_period ||= ContractPeriods::ForECTRegistration.new(
-        started_on:,
-        previous_training_period: previous_provider_led_training_period
-      ).call
-    end
-
     def previous_provider_led_training_period
       store&.previous_provider_led_training_period
     end
 
-    def preserved_contract_period
-      return nil unless previous_provider_led_training_period
-      return nil unless contract_period == previous_contract_period
-
-      contract_period
-    end
-
-    def previous_contract_period
-      @previous_contract_period ||=
-        previous_provider_led_training_period.contract_period ||
-        previous_provider_led_training_period.expression_of_interest&.contract_period ||
-        previous_provider_led_training_period.school_partnership&.framework_agreement&.contract_period ||
-        previous_provider_led_training_period.schedule&.contract_period
-    end
-
-    def schedule
-      previous_provider_led_training_period&.schedule if preserved_contract_period
+    def previous_contract_period(previous_training_period)
+      previous_training_period.contract_period ||
+        previous_training_period.expression_of_interest&.contract_period ||
+        previous_training_period.school_partnership&.framework_agreement&.contract_period ||
+        previous_training_period.schedule&.contract_period
     end
   end
 end

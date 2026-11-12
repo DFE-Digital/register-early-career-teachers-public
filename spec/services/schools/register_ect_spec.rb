@@ -661,7 +661,7 @@ RSpec.describe Schools::RegisterECT do
             Schools::RegisterECTWizard::RegistrationStore.new(repository)
           end
 
-          it "retains the same-day provider-led contract period when submission closes the previous placement" do
+          it "retains the same-day provider-led contract period when registration closes the previous ECT at school period" do
             service.register!
 
             new_training_period = service.ect_at_school_period.training_periods.sole
