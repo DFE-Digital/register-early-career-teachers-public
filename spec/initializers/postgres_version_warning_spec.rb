@@ -5,7 +5,7 @@ RSpec.describe PostgresVersionWarning do
     end
 
     let(:logger) { instance_double(Logger, warn: nil) }
-    let(:environment) { ActiveSupport::StringInquirer.new("development") }
+    let(:environment) { ActiveSupport::EnvironmentInquirer.new("development") }
     let(:connection_pool) { instance_double(ActiveRecord::ConnectionAdapters::ConnectionPool) }
 
     it "warns when PostgreSQL is older than v18 in development" do
@@ -31,7 +31,7 @@ RSpec.describe PostgresVersionWarning do
 
       described_class.warn_if_outdated(
         logger:,
-        environment: ActiveSupport::StringInquirer.new("production"),
+        environment: ActiveSupport::EnvironmentInquirer.new("production"),
         connection_pool:
       )
 

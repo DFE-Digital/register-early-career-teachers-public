@@ -6,7 +6,7 @@ module PostgresVersionWarning
 module_function
 
   def warn_if_outdated(logger: Rails.logger, environment: Rails.env, connection_pool: ActiveRecord::Base.connection_pool)
-    return unless environment.development? || environment.test?
+    return unless environment.local?
 
     database_version = connection_pool.with_connection(&:database_version)
     return if database_version >= MINIMUM_DATABASE_VERSION
