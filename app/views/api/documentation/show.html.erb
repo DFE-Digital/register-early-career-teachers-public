@@ -1,4 +1,13 @@
 <div class="govuk-grid-column-two-thirds">
+  <%= govuk_notification_banner(title_text: "Important") do |nb| %>
+    <% nb.with_heading(text: "This documentation is not for lead providers") %>
+    <p>
+    Lead providers should use the <%= govuk_link_to("version 3 API documentaion",
+                                                    api_docs_training_documentation_path,
+                                                    no_visited_state: true) %>.
+    </p>
+  <% end %>
+
   <h1 class="govuk-heading-l">Register early career teachers APIs</h1>
 
   <p>
@@ -38,6 +47,7 @@
     <%= link_to("View the Hello API", api_hello_documentation_path) %>
   </p>
 
+<% if Rails.application.config.enable_training_api %>
   <h2 class="govuk-heading-m">Training API</h2>
 
   <p>
@@ -48,6 +58,7 @@
   <p>
     <%= link_to("View the Training API", api_training_v4_documentation_path) %>
   </p>
+<% end %>
 
   <h2 class="govuk-heading-m">Induction API</h2>
 
