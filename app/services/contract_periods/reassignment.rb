@@ -24,5 +24,9 @@ module ContractPeriods
     def assigned_contract_period
       training_period&.contract_period || training_period&.expression_of_interest_contract_period
     end
+
+    def schedule_identifier
+      "ecf-extended-september"
+    end
   end
 end

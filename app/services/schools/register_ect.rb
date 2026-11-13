@@ -51,6 +51,7 @@ module Schools
         create_teacher!
         not_registered_as_an_ect!
         update_school_last_choices!
+        assign_contract_period_and_schedule if provider_led?
         finish_previous_ect_period!
         @ect_at_school_period = start_at_school!
         create_training_period!
@@ -64,6 +65,8 @@ module Schools
     end
 
   private
+
+    attr_reader :contract_period, :preserved_contract_period, :schedule
 
     def already_registered_as_an_ect?
       teacher.ect_at_school_periods.where(school:).unfinished.exists?
@@ -193,42 +196,59 @@ module Schools
         )
     end
 
+    def assign_contract_period_and_schedule
+      previous_training_period = previous_provider_led_training_period
+      reassignment = ContractPeriods::Reassignment.new(training_period: previous_training_period)
+
+      @contract_period = ContractPeriods::ForECTRegistration.new(
+        started_on:,
+        previous_training_period:,
+        reassignment:
+      ).call
+
+      if reassignment.required?
+        @schedule = @contract_period.schedules.find_by!(identifier: reassignment.schedule_identifier)
+      else
+        retain_previous_contract_period_and_schedule(previous_training_period)
+      end
+    end
+
+    def retain_previous_contract_period_and_schedule(previous_training_period)
+      return unless previous_training_period
+      return unless @contract_period == previous_contract_period(previous_training_period)
+
+      @preserved_contract_period = @contract_period
+      @schedule = previous_training_period.schedule
+    end
+
+    def provider_led?
+      training_programme == "provider_led"
+    end
+
     def training_period_started_on
-      if ContractPeriods::Reassignment.new(training_period: previous_training_period).required?
-        [ect_at_school_period.started_on, contract_period.started_on].max
+      previous_period = store&.previous_training_period
+
+      if ContractPeriods::Reassignment.new(training_period: previous_period).required?
+        date_contract_period = ContractPeriods::ForECTRegistration.new(
+          started_on:,
+          previous_training_period: previous_period
+        ).call
+
+        [ect_at_school_period.started_on, date_contract_period.started_on].max
       else
         [ect_at_school_period.started_on, Date.current].max
       end
     end
 
-    def contract_period
-      @contract_period ||= ContractPeriods::ForECTRegistration.new(
-        started_on:,
-        previous_training_period:
-      ).call
+    def previous_provider_led_training_period
+      store&.previous_provider_led_training_period
     end
 
-    def previous_training_period
-      store&.previous_training_period
-    end
-
-    def preserved_contract_period
-      return nil unless previous_training_period
-      return nil unless contract_period == previous_contract_period
-
-      contract_period
-    end
-
-    def previous_contract_period
-      @previous_contract_period ||=
-        previous_training_period.contract_period ||
+    def previous_contract_period(previous_training_period)
+      previous_training_period.contract_period ||
         previous_training_period.expression_of_interest&.contract_period ||
         previous_training_period.school_partnership&.framework_agreement&.contract_period ||
         previous_training_period.schedule&.contract_period
-    end
-
-    def schedule
-      previous_training_period&.schedule if preserved_contract_period
     end
   end
 end
