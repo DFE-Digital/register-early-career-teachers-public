@@ -18,7 +18,7 @@ module Sessions
         @name = user.name
         @original_type = original_type
 
-        super(email: user.email)
+        super(email: user.email, **)
       end
 
       delegate :id, to: :appropriate_body_period, prefix: true, allow_nil: true

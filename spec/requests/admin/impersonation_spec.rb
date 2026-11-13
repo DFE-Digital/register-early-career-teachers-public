@@ -24,6 +24,14 @@ RSpec.describe "Admin delivery partners", type: :request do
         expect(impersonate_school).to redirect_to(schools_ects_home_path)
       end
 
+      it "cannot access admin pages" do
+        impersonate_school
+
+        get admin_teachers_path
+
+        expect(response).to have_http_status(:unauthorized)
+      end
+
       context "when the school does not exist" do
         let(:school_urn) { "something_impossible" }
 
@@ -58,6 +66,25 @@ RSpec.describe "Admin delivery partners", type: :request do
         expect(delete(admin_impersonate_path))
           .to redirect_to(admin_school_overview_path(school_urn))
       end
+
+      it "can access admin pages" do
+        impersonate_school
+        delete admin_impersonate_path
+
+        get admin_teachers_path
+
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "cannot access admin pages if session has expired" do
+        impersonate_school
+        travel_to 1.second.after(Rails.configuration.max_session_idle_time.from_now)
+        delete admin_impersonate_path
+
+        get admin_teachers_path
+
+        expect(response).to redirect_to(sign_in_path)
+      end
     end
   end
 
@@ -82,6 +109,14 @@ RSpec.describe "Admin delivery partners", type: :request do
 
       it "redirects to the appropriate bodies teachers path" do
         expect(impersonate_appropriate_body).to redirect_to(ab_teachers_path)
+      end
+
+      it "cannot access admin pages" do
+        impersonate_appropriate_body
+
+        get admin_teachers_path
+
+        expect(response).to have_http_status(:unauthorized)
       end
 
       context "when the appropriate body does not exist" do
@@ -117,6 +152,25 @@ RSpec.describe "Admin delivery partners", type: :request do
 
         expect(delete(admin_impersonate_path))
           .to redirect_to(admin_appropriate_body_path(appropriate_body_period_id))
+      end
+
+      it "can access admin pages" do
+        impersonate_appropriate_body
+        delete admin_impersonate_path
+
+        get admin_teachers_path
+
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "cannot access admin pages if session has expired" do
+        impersonate_appropriate_body
+        travel_to 1.second.after(Rails.configuration.max_session_idle_time.from_now)
+        delete admin_impersonate_path
+
+        get admin_teachers_path
+
+        expect(response).to redirect_to(sign_in_path)
       end
     end
   end

@@ -18,7 +18,7 @@ module Sessions
         @name = user.name
         @original_type = original_type
 
-        super(email: user.email)
+        super(email: user.email, **)
       end
 
       def dfe_user? = false
