@@ -11,7 +11,7 @@ module API
       private
 
         def appropriate_bodies
-          AppropriateBodyPeriod.active.with_display_names.strict_loading.sort_by(&:display_name)
+          AppropriateBodyPeriod.active.with_display_names.strict_loading.ordered_by_display_name
         end
       end
     end

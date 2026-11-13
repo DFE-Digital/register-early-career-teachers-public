@@ -80,7 +80,11 @@ class AppropriateBodyPeriod < ApplicationRecord
     with_naming_bodies_joined.where(Arel.sql("#{DISPLAY_NAME_SQL} = :name"), name:)
   }
 
-  scope :ordered_by_display_name, -> { order(Arel.sql(DISPLAY_NAME_SQL), :id) }
+  scope :with_display_name_in, ->(names) {
+    with_naming_bodies_joined.where(Arel.sql("#{DISPLAY_NAME_SQL} IN (?)"), names)
+  }
+
+  scope :ordered_by_display_name, -> { with_naming_bodies_joined.order(Arel.sql(DISPLAY_NAME_SQL), :id) }
   scope :matching_display_name, ->(term) {
     with_naming_bodies_joined
       .where(Arel.sql("#{DISPLAY_NAME_SQL} ILIKE :term"), term: "%#{sanitize_sql_like(term)}%")
