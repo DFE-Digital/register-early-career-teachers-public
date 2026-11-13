@@ -10,6 +10,8 @@ FactoryBot.define do
     redirect_uri { client.redirect_uris.first }
     code_challenge { Base64.urlsafe_encode64(Digest::SHA256.digest(code_verifier), padding: false) }
     code_challenge_method { :s256 }
+    granted_by_name { Faker::Name.name }
+    granted_by_dfe_sign_in_user_id { SecureRandom.uuid }
 
     trait :with_token do
       after(:build, &:assign_token)

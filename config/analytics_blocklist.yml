@@ -241,6 +241,8 @@
   - code_challenge_method
   - code_expires_at
   - code_exchanged_at
+  - granted_by_name
+  - granted_by_dfe_sign_in_user_id
   - token_digest
   - token_expires_at
   - revoked_at

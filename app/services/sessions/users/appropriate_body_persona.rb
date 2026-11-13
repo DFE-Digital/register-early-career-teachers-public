@@ -21,6 +21,7 @@ module Sessions
       delegate :id, to: :appropriate_body_period, prefix: true, allow_nil: true
 
       def appropriate_body_user? = true
+      def dfe_sign_in_user_id = nil
 
       def event_author_params
         {
