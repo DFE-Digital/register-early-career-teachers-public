@@ -82,6 +82,19 @@ module API
         respond_with_service(service:, action: :withdraw)
       end
 
+      def engagement_threshold_met
+        validate_engagement_threshold_met_params!
+
+        service = API::Teachers::ClaimEngagementThresholdMet.new(
+          **lead_provider_filter,
+          teacher_api_id: teacher.api_id,
+          teacher_type:,
+          confirmation: engagement_threshold_met_params[:confirmation]
+        )
+
+        respond_with_service(service:, action: :claim_engagement_threshold_met)
+      end
+
     private
 
       # We want to raise a 400 error if the params are malformed, however some actions
@@ -90,6 +103,7 @@ module API
       def validate_withdraw_participant_params! = withdraw_participant_params
       def validate_defer_participant_params! = defer_participant_params
       def validate_change_schedule_params! = change_schedule_params
+      def validate_engagement_threshold_met_params! = engagement_threshold_met_params
 
       def lead_provider_teachers_query(filters: {})
         teacher_filters = lead_provider_filter.merge(filters).compact
@@ -120,6 +134,10 @@ module API
 
       def change_schedule_params
         params.require(:data).expect({ attributes: %i[schedule_identifier cohort course_identifier] })
+      end
+
+      def engagement_threshold_met_params
+        params.require(:data).expect({ attributes: %i[confirmation] })
       end
 
       def api_from_teacher_id

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_06_081929) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_10_133518) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -125,10 +125,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_06_081929) do
     t.bigint "school_id"
     t.bigint "teaching_school_hub_id"
     t.datetime "updated_at", null: false
-    t.date "started_on", null: false
+    t.uuid "external_id", default: -> { "gen_random_uuid()" }, null: false
+    t.date "started_on"
     t.date "finished_on"
     t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on, '[]'::text)", stored: true
-    t.uuid "external_id", default: -> { "gen_random_uuid()" }, null: false
     t.index ["dfe_sign_in_organisation_id"], name: "index_appropriate_body_periods_on_dfe_sign_in_organisation_id", unique: true
     t.index ["external_id"], name: "index_appropriate_body_periods_on_external_id", unique: true
     t.index ["local_authority_id"], name: "index_appropriate_body_periods_on_local_authority_id"
@@ -963,6 +963,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_06_081929) do
     t.string "trs_redirected_to"
     t.enum "trs_response", enum_type: "trs_responses"
     t.datetime "updated_at", null: false
+    t.boolean "ect_engagement_threshold_claimed", default: false, null: false
     t.index ["api_ect_training_record_id"], name: "index_teachers_on_api_ect_training_record_id", unique: true
     t.index ["api_id"], name: "index_teachers_on_api_id", unique: true
     t.index ["api_mentor_training_record_id"], name: "index_teachers_on_api_mentor_training_record_id", unique: true
