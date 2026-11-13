@@ -76,6 +76,10 @@ class AppropriateBodyPeriod < ApplicationRecord
 
   scope :with_display_names, -> { includes(*body_type_associations) }
   scope :with_naming_bodies_joined, -> { left_joins(*body_type_associations) }
+  scope :with_display_name, ->(name) {
+    with_naming_bodies_joined.where(Arel.sql("#{DISPLAY_NAME_SQL} = :name"), name:)
+  }
+
   scope :ordered_by_display_name, -> { order(Arel.sql(DISPLAY_NAME_SQL), :id) }
   scope :matching_display_name, ->(term) {
     with_naming_bodies_joined

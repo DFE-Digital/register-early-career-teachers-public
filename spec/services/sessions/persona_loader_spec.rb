@@ -17,12 +17,8 @@ describe Sessions::PersonaLoader do
 
     describe "Appropriate body users" do
       it "sets the right appropriate_body_period_id given the hub name" do
-        school = FactoryBot.create(:school, :eligible)
         hub = FactoryBot.create(:teaching_school_hub, name: "Umber Teaching School Hub")
-        abp = FactoryBot.create(:appropriate_body_period, :teaching_school_hub,
-                                teaching_school_hub: hub,
-                                provisioning_school: school,
-                                name: nil)
+        abp = FactoryBot.create(:appropriate_body_period, :teaching_school_hub, :nameless, teaching_school_hub: hub)
 
         fred_jones = subject.personas.find { it.name == "Fred Jones" }
 
@@ -31,6 +27,20 @@ describe Sessions::PersonaLoader do
           expect(fred_jones.school_urn).to be_nil
           expect(fred_jones.user_id).to be_nil
         end
+      end
+
+      it "sets the right appropriate_body_period_id given a national body name" do
+        national_body = FactoryBot.create(:national_body, name: "Example National Body")
+        abp = FactoryBot.create(:appropriate_body_period, :national, :nameless, national_body:)
+
+        expect(loader_with("Example National Body").personas.first.appropriate_body_period_id).to eql(abp.id)
+      end
+
+      def loader_with(appropriate_body_name)
+        path = Rails.root.join("tmp/personas_#{SecureRandom.hex(4)}.yml")
+        path.write([{ "name" => "Example Persona", "appropriate_body_name" => appropriate_body_name }].to_yaml)
+
+        described_class.new(path.to_s)
       end
     end
 

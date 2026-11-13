@@ -50,10 +50,9 @@ module Sessions
     end
 
     def appropriate_bodies
-      @appropriate_bodies ||= TeachingSchoolHub.where(name: appropriate_body_names)
-                                               .includes(:appropriate_body_periods)
-                                               .flat_map(&:appropriate_body_periods)
-                                               .index_by(&:display_name)
+      @appropriate_bodies ||= appropriate_body_names.index_with { |name|
+        AppropriateBodyPeriod.with_display_name(name).first
+      }.compact
     end
 
     def appropriate_body_names
