@@ -1,5 +1,6 @@
 class TrainingPeriod < ApplicationRecord
   include Interval
+  include Archivable
   include DeclarativeUpdates
 
   MENTOR_ONLY_WITHDRAWAL_REASONS = %w[mentor_no_longer_being_mentor].freeze
@@ -47,7 +48,7 @@ class TrainingPeriod < ApplicationRecord
   has_many :declarations, inverse_of: :training_period
   has_many :events
 
-  touch -> { self }, when_changing: %i[started_on finished_on], timestamp_attribute: :api_transfer_updated_at
+  touch -> { self }, when_changing: %i[started_on finished_on archived], timestamp_attribute: :api_transfer_updated_at
   touch -> { teacher },
         on_event: %i[create destroy update],
         timestamp_attribute: :api_updated_at,
@@ -62,10 +63,11 @@ class TrainingPeriod < ApplicationRecord
           mentor_at_school_period_id
           schedule_id
           school_partnership_id
+          archived
         ]
 
   refresh_metadata -> { at_school_period.school }, on_event: %i[create destroy update], when_changing: %i[school_partnership_id expression_of_interest_id started_on]
-  refresh_metadata -> { teacher }, on_event: %i[create destroy update], when_changing: %i[started_on finished_on withdrawn_at deferred_at school_partnership_id]
+  refresh_metadata -> { teacher }, on_event: %i[create destroy update], when_changing: %i[started_on finished_on withdrawn_at deferred_at school_partnership_id archived]
 
   # Validations
   validates :started_on,
