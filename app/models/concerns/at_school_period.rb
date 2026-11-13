@@ -2,6 +2,7 @@ module AtSchoolPeriod
   extend ActiveSupport::Concern
 
   include Interval
+  include Archivable
   include DeclarativeUpdates
 
   included do
@@ -10,9 +11,9 @@ module AtSchoolPeriod
 
     has_many :events
 
-    has_one :current_or_next_training_period, -> { current_or_future.earliest_first }, class_name: "TrainingPeriod"
-    has_one :earliest_training_period, -> { earliest_first }, class_name: "TrainingPeriod"
-    has_one :latest_training_period, -> { latest_first }, class_name: "TrainingPeriod"
+    has_one :current_or_next_training_period, -> { unarchived.current_or_future.earliest_first }, class_name: "TrainingPeriod"
+    has_one :earliest_training_period, -> { unarchived.earliest_first }, class_name: "TrainingPeriod"
+    has_one :latest_training_period, -> { unarchived.latest_first }, class_name: "TrainingPeriod"
 
     # Callbacks
     touch -> { teacher }, on_event: %i[create destroy update], when_changing: %i[email], timestamp_attribute: :api_updated_at
@@ -66,14 +67,14 @@ module AtSchoolPeriod
   # Validations
   def covering_training_periods
     current_range = (started_on..finished_on)
-    return if training_periods.all? { current_range.cover?(it.started_on..it.finished_on) }
+    return if training_periods.unarchived.all? { current_range.cover?(it.started_on..it.finished_on) }
 
     errors.add(:base, "Date range does not cover all the training periods")
   end
 
   def covering_mentorship_periods
     current_range = (started_on..finished_on)
-    return if mentorship_periods.all? { current_range.cover?(it.started_on..it.finished_on) }
+    return if mentorship_periods.unarchived.all? { current_range.cover?(it.started_on..it.finished_on) }
 
     errors.add(:base, "Date range does not cover all the mentorship periods")
   end

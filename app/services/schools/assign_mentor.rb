@@ -24,7 +24,7 @@ module Schools
         if started?(mentorship_period) && earliest_possible_start.after?(mentorship_period.started_on)
           finish_mentorship!(mentorship_period)
         else
-          destroy_mentorship!(mentorship_period)
+          archive_mentorship!(mentorship_period)
         end
       end
     end
@@ -39,9 +39,8 @@ module Schools
       mentorship_period.finish!(earliest_possible_start.yesterday)
     end
 
-    def destroy_mentorship!(mentorship_period)
-      Event.where(mentorship_period:).delete_all
-      mentorship_period.destroy!
+    def archive_mentorship!(mentorship_period)
+      MentorshipPeriods::Archive.call(mentorship_period)
     end
 
     def current_and_upcoming_mentorship_periods

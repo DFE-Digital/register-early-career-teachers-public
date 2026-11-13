@@ -1,9 +1,16 @@
 RSpec.shared_examples "does not destroy or finish any periods" do
-  it "does not destroy unstarted periods" do
-    expect(MentorAtSchoolPeriods::Destroy).not_to receive(:call)
-    expect(ECTAtSchoolPeriods::Destroy).not_to receive(:call)
-
+  it "does not archive unstarted periods" do
+    expect(MentorAtSchoolPeriods::Archive).not_to receive(:call)
+    expect(ECTAtSchoolPeriods::Archive).not_to receive(:call)
     subject
+
+    unstarted_mentors.each do |period|
+      expect(period.reload).not_to be_archived
+    end
+
+    unstarted_ects.each do |period|
+      expect(period.reload).not_to be_archived
+    end
   end
 
   it "does not finish ongoing periods" do
@@ -14,24 +21,22 @@ RSpec.shared_examples "does not destroy or finish any periods" do
   end
 end
 
-RSpec.shared_examples "destroys unstarted mentor_at_school_periods" do
-  it "destroys unstarted mentor_at_school_periods" do
-    expect { service }.to change(MentorAtSchoolPeriod, :count).by(-2)
+RSpec.shared_examples "archives unstarted mentor_at_school_periods" do
+  it "archives unstarted mentor_at_school_periods" do
+    expect { service }.not_to change(MentorAtSchoolPeriod, :count)
 
     unstarted_mentors.each do |period|
-      expect { period.reload }
-        .to raise_error(ActiveRecord::RecordNotFound)
+      expect(period.reload).to be_archived
     end
   end
 end
 
-RSpec.shared_examples "destroys unstarted ect_at_school_periods" do
-  it "destroys unstarted ect_at_school_periods" do
-    expect { service }.to change(ECTAtSchoolPeriod, :count).by(-2)
+RSpec.shared_examples "archives unstarted ect_at_school_periods" do
+  it "archives unstarted ect_at_school_periods" do
+    expect { service }.not_to change(ECTAtSchoolPeriod, :count)
 
     unstarted_ects.each do |period|
-      expect { period.reload }
-        .to raise_error(ActiveRecord::RecordNotFound)
+      expect(period.reload).to be_archived
     end
 
     service

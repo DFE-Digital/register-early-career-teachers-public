@@ -33,5 +33,9 @@ FactoryBot.define do
     trait :unfinished do
       finished_on { nil }
     end
+
+    trait :archived do
+      archived { true }
+    end
   end
 end

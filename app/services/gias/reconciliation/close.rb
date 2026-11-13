@@ -10,8 +10,8 @@ module GIAS::Reconciliation
       return false unless eligibility.can_be_closed? || eligibility.can_be_closed_after_split?
 
       ActiveRecord::Base.transaction do
-        destroy_unstarted_mentorship_periods!
-        destroy_unstarted_periods!
+        archive_unstarted_mentorship_periods!
+        archive_unstarted_periods!
         finish_ongoing_periods!
 
         record_school_closed_event!
@@ -49,23 +49,23 @@ module GIAS::Reconciliation
       end
     end
 
-    def destroy_unstarted_periods!
+    def archive_unstarted_periods!
       mentor_at_school_periods.started_after(closed_on).each do |mentor_at_school_period|
-        ::MentorAtSchoolPeriods::Destroy.call(mentor_at_school_period:, author:, actioned_at: closed_on)
+        ::MentorAtSchoolPeriods::Archive.call(mentor_at_school_period)
       end
 
       ect_at_school_periods.started_after(closed_on).each do |ect_at_school_period|
-        ::ECTAtSchoolPeriods::Destroy.call(ect_at_school_period:, author:, actioned_at: closed_on)
+        ::ECTAtSchoolPeriods::Archive.call(ect_at_school_period)
       end
     end
 
-    def destroy_unstarted_mentorship_periods!
+    def archive_unstarted_mentorship_periods!
       unstarted_mentorship_periods_at_school.uniq.each do |mentorship_period|
-        # Load the mentee's teacher before destruction so the after-commit metadata refresh can still access it.
+        # Load the mentee's teacher before archival so the after-commit metadata refresh can still access it.
         mentorship_period.association(:mentee).load_target
         mentorship_period.mentee.association(:teacher).load_target
 
-        mentorship_period.destroy!
+        MentorshipPeriods::Archive.call(mentorship_period)
       end
     end
 

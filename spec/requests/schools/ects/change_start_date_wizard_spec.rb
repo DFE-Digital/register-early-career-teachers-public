@@ -425,7 +425,7 @@ RSpec.describe "Schools::ECTs::ChangeStartDateWizardController" do
         )
       end
 
-      it "updates the dates, removes the mentorship period and redirects to confirmation" do
+      it "updates the dates, archives the mentorship period and redirects to confirmation" do
         expect { post_check_answers }
           .to change { ect_at_school_period.reload.started_on }
           .from(original_started_on)
@@ -434,10 +434,10 @@ RSpec.describe "Schools::ECTs::ChangeStartDateWizardController" do
           .from(original_started_on)
           .to(new_start_date)
           .and change {
-            MentorshipPeriod.exists?(mentorship_period.id)
+            mentorship_period.reload.archived?
           }
-          .from(true)
-          .to(false)
+          .from(false)
+          .to(true)
 
         expect(response)
           .to redirect_to(path_for_step("confirmation"))

@@ -7,26 +7,27 @@ module Interval
     validate :period_dates_validation
 
     # Scopes
-    scope :unfinished, -> { where(finished_on: nil) }
-    scope :finished, -> { where.not(finished_on: nil) }
-    scope :earliest_first, -> { order(started_on: "asc") }
-    scope :latest_first, -> { order(started_on: "desc") }
-    scope :started_before, ->(date) { where(started_on: ...date) }
-    scope :started_after, ->(date) { where("#{table_name}.started_on > ?", date) }
-    scope :started_on_or_before, ->(date) { where(started_on: ..date) }
-    scope :started_on_or_after, ->(date) { where(started_on: date..) }
-    scope :finished_before, ->(date) { where(finished_on: ...date) }
-    scope :finished_on_or_after, ->(date) { where(finished_on: date..) }
-    scope :overlapping_with, ->(period) { where(*overlapping_with_range(period.started_on, period.finished_on)) }
-    scope :containing_period, ->(period) { where(*containing_range(period.started_on, period.finished_on)) }
-    scope :contains_date, ->(date) { where(*date_in_range(date)) }
+    scope :unarchived, -> { all }
+    scope :unfinished, -> { unarchived.where(finished_on: nil) }
+    scope :finished, -> { unarchived.where.not(finished_on: nil) }
+    scope :earliest_first, -> { unarchived.order(started_on: "asc") }
+    scope :latest_first, -> { unarchived.order(started_on: "desc") }
+    scope :started_before, ->(date) { unarchived.where(started_on: ...date) }
+    scope :started_after, ->(date) { unarchived.where("#{table_name}.started_on > ?", date) }
+    scope :started_on_or_before, ->(date) { unarchived.where(started_on: ..date) }
+    scope :started_on_or_after, ->(date) { unarchived.where(started_on: date..) }
+    scope :finished_before, ->(date) { unarchived.where(finished_on: ...date) }
+    scope :finished_on_or_after, ->(date) { unarchived.where(finished_on: date..) }
+    scope :overlapping_with, ->(period) { unarchived.where(*overlapping_with_range(period.started_on, period.finished_on)) }
+    scope :containing_period, ->(period) { unarchived.where(*containing_range(period.started_on, period.finished_on)) }
+    scope :contains_date, ->(date) { unarchived.where(*date_in_range(date)) }
     scope :closest_to, ->(date) {
       # this scope orders records by their proximity to the given date.
       # if a record covers the date, it will be prioritized.
       # otherwise, it finds the record with the nearest started or finished on date.
-      date = date&.to_date or next all
+      date = date&.to_date or next unarchived
 
-      order(
+      unarchived.order(
         Arel.sql(
           <<~SQL
             CASE
@@ -58,14 +59,15 @@ module Interval
   end
 
   def overlap_validation(name:)
+    return if interval_archived?
     return unless valid_date_order?
-    return unless has_overlap_with_siblings?
+    return unless has_overlap_with_unarchived_siblings?
 
-    if siblings.any? { |s| s.range.include?(started_on) }
+    if unarchived_siblings.any? { |s| s.range.include?(started_on) }
       errors.add(:started_on, "Start date cannot overlap another #{name} period")
-    elsif siblings.any? { |s| s.range.include?(finished_on) } || finished_on.nil?
+    elsif unarchived_siblings.any? { |s| s.range.include?(finished_on) } || finished_on.nil?
       errors.add(:finished_on, "End date cannot overlap another #{name} period")
-    elsif siblings.any? { |s| (s.started_on..s.finished_on).overlap?(started_on..finished_on) }
+    elsif unarchived_siblings.any? { |s| (s.started_on..s.finished_on).overlap?(started_on..finished_on) }
       errors.add(:base, "Period cannot overlap another #{name} period")
     end
   end
@@ -76,11 +78,11 @@ module Interval
   end
 
   # Associations
-  def predecessors = siblings.started_before(started_on)
+  def predecessors = unarchived_siblings.started_before(started_on)
 
   def siblings = raise(NotImplementedError)
 
-  def successors = finished_on ? siblings.started_on_or_after(finished_on) : self.class.none
+  def successors = finished_on ? unarchived_siblings.started_on_or_after(finished_on) : self.class.none
 
   # Predicates
   def valid_date_order?
@@ -107,16 +109,28 @@ module Interval
 
   def incomplete? = [started_on, finished_on].any?(&:blank?)
 
-  def has_overlap_with_siblings? = siblings.overlapping_with(self).exists?
+  def has_overlap_with_siblings? = has_overlap_with_unarchived_siblings?
+
+  def has_overlap_with_unarchived_siblings? = unarchived_siblings.overlapping_with(self).exists?
 
   def has_predecessors? = predecessors.exists?
 
-  def has_siblings? = siblings.exists?
+  def has_siblings? = unarchived_siblings.exists?
 
   def has_successors? = successors.exists?
 
   # Methods
   def last_finished_sibling
-    siblings.finished.earliest_first.last
+    unarchived_siblings.finished.earliest_first.last
+  end
+
+  def unarchived_siblings
+    return self.class.none if interval_archived?
+
+    siblings.unarchived
+  end
+
+  def interval_archived?
+    respond_to?(:archived?) && archived?
   end
 end

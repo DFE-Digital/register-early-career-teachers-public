@@ -142,6 +142,7 @@ shared:
     - withdrawal_reason
     - schedule_id
     - api_transfer_updated_at
+    - archived
   :schools:
     - last_chosen_appropriate_body_id
     - last_chosen_lead_provider_id
@@ -180,6 +181,7 @@ shared:
     - finished_on
     - created_at
     - updated_at
+    - archived
   :mentor_at_school_periods:
     - id
     - school_id
@@ -190,6 +192,7 @@ shared:
     - updated_at
     - email
     - reported_leaving_by_school_id
+    - archived
   :lead_providers:
     - id
     - ecf_cpd_lead_provider_id
@@ -209,6 +212,7 @@ shared:
     - email
     - school_reported_appropriate_body_id
     - reported_leaving_by_school_id
+    - archived
   :delivery_partners:
     - id
     - name

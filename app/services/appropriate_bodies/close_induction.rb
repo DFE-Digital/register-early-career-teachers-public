@@ -72,28 +72,41 @@ module AppropriateBodies
     # but for MVP inductions can only be closed with today's date or earlier.
     # To keep it simple therefore we close ECT, training and mentorship periods
     # on today's date unless it is already closed.
-    # Anything that starts today or in the future is destroyed first.
+    # Anything that starts today or in the future is archived first.
     def finish_ect_period_today
       return unless ect_at_school_period
+      return if ect_at_school_period.archived?
       return if ect_at_school_period.finished_on.present?
 
       ECTAtSchoolPeriods::Finish.new(ect_at_school_period:, finished_on: Time.zone.today, author:, record_event: false).finish!
     end
 
     def ect_at_school_period
-      ongoing_induction_period.teacher.ect_at_school_periods.latest_first.first
+      @ect_at_school_period ||= ongoing_induction_period.teacher.ect_at_school_periods.latest_first.first
     end
 
-    def destroy_unstarted_ect_period!
-      ECTAtSchoolPeriods::Destroy.call(ect_at_school_period:, author:, actioned_at: Date.current)
+    def archive_unstarted_ect_period!
+      period = ect_at_school_period
+      return unless period && period.started_on >= Date.current
+
+      # The outcome event still needs to retain its links to the archived history.
+      # Slightly hacky way to make the tests pass by caching them
+      mentorship_period
+      training_period
+
+      ECTAtSchoolPeriods::Archive.call(period)
     end
 
     def mentorship_period
-      ect_at_school_period&.latest_mentorship_period
+      return @mentorship_period if defined?(@mentorship_period)
+
+      @mentorship_period = ect_at_school_period&.latest_mentorship_period
     end
 
     def training_period
-      ect_at_school_period&.latest_training_period
+      return @training_period if defined?(@training_period)
+
+      @training_period = ect_at_school_period&.latest_training_period
     end
   end
 end

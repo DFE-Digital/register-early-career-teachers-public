@@ -359,8 +359,8 @@ RSpec.describe Teachers::UndoRegistration do
             .once
         end
 
-        it "deletes the relevant periods" do
-          expect_periods_to_be_deleted(ect_at_school_period:, training_period:, mentorship_period:)
+        it "archives the relevant periods" do
+          expect_periods_to_be_archived(ect_at_school_period:, training_period:, mentorship_period:)
         end
 
         it "records an undo registration event" do
@@ -375,26 +375,26 @@ RSpec.describe Teachers::UndoRegistration do
       context "with only a non-billable declaration" do
         let!(:declaration) { FactoryBot.create(:declaration, training_period:) }
 
-        it "deletes the relevant periods" do
-          expect_periods_to_be_deleted(ect_at_school_period:, training_period:, mentorship_period:)
-          expect { declaration.reload }.to raise_error(ActiveRecord::RecordNotFound)
+        it "archives the relevant periods" do
+          expect_periods_to_be_archived(ect_at_school_period:, training_period:, mentorship_period:)
+          expect(declaration.reload.training_period).to eq(training_period)
         end
       end
 
       context "with only a voided declaration" do
         let!(:declaration) { FactoryBot.create(:declaration, :voided, training_period:) }
 
-        it "deletes the relevant periods" do
-          expect_periods_to_be_deleted(ect_at_school_period:, training_period:, mentorship_period:)
-          expect { declaration.reload }.to raise_error(ActiveRecord::RecordNotFound)
+        it "archives the relevant periods" do
+          expect_periods_to_be_archived(ect_at_school_period:, training_period:, mentorship_period:)
+          expect(declaration.reload.training_period).to eq(training_period)
         end
       end
 
       context "when the teacher has an induction period" do
         let!(:induction_period) { FactoryBot.create(:induction_period, teacher: ect_at_school_period.teacher) }
 
-        it "deletes the relevant periods" do
-          expect_periods_to_be_deleted(ect_at_school_period:, training_period:, mentorship_period:)
+        it "archives the relevant periods" do
+          expect_periods_to_be_archived(ect_at_school_period:, training_period:, mentorship_period:)
         end
 
         it "does not anonymise the teacher" do
@@ -413,12 +413,12 @@ RSpec.describe Teachers::UndoRegistration do
           FactoryBot.create(:mentor_at_school_period, :unfinished, teacher: ect_at_school_period.teacher)
         end
 
-        it "deletes only the targeted ECT registration" do
+        it "archives only the targeted ECT registration" do
           undo_registration
 
-          expect { ect_at_school_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
-          expect { training_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
-          expect { mentorship_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+          expect(ect_at_school_period.reload).to be_archived
+          expect(training_period.reload).to be_archived
+          expect(mentorship_period.reload).to be_archived
           expect { other_mentor_at_school_period.reload }.not_to raise_error
         end
 
@@ -443,12 +443,12 @@ RSpec.describe Teachers::UndoRegistration do
           )
         end
 
-        it "deletes only the targeted ECT registration" do
+        it "archives only the targeted ECT registration" do
           undo_registration
 
-          expect { ect_at_school_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
-          expect { training_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
-          expect { mentorship_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+          expect(ect_at_school_period.reload).to be_archived
+          expect(training_period.reload).to be_archived
+          expect(mentorship_period.reload).to be_archived
           expect { other_ect_at_school_period.reload }.not_to raise_error
         end
 
@@ -488,8 +488,8 @@ RSpec.describe Teachers::UndoRegistration do
         it "only undoes the targeted registration" do
           undo_registration
 
-          expect { mentor_at_school_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
-          expect { training_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+          expect(mentor_at_school_period.reload).to be_archived
+          expect(training_period.reload).to be_archived
         end
       end
 
@@ -518,11 +518,11 @@ RSpec.describe Teachers::UndoRegistration do
           FactoryBot.create(:ect_at_school_period, :unfinished, teacher: mentor_at_school_period.teacher)
         end
 
-        it "deletes only the targeted mentor registration" do
+        it "archives only the targeted mentor registration" do
           undo_registration
 
-          expect { mentor_at_school_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
-          expect { training_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+          expect(mentor_at_school_period.reload).to be_archived
+          expect(training_period.reload).to be_archived
           expect { other_ect_at_school_period.reload }.not_to raise_error
         end
 
@@ -547,11 +547,11 @@ RSpec.describe Teachers::UndoRegistration do
           )
         end
 
-        it "deletes only the targeted mentor registration" do
+        it "archives only the targeted mentor registration" do
           undo_registration
 
-          expect { mentor_at_school_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
-          expect { training_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+          expect(mentor_at_school_period.reload).to be_archived
+          expect(training_period.reload).to be_archived
           expect { other_mentor_at_school_period.reload }.not_to raise_error
         end
 
@@ -593,7 +593,7 @@ RSpec.describe Teachers::UndoRegistration do
       it "only undoes the targeted registration" do
         undo_registration
 
-        expect { erroneous_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+        expect(erroneous_period.reload).to be_archived
         expect { legitimate_period.reload }.not_to raise_error
         expect { legitimate_training_period.reload }.not_to raise_error
       end
@@ -631,12 +631,12 @@ RSpec.describe Teachers::UndoRegistration do
       expect { mentorship_period.reload }.not_to raise_error
     end
 
-    def expect_periods_to_be_deleted(ect_at_school_period:, training_period:, mentorship_period:)
+    def expect_periods_to_be_archived(ect_at_school_period:, training_period:, mentorship_period:)
       undo_registration
 
-      expect { ect_at_school_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
-      expect { training_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
-      expect { mentorship_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+      expect(ect_at_school_period.reload).to be_archived
+      expect(training_period.reload).to be_archived
+      expect(mentorship_period.reload).to be_archived
     end
   end
 
