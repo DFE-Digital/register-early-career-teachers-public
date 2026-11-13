@@ -67,7 +67,7 @@ module ECTAtSchoolPeriods
       if mentorship_period.finished_on.present? &&
           updated_started_on >= mentorship_period.finished_on
         record_mentorship_period_removed_event!
-        mentorship_period.destroy!
+        MentorshipPeriods::Archive.call(mentorship_period)
       else
         mentorship_period.update!(
           started_on: updated_started_on

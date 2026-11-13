@@ -365,13 +365,12 @@ module ECTAtSchoolPeriods
       end
 
       context "when the training period started in the past" do
-        it "destroys the existing training period" do
+        it "archives the existing training period" do
           freeze_time
 
           change_lead_provider
 
-          expect { training_period.reload }
-            .to raise_error(ActiveRecord::RecordNotFound)
+          expect(training_period.reload).to be_archived
         end
 
         it "creates a new training period" do
@@ -461,13 +460,12 @@ module ECTAtSchoolPeriods
           )
         end
 
-        it "destroys the existing training period" do
+        it "archives the existing training period" do
           freeze_time
 
           change_lead_provider
 
-          expect { training_period.reload }
-            .to raise_error(ActiveRecord::RecordNotFound)
+          expect(training_period.reload).to be_archived
         end
 
         it "creates a new training period in the current contract period" do

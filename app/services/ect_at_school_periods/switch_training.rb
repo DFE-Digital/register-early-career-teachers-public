@@ -75,7 +75,7 @@ module ECTAtSchoolPeriods
       return if @training_period.blank?
 
       if training_not_started? || !keep_existing_training_period?
-        @training_period.destroy!
+        TrainingPeriods::Archive.call(@training_period)
       else
         finish_training_period!
       end

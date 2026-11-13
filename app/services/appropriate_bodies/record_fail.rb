@@ -19,7 +19,7 @@ module AppropriateBodies
       validate_submission(context: :record_outcome)
 
       InductionPeriod.transaction do
-        destroy_unstarted_ect_period!
+        archive_unstarted_ect_period!
         close_induction_period
         finish_ect_period_today
         delete_submission

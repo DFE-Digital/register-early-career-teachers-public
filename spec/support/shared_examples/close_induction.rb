@@ -96,21 +96,17 @@ RSpec.shared_context "it closes an induction period and finishes any related per
   context "when the ect at school period is has not started" do
     let(:started_on) { 2.days.from_now }
 
-    it "calls a service to delete the period" do
-      allow(ECTAtSchoolPeriods::Destroy)
+    it "calls a service to archive the period" do
+      allow(ECTAtSchoolPeriods::Archive)
       .to receive(:call)
       .and_call_original
 
       service_call
 
-      expect(ECTAtSchoolPeriods::Destroy)
-      .to have_received(:call).with(
-        ect_at_school_period:,
-        author:,
-        actioned_at: Date.current
-      )
+      expect(ECTAtSchoolPeriods::Archive)
+      .to have_received(:call).with(ect_at_school_period)
 
-      expect(ECTAtSchoolPeriod).not_to exist(ect_at_school_period.id)
+      expect(ect_at_school_period.reload).to be_archived
     end
   end
 
