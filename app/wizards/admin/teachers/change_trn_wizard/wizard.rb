@@ -117,6 +117,8 @@ module Admin
           rescue ActiveRecord::RecordInvalid
             raise IneligibleForMergeError if merge_proposed?
             raise IneligibleForReplacementError if replace_proposed?
+
+            raise
           rescue ::Teachers::TRN::TrainingPeriods::Merge::CannotMergePeriods,
                  ::Teachers::TRN::MentorshipPeriods::Merge::CannotMergePeriods
             raise IneligibleForMergeError
