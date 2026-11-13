@@ -110,4 +110,12 @@ RSpec.describe ContractPeriods::Reassignment do
       it { is_expected.to be_nil }
     end
   end
+
+  describe "#schedule_identifier" do
+    it "returns the extended September schedule identifier" do
+      reassignment = described_class.new(training_period:)
+
+      expect(reassignment.schedule_identifier).to eq("ecf-extended-september")
+    end
+  end
 end

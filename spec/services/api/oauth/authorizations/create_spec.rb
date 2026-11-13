@@ -33,6 +33,8 @@ describe API::OAuth::Authorizations::Create do
       expect(authorization.code_challenge).to eq(authorization_request.code_challenge)
       expect(authorization).to be_s256
       expect(authorization.code).to be_present
+      expect(authorization.granted_by_name).to eq(author.name)
+      expect(authorization.granted_by_dfe_sign_in_user_id).to eq(author.dfe_sign_in_user_id)
       expect(event.appropriate_body_period).to eq(appropriate_body_period)
       expect(event.author_email).to eq(author.email)
       expect(event.oauth_client).to eq(client)

@@ -1,0 +1,29 @@
+<% page_data(title: @induction_platform.name, breadcrumbs: @breadcrumbs) %>
+
+<p class="govuk-body">
+  Appropriate bodies who've granted access to send data to DfE from <%= @induction_platform.name %>.
+</p>
+
+<% if @authorizations.any? %>
+  <%= govuk_table do |table|
+    table.with_head do |head|
+      head.with_row do |row|
+        row.with_cell(text: "Appropriate body")
+        row.with_cell(text: "Access given by")
+        row.with_cell(text: "Date access given")
+      end
+    end
+
+    table.with_body do |body|
+      @authorizations.each do |authorization|
+        body.with_row do |row|
+          row.with_cell { govuk_link_to(authorization.appropriate_body_name, admin_appropriate_body_path(authorization.appropriate_body_period), no_visited_state: true) }
+          row.with_cell(text: authorization.granted_by_name)
+          row.with_cell(text: authorization.created_at.to_date.to_fs(:govuk))
+        end
+      end
+    end
+  end %>
+<% else %>
+  <p class="govuk-body">No appropriate bodies have granted access.</p>
+<% end %>

@@ -10,7 +10,7 @@ The quickest way to get up and running with the ECF2 application is to use a [Co
 
 * Ruby 4.0.9 (via [rbenv](https://github.com/rbenv/rbenv), [rvm](https://github.com/rvm/rvm), or [asdf](https://github.com/asdf-vm/asdf))
 * NodeJS (via [fnm](https://github.com/Schniz/fnm), [nvm](https://github.com/nvm-sh/nvm) or asdf)
-* PostgreSQL (via your package manager or [Postgres.app](https://postgresapp.com/))
+* PostgreSQL 18 or newer (via your package manager or [Postgres.app](https://postgresapp.com/)).
 
 You'll need to set up some environment variables too. You can do that securely with [direnv](https://direnv.net/).
 
@@ -20,7 +20,7 @@ When running the app locally for development purposes we'll often want to drop a
 
 This assumes your username is `joey`. You can check yours by running `whoami`
 
-1. Ensure PostgreSQL is installed and running
+1. Ensure PostgreSQL 18 or newer is installed and running
 2. Change to the `postgres` user with `sudo su -l postgres`
 3. As the `postgres` user:
     1. Create a database user with the same name as your main main login, i.e., `createuser --superuser joey`
@@ -45,7 +45,7 @@ This assumes your username is `joey`. You can check yours by running `whoami`
    ```sh
    $ psql
 
-   psql (16.3)
+   psql (18.6)
    Type "help" for help.
 
    joey=#
