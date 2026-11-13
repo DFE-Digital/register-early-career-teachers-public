@@ -12,6 +12,10 @@ RSpec.describe "admin/appropriate_bodies/show.html.erb" do
     expect(view.content_for(:page_header)).to have_css("h1", text: appropriate_body_period.name)
   end
 
+  it "does not render a back link" do
+    expect(rendered).not_to have_link("Back")
+  end
+
   context "when the appropriate body name contains ampersands" do
     let(:name) { "Bright Futures Teaching School Hub (Salford & Trafford)" }
 

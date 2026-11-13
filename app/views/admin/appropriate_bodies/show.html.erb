@@ -1,9 +1,4 @@
-<%
-  page_data(
-    title: @appropriate_body.name,
-    backlink_href: admin_appropriate_bodies_path
-  )
-%>
+<% page_data(title: @appropriate_body.name) %>
 
 <%= render Admin::AppropriateBodies::DetailsComponent.new(appropriate_body_period: @appropriate_body) %>
 
