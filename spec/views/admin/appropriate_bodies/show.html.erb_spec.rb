@@ -35,6 +35,10 @@ RSpec.describe "admin/appropriate_bodies/show.html.erb" do
     it "heads the page with the parent hub name" do
       expect(view.content_for(:page_header)).to have_css("h1", text: "Bright Futures Teaching School Hub")
     end
+
+    it "signs in as the parent hub name" do
+      expect(rendered).to have_css(".govuk-button", text: "Sign in as Bright Futures Teaching School Hub")
+    end
   end
 
   context "when the period is backed by a national body" do

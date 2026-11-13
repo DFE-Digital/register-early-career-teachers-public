@@ -50,9 +50,8 @@ module Sessions
     end
 
     def appropriate_bodies
-      @appropriate_bodies ||= appropriate_body_names.index_with { |name|
-        AppropriateBodyPeriod.with_display_name(name).first
-      }.compact
+      @appropriate_bodies ||= AppropriateBodyPeriod.with_display_name_in(appropriate_body_names)
+                                                   .index_by(&:display_name)
     end
 
     def appropriate_body_names

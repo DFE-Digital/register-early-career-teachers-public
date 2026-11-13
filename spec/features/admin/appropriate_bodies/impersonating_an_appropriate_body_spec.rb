@@ -39,7 +39,7 @@ private
   end
 
   def when_i_click_sign_in_as_appropriate_body
-    page.get_by_role("button", name: "Sign in as #{@appropriate_body.name}").click
+    page.get_by_role("button", name: "Sign in as #{@appropriate_body.display_name}").click
   end
 
   def then_i_should_be_on_the_appropriate_bodies_home_page
