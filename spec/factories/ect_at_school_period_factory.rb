@@ -36,6 +36,10 @@ FactoryBot.define do
       finished_on { nil }
     end
 
+    trait :archived do
+      archived { true }
+    end
+
     trait :independent_school do
       association :school, :independent
       national_ab
