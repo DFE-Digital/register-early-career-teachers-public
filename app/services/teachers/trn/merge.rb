@@ -13,6 +13,7 @@ module Teachers
         teacher_started_induction_on = teacher.induction_periods.minimum(:started_on)
 
         ActiveRecord::Base.transaction do
+          move_archived_school_periods
           move_school_periods
           move_induction_periods
           move_teacher_events
@@ -79,6 +80,11 @@ module Teachers
 
         teacher.ect_at_school_periods.reload.find_each { |period| period.update!(teacher: destination) }
         teacher.mentor_at_school_periods.reload.find_each { |period| period.update!(teacher: destination) }
+      end
+
+      def move_archived_school_periods
+        teacher.ect_at_school_periods.archived.find_each { |period| period.update!(teacher: destination) }
+        teacher.mentor_at_school_periods.archived.find_each { |period| period.update!(teacher: destination) }
       end
 
       def move_induction_periods

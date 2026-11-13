@@ -33,13 +33,15 @@ module Teachers
         end
 
         def update_training_periods!
+          training_periods.select(&:archived?).each { |period| period.update!(attrs) }
+
           overlapping_training_periods.each do |periods|
             Teachers::TRN::TrainingPeriods::Merge.call(periods:, destination:)
           end
 
           merged_training_periods = overlapping_training_periods.flat_map(&:itself).uniq
 
-          training_periods.each do |period|
+          training_periods.reject(&:archived?).each do |period|
             next if merged_training_periods.include?(period)
 
             period.update!(attrs)
@@ -52,7 +54,7 @@ module Teachers
         end
 
         def source_and_destination_training_periods
-          training_periods + successor_period.training_periods
+          training_periods.reject(&:archived?) + successor_period.training_periods.unarchived.to_a
         end
 
         def reset_related_records!(period)

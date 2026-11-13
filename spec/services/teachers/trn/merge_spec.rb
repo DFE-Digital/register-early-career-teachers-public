@@ -583,6 +583,40 @@ RSpec.describe Teachers::TRN::Merge do
           expect(destination_ect_at_school_period.reload.started_on).to eq(overlapping_period_started_on)
           expect { overlapping_ect_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
         end
+
+        context "when there are archived periods" do
+          let(:archived_ect_at_school_period) do
+            FactoryBot.create(
+              :ect_at_school_period,
+              :archived,
+              teacher:,
+              school:,
+              started_on: first_period_started_on + 1.day,
+              finished_on: first_period_finished_on - 1.day
+            )
+          end
+
+          let!(:archived_training_period) do
+            FactoryBot.create(
+              :training_period,
+              :for_ect,
+              :with_framework_agreement,
+              :archived,
+              ect_at_school_period: archived_ect_at_school_period,
+              school_partnership:,
+              started_on: first_period_started_on + 1.day,
+              finished_on: first_period_finished_on - 1.day
+            )
+          end
+
+          it "moves the archived training period intact to the successor period" do
+            merge!
+
+            expect(archived_training_period.reload).to be_archived
+            expect(archived_ect_at_school_period.reload).to be_archived
+            expect(archived_ect_at_school_period.reload.teacher).to eq(destination)
+          end
+        end
       end
     end
 

@@ -6,6 +6,9 @@ RSpec.describe GIAS::Reconciliation::MentorAtSchoolPeriods::Overlapping do
   let(:second_school) { FactoryBot.create(:school) }
 
   let(:schools) { [first_school, second_school] }
+  let(:period_type) { :mentor_at_school_period }
+  let(:traits) { [] }
+  let(:source_attrs) { { teacher:, school: first_school } }
   let!(:periods) { [first_period, second_period] }
 
   let!(:first_period) do

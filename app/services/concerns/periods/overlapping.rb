@@ -19,7 +19,7 @@ module Periods
     attr_reader :groups
 
     def periods_by_start_date
-      periods.sort_by(&:started_on)
+      periods.reject(&:archived?).sort_by(&:started_on)
     end
 
     def group_periods = group_by_order

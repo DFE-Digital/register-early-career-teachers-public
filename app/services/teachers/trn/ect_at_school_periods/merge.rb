@@ -11,13 +11,15 @@ module Teachers
         end
 
         def update_mentorship_periods!
+          mentorship_periods.select(&:archived?).each { |period| period.update!(mentorship_attrs) }
+
           overlapping_mentorship_periods.each do |periods|
             Teachers::TRN::MentorshipPeriods::Merge.call(periods:, destination:)
           end
 
           merged_mentorship_periods = overlapping_mentorship_periods.flat_map(&:itself).uniq
 
-          mentorship_periods.each do |period|
+          mentorship_periods.reject(&:archived?).each do |period|
             next if merged_mentorship_periods.include?(period)
 
             period.update!(mentorship_attrs)
@@ -25,7 +27,7 @@ module Teachers
         end
 
         def source_and_destination_mentorship_periods
-          mentorship_periods + successor_period.mentorship_periods
+          mentorship_periods.reject(&:archived?) + successor_period.mentorship_periods.unarchived.to_a
         end
 
         def overlapping_mentorship_periods

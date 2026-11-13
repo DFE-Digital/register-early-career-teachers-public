@@ -357,6 +357,30 @@ RSpec.shared_examples "it identifies overlapping periods" do
 
     it { is_expected.to eq([[first_period, second_period]]) }
   end
+
+  context "when an archived period overlaps the active periods" do
+    let(:first_period_started_on) { Date.new(2025, 1, 1) }
+    let(:first_period_finished_on) { Date.new(2025, 3, 31) }
+    let(:second_period_started_on) { Date.new(2025, 3, 1) }
+    let(:second_period_finished_on) { Date.new(2025, 6, 30) }
+
+    let(:archived_period) do
+      FactoryBot.create(
+        period_type,
+        :archived,
+        *traits,
+        **source_attrs,
+        started_on: first_period_started_on + 1.day,
+        finished_on: first_period_finished_on - 1.day
+      )
+    end
+
+    let(:periods) { [first_period, second_period, archived_period] }
+
+    it "does not include the archived period in merge groups" do
+      expect(subject).to eq([[first_period, second_period]])
+    end
+  end
 end
 
 RSpec.shared_examples "it guards against invalid periods" do
