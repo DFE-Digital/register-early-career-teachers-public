@@ -1,0 +1,5 @@
+<% if @wizard.records_merged? %>
+  <%= render "confirmation_merge" %>
+<% else %>
+  <%= render "confirmation_replace" %>
+<% end %>

@@ -1,0 +1,23 @@
+<% page_data(
+  title: "TRN changed for #{@wizard.teacher_name}",
+  header: false
+) %>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <%= govuk_panel(title_text: "TRN changed for #{@wizard.teacher_name}") %>
+
+    <p class="govuk-body">
+      TRN <strong><%= @wizard.store.old_trn %></strong>
+      updated to <strong><%= @wizard.store.trn %></strong>.
+    </p>
+
+    <p class="govuk-body">
+      The old TRN has been deleted from the record.
+    </p>
+
+    <p class="govuk-body">
+      <%= govuk_link_to "Back to teachers", admin_teachers_path %>
+    </p>
+  </div>
+</div>

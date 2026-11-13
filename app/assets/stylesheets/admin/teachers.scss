@@ -12,3 +12,13 @@
     }
   }
 }
+
+.app-merge-preview {
+  @include govuk-media-query($from: tablet) {
+    display: flex;
+
+    > .app-merge-preview__destination {
+      border-left: 1px solid $govuk-border-colour;
+    }
+  }
+}

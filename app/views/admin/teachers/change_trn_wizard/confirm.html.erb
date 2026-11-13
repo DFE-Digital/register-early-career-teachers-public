@@ -1,0 +1,5 @@
+<% if @wizard.merge_proposed? %>
+  <%= render "confirm_merge" %>
+<% else %>
+  <%= render "confirm_replace" %>
+<% end %>

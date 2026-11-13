@@ -2,15 +2,15 @@ RSpec.describe Teachers::SyncTeacherWithTRSJob, type: :job do
   describe "#perform" do
     let(:teacher) { FactoryBot.create(:teacher) }
     let(:refresh_service) { instance_double(Teachers::RefreshTRSAttributes, refresh!: :teacher_updated) }
-    let(:replace_trn_service) { instance_double(Teachers::ReplaceTRN) }
-    let(:merge_trn_service) { instance_double(Teachers::MergeTRN) }
+    let(:replace_trn_service) { instance_double(Teachers::TRN::Replace) }
+    let(:merge_trn_service) { instance_double(Teachers::TRN::Merge) }
 
     before do
-      allow(Teachers::ReplaceTRN)
+      allow(Teachers::TRN::Replace)
         .to receive(:new)
         .with(teacher:)
         .and_return(replace_trn_service)
-      allow(Teachers::MergeTRN)
+      allow(Teachers::TRN::Merge)
         .to receive(:new)
         .with(teacher:)
         .and_return(merge_trn_service)
@@ -38,7 +38,7 @@ RSpec.describe Teachers::SyncTeacherWithTRSJob, type: :job do
         expect(described_class.queue_name).to eq("trs_sync")
       end
 
-      it "does not call the ReplaceTRN or MergeTRN service if the teacher has not been merged" do
+      it "does not call the Teachers::TRN::Replace or Teachers::TRN::Merge service if the teacher has not been merged" do
         expect(replace_trn_service).not_to receive(:replace!)
         expect(merge_trn_service).not_to receive(:merge!)
 
@@ -101,7 +101,7 @@ RSpec.describe Teachers::SyncTeacherWithTRSJob, type: :job do
       include_context "test TRS API returns a merged teacher"
 
       context "when there is no existing teacher with the redirected TRN" do
-        it "calls the ReplaceTRN service to replace the teacher's TRN" do
+        it "calls the Teachers::TRN::Replace service to replace the teacher's TRN" do
           expect(replace_trn_service).to receive(:replace!)
 
           described_class.perform_now(teacher:)
@@ -111,7 +111,7 @@ RSpec.describe Teachers::SyncTeacherWithTRSJob, type: :job do
       context "when there is an existing teacher with the redirected TRN" do
         let!(:existing_teacher) { FactoryBot.create(:teacher, trn: TRS::TestAPIClient::MERGED_TRN_REDIRECTS_TO) }
 
-        it "calls the MergeTRN service to merge the teacher's TRN" do
+        it "calls the Teachers::TRN::Merge service to merge the teacher's TRN" do
           expect(merge_trn_service).to receive(:merge!)
 
           described_class.perform_now(teacher:)
