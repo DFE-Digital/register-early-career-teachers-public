@@ -99,6 +99,7 @@ module Schools
     def latest_mentor_training_period
       @latest_mentor_training_period ||= TrainingPeriod
                                            .for_mentor_trn(teacher.trn)
+                                           .unarchived
                                            .order(started_on: :desc)
                                            .first
     end
