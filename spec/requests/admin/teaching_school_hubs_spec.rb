@@ -7,10 +7,9 @@ RSpec.describe "Admin::TeachingSchoolHubsController", type: :request do
   let(:lead_school) { FactoryBot.create(:school, :eligible) }
 
   let(:appropriate_body_period) do
-    FactoryBot.create(:appropriate_body_period, :teaching_school_hub,
+    FactoryBot.create(:appropriate_body_period, :teaching_school_hub, :nameless,
                       teaching_school_hub:,
-                      provisioning_school: provisioning_school_1,
-                      name: nil)
+                      provisioning_school: provisioning_school_1)
   end
 
   before do

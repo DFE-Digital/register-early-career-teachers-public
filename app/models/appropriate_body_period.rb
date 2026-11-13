@@ -28,6 +28,14 @@ class AppropriateBodyPeriod < ApplicationRecord
     [:teaching_school_hub, :national_body, :local_authority, { provisioning_school: :gias_school }]
   end
 
+  DISPLAY_NAME_SQL = <<~SQL.squish.freeze
+    COALESCE(appropriate_body_periods.name,
+             teaching_school_hubs.name,
+             national_bodies.name,
+             local_authorities.name,
+             gias_schools.name)
+  SQL
+
   include Interval
 
   # Associations
@@ -67,6 +75,12 @@ class AppropriateBodyPeriod < ApplicationRecord
   }
 
   scope :with_display_names, -> { includes(*body_type_associations) }
+  scope :with_naming_bodies_joined, -> { left_joins(*body_type_associations) }
+  scope :ordered_by_display_name, -> { order(Arel.sql(DISPLAY_NAME_SQL), :id) }
+  scope :matching_display_name, ->(term) {
+    with_naming_bodies_joined
+      .where(Arel.sql("#{DISPLAY_NAME_SQL} ILIKE :term"), term: "%#{sanitize_sql_like(term)}%")
+  }
 
   # Normalizations
   normalizes :name, with: -> { it.squish.presence }

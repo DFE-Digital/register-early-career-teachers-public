@@ -11,6 +11,11 @@ FactoryBot.define do
     association :provisioning_school, factory: :school
     started_on { 1.year.ago }
 
+    trait :nameless do
+      initialize_with { AppropriateBodyPeriod.new }
+      name { nil }
+    end
+
     trait :cannot_sign_in do
       dfe_sign_in_organisation_id { nil }
     end

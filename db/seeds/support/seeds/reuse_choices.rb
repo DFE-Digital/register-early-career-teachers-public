@@ -104,11 +104,12 @@ module Seeds
       @matrix_appropriate_body_period ||= begin
         hub = TeachingSchoolHub.find_or_create_by!(name: PREFERRED_APPROPRIATE_BODY_NAME)
 
-        abp = hub.appropriate_body_periods.first || hub.appropriate_body_periods.build(
-          body_type: :teaching_school_hub,
-          name: nil,
-          started_on: TeachingSchoolHub::ACTED_AS_APPROPRIATE_BODY_DATES[:introduced_on]
-        )
+        abp = hub.appropriate_body_periods.find_by(name: PREFERRED_APPROPRIATE_BODY_NAME) ||
+          hub.appropriate_body_periods.first_or_initialize(
+            body_type: :teaching_school_hub,
+            name: nil,
+            started_on: TeachingSchoolHub::ACTED_AS_APPROPRIATE_BODY_DATES[:introduced_on]
+          )
 
         abp.provisioning_school ||= matrix_provisioning_school
         abp.save!
