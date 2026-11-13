@@ -1,14 +1,18 @@
 module Admin
   class ImpersonationBannerComponent < ApplicationComponent
-    attr_reader :user, :school
+    attr_reader :user, :organisation
 
-    def initialize(user:, school:)
+    def initialize(user:)
       @user = user
-      @school = school
+      @organisation = if @user&.dfe_user_impersonating_school_user?
+                        @user.school
+                      elsif @user&.dfe_user_impersonating_appropriate_body_user?
+                        @user.appropriate_body_period
+                      end
     end
 
     def render?
-      user.present? && school.present? && user.dfe_user_impersonating_school_user?
+      user.present? && organisation.present? && user.impersonating?
     end
   end
 end

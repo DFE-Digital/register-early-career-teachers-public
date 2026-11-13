@@ -1,5 +1,11 @@
 describe Sessions::Users::DfEUserImpersonatingSchoolUser do
-  subject(:dfe_user_impersonating_school_user) { Sessions::Users::DfEUserImpersonatingSchoolUser.new(email: user.email, school_urn:, original_type:) }
+  subject(:dfe_user_impersonating_school_user) do
+    Sessions::Users::DfEUserImpersonatingSchoolUser.new(
+      email: user.email,
+      school_urn:,
+      original_type:
+    )
+  end
 
   let(:email) { "timothy.dalton@education.gov.uk" }
   let(:user) { FactoryBot.create(:user, email:, name: "Timothy Dalton") }
@@ -8,7 +14,8 @@ describe Sessions::Users::DfEUserImpersonatingSchoolUser do
   let(:original_type) { "Sessions::Users::SchoolPersona" }
 
   it "has user type :dfe_user_impersonating_school_user" do
-    expect(Sessions::Users::DfEUserImpersonatingSchoolUser::USER_TYPE).to be(:dfe_user_impersonating_school_user)
+    expect(Sessions::Users::DfEUserImpersonatingSchoolUser::USER_TYPE)
+      .to be(:dfe_user_impersonating_school_user)
   end
 
   it_behaves_like "a fingerprintable user" do
@@ -22,18 +29,29 @@ describe Sessions::Users::DfEUserImpersonatingSchoolUser do
   end
 
   describe "#id" do
-    it { expect(dfe_user_impersonating_school_user.id).to eql(user.id) }
+    subject(:id) { dfe_user_impersonating_school_user.id }
+
+    it { is_expected.to eql(user.id) }
   end
 
   describe "#dfe_analytics_user_id" do
-    it { expect(dfe_user_impersonating_school_user.dfe_analytics_user_id).to eql(user.id) }
+    subject(:dfe_analytics_user_id) do
+      dfe_user_impersonating_school_user.dfe_analytics_user_id
+    end
+
+    it { is_expected.to eql(user.id) }
   end
 
   describe "#to_h" do
+    subject(:to_h) { dfe_user_impersonating_school_user.to_h }
+
+    before { freeze_time }
+
     it "returns the session details" do
-      expect(dfe_user_impersonating_school_user.to_h.except("last_active_at")).to eq(
+      expect(to_h).to eq(
         {
           "email" => email,
+          "last_active_at" => Time.zone.now,
           "type" => "Sessions::Users::DfEUserImpersonatingSchoolUser",
           "original_type" => original_type,
           "school_urn" => school_urn
@@ -42,25 +60,37 @@ describe Sessions::Users::DfEUserImpersonatingSchoolUser do
     end
   end
 
-  describe "#rebuild_original_session" do
-    it "switches the current type for the original type" do
-      expect(dfe_user_impersonating_school_user.rebuild_original_session.fetch("type")).to eql(original_type)
+  describe "#expired?" do
+    before { freeze_time }
+
+    it "is expired when the max_session_idle_time has passed since the last_active_at" do
+      travel_to dfe_user_impersonating_school_user.max_session_idle_time.from_now + 1.second
+
+      expect(dfe_user_impersonating_school_user).to be_expired
     end
 
-    it "does not include the original type" do
-      expect(dfe_user_impersonating_school_user.rebuild_original_session).not_to have_key("original_type")
-    end
-
-    it "does not include the school_urn" do
-      expect(dfe_user_impersonating_school_user.rebuild_original_session).not_to have_key("school_urn")
+    context "when the max_session_idle_time has not passed since the last_active_at" do
+      it { is_expected.not_to be_expired }
     end
   end
 
+  describe "#rebuild_original_session" do
+    subject(:rebuild_original_session) do
+      dfe_user_impersonating_school_user.rebuild_original_session
+    end
+
+    it { expect(rebuild_original_session.fetch("type")).to eql(original_type) }
+    it { is_expected.not_to have_key("original_type") }
+    it { is_expected.not_to have_key("school_urn") }
+  end
+
   describe "user type methods" do
-    it { expect(dfe_user_impersonating_school_user).to be_school_user }
-    it { expect(dfe_user_impersonating_school_user).to be_dfe_user_impersonating_school_user }
-    it { expect(dfe_user_impersonating_school_user).not_to be_dfe_user }
-    it { expect(dfe_user_impersonating_school_user).not_to be_dfe_sign_in_authorisable }
-    it { expect(dfe_user_impersonating_school_user).not_to be_appropriate_body_user }
+    it { is_expected.to be_impersonating }
+    it { is_expected.to be_school_user }
+    it { is_expected.to be_dfe_user_impersonating_school_user }
+    it { is_expected.not_to be_dfe_user }
+    it { is_expected.not_to be_dfe_sign_in_authorisable }
+    it { is_expected.not_to be_appropriate_body_user }
+    it { is_expected.not_to be_dfe_user_impersonating_appropriate_body_user }
   end
 end

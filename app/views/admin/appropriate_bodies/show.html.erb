@@ -1,5 +1,7 @@
 <% page_data(title: @appropriate_body.name) %>
 
+<%= render 'admin/appropriate_bodies/impersonate_button', appropriate_body: @appropriate_body %>
+
 <%= render Admin::AppropriateBodies::DetailsComponent.new(appropriate_body_period: @appropriate_body) %>
 
 <p class='govuk-body'>

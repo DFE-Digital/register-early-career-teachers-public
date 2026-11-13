@@ -35,6 +35,8 @@ module Navigation
         :api_documentation
       elsif current_user_type == :dfe_user_impersonating_school_user
         :school_user
+      elsif current_user_type == :dfe_user_impersonating_appropriate_body_user
+        :appropriate_body_user
       else
         current_user_type
       end

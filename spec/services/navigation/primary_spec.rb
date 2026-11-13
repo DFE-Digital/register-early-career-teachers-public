@@ -114,6 +114,21 @@ describe Navigation::Primary, type: :component do
         it { is_expected.to be_empty }
       end
 
+      context "when logged in as a DfE staff user but impersonating an appropriate body user" do
+        let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
+        let(:appropriate_body_user) { FactoryBot.create(:user) }
+        let(:current_path) { "/appropriate-body/teachers" }
+        let(:current_user) do
+          FactoryBot.build(
+            :dfe_user_impersonating_appropriate_body_user,
+            email: appropriate_body_user.email,
+            appropriate_body_period_id: appropriate_body_period.id
+          )
+        end
+
+        it { is_expected.to be_empty }
+      end
+
       context "when looking at the API guidance" do
         let(:current_path) { "/api/docs/training/guidance" }
         let(:expected_visible_items) do
