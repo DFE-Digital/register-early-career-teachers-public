@@ -65,29 +65,97 @@ describe AppropriateBodies::Search do
     end
 
     describe "#search" do
-      context "when the search string is blank" do
-        let(:query_string) { " " }
+      subject(:results) { described_class.new(query).search }
 
-        it "applies no conditions and returns all appropriate bodies" do
-          subject.search
+      let(:query) { nil }
 
-          expect(subject.search.to_sql).to start_with(%(SELECT "appropriate_body_periods".* FROM "appropriate_body_periods" ORDER BY))
+      def period_named_by_tsh(name)
+        teaching_school_hub = FactoryBot.create(:teaching_school_hub, name:)
+        FactoryBot.create(:appropriate_body_period, :teaching_school_hub, :nameless,
+                          teaching_school_hub:)
+      end
+
+      def period_named_by_period(name)
+        FactoryBot.create(:appropriate_body_period, :teaching_school_hub,
+                          name:)
+      end
+
+      def period_named_by_nb(name)
+        national_body = FactoryBot.create(:national_body, name:)
+        FactoryBot.create(:appropriate_body_period, :national, :nameless,
+                          national_body:)
+      end
+
+      def period_named_by_la(name)
+        local_authority = FactoryBot.create(:local_authority, name:)
+        FactoryBot.create(:appropriate_body_period, :local_authority, :nameless,
+                          local_authority:)
+      end
+
+      def period_named_by_ts(name)
+        gias_school = FactoryBot.create(:gias_school, :eligible_type, :in_england, name:)
+        provisioning_school = FactoryBot.create(:school, :eligible, gias_school:)
+        FactoryBot.create(:appropriate_body_period, :teaching_school, :nameless,
+                          provisioning_school:)
+      end
+
+      context "when nothing is searched for" do
+        let(:query) { " " }
+        let!(:period) { period_named_by_tsh("Example Hub") }
+
+        it { is_expected.to contain_exactly(period) }
+      end
+
+      context "when the period carries its own name" do
+        let(:query) { "of its own" }
+        let!(:period) { period_named_by_period("A name of its own") }
+
+        it { is_expected.to contain_exactly(period) }
+      end
+
+      context "when the hub supplies the name" do
+        let(:query) { "example hub" }
+        let!(:period) { period_named_by_tsh("Example Hub") }
+
+        it { is_expected.to contain_exactly(period) }
+      end
+
+      context "when the national body supplies the name" do
+        let(:query) { "example body" }
+        let!(:period) { period_named_by_nb("Example Body") }
+
+        it { is_expected.to contain_exactly(period) }
+      end
+
+      context "when the local authority supplies the name" do
+        let(:query) { "example authority" }
+        let!(:period) { period_named_by_la("Example Authority") }
+
+        it { is_expected.to contain_exactly(period) }
+      end
+
+      context "when the school supplies the name" do
+        let(:query) { "example school" }
+        let!(:period) { period_named_by_ts("Example School") }
+
+        it { is_expected.to contain_exactly(period) }
+      end
+
+      context "when the query contains a wildcard" do
+        let(:query) { "%" }
+        let!(:period) { period_named_by_tsh("100% Hub") }
+
+        it "treats it as a literal character" do
+          expect(results).to contain_exactly(period)
         end
       end
 
-      context "when the search string contains some text" do
-        let(:query_string) { "Captain Scrummy" }
+      context "when the periods display different names" do
+        let!(:nameless) { period_named_by_tsh("Alpha Hub") }
+        let!(:named) { period_named_by_period("Zeta Body") }
 
-        it "initiates a full text search with the given search string" do
-          expect(subject.search.to_sql).to include(%{WHERE (name ILIKE '%Captain Scrummy%')})
-        end
-      end
-
-      context "ordering" do
-        before { allow(AppropriateBodyPeriod).to receive(:where).and_call_original }
-
-        it "defaults to order by name ascending" do
-          expect(subject.search.to_sql).to include(%(ORDER BY "appropriate_body_periods"."name" ASC))
+        it "orders by the displayed name, not the column" do
+          expect(results.to_a).to eq([nameless, named])
         end
       end
     end

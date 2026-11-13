@@ -20,16 +20,10 @@ module AppropriateBodies
       @scope.find_by(dfe_sign_in_organisation_id:)
     end
 
-    # Maybe moving to body_type specific search so ABP names can be treated differently in the future
-    # for teaching school hubs.
     def search
-      query = if @query_string.blank?
-                @scope.all
-              else
-                @scope.where("name ILIKE ?", "%#{@query_string}%")
-              end
+      query = @query_string.present? ? @scope.matching_display_name(@query_string) : @scope.with_naming_bodies_joined
 
-      query.with_display_names.strict_loading.order(name: "asc")
+      query.with_display_names.strict_loading.ordered_by_display_name
     end
   end
 end
