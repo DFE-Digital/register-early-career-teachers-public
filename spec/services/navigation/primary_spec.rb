@@ -159,17 +159,33 @@ describe Navigation::Primary, type: :component do
 
       context "when looking at the Training API v4 documentation" do
         let(:current_path) { "/api/docs/training/v4" }
-        let(:expected_visible_items) do
-          {
-            "Home" => "/api/docs",
-            "Authorisation" => "/api/docs/authorisation",
-            "Hello API" => "/api/docs/hello",
-            "Training API" => "/api/docs/training/v4",
-            "Induction API" => "/api/docs/induction/v1"
-          }
+
+        context "when the training API feature flag is true", with_feature_flags: { enable_training_api: true } do
+          let(:expected_visible_items) do
+            {
+              "Home" => "/api/docs",
+              "Authorisation" => "/api/docs/authorisation",
+              "Hello API" => "/api/docs/hello",
+              "Training API" => "/api/docs/training/v4",
+              "Induction API" => "/api/docs/induction/v1"
+            }
+          end
+
+          it { is_expected.to eql(expected_visible_items) }
         end
 
-        it { is_expected.to eql(expected_visible_items) }
+        context "when the training API feature flag is false", with_feature_flags: { enable_training_api: false } do
+          let(:expected_visible_items) do
+            {
+              "Home" => "/api/docs",
+              "Authorisation" => "/api/docs/authorisation",
+              "Hello API" => "/api/docs/hello",
+              "Induction API" => "/api/docs/induction/v1"
+            }
+          end
+
+          it { is_expected.to eql(expected_visible_items) }
+        end
       end
 
       describe "Areas and sections" do
@@ -234,7 +250,7 @@ describe Navigation::Primary, type: :component do
                 { text: "Home", href: "/api/docs" },
                 { text: "Authorisation", href: "/api/docs/authorisation", active_when: "/api/docs/authorisation" },
                 { text: "Hello API", href: "/api/docs/hello", active_when: "/api/docs/hello" },
-                { text: "Training API", href: "/api/docs/training/v4", active_when: "/api/docs/training/v4" },
+                { text: "Training API", href: "/api/docs/training/v4", active_when: "/api/docs/training/v4", if: :training_api_enabled? },
                 { text: "Induction API", href: "/api/docs/induction/v1", active_when: "/api/docs/induction/v1" },
               ]
             )

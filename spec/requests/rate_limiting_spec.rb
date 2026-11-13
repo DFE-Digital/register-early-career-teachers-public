@@ -64,7 +64,7 @@ RSpec.describe "Rack::Attack" do
     "/api/docs/training/v4",
     "/api/hello/world",
   ].each do |public_api_path|
-    context "when requesting the public API path #{public_api_path}" do
+    context "when requesting the public API path #{public_api_path}", with_feature_flags: { enable_training_api: true } do
       let(:path) { public_api_path }
 
       it_behaves_like "a rate limited endpoint", "public API requests by ip" do
