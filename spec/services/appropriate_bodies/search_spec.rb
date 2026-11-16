@@ -38,32 +38,6 @@ describe AppropriateBodies::Search do
       end
     end
 
-    describe ".esp" do
-      subject { described_class.esp }
-
-      context "when ESP has been registered" do
-        let!(:esp) { FactoryBot.create(:appropriate_body_period, :esp) }
-
-        it "returns it" do
-          expect(subject).to eq(esp)
-        end
-      end
-
-      context "when ESP period name is nullified" do
-        let!(:esp) { FactoryBot.create(:appropriate_body_period, :esp, name: nil) }
-
-        it "finds it by the national body name" do
-          expect(subject).to eq(esp)
-        end
-      end
-
-      context "when ESP has not been registered" do
-        it "raises an exception" do
-          expect { subject }.to raise_error(ActiveRecord::RecordNotFound, "ESP appropriate body period not found!")
-        end
-      end
-    end
-
     describe "#search" do
       subject(:results) { described_class.new(query).search }
 

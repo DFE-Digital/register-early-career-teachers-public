@@ -23,7 +23,7 @@
     <% end %>
 
     <% table.with_body do |body| %>
-      <% appropriate_body_period.region_awards.select(&:active?).each do |award| %>
+      <% appropriate_body_period.active_region_awards.each do |award| %>
         <% body.with_row do |row| %>
           <% row.with_cell(text: award.region.code) %>
           <% row.with_cell(text: award.region.districts.to_sentence) %>

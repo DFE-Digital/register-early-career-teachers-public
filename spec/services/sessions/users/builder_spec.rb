@@ -197,6 +197,19 @@ RSpec.describe Sessions::Users::Builder do
           end
         end
 
+        context "when both school_urn and appropriate_body_period_id are present" do
+          let(:uid) { email }
+          let(:appropriate_body_period_id) { appropriate_body_period.id }
+          let(:school_urn) { school.urn }
+          let(:dfe_staff) { "false" }
+          let(:organisation_id) { nil }
+          let(:organisation_urn) { nil }
+
+          it "returns an appropriate body persona" do
+            expect(session_user).to be_a(Sessions::Users::AppropriateBodyPersona)
+          end
+        end
+
         context "when no dfe_staff or school_urn or appropriate_body_period_id present" do
           let(:uid) { email }
           let(:appropriate_body_period_id) { nil }

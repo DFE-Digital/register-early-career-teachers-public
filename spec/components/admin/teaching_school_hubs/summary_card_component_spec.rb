@@ -30,6 +30,25 @@ RSpec.describe Admin::TeachingSchoolHubs::SummaryCardComponent, type: :component
       end
     end
 
+    context "when the hub has a single period that has a name of its own" do
+      before do
+        FactoryBot.create(:appropriate_body_period, :teaching_school_hub,
+                          teaching_school_hub:,
+                          provisioning_school: provisioning_school_1,
+                          name: "Acme TSH Studio")
+
+        render_inline(component)
+      end
+
+      it "renders the period name" do
+        expect(rendered_content).to have_selector("strong", text: "Acme TSH Studio:")
+      end
+
+      it "links the hub name to the hub page" do
+        expect(rendered_content).to have_link("Acme TSH", href: admin_teaching_school_hub_path(teaching_school_hub))
+      end
+    end
+
     context "when the hub has more than one appropriate body period" do
       before do
         FactoryBot.create(:appropriate_body_period, :teaching_school_hub,
@@ -84,10 +103,6 @@ RSpec.describe Admin::TeachingSchoolHubs::SummaryCardComponent, type: :component
 
       it "emboldens only the period that has a name of its own" do
         expect(rendered_content).to have_selector("strong", text: "Acme TSH East:")
-        expect(rendered_content).not_to have_selector("strong", text: "#{teaching_school_hub.name}:")
-      end
-
-      it "does not pass the hub name off as that period's name" do
         expect(rendered_content).not_to have_selector("strong", text: "#{teaching_school_hub.name}:")
       end
     end

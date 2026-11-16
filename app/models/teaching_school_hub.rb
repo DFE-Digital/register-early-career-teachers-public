@@ -33,19 +33,28 @@ class TeachingSchoolHub < ApplicationRecord
 
   normalizes :name, with: -> { it.squish }
 
-  def name_is_not_an_ongoing_appropriate_body_period_name
-    return if name.blank?
-    return unless AppropriateBodyPeriod.where(name:).contains_date(Date.current).exists?
-
-    errors.add(:name, "is already used by an ongoing appropriate body.")
-  end
+  def has_multiple_ongoing_appropriate_body_periods? = appropriate_body_periods.count { it.range.cover?(Date.current) } > 1
 
   # @return [Array<String>]
   def region_codes
     appropriate_body_periods.flat_map do |period|
-      period.region_awards.select(&:active?).map { |award| award.region.code }
+      period.active_region_awards.map { |award| award.region.code }
     end
   end
 
-  def has_multiple_active_appropriate_body_periods? = appropriate_body_periods.count(&:active?) > 1
+private
+
+  def name_is_not_an_ongoing_appropriate_body_period_name
+    return if name.blank?
+
+    ongoing_appropriate_bodies = AppropriateBodyPeriod.with_display_name(name).contains_date(Date.current)
+    if persisted?
+      ongoing_appropriate_bodies = ongoing_appropriate_bodies.where(
+        "appropriate_body_periods.teaching_school_hub_id IS DISTINCT FROM ? OR appropriate_body_periods.name IS NOT NULL", id
+      )
+    end
+    return unless ongoing_appropriate_bodies.exists?
+
+    errors.add(:name, "is already used by an ongoing appropriate body.")
+  end
 end

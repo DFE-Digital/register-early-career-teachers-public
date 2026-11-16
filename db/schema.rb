@@ -140,6 +140,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_06_123206) do
     t.index ["teaching_school_hub_id"], name: "index_appropriate_body_periods_on_teaching_school_hub_id"
     t.check_constraint "finished_on >= started_on", name: "finished_on_not_before_started_on"
     t.exclusion_constraint "teaching_school_hub_id WITH =, name WITH =, range WITH &&", using: :gist, name: "appropriate_body_periods_unique_names_for_concurrent_periods"
+    t.exclusion_constraint "teaching_school_hub_id WITH =, range WITH &&", where: "(name IS NULL) AND (teaching_school_hub_id IS NOT NULL)", using: :gist, name: "appropriate_body_periods_one_unnamed_period_per_hub"
   end
 
   create_table "blazer_audits", force: :cascade do |t|
