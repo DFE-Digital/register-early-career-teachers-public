@@ -666,7 +666,7 @@ RSpec.describe Schools::RegisterECT do
 
             new_training_period = service.ect_at_school_period.training_periods.sole
 
-            expect(TrainingPeriod.exists?(previous_training_period.id)).to be(false)
+            expect(previous_training_period.reload).to have_attributes(started_on: started_on.yesterday, finished_on: started_on.yesterday)
             expect(previous_ect_period.reload.finished_on).to eq(started_on.yesterday)
 
             expect(new_training_period.started_on).to eq(started_on)
@@ -697,7 +697,7 @@ RSpec.describe Schools::RegisterECT do
 
               new_training_period = service.ect_at_school_period.training_periods.sole
 
-              expect(TrainingPeriod.exists?(previous_training_period.id)).to be(false)
+              expect(previous_training_period.reload).to have_attributes(started_on: started_on.yesterday, finished_on: started_on.yesterday)
               expect(previous_ect_period.reload.finished_on).to eq(started_on.yesterday)
 
               expect(new_training_period.school_partnership).to be_nil
@@ -1081,6 +1081,33 @@ RSpec.describe Schools::RegisterECT do
           teacher_id: teacher.id
         )
         expect(event.happened_at.to_date).to eq(expected_finished_on)
+      end
+
+      context "when the previous period has future training and mentorship periods" do
+        let!(:future_training_period) do
+          FactoryBot.create(
+            :training_period,
+            :school_led,
+            ect_at_school_period: existing_period,
+            started_on: started_on + 1.week
+          )
+        end
+        let!(:future_mentorship_period) do
+          mentor = FactoryBot.create(:mentor_at_school_period, :unfinished, school: other_school, started_on: 1.year.ago)
+          FactoryBot.create(
+            :mentorship_period,
+            mentee: existing_period,
+            mentor:,
+            started_on: started_on + 1.week
+          )
+        end
+
+        it "moves them to zero-length periods on the day before the new registration" do
+          service.register!
+
+          expect(future_training_period.reload).to have_attributes(started_on: expected_finished_on, finished_on: expected_finished_on)
+          expect(future_mentorship_period.reload).to have_attributes(started_on: expected_finished_on, finished_on: expected_finished_on)
+        end
       end
 
       context "when transfer happens today" do

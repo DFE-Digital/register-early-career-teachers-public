@@ -57,10 +57,11 @@ module ECTAtSchoolPeriods
     end
 
     def finish_mentorship_periods!
-      destroy_unstarted_mentorship_periods!
+      move_unstarted_mentorship_periods!
 
       return unless (
         mentorship_period = ect_at_school_period.mentorship_periods
+                                                .started_before(finished_on)
                                                 .find_by(MentorshipPeriod.date_in_range(finished_on))
       )
 
@@ -70,10 +71,11 @@ module ECTAtSchoolPeriods
     end
 
     def finish_training_period!
-      destroy_unstarted_training_periods!
+      move_unstarted_training_periods!
 
       return unless (
         training_period = ect_at_school_period.training_periods
+                                              .started_before(finished_on)
                                               .find_by(TrainingPeriod.date_in_range(finished_on))
       )
 
@@ -82,17 +84,15 @@ module ECTAtSchoolPeriods
       TrainingPeriods::Finish.ect_training(author:, training_period:, ect_at_school_period:, finished_on:, record_event: record_event?).finish!
     end
 
-    def destroy_unstarted_training_periods!
+    def move_unstarted_training_periods!
       unstarted_training_periods.find_each do |training_period|
-        Event.where(training_period:).delete_all
-        training_period.destroy!
+        training_period.update!(started_on: finished_on, finished_on:)
       end
     end
 
-    def destroy_unstarted_mentorship_periods!
+    def move_unstarted_mentorship_periods!
       ect_at_school_period.mentorship_periods.started_on_or_after(finished_on).find_each do |mentorship_period|
-        Event.where(mentorship_period:).delete_all
-        mentorship_period.destroy!
+        mentorship_period.update!(started_on: finished_on, finished_on:)
       end
     end
 
