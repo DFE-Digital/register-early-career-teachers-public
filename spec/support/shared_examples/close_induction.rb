@@ -95,22 +95,19 @@ RSpec.shared_context "it closes an induction period and finishes any related per
 
   context "when the ect at school period is has not started" do
     let(:started_on) { 2.days.from_now }
+    let(:mentor_at_school_period) do
+      FactoryBot.create(:mentor_at_school_period, :unfinished, teacher: mentor_teacher, school:, started_on: Date.current)
+    end
+    let!(:mentorship_period) do
+      FactoryBot.create(:mentorship_period, mentor: mentor_at_school_period, mentee: ect_at_school_period, started_on:)
+    end
 
-    it "calls a service to delete the period" do
-      allow(ECTAtSchoolPeriods::Destroy)
-      .to receive(:call)
-      .and_call_original
-
+    it "moves the ECT period and its unstarted related periods to today" do
       service_call
 
-      expect(ECTAtSchoolPeriods::Destroy)
-      .to have_received(:call).with(
-        ect_at_school_period:,
-        author:,
-        actioned_at: Date.current
-      )
-
-      expect(ECTAtSchoolPeriod).not_to exist(ect_at_school_period.id)
+      expect(ect_at_school_period.reload).to have_attributes(started_on: Date.current, finished_on: Date.current)
+      expect(training_period.reload).to have_attributes(started_on: Date.current, finished_on: Date.current)
+      expect(mentorship_period.reload).to have_attributes(started_on: Date.current, finished_on: Date.current)
     end
   end
 
