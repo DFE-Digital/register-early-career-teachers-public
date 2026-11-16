@@ -18,8 +18,15 @@ module Sessions
         payload.credentials.id_token
       end
 
-      # @return [String]
-      delegate :name, to: :organisation, prefix: true
+      # @return [Hash]
+      def invalid_organisation_details
+        {
+          dfe_sign_in_organisation_id: organisation.id,
+          dfe_sign_in_organisation_urn: organisation.urn,
+          dfe_sign_in_organisation_name: organisation.name,
+          dfe_sign_in_user_id: uid
+        }
+      end
 
       # Determine user session type
       #
@@ -37,28 +44,34 @@ module Sessions
       # @return [Sessions::Users::SchoolUser]
       # @return [Sessions::Users::SchoolPersona]
       def session_user
-        if dfe_sign_in?
-          record_dfe_sign_in_authentication!
-
-          return school_user if school_user?
-          return appropriate_body_user if appropriate_body_user?
-          return dfe_user if dfe_user? # TODO: deprecate OTP
-
-          raise(UnknownOrganisation, organisation)
-        end
-
-        if persona?
-          return school_persona if school_persona?
-          return appropriate_body_persona if appropriate_body_persona?
-          return dfe_persona if dfe_persona?
-
-          raise(UnknownPersonaType)
-        end
+        return process_dfe_sign_in_session! if dfe_sign_in?
+        return process_persona_session! if persona?
 
         raise(UnknownProvider, provider)
       end
 
     private
+
+      def process_dfe_sign_in_session!
+        record_dfe_sign_in_authentication!
+
+        return school_user if school_user?
+        return appropriate_body_user if appropriate_body_user?
+        return dfe_user if dfe_user? # TODO: deprecate OTP
+
+        raise(UnknownOrganisation, organisation)
+      rescue ::DfESignIn::APIClient::NotFoundError => e
+        Sentry.capture_message(e.message, level: :info)
+        raise(UnknownOrganisation, organisation)
+      end
+
+      def process_persona_session!
+        return school_persona if school_persona?
+        return appropriate_body_persona if appropriate_body_persona?
+        return dfe_persona if dfe_persona?
+
+        raise(UnknownPersonaType)
+      end
 
       delegate :appropriate_body_period_id, to: :user_info
 

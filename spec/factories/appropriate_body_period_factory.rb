@@ -79,5 +79,11 @@ FactoryBot.define do
       started_on { LocalAuthority::ACTED_AS_APPROPRIATE_BODY_DATES[:introduced_on] }
       finished_on { LocalAuthority::ACTED_AS_APPROPRIATE_BODY_DATES[:retired_on] }
     end
+
+    trait :with_dsi do
+      dfe_sign_in_organisation do
+        association :dfe_sign_in_organisation, name:
+      end
+    end
   end
 end
