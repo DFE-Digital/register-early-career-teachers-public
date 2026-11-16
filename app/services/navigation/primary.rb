@@ -75,7 +75,7 @@ module Navigation
           { text: "Home", href: "/api/docs" },
           { text: "Authorisation", href: api_documentation_authorisation_path, active_when: api_documentation_authorisation_path },
           { text: "Hello API", href: api_hello_documentation_path, active_when: api_hello_documentation_path },
-          { text: "Training API", href: api_training_v4_documentation_path, active_when: api_training_v4_documentation_path },
+          { text: "Training API", href: api_training_v4_documentation_path, active_when: api_training_v4_documentation_path, if: :training_api_enabled? },
           { text: "Induction API", href: api_induction_v1_documentation_path, active_when: api_induction_v1_documentation_path },
         ]
       }
@@ -110,6 +110,10 @@ module Navigation
 
     def can_see_tools?
       current_user&.product_team?
+    end
+
+    def training_api_enabled?
+      Rails.application.config.enable_training_api
     end
 
     def current_user_type

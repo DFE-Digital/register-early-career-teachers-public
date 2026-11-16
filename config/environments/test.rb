@@ -73,6 +73,7 @@ Rails.application.configure do
   config.action_controller.raise_on_missing_callback_actions = true
   config.enable_personas = true
   config.enable_apis_under_development = true
+  config.enable_training_api = true
   config.enable_fake_trs_api = false
   config.dfe_sign_in_enabled = true
   config.enable_test_guidance = false
