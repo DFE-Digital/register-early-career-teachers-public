@@ -1,4 +1,4 @@
-RSpec.describe "GET /api/docs/training/v4", type: :request, with_feature_flags: { enable_training_api: true } do
+RSpec.describe "GET /api/docs/training/v4", type: :request do
   it "shows the training API v4 documentation" do
     get "/api/docs/training/v4"
 

@@ -145,19 +145,17 @@ describe Navigation::Primary, type: :component do
       context "when looking at the Training API v4 documentation" do
         let(:current_path) { "/api/docs/training/v4" }
 
-        context "when the training API feature flag is true", with_feature_flags: { enable_training_api: true } do
-          let(:expected_visible_items) do
-            {
-              "Home" => "/api/docs",
-              "Authorisation" => "/api/docs/authorisation",
-              "Hello API" => "/api/docs/hello",
-              "Training API" => "/api/docs/training/v4",
-              "Induction API" => "/api/docs/induction/v1"
-            }
-          end
-
-          it { is_expected.to eql(expected_visible_items) }
+        let(:expected_visible_items) do
+          {
+            "Home" => "/api/docs",
+            "Authorisation" => "/api/docs/authorisation",
+            "Hello API" => "/api/docs/hello",
+            "Training API" => "/api/docs/training/v4",
+            "Induction API" => "/api/docs/induction/v1"
+          }
         end
+
+        it { is_expected.to eql(expected_visible_items) }
 
         context "when the training API feature flag is false", with_feature_flags: { enable_training_api: false } do
           let(:expected_visible_items) do
