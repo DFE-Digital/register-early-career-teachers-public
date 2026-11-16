@@ -37,7 +37,7 @@ module Teachers
             Teachers::TRN::TrainingPeriods::Merge.call(periods:, destination:)
           end
 
-          merged_training_periods = overlapping_training_periods.flat_map(&:itself).uniq
+          merged_training_periods = merged_periods_from(overlapping_training_periods)
 
           training_periods.each do |period|
             next if merged_training_periods.include?(period)
@@ -53,6 +53,13 @@ module Teachers
 
         def source_and_destination_training_periods
           training_periods + successor_period.training_periods
+        end
+
+        def merged_periods_from(groups)
+          groups
+            .select { |group| non_zero_length_periods(group).length > 1 }
+            .flat_map { |group| non_zero_length_periods(group) }
+            .uniq
         end
 
         def reset_related_records!(period)

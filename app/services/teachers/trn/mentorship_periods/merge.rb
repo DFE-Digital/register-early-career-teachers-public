@@ -29,7 +29,7 @@ module Teachers
         end
 
         def periods_have_different_mentors?
-          periods.map(&:mentor).uniq.size > 1
+          non_zero_length_periods.map(&:mentor).uniq.size > 1
         end
       end
     end
