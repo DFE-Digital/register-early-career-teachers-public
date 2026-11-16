@@ -87,7 +87,7 @@ module ECTAtSchoolPeriods
         it "creates a new training period with the new lead provider" do
           change_lead_provider
 
-          new_training_period = ect_at_school_period.reload.current_or_next_training_period
+          new_training_period = ect_at_school_period.reload.training_periods.unfinished.sole
           expect(new_training_period.started_on).to eq(Date.current)
           expect(new_training_period.expression_of_interest.lead_provider)
             .to eq(lead_provider)
@@ -120,14 +120,16 @@ module ECTAtSchoolPeriods
           )
         end
 
-        it "updates the existing training period in place" do
-          expect { change_lead_provider }.not_to change(TrainingPeriod, :count)
+        it "moves the existing training period and creates a new one" do
+          expect { change_lead_provider }.to change(TrainingPeriod, :count).by(1)
 
           training_period.reload
-          expect(training_period.finished_on).to be_nil
-          expect(training_period.school_partnership).to be_nil
-          expect(training_period.expression_of_interest.lead_provider)
-            .to eq(lead_provider)
+          expect(training_period).to have_attributes(started_on: Date.current, finished_on: Date.current)
+          expect(training_period.school_partnership).to eq(school_partnership)
+
+          new_training_period = ect_at_school_period.reload.training_periods.unfinished.sole
+          expect(new_training_period).not_to eq(training_period)
+          expect(new_training_period.expression_of_interest.lead_provider).to eq(lead_provider)
         end
 
         context "when the training period has a billable declaration" do
@@ -135,16 +137,15 @@ module ECTAtSchoolPeriods
             FactoryBot.create(:declaration, :paid, training_period:)
           end
 
-          it "raises and does not change the lead provider" do
-            expect {
-              expect { change_lead_provider }
-                .to raise_error(ActiveRecord::RecordInvalid)
-            }.not_to change(TrainingPeriod, :count)
+          it "keeps the declaration on the moved period and creates a new one" do
+            expect { change_lead_provider }.to change(TrainingPeriod, :count).by(1)
 
             training_period.reload
 
+            expect(training_period).to have_attributes(started_on: Date.current, finished_on: Date.current)
             expect(training_period.school_partnership).to eq(school_partnership)
             expect(training_period.lead_provider).to eq(old_lead_provider)
+            expect(training_period.declarations.billable).to exist
           end
         end
       end
@@ -158,14 +159,17 @@ module ECTAtSchoolPeriods
           )
         end
 
-        it "updates the existing training period in place" do
-          expect { change_lead_provider }.not_to change(TrainingPeriod, :count)
+        it "moves the existing training period and creates a new one" do
+          expect { change_lead_provider }.to change(TrainingPeriod, :count).by(1)
 
           training_period.reload
           expect(training_period.started_on).to eq(ect_at_school_period.started_on)
-          expect(training_period.school_partnership).to be_nil
-          expect(training_period.expression_of_interest.lead_provider)
-            .to eq(lead_provider)
+          expect(training_period.finished_on).to eq(ect_at_school_period.started_on)
+          expect(training_period.school_partnership).to eq(school_partnership)
+
+          new_training_period = ect_at_school_period.reload.training_periods.unfinished.sole
+          expect(new_training_period).not_to eq(training_period)
+          expect(new_training_period.expression_of_interest.lead_provider).to eq(lead_provider)
         end
 
         context "when the training period has a billable declaration" do
@@ -173,16 +177,15 @@ module ECTAtSchoolPeriods
             FactoryBot.create(:declaration, :paid, training_period:)
           end
 
-          it "raises and does not change the lead provider" do
-            expect {
-              expect { change_lead_provider }
-                .to raise_error(ActiveRecord::RecordInvalid)
-            }.not_to change(TrainingPeriod, :count)
+          it "keeps the declaration on the moved period and creates a new one" do
+            expect { change_lead_provider }.to change(TrainingPeriod, :count).by(1)
 
             training_period.reload
 
+            expect(training_period.finished_on).to eq(ect_at_school_period.started_on)
             expect(training_period.school_partnership).to eq(school_partnership)
             expect(training_period.lead_provider).to eq(old_lead_provider)
+            expect(training_period.declarations.billable).to exist
           end
         end
 
@@ -206,17 +209,17 @@ module ECTAtSchoolPeriods
             FactoryBot.create(:declaration, :paid, training_period:)
           end
 
-          it "raises and does not change the school partnership" do
-            expect {
-              expect { change_lead_provider }
-                .to raise_error(ActiveRecord::RecordInvalid)
-            }.not_to change(TrainingPeriod, :count)
+          it "keeps the declaration on the moved period and creates a new one" do
+            expect { change_lead_provider }.to change(TrainingPeriod, :count).by(1)
 
             training_period.reload
 
+            expect(training_period.finished_on).to eq(ect_at_school_period.started_on)
             expect(training_period.school_partnership).to eq(school_partnership)
-            expect(training_period.school_partnership).not_to eq(new_school_partnership)
             expect(training_period.lead_provider).to eq(old_lead_provider)
+            expect(training_period.declarations.billable).to exist
+
+            expect(ect_at_school_period.reload.training_periods.unfinished.sole.school_partnership).to eq(new_school_partnership)
           end
         end
 
@@ -256,7 +259,7 @@ module ECTAtSchoolPeriods
         it "creates a new training period with an extended september schedule in 2024" do
           change_lead_provider
 
-          new_training_period = ect_at_school_period.reload.current_or_next_training_period
+          new_training_period = ect_at_school_period.reload.training_periods.unfinished.sole
           expect(new_training_period.schedule.identifier).to eq("ecf-extended-september")
           expect(new_training_period.schedule.contract_period_year).to eq(2024)
         end
@@ -365,13 +368,12 @@ module ECTAtSchoolPeriods
       end
 
       context "when the training period started in the past" do
-        it "destroys the existing training period" do
+        it "finishes the existing unconfirmed training period" do
           freeze_time
 
           change_lead_provider
 
-          expect { training_period.reload }
-            .to raise_error(ActiveRecord::RecordNotFound)
+          expect(training_period.reload.finished_on).to eq(Date.yesterday)
         end
 
         it "creates a new training period" do
@@ -410,14 +412,17 @@ module ECTAtSchoolPeriods
           )
         end
 
-        it "updates the existing training period in place" do
-          expect { change_lead_provider }.not_to change(TrainingPeriod, :count)
+        it "moves the existing training period and creates a new one" do
+          expect { change_lead_provider }.to change(TrainingPeriod, :count).by(1)
 
           training_period.reload
           expect(training_period.started_on).to eq(ect_at_school_period.started_on)
-          expect(training_period.school_partnership).to be_nil
-          expect(training_period.expression_of_interest.lead_provider)
-            .to eq(lead_provider)
+          expect(training_period.finished_on).to eq(ect_at_school_period.started_on)
+          expect(training_period.expression_of_interest.lead_provider).to eq(old_lead_provider)
+
+          new_training_period = ect_at_school_period.reload.training_periods.unfinished.sole
+          expect(new_training_period).not_to eq(training_period)
+          expect(new_training_period.expression_of_interest.lead_provider).to eq(lead_provider)
         end
 
         it "records a `teacher_training_lead_provider_updated` event" do
@@ -461,13 +466,12 @@ module ECTAtSchoolPeriods
           )
         end
 
-        it "destroys the existing training period" do
+        it "finishes and retains the existing training period" do
           freeze_time
 
           change_lead_provider
 
-          expect { training_period.reload }
-            .to raise_error(ActiveRecord::RecordNotFound)
+          expect(training_period.reload.finished_on).to eq(Date.yesterday)
         end
 
         it "creates a new training period in the current contract period" do
