@@ -19,28 +19,23 @@ describe Sessions::PersonaLoader do
       it "sets the right appropriate_body_period_id given the hub name" do
         hub = FactoryBot.create(:teaching_school_hub, name: "Umber Teaching School Hub")
         abp = FactoryBot.create(:appropriate_body_period, :teaching_school_hub, :nameless, teaching_school_hub: hub)
-
+        school = FactoryBot.create(:gias_school, :with_school, name: "Umber LS").school
         fred_jones = subject.personas.find { it.name == "Fred Jones" }
 
         aggregate_failures do
           expect(fred_jones.appropriate_body_period_id).to eql(abp.id)
-          expect(fred_jones.school_urn).to be_nil
+          expect(fred_jones.school_urn).to eql(school.urn)
           expect(fred_jones.user_id).to be_nil
+          expect(fred_jones.appropriate_body_name).to eql("Umber Teaching School Hub")
+          expect(fred_jones.school_name).to eql("Umber LS")
         end
       end
 
-      it "sets the right appropriate_body_period_id given a national body name" do
-        national_body = FactoryBot.create(:national_body, name: "Example National Body")
-        abp = FactoryBot.create(:appropriate_body_period, :national, :nameless, national_body:)
+      it "sets the right appropriate_body_period_id given the national body name" do
+        abp = FactoryBot.create(:appropriate_body_period, :istip, :nameless)
+        linda = subject.personas.find { it.name == "Linda Belcher" }
 
-        expect(loader_with("Example National Body").personas.first.appropriate_body_period_id).to eql(abp.id)
-      end
-
-      def loader_with(appropriate_body_name)
-        path = Rails.root.join("tmp/personas_#{SecureRandom.hex(4)}.yml")
-        path.write([{ "name" => "Example Persona", "appropriate_body_name" => appropriate_body_name }].to_yaml)
-
-        described_class.new(path.to_s)
+        expect(linda.appropriate_body_period_id).to eql(abp.id)
       end
     end
 

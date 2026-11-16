@@ -171,11 +171,10 @@ class School < ApplicationRecord
     ).uniq
   end
 
-  # RIAB has remodelled and schools and hubs now link directly to appropriate body periods
-  # including in active appropriate bodies, imported from legacy DQT data, which will not
-  # have an DSI record.
+  # A school reaches its appropriate body period through its DfE Sign-in organisation, so a period
+  # imported from legacy DQT data, having no DSI record, cannot be reached here.
   #
-  # OPTIMIZE: there is potential to refactor as a school may link to multiple, but not concurrent, periods.
+  # OPTIMIZE: a school may link to multiple, but not concurrent, periods.
   # @return [AppropriateBodyPeriod]
   def teaching_school_hub = dfe_sign_in_organisation&.appropriate_body_period
 

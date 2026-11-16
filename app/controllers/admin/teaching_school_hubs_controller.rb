@@ -3,7 +3,7 @@ class Admin::TeachingSchoolHubsController < AdminController
 
   def index
     @hubs_with_multiple_appropriate_body_periods, @other_hubs =
-      hubs.order(:name).partition(&:has_multiple_active_appropriate_body_periods?)
+      hubs.order(:name).partition(&:has_multiple_ongoing_appropriate_body_periods?)
   end
 
   def show
@@ -15,6 +15,7 @@ private
   def hubs
     TeachingSchoolHub.strict_loading.includes(
       appropriate_body_periods: [
+        :teaching_school_hub,
         { provisioning_school: :gias_school },
         { region_awards: [:region, { school: :gias_school }] }
       ]

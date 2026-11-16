@@ -19,6 +19,18 @@ RSpec.describe PendingInductionSubmissionBatch do
         expect(described_class.for_appropriate_body_period(appropriate_body_period)).to contain_exactly(batch1, batch2, batch3)
       end
     end
+
+    describe ".with_appropriate_body_display_names" do
+      let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, :nameless, :teaching_school_hub) }
+
+      before { FactoryBot.create(:pending_induction_submission_batch, :claim, appropriate_body_period:) }
+
+      it "satisfies strict loading and does not raise an error" do
+        batches = described_class.with_appropriate_body_display_names
+
+        expect { batches.map { it.appropriate_body_period.display_name } }.not_to raise_error
+      end
+    end
   end
 
   describe "class methods" do

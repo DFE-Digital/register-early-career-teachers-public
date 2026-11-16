@@ -35,13 +35,7 @@ module Sessions
       end
 
       # @return [String]
-      def organisation_name
-        if has_multiple_roles?
-          "#{appropriate_body_period.display_name} (appropriate body)"
-        else
-          appropriate_body_period.display_name
-        end
-      end
+      def organisation_name = has_multiple_roles? ? "#{appropriate_body_period.display_name} (appropriate body)" : appropriate_body_period.display_name
 
       # @return [String]
       def sign_out_path

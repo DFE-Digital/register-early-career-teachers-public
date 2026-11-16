@@ -40,6 +40,34 @@ RSpec.describe TeachingSchoolHub do
         it { is_expected.to be_valid }
       end
     end
+
+    context "when nullable_appropriate_body_period_names is on" do
+      subject(:teaching_school_hub) { FactoryBot.create(:teaching_school_hub, name: "North West Hub") }
+
+      before do
+        allow(Rails.application.config).to receive(:nullable_appropriate_body_period_names).and_return(true)
+      end
+
+      context "and an ongoing period has no name override" do
+        before do
+          FactoryBot.create(:appropriate_body_period, :nameless,
+                            teaching_school_hub:,
+                            started_on: 1.year.ago)
+        end
+
+        it { is_expected.to be_valid }
+      end
+
+      context "and the name collides with an existing active body" do
+        before do
+          teaching_school_hub
+          FactoryBot.create(:appropriate_body_period, :national, :nameless,
+                            national_body: FactoryBot.create(:national_body, name: "North West Hub"))
+        end
+
+        it { is_expected.to have_error(:name, "is already used by an ongoing appropriate body.") }
+      end
+    end
   end
 
   describe "normalizing" do
@@ -108,7 +136,7 @@ RSpec.describe TeachingSchoolHub do
     end
   end
 
-  describe "#has_multiple_active_appropriate_body_periods?" do
+  describe "#has_multiple_ongoing_appropriate_body_periods?" do
     subject(:teaching_school_hub) { FactoryBot.create(:teaching_school_hub) }
 
     let(:provisioning_school_1) { FactoryBot.create(:school, :eligible) }
@@ -134,28 +162,40 @@ RSpec.describe TeachingSchoolHub do
                         finished_on: 1.year.ago)
     end
 
-    context "when the hub has a single active period" do
+    context "when the hub has a single ongoing period" do
       before { first_period }
 
-      it { is_expected.not_to have_multiple_active_appropriate_body_periods }
+      it { is_expected.not_to have_multiple_ongoing_appropriate_body_periods }
     end
 
-    context "when the hub has more than one active period" do
+    context "when the hub has more than one ongoing period" do
       before do
         first_period
         second_period
       end
 
-      it { is_expected.to have_multiple_active_appropriate_body_periods }
+      it { is_expected.to have_multiple_ongoing_appropriate_body_periods }
     end
 
-    context "when the hub has active and inactive periods" do
+    context "when the hub has ongoing and finished periods" do
       before do
         first_period
         inactive_second_period
       end
 
-      it { is_expected.not_to have_multiple_active_appropriate_body_periods }
+      it { is_expected.not_to have_multiple_ongoing_appropriate_body_periods }
+    end
+
+    context "when one ongoing period cannot be signed in to" do
+      before do
+        FactoryBot.create(:appropriate_body_period, :teaching_school_hub, :cannot_sign_in,
+                          teaching_school_hub:,
+                          provisioning_school: provisioning_school_1,
+                          name: "First Body")
+        second_period
+      end
+
+      it { is_expected.to have_multiple_ongoing_appropriate_body_periods }
     end
   end
 end

@@ -144,15 +144,25 @@ RSpec.describe Admin::AppropriateBodies::DescriptionComponent, type: :component 
   end
 
   describe "rendered template" do
-    context "when the hub has a single appropriate body" do
+    context "when the period has no name of its own" do
       before { render_inline(component) }
 
       it "renders the description in a GOV.UK paragraph" do
         expect(rendered_content).to have_selector("p.govuk-body", text: component.description)
       end
 
-      it "omits the name, which would repeat the page heading" do
+      it "omits the name, because the hub name would repeat the page heading" do
         expect(rendered_content).not_to have_text("#{component.display_name}:")
+      end
+    end
+
+    context "when the hub runs a single period that has a name of its own" do
+      let(:name) { "Acme TSH Studio" }
+
+      before { render_inline(component) }
+
+      it "shows the name, even though nothing runs concurrently with it" do
+        expect(rendered_content).to have_selector("p.govuk-body strong", text: "Acme TSH Studio:")
       end
     end
 

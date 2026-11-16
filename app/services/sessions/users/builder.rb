@@ -48,8 +48,8 @@ module Sessions
         end
 
         if persona?
-          return school_persona if school_persona?
           return appropriate_body_persona if appropriate_body_persona?
+          return school_persona if school_persona?
           return dfe_persona if dfe_persona?
 
           raise(UnknownPersonaType)

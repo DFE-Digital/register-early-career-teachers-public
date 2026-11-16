@@ -6,8 +6,8 @@ module Admin
       delegate :display_name,
                :provisioning_school,
                :teaching_school_hub,
-               :local_authority,
-               :national_body,
+               :local_authority?,
+               :teaching_school?,
                :region_awards,
                to: :appropriate_body_period
 
@@ -16,7 +16,6 @@ module Admin
         @appropriate_body_period = appropriate_body_period
       end
 
-      # @return [String]
       def description
         return "Pre-dates regional awards" if legacy_body?
         return if teaching_school_hub.blank?
@@ -25,26 +24,14 @@ module Admin
         "Provisioned by #{provisioning_school.name}, #{region_summary}"
       end
 
-      # @return [Boolean]
-      def distinct_period_names? = named? && hub_has_multiple_periods?
+      def named? = appropriate_body_period.name.present?
 
     private
 
-      # @return [Boolean]
-      def hub_has_multiple_periods? = teaching_school_hub&.has_multiple_active_appropriate_body_periods? || false
+      def legacy_body? = local_authority? || teaching_school?
 
-      # @return [Boolean] LA or TS, only NB and TSH are operational
-      def legacy_body?
-        local_authority.present? || (teaching_school_hub.nil? && provisioning_school.present?)
-      end
-
-      # @return [Boolean]
-      def named? = appropriate_body_period.name.present?
-
-      # @return [Integer]
       def region_count = region_awards.count(&:active?)
 
-      # @return [String]
       def region_summary
         return "no regions awarded" if region_count.zero?
 

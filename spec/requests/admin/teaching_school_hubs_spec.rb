@@ -71,7 +71,7 @@ RSpec.describe "Admin::TeachingSchoolHubsController", type: :request do
                             teaching_school_hub: network,
                             provisioning_school: provisioning_school_3,
                             name: "Large Hub Body 2")
-          FactoryBot.create(:appropriate_body_period, :teaching_school_hub,
+          FactoryBot.create(:appropriate_body_period, :teaching_school_hub, :nameless,
                             teaching_school_hub: other_hub,
                             provisioning_school: provisioning_school_4,
                             name: nil)
