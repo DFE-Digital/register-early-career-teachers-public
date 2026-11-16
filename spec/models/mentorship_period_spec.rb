@@ -97,6 +97,17 @@ describe MentorshipPeriod do
             end
           end
         end
+
+        context "with zero-length siblings" do
+          let(:school) { FactoryBot.create(:school) }
+          let(:mentee) { FactoryBot.create(:ect_at_school_period, :unfinished, started_on: 1.year.ago, school:) }
+          let(:mentor) { FactoryBot.create(:mentor_at_school_period, :unfinished, started_on: 1.year.ago, school:) }
+          let(:period_type) { :mentorship_period }
+          let(:traits) { [] }
+          let(:attrs) { { mentee:, mentor: } }
+
+          it_behaves_like "a period which allows zero-length periods to overlap"
+        end
       end
     end
 

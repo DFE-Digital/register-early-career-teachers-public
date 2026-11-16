@@ -202,6 +202,14 @@ describe MentorAtSchoolPeriod do
             end
           end
         end
+
+        context "with zero-length siblings" do
+          let(:period_type) { :mentor_at_school_period }
+          let(:traits) { [] }
+          let(:attrs) { { teacher:, school: } }
+
+          it_behaves_like "a period which allows zero-length periods to overlap"
+        end
       end
     end
   end

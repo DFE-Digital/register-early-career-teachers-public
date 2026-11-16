@@ -309,6 +309,15 @@ describe TrainingPeriod do
             end
           end
         end
+
+        context "with zero-length siblings" do
+          let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :unfinished, started_on: 1.year.ago) }
+          let(:period_type) { :training_period }
+          let(:traits) { %i[school_led for_ect] }
+          let(:attrs) { { ect_at_school_period: } }
+
+          it_behaves_like "a period which allows zero-length periods to overlap"
+        end
       end
 
       context "with mentor" do
@@ -352,6 +361,15 @@ describe TrainingPeriod do
               end
             end
           end
+        end
+
+        context "with zero-length siblings" do
+          let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :unfinished, started_on: 1.year.ago) }
+          let(:period_type) { :training_period }
+          let(:traits) { [:for_mentor] }
+          let(:attrs) { { mentor_at_school_period: } }
+
+          it_behaves_like "a period which allows zero-length periods to overlap"
         end
       end
     end

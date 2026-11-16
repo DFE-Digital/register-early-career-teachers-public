@@ -1,5 +1,6 @@
 class TrainingPeriod < ApplicationRecord
   include Interval
+  include OverlappingZeroLengthSiblings
   include DeclarativeUpdates
 
   MENTOR_ONLY_WITHDRAWAL_REASONS = %w[mentor_no_longer_being_mentor].freeze
