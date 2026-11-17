@@ -226,6 +226,19 @@ RSpec.describe Teachers::TRN::TrainingPeriods::Merge do
         expect(destination_period.reload.expression_of_interest).to eq(expression_of_interest)
       end
 
+      it "records a school partnership assignment event" do
+        service
+
+        event = Event.where(
+          event_type: "training_period_assigned_to_school_partnership"
+        ).sole
+
+        expect(event).to have_attributes(
+          training_period: destination_period,
+          school_partnership:
+        )
+      end
+
       it "records the original partnerships and the retained partnership in the merge event" do
         original_partnerships = [
           {
