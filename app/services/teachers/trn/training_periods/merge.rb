@@ -42,7 +42,6 @@ module Teachers
 
         def training_periods_are_incompatible?
           incompatible_attributes.each do |attribute|
-            next if attribute == :expression_of_interest_id && matching_school_partnership?
             next if %i[expression_of_interest_id school_partnership_id].include?(attribute) &&
               compatible_school_partnership_and_expressions_of_interest?
 
@@ -52,12 +51,6 @@ module Teachers
               raise CannotMergePeriods, "Periods have different #{attribute_name}"
             end
           end
-        end
-
-        def matching_school_partnership?
-          school_partnership_ids = periods.map(&:school_partnership_id).uniq
-
-          school_partnership_ids.size == 1 && school_partnership_ids.first.present?
         end
 
         def compatible_school_partnership_and_expressions_of_interest?
