@@ -2569,6 +2569,8 @@ RSpec.describe Events::Record do
           provider_name:,
           schedule: "ecf-standard-september",
           started_on: first_period_started_on,
+          expression_of_interest_id: first_period.expression_of_interest_id,
+          school_partnership_id: first_period.school_partnership_id,
           id: first_period.id },
         { finished_on: second_period_finished_on,
           training_programme: "provider_led",
@@ -2576,6 +2578,8 @@ RSpec.describe Events::Record do
           provider_name:,
           schedule: "ecf-standard-september",
           started_on: second_period_started_on,
+          expression_of_interest_id: second_period.expression_of_interest_id,
+          school_partnership_id: second_period.school_partnership_id,
           id: second_period.id }
       ]
     end
@@ -2591,7 +2595,10 @@ RSpec.describe Events::Record do
             event_type: "teacher_training_periods_merged",
             teacher:,
             training_period: successor_period,
-            metadata: { periods: formatted_periods }.as_json,
+            metadata: {
+              periods: formatted_periods,
+              retained_school_partnership_id: successor_period.school_partnership_id
+            }.as_json,
             heading: "Rhys Ifans's training periods with #{provider_name} from 2025-01-01 were merged into a single period",
             happened_at: Time.zone.now,
             **author_params
@@ -2609,7 +2616,10 @@ RSpec.describe Events::Record do
             event_type: "teacher_training_periods_merged",
             teacher:,
             training_period: successor_period,
-            metadata: { periods: formatted_periods }.as_json,
+            metadata: {
+              periods: formatted_periods,
+              retained_school_partnership_id: successor_period.school_partnership_id
+            }.as_json,
             heading: "Rhys Ifans's training periods with #{provider_name} between 2025-01-01 and 2025-12-31 were merged into a single period",
             happened_at: Time.zone.now,
             **author_params
@@ -2663,6 +2673,8 @@ RSpec.describe Events::Record do
             provider_name: nil,
             schedule: nil,
             started_on: first_period_started_on,
+            expression_of_interest_id: nil,
+            school_partnership_id: nil,
             id: first_period.id },
           { finished_on: second_period_finished_on,
             training_programme: "school_led",
@@ -2670,6 +2682,8 @@ RSpec.describe Events::Record do
             provider_name: nil,
             schedule: nil,
             started_on: second_period_started_on,
+            expression_of_interest_id: nil,
+            school_partnership_id: nil,
             id: second_period.id }
         ]
       end
@@ -2682,7 +2696,10 @@ RSpec.describe Events::Record do
             event_type: "teacher_training_periods_merged",
             teacher:,
             training_period: successor_period,
-            metadata: { periods: formatted_periods }.as_json,
+            metadata: {
+              periods: formatted_periods,
+              retained_school_partnership_id: successor_period.school_partnership_id
+            }.as_json,
             heading: "Rhys Ifans's school-led training periods between 2025-01-01 and 2025-12-31 were merged into a single period",
             happened_at: Time.zone.now,
             **author_params
@@ -2728,7 +2745,10 @@ RSpec.describe Events::Record do
             event_type: "teacher_training_periods_merged",
             teacher:,
             training_period: successor_period,
-            metadata: { periods: formatted_periods }.as_json,
+            metadata: {
+              periods: formatted_periods,
+              retained_school_partnership_id: successor_period.school_partnership_id
+            }.as_json,
             heading: "Rhys Ifans's training periods with #{provider_name} between 2025-01-01 and 2025-12-31 were merged into a single period",
             happened_at: Time.zone.now,
             **author_params

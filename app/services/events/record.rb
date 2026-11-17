@@ -722,7 +722,14 @@ module Events
       ).record_event!
     end
 
-    def self.record_teacher_training_periods_merged!(author:, teacher:, successor_period:, periods:, happened_at: Time.zone.now)
+    def self.record_teacher_training_periods_merged!(
+      author:,
+      teacher:,
+      successor_period:,
+      periods:,
+      original_period_associations: nil,
+      happened_at: Time.zone.now
+    )
       event_type = :teacher_training_periods_merged
       teacher_name = Teachers::Name.new(teacher).full_name
 
@@ -741,6 +748,15 @@ module Events
                                     end
 
       formatted_periods = periods.collect do |period|
+        original_associations = if original_period_associations
+                                  original_period_associations.fetch(period.id)
+                                else
+                                  {
+                                    expression_of_interest_id: period.expression_of_interest_id,
+                                    school_partnership_id: period.school_partnership_id
+                                  }
+                                end
+
         {
           training_programme: period.training_programme,
           contract_period: period.schedule&.contract_period_year,
@@ -748,6 +764,8 @@ module Events
           provider_name:,
           started_on: period.started_on,
           finished_on: period.finished_on,
+          expression_of_interest_id: original_associations.fetch(:expression_of_interest_id),
+          school_partnership_id: original_associations.fetch(:school_partnership_id),
           id: period.id,
         }
       end
@@ -760,9 +778,20 @@ module Events
 
       heading = "#{teacher_name}'s #{training_period_description} #{time_period} were merged into a single period"
 
-      metadata = { periods: formatted_periods }
+      metadata = {
+        periods: formatted_periods,
+        retained_school_partnership_id: successor_period.school_partnership_id
+      }
 
-      new(event_type:, author:, heading:, teacher:, training_period: successor_period, metadata:, happened_at:).record_event!
+      new(
+        event_type:,
+        author:,
+        heading:,
+        teacher:,
+        training_period: successor_period,
+        metadata:,
+        happened_at:
+      ).record_event!
     end
 
     def self.record_teacher_mentorship_periods_merged!(author:, teacher:, successor_period:, periods:, happened_at: Time.zone.now)
