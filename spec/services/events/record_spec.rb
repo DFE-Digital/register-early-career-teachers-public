@@ -2559,6 +2559,14 @@ RSpec.describe Events::Record do
 
     let(:successor_period) { second_period }
     let(:periods) { [first_period, second_period] }
+    let(:original_period_associations) do
+      periods.to_h do |period|
+        [
+          period.id,
+          period.slice(:expression_of_interest_id, :school_partnership_id)
+        ]
+      end
+    end
     let(:provider_name) { "#{successor_period.lead_provider_name} & #{successor_period.delivery_partner_name}" }
 
     let(:formatted_periods) do
@@ -2589,7 +2597,7 @@ RSpec.describe Events::Record do
 
       it "records an event with ongoing period message" do
         freeze_time do
-          Events::Record.record_teacher_training_periods_merged!(author:, teacher:, periods:, successor_period:)
+          Events::Record.record_teacher_training_periods_merged!(author:, teacher:, periods:, successor_period:, original_period_associations:)
 
           expect(Event.sole).to have_attributes(
             event_type: "teacher_training_periods_merged",
@@ -2610,7 +2618,7 @@ RSpec.describe Events::Record do
     context "when the successor period is finished" do
       it "records an event with between two dates message" do
         freeze_time do
-          Events::Record.record_teacher_training_periods_merged!(author:, teacher:, periods:, successor_period:)
+          Events::Record.record_teacher_training_periods_merged!(author:, teacher:, periods:, successor_period:, original_period_associations:)
 
           expect(Event.sole).to have_attributes(
             event_type: "teacher_training_periods_merged",
@@ -2690,7 +2698,7 @@ RSpec.describe Events::Record do
 
       it "records an event with school-led message" do
         freeze_time do
-          Events::Record.record_teacher_training_periods_merged!(author:, teacher:, periods:, successor_period:)
+          Events::Record.record_teacher_training_periods_merged!(author:, teacher:, periods:, successor_period:, original_period_associations:)
 
           expect(Event.sole).to have_attributes(
             event_type: "teacher_training_periods_merged",
@@ -2739,7 +2747,7 @@ RSpec.describe Events::Record do
 
       it "records an event with an expression of interest message" do
         freeze_time do
-          Events::Record.record_teacher_training_periods_merged!(author:, teacher:, periods:, successor_period:)
+          Events::Record.record_teacher_training_periods_merged!(author:, teacher:, periods:, successor_period:, original_period_associations:)
 
           expect(Event.sole).to have_attributes(
             event_type: "teacher_training_periods_merged",

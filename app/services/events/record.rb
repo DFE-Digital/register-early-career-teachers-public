@@ -727,7 +727,7 @@ module Events
       teacher:,
       successor_period:,
       periods:,
-      original_period_associations: nil,
+      original_period_associations:,
       happened_at: Time.zone.now
     )
       event_type = :teacher_training_periods_merged
@@ -748,14 +748,7 @@ module Events
                                     end
 
       formatted_periods = periods.collect do |period|
-        original_associations = if original_period_associations
-                                  original_period_associations.fetch(period.id)
-                                else
-                                  {
-                                    expression_of_interest_id: period.expression_of_interest_id,
-                                    school_partnership_id: period.school_partnership_id
-                                  }
-                                end
+        original_associations = original_period_associations.fetch(period.id)
 
         {
           training_programme: period.training_programme,

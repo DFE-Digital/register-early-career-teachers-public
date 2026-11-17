@@ -45,7 +45,11 @@ RSpec.describe Teachers::TRN::TrainingPeriods::Merge do
     end
 
     context "when the periods are for different partnerships" do
-      let(:other_school_partnership) { FactoryBot.create(:school_partnership, :for_year, year: 2024) }
+      let(:other_school_partnership) do
+        FactoryBot.create(:school_partnership, :with_framework_agreement,
+                          school:,
+                          framework_agreement: school_partnership.framework_agreement)
+      end
       let(:destination_attrs) do
         { ect_at_school_period: destination_ect_period, school_partnership: other_school_partnership }
       end
@@ -144,6 +148,22 @@ RSpec.describe Teachers::TRN::TrainingPeriods::Merge do
         expect(destination_period.reload.school_partnership).to eq(school_partnership)
       end
 
+      it "records the retained school partnership in the merge event" do
+        service
+
+        event = Event.where(event_type: "teacher_training_periods_merged").sole
+
+        expect(event.metadata["retained_school_partnership_id"]).to eq(school_partnership.id)
+      end
+
+      it "does not record a school partnership assignment event" do
+        expect {
+          service
+        }.not_to(change do
+          Event.where(event_type: "training_period_assigned_to_school_partnership").count
+        end)
+      end
+
       context "when the expression of interest has a different lead provider" do
         let(:other_lead_provider) { FactoryBot.create(:lead_provider) }
 
@@ -198,6 +218,12 @@ RSpec.describe Teachers::TRN::TrainingPeriods::Merge do
         service
 
         expect(destination_period.reload.school_partnership).to eq(school_partnership)
+      end
+
+      it "retains the expression of interest on the destination period" do
+        service
+
+        expect(destination_period.reload.expression_of_interest).to eq(expression_of_interest)
       end
 
       it "records the original partnerships and the retained partnership in the merge event" do

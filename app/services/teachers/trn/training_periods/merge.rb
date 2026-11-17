@@ -19,10 +19,7 @@ module Teachers
           @original_period_associations = periods.to_h do |period|
             [
               period.id,
-              period.attributes.symbolize_keys.slice(
-                :expression_of_interest_id,
-                :school_partnership_id
-              )
+              period.slice(:expression_of_interest_id, :school_partnership_id)
             ]
           end
         end
@@ -60,11 +57,8 @@ module Teachers
           school_partnership = school_partnerships.first
 
           periods.all? do |period|
-            next true if period.school_partnership == school_partnership
-            next false if period.expression_of_interest.blank?
-
-            period.expression_of_interest.lead_provider == school_partnership.lead_provider &&
-              period.expression_of_interest.contract_period == school_partnership.contract_period
+            period.school_partnership == school_partnership ||
+              period.expression_of_interest == school_partnership.framework_agreement
           end
         end
 
@@ -79,6 +73,28 @@ module Teachers
             periods:,
             author:,
             original_period_associations: @original_period_associations
+          )
+
+          record_school_partnership_assigned!
+        end
+
+        def record_school_partnership_assigned!
+          original_associations = @original_period_associations.fetch(successor_period.id)
+          school_partnership = successor_period.school_partnership
+
+          return if school_partnership.blank?
+          return if original_associations.fetch(:school_partnership_id) == school_partnership.id
+
+          Events::Record.record_training_period_assigned_to_school_partnership_event!(
+            author:,
+            training_period: successor_period,
+            ect_at_school_period: successor_period.ect_at_school_period,
+            mentor_at_school_period: successor_period.mentor_at_school_period,
+            teacher: successor_period.teacher,
+            school_partnership:,
+            lead_provider: school_partnership.lead_provider,
+            delivery_partner: school_partnership.delivery_partner,
+            school: school_partnership.school
           )
         end
 
