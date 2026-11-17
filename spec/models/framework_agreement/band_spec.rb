@@ -14,6 +14,15 @@ RSpec.describe FrameworkAgreement::Band, type: :model do
 
     it { is_expected.to validate_presence_of(:capacity).with_message("Capacity is required") }
     it { is_expected.to validate_numericality_of(:capacity).is_greater_than(0).only_integer.with_message("Capacity must be a number greater than zero") }
+
+    it "allows reducing capacity below the existing payment-declaration count" do
+      band = FactoryBot.create(:framework_agreement_band, framework_agreement:, capacity: 9)
+      FactoryBot.create_list(:declaration, 8, :paid, framework_agreement:)
+
+      band.update!(capacity: 2)
+
+      expect(band.reload.capacity).to eq 2
+    end
   end
 
   describe "immutability" do
