@@ -142,4 +142,5 @@ _eloy_casagrande = teacher(next_trn, "Eloy Casagrande") do
   ect_at_school_period(mallory_towers, "2025-09-01", school_reported_appropriate_body: golden_leaf_teaching_school_hub) do
     school_led_training_period("2025-09-01")
   end
+  induction_period(golden_leaf_teaching_school_hub, "2025-09-01")
 end
