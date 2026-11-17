@@ -9,7 +9,7 @@ FactoryBot.define do
     body_type { "teaching_school_hub" }
     association :teaching_school_hub
     association :provisioning_school, factory: :school
-    started_on { 1.year.ago }
+    started_on { TeachingSchoolHub::ACTED_AS_APPROPRIATE_BODY_DATES[:introduced_on] }
 
     trait :nameless do
       initialize_with { AppropriateBodyPeriod.new }
