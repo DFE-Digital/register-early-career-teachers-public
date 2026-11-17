@@ -612,6 +612,67 @@ describe AppropriateBodyPeriod do
     end
   end
 
+  describe "covering induction periods" do
+    subject(:appropriate_body_period) do
+      FactoryBot.create(:appropriate_body_period, :teaching_school_hub, :nameless,
+                        teaching_school_hub:,
+                        provisioning_school:,
+                        started_on: body_started_on,
+                        finished_on: body_finished_on)
+    end
+
+    let(:teaching_school_hub) { FactoryBot.create(:teaching_school_hub) }
+    let(:provisioning_school) { FactoryBot.create(:school, :eligible) }
+    let(:body_started_on) { Date.new(2021, 9, 1) }
+    let(:body_finished_on) { Date.new(2024, 8, 31) }
+
+    context "when it has no induction periods" do
+      it { is_expected.to be_valid }
+    end
+
+    context "when every induction period is within the appropriate body period" do
+      before do
+        FactoryBot.create(:induction_period,
+                          appropriate_body_period:,
+                          started_on: body_started_on,
+                          finished_on: body_finished_on)
+        appropriate_body_period.reload
+      end
+
+      it { is_expected.to be_valid }
+    end
+
+    context "when an induction period ends after the appropriate body has closed" do
+      before do
+        # The child rule refuses this, so the row is written as the data cleanse would find it.
+        FactoryBot.build(:induction_period,
+                         appropriate_body_period:,
+                         started_on: body_started_on,
+                         finished_on: body_finished_on + 1.day).save!(validate: false)
+        appropriate_body_period.reload
+      end
+
+      it do
+        expect(appropriate_body_period).not_to be_valid
+        expect(appropriate_body_period).to have_error(:base, "Date range does not cover all the induction periods")
+      end
+    end
+
+    context "when an induction period is unfinished but the appropriate body has closed" do
+      before do
+        FactoryBot.create(:induction_period, :unfinished,
+                          appropriate_body_period:,
+                          started_on: body_started_on)
+        appropriate_body_period.reload
+      end
+
+      it do
+        expect(appropriate_body_period).not_to be_valid
+        expect(appropriate_body_period).to have_error(:base, "Date range does not cover all the induction periods")
+      end
+    end
+  end
+
   describe "teaching school hub regional awards" do
     let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, :teaching_school_hub) }
     let(:school) { FactoryBot.create(:school) }
