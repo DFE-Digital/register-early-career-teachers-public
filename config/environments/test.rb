@@ -79,6 +79,13 @@ Rails.application.configure do
   config.enable_test_guidance = false
   config.active_job.queue_adapter = :test
 
+  # Reduce logging in tests to speed them up!
+  unless ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_TEST_LOGGING", false))
+    config.active_record.verbose_query_logs = false
+    config.active_record.query_log_tags_enabled = false
+    config.log_level = :fatal
+  end
+
   # Custom config
   config.bypass_filter_parameter_logging = ENV.fetch("ENABLE_BYPASS_FILTER_PARAMETER_LOGGING", false)
 end
