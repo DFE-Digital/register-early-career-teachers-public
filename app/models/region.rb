@@ -4,10 +4,11 @@ class Region < ApplicationRecord
            inverse_of: :region,
            dependent: :destroy
 
-  has_one :active_award,
-          -> { active },
-          class_name: "Region::Award",
-          dependent: nil
+  has_many :active_awards,
+           -> { active },
+           class_name: "Region::Award",
+           dependent: nil,
+           inverse_of: :region
 
   # Validations
   validates :code, presence: true, uniqueness: true
