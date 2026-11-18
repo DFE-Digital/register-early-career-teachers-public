@@ -319,6 +319,17 @@ erDiagram
     string name
     datetime updated_at
   }
+  LeadProviderMentorshipStatus {
+    integer id
+    integer mentorship_period_id
+    integer lead_provider_id
+    enum status
+    enum reason
+    datetime created_at
+    datetime updated_at
+  }
+  LeadProviderMentorshipStatus }o--|| MentorshipPeriod : belongs_to
+  LeadProviderMentorshipStatus }o--|| LeadProvider : belongs_to
   LeadProviderDeliveryPartnership {
     integer id
     datetime created_at

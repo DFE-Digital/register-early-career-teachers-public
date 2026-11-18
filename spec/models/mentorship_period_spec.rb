@@ -13,6 +13,7 @@ describe MentorshipPeriod do
     it { is_expected.to belong_to(:mentee).class_name("ECTAtSchoolPeriod").with_foreign_key(:ect_at_school_period_id).inverse_of(:mentorship_periods) }
     it { is_expected.to belong_to(:mentor).class_name("MentorAtSchoolPeriod").with_foreign_key(:mentor_at_school_period_id).inverse_of(:mentorship_periods) }
     it { is_expected.to have_many(:events) }
+    it { is_expected.to have_many(:lead_provider_mentorship_statuses).dependent(:destroy) }
   end
 
   describe "validations" do
