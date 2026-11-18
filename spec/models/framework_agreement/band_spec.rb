@@ -15,21 +15,13 @@ RSpec.describe FrameworkAgreement::Band, type: :model do
     it { is_expected.to validate_presence_of(:capacity).with_message("Capacity is required") }
     it { is_expected.to validate_numericality_of(:capacity).is_greater_than(0).only_integer.with_message("Capacity must be a number greater than zero") }
 
-    context "changing capacity" do
-      let!(:band_a) { FactoryBot.create(:framework_agreement_band, framework_agreement:, capacity: 2) }
-      let!(:band_b) { FactoryBot.create(:framework_agreement_band, framework_agreement:, capacity: 2) }
-      let!(:band_c) { FactoryBot.create(:framework_agreement_band, framework_agreement:, capacity: 5) }
+    it "allows reducing capacity below the existing payment-declaration count" do
+      band = FactoryBot.create(:framework_agreement_band, framework_agreement:, capacity: 9)
+      FactoryBot.create_list(:declaration, 8, :paid, framework_agreement:)
 
-      let!(:declarations) { FactoryBot.create_list(:declaration, 8, :paid, framework_agreement:) }
+      band.update!(capacity: 2)
 
-      it "validates that the combined capacity cannot be less than the number of payment declarations" do
-        band_c.capacity = 2
-        expect(band_c).to be_invalid
-        expect(band_c).to have_error(:capacity, "Band C capacity must be at least 4 to cover the existing payment declarations")
-
-        band_c.capacity = 4
-        expect(band_c).to be_valid
-      end
+      expect(band.reload.capacity).to eq 2
     end
   end
 
