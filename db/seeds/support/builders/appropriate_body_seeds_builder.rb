@@ -115,15 +115,7 @@ module AppropriateBodySeeds
     def region(code, districts:, lead_school:, deactivated_on: nil, reason: nil)
       raise ArgumentError, "a closed award needs a reason" if deactivated_on.present? && reason.blank?
 
-      # db/seeds/regions.rb owns the real regions and runs first. An invented code is created
-      # here; a real one must already agree, or the two files have drifted apart.
-      region = Region.find_or_initialize_by(code:)
-      if region.new_record?
-        region.update!(districts: Array(districts))
-      elsif region.districts != Array(districts)
-        raise ArgumentError, "region #{code} covers #{region.districts.to_sentence}, not #{Array(districts).to_sentence}"
-      end
-
+      region = Region.create_with(districts:).find_or_create_by!(code:)
       award = Region::Award.find_or_initialize_by(appropriate_body_period: @period, region:)
       award.assign_attributes(
         school: lookup_school(lead_school),
