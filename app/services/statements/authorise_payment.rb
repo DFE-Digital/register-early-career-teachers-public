@@ -4,6 +4,12 @@ module Statements
 
     attr_reader :statement, :author
 
+    def self.check_payable_statements_for_errors
+      Statement.with_status(:payable).find_each do |statement|
+        new(statement:, author: Events::SystemAuthor.new).report_invalid_declarations
+      end
+    end
+
     def initialize(statement:, author:)
       @statement = statement
       @author = author
@@ -16,6 +22,17 @@ module Statements
         settle_declarations!
         refund_declarations!
         settle_statement!
+      end
+    end
+
+    def report_invalid_declarations
+      declarations_payable.or(declarations_awaiting_clawback).find_each do |declaration|
+        next if declaration.valid?
+
+        Sentry.with_scope do |scope|
+          scope.set_context("errors", declaration.errors.messages) if scope
+          Sentry.capture_message("[AuthorisePayment-Check] - Declaration [#{declaration.id}] invalid on statement [#{statement.id}]")
+        end
       end
     end
 
