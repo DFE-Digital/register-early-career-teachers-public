@@ -140,7 +140,7 @@ module Sessions
 
       # @return [OmniAuth::AuthHash]
       def organisation
-        @organisation ||= payload.extra.raw_info.organisation
+        @organisation ||= OmniAuth::AuthHash.new(payload.extra.raw_info.to_hash).organisation
       end
 
       attr_reader :payload

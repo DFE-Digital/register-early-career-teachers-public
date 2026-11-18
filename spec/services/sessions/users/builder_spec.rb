@@ -27,7 +27,7 @@ RSpec.describe Sessions::Users::Builder do
               urn: organisation_urn,
               name: (Faker::Company.name if organisation_id)
             }
-          }
+          }.with_indifferent_access
         }
       )
     end
@@ -59,6 +59,15 @@ RSpec.describe Sessions::Users::Builder do
         it "records the DfE Sign In organisation" do
           session_user
           expect(recorder).to have_received(:call)
+        end
+
+        it "records nested organisation details from the DfE Sign In payload" do
+          allow(recorder_class).to receive(:new).and_call_original
+          omniauth_payload.extra.raw_info["organisation"]["status"] = { name: "Open" }
+
+          session_user
+
+          expect(DfESignInOrganisation.find_by!(uuid: organisation_id).status).to eq("Open")
         end
       end
 
