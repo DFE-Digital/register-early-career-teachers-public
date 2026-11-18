@@ -13,7 +13,7 @@ module Admin
       end
 
       # @return [Array<AppropriateBodyPeriod>]
-      def periods = appropriate_body_periods.sort_by { it.display_name.to_s }
+      def ongoing_periods = appropriate_body_periods.select(&:unfinished?)
     end
   end
 end

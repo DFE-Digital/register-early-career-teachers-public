@@ -26,7 +26,7 @@ RSpec.describe Admin::TeachingSchoolHubs::SummaryCardComponent, type: :component
 
       it "describes the body, naming its provisioning school" do
         expect(rendered_content).to have_selector("p.govuk-body",
-                                                  text: "Provisioned by #{provisioning_school_1.name}")
+                                                  text: "AB duties performed by #{provisioning_school_1.name}")
       end
     end
 
@@ -63,9 +63,9 @@ RSpec.describe Admin::TeachingSchoolHubs::SummaryCardComponent, type: :component
         render_inline(component)
       end
 
-      it "renders the periods in name order" do
-        expect(rendered_content).to have_text(/Acme TSH East.*Acme TSH West/m)
-        expect(rendered_content).not_to have_text(/Acme TSH West.*Acme TSH East/m)
+      it "lists both periods" do
+        expect(rendered_content).to have_text("Acme TSH East")
+        expect(rendered_content).to have_text("Acme TSH West")
       end
 
       it "names each period, so concurrent bodies can be told apart" do
@@ -111,7 +111,7 @@ RSpec.describe Admin::TeachingSchoolHubs::SummaryCardComponent, type: :component
       before { render_inline(component) }
 
       it "says so, rather than showing an empty card" do
-        expect(rendered_content).to have_text("No appropriate body periods yet")
+        expect(rendered_content).to have_text("No open appropriate body periods")
       end
     end
   end

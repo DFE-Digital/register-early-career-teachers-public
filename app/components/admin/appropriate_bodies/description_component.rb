@@ -8,7 +8,6 @@ module Admin
                :teaching_school_hub,
                :local_authority?,
                :teaching_school?,
-               :region_awards,
                to: :appropriate_body_period
 
       # @param appropriate_body_period [AppropriateBodyPeriod]
@@ -21,7 +20,7 @@ module Admin
         return if teaching_school_hub.blank?
         return "No provisioning school recorded" if provisioning_school.blank?
 
-        "Provisioned by #{provisioning_school.name}, #{region_summary}"
+        "AB duties performed by #{provisioning_school.name}"
       end
 
       def named? = appropriate_body_period.name.present?
@@ -29,14 +28,6 @@ module Admin
     private
 
       def legacy_body? = local_authority? || teaching_school?
-
-      def region_count = region_awards.count(&:active?)
-
-      def region_summary
-        return "no regions awarded" if region_count.zero?
-
-        "awarded #{region_count} #{'region'.pluralize(region_count)}"
-      end
     end
   end
 end

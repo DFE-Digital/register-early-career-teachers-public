@@ -44,12 +44,12 @@ RSpec.describe "Admin::TeachingSchoolHubsController", type: :request do
       it "says when a hub has no appropriate body periods yet" do
         FactoryBot.create(:teaching_school_hub)
         get "/admin/organisations/teaching-school-hubs"
-        expect(response.body).to include("No appropriate body periods yet")
+        expect(response.body).to include("No open appropriate body periods")
       end
 
       it "shows each hub with its provisioning school" do
         get "/admin/organisations/teaching-school-hubs"
-        expect(response.body).to include("Provisioned by #{provisioning_school_1.name}")
+        expect(response.body).to include("AB duties performed by #{provisioning_school_1.name}")
       end
 
       it "groups hubs by concurrent appropriate bodies" do

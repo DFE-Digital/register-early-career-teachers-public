@@ -41,6 +41,28 @@ RSpec.describe AppropriateBodyHelper, type: :helper do
     end
   end
 
+  describe "#appropriate_body_status" do
+    subject(:status) { appropriate_body_status(appropriate_body) }
+
+    let(:appropriate_body) do
+      FactoryBot.build(:appropriate_body_period, finished_on:)
+    end
+
+    context "when the period has no end date" do
+      let(:finished_on) { nil }
+
+      it { is_expected.to include("Active") }
+      it { is_expected.to include("govuk-tag--green") }
+    end
+
+    context "when the period has finished" do
+      let(:finished_on) { Date.new(2024, 8, 31) }
+
+      it { is_expected.to include("Inactive") }
+      it { is_expected.to include("govuk-tag--grey") }
+    end
+  end
+
   describe "#induction_programme_choices" do
     it "returns an array of FormChoice" do
       expect(induction_programme_choices).to be_an(Array)

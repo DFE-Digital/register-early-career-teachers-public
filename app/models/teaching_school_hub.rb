@@ -24,7 +24,7 @@ class TeachingSchoolHub < ApplicationRecord
     retired_on: nil,
   }.freeze
 
-  has_many :appropriate_body_periods
+  has_many :appropriate_body_periods, -> { order(finished_on: :desc) }
   has_many :lead_schools, through: :appropriate_body_periods, source: :lead_schools
 
   validates :name, presence: true, uniqueness: true
