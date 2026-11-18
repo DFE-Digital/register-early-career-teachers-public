@@ -20,6 +20,29 @@ def describe_appropriate_body_period(abp)
   print_seed_info("#{icon} #{abp.display_name} #{Colourize.text("(#{range})", :cyan)} #{sign_in}")
 end
 
+# Local authorities (until 2024)
+# ----------------------------------------------------------------------------
+print_seed_info("🏢 Local authorities", colour: :yellow)
+
+oldshire_local_authority = local_authority("Oldshire Local Authority")
+oldshire_local_authority.period("1999-09-01 -> 2024-08-31")
+
+ancient_county_council = local_authority("Ancient County Council")
+ancient_county_council.period("1999-09-01 -> 2024-08-31")
+
+# Teaching schools (until 2021)
+# ----------------------------------------------------------------------------
+print_seed_info("🎓 Teaching schools", colour: :yellow)
+
+frame_university_london = teaching_school("Frame University London")
+frame_university_london.period("1999-09-01 -> 2021-08-31")
+
+easelcroft_teaching_school = teaching_school("Easelcroft Teaching School")
+easelcroft_teaching_school.period("1999-09-01 -> 2021-08-31")
+
+vista_college = teaching_school("Vista College")
+vista_college.period("1999-09-01 -> 2021-08-31")
+
 # National bodies
 # ----------------------------------------------------------------------------
 print_seed_info("🏛️ National bodies", colour: :yellow)
@@ -100,13 +123,23 @@ star_teaching_school_hub_network.period(
 end
 star_teaching_school_hub_network.period(
   "2021-09-01 ->",
-  name_override: "Star Teaching School Hub Pennine Lancashire",
+  name_override: "Star Teaching School Hub Bolton, Bury, Rochdale, North West Lancashire and Pennine Lancashire",
   provisioning_school: 140_959,
   dfe_sign_in: {
     test: "191c7072-bd72-4d1c-989f-3747c6d14eec",
     pp: "b6cac4aa-dba8-4e81-8bbc-6dcad47785c6"
     # prod: "218b2e2f-f869-43aa-a7a3-8bece4b2949b"
   }
+) do
+  region "NW3", districts: %w[Bolton Bury Rochdale], lead_school: 140_959
+  region "NW4", districts: %w[Blackpool Preston Lancaster Wyre], lead_school: 138_220
+  region "NW5", districts: ["Hyndburn", "Burnley", "Pendle", "Blackburn with Darwen", "Ribble Valley", "Rossendale"], lead_school: 141_565
+end
+# This is an edge case that should not exist but that we must accommodate until 2028
+star_teaching_school_hub_network.period(
+  "2021-09-01 ->",
+  name_override: "Star Teaching School Hub Bolton, Bury, Rochdale, North West Lancashire and Pennine Lancashire (alternative provisioner)",
+  provisioning_school: 138_220
 ) do
   region "NW3", districts: %w[Bolton Bury Rochdale], lead_school: 140_959
   region "NW4", districts: %w[Blackpool Preston Lancaster Wyre], lead_school: 138_220
@@ -281,31 +314,8 @@ golden_leaf_teaching_school_hub.period(
   region "ZZ7", districts: %w[Camelot Avalon], lead_school: 141_888
 end
 
-# Local authorities
-# ----------------------------------------------------------------------------
-print_seed_info("🏢 Local authorities", colour: :yellow)
-
-oldshire_local_authority = local_authority("Oldshire Local Authority")
-oldshire_local_authority.period("1999-09-01 -> 2024-08-31")
-
-ancient_county_council = local_authority("Ancient County Council")
-ancient_county_council.period("1999-09-01 -> 2024-08-31")
-
-# Teaching schools
-# ----------------------------------------------------------------------------
-print_seed_info("🎓 Teaching schools", colour: :yellow)
-
-frame_university_london = teaching_school("Frame University London")
-frame_university_london.period("1999-09-01 -> 2021-08-31")
-
-easelcroft_teaching_school = teaching_school("Easelcroft Teaching School")
-easelcroft_teaching_school.period("1999-09-01 -> 2021-08-31")
-
-vista_college = teaching_school("Vista College")
-vista_college.period("1999-09-01 -> 2021-08-31")
-
 print_seed_info("")
 
-AppropriateBodyPeriod.with_display_names.order(:started_on, :body_type).each do
+AppropriateBodyPeriod.ordered_by_display_name.each do
   describe_appropriate_body_period(it)
 end
