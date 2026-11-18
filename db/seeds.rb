@@ -23,6 +23,8 @@ seed_files = Dir["db/seeds/*.rb"].sort_by do |path|
   priority_seeds.index(filename.chomp(".rb")) || Float::INFINITY
 end
 
+seed_files.concat(Dir["db/seeds/api/*.rb"])
+
 SemanticLogger.silence(:warn) do
   DeclarativeUpdates.skip(:metadata) do
     seed_files.each do |seed_file|
