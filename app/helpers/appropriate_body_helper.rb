@@ -5,6 +5,16 @@ module AppropriateBodyHelper
     AppropriateBodyPeriod.teaching_school_hub.active.includes(:teaching_school_hub)
   end
 
+  # @param appropriate_body [AppropriateBodyPeriod]
+  # @return [String]
+  def appropriate_body_status(appropriate_body)
+    if appropriate_body.unfinished?
+      govuk_tag(text: "Active", colour: "green")
+    else
+      govuk_tag(text: "Inactive", colour: "grey")
+    end
+  end
+
   # @return [Array<FormChoice>]
   def induction_programme_choices
     ::INDUCTION_PROGRAMMES.map { |key, value| FormChoice.new(key.to_s, value) }

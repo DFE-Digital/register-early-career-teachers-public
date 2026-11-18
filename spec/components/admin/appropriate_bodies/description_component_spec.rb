@@ -21,11 +21,7 @@ RSpec.describe Admin::AppropriateBodies::DescriptionComponent, type: :component 
       end
 
       it "includes the provisioning school" do
-        expect(component.description).to include("Provisioned by #{provisioning_school_1.name}")
-      end
-
-      it "counts the awarded regions" do
-        expect(component.description).to include("awarded 2 regions")
+        expect(component.description).to eq("AB duties performed by #{provisioning_school_1.name}")
       end
 
       it "does not repeat the name, which the template renders alongside it" do
@@ -39,24 +35,6 @@ RSpec.describe Admin::AppropriateBodies::DescriptionComponent, type: :component 
       it "leaves the trading name to the template" do
         expect(component.description).not_to include("Acme TSH East")
         expect(component.description).not_to include("Acme TSH")
-      end
-    end
-
-    context "with a single awarded region" do
-      let(:region_north) { FactoryBot.create(:region, code: "R2", districts: %w[North]) }
-
-      before do
-        FactoryBot.create(:region_award, appropriate_body_period:, region: region_north, school: provisioning_school_1)
-      end
-
-      it "uses the singular" do
-        expect(component.description).to end_with("awarded 1 region")
-      end
-    end
-
-    context "without awarded regions" do
-      it "reports none awarded" do
-        expect(component.description).to include("no regions awarded")
       end
     end
 
@@ -111,34 +89,6 @@ RSpec.describe Admin::AppropriateBodies::DescriptionComponent, type: :component 
 
       it "describes the body as pre-dating regional awards" do
         expect(component.description).to eq("Pre-dates regional awards")
-      end
-    end
-  end
-
-  describe "regional awards" do
-    let(:region_west_east) { FactoryBot.create(:region, code: "R1", districts: %w[West East]) }
-    let(:region_north) { FactoryBot.create(:region, code: "R2", districts: %w[North]) }
-    let(:region_south) { FactoryBot.create(:region, code: "R3", districts: %w[South]) }
-
-    before do
-      FactoryBot.create(:region_award, appropriate_body_period:, region: region_west_east, school: provisioning_school_1)
-      FactoryBot.create(:region_award, appropriate_body_period:, region: region_north, school: provisioning_school_1)
-      FactoryBot.create(:region_award, appropriate_body_period:, region: region_south, school: provisioning_school_1)
-    end
-
-    context "when the period is backed by a teaching school hub" do
-      it "counts the regions awarded to the period" do
-        expect(component.description).to include("awarded 3 regions")
-      end
-    end
-
-    context "when an award has been deactivated" do
-      before do
-        FactoryBot.create(:region_award, :deactivated, appropriate_body_period:, school: provisioning_school_1)
-      end
-
-      it "counts only the active awards" do
-        expect(component.description).to include("awarded 3 regions")
       end
     end
   end

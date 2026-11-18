@@ -1,4 +1,36 @@
 RSpec.describe TeachingSchoolHub do
+  describe "associations" do
+    describe "#appropriate_body_periods" do
+      subject(:periods) { teaching_school_hub.appropriate_body_periods }
+
+      let(:teaching_school_hub) { FactoryBot.create(:teaching_school_hub) }
+
+      let!(:finished_later) do
+        FactoryBot.create(:appropriate_body_period, :teaching_school_hub,
+                          teaching_school_hub:,
+                          name: "Previous",
+                          finished_on: 1.year.ago)
+      end
+
+      let!(:finished_earlier) do
+        FactoryBot.create(:appropriate_body_period, :teaching_school_hub,
+                          teaching_school_hub:,
+                          name: "First",
+                          finished_on: 2.years.ago)
+      end
+
+      let!(:ongoing) do
+        FactoryBot.create(:appropriate_body_period, :teaching_school_hub,
+                          teaching_school_hub:,
+                          name: "Current")
+      end
+
+      it "returns active periods first" do
+        expect(periods.map(&:name)).to eq(%w[Current Previous First])
+      end
+    end
+  end
+
   describe "validations" do
     subject(:teaching_school_hub) { FactoryBot.build(:teaching_school_hub, name:) }
 
