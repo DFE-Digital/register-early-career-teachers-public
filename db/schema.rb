@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_06_081929) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_18_095000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -38,6 +38,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_06_081929) do
   create_enum "induction_programme", ["cip", "fip", "diy", "unknown", "pre_september_2021"]
   create_enum "induction_programme_choice", ["not_yet_known", "provider_led", "school_led"]
   create_enum "mentor_became_ineligible_for_funding_reason", ["completed_declaration_received", "completed_during_early_roll_out", "started_not_completed"]
+  create_enum "mentorship_status_reasons", ["mentorship-expired", "completed-training", "available-to-train", "mentor-training-elsewhere", "mentor-not-currently-training", "no-known-training"]
+  create_enum "mentorship_statuses", ["no-access-required", "access-and-support-only", "available-to-train"]
   create_enum "oauth_code_challenge_methods", ["S256"]
   create_enum "oauth_grant_types", ["authorization_code"]
   create_enum "parity_check_request_states", ["pending", "queued", "in_progress", "completed", "failed"]
@@ -496,6 +498,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_06_081929) do
     t.index ["framework_agreement_id", "delivery_partner_id"], name: "idx_on_framework_agreement_id_delivery_partner_id_9fd91dcb3d", unique: true
     t.index ["framework_agreement_id"], name: "idx_lpdps_framework_agreement"
     t.index ["framework_agreement_id"], name: "idx_on_framework_agreement_id_f85a3e1a68"
+  end
+
+  create_table "lead_provider_mentorship_statuses", force: :cascade do |t|
+    t.bigint "mentorship_period_id", null: false
+    t.bigint "lead_provider_id", null: false
+    t.enum "status", null: false, enum_type: "mentorship_statuses"
+    t.enum "reason", null: false, enum_type: "mentorship_status_reasons"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["lead_provider_id"], name: "index_lead_provider_mentorship_statuses_on_lead_provider_id"
+    t.index ["mentorship_period_id", "lead_provider_id"], name: "idx_on_mentorship_period_id_lead_provider_id_a47a693c88", unique: true
+    t.index ["mentorship_period_id"], name: "idx_on_mentorship_period_id_1a0ce71cc3"
   end
 
   create_table "lead_providers", force: :cascade do |t|
@@ -1086,6 +1100,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_06_081929) do
   add_foreign_key "induction_periods", "teachers"
   add_foreign_key "lead_provider_delivery_partnerships", "delivery_partners"
   add_foreign_key "lead_provider_delivery_partnerships", "framework_agreements"
+  add_foreign_key "lead_provider_mentorship_statuses", "lead_providers"
+  add_foreign_key "lead_provider_mentorship_statuses", "mentorship_periods"
   add_foreign_key "mentor_at_school_periods", "schools"
   add_foreign_key "mentor_at_school_periods", "schools", column: "reported_leaving_by_school_id"
   add_foreign_key "mentor_at_school_periods", "teachers"
