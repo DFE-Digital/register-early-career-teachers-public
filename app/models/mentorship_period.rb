@@ -14,6 +14,7 @@ class MentorshipPeriod < ApplicationRecord
              inverse_of: :mentorship_periods
 
   has_many :events
+  has_many :lead_provider_mentorship_statuses, dependent: :destroy
 
   # Validations
   validates :started_on,
