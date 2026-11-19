@@ -553,6 +553,41 @@ describe AppropriateBodyPeriod do
 
         it { is_expected.to have_error(:finished_on, "can't be blank") }
       end
+
+      context "when multiple schools share a name" do
+        let(:name) { "Saint Mary’s Primary School" }
+
+        let(:school_1) do
+          FactoryBot.create(:school,
+                            gias_school: FactoryBot.create(:gias_school, name:))
+        end
+        let(:school_2) do
+          FactoryBot.create(:school,
+                            gias_school: FactoryBot.create(:gias_school, name:))
+        end
+
+        it "relaxes unique name validations" do
+          school_1_abp = FactoryBot.create(:appropriate_body_period, :teaching_school, :nameless,
+                                           provisioning_school: school_1)
+          # period name matches school name
+          school_1_abp.update!(name:)
+          # concurrent period matches other school name
+          school_2_abp = FactoryBot.build(:appropriate_body_period, :teaching_school, :nameless,
+                                          provisioning_school: school_2)
+
+          # Collisions for teaching schools are unavoidable so nullifying/overriding AB names of this type is valid
+          expect(school_2_abp).to be_valid
+          school_2_abp.save!
+          expect(school_2_abp).to be_persisted
+          expect(school_2_abp.reload.name).to be_nil
+          school_2_abp.update!(name:)
+          expect(school_2_abp.reload.name).to eq(name)
+          expect(school_1_abp.update(name: nil)).to be(true)
+          expect(school_2_abp.update(name: nil)).to be(true)
+          expect(school_1_abp.display_name).to eq(name)
+          expect(school_2_abp.display_name).to eq(name)
+        end
+      end
     end
   end
 
