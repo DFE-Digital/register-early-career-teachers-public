@@ -3,20 +3,9 @@ module MentorshipPeriods
     queue_as :default
 
     def perform
-      LeadProviderMentorshipStatus
-        .strict_loading
-        .includes(
-          :lead_provider,
-          mentorship_period: {
-            mentor: [
-              :teacher,
-              {
-                training_periods: :lead_provider
-              }
-            ]
-          }
-        )
-        .find_each(&:refresh!)
+      MentorshipPeriod.find_each do |mentorship_period|
+        MentorshipStatus.new(mentorship_period:).refresh!
+      end
     end
   end
 end

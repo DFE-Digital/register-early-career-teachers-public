@@ -33,14 +33,14 @@ does not count as confirmed training with the polling provider.
 ## Nightly refresh
 
 `MentorshipPeriods::RefreshStatusesJob` runs daily at 00:05 UTC in production,
-sandbox, staging and review. It processes existing `LeadProviderMentorshipStatus`
-rows in batches, calling each model's `refresh!` method to recalculate and
-persist both fields.
+sandbox, staging and review. It processes existing `MentorshipPeriod` records in
+batches, calling `MentorshipPeriods::MentorshipStatus#refresh!` to create missing
+provider/status rows and refresh existing ones.
 
 `updated_at` advances only when `status` or `reason` changes, so unchanged
 statuses do not appear as updates merely because the job ran. The mentorship
 period's own timestamps are not touched.
 
-The job does not create mentorship periods or missing provider/status rows.
-Creation of provider/status rows is handled separately; changes to underlying
-data are reflected when the refresh next runs.
+The job does not create mentorship periods. Missing provider/status rows are
+created only for providers linked through confirmed mentee training. Changes to
+underlying data are reflected when the service next runs.
