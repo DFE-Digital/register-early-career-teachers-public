@@ -361,3 +361,17 @@
   - ecf_id
   :lead_provider_delivery_partnerships:
   - ecf_id
+  :notify_delivery_receipts:
+  - id
+  - notification_id
+  - reference
+  - recipient
+  - status
+  - requested_at
+  - completed_at
+  - sent_at
+  - notification_type
+  - template_id
+  - template_version
+  - created_at
+  - updated_at

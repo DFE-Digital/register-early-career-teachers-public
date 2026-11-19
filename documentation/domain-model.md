@@ -24,6 +24,20 @@ erDiagram
   Region_Award }o--|| AppropriateBodyPeriod : belongs_to
   Region_Award }o--|| School : belongs_to
   Region_Award }o--|| Region : belongs_to
+  Notify_DeliveryReceipt {
+    integer id
+    uuid notification_id
+    string recipient
+    enum status
+    datetime requested_at
+    datetime completed_at
+    datetime sent_at
+    enum notification_type
+    uuid template_id
+    integer template_version
+    datetime created_at
+    datetime updated_at
+  }
   FrameworkAgreement_Band {
     integer id
     integer allocation_order
