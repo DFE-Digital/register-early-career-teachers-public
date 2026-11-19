@@ -14,8 +14,13 @@ RSpec.describe SupportQuery do
       let(:zendesk_ticket_id) { 123_456 }
 
       before do
-        ticket = double(id: zendesk_ticket_id)
-        allow(ZendeskAPI::Ticket).to receive(:create!).and_return(ticket)
+        allow(ZendeskAPI::Ticket).to receive(:create!).and_call_original
+        stub_request(:post, "https://example.com/tickets")
+          .to_return(
+            status: 201,
+            headers: { content_type: "application/json" },
+            body: { ticket: { id: zendesk_ticket_id } }.to_json
+          )
       end
 
       it "sends the ticket to Zendesk and updates state" do

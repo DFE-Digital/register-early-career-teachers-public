@@ -17,7 +17,7 @@ module OmniAuthHelper
             urn: args[:organisation_urn],
             name: args[:organisation_name],
           }
-        }
+        }.with_indifferent_access
       },
       credentials: {
         id_token: "mock_id_token",
