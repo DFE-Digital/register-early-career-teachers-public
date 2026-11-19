@@ -1,0 +1,13 @@
+<% page_data(
+     title: "Rotate client secret for #{@client.name}",
+     breadcrumbs: { "API clients" => admin_api_clients_path, @client.name => admin_api_client_path(@client), "Rotate client secret" => nil }
+   ) %>
+
+<%= govuk_warning_text(text: "The current client secret will stop working immediately. #{@client.name} will need the new secret to request access tokens.") %>
+
+<%= form_with url: admin_api_client_client_secret_rotation_path(@client), data: { turbo: false } do |f| %>
+  <div class="govuk-button-group">
+    <%= f.govuk_submit "Rotate client secret", warning: true %>
+    <%= govuk_link_to "Cancel", admin_api_client_path(@client) %>
+  </div>
+<% end %>

@@ -1,0 +1,30 @@
+<% page_data(
+     title: @client.name,
+     breadcrumbs: { "API clients" => admin_api_clients_path, @client.name => nil }
+   ) %>
+
+<%= govuk_summary_list do |list|
+  list.with_row do |row|
+    row.with_key(text: "Name")
+    row.with_value(text: @client.name)
+    row.with_action(text: "Change", href: edit_admin_api_client_path(@client), visually_hidden_text: "name")
+  end
+
+  list.with_row do |row|
+    row.with_key(text: "Client ID")
+    row.with_value { tag.code(@client.client_id) }
+  end
+
+  list.with_row do |row|
+    row.with_key(text: "Redirect URIs")
+    row.with_value { safe_join(@client.redirect_uris, tag.br) }
+    row.with_action(text: "Change", href: edit_admin_api_client_path(@client), visually_hidden_text: "redirect URIs")
+  end
+
+  list.with_row do |row|
+    row.with_key(text: "Client secret")
+    row.with_value(text: "Not available to view")
+  end
+end %>
+
+<%= govuk_button_link_to "Rotate client secret", new_admin_api_client_client_secret_rotation_path(@client), secondary: true %>

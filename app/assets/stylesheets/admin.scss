@@ -219,3 +219,7 @@ pre {
   cursor: not-allowed;
   opacity: 0.5;
 }
+
+.govuk-button[hidden] {
+  display: none;
+}

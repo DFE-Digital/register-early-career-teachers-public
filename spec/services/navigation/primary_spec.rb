@@ -56,6 +56,7 @@ describe Navigation::Primary, type: :component do
         let(:expected_product_team_visible_items) do
           {
             **expected_finance_visible_items,
+            "API clients" => "/admin/api-clients",
             "Tools" => "/admin/tools"
           }
         end
@@ -175,6 +176,7 @@ describe Navigation::Primary, type: :component do
                 { text: "Organisations", href: "/admin/organisations", active_when: "/admin/organisations" },
                 { text: "Finance", href: "/admin/finance", active_when: "/admin/finance", if: :can_see_finance? },
                 { text: "Users", href: "/admin/users", active_when: "/admin/users", if: :can_manage_users? },
+                { text: "API clients", href: "/admin/api-clients", active_when: "/admin/api-clients", if: :can_manage_api_clients? },
                 { text: "Tools", href: "/admin/tools", active_when: "/admin/tools", if: :can_see_tools? }
               ]
             )

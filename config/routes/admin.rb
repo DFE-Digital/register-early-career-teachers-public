@@ -19,6 +19,10 @@ namespace :admin do
   resources :batches, only: %i[index], path: "bulk" # all activity
   resource :tools, only: :show, controller: :tools
 
+  resources :api_clients, except: :destroy, path: "api-clients" do
+    resource :client_secret_rotation, only: %i[new create], path: "client-secret-rotation", module: :api_clients
+  end
+
   namespace :data_fixes do
     concerns :wizardable, wizard: Admin::DataFixesWizard
   end

@@ -9,13 +9,13 @@ describe API::OAuth::Client do
     let(:redirect_uris) { %w[https://ect_manager.com/oauth/callback] }
     let(:grant_types) { %w[authorization_code] }
 
-    it { is_expected.to validate_presence_of :name }
-    it { is_expected.to validate_uniqueness_of(:name) }
+    it { is_expected.to validate_presence_of(:name).with_message("Enter a name") }
+    it { is_expected.to validate_uniqueness_of(:name).with_message("An API client with this name already exists") }
     it { is_expected.to validate_presence_of(:client_id) }
     it { is_expected.to validate_uniqueness_of(:client_id) }
     it { is_expected.to validate_presence_of(:client_secret_digest) }
     it { is_expected.to validate_length_of(:client_secret_digest).is_equal_to(64) }
-    it { is_expected.to validate_presence_of(:redirect_uris) }
+    it { is_expected.to validate_presence_of(:redirect_uris).with_message("Enter at least one redirect URI") }
     it { is_expected.to validate_presence_of(:grant_types) }
 
     describe "redirect URIs" do
@@ -52,7 +52,7 @@ describe API::OAuth::Client do
 
       it "rejects malformed uris but not http or local urls" do
         expect_redirect_uris_valid(public_https_uris + http_or_local_uris)
-        expect_redirect_uris_invalid(malformed_uris, "is invalid")
+        expect_redirect_uris_invalid(malformed_uris, "Enter redirect URIs in the correct format, like https://example.com/callback")
       end
 
       context "in production" do
@@ -60,8 +60,8 @@ describe API::OAuth::Client do
 
         it "if rejects malformed, http and local urls" do
           expect_redirect_uris_valid(public_https_uris)
-          expect_redirect_uris_invalid(http_or_local_uris, "must use HTTPS and a public host")
-          expect_redirect_uris_invalid(blacklisted_uris, "must use HTTPS and a public host")
+          expect_redirect_uris_invalid(http_or_local_uris, "Redirect URIs must use HTTPS and a public host")
+          expect_redirect_uris_invalid(blacklisted_uris, "Redirect URIs must use HTTPS and a public host")
         end
       end
     end

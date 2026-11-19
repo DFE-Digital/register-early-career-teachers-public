@@ -3,6 +3,9 @@
 // ./bin/rails generate stimulus controllerName
 
 import { application } from "./application"
-import BandController from "./band_controller"
 
+import BandController from "./band_controller"
 application.register("band", BandController)
+
+import ClipboardController from "./clipboard_controller"
+application.register("clipboard", ClipboardController)

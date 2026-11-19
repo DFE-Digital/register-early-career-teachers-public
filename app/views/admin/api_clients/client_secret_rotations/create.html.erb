@@ -1,0 +1,5 @@
+<% page_data(title: "Client secret rotated", header: nil, breadcrumbs: { "API clients" => admin_api_clients_path, @client.name => admin_api_client_path(@client) }) %>
+
+<%= govuk_panel(title_text: "Client secret rotated", text: "The previous client secret for #{@client.name} no longer works.") %>
+
+<%= render "admin/api_clients/credentials", client: @client %>
