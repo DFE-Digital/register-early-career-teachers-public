@@ -1,16 +1,20 @@
-describe Schools::Mentors::ChangeEmailAddressWizard::EditStep, type: :model do
+describe Schools::Mentors::ChangeEmailAddressWizard::Steps::EditStep, type: :model do
   subject(:current_step) { wizard.current_step }
 
   let(:wizard) do
     Schools::Mentors::ChangeEmailAddressWizard::Wizard.new(
       current_step: :edit,
-      step_params: ActionController::Parameters.new(edit: params),
+      current_step_params: { edit: params },
+      state_store:
+    )
+  end
+  let(:state_store) do
+    Schools::Mentors::ChangeEmailAddressWizard::StateStore.new(
+      repository: DfE::Wizard::Repository::InMemory.new,
       author:,
-      store:,
       mentor_at_school_period:
     )
   end
-  let(:store) { FactoryBot.build(:session_repository) }
   let(:author) { FactoryBot.build(:school_user, school_urn: school.urn) }
   let(:school) { FactoryBot.create(:school) }
   let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school:) }
@@ -19,18 +23,6 @@ describe Schools::Mentors::ChangeEmailAddressWizard::EditStep, type: :model do
   describe ".permitted_params" do
     it "returns the permitted parameters" do
       expect(described_class.permitted_params).to contain_exactly(:email)
-    end
-  end
-
-  describe "#previous_step" do
-    it "raises an error" do
-      expect { current_step.previous_step }.to raise_error(NotImplementedError)
-    end
-  end
-
-  describe "#next_step" do
-    it "returns the next step" do
-      expect(current_step.next_step).to eq(:check_answers)
     end
   end
 
@@ -85,25 +77,6 @@ describe Schools::Mentors::ChangeEmailAddressWizard::EditStep, type: :model do
       it "is valid" do
         expect(current_step).to be_valid
         expect(current_step.errors).to be_empty
-      end
-    end
-  end
-
-  describe "save!" do
-    context "when email is invalid" do
-      let(:params) { { email: "invalid_email" } }
-
-      it "does not store the email" do
-        expect { current_step.save! }.not_to(change(store, :email))
-      end
-    end
-
-    context "when email is valid" do
-      let(:params) { { email: "new_email@example.com" } }
-
-      it "stores the email" do
-        expect { current_step.save! }.to change(store, :email)
-          .to("new_email@example.com")
       end
     end
   end

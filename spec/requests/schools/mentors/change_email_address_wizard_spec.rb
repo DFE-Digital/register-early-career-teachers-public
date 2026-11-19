@@ -51,6 +51,41 @@ describe "Schools::Mentors::ChangeEmailAddressWizardController" do
 
           expect(response).to have_http_status(:ok)
         end
+
+        it "resets the saved email when starting a new journey" do
+          post path_for_step("edit"), params: { edit: { email: "new-mentor@example.com" } }
+          follow_redirect!
+          expect(response).to have_http_status(:ok)
+
+          get path_for_step("edit"), headers: { "HTTP_REFERER" => root_url }
+          expect(response).to have_http_status(:ok)
+
+          get path_for_step("check-answers")
+
+          expect(response).to redirect_to(path_for_step("edit"))
+        end
+
+        it "retains the saved email when returning within the wizard" do
+          post path_for_step("edit"), params: { edit: { email: "new-mentor@example.com" } }
+          follow_redirect!
+          expect(response).to have_http_status(:ok)
+
+          get path_for_step("edit"), headers: { "HTTP_REFERER" => path_for_step("check-answers") }
+          expect(response).to have_http_status(:ok)
+
+          get path_for_step("check-answers")
+
+          expect(response).to have_http_status(:ok)
+          expect(response.body).to include("new-mentor@example.com")
+        end
+      end
+
+      context "when check answers is accessed without a valid edit step" do
+        it "redirects to the edit step" do
+          get path_for_step("check-answers")
+
+          expect(response).to redirect_to(path_for_step("edit"))
+        end
       end
     end
   end
