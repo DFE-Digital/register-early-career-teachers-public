@@ -13,7 +13,7 @@ module TRS
     end
 
     def self.build
-      if Rails.application.config.enable_fake_trs_api
+      if Rails.application.config.enable_fake_trs_api || Current.use_fake_trs_api
         Rails.logger.warn("Using TRS::FakeAPIClient")
 
         return TRS::FakeAPIClient.new

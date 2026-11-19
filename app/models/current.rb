@@ -4,7 +4,8 @@ class Current < ActiveSupport::CurrentAttributes
             :administrator,
             :role,
             :date_after_time_travel,
-            :date_before_time_travel
+            :date_before_time_travel,
+            :use_fake_trs_api
 
   def user=(user)
     super
