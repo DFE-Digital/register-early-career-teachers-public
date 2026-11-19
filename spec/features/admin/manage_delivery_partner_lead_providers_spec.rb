@@ -107,7 +107,7 @@ private
   def then_i_should_see_no_partnerships_message
     # With our new logic, we should see the table with contract periods that have available lead providers
     # but no partnerships yet, so we should see the year 2025 with empty lead providers
-    expect(page.get_by_text("2025")).to be_visible
+    expect(page.get_by_role("cell", name: "2025", exact: true)).to be_visible
     expect(page.get_by_text("Lead provider partners")).to be_visible
   end
 
