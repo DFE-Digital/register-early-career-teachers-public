@@ -6,10 +6,10 @@
 # - Periods for NBs and TSHs can be open, but some are closed.
 # - DfE Sign-in is possible as NB or TSH using accounts approved at select organisations.
 #
-def national_body(name, **) = AppropriateBodySeeds::Builder.national_body(name, **)
-def teaching_school_hub(name, **) = AppropriateBodySeeds::Builder.teaching_school_hub(name, **)
-def local_authority(name, **) = AppropriateBodySeeds::Builder.local_authority(name, **)
-def teaching_school(name, **) = AppropriateBodySeeds::Builder.teaching_school(name, **)
+def national_body(name, **) = AppropriateBody::Builder.national_body(name, **)
+def teaching_school_hub(name, **) = AppropriateBody::Builder.teaching_school_hub(name, **)
+def local_authority(name, **) = AppropriateBody::Builder.local_authority(name, **)
+def teaching_school(name, **) = AppropriateBody::Builder.teaching_school(name, **)
 
 # @param abp [AppropriateBodyPeriod]
 def describe_appropriate_body_period(abp)
