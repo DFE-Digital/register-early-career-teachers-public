@@ -1,7 +1,7 @@
 class AllowAnAppropriateBodyPeriodToShareARegionAward < ActiveRecord::Migration[8.1]
   # Star Teaching School Hub has been found to be an edge case and this database constraint
-  # prevents them operating two concurrent periods with the same three regions and lead schools.
-  # but a flipping the provisioner.
+  # prevents them operating two concurrent periods with the same three regions and lead schools
+  # but flipping the provisioner.
   #
   # One school has acted as AB for most of the cases across the three regions since Sep 2021.
   #

@@ -1,4 +1,4 @@
-module AppropriateBodySeeds
+module AppropriateBody
   module DateRange
     OPEN = /\A\s*\z/
 
