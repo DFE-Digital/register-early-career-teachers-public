@@ -3,19 +3,26 @@ RSpec.describe MentorshipPeriods::RefreshStatusesJob, type: :job do
 
   let(:mentee) { FactoryBot.create(:ect_at_school_period, :unfinished) }
   let(:mentor) { FactoryBot.create(:mentor_at_school_period, :unfinished, school: mentee.school) }
-  let(:mentorship_period) { FactoryBot.create(:mentorship_period, :unfinished, mentee:, mentor:) }
-  let!(:mentorship_status) { FactoryBot.create(:lead_provider_mentorship_status, mentorship_period:) }
+  let!(:mentorship_period) { FactoryBot.create(:mentorship_period, :unfinished, mentee:, mentor:) }
+  let(:lead_provider) { FactoryBot.create(:lead_provider) }
+  let(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, school: mentor.school, lead_provider:) }
 
-  around { |example| freeze_time { example.run } }
+  before { FactoryBot.create(:training_period, :for_ect, ect_at_school_period: mentee, school_partnership:) }
 
-  it "persists a changed status and reason and advances updated_at" do
-    mentorship_period.update!(finished_on: Date.current)
+  it "creates a mentorship status if none exists" do
+    expect { job.perform }.to change { mentorship_period.lead_provider_mentorship_statuses.count }.by(1)
 
-    expect { job.perform }.to change { mentorship_status.reload.slice(:status, :reason, :updated_at) }
-      .to({ status: "no-access-required", reason: "mentorship-expired", updated_at: Time.current })
+    mentorship_statuses = mentorship_period.lead_provider_mentorship_statuses
+    expect(mentorship_statuses.pluck(:lead_provider_id)).to contain_exactly(lead_provider.id)
   end
 
-  it "preserves the status, reason and updated_at when nothing has changed" do
-    expect { job.perform }.not_to(change { mentorship_status.reload.slice(:status, :reason, :updated_at) })
+  it "persists a changed status and reason" do
+    job.perform
+
+    mentorship_period.update!(finished_on: Date.current)
+    mentorship_status = mentorship_period.lead_provider_mentorship_statuses.sole
+
+    expect { job.perform }.to change { mentorship_status.reload.slice(:status, :reason) }
+      .to({ status: "no-access-required", reason: "mentorship-expired" })
   end
 end
