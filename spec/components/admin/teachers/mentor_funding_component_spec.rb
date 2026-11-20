@@ -8,9 +8,8 @@ RSpec.describe Admin::Teachers::MentorFundingComponent, type: :component do
 
     it "shows why the mentor is not yet eligible for funded training" do
       expect(rendered).to have_css(".govuk-summary-card__title", text: "Mentor training summary")
-      expect(rendered.text.squish).to include(
-        "Not eligible for funded training yet. They have not been assigned an ECT on provider-led training."
-      )
+      expect(rendered).to have_css("dd", text: "Not eligible for funded training yet.")
+      expect(rendered).to have_css("dd", text: "They have not been assigned an ECT on provider-led training.")
     end
   end
 
@@ -19,7 +18,8 @@ RSpec.describe Admin::Teachers::MentorFundingComponent, type: :component do
 
     it "shows eligible funding details" do
       expect(rendered).to have_css(".govuk-summary-card__title", text: "Mentor training summary")
-      expect(rendered.text.squish).to include("Training not completed yet. Eligible for funded training.")
+      expect(rendered).to have_css("dd", text: "Training not completed yet.")
+      expect(rendered).to have_css("dd", text: "Eligible for funded training.")
     end
   end
 
@@ -37,9 +37,8 @@ RSpec.describe Admin::Teachers::MentorFundingComponent, type: :component do
 
         it "shows completed training and the funding end date when a lead provider submitted a completed declaration" do
           expect(rendered).to have_css(".govuk-summary-card__title", text: "Mentor training summary")
-          expect(rendered.text.squish).to include(
-            "A lead provider submitted a completed declaration. Funding ended on 12 August 2026."
-          )
+          expect(rendered).to have_css("dd", text: "A lead provider submitted a completed declaration.")
+          expect(rendered).to have_css("dd", text: "Funding ended on 12 August 2026.")
         end
       end
 
@@ -48,9 +47,8 @@ RSpec.describe Admin::Teachers::MentorFundingComponent, type: :component do
 
         it "shows completed training and the funding end date when a lead provider submitted a completed declaration" do
           expect(rendered).to have_css(".govuk-summary-card__title", text: "Mentor training summary")
-          expect(rendered.text.squish).to include(
-            "A lead provider submitted a completed declaration. Funding ended on #{Time.zone.today.to_fs(:govuk)}."
-          )
+          expect(rendered).to have_css("dd", text: "A lead provider submitted a completed declaration.")
+          expect(rendered).to have_css("dd", text: "Funding ended on #{Time.zone.today.to_fs(:govuk)}.")
         end
       end
 
@@ -59,7 +57,8 @@ RSpec.describe Admin::Teachers::MentorFundingComponent, type: :component do
 
         it "shows completed training and the funding end date when a lead provider submitted a completed declaration" do
           expect(rendered).to have_css(".govuk-summary-card__title", text: "Mentor training summary")
-          expect(rendered.text.squish).to include("Training not completed yet. Eligible for funded training.")
+          expect(rendered).to have_css("dd", text: "Training not completed yet.")
+          expect(rendered).to have_css("dd", text: "Eligible for funded training.")
         end
       end
     end
@@ -73,7 +72,8 @@ RSpec.describe Admin::Teachers::MentorFundingComponent, type: :component do
 
       it "shows completed training during early roll-out and the early funding end date" do
         expect(rendered).to have_css(".govuk-summary-card__title", text: "Mentor training summary")
-        expect(rendered.text.squish).to include("Completed during early roll-out. Funding ended on 19 April 2021.")
+        expect(rendered).to have_css("dd", text: "Completed during early roll-out.")
+        expect(rendered).to have_css("dd", text: "Funding ended on 19 April 2021.")
       end
     end
 
@@ -90,9 +90,8 @@ RSpec.describe Admin::Teachers::MentorFundingComponent, type: :component do
 
         it "shows incomplete training and the funding end date when training was started but not completed" do
           expect(rendered).to have_css(".govuk-summary-card__title", text: "Mentor training summary")
-          expect(rendered.text.squish).to include(
-            "Did not finish training within the funded period. Funding ended on 12 August 2026."
-          )
+          expect(rendered).to have_css("dd", text: "Did not finish training within the funded period.")
+          expect(rendered).to have_css("dd", text: "Funding ended on 12 August 2026.")
         end
       end
 
@@ -101,9 +100,8 @@ RSpec.describe Admin::Teachers::MentorFundingComponent, type: :component do
 
         it "shows incomplete training and the funding end date when training was started but not completed" do
           expect(rendered).to have_css(".govuk-summary-card__title", text: "Mentor training summary")
-          expect(rendered.text.squish).to include(
-            "Did not finish training within the funded period. Funding ended on #{Time.zone.today.to_fs(:govuk)}."
-          )
+          expect(rendered).to have_css("dd", text: "Did not finish training within the funded period.")
+          expect(rendered).to have_css("dd", text: "Funding ended on #{Time.zone.today.to_fs(:govuk)}.")
         end
       end
 
@@ -112,7 +110,8 @@ RSpec.describe Admin::Teachers::MentorFundingComponent, type: :component do
 
         it "shows incomplete training and the funding end date when training was started but not completed" do
           expect(rendered).to have_css(".govuk-summary-card__title", text: "Mentor training summary")
-          expect(rendered.text.squish).to include("Training not completed yet. Eligible for funded training.")
+          expect(rendered).to have_css("dd", text: "Training not completed yet.")
+          expect(rendered).to have_css("dd", text: "Eligible for funded training.")
         end
       end
     end
