@@ -76,7 +76,7 @@ RSpec.describe "admin/finance/schedules/index.html.erb" do
 
     it "lists their names by type then month chronologically" do
       render
-      expect(rendered).not_to have_text("This contract period currently has no schedules.")
+      expect(rendered).to have_no_text("This contract period currently has no schedules.")
       expect(rendered).to have_text("Standard January")
       expect(rendered).to have_text("Standard April")
       expect(rendered).to have_text("Reduced April")

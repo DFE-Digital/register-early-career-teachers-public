@@ -4,7 +4,7 @@ module Admin
       layout "full"
 
       def show
-        @teacher = TeacherPresenter.new(Teacher.find(params[:teacher_id]))
+        @teacher = TeacherPresenter.new(Teacher.find(params.expect(:teacher_id)))
         @navigation_items = helpers.admin_teacher_navigation_items(@teacher, :training)
         @breadcrumbs = teacher_breadcrumbs
         @ect_at_school_periods = @teacher.ect_at_school_periods

@@ -124,7 +124,7 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
         end
 
         it "does not show the training programme row" do
-          expect(rendered_content).not_to have_css("dt", text: "Training programme")
+          expect(rendered_content).to have_no_css("dt", text: "Training programme")
         end
 
         it "shows the API data row" do
@@ -190,7 +190,7 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
         end
 
         it "does not show the move partnership link" do
-          expect(rendered_content).not_to have_css("a", text: "Move to a different partnership")
+          expect(rendered_content).to have_no_css("a", text: "Move to a different partnership")
         end
       end
     end
@@ -206,7 +206,7 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
       context "when the training period is active" do
         let(:training_period) { FactoryBot.create(:training_period, :provider_led, :for_ect) }
 
-        it { is_expected.not_to have_css(".govuk-inset-text") }
+        it { is_expected.to have_no_css(".govuk-inset-text") }
       end
 
       context "when the training period is deferred" do
@@ -226,11 +226,11 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
       subject(:rendered) { render_inline(described_class.new(training_period:, show_api_row: false)) }
 
       it "does not show the API data row" do
-        expect(rendered_content).not_to have_css("dt", text: "API response")
+        expect(rendered_content).to have_no_css("dt", text: "API response")
       end
 
       it "does not show the move partnership link" do
-        expect(rendered_content).not_to have_css("a", text: "Move to a different partnership")
+        expect(rendered_content).to have_no_css("a", text: "Move to a different partnership")
       end
     end
 
@@ -282,11 +282,11 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
     end
 
     it "does not show the move partnership link" do
-      expect(rendered_content).not_to have_css("a", text: "Move to a different partnership")
+      expect(rendered_content).to have_no_css("a", text: "Move to a different partnership")
     end
 
     it "does not show the API data row" do
-      expect(rendered_content).not_to have_css("dt", text: "API response")
+      expect(rendered_content).to have_no_css("dt", text: "API response")
       expect(rendered_content).not_to include("data")
     end
   end
@@ -323,7 +323,7 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
         end
 
         it "does not show the contract period change link" do
-          expect(rendered_content).not_to have_link(
+          expect(rendered_content).to have_no_link(
             "Change",
             href: admin_teacher_training_period_change_contract_period_wizard_select_contract_period_path(
               training_period.teacher.id,
@@ -333,7 +333,7 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
         end
 
         it "does not show the move partnership link" do
-          expect(rendered_content).not_to have_link(
+          expect(rendered_content).to have_no_link(
             "Move to a different partnership"
           )
         end
@@ -367,7 +367,7 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
       before { rendered }
 
       it "does not show a change link for the contract period row" do
-        expect(rendered_content).not_to have_link("Change")
+        expect(rendered_content).to have_no_link("Change")
       end
     end
   end
@@ -382,7 +382,7 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
 
     shared_examples "a training period preview" do
       it "omits a missing end date" do
-        expect(rendered).not_to have_css("dt", text: "End date", exact_text: true)
+        expect(rendered).to have_no_css("dt", text: "End date", exact_text: true)
       end
 
       context "when the period has ended" do
@@ -419,7 +419,7 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
       it_behaves_like "a training period preview"
 
       it "omits the training programme row" do
-        expect(rendered).not_to have_css("dt", text: "Training programme")
+        expect(rendered).to have_no_css("dt", text: "Training programme")
       end
     end
   end

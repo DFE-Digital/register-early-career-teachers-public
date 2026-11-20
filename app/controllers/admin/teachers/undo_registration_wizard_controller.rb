@@ -32,7 +32,7 @@ module Admin
       def authorised? = super && current_user.product_team?
 
       def set_teacher
-        @teacher = Teacher.find(params[:teacher_id])
+        @teacher = Teacher.find(params.expect(:teacher_id))
       end
 
       def check_allowed_step

@@ -6,7 +6,7 @@ module Admin
       layout "full"
 
       def new
-        @delivery_partner = DeliveryPartner.find(params[:delivery_partner_id])
+        @delivery_partner = DeliveryPartner.find(params.expect(:delivery_partner_id))
         @year = params[:year]
         @contract_period = ContractPeriod.find_by(year: @year)
 

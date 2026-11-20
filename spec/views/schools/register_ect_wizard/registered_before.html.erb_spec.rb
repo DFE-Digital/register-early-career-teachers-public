@@ -162,12 +162,12 @@ RSpec.describe "schools/register_ect_wizard/registered_before.html.erb" do
     end
 
     it "does not show the previously used lead provider" do
-      expect(rendered).not_to have_css("dt.govuk-summary-list__key", text: "Lead provider")
+      expect(rendered).to have_no_css("dt.govuk-summary-list__key", text: "Lead provider")
     end
 
     it "does not show the previously used delivery partner" do
-      expect(rendered).not_to have_css("dt.govuk-summary-list__key", text: "Delivery partner")
-      expect(rendered).not_to have_css("dd.govuk-summary-list__value", text: delivery_partner.name)
+      expect(rendered).to have_no_css("dt.govuk-summary-list__key", text: "Delivery partner")
+      expect(rendered).to have_no_css("dd.govuk-summary-list__value", text: delivery_partner.name)
     end
   end
 end

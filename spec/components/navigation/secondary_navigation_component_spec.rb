@@ -57,8 +57,8 @@ RSpec.describe Navigation::SecondaryNavigationComponent, type: :component do
     end
 
     it "does not mark non-current items as current" do
-      expect(rendered_content).not_to have_css(".x-govuk-secondary-navigation__list-item--current a", text: "Teachers")
-      expect(rendered_content).not_to have_css('a[aria-current="page"]', text: "Teachers")
+      expect(rendered_content).to have_no_css(".x-govuk-secondary-navigation__list-item--current a", text: "Teachers")
+      expect(rendered_content).to have_no_css('a[aria-current="page"]', text: "Teachers")
     end
 
     it "includes custom classes when provided" do
@@ -85,7 +85,7 @@ RSpec.describe Navigation::SecondaryNavigationComponent, type: :component do
 
     it "uses labelled_by instead of aria-label" do
       expect(rendered_content).to have_css('nav[aria-labelledby="page-title"]')
-      expect(rendered_content).not_to have_css("nav[aria-label]")
+      expect(rendered_content).to have_no_css("nav[aria-label]")
     end
 
     it "applies custom classes" do

@@ -59,7 +59,7 @@ shared_examples "a review mentor details step view" do |current_step:, back_path
 
       expect(rendered).to have_element(:dt, text: "Date of birth")
       expect(rendered).to have_element(:dd, text: "1 January 1950")
-      expect(rendered).not_to have_element(:dt, text: "National Insurance Number")
+      expect(rendered).to have_no_element(:dt, text: "National Insurance Number")
     end
   end
 
@@ -73,7 +73,7 @@ shared_examples "a review mentor details step view" do |current_step:, back_path
 
       expect(rendered).to have_element(:dt, text: "National insurance number")
       expect(rendered).to have_element(:dd, text: "AD12345ED")
-      expect(rendered).not_to have_element(:dt, text: "Date of birth")
+      expect(rendered).to have_no_element(:dt, text: "Date of birth")
     end
   end
 
@@ -81,7 +81,7 @@ shared_examples "a review mentor details step view" do |current_step:, back_path
     render
 
     expect(rendered).to have_button("Confirm and continue")
-    expect(rendered).to have_selector("form[action='#{send(confirm_and_continue_path)}']")
+    expect(rendered).to have_css("form[action='#{send(confirm_and_continue_path)}']")
   end
 
   it "includes a 'check details' link that targets #{check_details_step_name} page" do

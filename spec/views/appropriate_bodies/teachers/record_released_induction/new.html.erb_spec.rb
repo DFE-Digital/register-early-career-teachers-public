@@ -39,6 +39,6 @@ RSpec.describe "appropriate_bodies/teachers/record_released_induction/new.html.e
   end
 
   it "has a submit button" do
-    expect(rendered).to have_css("button.govuk-button")
+    expect(rendered).to have_button("Continue")
   end
 end

@@ -61,15 +61,15 @@ RSpec.describe Admin::Statements::PaymentOverview::ECFComponent, type: :componen
     end
 
     it "does not show rows for ITTECF contracts" do
-      expect(page).not_to have_text("ECTs output payment")
-      expect(page).not_to have_text("Mentors output payment")
-      expect(page).not_to have_text("ECTs clawbacks")
-      expect(page).not_to have_text("Mentors clawbacks")
+      expect(page).to have_no_text("ECTs output payment")
+      expect(page).to have_no_text("Mentors output payment")
+      expect(page).to have_no_text("ECTs clawbacks")
+      expect(page).to have_no_text("Mentors clawbacks")
     end
 
     it "displays the milestone cutoff and payment dates" do
-      expect(page).to have_content("30 September 2024")
-      expect(page).to have_content("15 October 2024")
+      expect(page).to have_text("30 September 2024")
+      expect(page).to have_text("15 October 2024")
     end
 
     it "has a total payment which comes from the Banded calculator" do

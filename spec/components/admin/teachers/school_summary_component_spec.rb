@@ -117,7 +117,7 @@ RSpec.describe Admin::Teachers::SchoolSummaryComponent, type: :component do
         end
 
         it "displays mentors in a table with name, start date, and end date columns" do
-          expect(rendered).to have_css("table.govuk-table")
+          expect(rendered).to have_table
           expect(rendered).to have_css("th", text: "Name")
           expect(rendered).to have_css("th", text: "Start date")
           expect(rendered).to have_css("th", text: "End date")
@@ -261,7 +261,7 @@ RSpec.describe Admin::Teachers::SchoolSummaryComponent, type: :component do
         end
 
         it "displays ECTs in a table with name, start date, and end date columns" do
-          expect(rendered).to have_css("table.govuk-table")
+          expect(rendered).to have_table
           expect(rendered).to have_css("th", text: "Name")
           expect(rendered).to have_css("th", text: "Start date")
           expect(rendered).to have_css("th", text: "End date")
@@ -306,19 +306,19 @@ RSpec.describe Admin::Teachers::SchoolSummaryComponent, type: :component do
     shared_examples "a school period preview" do
       it "shows the school title without a link" do
         expect(rendered).to have_css("h4", text: school_period.school.name)
-        expect(rendered).not_to have_link(school_period.school.name)
+        expect(rendered).to have_no_link(school_period.school.name)
       end
 
       it "omits the email and missing end date rows" do
-        expect(rendered).not_to have_css("dt", text: "Email address")
-        expect(rendered).not_to have_css("dt", text: "School end date")
+        expect(rendered).to have_no_css("dt", text: "Email address")
+        expect(rendered).to have_no_css("dt", text: "School end date")
       end
 
       it "shows linked mentorship teacher without a link" do
         name = Teachers::Name.new(mentorship_link_teacher).full_name
 
         expect(rendered).to have_css("td", text: name)
-        expect(rendered).not_to have_link(name)
+        expect(rendered).to have_no_link(name)
       end
 
       context "when the period has ended" do

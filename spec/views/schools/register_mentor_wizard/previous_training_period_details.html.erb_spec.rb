@@ -98,7 +98,7 @@ RSpec.describe "schools/register_mentor_wizard/previous_training_period_details.
       render
 
       expect(rendered).to have_css("dt", text: "Lead provider")
-      expect(rendered).not_to have_css("dt", text: "Delivery partner")
+      expect(rendered).to have_no_css("dt", text: "Delivery partner")
     end
   end
 

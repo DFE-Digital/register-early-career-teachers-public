@@ -38,7 +38,7 @@ RSpec.describe "schools/register_mentor_wizard/find_mentor.html.erb" do
     render
 
     expect(rendered).to have_button("Continue")
-    expect(rendered).to have_selector("form[action='#{continue_path}']")
+    expect(rendered).to have_css("form[action='#{continue_path}']")
   end
 
   it "includes a link to 'They do not have a TRN' a TRN" do

@@ -73,11 +73,11 @@ RSpec.describe Schools::Mentors::SummaryComponent, type: :component do
         )
       end
 
-      it { is_expected.not_to have_text("No ECTs assigned") }
+      it { is_expected.to have_no_text("No ECTs assigned") }
       it { is_expected.to have_link(full_name(current_teacher), href: schools_ect_path(current_period)) }
       it { is_expected.to have_link(full_name(upcoming_teacher), href: schools_ect_path(upcoming_period)) }
-      it { is_expected.not_to have_link(full_name(finished_teacher), href: schools_ect_path(finished_period)) }
-      it { is_expected.not_to have_link(full_name(completed_teacher), href: schools_ect_path(completed_period)) }
+      it { is_expected.to have_no_link(full_name(finished_teacher), href: schools_ect_path(finished_period)) }
+      it { is_expected.to have_no_link(full_name(completed_teacher), href: schools_ect_path(completed_period)) }
     end
 
     context "with 5 or fewer current ECTs" do
@@ -89,7 +89,7 @@ RSpec.describe Schools::Mentors::SummaryComponent, type: :component do
         end
       end
 
-      it { is_expected.not_to have_text("No ECTs assigned") }
+      it { is_expected.to have_no_text("No ECTs assigned") }
 
       it "lists each ECT by name" do
         ects.each do |teacher|
@@ -134,7 +134,7 @@ RSpec.describe Schools::Mentors::SummaryComponent, type: :component do
 
       it "links the mentor to their current period, not the finished one" do
         expect(subject).to have_link(full_name(mentor), href: schools_mentor_path(current_period))
-        expect(subject).not_to have_link(full_name(mentor), href: schools_mentor_path(mentor_at_school_period))
+        expect(subject).to have_no_link(full_name(mentor), href: schools_mentor_path(mentor_at_school_period))
       end
     end
 
@@ -165,9 +165,9 @@ RSpec.describe Schools::Mentors::SummaryComponent, type: :component do
     let(:withdrawn_text) { "have told us that #{full_name(mentor)} is not registered for ECTE mentor training with them. Contact them if you think this is an error." }
 
     shared_examples "does not show training details" do
-      it { is_expected.not_to have_text(active_text) }
-      it { is_expected.not_to have_text(deferred_text) }
-      it { is_expected.not_to have_text(withdrawn_text) }
+      it { is_expected.to have_no_text(active_text) }
+      it { is_expected.to have_no_text(deferred_text) }
+      it { is_expected.to have_no_text(withdrawn_text) }
       it { is_expected.not_to have_summary_list_row("Lead provider") }
     end
 

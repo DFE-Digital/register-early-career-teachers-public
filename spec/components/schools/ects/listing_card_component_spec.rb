@@ -24,14 +24,14 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
     end
 
     it "renders 'Registered' status" do
-      expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "Status")
+      expect(rendered_content).to have_css(".govuk-summary-list__row", text: "Status")
       expect(rendered_content).to have_text("Registered")
     end
 
     it "renders the mentor name without a link" do
-      expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "Mentor")
+      expect(rendered_content).to have_css(".govuk-summary-list__row", text: "Mentor")
       expect(rendered_content).to have_text(mentor_name)
-      expect(rendered_content).not_to have_link(mentor_name)
+      expect(rendered_content).to have_no_link(mentor_name)
     end
   end
 
@@ -39,7 +39,7 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
     before { render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:)) }
 
     it "renders action required status with mentor message" do
-      expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "Status")
+      expect(rendered_content).to have_css(".govuk-summary-list__row", text: "Status")
       expect(rendered_content).to have_text("Action required")
       expect(rendered_content).to have_text("A mentor needs to be assigned to Naruto Uzumaki.")
     end
@@ -55,29 +55,29 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
     before { render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:)) }
 
     it "does not render the mentor row" do
-      expect(rendered_content).not_to have_css(".govuk-summary-list__key", text: "Mentor")
-      expect(rendered_content).not_to have_link("Assign a mentor for this ECT")
+      expect(rendered_content).to have_no_css(".govuk-summary-list__key", text: "Mentor")
+      expect(rendered_content).to have_no_link("Assign a mentor for this ECT")
     end
   end
 
   it "renders the TRN" do
     render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:))
 
-    expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "TRN")
+    expect(rendered_content).to have_css(".govuk-summary-list__row", text: "TRN")
     expect(rendered_content).to have_text(ect_at_school_period.trn)
   end
 
   it "renders the school start date" do
     render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:))
 
-    expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "School start date")
+    expect(rendered_content).to have_css(".govuk-summary-list__row", text: "School start date")
     expect(rendered_content).to have_text("1 September 2023")
   end
 
   it "renders the school reported appropriate body name" do
     render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:))
 
-    expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "Appropriate body")
+    expect(rendered_content).to have_css(".govuk-summary-list__row", text: "Appropriate body")
     expect(rendered_content).to have_text(ect_at_school_period.school_reported_appropriate_body_name)
   end
 
@@ -89,7 +89,7 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
     it "renders not reported" do
       render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:))
 
-      expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "Appropriate body")
+      expect(rendered_content).to have_css(".govuk-summary-list__row", text: "Appropriate body")
       expect(rendered_content).to have_text("Not reported")
     end
   end
@@ -98,9 +98,9 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
     it "renders the school reported appropriate body name" do
       render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:))
 
-      expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "Appropriate body")
+      expect(rendered_content).to have_css(".govuk-summary-list__row", text: "Appropriate body")
       expect(rendered_content).to have_text(ect_at_school_period.school_reported_appropriate_body_name)
-      expect(rendered_content).not_to have_text("Not reported")
+      expect(rendered_content).to have_no_text("Not reported")
     end
   end
 
@@ -117,10 +117,10 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
     it "renders the claimed by appropriate body name" do
       render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:))
 
-      expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "Appropriate body")
+      expect(rendered_content).to have_css(".govuk-summary-list__row", text: "Appropriate body")
       expect(rendered_content).to have_text(induction_period.appropriate_body_period.name)
-      expect(rendered_content).not_to have_text(ect_at_school_period.school_reported_appropriate_body_name)
-      expect(rendered_content).not_to have_text("Not reported")
+      expect(rendered_content).to have_no_text(ect_at_school_period.school_reported_appropriate_body_name)
+      expect(rendered_content).to have_no_text("Not reported")
     end
   end
 
@@ -130,10 +130,10 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
     it "renders their latest providers" do
       render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:))
 
-      expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "Delivery partner")
+      expect(rendered_content).to have_css(".govuk-summary-list__row", text: "Delivery partner")
       expect(rendered_content).to have_text(training_period.delivery_partner_name)
 
-      expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "Lead provider")
+      expect(rendered_content).to have_css(".govuk-summary-list__row", text: "Lead provider")
       expect(rendered_content).to have_text(training_period.lead_provider_name)
     end
   end
@@ -144,8 +144,8 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
     it "doesn't render providers" do
       render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:))
 
-      expect(rendered_content).not_to have_selector(".govuk-summary-list__row", text: "Delivery partner")
-      expect(rendered_content).not_to have_selector(".govuk-summary-list__row", text: "Lead provider")
+      expect(rendered_content).to have_no_css(".govuk-summary-list__row", text: "Delivery partner")
+      expect(rendered_content).to have_no_css(".govuk-summary-list__row", text: "Lead provider")
     end
   end
 
@@ -173,7 +173,7 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
 
       expect(rendered_content).not_to match(/no longer training with them/i)
       expect(rendered_content).not_to match(/training is paused/i)
-      expect(rendered_content).not_to have_link(
+      expect(rendered_content).to have_no_link(
         "continuing their training or if they have left your school.",
         href: "/school/ects/#{ect_at_school_period.id}#training-details"
       )
@@ -198,13 +198,13 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
     it "renders lead provider name on the EOI" do
       render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:))
 
-      expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "Lead provider")
+      expect(rendered_content).to have_css(".govuk-summary-list__row", text: "Lead provider")
       expect(rendered_content).to have_text("Jimmy Provider")
     end
 
     it "renders the delivery partner fallback text" do
       render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:))
-      expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "Delivery partner")
+      expect(rendered_content).to have_css(".govuk-summary-list__row", text: "Delivery partner")
       expect(rendered_content).to have_text("Their lead provider will confirm this")
     end
   end
@@ -238,8 +238,8 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
     end
 
     it "does not render lead provider or delivery partner rows" do
-      expect(rendered_content).not_to have_selector(".govuk-summary-list__row", text: "Lead provider")
-      expect(rendered_content).not_to have_selector(".govuk-summary-list__row", text: "Delivery partner")
+      expect(rendered_content).to have_no_css(".govuk-summary-list__row", text: "Lead provider")
+      expect(rendered_content).to have_no_css(".govuk-summary-list__row", text: "Delivery partner")
     end
   end
 
@@ -269,14 +269,14 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
     end
 
     it "does not show the withdrawn warning link" do
-      expect(rendered_content).not_to have_link(
+      expect(rendered_content).to have_no_link(
         "continuing their training or if they have left your school."
       )
     end
 
     it "does not render lead provider or delivery partner rows" do
-      expect(rendered_content).not_to have_selector(".govuk-summary-list__row", text: "Lead provider")
-      expect(rendered_content).not_to have_selector(".govuk-summary-list__row", text: "Delivery partner")
+      expect(rendered_content).to have_no_css(".govuk-summary-list__row", text: "Lead provider")
+      expect(rendered_content).to have_no_css(".govuk-summary-list__row", text: "Delivery partner")
     end
   end
 
@@ -297,8 +297,8 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
       expect(rendered_content).to have_text("Action required")
       expect(rendered_content).to match(/no longer training with them/i)
 
-      expect(rendered_content).not_to have_text("Mentor required")
-      expect(rendered_content).not_to have_text("A mentor needs to be assigned")
+      expect(rendered_content).to have_no_text("Mentor required")
+      expect(rendered_content).to have_no_text("A mentor needs to be assigned")
     end
   end
 
@@ -314,7 +314,7 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
     it "shows withdrawn action required instead of registered" do
       expect(rendered_content).to have_text("Action required")
       expect(rendered_content).to match(/no longer training with them/i)
-      expect(rendered_content).not_to have_text("Registered")
+      expect(rendered_content).to have_no_text("Registered")
     end
   end
 
@@ -335,8 +335,8 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
       expect(rendered_content).to have_text("Training paused")
       expect(rendered_content).to match(/training is paused/i)
 
-      expect(rendered_content).not_to have_text("Mentor required")
-      expect(rendered_content).not_to have_text("A mentor needs to be assigned")
+      expect(rendered_content).to have_no_text("Mentor required")
+      expect(rendered_content).to have_no_text("A mentor needs to be assigned")
     end
   end
 
@@ -358,10 +358,10 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
     end
 
     it "still renders lead provider and delivery partner rows" do
-      expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "Lead provider")
+      expect(rendered_content).to have_css(".govuk-summary-list__row", text: "Lead provider")
       expect(rendered_content).to have_text(training_period.lead_provider_name)
 
-      expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "Delivery partner")
+      expect(rendered_content).to have_css(".govuk-summary-list__row", text: "Delivery partner")
       expect(rendered_content).to have_text(training_period.delivery_partner_name)
     end
   end
@@ -385,8 +385,8 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
     end
 
     it "still renders lead provider and delivery partner rows" do
-      expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "Lead provider")
-      expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "Delivery partner")
+      expect(rendered_content).to have_css(".govuk-summary-list__row", text: "Lead provider")
+      expect(rendered_content).to have_css(".govuk-summary-list__row", text: "Delivery partner")
     end
   end
 
@@ -404,7 +404,7 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
     it "does not show the leaving status when current_school is not provided" do
       render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:))
 
-      expect(rendered_content).not_to have_css("strong.govuk-tag.govuk-tag--yellow", text: "Leaving school")
+      expect(rendered_content).to have_no_css("strong.govuk-tag.govuk-tag--yellow", text: "Leaving school")
     end
   end
 

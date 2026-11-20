@@ -21,6 +21,6 @@ RSpec.describe "appropriate_bodies/teachers/show.html.erb" do
 
     past_induction_period_list = rendered.html.at("ul#past-induction-periods")
 
-    expect(past_induction_period_list).not_to have_link("Edit")
+    expect(past_induction_period_list).to have_no_link("Edit")
   end
 end

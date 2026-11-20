@@ -24,7 +24,7 @@ RSpec.describe "admin/delivery_partners/index.html.erb" do
 
     expect(view.content_for(:backlink_or_breadcrumb)).to have_link("Organisations", href: admin_organisations_path)
     expect(view.content_for(:backlink_or_breadcrumb)).to include("Delivery partners")
-    expect(view.content_for(:backlink_or_breadcrumb)).not_to have_link("Delivery partners")
+    expect(view.content_for(:backlink_or_breadcrumb)).to have_no_link("Delivery partners")
   end
 
   it "renders the search section" do
@@ -37,7 +37,7 @@ RSpec.describe "admin/delivery_partners/index.html.erb" do
   it "renders a table of delivery partners" do
     render
 
-    expect(rendered).to have_css("table.govuk-table")
+    expect(rendered).to have_table
     expect(rendered).to have_css("tbody tr", count: number_of_delivery_partners)
   end
 
@@ -71,7 +71,7 @@ RSpec.describe "admin/delivery_partners/index.html.erb" do
       render
 
       expect(rendered).to have_css("p", text: "No delivery partners found.")
-      expect(rendered).not_to have_css("table.govuk-table")
+      expect(rendered).to have_no_table
     end
   end
 
@@ -86,14 +86,14 @@ RSpec.describe "admin/delivery_partners/index.html.erb" do
       render
 
       expect(rendered).to have_css("p", text: "There are no delivery partners that match your search.")
-      expect(rendered).not_to have_css("table.govuk-table")
+      expect(rendered).to have_no_table
     end
   end
 
   it "renders table with only Delivery partner column" do
     render
 
-    expect(rendered).to have_css("table.govuk-table")
+    expect(rendered).to have_table
     expect(rendered).to have_css("th", text: "Delivery partner")
   end
 

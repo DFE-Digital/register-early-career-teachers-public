@@ -11,7 +11,7 @@ module Admin
     end
 
     def show
-      @induction_platform = API::OAuth::Client.find(params[:id])
+      @induction_platform = API::OAuth::Client.find(params.expect(:id))
       @breadcrumbs = {
         "Organisations" => admin_organisations_path,
         "Induction platforms" => admin_induction_platforms_path,

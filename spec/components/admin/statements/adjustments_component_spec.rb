@@ -27,8 +27,8 @@ RSpec.describe Admin::Statements::AdjustmentsComponent, type: :component do
     end
 
     it "does not have links to change or remove adjustments" do
-      expect(page).not_to have_link("Change")
-      expect(page).not_to have_link("Remove")
+      expect(page).to have_no_link("Change")
+      expect(page).to have_no_link("Remove")
     end
   end
 
@@ -81,12 +81,12 @@ RSpec.describe Admin::Statements::AdjustmentsComponent, type: :component do
       let(:statement) { FactoryBot.create :statement, :paid }
 
       it "does not have a link to add adjustments" do
-        expect(page).not_to have_link("Add")
+        expect(page).to have_no_link("Add")
       end
 
       it "does not have links to change or remove adjustments" do
-        expect(page).not_to have_link("Change")
-        expect(page).not_to have_link("Remove")
+        expect(page).to have_no_link("Change")
+        expect(page).to have_no_link("Remove")
       end
     end
 
@@ -94,12 +94,12 @@ RSpec.describe Admin::Statements::AdjustmentsComponent, type: :component do
       let(:statement) { FactoryBot.create :statement, :service_fee }
 
       it "does not have a link to add adjustments" do
-        expect(page).not_to have_link("Add")
+        expect(page).to have_no_link("Add")
       end
 
       it "does not have links to change or remove adjustments" do
-        expect(page).not_to have_link("Change")
-        expect(page).not_to have_link("Remove")
+        expect(page).to have_no_link("Change")
+        expect(page).to have_no_link("Remove")
       end
     end
   end

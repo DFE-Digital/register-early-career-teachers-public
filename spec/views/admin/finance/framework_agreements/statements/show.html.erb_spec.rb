@@ -31,7 +31,7 @@ RSpec.describe "admin/finance/framework_agreements/statements/show.html.erb" do
 
     expect(rendered).to have_link("Edit statement", href: edit_path)
     expect(rendered).to have_link("Delete statement", href: delete_path)
-    expect(rendered).not_to have_selector("a[aria-disabled='true']")
+    expect(rendered).to have_no_css("a[aria-disabled='true']")
   end
 
   context "when the contract period is payments frozen" do
@@ -41,8 +41,8 @@ RSpec.describe "admin/finance/framework_agreements/statements/show.html.erb" do
     it "renders the Edit and Delete buttons in a disabled state" do
       render
 
-      expect(rendered).to have_selector("a[disabled], a[aria-disabled='true']", text: "Edit statement")
-      expect(rendered).to have_selector("a[disabled], a[aria-disabled='true']", text: "Delete statement")
+      expect(rendered).to have_css("a[disabled], a[aria-disabled='true']", text: "Edit statement")
+      expect(rendered).to have_css("a[disabled], a[aria-disabled='true']", text: "Delete statement")
     end
   end
 
@@ -53,8 +53,8 @@ RSpec.describe "admin/finance/framework_agreements/statements/show.html.erb" do
     it "renders the Edit and Delete buttons in an enabled state" do
       render
 
-      expect(rendered).to have_selector("a:not([disabled])", text: "Edit statement")
-      expect(rendered).to have_selector("a:not([disabled])", text: "Delete statement")
+      expect(rendered).to have_css("a:not([disabled])", text: "Edit statement")
+      expect(rendered).to have_css("a:not([disabled])", text: "Delete statement")
     end
   end
 end

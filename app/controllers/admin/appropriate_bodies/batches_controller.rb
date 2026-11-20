@@ -16,13 +16,13 @@ module Admin::AppropriateBodies
     end
 
     def show
-      @pending_induction_submission_batch = PendingInductionSubmissionBatch.for_appropriate_body_period(@appropriate_body).find(params[:id])
+      @pending_induction_submission_batch = PendingInductionSubmissionBatch.for_appropriate_body_period(@appropriate_body).find(params.expect(:id))
     end
 
   private
 
     def set_appropriate_body
-      @appropriate_body = AppropriateBodyPeriod.find(params[:appropriate_body_id])
+      @appropriate_body = AppropriateBodyPeriod.find(params.expect(:appropriate_body_id))
     end
   end
 end

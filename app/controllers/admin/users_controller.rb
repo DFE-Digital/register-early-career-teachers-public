@@ -7,7 +7,7 @@ module Admin
     end
 
     def show
-      @user = User.find(params[:id])
+      @user = User.find(params.expect(:id))
     end
 
     def new
@@ -27,7 +27,7 @@ module Admin
     end
 
     def edit
-      @user = User.find(params[:id])
+      @user = User.find(params.expect(:id))
     end
 
     def update
@@ -43,12 +43,12 @@ module Admin
     end
 
     def remove
-      @user = User.find(params[:id])
+      @user = User.find(params.expect(:id))
       @remove_user = Admin::Users::RemoveUserForm.new(user: @user)
     end
 
     def destroy
-      @user = User.find(params[:id])
+      @user = User.find(params.expect(:id))
 
       @remove_user = Admin::Users::RemoveUserForm.new(
         remove_user_params.merge(
@@ -72,7 +72,7 @@ module Admin
     end
 
     def unlock_otp_sign_in
-      user = User.find(params[:id])
+      user = User.find(params.expect(:id))
 
       Sessions::UnlockOTPAccount.new(author: current_user, user:).unlock
 

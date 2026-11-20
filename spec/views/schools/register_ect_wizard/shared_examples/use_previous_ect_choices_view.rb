@@ -62,7 +62,7 @@ RSpec.shared_examples "a use previous ect choices view" do |current_step:, back_
     render
 
     expect(rendered).to have_button("Continue")
-    expect(rendered).to have_selector("form[action='#{send(continue_path)}']")
+    expect(rendered).to have_css("form[action='#{send(continue_path)}']")
   end
 
   context "when school-led" do
@@ -92,11 +92,11 @@ RSpec.shared_examples "a use previous ect choices view" do |current_step:, back_
     end
 
     it "does not render the lead provider row" do
-      expect(rendered).not_to have_css(".govuk-summary-list__key", text: "Lead provider")
+      expect(rendered).to have_no_css(".govuk-summary-list__key", text: "Lead provider")
     end
 
     it "does not render the delivery partner row" do
-      expect(rendered).not_to have_css(".govuk-summary-list__key", text: "Delivery partner")
+      expect(rendered).to have_no_css(".govuk-summary-list__key", text: "Delivery partner")
     end
   end
 
@@ -160,7 +160,7 @@ RSpec.shared_examples "a use previous ect choices view" do |current_step:, back_
     end
 
     it "does not render the delivery partner row" do
-      expect(rendered).not_to have_css(".govuk-summary-list__key", text: "Delivery partner")
+      expect(rendered).to have_no_css(".govuk-summary-list__key", text: "Delivery partner")
     end
 
     it "renders the explanatory paragraph" do

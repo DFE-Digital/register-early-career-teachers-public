@@ -61,11 +61,11 @@ module Admin
   private
 
     def set_teacher
-      @teacher = Teacher.includes(:induction_periods).find(params[:teacher_id])
+      @teacher = Teacher.includes(:induction_periods).find(params.expect(:teacher_id))
     end
 
     def set_induction_period
-      @induction_period = @teacher.induction_periods.find(params[:id])
+      @induction_period = @teacher.induction_periods.find(params.expect(:id))
     end
 
     def induction_period_params

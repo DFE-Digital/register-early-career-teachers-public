@@ -57,14 +57,14 @@ RSpec.describe Admin::Statements::PaymentOverview::IttecfEctpComponent, type: :c
     end
 
     it "does not show rows for ECF contracts" do
-      expect(page).not_to have_text("Uplift fees")
-      expect(page).not_to have_text("Output payment")
-      expect(page).not_to have_text("Clawbacks")
+      expect(page).to have_no_text("Uplift fees")
+      expect(page).to have_no_text("Output payment")
+      expect(page).to have_no_text("Clawbacks")
     end
 
     it "displays the milestone cutoff and payment dates" do
-      expect(page).to have_content("30 September 2025")
-      expect(page).to have_content("15 October 2025")
+      expect(page).to have_text("30 September 2025")
+      expect(page).to have_text("15 October 2025")
     end
 
     it "has a total payment which is the sum of net total for banded and flatrate" do

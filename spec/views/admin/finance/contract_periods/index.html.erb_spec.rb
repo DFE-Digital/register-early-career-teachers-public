@@ -28,7 +28,7 @@ RSpec.describe "admin/finance/contract_periods/index.html.erb" do
 
     expect(view.content_for(:backlink_or_breadcrumb)).to have_link("Finance", href: admin_finance_path)
     expect(view.content_for(:backlink_or_breadcrumb)).to include("Contract periods")
-    expect(view.content_for(:backlink_or_breadcrumb)).not_to have_link("Contract periods")
+    expect(view.content_for(:backlink_or_breadcrumb)).to have_no_link("Contract periods")
   end
 
   it "has the right number of rows" do
@@ -49,7 +49,7 @@ RSpec.describe "admin/finance/contract_periods/index.html.erb" do
     it "displays a message informing me there are no contract periods to display" do
       render
 
-      expect(rendered).to have_content("No contract periods found")
+      expect(rendered).to have_text("No contract periods found")
     end
   end
 end

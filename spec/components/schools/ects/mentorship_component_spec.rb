@@ -116,7 +116,7 @@ RSpec.describe Schools::ECTs::MentorshipComponent, type: :component do
       render_inline(component)
 
       expect(page).to have_text("Test Mentor")
-      expect(page).not_to have_css("ul")
+      expect(page).to have_no_css("ul")
     end
   end
 

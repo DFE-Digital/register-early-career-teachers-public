@@ -220,17 +220,19 @@ RSpec.describe ApplicationHelper, type: :helper do
 
   describe "#support_mailto_link" do
     it "returns a govuk styled link to the CPD support email address" do
-      expect(support_mailto_link).to have_css(
-        %(a[href='mailto:teacher.induction@education.gov.uk'][class='govuk-link']),
-        text: "teacher.induction@education.gov.uk"
+      expect(support_mailto_link).to have_link(
+        "teacher.induction@education.gov.uk",
+        href: "mailto:teacher.induction@education.gov.uk",
+        class: "govuk-link"
       )
     end
 
     context "when custom text is passed in" do
       it "adds the custom text into the link" do
-        expect(support_mailto_link("feedback")).to have_css(
-          %(a[href='mailto:teacher.induction@education.gov.uk'][class='govuk-link']),
-          text: "feedback"
+        expect(support_mailto_link("feedback")).to have_link(
+          "feedback",
+          href: "mailto:teacher.induction@education.gov.uk",
+          class: "govuk-link"
         )
       end
     end
@@ -337,7 +339,7 @@ RSpec.describe ApplicationHelper, type: :helper do
         result = trs_alerts_text(false)
 
         expect(result).to have_text("No")
-        expect(result).not_to have_selector("a")
+        expect(result).to have_no_css("a")
       end
     end
   end

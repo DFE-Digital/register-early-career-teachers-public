@@ -39,7 +39,7 @@ module AppropriateBodies
       end
 
       def update
-        @pending_induction_submission_batch = PendingInductionSubmissionBatch.find(params[:id])
+        @pending_induction_submission_batch = PendingInductionSubmissionBatch.find(params.expect(:id))
 
         if @pending_induction_submission_batch.processed?
           @pending_induction_submission_batch.completing!

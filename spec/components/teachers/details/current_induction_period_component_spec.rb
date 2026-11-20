@@ -45,7 +45,7 @@ RSpec.describe Teachers::Details::CurrentInductionPeriodComponent, type: :compon
         context "and in admin mode" do
           let(:mode) { :admin }
 
-          it { expect(page).not_to have_link("Release") }
+          it { expect(page).to have_no_link("Release") }
         end
 
         context "and in appropriate body mode" do
@@ -59,7 +59,7 @@ RSpec.describe Teachers::Details::CurrentInductionPeriodComponent, type: :compon
         let(:enable_release) { false }
 
         it {
-          expect(page).not_to have_link("Release")
+          expect(page).to have_no_link("Release")
         }
       end
     end
@@ -98,14 +98,14 @@ RSpec.describe Teachers::Details::CurrentInductionPeriodComponent, type: :compon
                               induction_programme: "cip")
           end
 
-          it { expect(page).not_to have_link("Edit") }
+          it { expect(page).to have_no_link("Edit") }
         end
       end
 
       context "when false" do
         let(:enable_edit) { false }
 
-        it { expect(page).not_to have_link("Edit") }
+        it { expect(page).to have_no_link("Edit") }
       end
     end
 
@@ -126,14 +126,14 @@ RSpec.describe Teachers::Details::CurrentInductionPeriodComponent, type: :compon
         context "and in appropriate body mode" do
           let(:mode) { :appropriate_body }
 
-          it { expect(page).not_to have_link("Delete") }
+          it { expect(page).to have_no_link("Delete") }
         end
       end
 
       context "when false" do
         let(:enable_delete) { false }
 
-        it { expect(page).not_to have_link("Delete") }
+        it { expect(page).to have_no_link("Delete") }
       end
     end
   end

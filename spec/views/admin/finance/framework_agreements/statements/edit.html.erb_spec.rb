@@ -19,8 +19,8 @@ RSpec.describe "admin/finance/framework_agreements/statements/edit.html.erb" do
     expect(view.content_for(:page_title)).to eq("Edit statement")
     expect(view.content_for(:backlink_or_breadcrumb)).to have_link("Back", href: statement_path)
 
-    expect(rendered).to have_selector("form[action='#{statement_path}']")
-    expect(rendered).to have_selector("input[name='_method'][value='patch']", visible: :all)
+    expect(rendered).to have_css("form[action='#{statement_path}']")
+    expect(rendered).to have_css("input[name='_method'][value='patch']", visible: :all)
     expect(rendered).to have_button("Save")
 
     expect(rendered).to have_css("select[name='statement[month]'] option[value='11'][selected]")

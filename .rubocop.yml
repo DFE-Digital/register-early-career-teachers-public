@@ -147,7 +147,7 @@ Naming/MethodParameterName:
 Lint/MissingSuper:
   Enabled: false
 
-Capybara/CurrentPathExpectation:
+Capybara/RSpec/CurrentPathExpectation:
   Exclude:
     - "spec/features/**/*" # Excluded in feature specs because we use Playwright (not Capybara) for those. Leaving it enabled elsewhere in case Capybara matchers are used in other test types.
 
@@ -159,3 +159,7 @@ RSpec/VariableName:
   Exclude:
     - 'spec/requests/api/documentation/**/*'
     - 'spec/support/shared_contexts/api/api_doc_request_auth.rb'
+
+RSpec/ExpectActual:
+  Exclude:
+    - "spec/requests/dfe_analytics_spec.rb"

@@ -27,7 +27,7 @@ RSpec.describe "admin/schools/index.html.erb" do
   it "renders a table of schools" do
     render
 
-    expect(rendered).to have_css("table.govuk-table")
+    expect(rendered).to have_table
     expect(rendered).to have_css("tbody tr", count: number_of_schools)
   end
 
@@ -62,7 +62,7 @@ RSpec.describe "admin/schools/index.html.erb" do
       render
 
       expect(rendered).to have_css("p", text: "No schools found.")
-      expect(rendered).not_to have_css("table.govuk-table")
+      expect(rendered).to have_no_table
     end
   end
 
@@ -78,16 +78,16 @@ RSpec.describe "admin/schools/index.html.erb" do
       render
 
       expect(rendered).to have_css("p", text: "There are no schools that match your search.")
-      expect(rendered).not_to have_css("table.govuk-table")
+      expect(rendered).to have_no_table
     end
   end
 
   it "renders table with only School and URN columns" do
     render
 
-    expect(rendered).to have_css("table.govuk-table")
+    expect(rendered).to have_table
     expect(rendered).to have_css("th", text: "School")
     expect(rendered).to have_css("th", text: "URN")
-    expect(rendered).not_to have_css("th", text: "Postcode")
+    expect(rendered).to have_no_css("th", text: "Postcode")
   end
 end

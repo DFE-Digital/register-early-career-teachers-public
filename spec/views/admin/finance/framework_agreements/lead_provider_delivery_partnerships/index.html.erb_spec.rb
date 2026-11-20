@@ -33,7 +33,7 @@ RSpec.describe "admin/finance/framework_agreements/lead_provider_delivery_partne
     expect(rendered).to have_link(delivery_partner.name, href: admin_delivery_partner_path(delivery_partner))
     expect(rendered).to have_link("Remove", href: delete_admin_contract_period_framework_agreement_lead_provider_delivery_partnership_path(contract_period, framework_agreement, lead_provider_delivery_partnership))
     expect(rendered).to have_link("Add delivery partner", href: new_admin_contract_period_framework_agreement_lead_provider_delivery_partnership_path(contract_period, framework_agreement))
-    expect(rendered).not_to have_selector("a[aria-disabled='true']", text: "Add delivery partner")
+    expect(rendered).to have_no_css("a[aria-disabled='true']", text: "Add delivery partner")
   end
 
   context "when the contract period is payments frozen" do
@@ -44,8 +44,8 @@ RSpec.describe "admin/finance/framework_agreements/lead_provider_delivery_partne
     it "hides remove buttons and renders the add button in a disabled state" do
       render
 
-      expect(rendered).not_to have_link("Remove")
-      expect(rendered).to have_selector("a[disabled], a[aria-disabled='true']", text: "Add delivery partner")
+      expect(rendered).to have_no_link("Remove")
+      expect(rendered).to have_css("a[disabled], a[aria-disabled='true']", text: "Add delivery partner")
     end
   end
 
@@ -55,8 +55,8 @@ RSpec.describe "admin/finance/framework_agreements/lead_provider_delivery_partne
     it "displays a message informing me there are no delivery partners" do
       render
 
-      expect(rendered).to have_content("No delivery partners found")
-      expect(rendered).not_to have_css(".govuk-table")
+      expect(rendered).to have_text("No delivery partners found")
+      expect(rendered).to have_no_css(".govuk-table")
     end
   end
 end

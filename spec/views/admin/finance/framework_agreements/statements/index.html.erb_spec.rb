@@ -35,7 +35,7 @@ RSpec.describe "admin/finance/framework_agreements/statements/index.html.erb" do
     expect(view.content_for(:backlink_or_breadcrumb)).to have_link(contract_period.year.to_s, href: admin_contract_period_path(contract_period))
     expect(view.content_for(:backlink_or_breadcrumb)).to have_link(lead_provider.name, href: admin_contract_period_framework_agreements_path(contract_period))
 
-    expect(rendered).to have_content("Statements for #{lead_provider.name} in the #{contract_period.year} contract period.")
+    expect(rendered).to have_text("Statements for #{lead_provider.name} in the #{contract_period.year} contract period.")
 
     expect(rendered).to have_css(".govuk-table", count: 1)
     ["Month", "Fee type", "Deadline date", "Payment date", "Status"].each do |header|
@@ -47,15 +47,15 @@ RSpec.describe "admin/finance/framework_agreements/statements/index.html.erb" do
     expect(rows[0].text).to include("November 2099")
     expect(rows[1].text).to include("December 2099")
     expect(rendered).to have_link("November 2099", href: admin_contract_period_framework_agreement_statement_path(contract_period, framework_agreement, november_statement))
-    expect(rendered).to have_content("Output")
-    expect(rendered).to have_content("Service")
+    expect(rendered).to have_text("Output")
+    expect(rendered).to have_text("Service")
     expect(rendered).to have_css(".govuk-tag.govuk-tag--blue", text: "Open")
     expect(rendered).to have_css(".govuk-tag.govuk-tag--green", text: "Paid")
-    expect(rendered).to have_content(november_statement.deadline_date.to_fs(:govuk))
-    expect(rendered).to have_content(december_statement.payment_date.to_fs(:govuk))
+    expect(rendered).to have_text(november_statement.deadline_date.to_fs(:govuk))
+    expect(rendered).to have_text(december_statement.payment_date.to_fs(:govuk))
 
     expect(rendered).to have_link("Add statement", href: new_admin_contract_period_framework_agreement_statement_path(contract_period, framework_agreement))
-    expect(rendered).not_to have_selector("a[aria-disabled='true']", text: "Add statement")
+    expect(rendered).to have_no_css("a[aria-disabled='true']", text: "Add statement")
   end
 
   context "when the contract period has already started but is not frozen" do
@@ -67,7 +67,7 @@ RSpec.describe "admin/finance/framework_agreements/statements/index.html.erb" do
       render
 
       expect(rendered).to have_link("Add statement", href: new_admin_contract_period_framework_agreement_statement_path(contract_period, framework_agreement))
-      expect(rendered).not_to have_selector("a[aria-disabled='true']", text: "Add statement")
+      expect(rendered).to have_no_css("a[aria-disabled='true']", text: "Add statement")
     end
   end
 
@@ -80,7 +80,7 @@ RSpec.describe "admin/finance/framework_agreements/statements/index.html.erb" do
     it "renders the add button in a disabled state" do
       render
 
-      expect(rendered).to have_selector("a[disabled], a[aria-disabled='true']", text: "Add statement")
+      expect(rendered).to have_css("a[disabled], a[aria-disabled='true']", text: "Add statement")
     end
   end
 
@@ -90,8 +90,8 @@ RSpec.describe "admin/finance/framework_agreements/statements/index.html.erb" do
     it "displays a message informing me there are no statements" do
       render
 
-      expect(rendered).to have_content("No statements found")
-      expect(rendered).not_to have_css(".govuk-table")
+      expect(rendered).to have_text("No statements found")
+      expect(rendered).to have_no_css(".govuk-table")
     end
   end
 end

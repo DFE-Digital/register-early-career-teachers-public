@@ -76,7 +76,7 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
 
           render
 
-          expect(rendered).to have_content("We’ll pass on their details to FraggleRock")
+          expect(rendered).to have_text("We’ll pass on their details to FraggleRock")
         end
       end
 
@@ -97,7 +97,7 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
 
           render
 
-          expect(rendered).to have_content("We’ll pass on their details to Gobo")
+          expect(rendered).to have_text("We’ll pass on their details to Gobo")
         end
       end
 
@@ -111,7 +111,7 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
 
           render
 
-          expect(rendered).not_to have_content("We’ll pass on their details to FraggleRock")
+          expect(rendered).to have_no_text("We’ll pass on their details to FraggleRock")
         end
       end
     end
@@ -130,7 +130,7 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
 
           render
 
-          expect(rendered).to have_content("They cannot do mentor training according to our records.")
+          expect(rendered).to have_text("They cannot do mentor training according to our records.")
         end
       end
 
@@ -144,7 +144,7 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
 
           render
 
-          expect(rendered).not_to have_content("They cannot do mentor training according to our records.")
+          expect(rendered).to have_no_text("They cannot do mentor training according to our records.")
         end
       end
     end
@@ -163,12 +163,12 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
     end
 
     it "does not mention an email sent to the mentor" do
-      expect(rendered).not_to have_content("What happens next")
-      expect(rendered).not_to have_content("We’ll email #{mentor.full_name} to confirm that you’ve registered them as a mentor.")
+      expect(rendered).to have_no_text("What happens next")
+      expect(rendered).to have_no_text("We’ll email #{mentor.full_name} to confirm that you’ve registered them as a mentor.")
     end
 
     it "does not mention passing on details to the lead provider for mentor training" do
-      expect(rendered).not_to have_content("We’ll pass on their details to")
+      expect(rendered).to have_no_text("We’ll pass on their details to")
     end
   end
 
@@ -185,8 +185,8 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
     end
 
     it "mentions an email sent to the mentor" do
-      expect(rendered).to have_content("What happens next")
-      expect(rendered).to have_content("We’ll email #{mentor.full_name} to confirm that you’ve registered them as a mentor.")
+      expect(rendered).to have_text("What happens next")
+      expect(rendered).to have_text("We’ll email #{mentor.full_name} to confirm that you’ve registered them as a mentor.")
     end
 
     it "renders the 'What happens next' subheading as a h2" do
@@ -194,7 +194,7 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
     end
 
     it "mentions passing on details to the lead provider for mentor training" do
-      expect(rendered).to have_content("We’ll pass on their details to FraggleRock")
+      expect(rendered).to have_text("We’ll pass on their details to FraggleRock")
     end
   end
 
@@ -211,11 +211,11 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
     end
 
     it "does not mention passing on details to the lead provider for mentor training" do
-      expect(rendered).not_to have_content("We’ll pass on their details to")
+      expect(rendered).to have_no_text("We’ll pass on their details to")
     end
 
     it "does not mention ineligibility for mentor training" do
-      expect(rendered).not_to have_content("They cannot do mentor training according to our records.")
+      expect(rendered).to have_no_text("They cannot do mentor training according to our records.")
     end
   end
 
@@ -230,7 +230,7 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
 
       render
 
-      expect(rendered).to have_content("We’ll pass on their details to FraggleRock")
+      expect(rendered).to have_text("We’ll pass on their details to FraggleRock")
     end
   end
 end

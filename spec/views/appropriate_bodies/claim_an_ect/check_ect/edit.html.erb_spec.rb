@@ -45,7 +45,7 @@ RSpec.describe "appropriate_bodies/claim_an_ect/check_ect/edit.html.erb" do
         render
         expect(rendered).to have_text("You cannot register Anna Chancellor")
         expect(rendered).to have_text("completing their induction with another appropriate body")
-        expect(rendered).not_to have_button("Claim induction")
+        expect(rendered).to have_no_button("Claim induction")
       end
     end
   end
@@ -71,7 +71,7 @@ RSpec.describe "appropriate_bodies/claim_an_ect/check_ect/edit.html.erb" do
 
       it "has no release link" do
         render
-        expect(rendered).not_to have_link("Release")
+        expect(rendered).to have_no_link("Release")
       end
     end
 
@@ -89,8 +89,8 @@ RSpec.describe "appropriate_bodies/claim_an_ect/check_ect/edit.html.erb" do
     context "with no extensions but with a teacher" do
       it "does not display the row" do
         render
-        expect(rendered).not_to have_css(".govuk-summary-list__key", text: "Extensions")
-        expect(rendered).not_to have_css(".govuk-summary-list__value", text: "0.0")
+        expect(rendered).to have_no_css(".govuk-summary-list__key", text: "Extensions")
+        expect(rendered).to have_no_css(".govuk-summary-list__value", text: "0.0")
       end
     end
 
@@ -99,8 +99,8 @@ RSpec.describe "appropriate_bodies/claim_an_ect/check_ect/edit.html.erb" do
 
       it "does not display the row" do
         render
-        expect(rendered).not_to have_css(".govuk-summary-list__key", text: "Extensions")
-        expect(rendered).not_to have_css(".govuk-summary-list__value", text: "0.0")
+        expect(rendered).to have_no_css(".govuk-summary-list__key", text: "Extensions")
+        expect(rendered).to have_no_css(".govuk-summary-list__value", text: "0.0")
       end
     end
 

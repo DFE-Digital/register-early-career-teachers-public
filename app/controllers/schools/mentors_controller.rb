@@ -27,7 +27,7 @@ module Schools
     end
 
     def set_mentor
-      @mentor = MentorAtSchoolPeriod.find(params[:id])
+      @mentor = MentorAtSchoolPeriod.find(params.expect(:id))
     end
 
     def set_decorated_mentor

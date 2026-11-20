@@ -257,8 +257,8 @@ RSpec.shared_examples "does not show the failed TRN merges banner" do
 
     page = Capybara.string(response.body)
 
-    expect(page).not_to have_text("An automated merge of teacher records has failed.")
-    expect(page).not_to have_link("View the failed merges", href: admin_failed_trn_merges_path)
+    expect(page).to have_no_text("An automated merge of teacher records has failed.")
+    expect(page).to have_no_link("View the failed merges", href: admin_failed_trn_merges_path)
   end
 end
 

@@ -49,7 +49,7 @@ RSpec.describe "admin/finance/framework_agreements/index.html.erb" do
 
     expect(rendered).to have_link(add_button_text, href: new_admin_contract_period_framework_agreement_path(contract_period))
 
-    expect(rendered).not_to have_content(started_hint)
+    expect(rendered).to have_no_text(started_hint)
   end
 
   context "when the contract period has started" do
@@ -60,8 +60,8 @@ RSpec.describe "admin/finance/framework_agreements/index.html.erb" do
 
       expect(rendered).to have_css(".govuk-hint", text: started_hint)
 
-      expect(rendered).not_to have_css(".govuk-button--secondary", text: "Remove")
-      expect(rendered).not_to have_link(add_button_text)
+      expect(rendered).to have_no_css(".govuk-button--secondary", text: "Remove")
+      expect(rendered).to have_no_link(add_button_text)
 
       framework_agreements.each do |framework_agreement|
         name = framework_agreement.lead_provider.name
@@ -78,7 +78,7 @@ RSpec.describe "admin/finance/framework_agreements/index.html.erb" do
     it "displays an empty state message" do
       render
 
-      expect(rendered).to have_content("No lead provider framework agreements for #{contract_period.year}")
+      expect(rendered).to have_text("No lead provider framework agreements for #{contract_period.year}")
     end
   end
 end

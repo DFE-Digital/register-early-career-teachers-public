@@ -61,7 +61,7 @@ RSpec.describe "admin/schools/teachers/show.html.erb", type: :view do
   it "renders the teachers table" do
     render
 
-    expect(rendered).to have_css("table.govuk-table")
+    expect(rendered).to have_table
   end
 
   it "renders the search form" do
@@ -89,7 +89,7 @@ RSpec.describe "admin/schools/teachers/show.html.erb", type: :view do
       render
 
       expect(rendered).to have_text("No teachers found at this school.")
-      expect(rendered).not_to have_field("Search for teacher")
+      expect(rendered).to have_no_field("Search for teacher")
     end
   end
 

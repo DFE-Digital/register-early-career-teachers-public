@@ -40,7 +40,7 @@ module AppropriateBodies
     end
 
     def find_batch
-      @pending_induction_submission_batch = PendingInductionSubmissionBatch.find(params[:id])
+      @pending_induction_submission_batch = PendingInductionSubmissionBatch.find(params.expect(:id))
 
       render "errors/unauthorised", status: :unauthorized if wrong_appropriate_body?
     end

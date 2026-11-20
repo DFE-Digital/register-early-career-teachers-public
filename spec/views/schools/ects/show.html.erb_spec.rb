@@ -347,8 +347,8 @@ RSpec.describe "schools/ects/show.html.erb" do
       let(:training_programme) { "school_led" }
 
       it "does not show lead provider and delivery partner fields" do
-        expect(subject).not_to have_css("dt.govuk-summary-list__key", text: "Lead provider")
-        expect(subject).not_to have_css("dt.govuk-summary-list__key", text: "Delivery partner")
+        expect(subject).to have_no_css("dt.govuk-summary-list__key", text: "Lead provider")
+        expect(subject).to have_no_css("dt.govuk-summary-list__key", text: "Delivery partner")
       end
     end
   end

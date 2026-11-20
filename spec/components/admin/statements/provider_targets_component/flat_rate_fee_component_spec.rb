@@ -16,7 +16,7 @@ RSpec.describe Admin::Statements::ProviderTargetsComponent::FlatRateFeeComponent
     let(:flat_rate_fee_structure) { nil }
 
     it "does not render anything" do
-      expect(page).to have_no_selector("body")
+      expect(page).to have_no_css("body")
     end
   end
 

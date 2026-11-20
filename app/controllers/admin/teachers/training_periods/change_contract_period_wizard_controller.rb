@@ -35,11 +35,11 @@ module Admin
       private
 
         def set_teacher
-          @teacher = Teacher.find(params[:teacher_id])
+          @teacher = Teacher.find(params.expect(:teacher_id))
         end
 
         def set_training_period
-          @training_period = TrainingPeriod.find(params[:training_period_id])
+          @training_period = TrainingPeriod.find(params.expect(:training_period_id))
 
           raise ActiveRecord::RecordNotFound unless @training_period.teacher_id == @teacher.id
         end

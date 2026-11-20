@@ -31,11 +31,11 @@ module AppropriateBodies
     private
 
       def find_current_teacher
-        @teacher = ects.current.find_by!(id: params[:teacher_id])
+        @teacher = ects.current.find_by!(id: params.expect(:teacher_id))
       end
 
       def find_former_teacher
-        @teacher = ects.former.find_by!(id: params[:teacher_id])
+        @teacher = ects.former.find_by!(id: params.expect(:teacher_id))
       end
 
       def record_release

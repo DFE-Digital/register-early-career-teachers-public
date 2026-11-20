@@ -11,7 +11,7 @@ RSpec.describe "schools/register_ect_wizard/cannot_register_ect" do
   end
 
   it "displays the cannot register ECT message" do
-    expect(rendered).to have_content("Our records show that John Doe cannot be registered for training or mentoring.")
+    expect(rendered).to have_text("Our records show that John Doe cannot be registered for training or mentoring.")
   end
 
   it "includes a link back to ECTs" do

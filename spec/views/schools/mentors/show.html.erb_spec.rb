@@ -52,7 +52,7 @@ RSpec.describe "schools/mentors/show.html.erb" do
       it { is_expected.to have_css("h2.govuk-heading-m", text: "Naruto Uzumaki is leaving your school") }
       it { is_expected.to have_text("You’ve told us Naruto Uzumaki is leaving your school on #{finished_on.to_fs(:govuk)}.", normalize_ws: true) }
       it { is_expected.to have_text("You will not be able to view or edit Naruto Uzumaki’s details after #{finished_on.to_fs(:govuk)}.", normalize_ws: true) }
-      it { is_expected.not_to have_link(href: leaving_wizard_href) }
+      it { is_expected.to have_no_link(href: leaving_wizard_href) }
     end
   end
 end

@@ -20,7 +20,7 @@ module AppropriateBodies
       end
 
       def edit
-        @extension = teacher.induction_extensions.find(params[:id])
+        @extension = teacher.induction_extensions.find(params.expect(:id))
       end
 
       def update
@@ -43,7 +43,7 @@ module AppropriateBodies
       end
 
       def teacher
-        @teacher ||= AppropriateBodies::ECTs.new(@appropriate_body).current.find_by!(id: params[:teacher_id])
+        @teacher ||= AppropriateBodies::ECTs.new(@appropriate_body).current.find_by!(id: params.expect(:teacher_id))
       end
 
       def extension_params

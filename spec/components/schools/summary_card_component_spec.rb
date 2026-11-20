@@ -27,11 +27,11 @@ RSpec.describe Schools::SummaryCardComponent, type: :component do
     before { render_inline(described_class.new(title: "Reported to us by your school", ect_at_school_period: school_led_ect_at_school_period, training_period: school_led_training_period, data_source: :school)) }
 
     it "renders the summary card" do
-      expect(page).to have_selector(".govuk-summary-card")
+      expect(page).to have_css(".govuk-summary-card")
     end
 
     it "renders the correct title" do
-      expect(page).to have_selector(".govuk-summary-card__title", text: "Reported to us by your school")
+      expect(page).to have_css(".govuk-summary-card__title", text: "Reported to us by your school")
     end
 
     it "renders the appropriate body" do
@@ -47,7 +47,7 @@ RSpec.describe Schools::SummaryCardComponent, type: :component do
     end
 
     it "does not render the lead provider" do
-      expect(page).not_to have_selector(".govuk-summary-list__row", text: "Lead provider")
+      expect(page).to have_no_css(".govuk-summary-list__row", text: "Lead provider")
     end
 
     context "when the ECT is provider-led and reported by the school" do
@@ -65,11 +65,11 @@ RSpec.describe Schools::SummaryCardComponent, type: :component do
     before { render_inline(described_class.new(title: "Reported to us by your lead provider", ect_at_school_period: provider_led_ect_at_school_period, training_period: provider_led_training_period, data_source: :lead_provider)) }
 
     it "renders the summary card" do
-      expect(page).to have_selector(".govuk-summary-card")
+      expect(page).to have_css(".govuk-summary-card")
     end
 
     it "renders the correct title" do
-      expect(page).to have_selector(".govuk-summary-card__title", text: "Reported to us by your lead provider")
+      expect(page).to have_css(".govuk-summary-card__title", text: "Reported to us by your lead provider")
     end
 
     it "renders the lead provider" do
@@ -98,11 +98,11 @@ RSpec.describe Schools::SummaryCardComponent, type: :component do
     end
 
     it "renders the summary card" do
-      expect(page).to have_selector(".govuk-summary-card")
+      expect(page).to have_css(".govuk-summary-card")
     end
 
     it "renders the correct title" do
-      expect(page).to have_selector(".govuk-summary-card__title", text: "Reported to us by your appropriate body")
+      expect(page).to have_css(".govuk-summary-card__title", text: "Reported to us by your appropriate body")
     end
 
     it "renders the appropriate body" do
@@ -137,7 +137,7 @@ RSpec.describe Schools::SummaryCardComponent, type: :component do
     end
 
     it "does not render an empty key column" do
-      expect(page).not_to have_selector(".govuk-summary-list__key:empty")
+      expect(page).to have_no_css(".govuk-summary-list__key:empty")
     end
   end
 
@@ -165,7 +165,7 @@ RSpec.describe Schools::SummaryCardComponent, type: :component do
 
     it "does not render any summary list rows" do
       within page.find(".govuk-summary-card", text: "Reported to us by your lead provider") do
-        expect(page).not_to have_selector(".govuk-summary-list__row")
+        expect(page).to have_no_css(".govuk-summary-list__row")
       end
     end
   end

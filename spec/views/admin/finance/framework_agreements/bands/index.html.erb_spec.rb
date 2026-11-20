@@ -24,7 +24,7 @@ RSpec.describe "admin/finance/framework_agreements/bands/index.html.erb" do
     expect(view.content_for(:backlink_or_breadcrumb)).to have_link(contract_period.year.to_s, href: admin_contract_period_path(contract_period))
     expect(view.content_for(:backlink_or_breadcrumb)).to have_link(framework_agreement.lead_provider_name, href: admin_contract_period_framework_agreement_bands_path(contract_period, framework_agreement))
 
-    expect(rendered).to have_content("Bands for #{framework_agreement.lead_provider_name} in the #{contract_period.year} contract period")
+    expect(rendered).to have_text("Bands for #{framework_agreement.lead_provider_name} in the #{contract_period.year} contract period")
 
     expect(rendered).to have_css(".govuk-table")
     expect(rendered).to have_link(
@@ -47,8 +47,8 @@ RSpec.describe "admin/finance/framework_agreements/bands/index.html.erb" do
       travel_to contract_period.started_on do
         render
 
-        expect(rendered).not_to have_button("Delete Band B")
-        expect(rendered).not_to have_link("Add band")
+        expect(rendered).to have_no_button("Delete Band B")
+        expect(rendered).to have_no_link("Add band")
       end
     end
   end
@@ -61,8 +61,8 @@ RSpec.describe "admin/finance/framework_agreements/bands/index.html.erb" do
     it "does not show delete or add band links" do
       render
 
-      expect(rendered).not_to have_link("Delete Band B")
-      expect(rendered).not_to have_link("Add band")
+      expect(rendered).to have_no_link("Delete Band B")
+      expect(rendered).to have_no_link("Add band")
     end
   end
 
@@ -72,8 +72,8 @@ RSpec.describe "admin/finance/framework_agreements/bands/index.html.erb" do
     it "displays a no bands message and no table" do
       render
 
-      expect(rendered).to have_content("No bands found")
-      expect(rendered).not_to have_css(".govuk-table")
+      expect(rendered).to have_text("No bands found")
+      expect(rendered).to have_no_css(".govuk-table")
     end
   end
 end

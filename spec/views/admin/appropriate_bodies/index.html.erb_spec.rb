@@ -26,7 +26,7 @@ RSpec.describe "admin/appropriate_bodies/index.html.erb" do
 
     expect(view.content_for(:backlink_or_breadcrumb)).to have_link("Organisations", href: admin_organisations_path)
     expect(view.content_for(:backlink_or_breadcrumb)).to include("Appropriate bodies")
-    expect(view.content_for(:backlink_or_breadcrumb)).not_to have_link("Appropriate bodies")
+    expect(view.content_for(:backlink_or_breadcrumb)).to have_no_link("Appropriate bodies")
   end
 
   it "renders a link to view all bulk uploads" do
@@ -76,14 +76,14 @@ RSpec.describe "admin/appropriate_bodies/index.html.erb" do
   it "does not mark active appropriate bodies as de-designated" do
     render
 
-    expect(rendered).not_to have_css(".govuk-tag", text: "De-designated")
+    expect(rendered).to have_no_css(".govuk-tag", text: "De-designated")
   end
 
   it "does not render pagination when there is only one page" do
     render
 
-    expect(rendered).not_to have_css(".govuk-pagination")
-    expect(rendered).not_to have_css("div.govuk-body", text: "Showing")
+    expect(rendered).to have_no_css(".govuk-pagination")
+    expect(rendered).to have_no_css("div.govuk-body", text: "Showing")
   end
 
   context "when there is more than one page" do
