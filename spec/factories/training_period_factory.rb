@@ -127,6 +127,10 @@ FactoryBot.define do
       finished_on { nil }
     end
 
+    trait :archived do
+      archived { true }
+    end
+
     trait :for_ect do
       mentor_at_school_period { nil }
       association :ect_at_school_period

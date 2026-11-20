@@ -36,8 +36,8 @@ RSpec.describe GIAS::Reconciliation::Close do
 
     it { is_expected.to be_truthy }
 
-    it_behaves_like "destroys unstarted mentor_at_school_periods"
-    it_behaves_like "destroys unstarted ect_at_school_periods"
+    it_behaves_like "archives unstarted mentor_at_school_periods"
+    it_behaves_like "archives unstarted ect_at_school_periods"
     it_behaves_like "finishes ongoing mentor_at_school_periods"
     it_behaves_like "finishes ongoing ect_at_school_periods"
 
@@ -49,8 +49,8 @@ RSpec.describe GIAS::Reconciliation::Close do
 
       it { is_expected.to be_truthy }
 
-      it_behaves_like "destroys unstarted mentor_at_school_periods"
-      it_behaves_like "destroys unstarted ect_at_school_periods"
+      it_behaves_like "archives unstarted mentor_at_school_periods"
+      it_behaves_like "archives unstarted ect_at_school_periods"
       it_behaves_like "finishes ongoing mentor_at_school_periods"
       it_behaves_like "finishes ongoing ect_at_school_periods"
 
@@ -62,8 +62,8 @@ RSpec.describe GIAS::Reconciliation::Close do
 
       it { is_expected.to be_truthy }
 
-      it_behaves_like "destroys unstarted mentor_at_school_periods"
-      it_behaves_like "destroys unstarted ect_at_school_periods"
+      it_behaves_like "archives unstarted mentor_at_school_periods"
+      it_behaves_like "archives unstarted ect_at_school_periods"
       it_behaves_like "finishes ongoing ect_at_school_periods"
 
       it "does not finish any mentor_at_school_periods" do
@@ -80,8 +80,8 @@ RSpec.describe GIAS::Reconciliation::Close do
 
       it { is_expected.to be_truthy }
 
-      it_behaves_like "destroys unstarted mentor_at_school_periods"
-      it_behaves_like "destroys unstarted ect_at_school_periods"
+      it_behaves_like "archives unstarted mentor_at_school_periods"
+      it_behaves_like "archives unstarted ect_at_school_periods"
       it_behaves_like "finishes ongoing mentor_at_school_periods"
 
       it "does not finish any ect_at_school_periods" do
@@ -98,10 +98,10 @@ RSpec.describe GIAS::Reconciliation::Close do
 
       it { is_expected.to be_truthy }
 
-      it_behaves_like "destroys unstarted mentor_at_school_periods"
+      it_behaves_like "archives unstarted mentor_at_school_periods"
 
-      it "does not destroy any ect_at_school_periods" do
-        expect(ECTAtSchoolPeriods::Destroy).not_to receive(:call)
+      it "does not archive any ect_at_school_periods" do
+        expect(ECTAtSchoolPeriods::Archive).not_to receive(:call)
 
         expect { service }.not_to change(ECTAtSchoolPeriod, :count)
       end
@@ -117,12 +117,12 @@ RSpec.describe GIAS::Reconciliation::Close do
 
       it { is_expected.to be_truthy }
 
-      it "does not destroy any mentor_at_school_periods" do
-        expect(MentorAtSchoolPeriods::Destroy).not_to receive(:call)
+      it "does not archive any mentor_at_school_periods" do
+        expect(MentorAtSchoolPeriods::Archive).not_to receive(:call)
         expect { service }.not_to change(MentorAtSchoolPeriod, :count)
       end
 
-      it_behaves_like "destroys unstarted ect_at_school_periods"
+      it_behaves_like "archives unstarted ect_at_school_periods"
       it_behaves_like "finishes ongoing mentor_at_school_periods"
       it_behaves_like "finishes ongoing ect_at_school_periods"
 
@@ -146,30 +146,30 @@ RSpec.describe GIAS::Reconciliation::Close do
       context "when the mentee has started but the mentorship starts in the future" do
         let!(:unstarted_mentorship_period) { create_mentorship_period(ects.second, unstarted_mentors.second, finished_on: nil) }
 
-        it "destroys the mentorship period" do
+        it "archives the mentorship period" do
           service
 
-          expect { unstarted_mentorship_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+          expect(unstarted_mentorship_period.reload).to be_archived
         end
       end
 
       context "when the mentor has started but the mentorship starts in the future" do
         let!(:unstarted_mentorship_period) { create_mentorship_period(unstarted_ects.second, mentors.second, finished_on: nil) }
 
-        it "destroys the mentorship period" do
+        it "archives the mentorship period" do
           service
 
-          expect { unstarted_mentorship_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+          expect(unstarted_mentorship_period.reload).to be_archived
         end
       end
 
       context "when neither the mentor nor the mentee period is unstarted" do
         let!(:unstarted_mentorship_period) { create_mentorship_period(unstarted_ects.first, unstarted_mentors.first) }
 
-        it "destroys the mentorship period" do
+        it "archives the mentorship period" do
           service
 
-          expect { unstarted_mentorship_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+          expect(unstarted_mentorship_period.reload).to be_archived
         end
       end
     end
@@ -194,8 +194,8 @@ RSpec.describe GIAS::Reconciliation::Close do
 
       it { is_expected.to be_truthy }
 
-      it_behaves_like "destroys unstarted ect_at_school_periods"
-      it_behaves_like "destroys unstarted mentor_at_school_periods"
+      it_behaves_like "archives unstarted ect_at_school_periods"
+      it_behaves_like "archives unstarted mentor_at_school_periods"
 
       it "does not destroy mentor_at_school_periods which started on closure date" do
         service

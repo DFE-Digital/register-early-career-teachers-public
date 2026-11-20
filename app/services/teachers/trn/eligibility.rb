@@ -52,8 +52,9 @@ module Teachers
       end
 
       def ect_periods_at_different_schools_do_not_overlap?
-        teacher.ect_at_school_periods.none? do |period|
+        teacher.ect_at_school_periods.unarchived.none? do |period|
           destination.ect_at_school_periods
+            .unarchived
             .where.not(school_id: period.school_id)
             .overlapping_with(period)
             .exists?

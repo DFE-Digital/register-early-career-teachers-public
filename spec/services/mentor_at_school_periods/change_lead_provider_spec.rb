@@ -256,8 +256,9 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
                           started_on:)
       end
 
-      it "deletes the existing training period" do
-        expect { subject }.not_to change(TrainingPeriod, :count)
+      it "archives the existing training period" do
+        expect { subject }.to change(TrainingPeriod, :count).by(1)
+        expect(training_period.reload).to be_archived
       end
     end
 

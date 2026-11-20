@@ -150,7 +150,7 @@ RSpec.describe "Admin::Teachers::UndoRegistrationWizardController", type: :reque
       end
       let(:declaration) { nil }
 
-      it "deletes the registration, shows the delete confirmation, and prevents a repeated submission" do
+      it "archives the registration, shows the confirmation, and prevents a repeated submission" do
         allow(Events::Record)
           .to receive(:record_undo_registration_event!)
           .and_call_original
@@ -167,9 +167,9 @@ RSpec.describe "Admin::Teachers::UndoRegistrationWizardController", type: :reque
              }
 
         expect(response).to redirect_to(admin_teacher_undo_registration_wizard_confirmation_path(teacher))
-        expect { at_school_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
-        expect { previous_training_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
-        expect { training_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+        expect(at_school_period.reload).to be_archived
+        expect(previous_training_period.reload).to be_archived
+        expect(training_period.reload).to be_archived
         expect(teacher.reload.anonymised_at).to be_present
 
         get admin_teacher_undo_registration_wizard_confirmation_path(teacher)

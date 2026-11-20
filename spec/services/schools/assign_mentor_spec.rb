@@ -82,20 +82,18 @@ RSpec.describe Schools::AssignMentor do
         context "and the earliest possible start is before the current mentorship started" do
           let(:earliest_possible_start) { current_mentorship_period.started_on.prev_day }
 
-          it "destroys the current mentorship period" do
+          it "archives the current mentorship period" do
             assign!
-            expect { current_mentorship_period.reload }
-              .to raise_error(ActiveRecord::RecordNotFound)
+            expect(current_mentorship_period.reload).to be_archived
           end
         end
 
         context "and the earliest possible start is when the current mentorship started" do
           let(:earliest_possible_start) { current_mentorship_period.started_on }
 
-          it "destroys the current mentorship period" do
+          it "archives the current mentorship period" do
             assign!
-            expect { current_mentorship_period.reload }
-              .to raise_error(ActiveRecord::RecordNotFound)
+            expect(current_mentorship_period.reload).to be_archived
           end
         end
       end
@@ -137,19 +135,17 @@ RSpec.describe Schools::AssignMentor do
         )
       end
 
-      it "destroys the upcoming mentorship period" do
+      it "archives the upcoming mentorship period" do
         assign!
 
-        expect { upcoming_mentorship_period.reload }
-          .to raise_error(ActiveRecord::RecordNotFound)
+        expect(upcoming_mentorship_period.reload).to be_archived
       end
 
-      it "destroys the events recorded against the upcoming mentorship period" do
+      it "preserves the events recorded against the upcoming mentorship period" do
         FactoryBot.create(:event, mentorship_period: upcoming_mentorship_period)
 
         expect { assign! }
-          .to change { Event.where(mentorship_period: upcoming_mentorship_period).count }
-          .from(1).to(0)
+          .not_to(change { Event.where(mentorship_period: upcoming_mentorship_period).count })
       end
 
       it "finishes the current mentorship period the day before the new one starts" do
@@ -168,11 +164,10 @@ RSpec.describe Schools::AssignMentor do
       context "when the new mentor starts in the future" do
         let(:new_mentor_started_on) { 2.months.from_now }
 
-        it "destroys the upcoming mentorship period" do
+        it "archives the upcoming mentorship period" do
           assign!
 
-          expect { upcoming_mentorship_period.reload }
-            .to raise_error(ActiveRecord::RecordNotFound)
+          expect(upcoming_mentorship_period.reload).to be_archived
         end
 
         it "does not extend the current mentorship period" do

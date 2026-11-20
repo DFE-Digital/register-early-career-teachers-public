@@ -53,6 +53,36 @@ describe Interval do
           expect(subject.errors.messages.keys).to be_empty
         end
       end
+
+      context "when the only overlapping sibling is archived" do
+        let!(:sibling) do
+          FactoryBot.create(:ect_at_school_period, :archived, school:, teacher: FactoryBot.create(:teacher), started_on: 1.week.ago, finished_on: 2.days.ago)
+        end
+        let(:finished_on) { 2.days.from_now }
+
+        it "does not treat the archived period as an overlap" do
+          expect(subject).to be_valid
+        end
+      end
+    end
+  end
+
+  describe "interval siblings" do
+    let(:teacher) { FactoryBot.create(:teacher) }
+    let!(:archived_sibling) do
+      FactoryBot.create(:ect_at_school_period, :archived, teacher:, school:, started_on: 1.year.ago, finished_on: 6.months.ago)
+    end
+    let!(:active_sibling) do
+      FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on: 5.months.ago, finished_on: 1.month.ago)
+    end
+    let(:period) { FactoryBot.build(:ect_at_school_period, teacher:, school:, started_on: Date.current, finished_on: nil) }
+
+    it "keeps `siblings` as the all-record relation" do
+      expect(period.siblings).to contain_exactly(archived_sibling, active_sibling)
+    end
+
+    it "uses only unarchived siblings for interval operations" do
+      expect(period.unarchived_siblings).to contain_exactly(active_sibling)
     end
   end
 

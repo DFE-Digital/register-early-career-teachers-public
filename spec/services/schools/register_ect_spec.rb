@@ -666,7 +666,7 @@ RSpec.describe Schools::RegisterECT do
 
             new_training_period = service.ect_at_school_period.training_periods.sole
 
-            expect(TrainingPeriod.exists?(previous_training_period.id)).to be(false)
+            expect(previous_training_period.reload).to be_archived
             expect(previous_ect_period.reload.finished_on).to eq(started_on.yesterday)
 
             expect(new_training_period.started_on).to eq(started_on)
@@ -697,7 +697,7 @@ RSpec.describe Schools::RegisterECT do
 
               new_training_period = service.ect_at_school_period.training_periods.sole
 
-              expect(TrainingPeriod.exists?(previous_training_period.id)).to be(false)
+              expect(previous_training_period.reload).to be_archived
               expect(previous_ect_period.reload.finished_on).to eq(started_on.yesterday)
 
               expect(new_training_period.school_partnership).to be_nil

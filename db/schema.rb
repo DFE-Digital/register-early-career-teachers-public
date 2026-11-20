@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_06_081929) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_12_091000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -327,6 +327,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_06_081929) do
     t.bigint "teacher_id", null: false
     t.datetime "updated_at", null: false
     t.enum "working_pattern", enum_type: "working_pattern"
+    t.boolean "archived", default: false, null: false
     t.index "teacher_id, ((finished_on IS NULL))", name: "index_ect_at_school_periods_on_teacher_id_finished_on_IS_NULL", unique: true, where: "(finished_on IS NULL)"
     t.index ["reported_leaving_by_school_id"], name: "index_ect_at_school_periods_on_reported_leaving_by_school_id"
     t.index ["school_id", "teacher_id", "started_on"], name: "index_ect_at_school_periods_on_school_id_teacher_id_started_on", unique: true
@@ -529,6 +530,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_06_081929) do
     t.date "started_on", null: false
     t.bigint "teacher_id", null: false
     t.datetime "updated_at", null: false
+    t.boolean "archived", default: false, null: false
     t.index "school_id, teacher_id, ((finished_on IS NULL))", name: "idx_on_school_id_teacher_id_finished_on_IS_NULL_dd7ee16a28", unique: true, where: "(finished_on IS NULL)"
     t.index ["reported_leaving_by_school_id"], name: "idx_on_reported_leaving_by_school_id_6c1d88c6d0"
     t.index ["school_id", "teacher_id", "started_on"], name: "idx_on_school_id_teacher_id_started_on_17d46e7783", unique: true
@@ -546,10 +548,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_06_081929) do
     t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on, '[]'::text)", stored: true
     t.date "started_on", null: false
     t.datetime "updated_at", null: false
-    t.index "ect_at_school_period_id, ((finished_on IS NULL))", name: "idx_on_ect_at_school_period_id_finished_on_IS_NULL_afd5cf131d", unique: true, where: "(finished_on IS NULL)"
-    t.index ["ect_at_school_period_id", "started_on"], name: "index_mentorship_periods_on_ect_at_school_period_id_started_on", unique: true
+    t.boolean "archived", default: false, null: false
+    t.index "ect_at_school_period_id, ((finished_on IS NULL))", name: "idx_on_ect_at_school_period_id_finished_on_IS_NULL_afd5cf131d", unique: true, where: "((finished_on IS NULL) AND (archived = false))"
+    t.index ["ect_at_school_period_id", "started_on"], name: "index_mentorship_periods_on_ect_at_school_period_id_started_on", unique: true, where: "(archived = false)"
     t.index ["ect_at_school_period_id"], name: "index_mentorship_periods_on_ect_at_school_period_id"
-    t.index ["mentor_at_school_period_id", "ect_at_school_period_id", "started_on"], name: "idx_on_mentor_at_school_period_id_ect_at_school_per_d69dffeecc", unique: true
+    t.index ["mentor_at_school_period_id", "ect_at_school_period_id", "started_on"], name: "idx_on_mentor_at_school_period_id_ect_at_school_per_d69dffeecc", unique: true, where: "(archived = false)"
     t.index ["mentor_at_school_period_id"], name: "index_mentorship_periods_on_mentor_at_school_period_id"
     t.check_constraint "finished_on >= started_on", name: "finished_on_not_before_started_on"
   end
@@ -1003,6 +1006,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_06_081929) do
     t.datetime "updated_at", null: false
     t.enum "withdrawal_reason", enum_type: "withdrawal_reasons"
     t.datetime "withdrawn_at"
+    t.boolean "archived", default: false, null: false
     t.index "ect_at_school_period_id, mentor_at_school_period_id, ((finished_on IS NULL))", name: "idx_on_ect_at_school_period_id_mentor_at_school_per_42bce3bf48", unique: true, where: "(finished_on IS NULL)"
     t.index ["api_transfer_updated_at", "ect_at_school_period_id"], name: "idx_training_periods_transfer_updated_ect", where: "(ect_at_school_period_id IS NOT NULL)"
     t.index ["api_transfer_updated_at", "mentor_at_school_period_id"], name: "idx_training_periods_transfer_updated_mentor", where: "(mentor_at_school_period_id IS NOT NULL)"
