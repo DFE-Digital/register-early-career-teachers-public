@@ -76,12 +76,12 @@ RSpec.describe Schools::Mentors::DetailsComponent, type: :component do
     end
 
     it "renders links for currently assigned ECTs" do
-      expect(page).not_to have_css(".govuk-summary-list__value", text: "No ECTs assigned")
+      expect(page).to have_no_css(".govuk-summary-list__value", text: "No ECTs assigned")
 
       expect(page).to have_link("Konohamaru Sarutobi", href: schools_ect_path(current_period, back_to_mentor: true, mentor_id: mentor.id))
       expect(page).to have_link("Boruto Uzumaki", href: schools_ect_path(upcoming_period, back_to_mentor: true, mentor_id: mentor.id))
-      expect(page).not_to have_link("Kakashi Hatake", href: schools_ect_path(finished_period, back_to_mentor: true, mentor_id: mentor.id))
-      expect(page).not_to have_link("Jiraiya Sannin", href: schools_ect_path(completed_period, back_to_mentor: true, mentor_id: mentor.id))
+      expect(page).to have_no_link("Kakashi Hatake", href: schools_ect_path(finished_period, back_to_mentor: true, mentor_id: mentor.id))
+      expect(page).to have_no_link("Jiraiya Sannin", href: schools_ect_path(completed_period, back_to_mentor: true, mentor_id: mentor.id))
     end
   end
 
@@ -101,7 +101,7 @@ RSpec.describe Schools::Mentors::DetailsComponent, type: :component do
     end
 
     it "does not render ECTs assigned to other mentors" do
-      expect(page).not_to have_css(".govuk-summary-list__value", text: "Sauske Uchiha")
+      expect(page).to have_no_css(".govuk-summary-list__value", text: "Sauske Uchiha")
     end
   end
 

@@ -69,10 +69,10 @@ module Schools
           )
         end
 
-        delegate  :type,
-                  :started_on_formatted,
-                  to: :leaving_on_boundary_validator,
-                  prefix: :invalid_period
+        delegate :type,
+                 :started_on_formatted,
+                 to: :leaving_on_boundary_validator,
+                 prefix: :invalid_period
         delegate :earliest_valid_input_date_formatted, to: :leaving_on_boundary_validator
       end
     end

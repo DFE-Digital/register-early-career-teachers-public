@@ -35,15 +35,15 @@ RSpec.describe Teachers::Details::PastInductionPeriodsComponent, type: :componen
     end
 
     it "displays the start date" do
-      expect(page).to have_content(Date.new(2021, 9, 1).to_fs(:govuk))
+      expect(page).to have_text(Date.new(2021, 9, 1).to_fs(:govuk))
     end
 
     it "displays the end date" do
-      expect(page).to have_content(1.year.ago.to_date.to_fs(:govuk))
+      expect(page).to have_text(1.year.ago.to_date.to_fs(:govuk))
     end
 
     it "displays the number of terms" do
-      expect(page).to have_content("3")
+      expect(page).to have_text("3")
     end
 
     context "when edit is enabled" do
@@ -65,8 +65,8 @@ RSpec.describe Teachers::Details::PastInductionPeriodsComponent, type: :componen
       let(:enable_edit) { false }
 
       it "does not render actions when edit is disabled" do
-        expect(page).not_to have_link("Edit")
-        expect(page).not_to have_link("Delete")
+        expect(page).to have_no_link("Edit")
+        expect(page).to have_no_link("Delete")
       end
     end
   end

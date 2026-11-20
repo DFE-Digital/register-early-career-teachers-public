@@ -116,7 +116,7 @@ RSpec.describe "ECT summary" do
 
           current_mentor_name = Teachers::Name.new(current_mentor).full_name
           expect(page).to have_text(current_mentor_name)
-          expect(page).not_to have_css(".govuk-hint", text: current_mentor_name)
+          expect(page).to have_no_css(".govuk-hint", text: current_mentor_name)
 
           future_mentor_name = Teachers::Name.new(future_mentor).full_name
           future_mentor_start_date = future_mentorship_period.started_on.to_fs(:govuk)

@@ -11,6 +11,6 @@ class Admin::TeachingSchoolHubsController < AdminController
         { provisioning_school: :gias_school },
         { region_awards: [:region, { school: :gias_school }] }
       ]
-    ).find(params[:id])
+    ).find(params.expect(:id))
   end
 end

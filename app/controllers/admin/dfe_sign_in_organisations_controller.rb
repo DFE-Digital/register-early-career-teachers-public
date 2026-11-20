@@ -1,5 +1,5 @@
 class Admin::DfESignInOrganisationsController < AdminController
   def show
-    @organisation = DfESignInOrganisation.find_by!(uuid: params[:id])
+    @organisation = DfESignInOrganisation.find_by!(uuid: params.expect(:id))
   end
 end

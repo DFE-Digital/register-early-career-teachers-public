@@ -40,7 +40,7 @@ RSpec.describe "admin/finance/framework_agreements/contracts/show.html.erb" do
 
     it "shows not applicable for flat rate fee structure" do
       render
-      expect(rendered).to have_content("Not applicable")
+      expect(rendered).to have_text("Not applicable")
     end
   end
 
@@ -59,8 +59,8 @@ RSpec.describe "admin/finance/framework_agreements/contracts/show.html.erb" do
     it "does not show edit or delete buttons" do
       render
 
-      expect(rendered).not_to have_link("Edit")
-      expect(rendered).not_to have_button("Delete")
+      expect(rendered).to have_no_link("Edit")
+      expect(rendered).to have_no_button("Delete")
     end
   end
 end

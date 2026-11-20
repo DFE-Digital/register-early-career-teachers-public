@@ -92,7 +92,7 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
       end
 
       it "hides lead provider" do
-        expect(rendered).not_to have_element(:dt, text: "Lead provider")
+        expect(rendered).to have_no_element(:dt, text: "Lead provider")
       end
     end
 
@@ -116,8 +116,8 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
       end
 
       it "hides lead provider" do
-        expect(rendered).not_to have_element(:dt, text: "Lead provider")
-        expect(rendered).not_to have_element(:dd, text: "FraggleRock")
+        expect(rendered).to have_no_element(:dt, text: "Lead provider")
+        expect(rendered).to have_no_element(:dd, text: "FraggleRock")
       end
     end
 
@@ -132,8 +132,8 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
       end
 
       it "hides lead provider" do
-        expect(rendered).not_to have_element(:dt, text: "Lead provider")
-        expect(rendered).not_to have_element(:dd, text: "FraggleRock")
+        expect(rendered).to have_no_element(:dt, text: "Lead provider")
+        expect(rendered).to have_no_element(:dd, text: "FraggleRock")
       end
     end
 
@@ -157,9 +157,9 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
       end
 
       it "does not show the lead provider row" do
-        expect(rendered).not_to have_element(:dt, text: "Lead provider")
-        expect(rendered).not_to have_element(:dd, text: "FraggleRock")
-        expect(rendered).not_to have_link("Change", href: schools_register_mentor_wizard_change_lead_provider_path)
+        expect(rendered).to have_no_element(:dt, text: "Lead provider")
+        expect(rendered).to have_no_element(:dd, text: "FraggleRock")
+        expect(rendered).to have_no_link("Change", href: schools_register_mentor_wizard_change_lead_provider_path)
       end
     end
 
@@ -170,9 +170,9 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
       end
 
       it "does not show the lead provider row" do
-        expect(rendered).not_to have_element(:dt, text: "Lead provider")
-        expect(rendered).not_to have_element(:dd, text: "FraggleRock")
-        expect(rendered).not_to have_link("Change", href: schools_register_mentor_wizard_change_lead_provider_path)
+        expect(rendered).to have_no_element(:dt, text: "Lead provider")
+        expect(rendered).to have_no_element(:dd, text: "FraggleRock")
+        expect(rendered).to have_no_link("Change", href: schools_register_mentor_wizard_change_lead_provider_path)
       end
     end
 
@@ -183,9 +183,9 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
       end
 
       it "does not show the lead provider row" do
-        expect(rendered).not_to have_element(:dt, text: "Lead provider")
-        expect(rendered).not_to have_element(:dd, text: "FraggleRock")
-        expect(rendered).not_to have_link("Change", href: schools_register_mentor_wizard_change_lead_provider_path)
+        expect(rendered).to have_no_element(:dt, text: "Lead provider")
+        expect(rendered).to have_no_element(:dd, text: "FraggleRock")
+        expect(rendered).to have_no_link("Change", href: schools_register_mentor_wizard_change_lead_provider_path)
       end
     end
 
@@ -209,7 +209,7 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
       end
 
       it "does not show the lead provider row" do
-        expect(rendered).not_to have_element(:dt, text: "Lead provider")
+        expect(rendered).to have_no_element(:dt, text: "Lead provider")
       end
     end
 
@@ -252,8 +252,8 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
       end
 
       it "does not show the mentoring only at your school row" do
-        expect(rendered).not_to have_element(:dt, text: "Mentoring only at your school")
-        expect(rendered).not_to have_link(
+        expect(rendered).to have_no_element(:dt, text: "Mentoring only at your school")
+        expect(rendered).to have_no_link(
           "Change mentoring only at your school",
           href: schools_register_mentor_wizard_mentoring_at_new_school_only_path
         )
@@ -294,21 +294,21 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
       end
 
       it "does not show the lead provider row" do
-        expect(rendered).not_to have_element(:dt, text: "Lead provider")
-        expect(rendered).not_to have_element(:dd, text: "FraggleRock")
+        expect(rendered).to have_no_element(:dt, text: "Lead provider")
+        expect(rendered).to have_no_element(:dd, text: "FraggleRock")
       end
     end
   end
 
   it "includes an inset with the names of the mentor and ECT associated" do
     render
-    expect(rendered).to have_selector(".govuk-inset-text", text: "Jim Wayne will mentor Michael Dixon", visible: :visible)
+    expect(rendered).to have_css(".govuk-inset-text", text: "Jim Wayne will mentor Michael Dixon", visible: :visible)
   end
 
   it "includes a Confirm details button that posts to the check answers page" do
     render
     expect(rendered).to have_button("Confirm details")
-    expect(rendered).to have_selector("form[action='#{schools_register_mentor_wizard_check_answers_path}']")
+    expect(rendered).to have_css("form[action='#{schools_register_mentor_wizard_check_answers_path}']")
   end
 
   it "has change links" do

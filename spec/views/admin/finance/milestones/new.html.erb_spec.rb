@@ -68,7 +68,7 @@ RSpec.describe "admin/finance/milestones/new.html.erb" do
     it "renders an empty radio button fieldset" do
       render
       expect(rendered).to have_css(".govuk-radios")
-      expect(rendered).not_to have_css(".govuk-radios__item")
+      expect(rendered).to have_no_css(".govuk-radios__item")
     end
   end
 

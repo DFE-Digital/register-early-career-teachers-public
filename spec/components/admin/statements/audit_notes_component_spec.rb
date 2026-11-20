@@ -8,7 +8,7 @@ RSpec.describe Admin::Statements::AuditNotesComponent, type: :component do
     end
 
     it "does not render" do
-      expect(page).not_to have_css("h2", text: "Audit notes")
+      expect(page).to have_no_css("h2", text: "Audit notes")
     end
   end
 

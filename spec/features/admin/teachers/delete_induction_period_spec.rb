@@ -185,7 +185,8 @@ private
   end
 
   def and_trs_status_should_be_reset
-    expect(page).not_to have_selector(".govuk-summary-card")
+    summary_card = page.locator(".govuk-summary-card")
+    expect(summary_card).not_to be_visible
   end
 
   def and_trs_status_should_not_be_reset

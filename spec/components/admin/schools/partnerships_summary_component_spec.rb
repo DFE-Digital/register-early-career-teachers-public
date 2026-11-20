@@ -191,7 +191,7 @@ RSpec.describe Admin::Schools::PartnershipsSummaryComponent, type: :component do
 
       it "does not show finished ECTs" do
         finished_name = Teachers::Name.new(finished_ect_period.teacher).full_name
-        expect(ect_row).not_to have_link(finished_name, href: admin_teacher_path(finished_ect_period.teacher))
+        expect(ect_row).to have_no_link(finished_name, href: admin_teacher_path(finished_ect_period.teacher))
       end
 
       it "does not show ECTs whose training period is unconfirmed" do
@@ -204,7 +204,7 @@ RSpec.describe Admin::Schools::PartnershipsSummaryComponent, type: :component do
 
         unconfirmed_name = Teachers::Name.new(unconfirmed_ect_period.teacher).full_name
 
-        expect(ect_row).not_to have_link(
+        expect(ect_row).to have_no_link(
           unconfirmed_name,
           href: admin_teacher_path(unconfirmed_ect_period.teacher)
         )
@@ -224,7 +224,7 @@ RSpec.describe Admin::Schools::PartnershipsSummaryComponent, type: :component do
 
       it "does not show finished mentors" do
         finished_name = Teachers::Name.new(finished_mentor_period.teacher).full_name
-        expect(mentor_row).not_to have_link(finished_name, href: admin_teacher_path(finished_mentor_period.teacher))
+        expect(mentor_row).to have_no_link(finished_name, href: admin_teacher_path(finished_mentor_period.teacher))
       end
     end
 

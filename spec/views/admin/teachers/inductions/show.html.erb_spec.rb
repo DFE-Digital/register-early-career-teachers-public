@@ -52,7 +52,7 @@ RSpec.describe "admin/teachers/inductions/show.html.erb" do
     end
 
     it "does not display a button to reopen induction" do
-      expect(rendered).not_to have_button("Reopen induction")
+      expect(rendered).to have_no_button("Reopen induction")
     end
   end
 
@@ -72,7 +72,7 @@ RSpec.describe "admin/teachers/inductions/show.html.erb" do
     end
 
     it "does not display a link to reopen induction" do
-      expect(rendered).not_to have_link("Reopen induction")
+      expect(rendered).to have_no_link("Reopen induction")
     end
   end
 
@@ -82,7 +82,7 @@ RSpec.describe "admin/teachers/inductions/show.html.erb" do
     end
 
     it "does not display a link to reopen induction" do
-      expect(rendered).not_to have_link("Reopen induction")
+      expect(rendered).to have_no_link("Reopen induction")
     end
   end
 end

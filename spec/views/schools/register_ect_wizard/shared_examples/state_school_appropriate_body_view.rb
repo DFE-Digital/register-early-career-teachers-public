@@ -41,6 +41,6 @@ RSpec.shared_examples "a state school appropriate body view" do |current_step:, 
     render
 
     expect(rendered).to have_button("Continue")
-    expect(rendered).to have_selector("form[action='#{send(continue_path)}']")
+    expect(rendered).to have_css("form[action='#{send(continue_path)}']")
   end
 end

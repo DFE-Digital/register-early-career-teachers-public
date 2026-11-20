@@ -44,7 +44,7 @@ module Admin::Finance
     end
 
     def destroy
-      framework_agreement = @contract_period.framework_agreements.find(params[:id])
+      framework_agreement = @contract_period.framework_agreements.find(params.expect(:id))
       lead_provider_name = framework_agreement.lead_provider.name
       ::FrameworkAgreements::CascadeDelete.new(framework_agreement:, author: current_user).call
       flash[:notice] = "#{lead_provider_name} removed"
@@ -57,7 +57,7 @@ module Admin::Finance
   private
 
     def set_contract_period
-      @contract_period = ContractPeriod.find(params[:contract_period_id])
+      @contract_period = ContractPeriod.find(params.expect(:contract_period_id))
     end
 
     def redirect_unless_contract_period_editable

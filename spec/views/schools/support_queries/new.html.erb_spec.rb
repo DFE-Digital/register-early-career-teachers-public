@@ -12,10 +12,10 @@ RSpec.describe "schools/support_queries/new.html.erb" do
     render
   end
 
-  it { is_expected.to have_content(current_user.name) }
-  it { is_expected.to have_content(current_user.email) }
-  it { is_expected.to have_content(current_user.school.name) }
-  it { is_expected.to have_content(current_user.school.urn) }
-  it { is_expected.to have_selector("textarea[name='support_query[message]']") }
+  it { is_expected.to have_text(current_user.name) }
+  it { is_expected.to have_text(current_user.email) }
+  it { is_expected.to have_text(current_user.school.name) }
+  it { is_expected.to have_text(current_user.school.urn) }
+  it { is_expected.to have_css("textarea[name='support_query[message]']") }
   it { is_expected.to have_button("Send") }
 end

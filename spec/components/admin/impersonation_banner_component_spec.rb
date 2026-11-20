@@ -27,11 +27,11 @@ describe "Admin::ImpersonationBannerComponent", type: :component do
       end
 
       it "renders a sentence explaining that impersonation is happening" do
-        expect(rendered_content).to have_content("You are signed in as #{organisation.name}")
+        expect(rendered_content).to have_text("You are signed in as #{organisation.name}")
       end
 
       it "renders a warning paragraph" do
-        expect(rendered_content).to have_content(/Make any changes with care/)
+        expect(rendered_content).to have_text(/Make any changes with care/)
       end
 
       it "renders a button to finish impersonating" do
@@ -67,11 +67,11 @@ describe "Admin::ImpersonationBannerComponent", type: :component do
       end
 
       it "renders a sentence explaining that impersonation is happening" do
-        expect(rendered_content).to have_content("You are signed in as #{organisation.name}")
+        expect(rendered_content).to have_text("You are signed in as #{organisation.name}")
       end
 
       it "renders a warning paragraph" do
-        expect(rendered_content).to have_content(/Make any changes with care/)
+        expect(rendered_content).to have_text(/Make any changes with care/)
       end
 
       it "renders a button to finish impersonating" do

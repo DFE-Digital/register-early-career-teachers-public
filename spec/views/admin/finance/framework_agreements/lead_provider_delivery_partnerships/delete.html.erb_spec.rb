@@ -21,9 +21,9 @@ RSpec.describe "admin/finance/framework_agreements/lead_provider_delivery_partne
     expect(view.content_for(:page_title)).to eq("Remove #{delivery_partner.name} from 2099")
     expect(view.content_for(:backlink_or_breadcrumb)).to have_link("Back", href: index_path)
 
-    expect(rendered).to have_content("Are you sure you want to remove #{delivery_partner.name}?")
-    expect(rendered).to have_selector("form[action='#{destroy_path}']")
-    expect(rendered).to have_selector("input[name='_method'][value='delete']", visible: :all)
+    expect(rendered).to have_text("Are you sure you want to remove #{delivery_partner.name}?")
+    expect(rendered).to have_css("form[action='#{destroy_path}']")
+    expect(rendered).to have_css("input[name='_method'][value='delete']", visible: :all)
     expect(rendered).to have_button("Remove delivery partner")
     expect(rendered).to have_link("Cancel", href: index_path)
   end
@@ -34,8 +34,8 @@ RSpec.describe "admin/finance/framework_agreements/lead_provider_delivery_partne
     it "explains it cannot be removed and hides the remove button" do
       render
 
-      expect(rendered).to have_content("school partnerships and cannot be removed")
-      expect(rendered).not_to have_button("Remove delivery partner")
+      expect(rendered).to have_text("school partnerships and cannot be removed")
+      expect(rendered).to have_no_button("Remove delivery partner")
       expect(rendered).to have_link("Return to delivery partnerships", href: index_path)
     end
   end

@@ -55,11 +55,11 @@ module Admin::Finance
     end
 
     def set_statement
-      @statement = Statement.find(params[:finance_statement_id])
+      @statement = Statement.find(params.expect(:finance_statement_id))
     end
 
     def set_adjustment
-      @adjustment = @statement.adjustments.find(params[:id])
+      @adjustment = @statement.adjustments.find(params.expect(:id))
     end
 
     def redirect_if_adjustment_not_editable

@@ -26,7 +26,7 @@ module Admin
   private
 
     def teacher
-      @teacher = TeacherPresenter.new(Teacher.find(params[:id]))
+      @teacher = TeacherPresenter.new(Teacher.find(params.expect(:id)))
     end
 
     def teacher_breadcrumbs

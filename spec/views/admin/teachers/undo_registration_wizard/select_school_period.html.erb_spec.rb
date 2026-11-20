@@ -66,15 +66,15 @@ RSpec.describe "admin/teachers/undo_registration_wizard/select_school_period.htm
   end
 
   it "uses one radio group for both school period types" do
-    expect(rendered).to have_css('input[type="radio"]', count: 2)
-    expect(rendered).to have_css('input[type="radio"][name="select_school_period[at_school_period_gid]"]', count: 2)
+    expect(rendered).to have_field(type: "radio", count: 2)
+    expect(rendered).to have_field("select_school_period[at_school_period_gid]", type: "radio", count: 2)
   end
 
   context "when the teacher has no ECT school periods" do
     let!(:ect_at_school_period) { nil }
 
     it "does not show the ECT school periods heading" do
-      expect(rendered).not_to have_css("h2", text: "ECT school periods")
+      expect(rendered).to have_no_css("h2", text: "ECT school periods")
     end
   end
 
@@ -82,7 +82,7 @@ RSpec.describe "admin/teachers/undo_registration_wizard/select_school_period.htm
     let!(:mentor_at_school_period) { nil }
 
     it "does not show the mentor school periods heading" do
-      expect(rendered).not_to have_css("h2", text: "Mentor school periods")
+      expect(rendered).to have_no_css("h2", text: "Mentor school periods")
     end
   end
 

@@ -22,13 +22,13 @@ RSpec.describe "admin/lead_providers/index.html.erb" do
 
     expect(view.content_for(:backlink_or_breadcrumb)).to have_link("Organisations", href: admin_organisations_path)
     expect(view.content_for(:backlink_or_breadcrumb)).to include("Lead providers")
-    expect(view.content_for(:backlink_or_breadcrumb)).not_to have_link("Lead providers")
+    expect(view.content_for(:backlink_or_breadcrumb)).to have_no_link("Lead providers")
   end
 
   it "renders a table of lead providers" do
     render
 
-    expect(rendered).to have_css("table.govuk-table")
+    expect(rendered).to have_table
     expect(rendered).to have_css("tbody tr", count: number_of_lead_providers)
   end
 

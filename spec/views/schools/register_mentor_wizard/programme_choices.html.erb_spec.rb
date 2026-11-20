@@ -59,8 +59,8 @@ RSpec.describe "schools/register_mentor_wizard/programme_choices.html.erb" do
     it "does not show the delivery partner row" do
       render
 
-      expect(rendered).not_to have_element(:dt, text: "Delivery partner")
-      expect(rendered).not_to have_element(:dd, text: "Shinobi Training Co")
+      expect(rendered).to have_no_element(:dt, text: "Delivery partner")
+      expect(rendered).to have_no_element(:dd, text: "Shinobi Training Co")
     end
 
     it "shows the explanatory text" do
@@ -84,7 +84,7 @@ RSpec.describe "schools/register_mentor_wizard/programme_choices.html.erb" do
     end
 
     it "does not show explanatory text" do
-      expect(rendered).not_to have_text("will confirm if they’ll be working with your school")
+      expect(rendered).to have_no_text("will confirm if they’ll be working with your school")
     end
   end
 end

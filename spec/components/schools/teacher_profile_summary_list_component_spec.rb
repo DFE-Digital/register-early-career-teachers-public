@@ -27,10 +27,10 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
     end
 
     it "renders the summary list container" do
-      expect(page).to have_selector(".govuk-summary-list")
+      expect(page).to have_css(".govuk-summary-list")
     end
 
-    it { is_expected.to have_selector(".govuk-summary-list__row", count: 6) }
+    it { is_expected.to have_css(".govuk-summary-list__row", count: 6) }
     it { is_expected.to have_summary_list_row("Name", value: "Kakarot SSJ") }
     it { is_expected.to have_summary_list_row("Email address", value: "foobarect@madeup.com") }
     it { is_expected.to have_summary_list_row("Mentor") }
@@ -40,7 +40,7 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
 
     it "renders the mentor name without a link" do
       expect(mentor_row).to have_css(".govuk-summary-list__value", text: current_mentor_name)
-      expect(mentor_row).not_to have_link(current_mentor_name)
+      expect(mentor_row).to have_no_link(current_mentor_name)
     end
 
     it "renders the change mentor link" do
@@ -61,7 +61,7 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
 
       it "renders the mentor name without the change mentor link" do
         expect(mentor_row).to have_css(".govuk-summary-list__value", text: current_mentor_name)
-        expect(mentor_row).not_to have_link("Change")
+        expect(mentor_row).to have_no_link("Change")
       end
     end
 
@@ -69,8 +69,8 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
       before { render_inline(component) }
 
       it "does not render the mentor row" do
-        expect(page).not_to have_css(".govuk-summary-list__key", text: "Mentor")
-        expect(page).not_to have_link("Assign a mentor for this ECT")
+        expect(page).to have_no_css(".govuk-summary-list__key", text: "Mentor")
+        expect(page).to have_no_link("Assign a mentor for this ECT")
       end
     end
   end
@@ -118,7 +118,7 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
 
       it "does not show the change link" do
         expect(school_start_date_row)
-          .not_to have_link("Change")
+          .to have_no_link("Change")
       end
     end
   end
@@ -215,7 +215,7 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
       expect(page).to have_text("Action required")
       expect(page).to have_text(/no longer training with them/i)
 
-      expect(page).not_to have_text("Mentor required")
+      expect(page).to have_no_text("Mentor required")
     end
   end
 
@@ -235,7 +235,7 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
 
     it "shows training paused instead of mentor required" do
       expect(page).to have_text("Training paused")
-      expect(page).not_to have_text("Mentor required")
+      expect(page).to have_no_text("Mentor required")
     end
   end
 
@@ -257,7 +257,7 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
 
     it "shows leaving school instead of action required" do
       expect(page).to have_text("Leaving school")
-      expect(page).not_to have_text("Action required")
+      expect(page).to have_no_text("Action required")
     end
   end
 
@@ -279,7 +279,7 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
 
     it "shows leaving school instead of training paused" do
       expect(page).to have_text("Leaving school")
-      expect(page).not_to have_text("Training paused")
+      expect(page).to have_no_text("Training paused")
     end
   end
 
@@ -301,7 +301,7 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
 
     it "shows exempt status instead of action required" do
       expect(page).to have_text("Exempt")
-      expect(page).not_to have_text("Action required")
+      expect(page).to have_no_text("Action required")
     end
   end
 
@@ -323,7 +323,7 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
 
     it "shows exempt status instead of training paused" do
       expect(page).to have_text("Exempt")
-      expect(page).not_to have_text("Training paused")
+      expect(page).to have_no_text("Training paused")
     end
   end
 
@@ -335,7 +335,7 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
     it "shows action required with mentor assignment message" do
       expect(page).to have_text("Action required")
       expect(page).to have_text("A mentor needs to be assigned to Kakarot SSJ.")
-      expect(page).not_to have_text("Mentor required")
+      expect(page).to have_no_text("Mentor required")
     end
 
     it "renders the assign mentor link" do

@@ -96,8 +96,8 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
           expect(rendered_content).to have_css("h2", text: "ECTE mentor training details")
           expect(rendered_content).to have_css(".govuk-body", text: /Hidden leaf village have told us that .* is not registered for ECTE mentor training with them./)
 
-          expect(rendered_content).not_to have_css("dt.govuk-summary-list__key", text: "Lead provider")
-          expect(rendered_content).not_to have_css("dt.govuk-summary-list__key", text: "Delivery partner")
+          expect(rendered_content).to have_no_css("dt.govuk-summary-list__key", text: "Lead provider")
+          expect(rendered_content).to have_no_css("dt.govuk-summary-list__key", text: "Delivery partner")
         end
       end
 
@@ -175,7 +175,7 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
       it "renders the details for the most recent period" do
         render_inline(component)
 
-        expect(rendered_content).not_to have_text("Konohagakure")
+        expect(rendered_content).to have_no_text("Konohagakure")
         expect(rendered_content).to have_text("Hidden leaf village")
         expect(rendered_content).to have_css("dt.govuk-summary-list__key", text: "Lead provider").once
         expect(rendered_content).to have_css("dt.govuk-summary-list__key", text: "Delivery partner").once
@@ -252,7 +252,7 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
         render_inline(described_class.new(teacher:, mentor:))
 
         expect(rendered_content).to have_text("completed mentor training on 1 January 2024")
-        expect(rendered_content).not_to have_text("Lead provider")
+        expect(rendered_content).to have_no_text("Lead provider")
       end
     end
   end

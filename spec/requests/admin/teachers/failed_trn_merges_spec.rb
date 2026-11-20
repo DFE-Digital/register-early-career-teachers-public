@@ -43,7 +43,7 @@ RSpec.describe "Teachers::FailedTRNMerges", type: :request do
           expect(page).to have_link(teacher_2.trn, href: admin_teacher_path(teacher_2))
           expect(page).to have_link(redirected_teacher_1.trn, href: admin_teacher_path(redirected_teacher_1))
           expect(page).to have_link(redirected_teacher_2.trn, href: admin_teacher_path(redirected_teacher_2))
-          expect(page).not_to have_link(unredirected_teacher.trn, href: admin_teacher_path(unredirected_teacher))
+          expect(page).to have_no_link(unredirected_teacher.trn, href: admin_teacher_path(unredirected_teacher))
         end
 
         context "when the redirected teacher does not exist in the system" do
@@ -55,8 +55,8 @@ RSpec.describe "Teachers::FailedTRNMerges", type: :request do
             page = Capybara.string(response.body)
 
             expect(page).to have_link(teacher_1.trn, href: admin_teacher_path(teacher_1))
-            expect(page).to have_content("0123456")
-            expect(page).not_to have_link("0123456")
+            expect(page).to have_text("0123456")
+            expect(page).to have_no_link("0123456")
           end
         end
       end

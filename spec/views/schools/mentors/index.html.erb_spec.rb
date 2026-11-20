@@ -18,11 +18,11 @@ RSpec.describe "schools/mentors/index.html.erb" do
     end
 
     it "does not render the summary component" do
-      expect(rendered).not_to have_css(".govuk-summary-card")
+      expect(rendered).to have_no_css(".govuk-summary-card")
     end
 
     it "does not render the search box" do
-      expect(rendered).not_to have_css(".govuk-form-group label", text: "Search by name or teacher reference number (TRN)")
+      expect(rendered).to have_no_css(".govuk-form-group label", text: "Search by name or teacher reference number (TRN)")
     end
   end
 

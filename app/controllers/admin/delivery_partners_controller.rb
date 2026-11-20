@@ -64,7 +64,7 @@ module Admin
   private
 
     def set_delivery_partner
-      @delivery_partner = DeliveryPartner.find(params[:id])
+      @delivery_partner = DeliveryPartner.find(params.expect(:id))
     end
 
     def assign_backlink_params

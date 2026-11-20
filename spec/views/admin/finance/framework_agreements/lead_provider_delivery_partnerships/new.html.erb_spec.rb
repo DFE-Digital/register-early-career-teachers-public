@@ -21,7 +21,7 @@ RSpec.describe "admin/finance/framework_agreements/lead_provider_delivery_partne
     expect(view.content_for(:page_title)).to eq("Add delivery partner to #{lead_provider.name} for 2099")
     expect(view.content_for(:backlink_or_breadcrumb)).to have_link("Back", href: index_path)
 
-    expect(rendered).to have_selector("form[action='#{index_path}']")
+    expect(rendered).to have_css("form[action='#{index_path}']")
     expect(rendered).to have_css("select[name='lead_provider_delivery_partnership[delivery_partner_id]'] option[value='#{delivery_partner.id}']", text: delivery_partner.name)
     expect(rendered).to have_button("Save")
   end

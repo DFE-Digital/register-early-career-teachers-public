@@ -4,7 +4,7 @@ module Admin
       layout "full"
 
       def show
-        @school = School.includes(:gias_school).find_by!(urn: params[:school_urn])
+        @school = School.includes(:gias_school).find_by!(urn: params.expect(:school_urn))
         @breadcrumbs = {
           "Schools" => admin_schools_path(page: params[:page], q: params[:q]),
           @school.name => nil

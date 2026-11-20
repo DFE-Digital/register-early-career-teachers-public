@@ -15,11 +15,11 @@ RSpec.describe Teachers::Details::ITTDetailsComponent, type: :component do
     it "renders QTS awarded date and ITT provider" do
       render_inline(component)
 
-      expect(page).to have_content("Initial teacher training details")
-      expect(page).to have_content("QTS awarded")
-      expect(page).to have_content(1.year.ago.to_date.to_fs(:govuk))
-      expect(page).to have_content("Initial teacher training provider")
-      expect(page).to have_content("Test University")
+      expect(page).to have_text("Initial teacher training details")
+      expect(page).to have_text("QTS awarded")
+      expect(page).to have_text(1.year.ago.to_date.to_fs(:govuk))
+      expect(page).to have_text("Initial teacher training provider")
+      expect(page).to have_text("Test University")
     end
   end
 
@@ -35,10 +35,10 @@ RSpec.describe Teachers::Details::ITTDetailsComponent, type: :component do
     it "does not render QTS awarded section" do
       render_inline(component)
 
-      expect(page).to have_content("Initial teacher training details")
-      expect(page).not_to have_content("QTS awarded")
-      expect(page).to have_content("Initial teacher training provider")
-      expect(page).to have_content("Test University")
+      expect(page).to have_text("Initial teacher training details")
+      expect(page).to have_no_text("QTS awarded")
+      expect(page).to have_text("Initial teacher training provider")
+      expect(page).to have_text("Test University")
     end
   end
 
@@ -54,10 +54,10 @@ RSpec.describe Teachers::Details::ITTDetailsComponent, type: :component do
     it "does not render ITT provider section" do
       render_inline(component)
 
-      expect(page).to have_content("Initial teacher training details")
-      expect(page).to have_content("QTS awarded")
-      expect(page).to have_content(1.year.ago.to_date.to_fs(:govuk))
-      expect(page).not_to have_content("Initial teacher training provider")
+      expect(page).to have_text("Initial teacher training details")
+      expect(page).to have_text("QTS awarded")
+      expect(page).to have_text(1.year.ago.to_date.to_fs(:govuk))
+      expect(page).to have_no_text("Initial teacher training provider")
     end
   end
 
@@ -73,9 +73,9 @@ RSpec.describe Teachers::Details::ITTDetailsComponent, type: :component do
     it "renders the component with just the heading" do
       render_inline(component)
 
-      expect(page).to have_content("Initial teacher training details")
-      expect(page).not_to have_content("QTS awarded")
-      expect(page).not_to have_content("Initial teacher training provider")
+      expect(page).to have_text("Initial teacher training details")
+      expect(page).to have_no_text("QTS awarded")
+      expect(page).to have_no_text("Initial teacher training provider")
     end
   end
 end

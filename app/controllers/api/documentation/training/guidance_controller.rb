@@ -13,7 +13,7 @@ module API
         end
 
         def page
-          template = "api/documentation/training/guidance/#{params[:page].underscore}"
+          template = "api/documentation/training/guidance/#{params.expect(:page).underscore}"
 
           if template_exists?(template)
             render template, layout: "api/documentation/training/api_guidance"

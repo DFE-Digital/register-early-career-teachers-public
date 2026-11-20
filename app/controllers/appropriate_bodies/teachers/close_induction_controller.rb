@@ -17,11 +17,11 @@ module AppropriateBodies
     private
 
       def find_former_teacher
-        @teacher = ects.current_or_completed_while_at_appropriate_body.find_by!(id: params[:teacher_id])
+        @teacher = ects.current_or_completed_while_at_appropriate_body.find_by!(id: params.expect(:teacher_id))
       end
 
       def find_current_teacher
-        @teacher = ects.current_or_completed_while_at_appropriate_body.find_by!(id: params[:teacher_id])
+        @teacher = ects.current_or_completed_while_at_appropriate_body.find_by!(id: params.expect(:teacher_id))
       end
 
       def ects

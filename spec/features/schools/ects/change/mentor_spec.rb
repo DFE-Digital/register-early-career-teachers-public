@@ -417,7 +417,7 @@ private
 
   def and_i_no_longer_see_the_upcoming_mentor
     row = page.locator(".govuk-summary-list__row", hasText: "Mentor")
-    expect(row).not_to have_text("Sally Successor")
+    expect(row).to have_no_text("Sally Successor")
   end
 
   def when_i_continue_without_selecting_a_mentor

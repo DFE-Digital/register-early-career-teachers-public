@@ -27,8 +27,8 @@ RSpec.describe "admin/finance/framework_agreements/bands/new.html.erb" do
     expect(view.content_for(:backlink_or_breadcrumb)).to have_link(contract_period.year.to_s, href: admin_contract_period_path(contract_period))
     expect(view.content_for(:backlink_or_breadcrumb)).to have_link(framework_agreement.lead_provider_name, href: index_path)
 
-    expect(rendered).to have_selector("form[action='#{index_path}']")
-    expect(rendered).to have_css("input[name='framework_agreement_band[capacity]']")
+    expect(rendered).to have_css("form[action='#{index_path}']")
+    expect(rendered).to have_field("framework_agreement_band[capacity]")
     expect(rendered).to have_button("Add new band")
   end
 

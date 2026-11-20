@@ -32,7 +32,7 @@ RSpec.describe "admin/finance/framework_agreements/contracts/index.html.erb" do
     expect(view.content_for(:backlink_or_breadcrumb)).to have_link(contract_period.year.to_s, href: admin_contract_period_path(contract_period))
     expect(view.content_for(:backlink_or_breadcrumb)).to have_link(framework_agreement.lead_provider_name, href: admin_contract_period_framework_agreements_path(contract_period))
 
-    expect(rendered).to have_content("Contracts for #{framework_agreement.lead_provider_name} in the #{contract_period.year} contract period")
+    expect(rendered).to have_text("Contracts for #{framework_agreement.lead_provider_name} in the #{contract_period.year} contract period")
 
     expect(rendered).to have_css(".govuk-table")
     expect(rendered).to have_link(
@@ -56,8 +56,8 @@ RSpec.describe "admin/finance/framework_agreements/contracts/index.html.erb" do
     it "does not show delete buttons or an add contract link" do
       render
 
-      expect(rendered).not_to have_button("Delete")
-      expect(rendered).not_to have_link("Add contract")
+      expect(rendered).to have_no_button("Delete")
+      expect(rendered).to have_no_link("Add contract")
     end
   end
 
@@ -67,8 +67,8 @@ RSpec.describe "admin/finance/framework_agreements/contracts/index.html.erb" do
     it "displays a no contracts message and no table" do
       render
 
-      expect(rendered).to have_content("No contracts found")
-      expect(rendered).not_to have_css(".govuk-table")
+      expect(rendered).to have_text("No contracts found")
+      expect(rendered).to have_no_css(".govuk-table")
     end
   end
 end

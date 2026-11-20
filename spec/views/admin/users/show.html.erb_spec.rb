@@ -49,7 +49,7 @@ describe "admin/users/show.html.erb" do
   end
 
   it "does not display an unlock OTP sign-in button" do
-    expect(rendered).not_to have_button("Unlock OTP sign-in")
+    expect(rendered).to have_no_button("Unlock OTP sign-in")
   end
 
   it "displays the remove user link for a user who can manage users" do
@@ -60,7 +60,7 @@ describe "admin/users/show.html.erb" do
     let(:current_user) { FactoryBot.build(:user, role: :admin) }
 
     it "does not display the remove user link" do
-      expect(rendered).not_to have_link("Remove user")
+      expect(rendered).to have_no_link("Remove user")
     end
   end
 
@@ -69,7 +69,7 @@ describe "admin/users/show.html.erb" do
     let(:user) { current_user }
 
     it "does not display the remove user link" do
-      expect(rendered).not_to have_link("Remove user")
+      expect(rendered).to have_no_link("Remove user")
     end
   end
 

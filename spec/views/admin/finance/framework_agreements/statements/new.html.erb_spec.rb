@@ -20,7 +20,7 @@ RSpec.describe "admin/finance/framework_agreements/statements/new.html.erb" do
     expect(view.content_for(:page_title)).to eq("Add statement")
     expect(view.content_for(:backlink_or_breadcrumb)).to have_link("Back", href: index_path)
 
-    expect(rendered).to have_selector("form[action='#{index_path}']")
+    expect(rendered).to have_css("form[action='#{index_path}']")
     expect(rendered).to have_button("Save")
 
     expect(rendered).to have_css("select[name='statement[contract_id]'] option[value='#{contract.id}']")

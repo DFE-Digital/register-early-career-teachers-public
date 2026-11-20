@@ -29,7 +29,7 @@ RSpec.describe TeachersIndex::HeaderSectionComponent, type: :component do
 
       it "does not link to closed inductions" do
         expect(rendered).to have_text("No closed inductions")
-        expect(rendered).not_to have_link("No closed inductions")
+        expect(rendered).to have_no_link("No closed inductions")
         # Should still render the padding container
         expect(rendered.css('[class*="govuk-"][class*="padding-bottom"]').length).to eq(1)
       end
@@ -56,7 +56,7 @@ RSpec.describe TeachersIndex::HeaderSectionComponent, type: :component do
 
       it "is not plural" do
         expect(subheading).to have_text("1 open induction")
-        expect(subheading).not_to have_text("inductions")
+        expect(subheading).to have_no_text("inductions")
       end
     end
 

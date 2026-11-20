@@ -33,7 +33,7 @@ describe "admin/users/edit.html.erb" do
   end
 
   it "has an add user button" do
-    expect(rendered).to have_css("button", text: "Update user")
+    expect(rendered).to have_button("Update user")
   end
 
   context "when the user has errors" do

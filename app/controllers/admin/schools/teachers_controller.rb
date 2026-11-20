@@ -4,7 +4,7 @@ module Admin
       layout "full"
 
       def show
-        @school = School.includes(:gias_school).find_by!(urn: params[:school_urn])
+        @school = School.includes(:gias_school).find_by!(urn: params.expect(:school_urn))
         teacher_search = TeacherSearch.new(
           school: @school,
           query_string: params[:q],

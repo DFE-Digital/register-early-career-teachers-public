@@ -18,7 +18,7 @@ RSpec.describe Admin::AppropriateBodies::DetailsComponent, type: :component do
 
     context "without current ECTs" do
       it do
-        expect(rendered_content).not_to have_link("View current ECTs")
+        expect(rendered_content).to have_no_link("View current ECTs")
       end
     end
   end
@@ -38,7 +38,7 @@ RSpec.describe Admin::AppropriateBodies::DetailsComponent, type: :component do
 
     context "without activity" do
       it do
-        expect(rendered_content).not_to have_link("View bulk uploads")
+        expect(rendered_content).to have_no_link("View bulk uploads")
       end
     end
   end

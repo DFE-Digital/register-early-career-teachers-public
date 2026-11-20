@@ -170,7 +170,7 @@ RSpec.describe Admin::Statements::DeclarationComponent, type: :component do
       let(:statement_trait) { :service_fee }
 
       it "does not show the CSV download link" do
-        expect(page).not_to have_link("Download declarations (CSV)")
+        expect(page).to have_no_link("Download declarations (CSV)")
       end
     end
   end

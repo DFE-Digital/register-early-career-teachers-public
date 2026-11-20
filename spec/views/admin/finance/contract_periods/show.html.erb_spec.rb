@@ -31,25 +31,25 @@ RSpec.describe "admin/finance/contract_periods/show.html.erb" do
     render
 
     expect(rendered).to have_css(".govuk-summary-list")
-    expect(rendered).to have_content("Year")
-    expect(rendered).to have_content(contract_period.year.to_s)
-    expect(rendered).to have_content("Started on")
-    expect(rendered).to have_content(contract_period.started_on.to_fs(:govuk))
-    expect(rendered).to have_content("Finished on")
-    expect(rendered).to have_content(contract_period.finished_on.to_fs(:govuk))
-    expect(rendered).to have_content("Mentor funding enabled")
-    expect(rendered).to have_content("Detailed evidence types enabled")
-    expect(rendered).to have_content("Uplift fees enabled")
-    expect(rendered).to have_content("Declarations in sequence enabled")
-    expect(rendered).to have_content("Payments frozen")
+    expect(rendered).to have_text("Year")
+    expect(rendered).to have_text(contract_period.year.to_s)
+    expect(rendered).to have_text("Started on")
+    expect(rendered).to have_text(contract_period.started_on.to_fs(:govuk))
+    expect(rendered).to have_text("Finished on")
+    expect(rendered).to have_text(contract_period.finished_on.to_fs(:govuk))
+    expect(rendered).to have_text("Mentor funding enabled")
+    expect(rendered).to have_text("Detailed evidence types enabled")
+    expect(rendered).to have_text("Uplift fees enabled")
+    expect(rendered).to have_text("Declarations in sequence enabled")
+    expect(rendered).to have_text("Payments frozen")
   end
 
   it "renders a task list" do
     render
 
     expect(rendered).to have_css(".govuk-task-list")
-    expect(rendered).to have_content("Lead providers")
-    expect(rendered).to have_content("Schedules")
+    expect(rendered).to have_text("Lead providers")
+    expect(rendered).to have_text("Schedules")
   end
 
   describe "edit button" do
@@ -73,7 +73,7 @@ RSpec.describe "admin/finance/contract_periods/show.html.erb" do
       it "renders the edit button in a disabled state" do
         render
 
-        expect(rendered).to have_selector("a[disabled], a[aria-disabled='true']", text: "Edit contract period")
+        expect(rendered).to have_css("a[disabled], a[aria-disabled='true']", text: "Edit contract period")
       end
     end
   end
@@ -108,7 +108,7 @@ RSpec.describe "admin/finance/contract_periods/show.html.erb" do
 
         expect(rendered).to have_link("Lead providers")
         within(".govuk-task-list") do
-          expect(rendered).to have_content("Completed")
+          expect(rendered).to have_text("Completed")
         end
       end
     end
@@ -127,7 +127,7 @@ RSpec.describe "admin/finance/contract_periods/show.html.erb" do
 
         expect(rendered).to have_link("Lead providers")
         within(".govuk-task-list") do
-          expect(rendered).to have_content("Completed")
+          expect(rendered).to have_text("Completed")
         end
       end
     end
@@ -138,9 +138,9 @@ RSpec.describe "admin/finance/contract_periods/show.html.erb" do
       it "shows the task as cannot start yet" do
         render
 
-        expect(rendered).not_to have_link("Schedules")
+        expect(rendered).to have_no_link("Schedules")
         within(".govuk-task-list") do
-          expect(rendered).to have_content("Schedules")
+          expect(rendered).to have_text("Schedules")
           expect(rendered).to have_css(".govuk-task-list__status--cannot-start-yet", text: "Cannot start yet")
         end
       end
@@ -154,7 +154,7 @@ RSpec.describe "admin/finance/contract_periods/show.html.erb" do
 
         expect(rendered).to have_link("Schedules")
         within(".govuk-task-list") do
-          expect(rendered).to have_content("Completed")
+          expect(rendered).to have_text("Completed")
         end
       end
     end

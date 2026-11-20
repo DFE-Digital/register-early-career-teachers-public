@@ -46,7 +46,7 @@ module Schools
           "@#{wizard_record_name}",
           @school
             .public_send(wizard_record_name.pluralize)
-            .find(params[wizard_record_param])
+            .find(params.expect(wizard_record_param))
         )
       end
 

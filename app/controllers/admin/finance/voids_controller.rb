@@ -22,7 +22,7 @@ module Admin
     private
 
       def set_declaration
-        @declaration = Declaration.find(params[:declaration_id])
+        @declaration = Declaration.find(params.expect(:declaration_id))
       end
 
       def set_teacher

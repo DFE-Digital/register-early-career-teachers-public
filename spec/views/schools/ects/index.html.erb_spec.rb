@@ -25,11 +25,11 @@ RSpec.describe "schools/ects/index.html.erb" do
     end
 
     it "does not render the summary component" do
-      expect(rendered).not_to have_css(".govuk-summary-card")
+      expect(rendered).to have_no_css(".govuk-summary-card")
     end
 
     it "does not render the search box" do
-      expect(rendered).not_to have_css(".govuk-form-group label", text: "Search by name or teacher reference number (TRN)")
+      expect(rendered).to have_no_css(".govuk-form-group label", text: "Search by name or teacher reference number (TRN)")
     end
   end
 
@@ -83,7 +83,7 @@ RSpec.describe "schools/ects/index.html.erb" do
     end
 
     it "does not show the Register an ECT starting at your school button" do
-      expect(rendered).not_to have_css("a.govuk-button", text: "Register an ECT starting at your school")
+      expect(rendered).to have_no_css("a.govuk-button", text: "Register an ECT starting at your school")
     end
 
     it "shows a section 41 not approved message" do

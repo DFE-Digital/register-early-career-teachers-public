@@ -46,7 +46,7 @@ RSpec.describe Admin::Teachers::OverviewSummaryComponent, type: :component do
 
       it "shows the TRN without a deactivated tag" do
         expect(rendered).to have_text(teacher.trn)
-        expect(rendered).not_to have_css(".govuk-tag", text: "Deactivated")
+        expect(rendered).to have_no_css(".govuk-tag", text: "Deactivated")
       end
     end
 
@@ -77,7 +77,7 @@ RSpec.describe Admin::Teachers::OverviewSummaryComponent, type: :component do
     end
 
     it "does not render the induction status row" do
-      expect(rendered).not_to have_text("Induction status")
+      expect(rendered).to have_no_text("Induction status")
     end
   end
 end

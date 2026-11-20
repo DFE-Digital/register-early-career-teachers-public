@@ -13,7 +13,7 @@ RSpec.describe "admin/appropriate_bodies/show.html.erb" do
   end
 
   it "does not render a back link" do
-    expect(rendered).not_to have_link("Back")
+    expect(rendered).to have_no_link("Back")
   end
 
   context "when the appropriate body name contains ampersands" do

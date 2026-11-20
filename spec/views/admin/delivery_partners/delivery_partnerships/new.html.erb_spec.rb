@@ -34,15 +34,15 @@ RSpec.describe "admin/delivery_partners/delivery_partnerships/new.html.erb" do
 
     expected_action = admin_delivery_partner_delivery_partnership_path(delivery_partner, 2025)
     expect(rendered).to have_css("form[action='#{expected_action}'][method='post']")
-    expect(rendered).not_to have_css("input[name='_method'][value='patch']", visible: :hidden)
+    expect(rendered).to have_no_css("input[name='_method'][value='patch']", visible: :hidden)
   end
 
   it "includes hidden fields for year, page, and query parameters" do
     render
 
-    expect(rendered).to have_css("input[name='year'][value='2025']", visible: :hidden)
-    expect(rendered).to have_css("input[name='page'][value='2']", visible: :hidden)
-    expect(rendered).to have_css("input[name='q'][value='search term']", visible: :hidden)
+    expect(rendered).to have_css("input[name='year'][value='2025'][type='hidden']", visible: :hidden)
+    expect(rendered).to have_css("input[name='page'][value='2'][type='hidden']", visible: :hidden)
+    expect(rendered).to have_css("input[name='q'][value='search term'][type='hidden']", visible: :hidden)
   end
 
   it "renders checkboxes for available lead providers" do
@@ -86,7 +86,7 @@ RSpec.describe "admin/delivery_partners/delivery_partnerships/new.html.erb" do
     it "only shows unassigned lead providers as checkboxes" do
       render
 
-      expect(rendered).not_to have_css("input[type='checkbox'][value='#{framework_agreement_1.id}']")
+      expect(rendered).to have_no_css("input[type='checkbox'][value='#{framework_agreement_1.id}']")
       expect(rendered).to have_css("input[type='checkbox'][value='#{framework_agreement_2.id}']")
     end
   end
@@ -102,8 +102,8 @@ RSpec.describe "admin/delivery_partners/delivery_partnerships/new.html.erb" do
 
       expected_href = admin_delivery_partner_path(delivery_partner)
       expect(view.content_for(:backlink_or_breadcrumb)).to have_link("Back", href: expected_href)
-      expect(rendered).to have_css("input[name='page']", visible: :hidden)
-      expect(rendered).to have_css("input[name='q']", visible: :hidden)
+      expect(rendered).to have_css("input[name='page'][type='hidden']", visible: :hidden)
+      expect(rendered).to have_css("input[name='q'][type='hidden']", visible: :hidden)
     end
   end
 end
