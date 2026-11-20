@@ -100,6 +100,7 @@ class TrainingPeriod < ApplicationRecord
 
   # Callbacks
   before_destroy :destroy_non_billable_declarations
+  after_save :refresh_mentorship_statuses
 
   # Scopes
   scope :for_ect, ->(ect_at_school_period_id) { where(ect_at_school_period_id:) }
@@ -199,6 +200,14 @@ class TrainingPeriod < ApplicationRecord
   end
 
 private
+
+  def refresh_mentorship_statuses
+    return unless %w[id finished_on school_partnership_id expression_of_interest_id].any? { saved_change_to_attribute?(it) }
+
+    mentorship_periods.find_each do |mentorship_period|
+      MentorshipPeriods::MentorshipStatus.new(mentorship_period:).refresh!
+    end
+  end
 
   def lead_provider_cannot_change_with_billable_declarations
     return unless lead_provider_delivery_partnership_will_change? || will_save_change_to_expression_of_interest_id?

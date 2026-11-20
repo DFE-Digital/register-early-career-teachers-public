@@ -1,4 +1,27 @@
 describe MentorshipPeriod do
+  describe "mentorship status callbacks" do
+    let(:mentee) { FactoryBot.create(:ect_at_school_period, :unfinished) }
+    let(:mentor) { FactoryBot.create(:mentor_at_school_period, :unfinished, school: mentee.school) }
+    let(:mentorship_period) { FactoryBot.build(:mentorship_period, :unfinished, mentee:, mentor:) }
+    let(:status_service) { instance_double(MentorshipPeriods::MentorshipStatus, refresh!: true) }
+
+    before do
+      allow(MentorshipPeriods::MentorshipStatus).to receive(:new).with(mentorship_period:).and_return(status_service)
+    end
+
+    it "refreshes statuses when created" do
+      expect(status_service).to receive(:refresh!)
+
+      mentorship_period.save!
+    end
+
+    it "refreshes statuses when finished_on changes" do
+      mentorship_period.save!
+      expect(status_service).to receive(:refresh!)
+      mentorship_period.update!(finished_on: Date.current)
+    end
+  end
+
   describe "declarative updates" do
     let(:instance) { FactoryBot.create(:mentorship_period, :unfinished, mentee:, mentor:, started_on: 1.year.ago, finished_on: nil) }
     let(:mentee) { FactoryBot.create(:ect_at_school_period, started_on: 5.years.ago, finished_on: nil, teacher: target, school:) }

@@ -118,6 +118,8 @@ class Teacher < ApplicationRecord
   validates :anonymisation_reason, presence: true, if: -> { anonymised_at.present? }
   validates :anonymised_at, presence: true, if: -> { anonymisation_reason.present? }
 
+  after_update :refresh_mentorship_statuses
+
   # Scopes
   scope :search, ->(query_string) {
     where(
@@ -172,5 +174,15 @@ class Teacher < ApplicationRecord
     TrainingPeriod
       .where(id: ect_training_periods)
       .or(TrainingPeriod.where(id: mentor_training_periods))
+  end
+
+private
+
+  def refresh_mentorship_statuses
+    return unless saved_change_to_mentor_became_ineligible_for_funding_on?
+
+    MentorshipPeriod.where(mentor: mentor_at_school_periods).find_each do |mentorship_period|
+      MentorshipPeriods::MentorshipStatus.new(mentorship_period:).refresh!
+    end
   end
 end
