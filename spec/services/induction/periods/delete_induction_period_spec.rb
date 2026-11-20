@@ -83,28 +83,24 @@ describe Induction::Periods::DeleteInductionPeriod do
   end
 
   context "when there are other induction periods" do
+    let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, :teaching_school) }
+
     let!(:earliest_period) do
-      FactoryBot.create(
-        :induction_period,
-        :unfinished,
-        teacher:,
-        appropriate_body_period:,
-        started_on: Date.new(2020, 1, 1),
-        finished_on: Date.new(2020, 12, 31),
-        number_of_terms: 3
-      )
+      FactoryBot.create(:induction_period, :unfinished,
+                        teacher:,
+                        appropriate_body_period:,
+                        started_on: Date.new(2019, 1, 1),
+                        finished_on: Date.new(2019, 12, 31),
+                        number_of_terms: 3)
     end
 
     let!(:later_period) do
-      FactoryBot.create(
-        :induction_period,
-        :unfinished,
-        teacher:,
-        appropriate_body_period:,
-        started_on: Date.new(2021, 1, 1),
-        finished_on: Date.new(2021, 12, 31),
-        number_of_terms: 3
-      )
+      FactoryBot.create(:induction_period, :unfinished,
+                        teacher:,
+                        appropriate_body_period:,
+                        started_on: Date.new(2020, 1, 1),
+                        finished_on: Date.new(2020, 12, 31),
+                        number_of_terms: 3)
     end
 
     context "when deleting the earliest period" do

@@ -11,9 +11,15 @@ brookfield_school = School.find_by!(urn: 2_976_163)
 ashford_independent_school = School.find_by!(urn: 9_123_458)
 
 # Appropriate bodies
+#
+# 01 Sep 2021 -> 01 Sep 2024
 south_yorkshire_studio_hub = AppropriateBodyPeriod.with_display_name("South Yorkshire Studio Hub").first!
+# 01 Sep 2021 -> now
 golden_leaf_teaching_school_hub = AppropriateBodyPeriod.with_display_name("Golden Leaf Teaching School Hub").first!
+# 01 Sep 2021 -> now
 umber_teaching_school_hub = AppropriateBodyPeriod.with_display_name("Umber Teaching School Hub").first!
+# 31 Aug 2011 -> now
+istip = AppropriateBodyPeriod.with_display_name("Independent Schools Teacher Induction Panel (ISTIP)").first!
 
 def teacher(...) = TeacherHistories::TeacherBuilder.teacher(...)
 def next_trn = (sprintf("%07d", @trns.next))
@@ -37,7 +43,7 @@ _bill_ward = teacher(next_trn, "Bill Ward") do
   ect_at_school_period(ackley_bridge, "2025-09-01") do
     school_led_training_period("2025-09-01")
   end
-  induction_period(south_yorkshire_studio_hub, "2025-09-01 -> 2026-01-01")
+  induction_period(umber_teaching_school_hub, "2025-09-01 -> 2026-01-01")
 end
 
 _mitch_mitchell = teacher(next_trn, "Mitch Mitchell") do
@@ -98,6 +104,7 @@ _joe_morello = teacher(next_trn, "Joe Morello", trs_induction_status: "Passed") 
   induction_period(umber_teaching_school_hub, "2023-09-01 -> 2025-05-20", :pass)
 end
 
+# south_yorkshire_studio_hub closed on 01 Sep 2024
 _lars_ulrich = teacher(next_trn, "Lars Ulrich", trs_induction_status: "Failed") do
   # this might also need to be reflected in TRS query
   description("ECT who has failed induction, cannot be claimed")
@@ -107,10 +114,10 @@ _lars_ulrich = teacher(next_trn, "Lars Ulrich", trs_induction_status: "Failed") 
       declaration("started",    "2023-12-05", :paid)
       declaration("retained-1", "2024-03-10", :paid)
       declaration("retained-2", "2024-07-01", :paid)
-      declaration("retained-3", "2024-12-20", :paid)
+      declaration("retained-3", "2024-08-31", :paid)
     end
   end
-  induction_period(umber_teaching_school_hub, "2023-09-01 -> 2025-05-20", :fail)
+  induction_period(south_yorkshire_studio_hub, "2023-09-01 -> 2024-08-31", :fail)
 end
 
 _stewart_copeland = teacher(next_trn, "Stewart Copeland") do
@@ -143,4 +150,12 @@ _eloy_casagrande = teacher(next_trn, "Eloy Casagrande") do
     school_led_training_period("2025-09-01")
   end
   induction_period(golden_leaf_teaching_school_hub, "2025-09-01")
+end
+
+_danny_carey = teacher(next_trn, "Danny Carey") do
+  description("ECT ongoing induction, to be released and claimed")
+  ect_at_school_period(ashford_independent_school, "2020-09-01", school_reported_appropriate_body: istip) do
+    school_led_training_period("2025-09-01")
+  end
+  induction_period(istip, "2020-09-01")
 end
