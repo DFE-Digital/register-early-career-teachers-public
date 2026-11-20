@@ -2559,6 +2559,14 @@ RSpec.describe Events::Record do
 
     let(:successor_period) { second_period }
     let(:periods) { [first_period, second_period] }
+    let(:original_period_associations) do
+      periods.to_h do |period|
+        [
+          period.id,
+          period.slice(:expression_of_interest_id, :school_partnership_id)
+        ]
+      end
+    end
     let(:provider_name) { "#{successor_period.lead_provider_name} & #{successor_period.delivery_partner_name}" }
 
     let(:formatted_periods) do
@@ -2569,6 +2577,8 @@ RSpec.describe Events::Record do
           provider_name:,
           schedule: "ecf-standard-september",
           started_on: first_period_started_on,
+          expression_of_interest_id: first_period.expression_of_interest_id,
+          school_partnership_id: first_period.school_partnership_id,
           id: first_period.id },
         { finished_on: second_period_finished_on,
           training_programme: "provider_led",
@@ -2576,6 +2586,8 @@ RSpec.describe Events::Record do
           provider_name:,
           schedule: "ecf-standard-september",
           started_on: second_period_started_on,
+          expression_of_interest_id: second_period.expression_of_interest_id,
+          school_partnership_id: second_period.school_partnership_id,
           id: second_period.id }
       ]
     end
@@ -2585,13 +2597,16 @@ RSpec.describe Events::Record do
 
       it "records an event with ongoing period message" do
         freeze_time do
-          Events::Record.record_teacher_training_periods_merged!(author:, teacher:, periods:, successor_period:)
+          Events::Record.record_teacher_training_periods_merged!(author:, teacher:, periods:, successor_period:, original_period_associations:)
 
           expect(Event.sole).to have_attributes(
             event_type: "teacher_training_periods_merged",
             teacher:,
             training_period: successor_period,
-            metadata: { periods: formatted_periods }.as_json,
+            metadata: {
+              periods: formatted_periods,
+              retained_school_partnership_id: successor_period.school_partnership_id
+            }.as_json,
             heading: "Rhys Ifans's training periods with #{provider_name} from 2025-01-01 were merged into a single period",
             happened_at: Time.zone.now,
             **author_params
@@ -2603,13 +2618,16 @@ RSpec.describe Events::Record do
     context "when the successor period is finished" do
       it "records an event with between two dates message" do
         freeze_time do
-          Events::Record.record_teacher_training_periods_merged!(author:, teacher:, periods:, successor_period:)
+          Events::Record.record_teacher_training_periods_merged!(author:, teacher:, periods:, successor_period:, original_period_associations:)
 
           expect(Event.sole).to have_attributes(
             event_type: "teacher_training_periods_merged",
             teacher:,
             training_period: successor_period,
-            metadata: { periods: formatted_periods }.as_json,
+            metadata: {
+              periods: formatted_periods,
+              retained_school_partnership_id: successor_period.school_partnership_id
+            }.as_json,
             heading: "Rhys Ifans's training periods with #{provider_name} between 2025-01-01 and 2025-12-31 were merged into a single period",
             happened_at: Time.zone.now,
             **author_params
@@ -2663,6 +2681,8 @@ RSpec.describe Events::Record do
             provider_name: nil,
             schedule: nil,
             started_on: first_period_started_on,
+            expression_of_interest_id: nil,
+            school_partnership_id: nil,
             id: first_period.id },
           { finished_on: second_period_finished_on,
             training_programme: "school_led",
@@ -2670,19 +2690,24 @@ RSpec.describe Events::Record do
             provider_name: nil,
             schedule: nil,
             started_on: second_period_started_on,
+            expression_of_interest_id: nil,
+            school_partnership_id: nil,
             id: second_period.id }
         ]
       end
 
       it "records an event with school-led message" do
         freeze_time do
-          Events::Record.record_teacher_training_periods_merged!(author:, teacher:, periods:, successor_period:)
+          Events::Record.record_teacher_training_periods_merged!(author:, teacher:, periods:, successor_period:, original_period_associations:)
 
           expect(Event.sole).to have_attributes(
             event_type: "teacher_training_periods_merged",
             teacher:,
             training_period: successor_period,
-            metadata: { periods: formatted_periods }.as_json,
+            metadata: {
+              periods: formatted_periods,
+              retained_school_partnership_id: successor_period.school_partnership_id
+            }.as_json,
             heading: "Rhys Ifans's school-led training periods between 2025-01-01 and 2025-12-31 were merged into a single period",
             happened_at: Time.zone.now,
             **author_params
@@ -2722,13 +2747,16 @@ RSpec.describe Events::Record do
 
       it "records an event with an expression of interest message" do
         freeze_time do
-          Events::Record.record_teacher_training_periods_merged!(author:, teacher:, periods:, successor_period:)
+          Events::Record.record_teacher_training_periods_merged!(author:, teacher:, periods:, successor_period:, original_period_associations:)
 
           expect(Event.sole).to have_attributes(
             event_type: "teacher_training_periods_merged",
             teacher:,
             training_period: successor_period,
-            metadata: { periods: formatted_periods }.as_json,
+            metadata: {
+              periods: formatted_periods,
+              retained_school_partnership_id: successor_period.school_partnership_id
+            }.as_json,
             heading: "Rhys Ifans's training periods with #{provider_name} between 2025-01-01 and 2025-12-31 were merged into a single period",
             happened_at: Time.zone.now,
             **author_params
