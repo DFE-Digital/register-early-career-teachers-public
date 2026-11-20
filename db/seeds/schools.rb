@@ -3,6 +3,8 @@ def describe_school(school)
   print_seed_info("#{school.name} (#{school_urn})", indent: 2)
 end
 
+opened_on = Date.parse("1999-09-01")
+
 [
   {
     urn: 3_375_958,
@@ -74,7 +76,56 @@ end
     induction_tutor_email: nil,
     induction_tutor_name: nil,
     induction_tutor_last_nominated_in: nil,
-  }
+  },
+
+  # Appropriate body teaching school hub provisioning schools
+  # ----------------------------------------------------------------------------
+  # Star Teaching School Hub Network
+  { urn: 141_969, name: "Eden Boys' School, Birmingham", type: :state_school_type, opened_on: },      # Star Teaching School Hub Birmingham South
+  { urn: 138_220, name: "Tauheedul Islam Boys' High School", type: :state_school_type, opened_on: },  # Star Teaching School Hub Pennine Lancashire
+  { urn: 140_959, name: "Eden Boys' School, Bolton", type: :state_school_type, opened_on: },          # Star Teaching School Hub Pennine Lancashire
+  { urn: 141_565, name: "Tauheedul Islam Girls' High School", type: :state_school_type, opened_on: }, # Star Teaching School Hub Pennine Lancashire
+  # Exchange Teaching School Hub
+  { urn: 138_332, name: "The Vale Primary Academy", type: :state_school_type, opened_on: },
+  { urn: 137_482, name: "Grange Lane Infant Academy", type: :state_school_type, opened_on: },
+  # Five Counties Teaching School Hub Alliance
+  { urn: 135_959, name: "Bristol Metropolitan Academy", type: :state_school_type, opened_on: },                  # Five Counties Teaching School Hubs Alliance (Somerset)
+  { urn: 149_948, name: "Mangotsfield Church of England Primary School", type: :state_school_type, opened_on: }, # Five Counties Teaching School Hubs Alliance (South Glos/BANES)
+  # Chiltern TSH
+  { urn: 136_319, name: "Denbigh High School", type: :state_school_type, opened_on: },
+  # Kent Teaching School Hub
+  { urn: 136_603, name: "Bennett Memorial Diocesan School", type: :state_school_type, opened_on: },
+  # Bright Futures Teaching School Hub
+  { urn: 137_289, name: "Altrincham Grammar School for Girls", type: :state_school_type, opened_on: },
+  # Unity Teaching School Hub
+  { urn: 139_732, name: "Churchill Special Free School", type: :state_school_type, opened_on: },
+  # STEP Ahead Teaching School Hub
+  { urn: 141_666, name: "Angel Oak Academy", type: :state_school_type, opened_on: },
+  # Embrace Teaching School Hub
+  { urn: 143_879, name: "Tor View School", type: :state_school_type, opened_on: },
+
+  # Mock hubs ------------------------------------------------------------------
+
+  # Canvas Teaching School Hub
+  { urn: 9_400_101, name: "Canvas Academy", type: :state_school_type, opened_on: },
+  # South Yorkshire Studio Hub
+  { urn: 9_400_102, name: "Dearne Valley Studio School", type: :state_school_type, opened_on:, closed_on: Date.parse("2024-08-31") },
+  # Ochre Education Partnership
+  { urn: 9_400_103, name: "Ochre Academy", type: :state_school_type, opened_on: },           # Ochre Education Partnership (Winterfell)
+  { urn: 9_400_104, name: "Ochre Learning Alliance", type: :state_school_type, opened_on: }, # Ochre Education Partnership (Dragonstone)
+
+  # Personas --------------------------------------------------------------------
+  # Fred Jones @ Umber Teaching School Hub
+  { urn: 141_777, name: "Umber LS", type: :state_school_type, opened_on: },
+  # Velma Dinkley @ Golden Leaf Teaching School Hub
+  { urn: 141_888, name: "Golden Leaf LS", type: :state_school_type, opened_on: },
+
+  # Appropriate body teaching schools
+  # ----------------------------------------------------------------------------
+  { urn: 9_400_001, name: "Frame University London", type: :state_school_type, opened_on:, closed_on: Date.parse("2021-08-31") },
+  { urn: 9_400_002, name: "Easelcroft Teaching School", type: :state_school_type, opened_on:, closed_on: Date.parse("2021-08-31") },
+  { urn: 9_400_003, name: "Vista College", type: :state_school_type, opened_on:, closed_on: Date.parse("2022-08-31") },
+
 ].uniq { |h| h[:urn] }.map do |data|
   type = data[:type]
 
@@ -103,7 +154,7 @@ end
   ).school
 
   # Update School-specific attributes separately
-  school.update!(**data.except(:name, :type, :section_41_approved, :sparsity_uplift, :pupil_premium_uplift))
+  school.update!(**data.except(:name, :type, :opened_on, :closed_on, :section_41_approved, :sparsity_uplift, :pupil_premium_uplift))
 
   if data.key?(:section_41_approved)
     school.gias_school&.update!(section_41_approved: data[:section_41_approved])

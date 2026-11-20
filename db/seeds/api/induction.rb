@@ -11,9 +11,9 @@ brookfield_school = School.find_by!(urn: 2_976_163)
 ashford_independent_school = School.find_by!(urn: 9_123_458)
 
 # Appropriate bodies
-south_yorkshire_studio_hub = AppropriateBodyPeriod.find_by!(name: "South Yorkshire Studio Hub")
-golden_leaf_teaching_school_hub = AppropriateBodyPeriod.find_by!(name: "Golden Leaf Teaching School Hub")
-umber_teaching_school_hub = AppropriateBodyPeriod.find_by!(name: "Umber Teaching School Hub")
+south_yorkshire_studio_hub = AppropriateBodyPeriod.with_display_name("South Yorkshire Studio Hub").first!
+golden_leaf_teaching_school_hub = AppropriateBodyPeriod.with_display_name("Golden Leaf Teaching School Hub").first!
+umber_teaching_school_hub = AppropriateBodyPeriod.with_display_name("Umber Teaching School Hub").first!
 
 def teacher(...) = TeacherHistories::TeacherBuilder.teacher(...)
 def next_trn = (sprintf("%07d", @trns.next))
