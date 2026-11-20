@@ -1,0 +1,12 @@
+<%=
+  govuk_summary_card(title: "Mentor training summary", heading_level: 4) do |card|
+    card.with_summary_list(actions: false) do |list|
+      list.with_row do |row|
+        row.with_key(text: "Funding")
+        row.with_value do
+          safe_join([funding_status, funding_date], tag.br)
+        end
+      end
+    end
+  end
+%>
