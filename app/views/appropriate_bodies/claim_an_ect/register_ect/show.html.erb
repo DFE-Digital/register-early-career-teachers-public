@@ -6,7 +6,7 @@
 <%= govuk_panel(title_text: "You've successfully claimed #{pending_induction_submission_full_name(@pending_induction_submission)}'s induction") %>
 
 <p>
-  You've successfully claimed <%= pending_induction_submission_full_name(@pending_induction_submission) %> with <%= @appropriate_body.name %>. This means that they cannot be claimed by another appropriate body.
+  You've successfully claimed <%= pending_induction_submission_full_name(@pending_induction_submission) %> with <%= @appropriate_body.display_name %>. This means that they cannot be claimed by another appropriate body.
 </p>
 
 <h2 class="govuk-heading-m">What happens next</h2>

@@ -38,7 +38,8 @@ module Seeds
     end
 
     def reuse_reference_appropriate_body
-      AppropriateBodyPeriod.find_by!(name: Seeds::ReuseChoices::PREFERRED_APPROPRIATE_BODY_NAME)
+      TeachingSchoolHub.find_by!(name: Seeds::ReuseChoices::PREFERRED_APPROPRIATE_BODY_NAME)
+                       .appropriate_body_periods.first!
     end
 
     def scenario_ect_period_for_school!(school:, previous_year:)

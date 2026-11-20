@@ -24,7 +24,7 @@
       <%= f.govuk_collection_select(:appropriate_body_id,
                                     appropriate_bodies_options_for_collection,
                                     :id,
-                                    :name,
+                                    :display_name,
                                     label: { text: "Enter appropriate body name" },
                                     options: { include_blank: true },
                                     class: "autocomplete"

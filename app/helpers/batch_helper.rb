@@ -91,7 +91,7 @@ module BatchHelper
       rows: batches.map do |batch|
         [
           batch.id.to_s,
-          batch.appropriate_body_period.name,
+          batch.appropriate_body_period.display_name,
           batch_type_tag(batch),
           batch_status_tag(batch),
           batch.file_name || "-",

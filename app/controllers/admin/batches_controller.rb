@@ -6,8 +6,10 @@ module Admin
 
     def index
       @pagy, @batches = pagy(
-        PendingInductionSubmissionBatch.includes(:appropriate_body_period, :pending_induction_submissions)
-                                      .order(created_at: :desc)
+        PendingInductionSubmissionBatch
+          .with_appropriate_body_display_names
+          .includes(:pending_induction_submissions)
+          .order(created_at: :desc)
       )
     end
   end

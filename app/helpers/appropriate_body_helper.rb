@@ -2,7 +2,17 @@ module AppropriateBodyHelper
   FormChoice = Data.define(:identifier, :name)
 
   def appropriate_bodies_options_for_collection
-    AppropriateBodyPeriod.teaching_school_hub.active.select(:id, :name)
+    AppropriateBodyPeriod.teaching_school_hub.active.includes(:teaching_school_hub)
+  end
+
+  # @param appropriate_body [AppropriateBodyPeriod]
+  # @return [String]
+  def appropriate_body_status(appropriate_body)
+    if appropriate_body.unfinished?
+      govuk_tag(text: "Active", colour: "green")
+    else
+      govuk_tag(text: "Inactive", colour: "grey")
+    end
   end
 
   # @return [Array<FormChoice>]

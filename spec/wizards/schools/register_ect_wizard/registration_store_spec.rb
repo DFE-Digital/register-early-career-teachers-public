@@ -357,6 +357,23 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
       end
     end
 
+    describe "#appropriate_body_name" do
+      it "names the chosen period" do
+        expect(registration_store.appropriate_body_name).to eq(appropriate_body_period.name)
+      end
+
+      context "when the period has no name of its own" do
+        let(:national_body) { FactoryBot.create(:national_body, name: "National Body X") }
+        let(:appropriate_body_period) do
+          FactoryBot.create(:appropriate_body_period, :national, name: nil, national_body:)
+        end
+
+        it "delegates to the national body" do
+          expect(registration_store.appropriate_body_name).to eq("National Body X")
+        end
+      end
+    end
+
     describe "#previous_appropriate_body_name" do
       context "when the teacher has induction periods" do
         let!(:older_body) { FactoryBot.create(:appropriate_body_period, name: "Older Body") }
