@@ -51,7 +51,7 @@ module Teachers
         end
 
         def compatible_school_partnership_and_expressions_of_interest?
-          school_partnerships = periods.map(&:school_partnership).compact.uniq
+          school_partnerships = periods.filter_map(&:school_partnership).uniq
           return false unless school_partnerships.size == 1
 
           school_partnership = school_partnerships.first
@@ -79,18 +79,23 @@ module Teachers
         end
 
         def record_school_partnership_assigned!
-          original_associations = @original_period_associations.fetch(successor_period.id)
-          school_partnership = successor_period.school_partnership
+          training_period = successor_period
+          school_partnership = training_period.school_partnership
 
           return if school_partnership.blank?
-          return if original_associations.fetch(:school_partnership_id) == school_partnership.id
+
+          original_school_partnership_id = @original_period_associations
+            .fetch(training_period.id)
+            .fetch(:school_partnership_id)
+
+          return if original_school_partnership_id == school_partnership.id
 
           Events::Record.record_training_period_assigned_to_school_partnership_event!(
             author:,
-            training_period: successor_period,
-            ect_at_school_period: successor_period.ect_at_school_period,
-            mentor_at_school_period: successor_period.mentor_at_school_period,
-            teacher: successor_period.teacher,
+            training_period:,
+            ect_at_school_period: training_period.ect_at_school_period,
+            mentor_at_school_period: training_period.mentor_at_school_period,
+            teacher:,
             school_partnership:,
             lead_provider: school_partnership.lead_provider,
             delivery_partner: school_partnership.delivery_partner,
