@@ -1,5 +1,6 @@
 class MentorshipPeriod < ApplicationRecord
   include Interval
+  include OverlappingZeroLengthSiblings
   include DeclarativeUpdates
 
   # Associations

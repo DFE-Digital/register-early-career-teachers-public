@@ -96,12 +96,12 @@ module ECTAtSchoolPeriods
             )
           end
 
-          it "removes the existing training period" do
+          it "moves the existing training period to a zero-length period on the transition date" do
             freeze_time
 
             SwitchTraining.to_school_led(ect_at_school_period, author:)
 
-            expect { training_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+            expect(training_period.reload).to have_attributes(started_on: Date.current, finished_on: Date.current)
           end
 
           it "creates a new school-led training period" do
@@ -128,11 +128,13 @@ module ECTAtSchoolPeriods
             )
           end
 
-          it "removes the existing training period" do
+          it "moves the existing training period to a zero-length period on the transition date" do
             SwitchTraining.to_school_led(ect_at_school_period, author:)
 
-            expect { training_period.reload }
-              .to raise_error(ActiveRecord::RecordNotFound)
+            expect(training_period.reload).to have_attributes(
+              started_on: ect_at_school_period.started_on,
+              finished_on: ect_at_school_period.started_on
+            )
           end
 
           it "creates a new school-led training period that starts on the ECT start date" do
@@ -334,12 +336,12 @@ module ECTAtSchoolPeriods
             )
           end
 
-          it "finishes the existing training period" do
+          it "moves the existing training period to a zero-length period on the transition date" do
             freeze_time
 
             SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
 
-            expect { training_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+            expect(training_period.reload).to have_attributes(started_on: Date.current, finished_on: Date.current)
           end
 
           it "creates a new provider-led training period with an expression of interest" do
@@ -379,11 +381,13 @@ module ECTAtSchoolPeriods
               )
             end
 
-            it "removes the existing training period" do
+            it "moves the existing training period to a zero-length period on the transition date" do
               SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
 
-              expect { training_period.reload }
-                .to raise_error(ActiveRecord::RecordNotFound)
+              expect(training_period.reload).to have_attributes(
+                started_on: ect_at_school_period.started_on,
+                finished_on: ect_at_school_period.started_on
+              )
             end
 
             it "creates a new provider-led training period that starts on the ECT start date" do

@@ -49,33 +49,31 @@ private
   end
 
   def finish_mentorship_periods!(period)
-    destroy_unstarted_mentorship_periods!(period)
+    move_unstarted_mentorship_periods!(period)
 
-    period.mentorship_periods.contains_date(finished_on).each do |mentorship_period|
+    period.mentorship_periods.started_before(finished_on).contains_date(finished_on).each do |mentorship_period|
       effective_date = [finished_on, mentorship_period.mentee.finished_on].compact.min
 
       MentorshipPeriods::Finish.new(mentorship_period:, finished_on: effective_date, author:).finish!
     end
   end
 
-  def destroy_unstarted_mentorship_periods!(period)
+  def move_unstarted_mentorship_periods!(period)
     period.mentorship_periods.started_on_or_after(finished_on).find_each do |mentorship_period|
-      Event.where(mentorship_period:).delete_all
-      mentorship_period.destroy!
+      mentorship_period.update!(started_on: finished_on, finished_on:)
     end
   end
 
-  def destroy_unstarted_training_periods!(period)
+  def move_unstarted_training_periods!(period)
     period.training_periods.started_on_or_after(finished_on).find_each do |training_period|
-      Event.where(training_period:).delete_all
-      training_period.destroy!
+      training_period.update!(started_on: finished_on, finished_on:)
     end
   end
 
   def finish_training_periods!(period)
-    destroy_unstarted_training_periods!(period)
+    move_unstarted_training_periods!(period)
 
-    period.training_periods.contains_date(finished_on).each do |training_period|
+    period.training_periods.started_before(finished_on).contains_date(finished_on).each do |training_period|
       TrainingPeriods::Finish.mentor_training(training_period:, mentor_at_school_period: period, finished_on:, author:).finish!
     end
   end

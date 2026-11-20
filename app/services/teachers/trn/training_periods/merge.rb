@@ -38,7 +38,7 @@ module Teachers
         end
 
         def periods_have_different?(attribute)
-          periods.map(&attribute).uniq.size > 1
+          non_zero_length_periods.map(&attribute).uniq.size > 1
         end
 
         def declarations

@@ -2,6 +2,7 @@ module AtSchoolPeriod
   extend ActiveSupport::Concern
 
   include Interval
+  include OverlappingZeroLengthSiblings
   include DeclarativeUpdates
 
   included do

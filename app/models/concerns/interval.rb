@@ -61,11 +61,11 @@ module Interval
     return unless valid_date_order?
     return unless has_overlap_with_siblings?
 
-    if siblings.any? { |s| s.range.include?(started_on) }
+    if overlap_siblings.any? { |s| s.range.include?(started_on) }
       errors.add(:started_on, "Start date cannot overlap another #{name} period")
-    elsif siblings.any? { |s| s.range.include?(finished_on) } || finished_on.nil?
+    elsif overlap_siblings.any? { |s| s.range.include?(finished_on) } || finished_on.nil?
       errors.add(:finished_on, "End date cannot overlap another #{name} period")
-    elsif siblings.any? { |s| (s.started_on..s.finished_on).overlap?(started_on..finished_on) }
+    elsif overlap_siblings.any? { |s| (s.started_on..s.finished_on).overlap?(started_on..finished_on) }
       errors.add(:base, "Period cannot overlap another #{name} period")
     end
   end
@@ -107,7 +107,9 @@ module Interval
 
   def incomplete? = [started_on, finished_on].any?(&:blank?)
 
-  def has_overlap_with_siblings? = siblings.overlapping_with(self).exists?
+  def overlap_siblings = siblings
+
+  def has_overlap_with_siblings? = overlap_siblings.overlapping_with(self).exists?
 
   def has_predecessors? = predecessors.exists?
 

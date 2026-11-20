@@ -59,17 +59,16 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
             FactoryBot.create(:declaration, :paid, training_period:)
           end
 
-          it "raises and does not change the lead provider" do
-            expect {
-              expect { subject }
-                .to raise_error(ActiveRecord::RecordInvalid)
-            }.not_to change(TrainingPeriod, :count)
+          it "keeps the declaration on the moved period and creates a new one" do
+            expect { subject }.to change(TrainingPeriod, :count).by(1)
 
             training_period.reload
 
+            expect(training_period).to have_attributes(started_on: started_on.to_date, finished_on: started_on.to_date)
             expect(training_period.school_partnership).to eq(old_school_partnership)
             expect(training_period.expression_of_interest).to be_nil
             expect(training_period.lead_provider).to eq(old_lead_provider)
+            expect(training_period.declarations.billable).to exist
           end
         end
       end
@@ -105,12 +104,16 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
         context "when the training period started today" do
           let(:started_on) { Date.current }
 
-          it "updates the training period in place" do
-            expect { subject }.not_to change(TrainingPeriod, :count)
+          it "moves the existing training period and opens a new one" do
+            expect { subject }.to change(TrainingPeriod, :count).by(1)
 
             training_period.reload
-            expect(training_period.finished_on).to be_nil
-            expect(training_period.school_partnership).to eq(school_partnership)
+            expect(training_period).to have_attributes(started_on: Date.current, finished_on: Date.current)
+            expect(training_period.school_partnership).to eq(old_school_partnership)
+
+            new_training_period = mentor_at_school_period.training_periods.unfinished.first
+            expect(new_training_period).not_to eq(training_period)
+            expect(new_training_period.school_partnership).to eq(school_partnership)
           end
 
           context "when the training period has a billable declaration" do
@@ -118,16 +121,15 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
               FactoryBot.create(:declaration, :paid, training_period:)
             end
 
-            it "does not change the lead provider" do
-              expect {
-                expect { subject }
-                  .to raise_error(ActiveRecord::RecordInvalid)
-              }.not_to change(TrainingPeriod, :count)
+            it "retains the declaration on the moved period and opens a new one" do
+              expect { subject }.to change(TrainingPeriod, :count).by(1)
 
               training_period.reload
 
+              expect(training_period).to have_attributes(started_on: Date.current, finished_on: Date.current)
               expect(training_period.school_partnership).to eq(old_school_partnership)
               expect(training_period.lead_provider).to eq(old_lead_provider)
+              expect(training_period.declarations.billable).to exist
             end
           end
         end
@@ -135,12 +137,16 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
         context "when the training period starts in the future" do
           let(:started_on) { 1.month.from_now }
 
-          it "updates the training period in place" do
-            expect { subject }.not_to change(TrainingPeriod, :count)
+          it "moves the existing training period and opens a new one" do
+            expect { subject }.to change(TrainingPeriod, :count).by(1)
 
             training_period.reload
-            expect(training_period.finished_on).to be_nil
-            expect(training_period.school_partnership).to eq(school_partnership)
+            expect(training_period).to have_attributes(started_on: started_on.to_date, finished_on: started_on.to_date)
+            expect(training_period.school_partnership).to eq(old_school_partnership)
+
+            new_training_period = mentor_at_school_period.training_periods.unfinished.first
+            expect(new_training_period).not_to eq(training_period)
+            expect(new_training_period.school_partnership).to eq(school_partnership)
           end
 
           context "when the training period has a billable declaration" do
@@ -148,17 +154,16 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
               FactoryBot.create(:declaration, :paid, training_period:)
             end
 
-            it "raises and does not change the lead provider" do
-              expect {
-                expect { subject }
-                  .to raise_error(ActiveRecord::RecordInvalid)
-              }.not_to change(TrainingPeriod, :count)
+            it "retains the declaration on the moved period and opens a new one" do
+              expect { subject }.to change(TrainingPeriod, :count).by(1)
 
               training_period.reload
 
+              expect(training_period.finished_on).to eq(started_on.to_date)
               expect(training_period.school_partnership).to eq(old_school_partnership)
               expect(training_period.school_partnership).not_to eq(school_partnership)
               expect(training_period.lead_provider).to eq(old_lead_provider)
+              expect(training_period.declarations.billable).to exist
             end
           end
         end
@@ -256,8 +261,11 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
                           started_on:)
       end
 
-      it "deletes the existing training period" do
-        expect { subject }.not_to change(TrainingPeriod, :count)
+      it "finishes and retains the existing training period" do
+        freeze_time
+
+        expect { subject }.to change(TrainingPeriod, :count).by(1)
+        expect(training_period.reload.finished_on).to eq(Date.yesterday)
       end
     end
 
