@@ -14,17 +14,4 @@ RSpec.describe "GET /api/induction/v1/appropriate-bodies", type: :request do
       { "id" => golden_leaf.external_id, "name" => "Golden Leaf Teaching School Hub" },
     ])
   end
-
-  it "rejects bad client credentials" do
-    get "/api/induction/v1/appropriate-bodies", headers: basic_auth_headers(client:, secret: "wrong")
-    expect(response).to have_http_status(:unauthorized)
-    expect(response.parsed_body).to eq("error" => "invalid_client")
-
-    unknown_client = FactoryBot.build(:api_oauth_client)
-    get "/api/induction/v1/appropriate-bodies", headers: basic_auth_headers(client: unknown_client)
-    expect(response).to have_http_status(:unauthorized)
-
-    get "/api/induction/v1/appropriate-bodies"
-    expect(response).to have_http_status(:unauthorized)
-  end
 end

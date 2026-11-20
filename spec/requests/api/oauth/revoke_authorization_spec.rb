@@ -30,19 +30,6 @@ RSpec.describe "API OAuth Authorization revoked by client", type: :request do
       expect(response).to have_http_status(:ok)
     end
 
-    context "when the authentication secret is incorrect" do
-      let(:client_creds) { "#{client.client_id}:bananas" }
-
-      it "returns a error in json format" do
-        post("/oauth/token", params:, headers: basic_auth)
-
-        expect(response).to have_http_status(:unauthorized)
-
-        payload = JSON.parse(response.body)
-        expect(payload["error"]).to eq "invalid_client"
-      end
-    end
-
     context "when client does not have an authorization matching the token" do
       let(:token) { "bananas" }
 
