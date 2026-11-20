@@ -59,6 +59,8 @@ module RegisterEarlyCareerTeachers
     config.enable_api_test_client = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_API_TEST_CLIENT", false))
     config.enable_apis_under_development = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_APIS_UNDER_DEVELOPMENT", false))
     config.enable_training_api = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_TRAINING_API", false))
+    config.enable_notify_delivery_receipts = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_NOTIFY_DELIVERY_RECEIPTS", false))
+    config.notify_delivery_receipts_bearer_token = ENV["NOTIFY_DELIVERY_RECEIPTS_BEARER_TOKEN"]
     config.bypass_filter_parameter_logging = false
     config.sentry_dsn = ENV["SENTRY_DSN"]
     config.enable_request_specs_timeout = ActiveModel::Type::Boolean.new.cast(ENV.fetch("CI", false))

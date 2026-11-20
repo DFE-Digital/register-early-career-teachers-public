@@ -53,4 +53,5 @@ Rails.application.routes.draw do
   draw :school
   draw :api
   draw :integration_support
+  draw :webhooks
 end
