@@ -1,0 +1,30 @@
+<% page_data(title: "API clients") %>
+
+<p class="govuk-body">
+  Manage OAuth API clients for the Induction API. You can view client details,
+  rotate a client secret, and add new clients.
+</p>
+
+<%= govuk_button_link_to "Add API client", new_admin_api_client_path %>
+
+<% if @clients.any? %>
+  <%= govuk_table do |table|
+    table.with_head do |head|
+      head.with_row do |row|
+        row.with_cell(text: "Name")
+        row.with_cell(text: "Client ID")
+      end
+    end
+
+    table.with_body do |body|
+      @clients.each do |client|
+        body.with_row do |row|
+          row.with_cell { govuk_link_to(client.name, admin_api_client_path(client), no_visited_state: true) }
+          row.with_cell { tag.code(client.client_id) }
+        end
+      end
+    end
+  end %>
+<% else %>
+  <p class="govuk-body">There are no API clients.</p>
+<% end %>

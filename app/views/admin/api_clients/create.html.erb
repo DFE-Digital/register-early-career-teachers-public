@@ -1,0 +1,5 @@
+<% page_data(title: "Client credentials created", header: nil, breadcrumbs: { "API clients" => admin_api_clients_path, @client.name => nil }) %>
+
+<%= govuk_panel(title_text: "Client credentials created", text: "#{@client.name} has been added as an API client.") %>
+
+<%= render "credentials", client: @client %>

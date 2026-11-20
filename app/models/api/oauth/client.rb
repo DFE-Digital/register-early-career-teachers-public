@@ -15,10 +15,10 @@ class API::OAuth::Client < ApplicationRecord
   normalizes :redirect_uris, with: -> { it.compact_blank.map(&:strip).uniq }
   normalizes :grant_types, with: -> { it.compact_blank.uniq }
 
-  validates :name, presence: true, uniqueness: true
+  validates :name, presence: { message: "Enter a name" }, uniqueness: { message: "An API client with this name already exists" }
   validates :client_id, presence: true, uniqueness: true
   validates :client_secret_digest, presence: true, length: { is: 64 }
-  validates :redirect_uris, presence: true
+  validates :redirect_uris, presence: { message: "Enter at least one redirect URI" }
   validates :grant_types, presence: true, inclusion: { in: GRANT_TYPES, allow_blank: true }
   validate :redirect_uris_are_well_formed, if: :redirect_uris
   validate :redirect_uris_are_not_blacklisted, if: -> { Rails.env.production? && !any_malformed_urls? }
@@ -45,11 +45,11 @@ private
   end
 
   def redirect_uris_are_well_formed
-    errors.add(:redirect_uris, :invalid) if any_malformed_urls?
+    errors.add(:redirect_uris, :invalid, message: "Enter redirect URIs in the correct format, like https://example.com/callback") if any_malformed_urls?
   end
 
   def redirect_uris_are_not_blacklisted
-    errors.add(:redirect_uris, "must use HTTPS and a public host") if any_blacklisted_urls?
+    errors.add(:redirect_uris, "Redirect URIs must use HTTPS and a public host") if any_blacklisted_urls?
   end
 
   def any_malformed_urls? = redirect_uris&.any? { malformed?(it) }

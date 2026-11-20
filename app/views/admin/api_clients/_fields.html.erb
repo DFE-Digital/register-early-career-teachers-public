@@ -1,0 +1,33 @@
+<%= form.govuk_text_field :name,
+      label: { text: "Client name", size: "s" },
+      hint: { text: "Users will see this name when they authorise access through this client." } %>
+
+<% client = form.object %>
+<% error_message = client.errors.messages_for(:redirect_uris).first %>
+
+<div class="<%= class_names("govuk-form-group", "govuk-form-group--error": error_message) %>">
+  <fieldset class="govuk-fieldset" aria-describedby="<%= token_list("api-oauth-client-redirect-uris-hint", "api-oauth-client-redirect-uris-error": error_message) %>">
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Redirect URIs</legend>
+
+    <div class="govuk-hint" id="api-oauth-client-redirect-uris-hint">
+      The URIs that the client will use for the OAuth redirect (callback).
+    </div>
+
+    <% if error_message %>
+      <p class="govuk-error-message" id="api-oauth-client-redirect-uris-error">
+        <span class="govuk-visually-hidden">Error:</span> <%= error_message %>
+      </p>
+    <% end %>
+
+    <% client.redirect_uris.values_at(0...[3, client.redirect_uris.size + 1].max).each.with_index(1) do |redirect_uri, position| %>
+      <div class="govuk-!-margin-bottom-2">
+        <%= text_field_tag "api_oauth_client[redirect_uris][]",
+              redirect_uri,
+              id: position == 1 && error_message ? "api-oauth-client-redirect-uris-field-error" : "api-oauth-client-redirect-uris-field-#{position}",
+              class: ["govuk-input", ("govuk-input--error" if error_message)],
+              spellcheck: false,
+              aria: { label: "Redirect URI #{position}" } %>
+      </div>
+    <% end %>
+  </fieldset>
+</div>

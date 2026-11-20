@@ -1,0 +1,20 @@
+<% page_data(
+     title: "Add API client",
+     error: @client.errors.any?,
+     breadcrumbs: { "API clients" => admin_api_clients_path, "Add API client" => nil }
+   ) %>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <%= form_with model: @client, url: admin_api_clients_path, data: { turbo: false } do |f| %>
+      <%= content_for(:error_summary) { f.govuk_error_summary } %>
+
+      <%= render "fields", form: f %>
+
+      <div class="govuk-button-group">
+        <%= f.govuk_submit "Create client" %>
+        <%= govuk_link_to "Cancel", admin_api_clients_path %>
+      </div>
+    <% end %>
+  </div>
+</div>
