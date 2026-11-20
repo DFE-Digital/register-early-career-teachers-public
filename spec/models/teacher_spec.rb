@@ -1,4 +1,39 @@
 describe Teacher do
+  describe "mentorship status callbacks" do
+    let(:teacher) { first_mentorship_period.mentor.teacher }
+    let!(:first_mentorship_period) { FactoryBot.create(:mentorship_period) }
+    let!(:second_mentorship_period) { FactoryBot.create(:mentorship_period).tap { it.mentor.update!(teacher:) } }
+    let(:first_status_service) { instance_double(MentorshipPeriods::MentorshipStatus, refresh!: true) }
+    let(:second_status_service) { instance_double(MentorshipPeriods::MentorshipStatus, refresh!: true) }
+
+    before do
+      # Other mentorship periods for other teachers should be ignored.
+      FactoryBot.create(:mentorship_period)
+
+      allow(MentorshipPeriods::MentorshipStatus).to receive(:new)
+        .with(mentorship_period: first_mentorship_period).and_return(first_status_service)
+      allow(MentorshipPeriods::MentorshipStatus).to receive(:new)
+        .with(mentorship_period: second_mentorship_period).and_return(second_status_service)
+    end
+
+    it "refreshes both mentorships when funding eligibility changes" do
+      expect(first_status_service).to receive(:refresh!)
+      expect(second_status_service).to receive(:refresh!)
+
+      teacher.update!(
+        mentor_became_ineligible_for_funding_on: Date.current,
+        mentor_became_ineligible_for_funding_reason: "completed_declaration_received"
+      )
+    end
+
+    it "does not refresh statuses for unrelated changes" do
+      expect(first_status_service).not_to receive(:refresh!)
+      expect(second_status_service).not_to receive(:refresh!)
+
+      teacher.update!(trs_first_name: "Updated")
+    end
+  end
+
   describe "declarative updates" do
     let(:instance) { FactoryBot.create(:teacher) }
     let(:target) { instance }

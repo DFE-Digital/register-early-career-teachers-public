@@ -32,6 +32,8 @@ class MentorshipPeriod < ApplicationRecord
   validate :enveloped_by_ect_at_school_period, if: -> { mentee.present? && started_on.present? }
   validate :enveloped_by_mentor_at_school_period, if: -> { mentor.present? && started_on.present? }
 
+  after_save :refresh_mentorship_status
+
   # Scopes
   scope :for_mentee, ->(id) { where(ect_at_school_period_id: id) }
   scope :for_mentor, ->(id) { where(mentor_at_school_period_id: id) }
@@ -46,6 +48,12 @@ class MentorshipPeriod < ApplicationRecord
   end
 
 private
+
+  def refresh_mentorship_status
+    return unless saved_change_to_id? || saved_change_to_finished_on?
+
+    MentorshipPeriods::MentorshipStatus.new(mentorship_period: self).refresh!
+  end
 
   def enveloped_by_ect_at_school_period
     return if (mentee.started_on..mentee.finished_on).cover?(started_on..finished_on)

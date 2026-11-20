@@ -1,6 +1,52 @@
 describe TrainingPeriod do
   include SchoolPartnershipHelpers
 
+  describe "mentorship status callbacks" do
+    let(:mentee) { FactoryBot.create(:ect_at_school_period, :unfinished) }
+    let(:mentor) { FactoryBot.create(:mentor_at_school_period, :unfinished, school: mentee.school) }
+    let!(:mentorship_period) { FactoryBot.create(:mentorship_period, :unfinished, mentee:, mentor:) }
+    let(:status_service) { instance_double(MentorshipPeriods::MentorshipStatus, refresh!: true) }
+    let!(:training_period) { FactoryBot.build(:training_period, :unfinished, ect_at_school_period: mentee) }
+
+    shared_examples "refreshing mentorship statuses" do
+      before do
+        allow(MentorshipPeriods::MentorshipStatus).to receive(:new).with(mentorship_period:).and_return(status_service)
+      end
+
+      it "refreshes statuses when created" do
+        expect(status_service).to receive(:refresh!)
+
+        training_period.save!
+      end
+
+      it "refreshes statuses when finished_on changes" do
+        training_period.save!
+        expect(status_service).to receive(:refresh!)
+        training_period.update!(finished_on: Date.yesterday)
+      end
+
+      it "refreshes statuses when the school partnership changes" do
+        training_period.save!
+        partnership = FactoryBot.create(:school_partnership, :for_year, school: mentee.school, year: training_period.schedule.contract_period.year)
+        expect(status_service).to receive(:refresh!)
+        training_period.update!(school_partnership: partnership)
+      end
+
+      it "refreshes statuses when the expression of interest changes" do
+        training_period.save!
+        expression_of_interest = FactoryBot.create(:framework_agreement, contract_period: training_period.schedule.contract_period)
+        expect(status_service).to receive(:refresh!)
+        training_period.update!(expression_of_interest:)
+      end
+
+      it "does not refresh statuses for unrelated changes" do
+        training_period.save!
+        expect(status_service).not_to receive(:refresh!)
+        training_period.update!(api_transfer_updated_at: 1.day.ago)
+      end
+    end
+  end
+
   describe "declarative updates" do
     let(:period_boundaries) { { started_on: 3.years.ago.to_date, finished_on: nil } }
 
