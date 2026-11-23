@@ -361,7 +361,7 @@ private
 
   def and_i_see_the_change_lead_provider_form
     heading = page.locator("h1")
-    expect(heading).to have_text("Which lead provider would you like to contact")
+    expect(heading).to contain_text("Which lead provider would you like to contact")
   end
 
   def when_i_choose_a_lead_provider
@@ -396,7 +396,7 @@ private
 
   def then_i_see_the_upcoming_mentor
     row = page.locator(".govuk-summary-list__row", hasText: "Mentor")
-    expect(row).to have_text(
+    expect(row).to contain_text(
       "Sally Successor (from #{@upcoming_mentorship_start_date.to_fs(:govuk)})"
     )
   end
@@ -412,12 +412,12 @@ private
 
   def then_the_mentor_is_the_newly_reported_mentor
     row = page.locator(".govuk-summary-list__row", hasText: "Mentor")
-    expect(row).to have_text("Jane Smith")
+    expect(row).to contain_text("Jane Smith")
   end
 
   def and_i_no_longer_see_the_upcoming_mentor
     row = page.locator(".govuk-summary-list__row", hasText: "Mentor")
-    expect(row).to have_no_text("Sally Successor")
+    expect(row).not_to contain_text("Sally Successor")
   end
 
   def when_i_continue_without_selecting_a_mentor

@@ -55,8 +55,8 @@ RSpec.describe "Update adjustment for statement" do
 
     total = panel.locator("table + .govuk-grid-row .govuk-grid-column-one-half").last
 
-    expect(total).to have_text("Total")
-    expect(total).to have_text("£450.00")
+    expect(total).to contain_text("Total")
+    expect(total).to contain_text("£450.00")
   end
 
   def and_i_see_new_adjustment_values
@@ -76,8 +76,8 @@ RSpec.describe "Update adjustment for statement" do
 
     total = panel.locator("table + .govuk-grid-row .govuk-grid-column-one-half").last
 
-    expect(total).to have_text("Total")
-    expect(total).to have_text("£10,600.00")
+    expect(total).to contain_text("Total")
+    expect(total).to contain_text("£10,600.00")
   end
 
   def then_i_see_adjustments_section

@@ -171,17 +171,17 @@ private
 
   def then_i_see_the_check_answers_page
     expect(page.locator("h1", hasText: "Confirm contract period change for #{@teacher_name}")).to be_visible
-    expect(page.locator(".govuk-summary-list__row", hasText: "Existing contract period")).to have_text(@current_contract_period.year.to_s)
-    expect(page.locator(".govuk-summary-list__row", hasText: "New contract period")).to have_text(@target_contract_period.year.to_s)
-    expect(page.locator(".govuk-summary-list__row", hasText: "Partnership")).to have_text(@target_partnership_name)
+    expect(page.locator(".govuk-summary-list__row", hasText: "Existing contract period")).to contain_text(@current_contract_period.year.to_s)
+    expect(page.locator(".govuk-summary-list__row", hasText: "New contract period")).to contain_text(@target_contract_period.year.to_s)
+    expect(page.locator(".govuk-summary-list__row", hasText: "Partnership")).to contain_text(@target_partnership_name)
   end
 
   def then_i_skip_partnership_selection_and_see_check_answers
     expect(page.locator("h1", hasText: "Confirm contract period change for #{@teacher_name}")).to be_visible
-    expect(page.locator(".govuk-summary-list__row", hasText: "Existing contract period")).to have_text(@current_contract_period.year.to_s)
-    expect(page.locator(".govuk-summary-list__row", hasText: "New contract period")).to have_text(@target_contract_period.year.to_s)
-    expect(page.locator(".govuk-summary-list__row", hasText: "Lead provider")).to have_text("EOI Lead Provider")
-    expect(page.locator(".govuk-summary-list__row", hasText: "Delivery partner")).to have_text("No delivery partner confirmed")
+    expect(page.locator(".govuk-summary-list__row", hasText: "Existing contract period")).to contain_text(@current_contract_period.year.to_s)
+    expect(page.locator(".govuk-summary-list__row", hasText: "New contract period")).to contain_text(@target_contract_period.year.to_s)
+    expect(page.locator(".govuk-summary-list__row", hasText: "Lead provider")).to contain_text("EOI Lead Provider")
+    expect(page.locator(".govuk-summary-list__row", hasText: "Delivery partner")).to contain_text("No delivery partner confirmed")
   end
 
   def when_i_confirm_the_contract_period_change

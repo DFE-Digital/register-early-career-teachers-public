@@ -90,7 +90,7 @@ private
 
   def then_i_should_see_the_confirmation_error
     expect(page.locator(".govuk-error-summary"))
-      .to have_text("Confirm you want to remove #{user.name} as a user")
+      .to contain_text("Confirm you want to remove #{user.name} as a user")
   end
 
   def and_the_user_should_not_be_removed

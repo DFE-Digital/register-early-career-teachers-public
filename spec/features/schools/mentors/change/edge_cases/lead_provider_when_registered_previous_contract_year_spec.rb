@@ -168,7 +168,7 @@ private
     row = page.locator(".govuk-summary-list__row", hasText: "Lead provider").first
 
     expect(row)
-    .to have_text("Awaiting confirmation by Other Lead Provider")
+    .to contain_text("Awaiting confirmation by Other Lead Provider")
   end
 
   def and_a_new_training_period_should_be_created_in_the_original_contract_year

@@ -134,7 +134,7 @@ private
 
   def then_panel_is_visible_with(message:)
     panel = page.locator(".govuk-panel")
-    expect(panel).to have_text(message)
+    expect(panel).to contain_text(message)
   end
 
   def then_i_see_the_correct_ect_at_school_periods(*period_hashes)
@@ -186,7 +186,7 @@ private
           .locator("dl dt", hasText: "Lead provider")
           .locator("..")
         lead_provider_name = period_hash[:lead_provider].name
-        expect(lead_provider_row.locator("dd")).to have_text(lead_provider_name)
+        expect(lead_provider_row.locator("dd")).to contain_text(lead_provider_name)
       end
 
       start_date_row = summary_card

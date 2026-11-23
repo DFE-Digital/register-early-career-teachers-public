@@ -116,7 +116,7 @@ private
     )
 
     expect(heading).to be_visible
-    expect(page.locator("body")).to have_text(
+    expect(page.locator("body")).to contain_text(
       @new_start_date.to_fs(:govuk)
     )
   end

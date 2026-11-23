@@ -49,7 +49,7 @@ private
   def and_i_should_be_impersonating_the_school
     body = page.locator("body")
 
-    expect(body).to have_text("You are signed in as #{@school.name}")
+    expect(body).to contain_text("You are signed in as #{@school.name}")
   end
 
   def and_i_should_see_the_same_navbar_a_school_sees

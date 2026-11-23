@@ -61,8 +61,8 @@ RSpec.describe "Create adjustment for statement" do
 
     total = panel.locator("table + .govuk-grid-row .govuk-grid-column-one-half").last
 
-    expect(total).to have_text("Total")
-    expect(total).to have_text("£999.99")
+    expect(total).to contain_text("Total")
+    expect(total).to contain_text("£999.99")
   end
 
   def and_an_adjustment_is_created

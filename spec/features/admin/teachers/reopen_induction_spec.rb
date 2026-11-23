@@ -74,7 +74,7 @@ private
 
   def then_there_is_an_error_message
     expect(page.locator(".govuk-error-summary"))
-      .to have_text("There is a problem")
+      .to contain_text("There is a problem")
   end
 
   def when_i_add_a_zendesk_ticket_id(ticket)
@@ -91,7 +91,7 @@ private
 
   def and_i_am_sure_i_want_to_reopen_the_induction
     expect(page.locator(".govuk-warning-text"))
-      .to have_text("Are you sure you want to reopen this induction?")
+      .to contain_text("Are you sure you want to reopen this induction?")
 
     page.get_by_role("button", name: "Reopen induction").click
   end
@@ -114,7 +114,7 @@ private
     description = page
       .locator(".app-timeline__item", hasText: timeline_milestone)
       .locator(".app-timeline__description")
-    expect(description).to have_text(reason)
+    expect(description).to contain_text(reason)
   end
 
   def then_i_can_see_the_zendesk_link(url)

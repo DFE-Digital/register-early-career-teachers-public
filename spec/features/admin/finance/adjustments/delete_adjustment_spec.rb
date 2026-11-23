@@ -53,8 +53,8 @@ RSpec.describe "Delete adjustment from statement" do
 
     total = panel.locator("table + .govuk-grid-row .govuk-grid-column-one-half").last
 
-    expect(total).to have_text("Total")
-    expect(total).to have_text("£450.00")
+    expect(total).to contain_text("Total")
+    expect(total).to contain_text("£450.00")
   end
 
   def and_i_see_new_adjustment_values
@@ -72,8 +72,8 @@ RSpec.describe "Delete adjustment from statement" do
 
     total = panel.locator("table + .govuk-grid-row .govuk-grid-column-one-half").last
 
-    expect(total).to have_text("Total")
-    expect(total).to have_text("£600.00")
+    expect(total).to contain_text("Total")
+    expect(total).to contain_text("£600.00")
   end
 
   def then_i_see_adjustments_section
@@ -94,7 +94,7 @@ RSpec.describe "Delete adjustment from statement" do
 
   def and_i_see_a_success_banner
     expect(page.locator(".govuk-notification-banner"))
-      .to have_text("Adjustment removed")
+      .to contain_text("Adjustment removed")
   end
 
   def then_i_see(string)
