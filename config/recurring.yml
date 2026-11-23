@@ -27,7 +27,10 @@ production:
     class: TouchSchoolPartnershipForParticipantsCurrentlyTrainingJob
     queue: default
     schedule: every day at 00:01 UTC
-
+  refresh_mentorship_statuses:
+    class: MentorshipPeriods::RefreshStatusesJob
+    queue: default
+    schedule: every day at 00:05 UTC
   check_statements_for_errors:
     class: Statements::CheckStatementsForErrorsJob
     queue: default
@@ -66,6 +69,11 @@ sandbox:
     queue: default
     schedule: every day at 00:01 UTC
 
+  refresh_mentorship_statuses:
+    class: MentorshipPeriods::RefreshStatusesJob
+    queue: default
+    schedule: every day at 00:05 UTC
+
 staging:
   purge_pending_induction_submissions:
     class: PurgePendingInductionSubmissionsJob
@@ -86,6 +94,11 @@ staging:
     queue: default
     schedule: every day at 00:01 UTC
 
+  refresh_mentorship_statuses:
+    class: MentorshipPeriods::RefreshStatusesJob
+    queue: default
+    schedule: every day at 00:05 UTC
+
 review:
   purge_pending_induction_submissions:
     class: PurgePendingInductionSubmissionsJob
@@ -101,3 +114,8 @@ review:
     class: TouchSchoolPartnershipForParticipantsCurrentlyTrainingJob
     queue: default
     schedule: every day at 00:01 UTC
+
+  refresh_mentorship_statuses:
+    class: MentorshipPeriods::RefreshStatusesJob
+    queue: default
+    schedule: every day at 00:05 UTC

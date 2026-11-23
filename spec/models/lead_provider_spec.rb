@@ -22,6 +22,7 @@ describe LeadProvider do
     it { is_expected.to have_many(:training_periods).through(:school_partnerships) }
     it { is_expected.to have_many(:declarations).through(:training_periods) }
     it { is_expected.to have_many(:api_tokens).class_name("API::Token") }
+    it { is_expected.to have_many(:lead_provider_mentorship_statuses).dependent(:destroy) }
   end
 
   describe "validations" do

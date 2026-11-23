@@ -9,6 +9,7 @@ class LeadProvider < ApplicationRecord
   has_many :declarations, through: :training_periods
   has_many :events
   has_many :api_tokens, class_name: "API::Token"
+  has_many :lead_provider_mentorship_statuses, dependent: :destroy
 
   # Validations
   validates :name, presence: true, uniqueness: true
