@@ -1,4 +1,4 @@
-ALL_TRNS = (1111..9_999_999) unless defined?(ALL_TRNS)
+ALL_TRNS = (1111..8_999_999) unless defined?(ALL_TRNS)
 
 module APISeedData
   module Helpers
