@@ -17,6 +17,18 @@ RSpec.describe Schools::ECTRegistrationMailer, type: :mailer do
       expect(mail.body).to include(described_class::ECT_GUIDANCE_URL)
       expect(mail.body).to include(described_class::PRIVACY_NOTICE_URL)
     end
+
+    it "creates a `Notify::Outbound` record before the email is delivered" do
+      expect { mail.deliver_now }
+        .to change(Notify::Outbound, :count)
+        .by(1)
+
+      expect(Notify::Outbound.last).to have_attributes(
+        reference: mail.reference,
+        mailer: "Schools::ECTRegistrationMailer",
+        mailer_action: "provider_led_confirmation"
+      )
+    end
   end
 
   describe "#school_led_confirmation" do
@@ -33,6 +45,18 @@ RSpec.describe Schools::ECTRegistrationMailer, type: :mailer do
       expect(mail.body).to include("school-led")
       expect(mail.body).to include(described_class::ECT_GUIDANCE_URL)
       expect(mail.body).to include(described_class::PRIVACY_NOTICE_URL)
+    end
+
+    it "creates a `Notify::Outbound` record before the email is delivered" do
+      expect { mail.deliver_now }
+        .to change(Notify::Outbound, :count)
+        .by(1)
+
+      expect(Notify::Outbound.last).to have_attributes(
+        reference: mail.reference,
+        mailer: "Schools::ECTRegistrationMailer",
+        mailer_action: "school_led_confirmation"
+      )
     end
   end
 end

@@ -14,6 +14,7 @@ RSpec.describe "Notify delivery receipts" do
     let(:token) { Rails.application.config.notify_delivery_receipts_bearer_token }
     let(:headers) { { "Authorization" => "Bearer #{token}" } }
 
+    let!(:notify_outbound) { FactoryBot.create(:notify_outbound, reference:) }
     let(:notification_id) { SecureRandom.uuid }
     let(:template_id) { SecureRandom.uuid }
     let(:reference) { SecureRandom.uuid }
@@ -146,6 +147,29 @@ RSpec.describe "Notify delivery receipts" do
           expect(Sentry)
             .to have_received(:capture_message)
             .with("Failed to save delivery receipt")
+        end
+      end
+
+      context "when the delivery receipt has no reference" do
+        let!(:notify_outbound) { nil }
+        let(:reference) { nil }
+
+        it { is_expected.to have_http_status(:ok) }
+
+        it "does not create a delivery receipt" do
+          expect { post_delivery_receipt }
+            .not_to change(Notify::DeliveryReceipt, :count)
+        end
+      end
+
+      context "when the delivery receipt has no matching notify outbound" do
+        let!(:notify_outbound) { nil }
+
+        it { is_expected.to have_http_status(:not_found) }
+
+        it "does not create a delivery receipt" do
+          expect { post_delivery_receipt }
+            .not_to change(Notify::DeliveryReceipt, :count)
         end
       end
 

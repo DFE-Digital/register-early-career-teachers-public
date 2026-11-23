@@ -24,6 +24,14 @@ erDiagram
   Region_Award }o--|| AppropriateBodyPeriod : belongs_to
   Region_Award }o--|| School : belongs_to
   Region_Award }o--|| Region : belongs_to
+  Notify_Outbound {
+    integer id
+    string reference
+    string mailer
+    string mailer_action
+    datetime created_at
+    datetime updated_at
+  }
   Notify_DeliveryReceipt {
     integer id
     uuid notification_id
@@ -37,7 +45,9 @@ erDiagram
     integer template_version
     datetime created_at
     datetime updated_at
+    integer notify_outbound_id
   }
+  Notify_DeliveryReceipt }o--|| Notify_Outbound : belongs_to
   FrameworkAgreement_Band {
     integer id
     integer allocation_order

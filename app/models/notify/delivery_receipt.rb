@@ -1,6 +1,8 @@
 class Notify::DeliveryReceipt < ApplicationRecord
   self.table_name = "notify_delivery_receipts"
 
+  belongs_to :notify_outbound, class_name: "Notify::Outbound", optional: false
+
   enum :status,
        %w[delivered permanent-failure temporary-failure technical-failure]
         .index_by { it.itself.underscore },
