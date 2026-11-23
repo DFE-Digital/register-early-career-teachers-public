@@ -31,7 +31,7 @@ module Admin
       end
 
       def set_teacher
-        @teacher = Teacher.includes(:last_induction_period).find(params[:teacher_id])
+        @teacher = Teacher.includes(:last_induction_period).find(params.expect(:teacher_id))
       end
 
       def induction_complete_with_outcome?

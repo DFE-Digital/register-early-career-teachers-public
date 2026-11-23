@@ -80,7 +80,7 @@ RSpec.describe "schools/register_mentor_wizard/start.html.erb" do
     it "does not inform the user about the mentor training programme requirements" do
       render
 
-      expect(rendered).not_to have_text("You may also need to tell us about the mentor’s training programme.")
+      expect(rendered).to have_no_text("You may also need to tell us about the mentor’s training programme.")
     end
   end
 end

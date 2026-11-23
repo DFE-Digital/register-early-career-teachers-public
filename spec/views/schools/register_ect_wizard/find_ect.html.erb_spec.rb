@@ -36,7 +36,7 @@ RSpec.describe "schools/register_ect_wizard/find_ect.html.erb" do
   it "includes a continue button" do
     render
     expect(rendered).to have_button("Continue")
-    expect(rendered).to have_selector("form[action='#{schools_register_ect_wizard_find_ect_path}']")
+    expect(rendered).to have_css("form[action='#{schools_register_ect_wizard_find_ect_path}']")
   end
 
   it "uses h2's for the teacher reference number and date of birth fields" do

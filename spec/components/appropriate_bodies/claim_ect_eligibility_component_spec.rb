@@ -20,8 +20,8 @@ RSpec.describe AppropriateBodies::ClaimECTEligibilityComponent, type: :component
     context "when status is None" do
       it "renders the claim induction CTA" do
         expect(page).to have_button("Claim induction")
-        expect(page).not_to have_text("You cannot register John Doe")
-        expect(page).not_to have_link("Find and claim another ECT", href: "/appropriate-body/claim-an-ect/find-ect/new")
+        expect(page).to have_no_text("You cannot register John Doe")
+        expect(page).to have_no_link("Find and claim another ECT", href: "/appropriate-body/claim-an-ect/find-ect/new")
       end
     end
 
@@ -30,8 +30,8 @@ RSpec.describe AppropriateBodies::ClaimECTEligibilityComponent, type: :component
 
       it "renders the claim induction CTA" do
         expect(page).to have_button("Claim induction")
-        expect(page).not_to have_text("You cannot register John Doe")
-        expect(page).not_to have_link("Find and claim another ECT", href: "/appropriate-body/claim-an-ect/find-ect/new")
+        expect(page).to have_no_text("You cannot register John Doe")
+        expect(page).to have_no_link("Find and claim another ECT", href: "/appropriate-body/claim-an-ect/find-ect/new")
       end
     end
 
@@ -40,8 +40,8 @@ RSpec.describe AppropriateBodies::ClaimECTEligibilityComponent, type: :component
 
       it "renders the claim induction CTA" do
         expect(page).to have_button("Claim induction")
-        expect(page).not_to have_text("You cannot register John Doe")
-        expect(page).not_to have_link("Find and claim another ECT", href: "/appropriate-body/claim-an-ect/find-ect/new")
+        expect(page).to have_no_text("You cannot register John Doe")
+        expect(page).to have_no_link("Find and claim another ECT", href: "/appropriate-body/claim-an-ect/find-ect/new")
       end
     end
 
@@ -52,7 +52,7 @@ RSpec.describe AppropriateBodies::ClaimECTEligibilityComponent, type: :component
         expect(page).to have_text("You cannot register John Doe")
         expect(page).to have_text("Our records show that John Doe is exempt from completing their induction.")
         expect(page).to have_link("Find and claim another ECT", href: "/appropriate-body/claim-an-ect/find-ect/new")
-        expect(page).not_to have_button("Claim induction")
+        expect(page).to have_no_button("Claim induction")
       end
     end
 
@@ -63,7 +63,7 @@ RSpec.describe AppropriateBodies::ClaimECTEligibilityComponent, type: :component
         expect(page).to have_text("You cannot register John Doe")
         expect(page).to have_text("Our records show that John Doe has already passed their induction.")
         expect(page).to have_link("Find and claim another ECT", href: "/appropriate-body/claim-an-ect/find-ect/new")
-        expect(page).not_to have_button("Claim induction")
+        expect(page).to have_no_button("Claim induction")
       end
     end
 
@@ -74,7 +74,7 @@ RSpec.describe AppropriateBodies::ClaimECTEligibilityComponent, type: :component
         expect(page).to have_text("You cannot register John Doe")
         expect(page).to have_text("Our records show that John Doe has already failed their induction.")
         expect(page).to have_link("Find and claim another ECT", href: "/appropriate-body/claim-an-ect/find-ect/new")
-        expect(page).not_to have_button("Claim induction")
+        expect(page).to have_no_button("Claim induction")
       end
     end
 
@@ -85,7 +85,7 @@ RSpec.describe AppropriateBodies::ClaimECTEligibilityComponent, type: :component
         expect(page).to have_text("You cannot register John Doe")
         expect(page).to have_text("Our records show that John Doe has already failed their induction.")
         expect(page).to have_link("Find and claim another ECT", href: "/appropriate-body/claim-an-ect/find-ect/new")
-        expect(page).not_to have_button("Claim induction")
+        expect(page).to have_no_button("Claim induction")
       end
     end
 
@@ -101,7 +101,7 @@ RSpec.describe AppropriateBodies::ClaimECTEligibilityComponent, type: :component
         expect(page).to have_text("You cannot register John Doe")
         expect(page).to have_text("Our records show that John Doe does not have their qualified teacher status (QTS).")
         expect(page).to have_link("Find and claim another ECT", href: "/appropriate-body/claim-an-ect/find-ect/new")
-        expect(page).not_to have_button("Claim induction")
+        expect(page).to have_no_button("Claim induction")
       end
     end
   end
@@ -119,7 +119,7 @@ RSpec.describe AppropriateBodies::ClaimECTEligibilityComponent, type: :component
         expect(page).to have_text("You cannot register John Doe")
         expect(page).to have_text("Our records show that John Doe is completing their induction with another appropriate body")
         expect(page).to have_link("Find and claim another ECT", href: "/appropriate-body/claim-an-ect/find-ect/new")
-        expect(page).not_to have_button("Claim induction")
+        expect(page).to have_no_button("Claim induction")
       end
     end
   end

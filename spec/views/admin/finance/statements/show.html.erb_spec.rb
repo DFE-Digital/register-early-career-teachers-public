@@ -196,7 +196,7 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
   it "does not display an audit notes section when the statement has no audit notes" do
     render
 
-    expect(rendered).not_to have_css("h2", text: "Audit notes")
+    expect(rendered).to have_no_css("h2", text: "Audit notes")
   end
 
   context "when the statement has audit notes" do
@@ -231,7 +231,7 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
       let(:band_capacity_exceeded) { false }
 
       it "does not display the banner" do
-        expect(rendered).not_to have_css(".govuk-notification-banner")
+        expect(rendered).to have_no_css(".govuk-notification-banner")
       end
     end
   end

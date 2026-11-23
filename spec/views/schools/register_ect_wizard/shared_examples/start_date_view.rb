@@ -40,19 +40,19 @@ RSpec.shared_examples "a start date view" do |current_step:, back_path:, back_st
     render
 
     expect(rendered).to have_button("Continue")
-    expect(rendered).to have_selector("form[action='#{send(continue_path)}']")
+    expect(rendered).to have_css("form[action='#{send(continue_path)}']")
   end
 
   it "includes a start date field hint with the current year" do
     render
 
-    expect(rendered).to have_content("For example, 17 9 #{Date.current.year}")
+    expect(rendered).to have_text("For example, 17 9 #{Date.current.year}")
   end
 
   it "does not render the start date legend as a heading" do
     render
 
     expect(rendered).to have_css("legend", text: "Start date")
-    expect(rendered).not_to have_css("legend h1, legend h2, legend h3, legend h4, legend h5, legend h6")
+    expect(rendered).to have_no_css("legend h1, legend h2, legend h3, legend h4, legend h5, legend h6")
   end
 end

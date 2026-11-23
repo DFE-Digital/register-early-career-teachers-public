@@ -28,7 +28,7 @@ RSpec.describe "Schools::ReminderEmailOptOuts" do
       it "returns 404" do
         perform_request(token:)
 
-        expect(response).to have_http_status(:not_found)
+        expect(response).to have_http_status(:bad_request)
       end
     end
   end

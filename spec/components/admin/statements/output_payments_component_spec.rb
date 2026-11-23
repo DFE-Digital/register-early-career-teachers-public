@@ -88,7 +88,8 @@ RSpec.describe Admin::Statements::OutputPaymentsComponent, type: :component do
     end
 
     it "renders one table of output payments" do
-      expect(page).to have_css("table", count: 1)
+      expect(page).to have_table(count: 1)
+      expect(page).to have_table("Output payments")
     end
 
     it "renders all declaration types in order including empty rows" do
@@ -211,7 +212,7 @@ RSpec.describe Admin::Statements::OutputPaymentsComponent, type: :component do
     let(:statement) { FactoryBot.create(:statement, contract:, fee_type: :service) }
 
     it "does not render" do
-      expect(page).not_to have_css("table")
+      expect(page).to have_no_table
     end
   end
 end

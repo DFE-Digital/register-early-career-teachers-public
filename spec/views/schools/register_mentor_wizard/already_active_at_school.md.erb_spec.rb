@@ -22,7 +22,7 @@ RSpec.describe "schools/register_mentor_wizard/already_active_at_school.md.erb" 
 
   it "includes a button to assign the existing mentor to the ECT" do
     expect(rendered).to have_button("Assign #{mentor.full_name} to mentor #{ect_name}")
-    expect(rendered).to have_selector("form[action='#{assign_mentor_path}']")
+    expect(rendered).to have_css("form[action='#{assign_mentor_path}']")
   end
 
   it "includes a link back to ECTs" do

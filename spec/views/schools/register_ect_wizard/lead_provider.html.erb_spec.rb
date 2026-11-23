@@ -39,6 +39,6 @@ RSpec.describe "schools/register_ect_wizard/lead_provider.html.erb" do
   it "includes a continue button" do
     render
     expect(rendered).to have_button("Continue")
-    expect(rendered).to have_selector("form[action='#{schools_register_ect_wizard_lead_provider_path}']")
+    expect(rendered).to have_css("form[action='#{schools_register_ect_wizard_lead_provider_path}']")
   end
 end

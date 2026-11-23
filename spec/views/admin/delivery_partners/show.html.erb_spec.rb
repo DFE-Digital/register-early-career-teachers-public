@@ -49,7 +49,7 @@ RSpec.describe "admin/delivery_partners/show.html.erb" do
   it "renders a table with lead provider partnerships" do
     render
 
-    expect(rendered).to have_css("table.govuk-table")
+    expect(rendered).to have_table
     expect(rendered).to have_css("th", text: "Year")
     expect(rendered).to have_css("th", text: "Lead provider")
     expect(rendered).to have_css("th", text: "Action")
@@ -190,7 +190,7 @@ RSpec.describe "admin/delivery_partners/show.html.erb" do
       render
 
       expect(rendered).to have_css("p", text: "No contract periods with available lead providers found for this delivery partner.")
-      expect(rendered).not_to have_css("table.govuk-table")
+      expect(rendered).to have_no_table
     end
   end
 

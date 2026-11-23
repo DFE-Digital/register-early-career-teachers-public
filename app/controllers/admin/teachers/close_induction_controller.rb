@@ -15,7 +15,7 @@ module Admin
     private
 
       def find_teacher
-        @teacher = Teacher.find(params[:teacher_id])
+        @teacher = Teacher.find(params.expect(:teacher_id))
       end
 
       def appropriate_body_period

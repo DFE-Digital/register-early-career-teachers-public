@@ -4,7 +4,7 @@ module Admin
       layout "full"
 
       def index
-        @teacher = Teacher.find(params[:teacher_id])
+        @teacher = Teacher.find(params.expect(:teacher_id))
         @navigation_items = helpers.admin_teacher_navigation_items(@teacher, :declarations)
         @breadcrumbs = teacher_breadcrumbs
 

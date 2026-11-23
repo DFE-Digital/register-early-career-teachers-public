@@ -45,21 +45,20 @@ RSpec.describe Admin::LeadProviderPartnershipsTableComponent, type: :component d
       before { render_inline(component) }
 
       it "renders the table with correct caption" do
-        expect(page).to have_css("table")
-        expect(page).to have_content("Lead provider partners")
+        expect(page).to have_table("Lead provider partners")
       end
 
       it "renders table headers" do
-        expect(page).to have_content("Year")
-        expect(page).to have_content("Lead providers")
-        expect(page).to have_content("Action")
+        expect(page).to have_text("Year")
+        expect(page).to have_text("Lead providers")
+        expect(page).to have_text("Action")
       end
 
       it "renders contract periods with lead providers" do
-        expect(page).to have_content("2024")
-        expect(page).to have_content("2025")
-        expect(page).to have_content("Lead Provider One, Lead Provider Two")
-        expect(page).to have_content("Lead Provider Three")
+        expect(page).to have_text("2024")
+        expect(page).to have_text("2025")
+        expect(page).to have_text("Lead Provider One, Lead Provider Two")
+        expect(page).to have_text("Lead Provider Three")
       end
 
       it "renders change links with correct parameters" do
@@ -87,17 +86,17 @@ RSpec.describe Admin::LeadProviderPartnershipsTableComponent, type: :component d
       before { render_inline(component) }
 
       it "renders empty cells for contract periods without partnerships" do
-        expect(page).to have_content("2024")
-        expect(page).to have_content("2025")
-        expect(page).to have_content("Lead Provider One, Lead Provider Two")
+        expect(page).to have_text("2024")
+        expect(page).to have_text("2025")
+        expect(page).to have_text("Lead Provider One, Lead Provider Two")
 
         rows = page.all("tbody tr")
         expect(rows.size).to eq(2)
 
         row_2025 = rows.last
         cells = row_2025.all("td")
-        expect(cells[0]).to have_content("2025")
-        expect(cells[1]).to have_content("Not reported")
+        expect(cells[0]).to have_text("2025")
+        expect(cells[1]).to have_text("Not reported")
         expect(cells[2]).to have_link("Add")
       end
     end

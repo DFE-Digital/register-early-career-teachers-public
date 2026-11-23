@@ -84,10 +84,10 @@ RSpec.describe AppropriateBodyHelper, type: :helper do
     let(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Barry", trs_last_name: "White") }
 
     it "builds a summary card for a teacher" do
-      expect(summary_card).to have_selector(".govuk-summary-card__title", text: "Barry White")
-      expect(summary_card).to have_selector(".govuk-summary-card__actions > a", text: "Show")
-      expect(summary_card).to have_selector("dt", text: "TRN")
-      expect(summary_card).to have_selector("dd", text: teacher.trn)
+      expect(summary_card).to have_css(".govuk-summary-card__title", text: "Barry White")
+      expect(summary_card).to have_css(".govuk-summary-card__actions > a", text: "Show")
+      expect(summary_card).to have_css("dt", text: "TRN")
+      expect(summary_card).to have_css("dd", text: teacher.trn)
     end
 
     context "when the teacher has induction periods" do
@@ -102,13 +102,13 @@ RSpec.describe AppropriateBodyHelper, type: :helper do
       end
 
       it "displays the induction start date" do
-        expect(summary_card).to have_selector("dt", text: "Induction start date")
-        expect(summary_card).to have_selector("dd", text: expected_date)
+        expect(summary_card).to have_css("dt", text: "Induction start date")
+        expect(summary_card).to have_css("dd", text: expected_date)
       end
 
       it "displays the induction status" do
-        expect(summary_card).to have_selector("dt", text: "Status")
-        expect(summary_card).to have_selector("dd .govuk-tag")
+        expect(summary_card).to have_css("dt", text: "Status")
+        expect(summary_card).to have_css("dd .govuk-tag")
       end
     end
   end

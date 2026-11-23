@@ -41,6 +41,6 @@ RSpec.describe "schools/register_mentor_wizard/national_insurance_number.html.er
     render
 
     expect(rendered).to have_button("Continue")
-    expect(rendered).to have_selector("form[action='#{continue_path}']")
+    expect(rendered).to have_css("form[action='#{continue_path}']")
   end
 end

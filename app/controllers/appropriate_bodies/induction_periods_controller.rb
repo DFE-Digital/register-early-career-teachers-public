@@ -39,11 +39,11 @@ module AppropriateBodies
     end
 
     def teacher
-      @teacher ||= Teacher.find(params[:teacher_id])
+      @teacher ||= Teacher.find(params.expect(:teacher_id))
     end
 
     def induction_period
-      @induction_period ||= InductionPeriod.find(params[:id])
+      @induction_period ||= InductionPeriod.find(params.expect(:id))
     end
 
     def update_induction_period_service

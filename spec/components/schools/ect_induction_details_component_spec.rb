@@ -18,12 +18,12 @@ RSpec.describe Schools::ECTInductionDetailsComponent, type: :component do
   end
 
   it "renders the section heading" do
-    expect(page).to have_selector("h2.govuk-heading-m", text: "Induction details")
+    expect(page).to have_css("h2.govuk-heading-m", text: "Induction details")
   end
 
   it "renders the appropriate body row" do
-    expect(page).to have_selector(".govuk-summary-list__key", text: "Appropriate body")
-    expect(page).to have_selector(".govuk-summary-list__value", text: "Alpha Teaching School Hub")
+    expect(page).to have_css(".govuk-summary-list__key", text: "Appropriate body")
+    expect(page).to have_css(".govuk-summary-list__value", text: "Alpha Teaching School Hub")
   end
 
   context "when induction start date is available" do
@@ -37,16 +37,16 @@ RSpec.describe Schools::ECTInductionDetailsComponent, type: :component do
     end
 
     it "renders the induction start date with appropriate text" do
-      expect(page).to have_selector(".govuk-summary-list__key", text: "Induction start date")
-      expect(page).to have_selector(".govuk-summary-list__value", text: "1 September 2023")
+      expect(page).to have_css(".govuk-summary-list__key", text: "Induction start date")
+      expect(page).to have_css(".govuk-summary-list__value", text: "1 September 2023")
       expect(page).to have_text("This has been reported by an appropriate body")
     end
   end
 
   context "when induction start date is not available" do
     it "renders the appropriate message" do
-      expect(page).to have_selector(".govuk-summary-list__key", text: "Induction start date")
-      expect(page).to have_selector(".govuk-summary-list__value", text: "Yet to be reported by the appropriate body")
+      expect(page).to have_css(".govuk-summary-list__key", text: "Induction start date")
+      expect(page).to have_css(".govuk-summary-list__value", text: "Yet to be reported by the appropriate body")
     end
   end
 
@@ -59,21 +59,21 @@ RSpec.describe Schools::ECTInductionDetailsComponent, type: :component do
     end
 
     it "renders not reported for the appropriate body" do
-      expect(page).to have_selector(".govuk-summary-list__key", text: "Appropriate body")
-      expect(page).to have_selector(".govuk-summary-list__value", text: "Not reported")
+      expect(page).to have_css(".govuk-summary-list__key", text: "Appropriate body")
+      expect(page).to have_css(".govuk-summary-list__value", text: "Not reported")
     end
 
     it "renders the induction start date fallback" do
-      expect(page).to have_selector(".govuk-summary-list__key", text: "Induction start date")
-      expect(page).to have_selector(".govuk-summary-list__value", text: "Yet to be reported by the appropriate body")
+      expect(page).to have_css(".govuk-summary-list__key", text: "Induction start date")
+      expect(page).to have_css(".govuk-summary-list__value", text: "Yet to be reported by the appropriate body")
     end
   end
 
   context "when the appropriate body is reported" do
     it "renders the reported appropriate body" do
-      expect(page).to have_selector(".govuk-summary-list__key", text: "Appropriate body")
-      expect(page).to have_selector(".govuk-summary-list__value", text: "Alpha Teaching School Hub")
-      expect(page).not_to have_selector(".govuk-summary-list__value", text: "Not reported")
+      expect(page).to have_css(".govuk-summary-list__key", text: "Appropriate body")
+      expect(page).to have_css(".govuk-summary-list__value", text: "Alpha Teaching School Hub")
+      expect(page).to have_no_css(".govuk-summary-list__value", text: "Not reported")
     end
   end
 
@@ -92,7 +92,7 @@ RSpec.describe Schools::ECTInductionDetailsComponent, type: :component do
       end
 
       it "does not render the change link for the appropriate body" do
-        expect(page).not_to have_link("Change")
+        expect(page).to have_no_link("Change")
       end
     end
 
@@ -112,9 +112,9 @@ RSpec.describe Schools::ECTInductionDetailsComponent, type: :component do
   describe "appropriate body status" do
     context "when the school reported appropriate body has not claimed the induction" do
       it "shows the awaiting confirmation hint" do
-        expect(page).to have_selector(".govuk-summary-list__value", text: "Alpha Teaching School Hub")
+        expect(page).to have_css(".govuk-summary-list__value", text: "Alpha Teaching School Hub")
         expect(page).to have_text(awaiting_confirmation_hint)
-        expect(page).not_to have_text(confirmed_hint)
+        expect(page).to have_no_text(confirmed_hint)
       end
     end
 
@@ -129,9 +129,9 @@ RSpec.describe Schools::ECTInductionDetailsComponent, type: :component do
       end
 
       it "shows the confirmed hint" do
-        expect(page).to have_selector(".govuk-summary-list__value", text: "Alpha Teaching School Hub")
+        expect(page).to have_css(".govuk-summary-list__value", text: "Alpha Teaching School Hub")
         expect(page).to have_text(confirmed_hint)
-        expect(page).not_to have_text(awaiting_confirmation_hint)
+        expect(page).to have_no_text(awaiting_confirmation_hint)
       end
     end
 
@@ -147,10 +147,10 @@ RSpec.describe Schools::ECTInductionDetailsComponent, type: :component do
       end
 
       it "shows the claiming appropriate body with the confirmed hint" do
-        expect(page).to have_selector(".govuk-summary-list__value", text: "Beta Teaching School Hub")
-        expect(page).not_to have_selector(".govuk-summary-list__value", text: "Alpha Teaching School Hub")
+        expect(page).to have_css(".govuk-summary-list__value", text: "Beta Teaching School Hub")
+        expect(page).to have_no_css(".govuk-summary-list__value", text: "Alpha Teaching School Hub")
         expect(page).to have_text(confirmed_hint)
-        expect(page).not_to have_text(awaiting_confirmation_hint)
+        expect(page).to have_no_text(awaiting_confirmation_hint)
       end
     end
 
@@ -166,10 +166,10 @@ RSpec.describe Schools::ECTInductionDetailsComponent, type: :component do
       end
 
       it "still shows the school reported appropriate body with the awaiting confirmation hint" do
-        expect(page).to have_selector(".govuk-summary-list__value", text: "Alpha Teaching School Hub")
-        expect(page).not_to have_selector(".govuk-summary-list__value", text: "Beta Teaching School Hub")
+        expect(page).to have_css(".govuk-summary-list__value", text: "Alpha Teaching School Hub")
+        expect(page).to have_no_css(".govuk-summary-list__value", text: "Beta Teaching School Hub")
         expect(page).to have_text(awaiting_confirmation_hint)
-        expect(page).not_to have_text(confirmed_hint)
+        expect(page).to have_no_text(confirmed_hint)
       end
     end
   end

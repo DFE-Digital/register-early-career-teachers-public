@@ -54,12 +54,12 @@ module Admin
       end
 
       def teacher
-        @teacher ||= Teacher.find(params[:teacher_id])
+        @teacher ||= Teacher.find(params.expect(:teacher_id))
       end
 
       def set_extension
-        @teacher = Teacher.find(params[:teacher_id])
-        @extension = @teacher.induction_extensions.find(params[:id])
+        @teacher = Teacher.find(params.expect(:teacher_id))
+        @extension = @teacher.induction_extensions.find(params.expect(:id))
       end
 
       def extension_params

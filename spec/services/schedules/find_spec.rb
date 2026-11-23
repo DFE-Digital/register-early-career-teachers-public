@@ -161,9 +161,9 @@ RSpec.describe Schedules::Find do
 
             context "when the previous training period is school-led" do
               it "assigns the schedule based on the start date of the current training period" do
-                first_training_period = nil
+                nil
                 travel_to(registered_on) do
-                  first_training_period = FactoryBot.create(:training_period, :school_led, :unfinished, started_on: previous_start_date, ect_at_school_period:)
+                  FactoryBot.create(:training_period, :school_led, :unfinished, started_on: previous_start_date, ect_at_school_period:)
                 end
 
                 travel_to(provider_led_start_date) do
@@ -176,13 +176,13 @@ RSpec.describe Schedules::Find do
               let(:schedule) { FactoryBot.create(:schedule, contract_period: previous_contract_period, identifier: "ecf-reduced-september") }
 
               it "uses the identifier from the previous provider-led training period" do
-                first_training_period = nil
+                nil
                 travel_to(registered_on) do
-                  first_training_period = FactoryBot.create(:training_period, :provider_led, :unfinished,
-                                                            started_on: previous_start_date,
-                                                            ect_at_school_period:,
-                                                            schedule:,
-                                                            school_partnership:)
+                  FactoryBot.create(:training_period, :provider_led, :unfinished,
+                                    started_on: previous_start_date,
+                                    ect_at_school_period:,
+                                    schedule:,
+                                    school_partnership:)
                 end
 
                 travel_to(provider_led_start_date) do
@@ -202,21 +202,21 @@ RSpec.describe Schedules::Find do
 
             context "when the first training period is provider-led and the second is school-led" do
               it "uses the identifier from the most recent provider-led training period" do
-                first_training_period = nil
+                nil
                 travel_to(registered_on) do
-                  first_training_period = FactoryBot.create(:training_period, :provider_led,
-                                                            started_on: previous_start_date,
-                                                            finished_on: previous_start_date + 50.days,
-                                                            ect_at_school_period:,
-                                                            schedule:,
-                                                            school_partnership:)
+                  FactoryBot.create(:training_period, :provider_led,
+                                    started_on: previous_start_date,
+                                    finished_on: previous_start_date + 50.days,
+                                    ect_at_school_period:,
+                                    schedule:,
+                                    school_partnership:)
                 end
 
-                second_training_period = nil
+                nil
                 travel_to(registered_on + 60.days) do
-                  second_training_period = FactoryBot.create(:training_period, :school_led, :unfinished,
-                                                             started_on: previous_start_date + 60.days,
-                                                             ect_at_school_period:)
+                  FactoryBot.create(:training_period, :school_led, :unfinished,
+                                    started_on: previous_start_date + 60.days,
+                                    ect_at_school_period:)
                 end
 
                 travel_to(provider_led_start_date) do
@@ -243,14 +243,14 @@ RSpec.describe Schedules::Find do
               let(:schedule) { FactoryBot.create(:schedule, contract_period: previous_contract_period, identifier: "ecf-reduced-september") }
 
               it "uses the identifier from the previous provider-led training period" do
-                first_training_period = nil
+                nil
                 travel_to(registered_on) do
-                  first_training_period = FactoryBot.create(:training_period, :provider_led,
-                                                            started_on: old_school_start_date,
-                                                            finished_on: old_school_end_date,
-                                                            ect_at_school_period: ect_at_old_school_period,
-                                                            schedule:,
-                                                            school_partnership:)
+                  FactoryBot.create(:training_period, :provider_led,
+                                    started_on: old_school_start_date,
+                                    finished_on: old_school_end_date,
+                                    ect_at_school_period: ect_at_old_school_period,
+                                    schedule:,
+                                    school_partnership:)
                 end
 
                 travel_to(new_school_start_date) do

@@ -12,7 +12,7 @@ RSpec.describe "schools/register_mentor_wizard/cannot_register_mentor" do
   end
 
   it "displays the cannot register mentor message" do
-    expect(rendered).to have_content("Our records show that Jane Smith cannot be registered as a mentor.")
+    expect(rendered).to have_text("Our records show that Jane Smith cannot be registered as a mentor.")
   end
 
   it "includes a link back to ECTs" do

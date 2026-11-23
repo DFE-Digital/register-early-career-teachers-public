@@ -17,7 +17,7 @@ RSpec.describe "admin/finance/framework_agreements/contracts/new.html.erb" do
     expect(view.content_for(:page_title)).to eq("Add contract")
     expect(view.content_for(:backlink_or_breadcrumb)).to have_link("Back", href: contracts_path)
 
-    expect(rendered).to have_selector("form[action='#{contracts_path}']")
+    expect(rendered).to have_css("form[action='#{contracts_path}']")
 
     expect(rendered).to have_css("legend", text: "Contract type")
     expect(rendered).to have_css("h2", text: "Flat rate fee structure")

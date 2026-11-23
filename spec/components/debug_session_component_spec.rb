@@ -60,8 +60,8 @@ RSpec.describe DebugSessionComponent, type: :component do
       end
 
       it "does not display admin information" do
-        expect(rendered_content).not_to have_text("Administrator")
-        expect(rendered_content).not_to have_text("Role")
+        expect(rendered_content).to have_no_text("Administrator")
+        expect(rendered_content).to have_no_text("Role")
       end
     end
   end

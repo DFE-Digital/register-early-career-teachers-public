@@ -15,7 +15,7 @@ RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
   before { render_inline(component) }
 
   it "renders the section heading" do
-    expect(page).to have_selector("h2.govuk-heading-m", text: "Training details")
+    expect(page).to have_css("h2.govuk-heading-m", text: "Training details")
   end
 
   it "renders the training programme row" do
@@ -27,8 +27,8 @@ RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
     let(:component) { described_class.new(ect_at_school_period:, training_period:) }
 
     it "renders nothing" do
-      expect(page).to have_no_selector("h2", text: "Training details")
-      expect(page).to have_no_selector(".govuk-summary-list")
+      expect(page).to have_no_css("h2", text: "Training details")
+      expect(page).to have_no_css(".govuk-summary-list")
     end
   end
 
@@ -145,9 +145,9 @@ RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
 
     it "does not render the normal summary list" do
       expect(page).to have_no_css(".govuk-summary-list")
-      expect(page).not_to have_text("Training programme")
-      expect(page).not_to have_text("Lead provider")
-      expect(page).not_to have_text("Delivery partner")
+      expect(page).to have_no_text("Training programme")
+      expect(page).to have_no_text("Lead provider")
+      expect(page).to have_no_text("Delivery partner")
     end
 
     context "when the ECT is leaving the school" do

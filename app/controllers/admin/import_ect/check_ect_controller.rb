@@ -23,7 +23,7 @@ module Admin
     private
 
       def find_pending_induction_submission
-        @pending_induction_submission = PendingInductionSubmission.find(params[:id])
+        @pending_induction_submission = PendingInductionSubmission.find(params.expect(:id))
       end
     end
   end

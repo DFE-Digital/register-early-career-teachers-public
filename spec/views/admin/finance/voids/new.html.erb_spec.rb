@@ -30,7 +30,7 @@ RSpec.describe "admin/finance/voids/new.html.erb", type: :view do
     assign(:teacher, teacher)
     assign(:void_declaration_form, void_declaration_form)
 
-    # rubocop:disable RSpec/AnyInstance - needed for boundary with a helper
+    # rubocop:disable RSpec/AnyInstance -- (needed for boundary with a helper)
     allow_any_instance_of(DeclarationHelper).to receive(:declaration_course_identifier).and_return("ecf-induction")
     allow_any_instance_of(TeacherHelper).to receive(:teacher_full_name).and_return("Test Teacher")
     # rubocop:enable RSpec/AnyInstance
@@ -64,11 +64,11 @@ RSpec.describe "admin/finance/voids/new.html.erb", type: :view do
 
   it "has a confirmation checkbox" do
     expect(rendered).to have_field("admin_finance_void_declaration_form[confirmed]", type: "checkbox")
-    expect(rendered).to have_content("I confirm I want to void this declaration and I understand that it cannot be undone")
+    expect(rendered).to have_text("I confirm I want to void this declaration and I understand that it cannot be undone")
   end
 
   it "has a warning-styled confirm button" do
-    expect(rendered).to have_css("button.govuk-button--warning[type='submit']", text: "Confirm void declaration")
+    expect(rendered).to have_button("Confirm void declaration", class: "govuk-button--warning")
   end
 
   describe "error state" do
@@ -78,7 +78,7 @@ RSpec.describe "admin/finance/voids/new.html.erb", type: :view do
       end
 
       it "does not have error styling on the form group" do
-        expect(rendered).not_to have_css(".govuk-form-group--error")
+        expect(rendered).to have_no_css(".govuk-form-group--error")
       end
     end
 
@@ -92,7 +92,7 @@ RSpec.describe "admin/finance/voids/new.html.erb", type: :view do
 
       it "displays an error summary" do
         expect(view.content_for(:error_summary)).to have_css(".govuk-error-summary")
-        expect(view.content_for(:error_summary)).to have_content("There is a problem")
+        expect(view.content_for(:error_summary)).to have_text("There is a problem")
         expect(view.content_for(:error_summary)).to have_link("Confirm you want to void this declaration")
       end
 

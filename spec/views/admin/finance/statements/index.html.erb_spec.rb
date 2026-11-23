@@ -43,7 +43,7 @@ RSpec.describe "admin/finance/statements/index.html.erb" do
     it "displays a message informing me there are no statements to display" do
       render(locals:)
 
-      expect(rendered).to have_content("No financial statements found")
+      expect(rendered).to have_text("No financial statements found")
     end
   end
 end

@@ -17,7 +17,7 @@ module Admin::Finance
     end
 
     def show
-      statement = Statement.eager_load(framework_agreement: :lead_provider).find(params[:id])
+      statement = Statement.eager_load(framework_agreement: :lead_provider).find(params.expect(:id))
 
       @statement = Admin::StatementPresenter.new(statement)
     end
@@ -39,7 +39,7 @@ module Admin::Finance
   private
 
     def set_statement
-      @statement = Statement.eager_load(framework_agreement: %i[lead_provider contract_period]).find(params[:id])
+      @statement = Statement.eager_load(framework_agreement: %i[lead_provider contract_period]).find(params.expect(:id))
     end
 
     def ensure_output_fee_statement!

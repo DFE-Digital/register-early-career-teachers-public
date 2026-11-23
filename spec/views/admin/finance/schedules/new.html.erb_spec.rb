@@ -29,7 +29,7 @@ RSpec.describe "admin/finance/schedules/new.html.erb" do
     expect(rendered).to have_css(".govuk-radios__item", count: 11)
 
     expect(rendered).to have_text("Standard April")
-    expect(rendered).not_to have_text("Standard January")
+    expect(rendered).to have_no_text("Standard January")
   end
 
   it "has a submit button" do

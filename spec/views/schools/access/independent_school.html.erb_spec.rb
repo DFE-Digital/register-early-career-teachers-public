@@ -11,7 +11,7 @@ RSpec.describe "schools/access/independent_school" do
   end
 
   it "explains why the school cannot use the service" do
-    expect(rendered).to have_content("Abbeymead Independent School is an independent school.")
+    expect(rendered).to have_text("Abbeymead Independent School is an independent school.")
   end
 
   it "links to guidance on training options" do

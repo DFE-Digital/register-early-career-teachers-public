@@ -12,7 +12,7 @@ module Schools
   private
 
     def authenticate_token!
-      @school = School.find(params[:school_id].to_s)
+      @school = School.find(params.expect(:school_id).to_s)
       raise ActiveRecord::RecordNotFound unless
         ReminderEmailOptOutToken.valid?(school_id: @school.id, token: params[:token].to_s)
     end

@@ -19,7 +19,7 @@ module Admin
       def authorised? = super && current_user.product_team?
 
       def set_client
-        @client = API::OAuth::Client.find(params[:api_client_id])
+        @client = API::OAuth::Client.find(params.expect(:api_client_id))
       end
     end
   end

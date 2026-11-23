@@ -17,7 +17,7 @@ RSpec.describe "admin/induction_platforms/index.html.erb" do
 
   it "renders breadcrumbs" do
     expect(view.content_for(:backlink_or_breadcrumb)).to have_link("Organisations", href: admin_organisations_path)
-    expect(view.content_for(:backlink_or_breadcrumb)).not_to have_link("Induction platforms")
+    expect(view.content_for(:backlink_or_breadcrumb)).to have_no_link("Induction platforms")
   end
 
   it "links to each induction platform" do

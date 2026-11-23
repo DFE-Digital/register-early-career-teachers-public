@@ -9,18 +9,18 @@ RSpec.describe Shared::PaginationSummaryComponent, type: :component do
   end
 
   it "renders count" do
-    expect(subject).to have_content("Showing 41 to 60 of 196 users")
+    expect(subject).to have_text("Showing 41 to 60 of 196 users")
   end
 
   it "renders pagination" do
-    expect(subject).to have_content("govuk_pagination component")
+    expect(subject).to have_text("govuk_pagination component")
   end
 
   describe "default values" do
     let(:component) { described_class.new pagy: }
 
     it "renders count" do
-      expect(subject).to have_content("Showing 41 to 60 of 196 records")
+      expect(subject).to have_text("Showing 41 to 60 of 196 records")
     end
   end
 
@@ -28,8 +28,8 @@ RSpec.describe Shared::PaginationSummaryComponent, type: :component do
     let(:pagy) { Pagy.new(count: 5, limit: 20, page: 1) }
 
     it "does not render" do
-      expect(subject).not_to have_content("Showing")
-      expect(subject).not_to have_content("govuk_pagination component")
+      expect(subject).to have_no_text("Showing")
+      expect(subject).to have_no_text("govuk_pagination component")
     end
   end
 end

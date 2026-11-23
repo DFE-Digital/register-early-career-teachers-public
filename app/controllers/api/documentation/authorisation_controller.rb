@@ -9,7 +9,7 @@ module API
       end
 
       def page
-        template = "api/documentation/authorisation/pages/#{params[:page].underscore}"
+        template = "api/documentation/authorisation/pages/#{params.expect(:page).underscore}"
 
         if template_exists?(template)
           render template

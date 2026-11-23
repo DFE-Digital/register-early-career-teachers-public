@@ -14,7 +14,7 @@ module Admin
     end
 
     def show
-      @appropriate_body = AppropriateBodyPeriod.find(params[:id])
+      @appropriate_body = AppropriateBodyPeriod.find(params.expect(:id))
     end
 
   private

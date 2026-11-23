@@ -60,11 +60,11 @@ RSpec.describe TimelineComponent, type: :component do
 
     context "when no modifications are present" do
       it "renders no heading" do
-        expect(rendered_content).not_to have_css("h3", text: "Changes")
+        expect(rendered_content).to have_no_css("h3", text: "Changes")
       end
 
       it "renders no list" do
-        expect(rendered_content).not_to have_css(".govuk-list")
+        expect(rendered_content).to have_no_css(".govuk-list")
       end
     end
   end

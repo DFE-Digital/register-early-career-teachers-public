@@ -40,15 +40,15 @@ module Admin::Finance
   private
 
     def set_contract_period
-      @contract_period = ContractPeriod.find(params[:contract_period_id])
+      @contract_period = ContractPeriod.find(params.expect(:contract_period_id))
     end
 
     def set_schedule
-      @schedule = @contract_period.schedules.find(params[:schedule_id])
+      @schedule = @contract_period.schedules.find(params.expect(:schedule_id))
     end
 
     def set_milestone
-      @milestone = @schedule.milestones.find(params[:id])
+      @milestone = @schedule.milestones.find(params.expect(:id))
     end
 
     def milestone_params

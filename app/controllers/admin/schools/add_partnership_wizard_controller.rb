@@ -33,7 +33,7 @@ module Admin
     private
 
       def set_school
-        @school = School.includes(:gias_school).find_by!(urn: params[:school_urn])
+        @school = School.includes(:gias_school).find_by!(urn: params.expect(:school_urn))
       end
 
       def check_allowed_step

@@ -25,7 +25,7 @@ RSpec.describe "admin/teachers/declarations/_declaration.html.erb", type: :view 
   end
 
   before do
-    # rubocop:disable RSpec/AnyInstance - needed for boundary with a helper
+    # rubocop:disable RSpec/AnyInstance -- needed for boundary with a helper
     allow_any_instance_of(DeclarationHelper).to receive_messages(
       declaration_state_tag: "declaration-state-tag",
       declaration_course_identifier: "declaration-course-identifier"
@@ -46,7 +46,7 @@ RSpec.describe "admin/teachers/declarations/_declaration.html.erb", type: :view 
 
   describe "state history" do
     context "when the declaration has no events" do
-      it { is_expected.not_to have_content("State history") }
+      it { is_expected.to have_no_text("State history") }
     end
 
     context "when the declaration has events" do
@@ -74,7 +74,7 @@ RSpec.describe "admin/teachers/declarations/_declaration.html.erb", type: :view 
         render locals: { declaration: }
       end
 
-      it { is_expected.to have_content("State history") }
+      it { is_expected.to have_text("State history") }
 
       it "displays the state history table" do
         within "table tbody tr:nth-child(1)" do
@@ -97,7 +97,7 @@ RSpec.describe "admin/teachers/declarations/_declaration.html.erb", type: :view 
 
         it "shows who voided the declaration" do
           within "table tbody tr:nth-child(2)" do
-            expect(page).to have_content("Voided by Admin User (admin@example.com)")
+            expect(page).to have_text("Voided by Admin User (admin@example.com)")
           end
         end
       end
@@ -110,7 +110,7 @@ RSpec.describe "admin/teachers/declarations/_declaration.html.erb", type: :view 
 
         it "shows it was voided by lead provider" do
           within "table tbody tr:nth-child(2)" do
-            expect(page).to have_content("Voided by lead provider")
+            expect(page).to have_text("Voided by lead provider")
           end
         end
       end
@@ -134,7 +134,7 @@ RSpec.describe "admin/teachers/declarations/_declaration.html.erb", type: :view 
     context "when the declaration cannot be voided by admin" do
       let(:billable_or_changeable) { false }
 
-      it { is_expected.not_to have_link("Void declaration", visible: :all) }
+      it { is_expected.to have_no_link("Void declaration", visible: :all) }
     end
   end
 end

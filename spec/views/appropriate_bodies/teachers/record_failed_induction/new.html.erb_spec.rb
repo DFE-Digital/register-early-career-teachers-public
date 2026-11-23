@@ -39,6 +39,6 @@ RSpec.describe "appropriate_bodies/teachers/record_failed_induction/new.html.erb
   end
 
   it "has a warning submit button" do
-    expect(rendered).to have_css("button.govuk-button--warning")
+    expect(rendered).to have_button("Record fail", exact: false, class: "govuk-button--warning")
   end
 end

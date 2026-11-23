@@ -11,7 +11,7 @@ RSpec.describe "schools/registration_window_closed/show" do
   end
 
   it "shows the reopening date in the body" do
-    expect(rendered).to have_content("Until 15 June you cannot:")
+    expect(rendered).to have_text("Until 15 June you cannot:")
   end
 
   it "includes a back link to the ECT list" do

@@ -38,7 +38,7 @@ RSpec.describe "appropriate_bodies/teachers/record_passed_induction/new.html.erb
     expect(rendered).to have_css("label", text: "How many terms of induction did they spend with you?")
   end
 
-  it "has a warning submit button" do
-    expect(rendered).to have_css("button.govuk-button")
+  it "has a submit button" do
+    expect(rendered).to have_button("Record pass", exact: false)
   end
 end

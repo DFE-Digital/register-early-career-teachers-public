@@ -59,11 +59,11 @@ module Admin::Finance::FrameworkAgreements
     def set_framework_agreement
       @framework_agreement = FrameworkAgreement
         .includes(:contract_period, :lead_provider)
-        .find(params[:framework_agreement_id])
+        .find(params.expect(:framework_agreement_id))
     end
 
     def set_lead_provider_delivery_partnership
-      @lead_provider_delivery_partnership = @framework_agreement.lead_provider_delivery_partnerships.find(params[:id])
+      @lead_provider_delivery_partnership = @framework_agreement.lead_provider_delivery_partnerships.find(params.expect(:id))
     end
 
     def redirect_unless_editable

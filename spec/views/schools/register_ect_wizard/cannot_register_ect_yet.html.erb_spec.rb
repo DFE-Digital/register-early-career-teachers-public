@@ -13,8 +13,8 @@ RSpec.describe "schools/register_ect_wizard/cannot_register_ect_yet" do
   end
 
   it "displays the cannot register ECT message" do
-    expect(rendered).to have_content("Registration for the #{formatted_year} academic year is not open")
-    expect(rendered).to have_content("We'll email you to let you know when registration will open. This is usually in June.")
+    expect(rendered).to have_text("Registration for the #{formatted_year} academic year is not open")
+    expect(rendered).to have_text("We'll email you to let you know when registration will open. This is usually in June.")
   end
 
   it "includes a link back to ECTs" do

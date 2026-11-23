@@ -43,7 +43,7 @@ module Admin
       def set_teacher
         return if store.records_processed == "merged"
 
-        @teacher = Teacher.find(params[:teacher_id])
+        @teacher = Teacher.find(params.expect(:teacher_id))
       end
 
       def initialize_wizard

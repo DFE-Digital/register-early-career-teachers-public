@@ -24,7 +24,7 @@ RSpec.describe Teachers::Details::AdminInductionSummaryComponent, type: :compone
 
     it "displays the induction start date" do
       render_inline(component)
-      expect(page).to have_content(1.year.ago.to_date.to_fs(:govuk))
+      expect(page).to have_text(1.year.ago.to_date.to_fs(:govuk))
     end
 
     it "displays the add induction period button" do
@@ -38,15 +38,15 @@ RSpec.describe Teachers::Details::AdminInductionSummaryComponent, type: :compone
 
         it "renders QTS awarded" do
           render_inline(component)
-          expect(page).to have_content("QTS awarded")
-          expect(page).to have_content(1.year.ago.to_date.to_fs(:govuk))
+          expect(page).to have_text("QTS awarded")
+          expect(page).to have_text(1.year.ago.to_date.to_fs(:govuk))
         end
       end
 
       context "when the teacher does not have a QTS award date" do
         it "does not render QTS awarded on" do
           render_inline(component)
-          expect(page).not_to have_content("QTS awarded")
+          expect(page).to have_no_text("QTS awarded")
         end
       end
     end
@@ -57,8 +57,8 @@ RSpec.describe Teachers::Details::AdminInductionSummaryComponent, type: :compone
 
         it "renders ITT section with provider name" do
           render_inline(component)
-          expect(page).to have_content("Initial teacher training records")
-          expect(page).to have_content("Test University")
+          expect(page).to have_text("Initial teacher training records")
+          expect(page).to have_text("Test University")
         end
       end
 
@@ -67,7 +67,7 @@ RSpec.describe Teachers::Details::AdminInductionSummaryComponent, type: :compone
 
         it "does not render ITT section" do
           render_inline(component)
-          expect(page).not_to have_content("Initial teacher training records")
+          expect(page).to have_no_text("Initial teacher training records")
         end
       end
     end
@@ -77,7 +77,7 @@ RSpec.describe Teachers::Details::AdminInductionSummaryComponent, type: :compone
 
       it "displays extension information and link to admin extensions path" do
         render_inline(component)
-        expect(page).to have_content("Extensions")
+        expect(page).to have_text("Extensions")
         expect(page).to have_link("View", href: admin_teacher_extensions_path(teacher))
       end
     end
@@ -85,8 +85,8 @@ RSpec.describe Teachers::Details::AdminInductionSummaryComponent, type: :compone
     context "without extensions" do
       it "displays no extension information and link to admin extensions path" do
         render_inline(component)
-        expect(page).to have_content("Extensions")
-        expect(page).to have_content("None")
+        expect(page).to have_text("Extensions")
+        expect(page).to have_text("None")
         expect(page).to have_link("Add", href: admin_teacher_extensions_path(teacher))
       end
     end

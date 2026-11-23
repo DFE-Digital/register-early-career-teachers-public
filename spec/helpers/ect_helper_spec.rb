@@ -65,7 +65,7 @@ RSpec.describe ECTHelper, type: :helper do
       end
 
       it "does not show the leaving tag when current_school is not provided" do
-        expect(helper.ect_status(ect_at_school_period)).not_to have_css("strong.govuk-tag.govuk-tag--yellow", text: "Leaving school")
+        expect(helper.ect_status(ect_at_school_period)).to have_no_css("strong.govuk-tag.govuk-tag--yellow", text: "Leaving school")
       end
     end
 

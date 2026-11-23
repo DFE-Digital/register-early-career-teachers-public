@@ -41,12 +41,12 @@ RSpec.describe "schools/register_ect_wizard/check_answers.html.erb" do
   it "includes a continue button" do
     render
     expect(rendered).to have_button("Confirm details")
-    expect(rendered).to have_selector("form[action='#{schools_register_ect_wizard_check_answers_path}']")
+    expect(rendered).to have_css("form[action='#{schools_register_ect_wizard_check_answers_path}']")
   end
 
   it "includes a Programme details heading" do
     render
-    expect(rendered).to have_content("Programme details")
+    expect(rendered).to have_text("Programme details")
   end
 
   describe "programme details section" do
@@ -60,7 +60,7 @@ RSpec.describe "schools/register_ect_wizard/check_answers.html.erb" do
 
         it 'displays the "Choices used by your school previously" row' do
           render
-          expect(rendered).to have_content("Choices used by your school previously")
+          expect(rendered).to have_text("Choices used by your school previously")
         end
       end
 
@@ -73,7 +73,7 @@ RSpec.describe "schools/register_ect_wizard/check_answers.html.erb" do
 
         it 'does not display the "Choices used by your school previously" row' do
           render
-          expect(rendered).not_to have_content("Choices used by your school previously")
+          expect(rendered).to have_no_text("Choices used by your school previously")
         end
       end
     end
@@ -89,11 +89,11 @@ RSpec.describe "schools/register_ect_wizard/check_answers.html.erb" do
 
       it "hides change links for appropriate body and lead provider" do
         render
-        expect(rendered).not_to have_link(
+        expect(rendered).to have_no_link(
           "Change",
           href: schools_register_ect_wizard_change_state_school_appropriate_body_path
         )
-        expect(rendered).not_to have_link(
+        expect(rendered).to have_no_link(
           "Change",
           href: schools_register_ect_wizard_change_lead_provider_path
         )
@@ -114,7 +114,7 @@ RSpec.describe "schools/register_ect_wizard/check_answers.html.erb" do
 
         it "hides the change link for training programme" do
           render
-          expect(rendered).not_to have_link(
+          expect(rendered).to have_no_link(
             "Change",
             href: schools_register_ect_wizard_change_training_programme_path
           )
@@ -175,12 +175,12 @@ RSpec.describe "schools/register_ect_wizard/check_answers.html.erb" do
 
       it 'does not display the "Choices used by your school previously" row' do
         render
-        expect(rendered).not_to have_content("Choices used by your school previously")
+        expect(rendered).to have_no_text("Choices used by your school previously")
       end
 
       it "does not render the delivery partner row when reuse is not in effect" do
         render
-        expect(rendered).not_to have_css(".govuk-summary-list__key", text: "Delivery partner")
+        expect(rendered).to have_no_css(".govuk-summary-list__key", text: "Delivery partner")
       end
     end
   end

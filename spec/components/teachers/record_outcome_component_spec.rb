@@ -29,7 +29,7 @@ RSpec.describe Teachers::RecordOutcomeComponent, type: :component do
         let(:service_class) { AppropriateBodies::RecordPass }
 
         it "targets the appropriate body pass action" do
-          expect(rendered_content).to have_selector("form[action='/appropriate-body/teachers/#{teacher.id}/record-passed-outcome'][method='post']")
+          expect(rendered_content).to have_css("form[action='/appropriate-body/teachers/#{teacher.id}/record-passed-outcome'][method='post']")
         end
 
         it "renders a submit button", :aggregate_failures do
@@ -39,7 +39,7 @@ RSpec.describe Teachers::RecordOutcomeComponent, type: :component do
         end
 
         it "no confirmation date is required" do
-          expect(rendered_content).not_to have_text("When did you send written confirmation of their failed induction?")
+          expect(rendered_content).to have_no_text("When did you send written confirmation of their failed induction?")
         end
       end
 
@@ -47,7 +47,7 @@ RSpec.describe Teachers::RecordOutcomeComponent, type: :component do
         let(:service_class) { AppropriateBodies::RecordFail }
 
         it "targets the appropriate body fail action" do
-          expect(rendered_content).to have_selector("form[action='/appropriate-body/teachers/#{teacher.id}/record-failed-outcome'][method='post']")
+          expect(rendered_content).to have_css("form[action='/appropriate-body/teachers/#{teacher.id}/record-failed-outcome'][method='post']")
         end
 
         it "renders a warning button", :aggregate_failures do
@@ -69,7 +69,7 @@ RSpec.describe Teachers::RecordOutcomeComponent, type: :component do
         let(:service_class) { Admin::RecordPass }
 
         it "targets the admin pass action" do
-          expect(rendered_content).to have_selector("form[action='/admin/teachers/#{teacher.id}/record-passed-outcome'][method='post']")
+          expect(rendered_content).to have_css("form[action='/admin/teachers/#{teacher.id}/record-passed-outcome'][method='post']")
         end
 
         it "renders a submit button", :aggregate_failures do
@@ -79,7 +79,7 @@ RSpec.describe Teachers::RecordOutcomeComponent, type: :component do
         end
 
         it "no confirmation date is required" do
-          expect(rendered_content).not_to have_text("When did you send written confirmation of their failed induction?")
+          expect(rendered_content).to have_no_text("When did you send written confirmation of their failed induction?")
         end
       end
 
@@ -87,7 +87,7 @@ RSpec.describe Teachers::RecordOutcomeComponent, type: :component do
         let(:service_class) { Admin::RecordFail }
 
         it "targets the admin fail action" do
-          expect(rendered_content).to have_selector("form[action='/admin/teachers/#{teacher.id}/record-failed-outcome'][method='post']")
+          expect(rendered_content).to have_css("form[action='/admin/teachers/#{teacher.id}/record-failed-outcome'][method='post']")
         end
 
         it "renders a warning button", :aggregate_failures do
@@ -96,7 +96,7 @@ RSpec.describe Teachers::RecordOutcomeComponent, type: :component do
         end
 
         it "no confirmation date is required" do
-          expect(rendered_content).not_to have_text("When did you send written confirmation of their failed induction?")
+          expect(rendered_content).to have_no_text("When did you send written confirmation of their failed induction?")
         end
       end
     end

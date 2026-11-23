@@ -6,7 +6,7 @@ RSpec.describe Teachers::Details::PersonalDetailsComponent, type: :component do
   before { render_inline(component) }
 
   it "renders the personal details" do
-    expect(page).to have_content("Personal details")
-    expect(page).to have_content("Richard Prior")
+    expect(page).to have_text("Personal details")
+    expect(page).to have_text("Richard Prior")
   end
 end

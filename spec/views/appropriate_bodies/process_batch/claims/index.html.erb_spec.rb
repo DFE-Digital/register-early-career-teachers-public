@@ -23,15 +23,15 @@ RSpec.describe "appropriate_bodies/process_batch/claims/index.html.erb" do
   end
 
   it "lists claims in a table" do
-    expect(rendered).to have_selector("table tr", count: 4)
-    expect(rendered).to have_selector("th", text: "Reference")
-    expect(rendered).to have_selector("th", text: "File name")
-    expect(rendered).to have_selector("th", text: "Status")
-    expect(rendered).to have_selector("th", text: "Action")
+    expect(rendered).to have_css("table tr", count: 4)
+    expect(rendered).to have_css("th", text: "Reference")
+    expect(rendered).to have_css("th", text: "File name")
+    expect(rendered).to have_css("th", text: "Status")
+    expect(rendered).to have_css("th", text: "Action")
 
-    expect(rendered).to have_selector("td", text: "View", count: 3)
-    expect(rendered).to have_selector("td", text: "Submitted")
-    expect(rendered).to have_selector("td", text: "Not yet submitted")
-    expect(rendered).to have_selector("td", text: "Draft")
+    expect(rendered).to have_css("td", text: "View", count: 3)
+    expect(rendered).to have_css("td", text: "Submitted")
+    expect(rendered).to have_css("td", text: "Not yet submitted")
+    expect(rendered).to have_css("td", text: "Draft")
   end
 end

@@ -51,7 +51,7 @@ RSpec.describe Admin::Teachers::UndoRegistrationWizard::TrainingPeriodSummaryCom
     end
 
     it "does not show actions" do
-      expect(rendered).not_to have_link("Change")
+      expect(rendered).to have_no_link("Change")
     end
   end
 

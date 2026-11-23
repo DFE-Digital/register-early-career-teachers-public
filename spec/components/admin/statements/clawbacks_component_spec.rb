@@ -104,7 +104,8 @@ RSpec.describe Admin::Statements::ClawbacksComponent, type: :component do
     let(:contract) { FactoryBot.create(:contract, :for_ecf) }
 
     it "renders one table of clawbacks" do
-      expect(page).to have_css("table", count: 1)
+      expect(page).to have_table(count: 1)
+      expect(page).to have_table("Clawbacks")
     end
 
     it "renders the clawbacks table" do
@@ -177,7 +178,7 @@ RSpec.describe Admin::Statements::ClawbacksComponent, type: :component do
     let(:contract) { FactoryBot.create(:contract, :for_ittecf_ectp) }
 
     it "renders two tables of clawbacks with ECT clawbacks first" do
-      expect(page).to have_css("table", count: 2)
+      expect(page).to have_table(count: 2)
       tables = page.find_all("table")
       expect(tables.first).to have_css("caption", text: "ECT clawbacks")
       expect(tables.last).to have_css("caption", text: "Mentor clawbacks")

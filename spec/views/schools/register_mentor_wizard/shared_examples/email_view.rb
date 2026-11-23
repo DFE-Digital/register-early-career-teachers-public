@@ -49,13 +49,13 @@ RSpec.shared_examples "an email address step view" do |current_step:, back_path:
     render
 
     expect(rendered).to have_button("Continue")
-    expect(rendered).to have_selector("form[action='#{send(continue_path)}']")
+    expect(rendered).to have_css("form[action='#{send(continue_path)}']")
   end
 
   it "includes a visible email address label" do
     render
 
     expect(rendered).to have_css("label.govuk-label", text: "Email address")
-    expect(rendered).not_to have_css("label.govuk-visually-hidden", text: "Email address")
+    expect(rendered).to have_no_css("label.govuk-visually-hidden", text: "Email address")
   end
 end

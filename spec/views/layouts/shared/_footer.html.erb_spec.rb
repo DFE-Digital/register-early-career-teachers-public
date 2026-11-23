@@ -15,7 +15,7 @@ RSpec.describe "layouts/shared/_footer.html.erb" do
 
     shared_examples "normal support link" do
       it { is_expected.to have_link("Contact support", href: normal_href) }
-      it { is_expected.not_to have_link("Contact support", href: schools_href) }
+      it { is_expected.to have_no_link("Contact support", href: schools_href) }
     end
 
     context "when not signed in" do
@@ -31,7 +31,7 @@ RSpec.describe "layouts/shared/_footer.html.erb" do
     context "when signed in as school user" do
       let(:current_user) { FactoryBot.create(:school_user, :at_random_school) }
 
-      it { is_expected.not_to have_link("Contact support", href: normal_href) }
+      it { is_expected.to have_no_link("Contact support", href: normal_href) }
       it { is_expected.to have_link("Contact support", href: schools_href) }
     end
   end

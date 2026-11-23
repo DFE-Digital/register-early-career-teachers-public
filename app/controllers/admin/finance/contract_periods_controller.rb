@@ -63,7 +63,7 @@ module Admin::Finance
   private
 
     def set_contract_period
-      @contract_period = ContractPeriod.includes(:framework_agreements, :schedules).find(params[:id])
+      @contract_period = ContractPeriod.includes(:framework_agreements, :schedules).find(params.expect(:id))
     end
 
     def contract_period_params

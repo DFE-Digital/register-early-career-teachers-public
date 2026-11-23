@@ -21,7 +21,7 @@ RSpec.describe "admin/induction_platforms/show.html.erb" do
   it "renders breadcrumbs" do
     expect(view.content_for(:backlink_or_breadcrumb)).to have_link("Organisations", href: admin_organisations_path)
     expect(view.content_for(:backlink_or_breadcrumb)).to have_link("Induction platforms", href: admin_induction_platforms_path)
-    expect(view.content_for(:backlink_or_breadcrumb)).not_to have_link("Alpha Induction Platform")
+    expect(view.content_for(:backlink_or_breadcrumb)).to have_no_link("Alpha Induction Platform")
   end
 
   it "describes the page" do
@@ -56,14 +56,14 @@ RSpec.describe "admin/induction_platforms/show.html.erb" do
     end
 
     it "does not show the empty message" do
-      expect(rendered).not_to have_content("No appropriate bodies have granted access.")
+      expect(rendered).to have_no_text("No appropriate bodies have granted access.")
     end
   end
 
   context "when no appropriate bodies have granted access" do
     it "shows the empty message instead of a table" do
       expect(rendered).to have_css("p", text: "No appropriate bodies have granted access.")
-      expect(rendered).not_to have_css("table")
+      expect(rendered).to have_no_table
     end
   end
 end

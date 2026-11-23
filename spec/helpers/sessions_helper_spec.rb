@@ -26,7 +26,7 @@ RSpec.describe SessionsHelper, type: :helper do
       end
 
       it "does not include one time persona" do
-        expect(login_options).not_to have_css("a", text: persona_link_text)
+        expect(login_options).to have_no_css("a", text: persona_link_text)
       end
     end
   end

@@ -149,12 +149,8 @@ describe "School user can change ECT's appropriate body" do
     combobox = page
       .get_by_role("combobox", name: "Enter appropriate body name")
       .first
-
-    expect(combobox).not_to have_selector(
-      "option",
-      text: "Current Appropriate Body",
-      exact_text: true
-    )
+    option = combobox.locator("option", hasText: "Current Appropriate Body")
+    expect(option).not_to be_visible
   end
 
   def then_i_see_an_error
