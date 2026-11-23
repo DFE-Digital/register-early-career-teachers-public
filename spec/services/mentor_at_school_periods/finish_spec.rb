@@ -59,11 +59,11 @@ describe MentorAtSchoolPeriods::Finish do
         )
       end
 
-      it "deletes the mentorship period" do
-        expect { subject.finish_periods_at_all_schools! }.to change(MentorshipPeriod, :count).by(-1)
+      it "archives the mentorship period" do
+        expect { subject.finish_periods_at_all_schools! }.to change { mentorship_period.reload.archived }.from(false).to(true)
       end
 
-      it "deletes any events associated with the mentorship period" do
+      it "does not delete any events associated with the mentorship period" do
         FactoryBot.create(:event, mentorship_period:)
         FactoryBot.create(:event, mentorship_period:)
         other_event = FactoryBot.create(:event)
@@ -72,7 +72,7 @@ describe MentorAtSchoolPeriods::Finish do
 
         subject.finish_periods_at_all_schools!
 
-        expect(Event.where(mentorship_period:)).to be_empty
+        expect(Event.where(mentorship_period:).count).to eq(2)
         expect(Event.exists?(other_event.id)).to be true
       end
     end
@@ -88,11 +88,11 @@ describe MentorAtSchoolPeriods::Finish do
         )
       end
 
-      it "deletes the training period" do
-        expect { subject.finish_periods_at_all_schools! }.to change(TrainingPeriod, :count).by(-1)
+      it "archives the training period" do
+        expect { subject.finish_periods_at_all_schools! }.to change { training_period.reload.archived }.from(false).to(true)
       end
 
-      it "deletes any events associated with the training period" do
+      it "does not delete any events associated with the training period" do
         FactoryBot.create(:event, training_period:)
         FactoryBot.create(:event, training_period:)
         other_event = FactoryBot.create(:event)
@@ -101,7 +101,7 @@ describe MentorAtSchoolPeriods::Finish do
 
         subject.finish_periods_at_all_schools!
 
-        expect(Event.where(training_period:)).to be_empty
+        expect(Event.where(training_period:).count).to eq(2)
         expect(Event.exists?(other_event.id)).to be true
       end
     end

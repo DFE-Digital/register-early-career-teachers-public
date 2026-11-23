@@ -22,6 +22,7 @@ module GIAS::Reconciliation
         @periods_by_start_date ||= teacher
           .mentor_at_school_periods
           .where(school: schools)
+          .unarchived
           .order(:started_on)
       end
 

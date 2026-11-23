@@ -35,7 +35,7 @@ module Teachers
 
           finish_periods!
         else
-          delete_periods!
+          archive_periods!
           anonymiser.anonymise! if anonymiser.permitted?
         end
 
@@ -107,10 +107,12 @@ module Teachers
       at_school_period.finish!(finish_date_for(at_school_period)) if at_school_period.unfinished?
     end
 
-    def delete_periods!
-      mentorship_periods.find_each(&:destroy!)
-      training_periods.find_each(&:destroy!)
-      at_school_period.destroy!
+    def archive_periods!
+      if at_school_period.is_a?(ECTAtSchoolPeriod)
+        ECTAtSchoolPeriods::Archive.call(at_school_period)
+      else
+        MentorAtSchoolPeriods::Archive.call(at_school_period)
+      end
     end
 
     def record_undo_registration_event!

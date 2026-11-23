@@ -91,11 +91,11 @@ describe ECTAtSchoolPeriods::Finish do
           )
         end
 
-        it "deletes the mentorship period" do
-          expect { subject.finish! }.to change(MentorshipPeriod, :count).by(-1)
+        it "archives the mentorship period" do
+          expect { subject.finish! }.to change { mentorship_period.reload.archived }.from(false).to(true)
         end
 
-        it "deletes any events associated with the mentorship period" do
+        it "does not delete any events associated with the mentorship period" do
           FactoryBot.create(:event, mentorship_period:)
           FactoryBot.create(:event, mentorship_period:)
           other_event = FactoryBot.create(:event)
@@ -104,7 +104,7 @@ describe ECTAtSchoolPeriods::Finish do
 
           subject.finish!
 
-          expect(Event.where(mentorship_period:)).to be_empty
+          expect(Event.where(mentorship_period:).count).to eq(2)
           expect(Event.exists?(other_event.id)).to be true
         end
       end
@@ -119,8 +119,8 @@ describe ECTAtSchoolPeriods::Finish do
           )
         end
 
-        it "deletes the mentorship period" do
-          expect { subject.finish! }.to change(MentorshipPeriod, :count).by(-1)
+        it "archives the mentorship period" do
+          expect { subject.finish! }.to change { mentorship_period.reload.archived }.from(false).to(true)
         end
       end
 
@@ -249,8 +249,8 @@ describe ECTAtSchoolPeriods::Finish do
                             started_on: training_start_date)
         end
 
-        it "deletes the training period" do
-          expect { subject.finish! }.to change(TrainingPeriod, :count).by(-1)
+        it "archives the training period" do
+          expect { subject.finish! }.to change { training_period.reload.archived }.from(false).to(true)
         end
 
         it "records an event which is not linked to a training period" do
@@ -276,20 +276,20 @@ describe ECTAtSchoolPeriods::Finish do
         context "with a non-billable declaration" do
           let!(:declaration) { FactoryBot.create(:declaration, :no_payment, training_period:) }
 
-          it "destroys the unstarted period and its declaration" do
+          it "archives the unstarted period and retains its declaration" do
             subject.finish!
 
-            expect { training_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
-            expect { declaration.reload }.to raise_error(ActiveRecord::RecordNotFound)
+            expect(training_period.reload).to be_archived
+            expect(declaration.reload.training_period).to eq(training_period)
           end
         end
 
         context "with a billable declaration" do
           let!(:declaration) { FactoryBot.create(:declaration, :paid, training_period:) }
 
-          it "raises and does not destroy the training period" do
-            expect { subject.finish! }.to raise_error(ActiveRecord::RecordNotDestroyed)
-            expect { training_period.reload }.not_to raise_error
+          it "archives the period while retaining its billable declaration" do
+            expect { subject.finish! }.to change { training_period.reload.archived }.from(false).to(true)
+            expect(declaration.reload.training_period).to eq(training_period)
           end
         end
       end

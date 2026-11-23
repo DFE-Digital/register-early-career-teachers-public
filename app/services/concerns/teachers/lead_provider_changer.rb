@@ -43,7 +43,7 @@ module Teachers
         if current_or_future_training_period?
           update_training_period_in_place!
         else
-          finish_or_destroy_training_period!
+          finish_or_archive_training_period!
           create_training_period!
         end
 
@@ -90,13 +90,13 @@ module Teachers
       earliest_matching_school_partnership
     end
 
-    def finish_or_destroy_training_period!
+    def finish_or_archive_training_period!
       return unless training_period
 
       if training_period_confirmed?
         finish_training_period!
       else
-        training_period.destroy!
+        TrainingPeriods::Archive.call(training_period)
       end
     end
 

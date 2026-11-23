@@ -46,7 +46,7 @@ module Schools
       end
 
       def latest_training_period
-        @latest_training_period ||= mentor_period_for_school&.training_periods&.max_by(&:started_on)
+        @latest_training_period ||= mentor_period_for_school&.training_periods&.unarchived&.max_by(&:started_on)
       end
 
       def current_training_period
@@ -114,6 +114,7 @@ module Schools
       def mentor_period_for_school
         @mentor_period_for_school ||= @mentor
           .mentor_at_school_periods
+          .unarchived
           .select { it.school_id == @school.id }
           .max_by(&:started_on)
       end

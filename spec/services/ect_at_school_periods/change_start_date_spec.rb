@@ -213,13 +213,10 @@ RSpec.describe ECTAtSchoolPeriods::ChangeStartDate do
         context "when the new start date equals the mentorship end date" do
           let(:mentorship_finished_on) { new_started_on }
 
-          it "removes the mentorship period" do
-            expect { change_start_date }
-              .to change(MentorshipPeriod, :count)
-              .by(-1)
+          it "archives the mentorship period" do
+            change_start_date
 
-            expect(MentorshipPeriod.exists?(mentorship_period.id))
-              .to be(false)
+            expect(mentorship_period.reload).to be_archived
           end
 
           it_behaves_like "records the mentorship period removal event"
@@ -228,13 +225,10 @@ RSpec.describe ECTAtSchoolPeriods::ChangeStartDate do
         context "when the new start date is after the mentorship end date" do
           let(:mentorship_finished_on) { new_started_on.prev_day }
 
-          it "removes the mentorship period" do
-            expect { change_start_date }
-              .to change(MentorshipPeriod, :count)
-              .by(-1)
+          it "archives the mentorship period" do
+            change_start_date
 
-            expect(MentorshipPeriod.exists?(mentorship_period.id))
-              .to be(false)
+            expect(mentorship_period.reload).to be_archived
           end
 
           it_behaves_like "records the mentorship period removal event"

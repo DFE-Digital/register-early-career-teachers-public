@@ -1,5 +1,6 @@
 class MentorshipPeriod < ApplicationRecord
   include Interval
+  include Archivable
   include DeclarativeUpdates
 
   # Associations

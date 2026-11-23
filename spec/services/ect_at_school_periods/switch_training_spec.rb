@@ -40,7 +40,7 @@ module ECTAtSchoolPeriods
             )
           end
 
-          it "finishes the existing training period" do
+          it "archives the existing training period" do
             freeze_time
 
             SwitchTraining.to_school_led(ect_at_school_period, author:)
@@ -69,11 +69,10 @@ module ECTAtSchoolPeriods
             )
           end
 
-          it "removes the existing training period" do
+          it "archives the existing training period" do
             SwitchTraining.to_school_led(ect_at_school_period, author:)
 
-            expect { training_period.reload }
-              .to raise_error(ActiveRecord::RecordNotFound)
+            expect(training_period.reload).to be_archived
           end
 
           it "creates a new school-led training period" do
@@ -96,12 +95,12 @@ module ECTAtSchoolPeriods
             )
           end
 
-          it "removes the existing training period" do
+          it "archives the existing training period" do
             freeze_time
 
             SwitchTraining.to_school_led(ect_at_school_period, author:)
 
-            expect { training_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+            expect(training_period.reload).to be_archived
           end
 
           it "creates a new school-led training period" do
@@ -128,11 +127,10 @@ module ECTAtSchoolPeriods
             )
           end
 
-          it "removes the existing training period" do
+          it "archives the existing training period" do
             SwitchTraining.to_school_led(ect_at_school_period, author:)
 
-            expect { training_period.reload }
-              .to raise_error(ActiveRecord::RecordNotFound)
+            expect(training_period.reload).to be_archived
           end
 
           it "creates a new school-led training period that starts on the ECT start date" do
@@ -339,7 +337,7 @@ module ECTAtSchoolPeriods
 
             SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
 
-            expect { training_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+            expect(training_period.reload).to be_archived
           end
 
           it "creates a new provider-led training period with an expression of interest" do
@@ -379,11 +377,10 @@ module ECTAtSchoolPeriods
               )
             end
 
-            it "removes the existing training period" do
+            it "archives the existing training period" do
               SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
 
-              expect { training_period.reload }
-                .to raise_error(ActiveRecord::RecordNotFound)
+              expect(training_period.reload).to be_archived
             end
 
             it "creates a new provider-led training period that starts on the ECT start date" do
