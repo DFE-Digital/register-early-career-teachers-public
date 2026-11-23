@@ -43,6 +43,13 @@ easelcroft_teaching_school.period("1999-09-01 -> 2021-08-31")
 vista_college = teaching_school("Vista College")
 vista_college.period("1999-09-01 -> 2021-08-31")
 
+# St Mary's School did not open until 2017 but we permit a TS ABP to have an
+# earlier start date to accommodate legacy data. In production using migrated data
+# the exact school was not known so an ABP was created using the school at the TS->TSH boundary.
+# This is an acceptable compromise.
+st_marys_port_out = teaching_school("St Mary's School")
+st_marys_port_out.period("2015-09-01 -> 2021-08-31")
+
 # National bodies
 # ----------------------------------------------------------------------------
 print_seed_info("🏛️ National bodies", colour: :yellow)

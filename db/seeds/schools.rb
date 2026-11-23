@@ -125,6 +125,7 @@ opened_on = Date.parse("1999-09-01")
   { urn: 9_400_001, name: "Frame University London", type: :state_school_type, opened_on:, closed_on: Date.parse("2021-08-31") },
   { urn: 9_400_002, name: "Easelcroft Teaching School", type: :state_school_type, opened_on:, closed_on: Date.parse("2021-08-31") },
   { urn: 9_400_003, name: "Vista College", type: :state_school_type, opened_on:, closed_on: Date.parse("2022-08-31") },
+  { urn: 9_400_004, name: "St Mary's School", type: :state_school_type, opened_on: Date.parse("2017-09-01"), closed_on: Date.parse("2021-08-31") },
 
 ].uniq { |h| h[:urn] }.map do |data|
   type = data[:type]

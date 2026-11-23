@@ -485,7 +485,11 @@ describe AppropriateBodyPeriod do
 
         before { provisioning_school.gias_school.update!(closed_on: Date.new(2020, 8, 31)) }
 
-        it { is_expected.to have_error(:finished_on, "The end date cannot be later than the school closed (31 August 2020)") }
+        # Legacy teaching school data requires the validation to be more lenient to allow
+        # edgecases where AB periods were created to store migrated data when the exact school
+        # was not known, meaning the chosen school's opening and closing dates don not match the
+        # induction period dates it was designed to store.
+        it { is_expected.to be_valid }
       end
 
       context "when it finishes on the day the provisioning school closed" do
@@ -509,7 +513,7 @@ describe AppropriateBodyPeriod do
 
         before { provisioning_school.gias_school.update!(opened_on: Date.new(2012, 9, 1)) }
 
-        it { is_expected.to have_error(:started_on, "The start date cannot be earlier than the school opened (1 September 2012)") }
+        it { is_expected.to be_valid }
       end
 
       context "when it starts on the day the provisioning school opened" do
