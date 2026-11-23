@@ -18,7 +18,7 @@ class School < ApplicationRecord
   # Associations
   belongs_to :dfe_sign_in_organisation, foreign_key: :urn, primary_key: :urn, inverse_of: :school
   belongs_to :gias_school, class_name: "GIAS::School", foreign_key: :urn, inverse_of: :school
-  belongs_to :last_chosen_appropriate_body, class_name: "AppropriateBodyPeriod"
+  belongs_to :last_chosen_appropriate_body, class_name: "AppropriateBodyPeriod", inverse_of: :last_chosen_by_schools
   belongs_to :last_chosen_lead_provider, class_name: "LeadProvider"
   belongs_to :induction_tutor_last_nominated_in, class_name: "ContractPeriod", primary_key: "year", foreign_key: "induction_tutor_last_nominated_in", optional: true
 
@@ -125,7 +125,8 @@ class School < ApplicationRecord
   delegate :name, to: :last_chosen_lead_provider, prefix: true, allow_nil: true
 
   def last_chosen_appropriate_body_for_independent_school
-    return unless last_chosen_appropriate_body&.local_authority?
+    return if last_chosen_appropriate_body.blank?
+    return if last_chosen_appropriate_body.national? || last_chosen_appropriate_body.teaching_school_hub?
 
     errors.add(:last_chosen_appropriate_body_id, "Must be national or teaching school hub")
   end

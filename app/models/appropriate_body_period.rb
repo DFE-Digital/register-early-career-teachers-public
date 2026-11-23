@@ -47,6 +47,11 @@ class AppropriateBodyPeriod < ApplicationRecord
            -> { claimed_by_school_reported_appropriate_body },
            class_name: "ECTAtSchoolPeriod",
            foreign_key: :school_reported_appropriate_body_id
+  has_many :last_chosen_by_schools,
+           -> { includes(:gias_school) },
+           class_name: "School",
+           foreign_key: :last_chosen_appropriate_body_id,
+           inverse_of: :last_chosen_appropriate_body
 
   # Scopes
   scope :active, -> { where.not(dfe_sign_in_organisation_id: nil) }
@@ -86,6 +91,7 @@ class AppropriateBodyPeriod < ApplicationRecord
 
   # Validations
   validates :started_on, presence: true
+  validates_associated :last_chosen_by_schools, if: :will_save_change_to_body_type?
 
   validate :name_is_unique_among_overlapping_periods, unless: :teaching_school?
 

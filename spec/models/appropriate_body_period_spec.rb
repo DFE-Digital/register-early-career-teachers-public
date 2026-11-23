@@ -241,6 +241,24 @@ describe AppropriateBodyPeriod do
       end
     end
 
+    describe "changing the body type" do
+      let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, :teaching_school_hub) }
+
+      it "rejects changing to national when a state-funded school last chose the appropriate body" do
+        FactoryBot.create(:school, :state_funded, last_chosen_appropriate_body: appropriate_body_period)
+
+        appropriate_body_period.reload
+        appropriate_body_period.assign_attributes(
+          body_type: :national,
+          national_body: FactoryBot.build(:national_body),
+          teaching_school_hub: nil,
+          provisioning_school: nil
+        )
+
+        expect(appropriate_body_period).to have_error(:last_chosen_by_schools, "is invalid")
+      end
+    end
+
     context "when the type is local authority" do
       subject(:appropriate_body_period) do
         FactoryBot.build(:appropriate_body_period, :local_authority,
