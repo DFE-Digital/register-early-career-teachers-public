@@ -67,7 +67,7 @@
               row.with_cell do
                 safe_join([
                   event.happened_at.to_fs(:govuk),
-                  declaration_voided_by_caption(declaration, event)
+                  declaration_voided_by_caption(event)
                 ].compact)
               end
             end

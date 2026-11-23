@@ -49,13 +49,13 @@ module DeclarationHelper
     end
   end
 
-  def declaration_voided_by_caption(declaration, event)
+  def declaration_voided_by_caption(event)
     return unless event.event_type.in?(%w[teacher_declaration_voided teacher_declaration_awaiting_clawback])
 
-    text = if declaration.voided_by_user.present?
-             "Voided by #{declaration.voided_by_user.name} (#{declaration.voided_by_user.email})"
-           else
+    text = if event.author_type == "lead_provider_api"
              "Voided by lead provider"
+           else
+             "Voided by #{event.author_name} (#{event.author_email})"
            end
 
     tag.span(text, class: "govuk-caption-m")

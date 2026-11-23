@@ -138,9 +138,10 @@ RSpec.describe DeclarationHelper, type: :helper do
   end
 
   describe "#declaration_voided_by_caption" do
-    subject { helper.declaration_voided_by_caption(declaration, event) }
+    subject { helper.declaration_voided_by_caption(event) }
 
-    let(:event) { instance_double(Event, event_type:) }
+    let(:event) { instance_double(Event, event_type:, author_type:) }
+    let(:author_type) { "dfe_staff_user" }
 
     context "when the event type is not a voided or clawed_back event" do
       let(:event_type) { "teacher_declaration_created" }
@@ -152,15 +153,13 @@ RSpec.describe DeclarationHelper, type: :helper do
       let(:event_type) { "teacher_declaration_voided" }
 
       context "when voided by an admin user" do
-        let(:admin_user) { instance_double(User, name: "Admin User", email: "admin@example.com") }
-
-        before { allow(declaration).to receive(:voided_by_user).and_return(admin_user) }
+        before { allow(event).to receive_messages(author_name: "Admin User", author_email: "admin@example.com") }
 
         it { is_expected.to include("Voided by Admin User (admin@example.com)") }
       end
 
       context "when voided by a lead provider" do
-        before { allow(declaration).to receive(:voided_by_user).and_return(nil) }
+        let(:author_type) { "lead_provider_api" }
 
         it { is_expected.to include("Voided by lead provider") }
       end
@@ -170,18 +169,59 @@ RSpec.describe DeclarationHelper, type: :helper do
       let(:event_type) { "teacher_declaration_awaiting_clawback" }
 
       context "when clawed back by an admin user" do
-        let(:admin_user) { instance_double(User, name: "Finance User", email: "finance@example.com") }
-
-        before { allow(declaration).to receive(:voided_by_user).and_return(admin_user) }
+        before { allow(event).to receive_messages(author_name: "Finance User", author_email: "finance@example.com") }
 
         it { is_expected.to include("Voided by Finance User (finance@example.com)") }
       end
 
       context "when clawed back by a lead provider" do
-        before { allow(declaration).to receive(:voided_by_user).and_return(nil) }
+        let(:author_type) { "lead_provider_api" }
 
         it { is_expected.to include("Voided by lead provider") }
       end
+    end
+
+    context "when the author has been deleted" do
+      let(:event_type) { "teacher_declaration_voided" }
+      let(:author) { FactoryBot.create(:user) }
+      let!(:event) do
+        FactoryBot.create(
+          :event,
+          event_type:,
+          author:,
+          author_type:,
+          author_name: "Deleted User",
+          author_email: "deleted@example.com"
+        )
+      end
+
+      before { author.destroy! }
+
+      it "uses the event snapshots after the author id is nullified" do
+        expect(event.reload.author_id).to be_nil
+        expect(subject).to include("Voided by Deleted User (deleted@example.com)")
+      end
+    end
+
+    context "when the live author's details have changed" do
+      let(:event_type) { "teacher_declaration_awaiting_clawback" }
+      let(:author) { FactoryBot.create(:user) }
+      let!(:event) do
+        FactoryBot.create(
+          :event,
+          event_type:,
+          author:,
+          author_type:,
+          author_name: "Deleted User",
+          author_email: "deleted@example.com"
+        )
+      end
+
+      before do
+        author.update!(name: "Updated User", email: "updated@education.gov.uk")
+      end
+
+      it { is_expected.to include("Voided by Deleted User (deleted@example.com)") }
     end
   end
 end
