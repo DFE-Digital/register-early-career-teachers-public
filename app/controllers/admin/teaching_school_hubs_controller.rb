@@ -7,7 +7,7 @@ class Admin::TeachingSchoolHubsController < AdminController
   end
 
   def show
-    @teaching_school_hub = hubs.find(params[:id])
+    @teaching_school_hub = hubs.find(params.expect(:id))
   end
 
 private

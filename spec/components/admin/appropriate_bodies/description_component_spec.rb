@@ -98,11 +98,11 @@ RSpec.describe Admin::AppropriateBodies::DescriptionComponent, type: :component 
       before { render_inline(component) }
 
       it "renders the description in a GOV.UK paragraph" do
-        expect(rendered_content).to have_selector("p.govuk-body", text: component.description)
+        expect(rendered_content).to have_css("p.govuk-body", text: component.description)
       end
 
       it "omits the name, because the hub name would repeat the page heading" do
-        expect(rendered_content).not_to have_text("#{component.display_name}:")
+        expect(rendered_content).to have_no_text("#{component.display_name}:")
       end
     end
 
@@ -112,7 +112,7 @@ RSpec.describe Admin::AppropriateBodies::DescriptionComponent, type: :component 
       before { render_inline(component) }
 
       it "shows the name, even though nothing runs concurrently with it" do
-        expect(rendered_content).to have_selector("p.govuk-body strong", text: "Acme TSH Studio:")
+        expect(rendered_content).to have_css("p.govuk-body strong", text: "Acme TSH Studio:")
       end
     end
 
@@ -128,11 +128,11 @@ RSpec.describe Admin::AppropriateBodies::DescriptionComponent, type: :component 
       end
 
       it "names the body inline, so concurrent bodies can be told apart" do
-        expect(rendered_content).to have_selector("p.govuk-body strong", text: "#{component.display_name}:")
+        expect(rendered_content).to have_css("p.govuk-body strong", text: "#{component.display_name}:")
       end
 
       it "describes the body in the same paragraph" do
-        expect(rendered_content).to have_selector("p.govuk-body", text: component.description)
+        expect(rendered_content).to have_css("p.govuk-body", text: component.description)
       end
     end
 
@@ -156,8 +156,8 @@ RSpec.describe Admin::AppropriateBodies::DescriptionComponent, type: :component 
       end
 
       it "omits the name, which would repeat the hub name already in the heading" do
-        expect(rendered_content).not_to have_selector("strong")
-        expect(rendered_content).to have_selector("p.govuk-body", text: component.description)
+        expect(rendered_content).to have_no_css("strong")
+        expect(rendered_content).to have_css("p.govuk-body", text: component.description)
       end
     end
   end

@@ -25,8 +25,8 @@ RSpec.describe Admin::TeachingSchoolHubs::SummaryCardComponent, type: :component
       end
 
       it "describes the body, naming its provisioning school" do
-        expect(rendered_content).to have_selector("p.govuk-body",
-                                                  text: "AB duties performed by #{provisioning_school_1.name}")
+        expect(rendered_content).to have_css("p.govuk-body",
+                                             text: "AB duties performed by #{provisioning_school_1.name}")
       end
     end
 
@@ -41,7 +41,7 @@ RSpec.describe Admin::TeachingSchoolHubs::SummaryCardComponent, type: :component
       end
 
       it "renders the period name" do
-        expect(rendered_content).to have_selector("strong", text: "Acme TSH Studio:")
+        expect(rendered_content).to have_css("strong", text: "Acme TSH Studio:")
       end
 
       it "links the hub name to the hub page" do
@@ -69,8 +69,8 @@ RSpec.describe Admin::TeachingSchoolHubs::SummaryCardComponent, type: :component
       end
 
       it "names each period, so concurrent bodies can be told apart" do
-        expect(rendered_content).to have_selector("strong", text: "Acme TSH East:")
-        expect(rendered_content).to have_selector("strong", text: "Acme TSH West:")
+        expect(rendered_content).to have_css("strong", text: "Acme TSH East:")
+        expect(rendered_content).to have_css("strong", text: "Acme TSH West:")
       end
 
       it "names the hub once, not once per period" do
@@ -102,8 +102,8 @@ RSpec.describe Admin::TeachingSchoolHubs::SummaryCardComponent, type: :component
       end
 
       it "emboldens only the period that has a name of its own" do
-        expect(rendered_content).to have_selector("strong", text: "Acme TSH East:")
-        expect(rendered_content).not_to have_selector("strong", text: "#{teaching_school_hub.name}:")
+        expect(rendered_content).to have_css("strong", text: "Acme TSH East:")
+        expect(rendered_content).to have_no_css("strong", text: "#{teaching_school_hub.name}:")
       end
     end
 
