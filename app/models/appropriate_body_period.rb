@@ -94,8 +94,6 @@ class AppropriateBodyPeriod < ApplicationRecord
   # Teaching School Hub or Teaching School
   with_options if: :provisioning_school do
     validate :no_overlapping_periods_for_same_provisioning_school
-    validate :started_on_or_after_provisioning_school_opened
-    validate :finished_on_or_before_provisioning_school_closed
   end
 
   # National Body
@@ -114,6 +112,12 @@ class AppropriateBodyPeriod < ApplicationRecord
     validates :local_authority, absence: true
     validate :started_on_or_after_teaching_school_hub_body_introduced
     validate :name_is_required_if_the_hub_operates_multiple_appropriate_bodies
+
+    # Only TSH AB periods are validated against school dates because TS ABs are acknowledged
+    # to be of limited value to the service and not worth correcting historical data for.
+    #
+    validate :started_on_or_after_provisioning_school_opened
+    validate :finished_on_or_before_provisioning_school_closed
   end
 
   # Teaching School
@@ -266,7 +270,7 @@ private
   end
 
   def started_on_or_after_provisioning_school_opened
-    return if started_on.blank?
+    return if started_on.blank? || provisioning_school.blank?
 
     opened_on = provisioning_school.opened_on
     return if opened_on.blank?
@@ -276,7 +280,7 @@ private
   end
 
   def finished_on_or_before_provisioning_school_closed
-    return if unfinished?
+    return if unfinished? || provisioning_school.blank?
 
     closed_on = provisioning_school.closed_on
     return if closed_on.blank?

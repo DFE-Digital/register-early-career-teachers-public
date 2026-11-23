@@ -145,6 +145,7 @@ RSpec.describe TeachingSchoolHub do
 
     it "does not include codes awarded to another hub body" do
       other_hub = FactoryBot.create(:teaching_school_hub)
+
       other_hub_body = FactoryBot.create(:appropriate_body_period, :teaching_school_hub,
                                          teaching_school_hub: other_hub,
                                          provisioning_school: provisioning_school_3,
@@ -164,6 +165,14 @@ RSpec.describe TeachingSchoolHub do
 
       it "excludes its code" do
         expect(region_codes).to contain_exactly("R2")
+      end
+    end
+
+    context "when a school appears in multiple bodies" do
+      it "only includes the region code once" do
+        FactoryBot.create(:region_award, appropriate_body_period: first_period, region: region_south, school: provisioning_school_2)
+
+        expect(region_codes).to contain_exactly("R1", "R2")
       end
     end
   end

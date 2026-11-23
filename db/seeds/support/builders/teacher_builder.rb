@@ -94,7 +94,7 @@ module TeacherHistories
       else
         print_seed_info("Error messages: #{ect_at_school_period.errors.messages}", error: true, indent: indent(2))
 
-        fail
+        raise ActiveRecord::RecordInvalid, ect_at_school_period
       end
 
       if block_given?

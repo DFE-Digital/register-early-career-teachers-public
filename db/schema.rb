@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_06_123206) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_17_163000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gist"
   enable_extension "citext"
@@ -688,7 +688,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_06_123206) do
     t.datetime "updated_at", null: false
     t.index ["appropriate_body_period_id", "region_id"], name: "index_region_awards_on_appropriate_body_period_and_region", unique: true, where: "(deactivated_at IS NULL)"
     t.index ["appropriate_body_period_id"], name: "index_region_awards_on_appropriate_body_period_id"
-    t.index ["region_id"], name: "index_region_awards_on_active_region", unique: true, where: "(deactivated_at IS NULL)"
     t.index ["region_id"], name: "index_region_awards_on_region_id"
     t.index ["school_id"], name: "index_region_awards_on_school_id"
   end

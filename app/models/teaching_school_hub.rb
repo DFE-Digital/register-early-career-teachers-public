@@ -37,9 +37,7 @@ class TeachingSchoolHub < ApplicationRecord
 
   # @return [Array<String>]
   def region_codes
-    appropriate_body_periods.flat_map do |period|
-      period.active_region_awards.map { |award| award.region.code }
-    end
+    appropriate_body_periods.flat_map { it.active_region_awards.map { |award| award.region.code } }.uniq
   end
 
 private
