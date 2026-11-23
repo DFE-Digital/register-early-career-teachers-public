@@ -15,8 +15,8 @@ umber_teaching_school_hub = AppropriateBodyPeriod.find_by!(name: "Umber Teaching
 
 def teacher(...) = TeacherHistories::TeacherBuilder.teacher(...)
 
-Sandbox::ScenarioBuilder.sandbox_scenarios do
-  sandbox_scenario :new_ect_provider_led_claim, id: 1 do |trn, name, _index|
+Induction::ScenarioBuilder.define do
+  scenario :new_ect_provider_led_claim, id: 1 do |trn, name, _index|
     teacher(trn, name) do
       description("New ECT for provider-led, ready to claim")
       ect_at_school_period(abbey_grove_school, "2026-09-01", school_reported_appropriate_body: golden_leaf_teaching_school_hub) do
@@ -25,7 +25,7 @@ Sandbox::ScenarioBuilder.sandbox_scenarios do
     end
   end
 
-  sandbox_scenario :new_ect_school_led_claim, id: 2 do |trn, name, _index|
+  scenario :new_ect_school_led_claim, id: 2 do |trn, name, _index|
     teacher(trn, name) do
       description("New ECT for school-led, ready to claim")
       ect_at_school_period(ackley_bridge, "2026-09-01", school_reported_appropriate_body: golden_leaf_teaching_school_hub) do
@@ -34,7 +34,7 @@ Sandbox::ScenarioBuilder.sandbox_scenarios do
     end
   end
 
-  sandbox_scenario :released_ect_to_claim, id: 3 do |trn, name, _index|
+  scenario :released_ect_to_claim, id: 3 do |trn, name, _index|
     teacher(trn, name) do
       description("Previously released ECT, ready to claim")
       ect_at_school_period(ackley_bridge, "2025-09-01") do
@@ -44,7 +44,7 @@ Sandbox::ScenarioBuilder.sandbox_scenarios do
     end
   end
 
-  sandbox_scenario :ongoing_provider_led_ect_to_pass, id: 4 do |trn, name, _index|
+  scenario :ongoing_provider_led_ect_to_pass, id: 4 do |trn, name, _index|
     teacher(trn, name) do
       description("ECT with ongoing provider-led training, ready to pass")
       ect_at_school_period(abbey_grove_school, "2024-09-01") do
@@ -57,7 +57,7 @@ Sandbox::ScenarioBuilder.sandbox_scenarios do
     end
   end
 
-  sandbox_scenario :ongoing_school_led_ect_to_pass, id: 5 do |trn, name, _index|
+  scenario :ongoing_school_led_ect_to_pass, id: 5 do |trn, name, _index|
     teacher(trn, name) do
       description("ECT with ongoing school-led training, ready to pass")
       ect_at_school_period(brookfield_school, "2024-09-01") do
@@ -67,7 +67,7 @@ Sandbox::ScenarioBuilder.sandbox_scenarios do
     end
   end
 
-  sandbox_scenario :ongoing_provider_led_ect_to_release, id: 6 do |trn, name, _index|
+  scenario :ongoing_provider_led_ect_to_release, id: 6 do |trn, name, _index|
     teacher(trn, name) do
       description("ECT with ongoing induction, ready to release")
       ect_at_school_period(abbey_grove_school, "2025-09-01") do
@@ -80,7 +80,7 @@ Sandbox::ScenarioBuilder.sandbox_scenarios do
     end
   end
 
-  sandbox_scenario :ongoing_provider_led_ect_with_another_ab, id: 7 do |trn, name, _index|
+  scenario :ongoing_provider_led_ect_with_another_ab, id: 7 do |trn, name, _index|
     teacher(trn, name) do
       description("ECT with ongoing induction with another appropriate body, cannot be claimed")
       ect_at_school_period(abbey_grove_school, "2025-09-01") do
@@ -93,7 +93,7 @@ Sandbox::ScenarioBuilder.sandbox_scenarios do
     end
   end
 
-  sandbox_scenario :ect_who_has_passed_induction, id: 8 do |trn, name, _index|
+  scenario :ect_who_has_passed_induction, id: 8 do |trn, name, _index|
     teacher(trn, name, trs_induction_status: "Passed") do
       # this might also need to be reflected in TRS query
       description("ECT who has passed induction, cannot be claimed")
@@ -112,7 +112,7 @@ Sandbox::ScenarioBuilder.sandbox_scenarios do
     end
   end
 
-  sandbox_scenario :ect_who_has_failed_induction, id: 9 do |trn, name, _index|
+  scenario :ect_who_has_failed_induction, id: 9 do |trn, name, _index|
     teacher(trn, name, trs_induction_status: "Failed") do
       # this might also need to be reflected in TRS query
       description("ECT who has failed induction, cannot be claimed")
@@ -129,7 +129,7 @@ Sandbox::ScenarioBuilder.sandbox_scenarios do
     end
   end
 
-  sandbox_scenario :ect_without_qts, id: 10 do |trn, name, _index|
+  scenario :ect_without_qts, id: 10 do |trn, name, _index|
     teacher(trn, name) do
       # no QTS will be checked from TRS query
       description("Teacher without QTS, cannot begin induction")
@@ -139,7 +139,7 @@ Sandbox::ScenarioBuilder.sandbox_scenarios do
     end
   end
 
-  sandbox_scenario :ect_exempt_from_induction, id: 11 do |trn, name, _index|
+  scenario :ect_exempt_from_induction, id: 11 do |trn, name, _index|
     teacher(trn, name, trs_induction_status: "Exempt") do
       # exempt will be checked from TRS query
       description("Teacher exempt from induction, cannot begin induction")
@@ -149,7 +149,7 @@ Sandbox::ScenarioBuilder.sandbox_scenarios do
     end
   end
 
-  sandbox_scenario :ect_prohibited_from_teaching, id: 12 do |trn, name, _index|
+  scenario :ect_prohibited_from_teaching, id: 12 do |trn, name, _index|
     teacher(trn, name) do
       # prohibited checked from TRS query
       description("Teacher prohibited from teaching, cannot begin induction")
@@ -159,7 +159,7 @@ Sandbox::ScenarioBuilder.sandbox_scenarios do
     end
   end
 
-  sandbox_scenario :ect_ongoing_to_be_released_and_claimed, id: 13 do |trn, name, _index|
+  scenario :ect_ongoing_to_be_released_and_claimed, id: 13 do |trn, name, _index|
     teacher(trn, name) do
       description("ECT ongoing induction, to be released and claimed")
       ect_at_school_period(mallory_towers, "2025-09-01", school_reported_appropriate_body: golden_leaf_teaching_school_hub) do
@@ -169,7 +169,7 @@ Sandbox::ScenarioBuilder.sandbox_scenarios do
     end
   end
 
-  sandbox_client "ECT Manager", trn_prefix: "90" do
+  client "ECT Manager", trn_prefix: "90" do
     oauth_client grant_type: :authorization_code
 
     seed :new_ect_provider_led_claim, count: 1
@@ -187,7 +187,7 @@ Sandbox::ScenarioBuilder.sandbox_scenarios do
     seed :ect_ongoing_to_be_released_and_claimed, count: 1
   end
 
-  sandbox_client "Mosaic", trn_prefix: "91" do
+  client "Mosaic", trn_prefix: "91" do
     oauth_client grant_type: :authorization_code
 
     seed :new_ect_provider_led_claim, count: 1

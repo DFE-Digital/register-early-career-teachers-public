@@ -6,6 +6,7 @@ RSpec.describe APISeedData::Helpers::TRNGenerator, type: :helper do
       end
     end
 
+    # TRNs >= 9_000_000 reserved for induction API testing
     it "only draws from TRNs up to 8,999,999" do
       expect(ALL_TRNS.max).to eq(8_999_999)
     end

@@ -1,27 +1,27 @@
 # Example DSL for induction API sandbox seeding
-# Block params for sandbox_scenario:
+# Block params for scenario:
 # trn - calculated TRN based on client, scenario and index
 # name - calculated teacher name based on client, scenario and index
 # index - index of this iteration
 #
-# Sandbox::ScenarioBuilder.sandbox_scenarios do
-#   sandbox_scenario :new_ect_provider_led, id: 1 do |trn, name, index|
+# Induction::ScenarioBuilder.define do
+#   scenario :new_ect_provider_led, id: 1 do |trn, name, index|
 #     # build seed stuff using TeacherHistories DSL
 #     # ...
 #   end
 #
-#   sandbox_scenario :new_ect_school_led, id: 2 do |trn, name, index|
+#   scenario :new_ect_school_led, id: 2 do |trn, name, index|
 #     # build seed stuff using TeacherHistories DSL
 #     # ...
 #   end
 #
-#   sandbox_client "ECT Manager", trn_prefix: "90" do
+#   client "ECT Manager", trn_prefix: "90" do
 #     seed :new_ect_provider_led, count: 5
 #     seed :new_ect_school_led, count: 10
 #   end
 # end
 
-module Sandbox
+module Induction
   class ScenarioBuilder
     attr_reader :scenarios, :clients
 
@@ -30,19 +30,19 @@ module Sandbox
       @clients = []
     end
 
-    def self.sandbox_scenarios(&block)
+    def self.define(&block)
       builder = new
       builder.instance_eval(&block)
       builder
     end
 
-    def sandbox_scenario(label, id:, &block)
-      raise "Duplicate sandbox scenario! [#{label}] id: #{id}" if @scenarios.any? { |k, v| label == k || v[:id] == id }
+    def scenario(label, id:, &block)
+      raise "Duplicate induction scenario! [#{label}] id: #{id}" if @scenarios.any? { |k, v| label == k || v[:id] == id }
 
       @scenarios[label] = { id:, block: }
     end
 
-    def sandbox_client(name, trn_prefix:, &block)
+    def client(name, trn_prefix:, &block)
       builder = ClientBuilder.new(name, trn_prefix:, scenarios:)
       builder.instance_eval(&block) if block_given?
       @clients << builder.client
@@ -61,7 +61,7 @@ module Sandbox
 
     def oauth_client(grant_type: :authorization_code)
       # this will need an authorization going forward I think (or callback URIs if not)
-      print_seed_info("Seeding sandbox client '#{@name}'", colour: :green)
+      print_seed_info("Seeding induction client '#{@name}'", colour: :green)
       @client = FactoryBot.create(:api_oauth_client, name: @name, grant_types: [grant_type])
     end
 
@@ -85,7 +85,7 @@ module Sandbox
       @scenario.fetch(:id)
       block = @scenario.fetch(:block)
 
-      print_seed_info("Seeding sandbox scenario '#{@label}' *#{count}* #{'time'.pluralize(count)} for #{@client_name}", colour: :yellow)
+      print_seed_info("Seeding induction scenario '#{@label}' *#{count}* #{'time'.pluralize(count)} for #{@client_name}", colour: :yellow)
 
       count.times do |idx|
         instance_exec(make_trn(idx), make_name(idx), idx, &block)
