@@ -45,7 +45,7 @@ module Induction
     def appropriate_body_name
       return unless last_induction_period
 
-      last_induction_period.appropriate_body_period.name
+      last_induction_period.appropriate_body_period.display_name
     end
 
     def with_appropriate_body?(appropriate_body_period)

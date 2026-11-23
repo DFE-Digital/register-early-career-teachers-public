@@ -102,24 +102,25 @@ module Seeds
     # The reuse scenarios are state schools, which may only choose a teaching school hub.
     def matrix_appropriate_body_period
       @matrix_appropriate_body_period ||= begin
-        abp = AppropriateBodyPeriod.find_or_initialize_by(name: PREFERRED_APPROPRIATE_BODY_NAME)
-        # A teaching school hub period cannot start before 1 September 2021.
-        abp.started_on ||= TeachingSchoolHub::ACTED_AS_APPROPRIATE_BODY_DATES[:introduced_on]
-        ensure_matrix_links!(abp)
+        hub = TeachingSchoolHub.find_or_create_by!(name: PREFERRED_APPROPRIATE_BODY_NAME)
+
+        abp = hub.appropriate_body_periods.find_by(name: PREFERRED_APPROPRIATE_BODY_NAME) ||
+          hub.appropriate_body_periods.first_or_initialize(
+            body_type: :teaching_school_hub,
+            name: nil,
+            started_on: TeachingSchoolHub::ACTED_AS_APPROPRIATE_BODY_DATES[:introduced_on]
+          )
+
+        abp.provisioning_school ||= matrix_provisioning_school
         abp.save!
 
         abp
       end
     end
 
-    # Hub type ABPs link to both a School and a TeachingSchoolHub
-    def ensure_matrix_links!(abp)
-      abp.teaching_school_hub ||= TeachingSchoolHub.find_or_create_by!(name: PREFERRED_APPROPRIATE_BODY_NAME)
-
-      return if abp.provisioning_school.present?
-
+    def matrix_provisioning_school
       ensure_gias_school!(urn: MATRIX_PROVISIONING_SCHOOL_URN, name: PREFERRED_APPROPRIATE_BODY_NAME)
-      abp.provisioning_school = School.find_or_create_by!(urn: MATRIX_PROVISIONING_SCHOOL_URN)
+      School.find_or_create_by!(urn: MATRIX_PROVISIONING_SCHOOL_URN)
     end
 
     def set_last_chosen_appropriate_body!(school, chosen:)

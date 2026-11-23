@@ -19,7 +19,7 @@ module Teachers
   private
 
     def finished_on_legend
-      return "When did their induction end with #{appropriate_body_period.name}?" if appropriate_body_mode?
+      return "When did their induction end with #{appropriate_body_period.display_name}?" if appropriate_body_mode?
 
       "When did they complete their induction?"
     end

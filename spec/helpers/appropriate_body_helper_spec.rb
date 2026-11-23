@@ -24,6 +24,43 @@ RSpec.describe AppropriateBodyHelper, type: :helper do
     end
 
     it { is_expected.to contain_exactly(teaching_school_hub_appropriate_body_period) }
+
+    context "when a hub period has no name of its own" do
+      let!(:teaching_school_hub_appropriate_body_period) do
+        FactoryBot.create(
+          :appropriate_body_period,
+          :teaching_school_hub,
+          name: nil,
+          teaching_school_hub: FactoryBot.create(:teaching_school_hub, name: "Bright Futures Teaching School Hub")
+        )
+      end
+
+      it "labels the option with the parent hub name" do
+        expect(subject.map(&:display_name)).to contain_exactly("Bright Futures Teaching School Hub")
+      end
+    end
+  end
+
+  describe "#appropriate_body_status" do
+    subject(:status) { appropriate_body_status(appropriate_body) }
+
+    let(:appropriate_body) do
+      FactoryBot.build(:appropriate_body_period, finished_on:)
+    end
+
+    context "when the period has no end date" do
+      let(:finished_on) { nil }
+
+      it { is_expected.to include("Active") }
+      it { is_expected.to include("govuk-tag--green") }
+    end
+
+    context "when the period has finished" do
+      let(:finished_on) { Date.new(2024, 8, 31) }
+
+      it { is_expected.to include("Inactive") }
+      it { is_expected.to include("govuk-tag--grey") }
+    end
   end
 
   describe "#induction_programme_choices" do

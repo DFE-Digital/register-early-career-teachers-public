@@ -116,8 +116,8 @@ class School < ApplicationRecord
            to: :gias_school,
            allow_nil: true
 
-  # last_chosen_appropriate_body_name
-  delegate :name, to: :last_chosen_appropriate_body, prefix: true, allow_nil: true
+  # @return [String] AppropriateBodyPeriod#name may be nil
+  def last_chosen_appropriate_body_name = last_chosen_appropriate_body&.display_name
 
   def last_chosen_appropriate_body_type = last_chosen_appropriate_body&.body_type
 
@@ -171,12 +171,15 @@ class School < ApplicationRecord
     ).uniq
   end
 
-  def teaching_school_hub
-    dfe_sign_in_organisation&.appropriate_body_period
-  end
+  # A school reaches its appropriate body period through its DfE Sign-in organisation, so a period
+  # imported from legacy DQT data, having no DSI record, cannot be reached here.
+  #
+  # OPTIMIZE: a school may link to multiple, but not concurrent, periods.
+  # @return [AppropriateBodyPeriod]
+  def teaching_school_hub = dfe_sign_in_organisation&.appropriate_body_period
 
-  # teaching_school_hub_name
-  delegate :name, to: :teaching_school_hub, prefix: true, allow_nil: true
+  # @return [String] AppropriateBodyPeriod#name may be nil and delegates to TeachingSchoolHub#name
+  def teaching_school_hub_name = teaching_school_hub&.display_name
 
   def induction_tutor_details_cannot_be_confirmed_if_blank
     return if induction_tutor_last_nominated_in.blank?

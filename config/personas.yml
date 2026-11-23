@@ -2,7 +2,7 @@
 - name: Velma Dinkley
   email: velma.dinkley@education.gov.uk
   appropriate_body_name: Golden Leaf Teaching School Hub
-  school_name: Null
+  school_name: Golden Leaf LS
   dfe_staff: No
   image: personas/velma.png
   alt: Velma from Scooby Doo wearing an orange turtleneck jumper.
@@ -11,10 +11,19 @@
 - name: Fred Jones
   email: freddy.jones@education.gov.uk
   appropriate_body_name: Umber Teaching School Hub
-  school_name: Null
+  school_name: Umber LS
   dfe_staff: No
   image: personas/fred.png
   alt: Fred from Scooby Doo. He is shrugging and wearing a white top with a red cravat.
+  type: Appropriate body user
+
+- name: Linda Belcher
+  email: linda.belcher@education.gov.uk
+  appropriate_body_name: Independent Schools Teacher Induction Panel (ISTIP)
+  school_name: Null
+  dfe_staff: No
+  image: personas/linda.png
+  alt: Linda Belcher from Bob's Burgers wearing a red shirt and glasses.
   type: Appropriate body user
 
 - name: Daphne Blake

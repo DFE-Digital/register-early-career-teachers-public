@@ -1,5 +1,4 @@
 class AppropriateBodyPeriod < ApplicationRecord
-  # Enums
   enum :body_type, {
     local_authority: "local_authority",
     national: "national",
@@ -8,6 +7,18 @@ class AppropriateBodyPeriod < ApplicationRecord
   }, validate: {
     message: "Must be local authority, national, teaching school hub or teaching school"
   }
+
+  def self.body_type_associations
+    [:teaching_school_hub, :national_body, :local_authority, { provisioning_school: :gias_school }]
+  end
+
+  def self.current_or_latest_by_name(names)
+    with_display_name_in(names)
+      .group_by(&:display_name)
+      .transform_values do |periods|
+        periods.find { it.range.cover?(Date.current) } || periods.max_by(&:started_on)
+      end
+  end
 
   include Interval
 
@@ -40,12 +51,45 @@ class AppropriateBodyPeriod < ApplicationRecord
   # Scopes
   scope :active, -> { where.not(dfe_sign_in_organisation_id: nil) }
   scope :inactive, -> { where(dfe_sign_in_organisation_id: nil) }
+  scope :overlapping_in_the_same_teaching_school_hub, ->(period) {
+    teaching_school_hub
+      .where(teaching_school_hub_id: period.teaching_school_hub_id)
+      .where.not(id: period.id)
+      .overlapping_with(period)
+  }
+
+  DISPLAY_NAME_SQL = <<~SQL.squish.freeze
+    COALESCE(appropriate_body_periods.name,
+             teaching_school_hubs.name,
+             national_bodies.name,
+             local_authorities.name,
+             gias_schools.name)
+  SQL
+
+  scope :with_display_names, -> { eager_load(*body_type_associations) }
+  scope :with_display_name, ->(name) {
+    with_display_names.where(Arel.sql("#{DISPLAY_NAME_SQL} = :name"), name:)
+  }
+  scope :with_display_name_in, ->(names) {
+    with_display_names.where(Arel.sql("#{DISPLAY_NAME_SQL} IN (?)"), names)
+  }
+  scope :ordered_by_display_name, -> {
+    with_display_names.order(Arel.sql(DISPLAY_NAME_SQL), :id)
+  }
+  scope :matching_display_name, ->(term) {
+    with_display_names
+      .where(Arel.sql("#{DISPLAY_NAME_SQL} ILIKE :term"), term: "%#{sanitize_sql_like(term)}%")
+  }
 
   # Normalizations
-  normalizes :name, with: -> { it.squish }
+  normalizes :name, with: -> { it.squish.presence }
 
   # Validations
   validates :started_on, presence: true
+  validate :name_is_unique_among_overlapping_periods, unless: :teaching_school?
+
+  validate :name_is_not_a_teaching_school_hub_name,
+           if: -> { Rails.application.config.nullable_appropriate_body_period_names }
 
   # Teaching School Hub or Teaching School
   with_options if: :provisioning_school do
@@ -69,6 +113,7 @@ class AppropriateBodyPeriod < ApplicationRecord
     validates :national_body, absence: true
     validates :local_authority, absence: true
     validate :started_on_or_after_teaching_school_hub_body_introduced
+    validate :name_is_required_if_the_hub_operates_multiple_appropriate_bodies
   end
 
   # Teaching School
@@ -95,12 +140,56 @@ class AppropriateBodyPeriod < ApplicationRecord
     validate :finished_on_or_before_local_authority_body_retired
   end
 
-  # Predicates
+  # @return [String] AppropriateBodyPeriod#name is an override to the associated body
+  def display_name
+    name.presence ||
+      teaching_school_hub&.name ||
+      national_body&.name ||
+      local_authority&.name ||
+      provisioning_school&.name
+  end
+
+  # @return [Boolean]
   def active? = dfe_sign_in_organisation_id.present?
+
+  # @return [Array<Region::Award>]
+  def active_region_awards = region_awards.select(&:active?)
 
 private
 
-  # No two periods for one provisioning school may overlap.
+  def name_is_not_a_teaching_school_hub_name
+    return if name.blank?
+    return unless TeachingSchoolHub.exists?(name:)
+
+    errors.add(:name, "is used by a teaching school hub.")
+  end
+
+  def name_is_unique_among_overlapping_periods
+    return if display_name.blank? || started_on.blank?
+    return if invalid_date_order?
+
+    overlapping_periods = self.class.overlapping_with(self)
+    overlapping_periods = overlapping_periods.excluding(self) if persisted?
+
+    return unless overlapping_periods.with_display_name(display_name).exists?
+
+    errors.add(:name, "is already in use.")
+  end
+
+  def name_is_required_if_the_hub_operates_multiple_appropriate_bodies
+    return if teaching_school_hub_id.blank? || started_on.blank?
+    return if invalid_date_order?
+
+    overlapping_periods = self.class.overlapping_in_the_same_teaching_school_hub(self)
+    return unless overlapping_periods.exists?
+
+    if name.blank?
+      errors.add(:name, "Another active appropriate body in the teaching school hub exists, choose a name.")
+    elsif overlapping_periods.where(name: nil).exists?
+      errors.add(:base, "Give the overlapping appropriate body a name before adding another.")
+    end
+  end
+
   def siblings
     return self.class.none if school_id.nil?
 

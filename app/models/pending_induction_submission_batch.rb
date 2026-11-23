@@ -33,6 +33,9 @@ class PendingInductionSubmissionBatch < ApplicationRecord
 
   # Scopes
   scope :for_appropriate_body_period, ->(appropriate_body_period) { where(appropriate_body_period:) }
+  scope :with_appropriate_body_display_names, -> {
+    includes(appropriate_body_period: AppropriateBodyPeriod.body_type_associations).strict_loading
+  }
 
   # Validations
   validates :appropriate_body_period, presence: true

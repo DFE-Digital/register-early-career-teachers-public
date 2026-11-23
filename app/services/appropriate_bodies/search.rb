@@ -7,13 +7,8 @@ module AppropriateBodies
     end
 
     def self.istip
-      new(::NationalBody::ISTIP).search.first ||
+      AppropriateBodyPeriod.national.joins(:national_body).find_by(national_bodies: { name: ::NationalBody::ISTIP }) ||
         raise(ActiveRecord::RecordNotFound, "ISTIP appropriate body period not found!")
-    end
-
-    def self.esp
-      new(::NationalBody::ESP).search.first ||
-        raise(ActiveRecord::RecordNotFound, "ESP appropriate body period not found!")
     end
 
     def find_by_dfe_sign_in_organisation_id(dfe_sign_in_organisation_id)
@@ -21,13 +16,9 @@ module AppropriateBodies
     end
 
     def search
-      query = if @query_string.blank?
-                @scope.all
-              else
-                @scope.where("name ILIKE ?", "%#{@query_string}%")
-              end
+      query = @query_string.present? ? @scope.matching_display_name(@query_string) : @scope.with_display_names
 
-      query.order(name: "asc")
+      query.strict_loading.ordered_by_display_name
     end
   end
 end

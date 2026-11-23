@@ -50,8 +50,7 @@ module Sessions
     end
 
     def appropriate_bodies
-      @appropriate_bodies ||= AppropriateBodyPeriod.where(name: appropriate_body_names)
-                                                   .index_by(&:name)
+      @appropriate_bodies ||= AppropriateBodyPeriod.current_or_latest_by_name(appropriate_body_names)
     end
 
     def appropriate_body_names
