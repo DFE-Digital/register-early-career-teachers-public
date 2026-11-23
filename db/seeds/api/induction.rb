@@ -104,6 +104,8 @@ Induction::ScenarioBuilder.define do
   end
 
   scenario :ect_who_has_passed_induction, id: 8 do |trn:, name:, **|
+    trs_responds_with induction_status: :passed
+
     teacher(trn, name, trs_induction_status: "Passed") do
       # this might also need to be reflected in TRS query
       description("ECT who has passed induction, cannot be claimed")
@@ -123,6 +125,8 @@ Induction::ScenarioBuilder.define do
   end
 
   scenario :ect_who_has_failed_induction, id: 9 do |trn:, name:, **|
+    trs_responds_with induction_status: :failed
+
     teacher(trn, name, trs_induction_status: "Failed") do
       # this might also need to be reflected in TRS query
       description("ECT who has failed induction, cannot be claimed")
@@ -140,6 +144,8 @@ Induction::ScenarioBuilder.define do
   end
 
   scenario :ect_without_qts, id: 10 do |trn:, name:, **|
+    trs_responds_with no_qts: true
+
     teacher(trn, name) do
       # no QTS will be checked from TRS query
       description("Teacher without QTS, cannot begin induction")
@@ -150,6 +156,8 @@ Induction::ScenarioBuilder.define do
   end
 
   scenario :ect_exempt_from_induction, id: 11 do |trn:, name:, **|
+    trs_responds_with induction_status: :exempt
+
     teacher(trn, name, trs_induction_status: "Exempt") do
       # exempt will be checked from TRS query
       description("Teacher exempt from induction, cannot begin induction")
@@ -160,6 +168,8 @@ Induction::ScenarioBuilder.define do
   end
 
   scenario :ect_prohibited_from_teaching, id: 12 do |trn:, name:, **|
+    trs_responds_with prohibited_from_teaching: true
+
     teacher(trn, name) do
       # prohibited checked from TRS query
       description("Teacher prohibited from teaching, cannot begin induction")
