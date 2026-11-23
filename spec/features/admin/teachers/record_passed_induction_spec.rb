@@ -73,7 +73,7 @@ private
   end
 
   def then_there_is_an_error_message
-    expect(page.locator(".govuk-error-summary")).to have_text("There is a problem")
+    expect(page.locator(".govuk-error-summary")).to contain_text("There is a problem")
   end
 
   def then_i_should_be_on_the_success_page
@@ -109,7 +109,7 @@ private
     description = page
       .locator(".app-timeline__item", hasText: timeline_milestone)
       .locator(".app-timeline__description")
-    expect(description).to have_text(reason)
+    expect(description).to contain_text(reason)
   end
 
   def then_i_can_see_the_zendesk_link(url)

@@ -55,7 +55,7 @@ private
   end
 
   def then_i_am_asked_to_sign_in_as_an_appropriate_body_user
-    expect(page.locator("body")).to have_text("You must be signed in as an appropriate body user to start an authorization request.")
+    expect(page.locator("body")).to contain_text("You must be signed in as an appropriate body user to start an authorization request.")
   end
 
   def then_my_client_is_preselected
@@ -67,7 +67,7 @@ private
   end
 
   def then_i_am_asked_to_authorise_the_client
-    expect(page.locator("body")).to have_text(
+    expect(page.locator("body")).to contain_text(
       "Test Client has asked for access to early career teacher (ECT) data for Golden Leaf Teaching School Hub."
     )
   end
@@ -78,14 +78,14 @@ private
 
   def then_i_am_redirected_back_with_a_code
     expect(page).to have_path("/integration-support/api-client-connection")
-    expect(page.locator("body")).to have_text("Successfully redirected")
-    expect(page.locator("body")).to have_text("code")
-    expect(page.locator("body")).to have_text("state")
+    expect(page.locator("body")).to contain_text("Successfully redirected")
+    expect(page.locator("body")).to contain_text("code")
+    expect(page.locator("body")).to contain_text("state")
   end
 
   def then_i_am_redirected_back_with_an_error
-    expect(page.locator("body")).to have_text("Redirected with errors")
-    expect(page.locator("body")).to have_text("access_denied")
+    expect(page.locator("body")).to contain_text("Redirected with errors")
+    expect(page.locator("body")).to contain_text("access_denied")
   end
 
   def when_i_exchange_the_code_for_an_access_token
@@ -93,7 +93,7 @@ private
   end
 
   def then_i_receive_an_access_token
-    expect(page.locator("pre")).to have_text("access_token")
+    expect(page.locator("pre")).to contain_text("access_token")
   end
 
   def when_i_revoke_the_access_token
@@ -102,7 +102,7 @@ private
   end
 
   def then_the_access_token_is_revoked
-    expect(page.locator("body")).to have_text("Revoke access token")
-    expect(page.locator("body")).to have_text("Empty response body")
+    expect(page.locator("body")).to contain_text("Revoke access token")
+    expect(page.locator("body")).to contain_text("Empty response body")
   end
 end

@@ -138,7 +138,7 @@ private
 
   def then_i_see_a_success_message
     expect(page.locator(".govuk-notification-banner"))
-      .to have_text("Induction period created successfully")
+      .to contain_text("Induction period created successfully")
   end
 
   def and_there_is_an_induction_summary

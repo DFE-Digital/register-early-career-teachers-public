@@ -76,8 +76,8 @@ RSpec.describe "List adjustments for statement" do
 
     total = panel.locator("table + .govuk-grid-row .govuk-grid-column-one-half").last
 
-    expect(total).to have_text("Total")
-    expect(total).to have_text("£450.00")
+    expect(total).to contain_text("Total")
+    expect(total).to contain_text("£450.00")
   end
 
   def and_i_should_not_see_add_adjustment_link

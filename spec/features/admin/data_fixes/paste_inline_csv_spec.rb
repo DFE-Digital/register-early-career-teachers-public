@@ -91,7 +91,7 @@ private
 
   def then_i_see_an_error(error_message)
     error_summary = page.locator(".govuk-error-summary")
-    expect(error_summary).to have_text(error_message)
+    expect(error_summary).to contain_text(error_message)
   end
 
   def then_i_am_taken_to_the_preview_step

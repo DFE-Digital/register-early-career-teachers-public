@@ -125,7 +125,7 @@ RSpec.describe "Registering a mentor", :js do
   end
 
   def then_i_see_a_validation_error_message
-    expect(page.locator(".govuk-error-summary")).to have_text("There is a problem")
+    expect(page.locator(".govuk-error-summary")).to contain_text("There is a problem")
     expect(page.locator(".govuk-error-summary a").and(page.get_by_text("Start date must be before 1 October 2025"))).to be_visible
   end
 

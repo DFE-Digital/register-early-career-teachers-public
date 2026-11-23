@@ -155,7 +155,7 @@ describe "School user can change ECT's appropriate body" do
 
   def then_i_see_an_error
     error_summary = page.locator(".govuk-error-summary")
-    expect(error_summary).to have_text(
+    expect(error_summary).to contain_text(
       "Select the appropriate body which will be supporting the ECT's induction"
     )
   end
@@ -199,7 +199,7 @@ describe "School user can change ECT's appropriate body" do
     ab_locator = page.locator(".govuk-summary-list__key", hasText: "Appropriate body")
     row = page.locator(".govuk-summary-list__row", has: ab_locator)
 
-    expect(row.locator(".govuk-summary-list__value")).to have_text("New Appropriate Body")
+    expect(row.locator(".govuk-summary-list__value")).to contain_text("New Appropriate Body")
   end
 
   def and_i_cannot_select_a_national_appropriate_body

@@ -49,7 +49,7 @@ private
   def and_i_should_be_impersonating_the_appropriate_body
     body = page.locator("body")
 
-    expect(body).to have_text("You are signed in as #{@appropriate_body.name}")
+    expect(body).to contain_text("You are signed in as #{@appropriate_body.name}")
   end
 
   def and_i_should_see_the_same_options_an_appropriate_body_sees

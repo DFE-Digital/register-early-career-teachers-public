@@ -203,13 +203,13 @@ private
     row = page.locator(".govuk-summary-list__row", hasText: "Lead provider").first
 
     expect(row)
-    .to have_text("Confirmed by Other Lead Provider")
+    .to contain_text("Confirmed by Other Lead Provider")
   end
 
   def then_i_see_there_is_a_new_expression_of_interest
     row = page.locator(".govuk-summary-list__row", hasText: "Lead provider").first
 
     expect(row)
-    .to have_text("Awaiting confirmation by Other Lead Provider")
+    .to contain_text("Awaiting confirmation by Other Lead Provider")
   end
 end
