@@ -88,6 +88,42 @@ RSpec.describe API::AppropriateBodies::Induction do
           .to raise_error(described_class::NotEligible, "The teacher is prohibited from teaching")
       end
     end
+
+    context "when the teacher is deactivated in TRS" do
+      include_context "test TRS API returns a deactivated teacher"
+
+      it "raises not found" do
+        expect { induction.claim!(**claim_params) }
+          .to raise_error(described_class::TeacherNotFound, "Nothing could be found for the provided details")
+      end
+    end
+
+    context "when the teacher has been merged in TRS" do
+      include_context "test TRS API returns a merged teacher"
+
+      it "raises not found" do
+        expect { induction.claim!(**claim_params) }
+          .to raise_error(described_class::TeacherNotFound, "Nothing could be found for the provided details")
+      end
+    end
+
+    context "when the teacher has already completed their induction" do
+      include_context "test TRS API returns a teacher that has passed their induction"
+
+      it "raises not eligible" do
+        expect { induction.claim!(**claim_params) }
+          .to raise_error(described_class::NotEligible, "The teacher has already completed their induction")
+      end
+    end
+
+    context "when the teacher has not been awarded QTS" do
+      include_context "test TRS API returns a teacher without QTS"
+
+      it "raises not eligible" do
+        expect { induction.claim!(**claim_params) }
+          .to raise_error(described_class::NotEligible, "The teacher has not been awarded QTS")
+      end
+    end
   end
 
   describe "#pass!" do
