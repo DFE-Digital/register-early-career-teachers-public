@@ -554,6 +554,15 @@ describe ECTAtSchoolPeriod do
             end
           end
         end
+
+        context "with zero-length siblings" do
+          let(:school) { FactoryBot.create(:school) }
+          let(:period_type) { :ect_at_school_period }
+          let(:traits) { [] }
+          let(:attrs) { { teacher:, school: } }
+
+          it_behaves_like "a period which allows zero-length periods to overlap"
+        end
       end
     end
 

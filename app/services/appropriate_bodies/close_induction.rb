@@ -84,8 +84,11 @@ module AppropriateBodies
       ongoing_induction_period.teacher.ect_at_school_periods.latest_first.first
     end
 
-    def destroy_unstarted_ect_period!
-      ECTAtSchoolPeriods::Destroy.call(ect_at_school_period:, author:, actioned_at: Date.current)
+    def move_unstarted_ect_period!
+      return unless ect_at_school_period
+      return if ect_at_school_period.started_on <= Date.current
+
+      ect_at_school_period.update!(started_on: Date.current)
     end
 
     def mentorship_period

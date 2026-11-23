@@ -15,7 +15,7 @@ module Teachers
             Teachers::TRN::MentorshipPeriods::Merge.call(periods:, destination:)
           end
 
-          merged_mentorship_periods = overlapping_mentorship_periods.flat_map(&:itself).uniq
+          merged_mentorship_periods = merged_periods_from(overlapping_mentorship_periods)
 
           mentorship_periods.each do |period|
             next if merged_mentorship_periods.include?(period)

@@ -181,6 +181,49 @@ RSpec.describe Schools::RegisterMentor do
               expect(new_training_period).not_to eq(existing_training_period)
               expect(existing_training_period.reload.finished_on).not_to be_nil
             end
+
+            context "when the existing period has future training and mentorship periods" do
+              let!(:existing_training_period) do
+                FactoryBot.create(
+                  :training_period,
+                  :provider_led,
+                  :for_mentor,
+                  :with_only_expression_of_interest,
+                  mentor_at_school_period: existing_mentor_at_school_period,
+                  started_on: existing_mentor_at_school_period.started_on,
+                  finished_on: started_on - 2.days,
+                  expression_of_interest: framework_agreement
+                )
+              end
+              let!(:future_training_period) do
+                FactoryBot.create(
+                  :training_period,
+                  :provider_led,
+                  :for_mentor,
+                  :with_only_expression_of_interest,
+                  mentor_at_school_period: existing_mentor_at_school_period,
+                  started_on: started_on + 1.week,
+                  expression_of_interest: framework_agreement
+                )
+              end
+              let!(:future_mentorship_period) do
+                mentee = FactoryBot.create(:ect_at_school_period, :unfinished, school: existing_mentor_at_school_period.school, started_on: 1.year.ago)
+                FactoryBot.create(
+                  :mentorship_period,
+                  mentee:,
+                  mentor: existing_mentor_at_school_period,
+                  started_on: started_on + 1.week
+                )
+              end
+
+              it "moves them to zero-length periods on the day before the new registration" do
+                service.register!
+
+                expected_finished_on = started_on.prev_day
+                expect(future_training_period.reload).to have_attributes(started_on: expected_finished_on, finished_on: expected_finished_on)
+                expect(future_mentorship_period.reload).to have_attributes(started_on: expected_finished_on, finished_on: expected_finished_on)
+              end
+            end
           end
         end
       end

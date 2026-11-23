@@ -74,11 +74,17 @@ module ECTAtSchoolPeriods
     def handle_training_period_for_switch!
       return if @training_period.blank?
 
-      if training_not_started? || !keep_existing_training_period?
+      if training_not_started?
+        move_unstarted_training_period!
+      elsif !keep_existing_training_period?
         @training_period.destroy!
       else
         finish_training_period!
       end
+    end
+
+    def move_unstarted_training_period!
+      @training_period.update!(started_on: date_of_transition, finished_on: date_of_transition)
     end
 
     def keep_existing_training_period?

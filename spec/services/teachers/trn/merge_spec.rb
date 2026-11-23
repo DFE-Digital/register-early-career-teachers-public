@@ -583,6 +583,27 @@ RSpec.describe Teachers::TRN::Merge do
           expect(destination_ect_at_school_period.reload.started_on).to eq(overlapping_period_started_on)
           expect { overlapping_ect_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
         end
+
+        context "when there is a zero-length period on a date covered by the destination period" do
+          let!(:zero_length_ect_period) do
+            FactoryBot.create(
+              :ect_at_school_period,
+              teacher:,
+              school:,
+              started_on: overlapping_period_started_on,
+              finished_on: overlapping_period_started_on
+            )
+          end
+
+          it "moves the zero-length period to the destination without merging it" do
+            merge!
+
+            expect(zero_length_ect_period.reload.teacher).to eq(destination)
+            expect(zero_length_ect_period.started_on).to eq(overlapping_period_started_on)
+            expect(zero_length_ect_period.finished_on).to eq(overlapping_period_started_on)
+            expect(destination_ect_at_school_period.reload.started_on).to eq(overlapping_period_started_on)
+          end
+        end
       end
     end
 
