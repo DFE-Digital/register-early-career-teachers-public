@@ -13,8 +13,7 @@ module IntegrationSupport
         name: client_params[:name],
         client_id: client_params[:client_id],
         client_secret_digest: Digest::SHA256.hexdigest(@client_secret.to_s),
-        redirect_uris: [integration_support_api_client_connection_url],
-        grant_types: API::OAuth::Client::GRANT_TYPES
+        redirect_uris: [integration_support_api_client_connection_url]
       )
 
       if @client.save

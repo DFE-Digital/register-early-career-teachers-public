@@ -120,6 +120,9 @@ class Event < ApplicationRecord
     band_deleted
     api_oauth_authorization_code_exchanged
     api_oauth_access_token_revoked
+    api_client_created
+    api_client_updated
+    api_client_secret_rotated
   ].freeze
 
   belongs_to :author, class_name: "User"

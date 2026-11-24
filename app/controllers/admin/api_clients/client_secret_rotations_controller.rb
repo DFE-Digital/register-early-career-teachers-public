@@ -9,8 +9,7 @@ module Admin
       end
 
       def create
-        @client.rotate_client_secret
-        @client.save!
+        API::OAuth::Clients.new(author: current_user).rotate_secret!(client: @client)
         no_store
       end
 

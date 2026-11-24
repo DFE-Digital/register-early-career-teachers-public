@@ -48,6 +48,7 @@ RSpec.describe "Admin::APIClients::ClientSecretRotationsController" do
         expect(subject.headers["Cache-Control"]).to include("no-store")
         expect(client.reload.secret_matches?(secret: css_select("#client-secret").first["value"])).to be(true)
         expect(client.secret_matches?(secret: previous_secret)).to be(false)
+        expect(Event.sole).to have_attributes(event_type: "api_client_secret_rotated", oauth_client: client, author_id: user.id)
       end
     end
   end

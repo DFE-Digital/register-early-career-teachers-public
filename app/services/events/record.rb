@@ -965,6 +965,29 @@ module Events
       ).record_event!
     end
 
+    # API Client Events
+
+    def self.record_api_client_created_event!(author:, client:, modifications:, happened_at: Time.zone.now)
+      event_type = :api_client_created
+      heading = "API client '#{client.name}' added"
+
+      new(event_type:, author:, heading:, oauth_client: client, modifications:, happened_at:).record_event!
+    end
+
+    def self.record_api_client_updated_event!(author:, client:, modifications:, happened_at: Time.zone.now)
+      event_type = :api_client_updated
+      heading = "API client '#{client.name}' updated"
+
+      new(event_type:, author:, heading:, oauth_client: client, modifications:, happened_at:).record_event!
+    end
+
+    def self.record_api_client_secret_rotated_event!(author:, client:, happened_at: Time.zone.now)
+      event_type = :api_client_secret_rotated
+      heading = "API client '#{client.name}' secret rotated"
+
+      new(event_type:, author:, heading:, oauth_client: client, happened_at:).record_event!
+    end
+
     # School Partnership Events
 
     def self.record_school_partnership_created_event!(author:, school_partnership:)
