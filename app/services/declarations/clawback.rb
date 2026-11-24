@@ -2,25 +2,19 @@ module Declarations
   class Clawback
     include ActiveModel::Model
 
-    attr_reader :author, :declaration, :voided_by_user_id
+    attr_reader :author, :declaration
 
     validates :next_available_output_fee_statement, presence: true
 
-    def initialize(author:, declaration:, voided_by_user_id: nil)
+    def initialize(author:, declaration:)
       @author = author
       @declaration = declaration
-      @voided_by_user_id = voided_by_user_id
     end
 
     def clawback
       return false unless valid?
 
       ActiveRecord::Base.transaction do
-        if voided_by_user_id
-          declaration.voided_by_user_at = Time.current
-          declaration.voided_by_user = User.find(voided_by_user_id)
-        end
-
         attach_clawback_statement
         declaration.mark_as_awaiting_clawback!
         complete_mentor!

@@ -52,8 +52,7 @@ module Admin
       def service_attributes
         {
           author:,
-          declaration:,
-          voided_by_user_id: author&.id
+          declaration:
         }
       end
     end
