@@ -18,12 +18,13 @@ module TRS
 
     MERGED_TRN_REDIRECTS_TO = "7000012"
 
-    def initialize(raise_not_found: false, raise_deactivated: false, raise_merged: false)
+    def initialize(raise_not_found: false, raise_deactivated: false, raise_merged: false, store: TRS::FakeTeacherStore.new)
       fail(FakeAPIClientUsedInProduction) if Rails.env.production?
 
       @raise_not_found = raise_not_found
       @raise_deactivated = raise_deactivated
       @raise_merged = raise_merged
+      @store = store
     end
 
     def find_teacher(trn:, date_of_birth: "1977-02-03", national_insurance_number: nil)
@@ -33,9 +34,10 @@ module TRS
 
       Rails.logger.info("TRSFakeAPIClient pretending to find teacher with TRN=#{trn} and Date of birth=#{date_of_birth} and National Insurance Number=#{national_insurance_number}")
 
-      override_data_for_special_trns(trn)
+      options = @store.options_for(trn)
+      raise_errors_for_special_trns(trn, options)
 
-      build_trs_teacher(trn:, date_of_birth:, national_insurance_number:)
+      build_trs_teacher(trn:, date_of_birth:, national_insurance_number:, options:)
     end
 
     def begin_induction!(trn:, start_date:, modified_at: Time.zone.now)
@@ -99,67 +101,32 @@ module TRS
 
   private
 
-    def redis_client
-      @redis_client ||= Redis.new(url: ENV.fetch("REDIS_CACHE_URL", "redis://localhost:6379"))
-    end
-
-    def redis_induction_key(trn)
-      "#{trn}:induction"
-    end
-
     def update_induction_status(trn:, status:, modified_at:, start_date:, completed_date: nil)
-      payload = { "status" => status,
-                  "startDate" => start_date,
-                  "completedDate" => completed_date,
-                  "modifiedOn" => modified_at }.transform_values { |v| (v.present?) ? v : "" }
-
-      redis_client.mapped_hmset(redis_induction_key(trn), payload)
+      @store.set_induction(trn, status:, modified_at:, start_date:, completed_date:)
     end
 
-    # FIXME: Named for consistency with update_induction_status in the real client, but it's doing more
-    #        than just the status, both should probably end with _induction_details
-    def retrieve_induction_status(trn)
-      redis_client
-        .hgetall(redis_induction_key(trn))
-        .transform_values { |v| (v.present?) ? v : nil }
-    end
-
-    def build_trs_teacher(trn:, date_of_birth:, national_insurance_number:)
+    def build_trs_teacher(trn:, date_of_birth:, national_insurance_number:, options:)
       TRS::Teacher.new(
         teacher_params(trn:, date_of_birth:, national_insurance_number:).tap do |tp|
-          tp.merge!(qts_data)
-          tp.merge!(itt_data)
+          tp.merge!(qts_data(options[:has_qts]))
+          tp.merge!(itt_data(options[:has_itt]))
 
-          if @is_prohibited_from_teaching
+          if options[:prohibited_from_teaching]
             tp.merge!(prohibited_from_teaching_data)
-          elsif @has_alerts_but_not_prohibited
+          elsif options[:has_alerts]
             tp.merge!(other_alert_data)
           end
 
-          tp.merge!(induction_data(trn))
+          tp.merge!(induction_data(trn, options[:induction_status]))
         end
       )
     end
 
-    def override_data_for_special_trns(trn)
-      @has_qts = true
-
-      case trn.to_i
-      when 7_000_001 then @has_qts = false
-      when 7_000_002 then raise(TRS::Errors::TeacherNotFound)
-      when 7_000_003 then @is_prohibited_from_teaching = true
-      when 7_000_004 then raise(TRS::Errors::TeacherDeactivated)
-      when 7_000_005 then @has_alerts_but_not_prohibited = true
-      when 7_000_006 then nil # teacher with TRN 7000006 is seeded as an early roll out mentor
-      when 7_000_007 then @induction_status = "Passed"
-      when 7_000_008 then @induction_status = "Failed"
-      when 7_000_009 then @induction_status = "Exempt"
-      when 7_000_010 then @induction_status = "FailedInWales"
-      when 7_000_011 then raise(TRS::Errors::TeacherMerged.new(trn:, redirected_to: MERGED_TRN_REDIRECTS_TO))
-      else
-        @has_itt = true
-        @is_prohibited_from_teaching = false
-        @has_alerts_but_not_prohibited = false
+    def raise_errors_for_special_trns(trn, options)
+      case options[:error_type].to_s
+      when "not_found" then raise(TRS::Errors::TeacherNotFound, "Teacher with TRN #{trn} not found")
+      when "deactivated" then raise(TRS::Errors::TeacherDeactivated, "Teacher with TRN #{trn} deactivated")
+      when "merged" then raise(TRS::Errors::TeacherMerged.new(trn:, redirected_to: MERGED_TRN_REDIRECTS_TO))
       end
     end
 
@@ -193,8 +160,8 @@ module TRS
           .split(" ", 2)
     end
 
-    def qts_data
-      if @has_qts
+    def qts_data(has_qts)
+      if has_qts
         {
           "qts" => {
             "holdsFrom" => 3.years.ago.to_date.to_s,
@@ -227,17 +194,11 @@ module TRS
       }
     end
 
-    def induction_data(trn)
-      return { "induction" => { "status" => @induction_status } } if @induction_status
+    def induction_data(trn, induction_status_override)
+      return { "induction" => { "status" => induction_status_override } } if induction_status_override
 
-      if redis_client.connected? && (induction_status = retrieve_induction_status(trn)) && induction_status.present?
-        {
-          "induction" => {
-            "status" => induction_status["status"],
-            "startDate" => induction_status["startDate"],
-            "completedDate" => induction_status["completedDate"]
-          }
-        }
+      if (induction = @store.induction_for(trn))
+        { "induction" => induction.slice("status", "startDate", "completedDate") }
       else
         {
           "induction" => {
@@ -249,8 +210,8 @@ module TRS
       end
     end
 
-    def itt_data
-      if @has_itt
+    def itt_data(has_itt)
+      if has_itt
         {
 
           "routesToProfessionalStatuses" => [
