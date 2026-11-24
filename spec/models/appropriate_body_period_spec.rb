@@ -729,10 +729,6 @@ describe AppropriateBodyPeriod do
     end
 
     context "when the name of a teaching school hub is used" do
-      before do
-        allow(Rails.application.config).to receive(:nullable_appropriate_body_period_names).and_return(true)
-      end
-
       it "is invalid" do
         abp = hub_period(name: teaching_school_hub.name)
 

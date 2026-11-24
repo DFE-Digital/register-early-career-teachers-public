@@ -88,8 +88,7 @@ class AppropriateBodyPeriod < ApplicationRecord
   validates :started_on, presence: true
   validate :name_is_unique_among_overlapping_periods, unless: :teaching_school?
 
-  validate :name_is_not_a_teaching_school_hub_name,
-           if: -> { Rails.application.config.nullable_appropriate_body_period_names }
+  validate :name_is_not_a_teaching_school_hub_name
 
   # Teaching School Hub or Teaching School
   with_options if: :provisioning_school do

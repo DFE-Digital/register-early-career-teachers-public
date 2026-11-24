@@ -28,8 +28,7 @@ class TeachingSchoolHub < ApplicationRecord
   has_many :lead_schools, through: :appropriate_body_periods, source: :lead_schools
 
   validates :name, presence: true, uniqueness: true
-  validate :name_is_not_an_ongoing_appropriate_body_period_name,
-           if: -> { Rails.application.config.nullable_appropriate_body_period_names }
+  validate :name_is_not_an_ongoing_appropriate_body_period_name
 
   normalizes :name, with: -> { it.squish }
 
