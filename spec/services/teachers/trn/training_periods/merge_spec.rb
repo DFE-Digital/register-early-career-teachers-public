@@ -207,6 +207,21 @@ RSpec.describe Teachers::TRN::TrainingPeriods::Merge do
         expect(destination_period.reload.expression_of_interest).to eq(expression_of_interest)
       end
 
+      it "moves a paid declaration when the destination gains the school partnership" do
+        declaration = FactoryBot.create(
+          :declaration,
+          :paid,
+          training_period: source_period,
+          evidenced_at: source_period.started_on
+        )
+        source_period.reload
+
+        expect { service }.to change { declaration.reload.training_period }
+          .from(source_period).to(destination_period)
+
+        expect(destination_period.reload.school_partnership).to eq(school_partnership)
+      end
+
       it "records a school partnership assignment event" do
         service
 
