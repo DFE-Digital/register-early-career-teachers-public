@@ -21,7 +21,7 @@ describe AppropriateBodyPeriod do
     it { is_expected.to have_many(:unclaimed_ect_at_school_periods).class_name("ECTAtSchoolPeriod").with_foreign_key(:school_reported_appropriate_body_id) }
     it { is_expected.to have_many(:region_awards).class_name("Region::Award").dependent(:destroy) }
     it { is_expected.to have_many(:regions).through(:region_awards) }
-    it { is_expected.to have_many(:lead_schools).through(:region_awards).source(:school) }
+    it { is_expected.to have_many(:lead_schools).through(:region_awards).source(:lead_school) }
   end
 
   describe "scopes" do
@@ -614,17 +614,17 @@ describe AppropriateBodyPeriod do
 
   describe "teaching school hub regional awards" do
     let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, :teaching_school_hub) }
-    let(:school) { FactoryBot.create(:school) }
+    let(:lead_school) { FactoryBot.create(:school) }
     let(:region) { FactoryBot.create(:region) }
     let(:other_region) { FactoryBot.create(:region) }
 
     before do
-      FactoryBot.create(:region_award, appropriate_body_period:, school:, region:)
-      FactoryBot.create(:region_award, appropriate_body_period:, school:, region: other_region)
+      FactoryBot.create(:region_award, appropriate_body_period:, lead_school:, region:)
+      FactoryBot.create(:region_award, appropriate_body_period:, lead_school:, region: other_region)
     end
 
     it "lists lead schools and regions collapsing multi-region schools" do
-      expect(appropriate_body_period.lead_schools).to contain_exactly(school)
+      expect(appropriate_body_period.lead_schools).to contain_exactly(lead_school)
       expect(appropriate_body_period.regions).to contain_exactly(region, other_region)
     end
   end

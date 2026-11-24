@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_18_090000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_24_141640) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gist"
   enable_extension "citext"
@@ -127,7 +127,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_18_090000) do
     t.bigint "local_authority_id"
     t.string "name"
     t.bigint "national_body_id"
-    t.bigint "school_id"
+    t.bigint "provisioning_school_id"
     t.bigint "teaching_school_hub_id"
     t.datetime "updated_at", null: false
     t.date "started_on", null: false
@@ -138,7 +138,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_18_090000) do
     t.index ["external_id"], name: "index_appropriate_body_periods_on_external_id", unique: true
     t.index ["local_authority_id"], name: "index_appropriate_body_periods_on_local_authority_id"
     t.index ["national_body_id"], name: "index_appropriate_body_periods_on_national_body_id"
-    t.index ["school_id"], name: "index_appropriate_body_periods_on_school_id"
+    t.index ["provisioning_school_id"], name: "index_appropriate_body_periods_on_provisioning_school_id"
     t.index ["teaching_school_hub_id"], name: "index_appropriate_body_periods_on_teaching_school_hub_id"
     t.check_constraint "finished_on >= started_on", name: "finished_on_not_before_started_on"
     t.exclusion_constraint "teaching_school_hub_id WITH =, name WITH =, range WITH &&", using: :gist, name: "appropriate_body_periods_unique_names_for_concurrent_periods"
@@ -697,7 +697,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_18_090000) do
 
   create_table "region_awards", force: :cascade do |t|
     t.bigint "appropriate_body_period_id", null: false
-    t.bigint "school_id", null: false
+    t.bigint "lead_school_id", null: false
     t.bigint "region_id", null: false
     t.datetime "deactivated_at"
     t.string "deactivation_reason"
@@ -705,8 +705,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_18_090000) do
     t.datetime "updated_at", null: false
     t.index ["appropriate_body_period_id", "region_id"], name: "index_region_awards_on_appropriate_body_period_and_region", unique: true, where: "(deactivated_at IS NULL)"
     t.index ["appropriate_body_period_id"], name: "index_region_awards_on_appropriate_body_period_id"
+    t.index ["lead_school_id"], name: "index_region_awards_on_lead_school_id"
     t.index ["region_id"], name: "index_region_awards_on_region_id"
-    t.index ["school_id"], name: "index_region_awards_on_school_id"
   end
 
   create_table "regions", force: :cascade do |t|
@@ -1057,7 +1057,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_18_090000) do
   add_foreign_key "api_tokens", "lead_providers"
   add_foreign_key "appropriate_body_periods", "local_authorities"
   add_foreign_key "appropriate_body_periods", "national_bodies"
-  add_foreign_key "appropriate_body_periods", "schools"
+  add_foreign_key "appropriate_body_periods", "schools", column: "provisioning_school_id"
   add_foreign_key "appropriate_body_periods", "teaching_school_hubs"
   add_foreign_key "contract_banded_fee_structure_band_terms", "contract_banded_fee_structures", column: "banded_fee_structure_id", on_delete: :cascade
   add_foreign_key "contract_banded_fee_structure_band_terms", "framework_agreement_bands", column: "band_id"
@@ -1128,7 +1128,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_18_090000) do
   add_foreign_key "pending_induction_submissions", "pending_induction_submission_batches"
   add_foreign_key "region_awards", "appropriate_body_periods"
   add_foreign_key "region_awards", "regions"
-  add_foreign_key "region_awards", "schools"
+  add_foreign_key "region_awards", "schools", column: "lead_school_id"
   add_foreign_key "schedules", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "school_funding_eligibilities", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "school_funding_eligibilities", "gias_schools", column: "gias_school_urn", primary_key: "urn"

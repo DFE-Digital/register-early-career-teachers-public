@@ -20,15 +20,15 @@ RSpec.describe "Admin::TeachingSchoolHubsController", type: :request do
     FactoryBot.create(:region_award,
                       appropriate_body_period:,
                       region: region_1,
-                      school: provisioning_school_1)
+                      lead_school: provisioning_school_1)
     FactoryBot.create(:region_award,
                       appropriate_body_period:,
                       region: region_2,
-                      school: lead_school)
+                      lead_school:)
     FactoryBot.create(:region_award,
                       appropriate_body_period:,
                       region: region_3,
-                      school: lead_school)
+                      lead_school:)
   end
 
   describe "GET /index" do

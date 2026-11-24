@@ -108,8 +108,8 @@ RSpec.describe TeachingSchoolHub do
     end
 
     before do
-      FactoryBot.create(:region_award, appropriate_body_period: first_period, region: region_north, school: provisioning_school_1)
-      FactoryBot.create(:region_award, appropriate_body_period: second_period, region: region_south, school: provisioning_school_2)
+      FactoryBot.create(:region_award, appropriate_body_period: first_period, region: region_north, lead_school: provisioning_school_1)
+      FactoryBot.create(:region_award, appropriate_body_period: second_period, region: region_south, lead_school: provisioning_school_2)
     end
 
     it "combines the codes across every period" do
@@ -126,7 +126,7 @@ RSpec.describe TeachingSchoolHub do
       FactoryBot.create(:region_award,
                         appropriate_body_period: other_hub_body,
                         region: FactoryBot.create(:region, code: "R9"),
-                        school: provisioning_school_1)
+                        lead_school: provisioning_school_1)
 
       expect(region_codes).to contain_exactly("R1", "R2")
     end
@@ -143,7 +143,7 @@ RSpec.describe TeachingSchoolHub do
 
     context "when a school appears in multiple bodies" do
       it "only includes the region code once" do
-        FactoryBot.create(:region_award, appropriate_body_period: first_period, region: region_south, school: provisioning_school_2)
+        FactoryBot.create(:region_award, appropriate_body_period: first_period, region: region_south, lead_school: provisioning_school_2)
 
         expect(region_codes).to contain_exactly("R1", "R2")
       end

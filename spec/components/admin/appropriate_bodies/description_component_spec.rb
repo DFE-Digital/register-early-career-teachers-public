@@ -16,8 +16,8 @@ RSpec.describe Admin::AppropriateBodies::DescriptionComponent, type: :component 
       let(:region_north) { FactoryBot.create(:region, code: "R2", districts: %w[North]) }
 
       before do
-        FactoryBot.create(:region_award, appropriate_body_period:, region: region_west_east, school: provisioning_school_1)
-        FactoryBot.create(:region_award, appropriate_body_period:, region: region_north, school: provisioning_school_1)
+        FactoryBot.create(:region_award, appropriate_body_period:, region: region_west_east, lead_school: provisioning_school_1)
+        FactoryBot.create(:region_award, appropriate_body_period:, region: region_north, lead_school: provisioning_school_1)
       end
 
       it "includes the provisioning school" do

@@ -47,10 +47,10 @@
           <% row.with_cell(text: award.region.code) %>
           <% row.with_cell(text: award.region.districts.to_sentence) %>
           <% row.with_cell do %>
-            <% if award.school_id == appropriate_body_period.school_id %>
-              <%= tag.strong(award.school.name) %>
+            <% if award.lead_school_is_the_provisioner? %>
+              <%= tag.strong(award.lead_school.name) %>
             <% else %>
-              <%= award.school.name %>
+              <%= award.lead_school.name %>
             <% end %>
           <% end %>
         <% end %>

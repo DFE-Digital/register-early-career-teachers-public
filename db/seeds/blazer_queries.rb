@@ -82,7 +82,7 @@ end
         ra.appropriate_body_period_id AS appropriate_body_id,
         s.urn::text
       FROM region_awards AS ra
-      JOIN schools AS s ON ra.school_id=s.id
+      JOIN schools AS s ON ra.lead_school_id=s.id
     SQL
   },
   {
@@ -95,7 +95,7 @@ end
         abp.id AS appropriate_body_id,
         abp.id AS appropriate_body_period
       FROM appropriate_body_periods AS abp
-      JOIN schools AS s ON abp.school_id=s.id
+      JOIN schools AS s ON abp.provisioning_school_id=s.id
       JOIN teaching_school_hubs AS tsh ON abp.teaching_school_hub_id=tsh.id
       WHERE abp.body_type='teaching_school_hub'
     SQL
@@ -109,7 +109,7 @@ end
         abp.id AS appropriate_body_id,
         abp.id AS appropriate_body_period
       FROM appropriate_body_periods AS abp
-      JOIN schools AS s ON abp.school_id=s.id
+      JOIN schools AS s ON abp.provisioning_school_id=s.id
       WHERE abp.body_type='teaching_school'
     SQL
   },
