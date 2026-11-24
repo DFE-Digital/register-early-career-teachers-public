@@ -76,10 +76,10 @@ module Induction
 
       return @client if @client
 
-      @client = FactoryBot.create(
-        :api_oauth_client,
+      @client = API::OAuth::Client.create!(
         name: @name,
-        grant_types: [grant_type]
+        grant_types: [grant_type],
+        **oauth_client_attributes
       )
     end
 
@@ -111,6 +111,35 @@ module Induction
     end
 
   private
+
+    def oauth_client_attributes
+      configuration = Rails.application.config.oauth_api_client_seed_credentials
+      return { redirect_uris: ["https://example.com/callback"] } if configuration.nil?
+
+      clients = JSON.parse(configuration, symbolize_names: true)
+      raise ArgumentError, "OAUTH_API_CLIENT_SEED_CREDENTIALS must contain a JSON object" unless clients.is_a?(Hash)
+
+      client_key = @name.parameterize(separator: "_").to_sym
+      credentials = clients[client_key]
+      raise ArgumentError, "OAUTH_API_CLIENT_SEED_CREDENTIALS must contain credentials for #{@name}" unless credentials.is_a?(Hash)
+
+      missing_attributes = %i[client_id client_secret redirect_uris].select { |key| credentials[key].blank? }
+      raise ArgumentError, "OAUTH_API_CLIENT_SEED_CREDENTIALS must contain #{missing_attributes.join(', ')} for #{@name}" if missing_attributes.any?
+
+      client_id, client_secret, redirect_uris = credentials.values_at(:client_id, :client_secret, :redirect_uris)
+      unless [client_id, client_secret].all?(String) && redirect_uris.is_a?(Array) && redirect_uris.all?(String)
+        raise ArgumentError, "OAUTH_API_CLIENT_SEED_CREDENTIALS must contain strings for client_id and client_secret and an array of strings for redirect_uris for #{@name}"
+      end
+
+      {
+        client_id:,
+        client_secret_digest: Digest::SHA256.hexdigest(client_secret),
+        redirect_uris:
+      }
+    rescue JSON::ParserError
+      # Re-raise to avoid JSON parser errors exposing the raw credentials.
+      raise ArgumentError, "OAUTH_API_CLIENT_SEED_CREDENTIALS must contain valid JSON", cause: nil
+    end
 
     def teacher_trn(scenario, index)
       sprintf("%s%02d%03d", @trn_prefix, scenario.id, index)

@@ -66,6 +66,7 @@ module RegisterEarlyCareerTeachers
     config.sentry_dsn = ENV["SENTRY_DSN"]
     config.enable_request_specs_timeout = ActiveModel::Type::Boolean.new.cast(ENV.fetch("CI", false))
     config.enable_trs_teacher_refresh = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_TRS_TEACHER_REFRESH", true))
+    config.oauth_api_client_seed_credentials = ENV["OAUTH_API_CLIENT_SEED_CREDENTIALS"]
 
     config.gias_supplemental_schools_path = Rails.root.join("config/gias/schools.csv")
     config.gias_supplemental_links_path = Rails.root.join("config/gias/links.csv")

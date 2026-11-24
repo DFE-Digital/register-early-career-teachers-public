@@ -1,5 +1,11 @@
 describe Induction::ScenarioBuilder do
   let(:builder) { described_class.new }
+  let(:credentials) { nil }
+  let(:credentials_json) { credentials&.to_json }
+
+  before do
+    allow(Rails.application.config).to receive(:oauth_api_client_seed_credentials) { credentials_json }
+  end
 
   describe ".define" do
     subject do
@@ -73,26 +79,32 @@ describe Induction::ScenarioBuilder do
   end
 
   describe "#client" do
-    it "creates an OAuth client with the default grant type" do
+    it "creates an OAuth client with generated credentials and the default grant type" do
       builder.client("ECT Manager", trn_prefix: "90") do
         oauth_client
       end
 
       expect(builder.clients).to contain_exactly(
-        have_attributes(name: "ECT Manager", grant_types: %w[authorization_code], persisted?: true)
+        have_attributes(
+          name: "ECT Manager",
+          grant_types: %w[authorization_code],
+          client_id: be_present,
+          client_secret: be_present,
+          redirect_uris: be_present,
+          persisted?: true
+        )
       )
+
+      client = builder.clients.first
+      expect(client).to be_secret_matches(secret: client.client_secret)
     end
 
-    it "passes an explicit grant type to the factory" do
-      allow(FactoryBot).to receive(:create)
-
-      builder.client("ECT Manager", trn_prefix: "90") do
-        oauth_client(grant_type: "client_credentials")
-      end
-
-      expect(FactoryBot).to have_received(:create).with(
-        :api_oauth_client, name: "ECT Manager", grant_types: %w[client_credentials]
-      )
+    it "accepts an explicit grant type" do
+      expect {
+        builder.client("ECT Manager", trn_prefix: "90") do
+          oauth_client(grant_type: "other_grant_type")
+        end
+      }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Grant types is not included in the list")
     end
 
     it "collects multiple OAuth clients" do
@@ -131,6 +143,111 @@ describe Induction::ScenarioBuilder do
 
       expect { builder.client("Mosaic", trn_prefix: 90) {} }
         .to raise_error(ArgumentError, "Duplicate TRN prefix: 90")
+    end
+
+    context "when OAuth seed credentials are configured" do
+      let(:credentials) do
+        {
+          ect_manager: {
+            client_id: SecureRandom.base58(24),
+            client_secret: SecureRandom.base58(32),
+            redirect_uris: %w[https://ect-manager.example.com/callback https://ect-manager.example.com/alternate]
+          },
+          mosaic: {
+            client_id: SecureRandom.base58(24),
+            client_secret: SecureRandom.base58(32),
+            redirect_uris: %w[https://mosaic.example.com/callback]
+          }
+        }
+      end
+
+      it "uses each client's configured ID, secret and redirect URIs" do
+        builder.client("ECT Manager", trn_prefix: "90") { oauth_client }
+        builder.client("Mosaic", trn_prefix: "91") { oauth_client }
+
+        clients = API::OAuth::Client.where(id: builder.clients.map(&:id)).order(:name).to_a
+        expect(clients.size).to eq(2)
+
+        clients.zip(%i[ect_manager mosaic]).each do |client, key|
+          configured_client = credentials.fetch(key)
+
+          expect(client).to have_attributes(
+            client_id: configured_client.fetch(:client_id),
+            redirect_uris: configured_client.fetch(:redirect_uris),
+            client_secret_digest: Digest::SHA256.hexdigest(configured_client.fetch(:client_secret)),
+            grant_types: %w[authorization_code]
+          )
+          expect(client).to be_secret_matches(secret: configured_client.fetch(:client_secret))
+        end
+      end
+
+      describe "loading credentials" do
+        subject(:client_builder) { Induction::ClientBuilder.new("ECT Manager", trn_prefix: "90", scenarios: {}) }
+
+        context "when the client is missing" do
+          let(:credentials) { super().except(:ect_manager) }
+
+          it "raises instead of generating credentials" do
+            expect { client_builder.oauth_client }.to raise_error(ArgumentError, "OAUTH_API_CLIENT_SEED_CREDENTIALS must contain credentials for ECT Manager")
+          end
+        end
+
+        context "when the JSON is malformed" do
+          let(:credentials_json) { "not-json" }
+
+          it "raises without exposing the JSON parser error or credentials" do
+            expect { client_builder.oauth_client }
+              .to raise_error(ArgumentError, "OAUTH_API_CLIENT_SEED_CREDENTIALS must contain valid JSON") { |error|
+                expect(error.cause).to be_nil
+              }
+          end
+        end
+
+        context "when the JSON does not contain an object" do
+          let(:credentials_json) { "[]" }
+
+          it "raises an error describing the expected structure" do
+            expect { client_builder.oauth_client }
+              .to raise_error(ArgumentError, "OAUTH_API_CLIENT_SEED_CREDENTIALS must contain a JSON object")
+          end
+        end
+
+        context "when client attributes are missing" do
+          let(:credentials) { { ect_manager: {} } }
+
+          it "raises an error describing the missing attributes" do
+            expect { client_builder.oauth_client }
+              .to raise_error(ArgumentError, "OAUTH_API_CLIENT_SEED_CREDENTIALS must contain client_id, client_secret, redirect_uris for ECT Manager")
+          end
+        end
+
+        context "when client_id is malformed" do
+          let(:credentials) { super().deep_merge(ect_manager: { client_id: [123] }) }
+
+          it "raises an error describing the expected types" do
+            expect { client_builder.oauth_client }
+              .to raise_error(ArgumentError, "OAUTH_API_CLIENT_SEED_CREDENTIALS must contain strings for client_id and client_secret and an array of strings for redirect_uris for ECT Manager")
+          end
+        end
+
+        context "when client_secret is malformed" do
+          let(:credentials) { super().deep_merge(ect_manager: { client_secret: 123 }) }
+
+          it "raises an error describing the expected types" do
+            expect { client_builder.oauth_client }
+              .to raise_error(ArgumentError, "OAUTH_API_CLIENT_SEED_CREDENTIALS must contain strings for client_id and client_secret and an array of strings for redirect_uris for ECT Manager")
+          end
+        end
+
+        context "when redirect_uris are malformed" do
+          let(:credentials) { super().deep_merge(ect_manager: { redirect_uris: [1, "https://2.com"] }) }
+
+          it "raises an error describing the expected types" do
+            expect { client_builder.oauth_client }
+              .to raise_error(ArgumentError, "OAUTH_API_CLIENT_SEED_CREDENTIALS must contain strings for client_id and client_secret and an array of strings for redirect_uris for ECT Manager")
+          end
+        end
+      end
     end
 
     context "when seeding scenarios" do

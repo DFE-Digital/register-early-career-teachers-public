@@ -25,3 +25,27 @@ The sandbox tokens have been distributed to lead providers via galaxkey and are 
 ## Production
 
 At the time of writing, there are no lead provider records in production as we have not yet migrated the data across from ECF.
+
+## Induction API OAuth seed credentials
+
+To seed induction API clients with stable credentials, expose the Key Vault secret
+as the `OAUTH_API_CLIENT_SEED_CREDENTIALS` environment variable, for example:
+
+```json
+{
+  "ect_manager": {
+    "client_id": "<ect-manager-client-id>",
+    "client_secret": "<ect-manager-client-secret>",
+    "redirect_uris": ["https://ect-manager.example.com/oauth/callback"]
+  },
+  "mosaic": {
+    "client_id": "<mosaic-client-id>",
+    "client_secret": "<mosaic-client-secret>",
+    "redirect_uris": ["https://mosaic.example.com/oauth/callback"]
+  }
+}
+```
+
+Keys are client names lowercased and parameterized with underscores: `API Client 1` becomes `api_client_1`. Each entry must include `client_id`, `client_secret` and `redirect_uris`. 
+
+If the variable is absent, clients retain the generated credentials and default redirect URIs used by local and review seeds. If it is set, seeding raises an error for malformed JSON, invalid entries or a missing client; it never falls back to generated credentials for an unconfigured client.
