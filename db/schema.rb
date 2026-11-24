@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_17_163000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_18_090000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gist"
   enable_extension "citext"
@@ -39,6 +39,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_17_163000) do
   create_enum "induction_programme", ["cip", "fip", "diy", "unknown", "pre_september_2021"]
   create_enum "induction_programme_choice", ["not_yet_known", "provider_led", "school_led"]
   create_enum "mentor_became_ineligible_for_funding_reason", ["completed_declaration_received", "completed_during_early_roll_out", "started_not_completed"]
+  create_enum "notify_delivery_receipt_notification_type", ["email", "sms"]
+  create_enum "notify_delivery_receipt_status", ["delivered", "permanent-failure", "temporary-failure", "technical-failure"]
   create_enum "oauth_code_challenge_methods", ["S256"]
   create_enum "oauth_grant_types", ["authorization_code"]
   create_enum "parity_check_request_states", ["pending", "queued", "in_progress", "completed", "failed"]
@@ -620,6 +622,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_17_163000) do
     t.string "name", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_national_bodies_on_name", unique: true
+  end
+
+  create_table "notify_delivery_receipts", force: :cascade do |t|
+    t.uuid "notification_id", null: false
+    t.string "recipient", null: false
+    t.enum "status", null: false, enum_type: "notify_delivery_receipt_status"
+    t.datetime "requested_at", null: false
+    t.datetime "completed_at"
+    t.datetime "sent_at"
+    t.enum "notification_type", null: false, enum_type: "notify_delivery_receipt_notification_type"
+    t.uuid "template_id", null: false
+    t.integer "template_version", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["notification_id"], name: "index_notify_delivery_receipts_on_notification_id", unique: true
   end
 
   create_table "pending_induction_submission_batches", force: :cascade do |t|

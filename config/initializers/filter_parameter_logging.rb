@@ -30,6 +30,7 @@ unless Rails.application.config.bypass_filter_parameter_logging
     salt
     secret
     ssn
+    to
     trn
     trs_email_address
     trs_first_name

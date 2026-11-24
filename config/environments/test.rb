@@ -74,6 +74,8 @@ Rails.application.configure do
   config.enable_personas = true
   config.enable_apis_under_development = true
   config.enable_training_api = true
+  config.enable_notify_delivery_receipts = true
+  config.notify_delivery_receipts_bearer_token = "notify-delivery-receipts-test-token"
   config.enable_fake_trs_api = false
   config.dfe_sign_in_enabled = true
   config.enable_test_guidance = false
