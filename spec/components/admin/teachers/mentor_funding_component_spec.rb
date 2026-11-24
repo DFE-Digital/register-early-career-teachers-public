@@ -55,7 +55,7 @@ RSpec.describe Admin::Teachers::MentorFundingComponent, type: :component do
       context "when the mentor completed training in the future" do
         let(:mentor_became_ineligible_for_funding_on) { 1.day.from_now }
 
-        it "shows completed training and the funding end date when a lead provider submitted a completed declaration" do
+        it "does not say training is completed or show the end date" do
           expect(rendered).to have_css(".govuk-summary-card__title", text: "Mentor training summary")
           expect(rendered).to have_css("dd", text: "Training not completed yet.")
           expect(rendered).to have_css("dd", text: "Eligible for funded training.")
