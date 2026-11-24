@@ -39,20 +39,25 @@ module Teachers
 
         def training_periods_are_incompatible?
           incompatible_attributes.each do |attribute|
-            next if %i[expression_of_interest_id school_partnership_id].include?(attribute) &&
-              compatible_school_partnership_and_expressions_of_interest?
+            next unless periods_have_different?(attribute)
 
             attribute_name = attribute.to_s.humanize.pluralize.downcase
-
-            if periods_have_different?(attribute)
-              raise CannotMergePeriods, "Periods have different #{attribute_name}"
-            end
+            raise CannotMergePeriods, "Periods have different #{attribute_name}"
           end
         end
 
-        def compatible_school_partnership_and_expressions_of_interest?
+        def periods_have_different?(attribute)
+          if %i[expression_of_interest_id school_partnership_id].include?(attribute) &&
+              periods_match_through_school_partnership?
+            return false
+          end
+
+          periods.map(&attribute).uniq.size > 1
+        end
+
+        def periods_match_through_school_partnership?
           school_partnerships = periods.filter_map(&:school_partnership).uniq
-          return false unless school_partnerships.size == 1
+          return false unless school_partnerships.one?
 
           school_partnership = school_partnerships.first
 
@@ -62,19 +67,8 @@ module Teachers
           end
         end
 
-        def periods_have_different?(attribute)
-          periods.map(&attribute).uniq.size > 1
-        end
-
         def record_event!
-          Events::Record.record_teacher_training_periods_merged!(
-            teacher:,
-            successor_period:,
-            periods:,
-            author:,
-            original_period_associations: @original_period_associations
-          )
-
+          super(original_period_associations: @original_period_associations)
           record_school_partnership_assigned!
         end
 

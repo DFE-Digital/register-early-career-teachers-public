@@ -82,13 +82,14 @@ module Periods
       @started_on ||= periods.map(&:started_on).min
     end
 
-    def record_event!
+    def record_event!(**event_options)
       Events::Record.public_send(
         event_name,
         teacher:,
         successor_period:,
         periods:,
-        author:
+        author:,
+        **event_options
       )
     end
 

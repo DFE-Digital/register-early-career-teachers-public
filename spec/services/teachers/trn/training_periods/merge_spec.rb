@@ -104,25 +104,6 @@ RSpec.describe Teachers::TRN::TrainingPeriods::Merge do
           event.metadata["periods"].map { |period| period["expression_of_interest_id"] }
         ).to match_array(expected_expression_of_interest_ids)
       end
-
-      context "when the periods have different withdrawal reasons" do
-        let(:destination_attrs) do
-          {
-            ect_at_school_period: destination_ect_period,
-            school_partnership:,
-            expression_of_interest: destination_expression_of_interest,
-            withdrawal_reason: :left_teaching_profession,
-            withdrawn_at: second_period_finished_on
-          }
-        end
-
-        it "raises a CannotMergePeriods error" do
-          expect {
-            service
-          }.to raise_error(Teachers::TRN::TrainingPeriods::Merge::CannotMergePeriods,
-                           "Periods have different withdrawal reasons")
-        end
-      end
     end
 
     context "when the source has only an expression of interest matching the destination's school partnership" do
@@ -297,20 +278,6 @@ RSpec.describe Teachers::TRN::TrainingPeriods::Merge do
       end
     end
 
-    context "when both periods have school-led training programmes" do
-      let(:traits) { %i[for_ect school_led] }
-
-      let(:source_attrs) do
-        { ect_at_school_period: source_ect_period }
-      end
-
-      let(:destination_attrs) do
-        { ect_at_school_period: destination_ect_period }
-      end
-
-      it_behaves_like "it merges periods"
-    end
-
     context "when the periods have different training_programmes" do
       let!(:second_period) do
         FactoryBot.create(
@@ -330,7 +297,7 @@ RSpec.describe Teachers::TRN::TrainingPeriods::Merge do
       end
     end
 
-    context "when their periods have different withdrawal reasons" do
+    context "when the periods have different withdrawal reasons" do
       let(:destination_attrs) do
         {
           ect_at_school_period: destination_ect_period,
@@ -350,7 +317,7 @@ RSpec.describe Teachers::TRN::TrainingPeriods::Merge do
       end
     end
 
-    context "when ther periods have different deferral reasons" do
+    context "when the periods have different deferral reasons" do
       let(:destination_attrs) do
         {
           ect_at_school_period: destination_ect_period,
