@@ -64,7 +64,10 @@ RSpec.describe "admin/teachers/declarations/_declaration.html.erb", type: :view 
           :event,
           event_type: "teacher_declaration_voided",
           heading: "Declaration voided",
-          happened_at: Time.zone.local(2024, 1, 16, 12, 0, 0)
+          happened_at: Time.zone.local(2024, 1, 16, 12, 0, 0),
+          author_type: "dfe_staff_user",
+          author_name: "Admin User",
+          author_email: "admin@example.com"
         )
       end
 
@@ -88,13 +91,6 @@ RSpec.describe "admin/teachers/declarations/_declaration.html.erb", type: :view 
       end
 
       context "when voided by an admin user" do
-        let(:admin_user) { FactoryBot.build_stubbed(:user, name: "Admin User", email: "admin@example.com") }
-
-        before do
-          allow(declaration).to receive(:voided_by_user).and_return(admin_user)
-          render locals: { declaration: }
-        end
-
         it "shows who voided the declaration" do
           within "table tbody tr:nth-child(2)" do
             expect(page).to have_text("Voided by Admin User (admin@example.com)")
@@ -104,7 +100,7 @@ RSpec.describe "admin/teachers/declarations/_declaration.html.erb", type: :view 
 
       context "when voided by a lead provider" do
         before do
-          allow(declaration).to receive(:voided_by_user).and_return(nil)
+          allow(voided_event).to receive(:author_type).and_return("lead_provider_api")
           render locals: { declaration: }
         end
 
