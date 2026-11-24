@@ -104,10 +104,9 @@ Induction::ScenarioBuilder.define do
   end
 
   scenario :ect_who_has_passed_induction, id: 8 do |trn:, name:, **|
-    trs_responds_with induction_status: :passed
+    trs_responds_with induction_status: "Passed"
 
     teacher(trn, name, trs_induction_status: "Passed") do
-      # this might also need to be reflected in TRS query
       description("ECT who has passed induction, cannot be claimed")
 
       ect_at_school_period(ackley_bridge, "2023-09-01 -> 2025-07-30") do
@@ -125,10 +124,9 @@ Induction::ScenarioBuilder.define do
   end
 
   scenario :ect_who_has_failed_induction, id: 9 do |trn:, name:, **|
-    trs_responds_with induction_status: :failed
+    trs_responds_with induction_status: "Failed"
 
     teacher(trn, name, trs_induction_status: "Failed") do
-      # this might also need to be reflected in TRS query
       description("ECT who has failed induction, cannot be claimed")
 
       ect_at_school_period(ackley_bridge, "2023-09-01") do
@@ -144,10 +142,9 @@ Induction::ScenarioBuilder.define do
   end
 
   scenario :ect_without_qts, id: 10 do |trn:, name:, **|
-    trs_responds_with no_qts: true
+    trs_responds_with has_qts: false
 
     teacher(trn, name) do
-      # no QTS will be checked from TRS query
       description("Teacher without QTS, cannot begin induction")
       ect_at_school_period(abbey_grove_school, "2026-09-01", school_reported_appropriate_body: golden_leaf_teaching_school_hub) do
         training_period(ambition, 2026, "2026-09-01")
@@ -156,10 +153,9 @@ Induction::ScenarioBuilder.define do
   end
 
   scenario :ect_exempt_from_induction, id: 11 do |trn:, name:, **|
-    trs_responds_with induction_status: :exempt
+    trs_responds_with induction_status: "Exempt"
 
     teacher(trn, name, trs_induction_status: "Exempt") do
-      # exempt will be checked from TRS query
       description("Teacher exempt from induction, cannot begin induction")
       ect_at_school_period(abbey_grove_school, "2024-09-01", school_reported_appropriate_body: golden_leaf_teaching_school_hub) do
         school_led_training_period("2024-09-01")
@@ -171,7 +167,6 @@ Induction::ScenarioBuilder.define do
     trs_responds_with prohibited_from_teaching: true
 
     teacher(trn, name) do
-      # prohibited checked from TRS query
       description("Teacher prohibited from teaching, cannot begin induction")
       ect_at_school_period(ashford_independent_school, "2025-09-01", school_reported_appropriate_body: golden_leaf_teaching_school_hub) do
         school_led_training_period("2025-09-01")

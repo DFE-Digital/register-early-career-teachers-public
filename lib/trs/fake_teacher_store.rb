@@ -1,13 +1,9 @@
 module TRS
-  # Stores per-TRN options used by TRS::FakeAPIClient
-  #
-  #   store = TRS::FakeTeacherStore.new
-  #   store.set_options("1234567", has_qts: false, prohibited_from_teaching: true)
-  #   store.options_for("1234567") # => { has_qts: false, ... }
   class FakeTeacherStore
     BOOLEAN_OPTIONS = %i[has_qts has_itt prohibited_from_teaching has_alerts].freeze
     VALUE_OPTIONS = %i[induction_status error_type].freeze
     TEACHER_OPTIONS = (BOOLEAN_OPTIONS + VALUE_OPTIONS).freeze
+    STATUS_TYPES = %w[None RequiredToComplete Exempt InProgress Passed Failed FailedInWales].freeze
     ERROR_TYPES = %i[not_found deactivated merged].freeze
 
     DEFAULT_OPTIONS = {
@@ -96,6 +92,10 @@ module TRS
     def validate!(options)
       unknown_options = options.keys - TEACHER_OPTIONS
       raise ArgumentError, "Unknown option(s): #{unknown_options.join(', ')}" if unknown_options.any?
+
+      if options[:induction_status] && !STATUS_TYPES.include?(options[:induction_status])
+        raise ArgumentError, "induction_status must be one of #{STATUS_TYPES.join(', ')}"
+      end
 
       if options[:error_type] && !ERROR_TYPES.include?(options[:error_type])
         raise ArgumentError, "error_type must be one of #{ERROR_TYPES.join(', ')}"

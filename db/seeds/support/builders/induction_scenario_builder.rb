@@ -62,7 +62,7 @@ module Induction
   end
 
   class ClientBuilder
-    attr_reader :client
+    attr_reader :client, :trn_prefix
 
     def initialize(name, trn_prefix:, scenarios:)
       @name = name
@@ -98,16 +98,33 @@ module Induction
         colour: :yellow
       )
 
-      count.times do |index|
-        instance_exec(
-          trn: teacher_trn(scenario, index),
-          name: teacher_name(scenario, index),
-          index:,
-          &scenario.block
-        )
-      end
+      ScenarioSeeder.new(scenario:, client_name: @name, trn_prefix:).seed(count:)
 
       @seeded_scenarios << label
+    end
+  end
+
+  class ScenarioSeeder
+    attr_reader :scenario
+
+    def initialize(scenario:, client_name:, trn_prefix:)
+      @scenario = scenario
+      @client_name = client_name
+      @trn_prefix = trn_prefix
+      @trs_options = {}
+    end
+
+    def seed(count: 1)
+      count.times do |index|
+        trn = teacher_trn(index)
+        instance_exec(trn:, name: teacher_name(index), index:, &scenario.block)
+        store_options_for_fake_trs_api(trn)
+      end
+    end
+
+    def trs_responds_with(opts = {})
+      @trs_options = opts
+      print_seed_info("TRS response options '#{opts}'", indent: 2, colour: :magenta)
     end
 
   private
@@ -141,15 +158,25 @@ module Induction
       raise ArgumentError, "OAUTH_API_CLIENT_SEED_CREDENTIALS must contain valid JSON", cause: nil
     end
 
-    def teacher_trn(scenario, index)
+    def teacher_trn(index)
       sprintf("%s%02d%03d", @trn_prefix, scenario.id, index)
     end
 
-    def teacher_name(scenario, index)
-      first_name = @name.gsub(/[\s_]/, "-")
+    def teacher_name(index)
+      first_name = @client_name.gsub(/[\s_]/, "-")
       last_name = scenario.label.to_s.tr("_", "-").capitalize
 
       "#{first_name} #{last_name}-#{index}"
+    end
+
+    def store_options_for_fake_trs_api(trn)
+      return if @trs_options.empty?
+
+      fake_teacher_store.set_options(trn, **@trs_options)
+    end
+
+    def fake_teacher_store
+      @fake_teacher_store ||= TRS::FakeTeacherStore.new
     end
   end
 end
