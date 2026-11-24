@@ -92,7 +92,7 @@ describe TRS::FakeAPIClient do
       context "when configured as merged" do
         let(:stored_options) { { "error_type" => "merged" } }
 
-        it "raises TeacherDeactivated" do
+        it "raises TeacherMerged" do
           expect { trs_teacher }.to raise_error(TRS::Errors::TeacherMerged)
         end
       end
