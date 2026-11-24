@@ -66,9 +66,6 @@ module Admin
     rescue DfEUsers::CannotRemoveSelfError
       redirect_to admin_user_path(@user),
                   notice: "You cannot remove your own user account"
-    rescue DfEUsers::UserReferencedByDeclarationError
-      redirect_to admin_user_path(@user),
-                  notice: "This user cannot be removed because they are referenced by historical declaration records"
     end
 
     def unlock_otp_sign_in

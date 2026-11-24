@@ -75,28 +75,68 @@ RSpec.describe Admin::DfEUsers do
       end
     end
 
-    context "when the user is referenced by a declaration" do
+    context "when the user previously voided a declaration" do
       before do
         FactoryBot.create(
           :declaration,
-          :voided_by_user,
-          voided_by_user: user
+          :voided,
+          voided_by_user_id: user.id,
+          voided_by_user_at: 2.months.ago
         )
       end
 
-      it "does not remove the user" do
-        expect {
-          expect { remove_user }
-            .to raise_error(Admin::DfEUsers::UserReferencedByDeclarationError)
-        }.not_to change(User, :count)
+      it "removes the user" do
+        expect { remove_user }
+          .to change(User, :count).by(-1)
       end
 
-      it "does not record a deletion event" do
-        expect { remove_user }
-          .to raise_error(Admin::DfEUsers::UserReferencedByDeclarationError)
+      it "records a deletion event" do
+        remove_user
 
         expect(Events::Record)
-          .not_to have_received(:record_dfe_user_deleted_event!)
+          .to have_received(:record_dfe_user_deleted_event!)
+          .once
+      end
+    end
+
+    %i[voided awaiting_clawback clawed_back].each do |status|
+      context "when the user previously voided a declaration that is #{status}" do
+        let(:voided_at) { 2.months.ago.change(usec: 0) }
+        let!(:declaration) do
+          FactoryBot.create(
+            :declaration,
+            status,
+            voided_by_user_id: user.id,
+            voided_by_user_at: voided_at
+          )
+        end
+        let!(:event) do
+          FactoryBot.create(
+            :event,
+            event_type: status == :voided ? "teacher_declaration_voided" : "teacher_declaration_awaiting_clawback",
+            happened_at: voided_at,
+            declaration:,
+            teacher: declaration.teacher,
+            training_period: declaration.training_period,
+            author: user,
+            author_name: user.name,
+            author_email: user.email,
+            author_type: "dfe_staff_user"
+          )
+        end
+
+        it "removes the user without changing the declaration or historical attribution" do
+          declaration_attributes = declaration.attributes
+          event_attributes = event.attributes
+
+          expect { remove_user }
+            .to change(User, :count).by(-1)
+
+          expect(declaration.reload.attributes).to eq(declaration_attributes)
+          expect(declaration).to be_valid
+          expect(event.reload.author_id).to be_nil
+          expect(event.attributes.except("author_id")).to eq(event_attributes.except("author_id"))
+        end
       end
     end
 

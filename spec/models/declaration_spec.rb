@@ -33,7 +33,6 @@ describe Declaration do
 
   describe "associations" do
     it { is_expected.to belong_to(:training_period) }
-    it { is_expected.to belong_to(:voided_by_user).class_name("User").optional }
     it { is_expected.to belong_to(:mentorship_period).optional }
     it { is_expected.to belong_to(:delivery_partner_when_created).class_name("DeliveryPartner") }
     it { is_expected.to belong_to(:payment_statement).optional }
@@ -77,8 +76,6 @@ describe Declaration do
     it { is_expected.to validate_inclusion_of(:evidence_type).in_array(described_class.evidence_types.keys).with_message("Choose a valid evidence type").allow_nil }
     it { is_expected.to validate_uniqueness_of(:api_id).with_message("API id already exists for another declaration").case_insensitive }
     it { is_expected.to validate_presence_of(:delivery_partner_when_created).with_message("Delivery partner when the declaration was created must be specified") }
-    it { is_expected.not_to validate_presence_of(:voided_by_user) }
-    it { is_expected.not_to validate_presence_of(:voided_by_user_at) }
     it { is_expected.not_to validate_absence_of(:mentorship_period) }
 
     describe "uplift rules" do
@@ -158,13 +155,6 @@ describe Declaration do
       let(:training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: 1.month.ago, finished_on: nil) }
 
       it { is_expected.to validate_absence_of(:mentorship_period).with_message("Mentorship period must belong to the trainee") }
-    end
-
-    context "when voided by a user" do
-      subject { FactoryBot.build(:declaration, :voided_by_user) }
-
-      it { is_expected.to validate_presence_of(:voided_by_user).with_message("Voided by user must be set as well as the voided date") }
-      it { is_expected.to validate_presence_of(:voided_by_user_at).with_message("Voided by user at must be set as well as the voided by user") }
     end
 
     describe "declaration date relative to milestone dates" do

@@ -358,37 +358,62 @@ RSpec.describe "Admin::Users" do
         end
       end
 
-      context "when an admin user is referenced by a declaration" do
-        before do
+      context "when an admin user previously voided a declaration" do
+        let!(:declaration) do
           FactoryBot.create(
             :declaration,
-            :voided_by_user,
-            voided_by_user: user_record
+            :voided,
+            voided_by_user_id: user_record.id,
+            voided_by_user_at: 2.months.ago
           )
         end
 
-        it "does not remove the user" do
-          expect {
-            delete admin_user_path(user_record), params: confirmation_params
-          }.not_to change(User, :count)
+        before do
+          FactoryBot.create(
+            :event,
+            event_type: "teacher_declaration_voided",
+            declaration:,
+            teacher: declaration.teacher,
+            training_period: declaration.training_period,
+            author: user_record,
+            author_name: user_record.name,
+            author_email: user_record.email,
+            author_type: "dfe_staff_user"
+          )
         end
 
-        it "redirects back to their details with a message" do
+        it "removes the user" do
+          expect {
+            delete admin_user_path(user_record), params: confirmation_params
+          }.to change(User, :count).by(-1)
+        end
+
+        it "redirects to the users page with a success message" do
           delete admin_user_path(user_record), params: confirmation_params
 
           aggregate_failures do
-            expect(response).to redirect_to(admin_user_path(user_record))
-            expect(flash[:notice]).to eq(
-              "This user cannot be removed because they are referenced by historical declaration records"
+            expect(response).to redirect_to(admin_users_path)
+            expect(flash[:alert]).to eq(
+              "Daphne Blake has been removed as a user and no longer has access to the admin console"
             )
           end
         end
 
-        it "does not record a deletion event" do
+        it "records a deletion event" do
           delete admin_user_path(user_record), params: confirmation_params
 
           expect(Events::Record)
-            .not_to have_received(:record_dfe_user_deleted_event!)
+            .to have_received(:record_dfe_user_deleted_event!)
+            .once
+        end
+
+        it "still displays who voided the declaration" do
+          delete admin_user_path(user_record), params: confirmation_params
+
+          get admin_teacher_declarations_path(declaration.teacher)
+
+          expect(response).to have_http_status(:success)
+          expect(response.body).to include("Voided by Daphne Blake (daphne.blake@education.gov.uk)")
         end
       end
     end

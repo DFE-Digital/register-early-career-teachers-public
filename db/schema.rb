@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_24_141640) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_24_165223) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gist"
   enable_extension "citext"
@@ -1069,7 +1069,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_24_141640) do
   add_foreign_key "declarations", "statements", column: "clawback_statement_id"
   add_foreign_key "declarations", "statements", column: "payment_statement_id"
   add_foreign_key "declarations", "training_periods", on_delete: :restrict
-  add_foreign_key "declarations", "users", column: "voided_by_user_id"
   add_foreign_key "ect_at_school_periods", "appropriate_body_periods", column: "school_reported_appropriate_body_id"
   add_foreign_key "ect_at_school_periods", "schools"
   add_foreign_key "ect_at_school_periods", "schools", column: "reported_leaving_by_school_id"
