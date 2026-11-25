@@ -223,8 +223,6 @@ shared:
     - clawback_statement_id
     - declaration_type
     - evidenced_at
-    - voided_by_user_at
-    - voided_by_user_id
     - mentorship_period_id
     - delivery_partner_when_created_id
     - api_id
