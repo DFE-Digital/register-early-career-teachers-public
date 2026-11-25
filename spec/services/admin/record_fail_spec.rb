@@ -39,8 +39,7 @@ RSpec.describe Admin::RecordFail do
       expect { service_call }.to have_enqueued_job(FailECTInductionJob).with(
         trn: teacher.trn,
         start_date: induction_period.started_on,
-        completed_date: 1.day.ago.to_date,
-        use_fake_trs_api: nil
+        completed_date: 1.day.ago.to_date
       )
     end
 
