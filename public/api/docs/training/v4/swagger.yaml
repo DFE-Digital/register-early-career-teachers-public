@@ -3,15 +3,48 @@ openapi: 3.0.1
 info:
   title: Training API
   version: v4
-paths: {}
+paths:
+  "/api/training/v4/cohorts/{year}/mentorships":
+    get:
+      summary: Placeholder for listing mentorships in a cohort (returns no data yet)
+      security:
+      - bearer: []
+      tags:
+      - Mentorships
+      operationId: getCohortMentorships
+      parameters:
+      - name: year
+        in: path
+        required: true
+        description: The cohort year.
+        example: 2026
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: An empty response. This endpoint is a placeholder.
+        '401':
+          description: The lead provider API token is missing, unknown or revoked.
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/OAuthError"
+        '429':
+          description: Too many requests. Retry after the rate limit period has passed.
 components:
   securitySchemes:
     bearer:
       type: http
       scheme: bearer
-      description: OAuth 2.0 access token
-    client_credentials:
-      type: http
-      scheme: basic
-      description: OAuth 2.0 client ID and secret
-  schemas: {}
+      description: Existing lead provider API token
+  schemas:
+    OAuthError:
+      description: An OAuth 2.0 error.
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          type: string
+          description: The OAuth 2.0 error code.
+          example: invalid_token

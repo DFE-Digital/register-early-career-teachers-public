@@ -58,6 +58,14 @@ namespace :api do
     get "docs/authorisation/*page", to: "documentation/authorisation#page", as: :documentation_authorisation_page
 
     constraints -> { Rails.application.config.enable_training_api } do
+      namespace :training do
+        namespace :v4 do
+          scope "cohorts/:year" do
+            resources :mentorships, only: :index
+          end
+        end
+      end
+
       resource :training_v4_documentation, only: :show, path: "docs/training/v4", controller: "training/v4/documentations"
     end
   end

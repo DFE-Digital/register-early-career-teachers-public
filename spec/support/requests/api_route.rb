@@ -24,7 +24,9 @@ APIRoute = Data.define(:verb, :path, :controller) do
   end
 
   def authenticated?
-    controller.include?(API::OAuth::TokenAuthenticable) || controller.include?(API::OAuth::ClientAuthenticable)
+    controller.include?(API::TokenAuthenticatable) ||
+      controller.include?(API::OAuth::TokenAuthenticable) ||
+      controller.include?(API::OAuth::ClientAuthenticable)
   end
 
   def to_s = "#{verb.upcase} #{path}"

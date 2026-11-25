@@ -203,15 +203,12 @@ RSpec.configure do |config|
           bearer: {
             type: :http,
             scheme: :bearer,
-            description: "OAuth 2.0 access token",
-          },
-          client_credentials: {
-            type: :http,
-            scheme: :basic,
-            description: "OAuth 2.0 client ID and secret",
+            description: "Existing lead provider API token",
           },
         },
-        schemas: {},
+        schemas: {
+          **API::OAuth::ErrorSerializer.openapi_schema_definition(include_namespace: true),
+        },
       },
     },
   }

@@ -17,6 +17,15 @@ RSpec.describe API::OAuth::TokenAuthenticable, type: :request do
         expect(response.parsed_body).to eq("error" => "invalid_token")
       end
 
+      it "rejects a legacy lead provider API token" do
+        api_token = FactoryBot.create(:api_token)
+        process(route.verb, route.path, headers: api_headers(token: api_token.token), as: :json)
+
+        expect(response).to have_http_status(:unauthorized)
+        expect(response.headers["WWW-Authenticate"]).to eq(%(Bearer error="invalid_token"))
+        expect(response.parsed_body).to eq("error" => "invalid_token")
+      end
+
       it "rejects an expired token" do
         expired = FactoryBot.create(:api_oauth_authorization, :with_expired_token, token: "expired-token")
         process(route.verb, route.path, headers: bearer_auth_headers(authorization: expired, token: "expired-token"), as: :json)

@@ -7,11 +7,13 @@ describe "API routes" do
 
   it "permits access to the Training API routes" do
     expect(get: "/api/docs/training/v4").to route_to(controller: "api/training/v4/documentations", action: "show")
+    expect(get: "/api/training/v4/cohorts/2026/mentorships").to route_to(controller: "api/training/v4/mentorships", action: "index", year: "2026")
   end
 
   context "when the training API feature flag is false", with_feature_flags: { enable_training_api: false } do
     it "removes access to the Training API routes" do
       expect(get: "/api/docs/training/v4").not_to route_to(controller: "api/training/v4/documentations", action: "show")
+      expect(get: "/api/training/v4/cohorts/2026/mentorships").not_to be_routable
     end
   end
 end

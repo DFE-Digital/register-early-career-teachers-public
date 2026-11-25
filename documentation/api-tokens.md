@@ -1,5 +1,12 @@
 # API tokens
 
+## Training API v4
+
+The training API v4 accepts existing lead provider API tokens through
+`API::TokenAuthenticatable`, as v3 does. Send the token in the
+`Authorization: Bearer <token>` header. These tokens do not authenticate requests
+to the induction or hello APIs, which continue to use OAuth.
+
 ## Development/review
 
 We generate tokens for each lead provider in the review apps (via the development database seeds) to make testing easier. The tokens are the lead provider names, lower case and hyphenated:
