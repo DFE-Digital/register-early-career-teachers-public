@@ -95,6 +95,12 @@ describe API::OAuth::Client do
     end
   end
 
+  describe "grant_types" do
+    it "defaults to the supported grant types" do
+      expect(described_class.new.grant_types).to eq(%w[authorization_code])
+    end
+  end
+
   describe "#rotate_client_secret" do
     subject(:client) { described_class.new }
 

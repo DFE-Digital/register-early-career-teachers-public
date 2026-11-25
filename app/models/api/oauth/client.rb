@@ -6,6 +6,8 @@ class API::OAuth::Client < ApplicationRecord
 
   has_many :authorizations, dependent: :destroy
 
+  attribute :grant_types, default: -> { GRANT_TYPES }
+
   # we need to temporarily see the secret to make it available to the client.
   attr_reader :client_secret
 

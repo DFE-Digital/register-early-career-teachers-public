@@ -85,6 +85,7 @@ RSpec.describe "Admin::APIClientsController" do
       expect(css_select("#client-id").first["value"]).to eq(client.client_id)
       expect(client.secret_matches?(secret: css_select("#client-secret").first["value"])).to be(true)
       expect(css_select("main button[hidden]").map { it.text.squish }).to contain_exactly("Copy client ID", "Copy client secret")
+      expect(Event.sole).to have_attributes(event_type: "api_client_created", oauth_client: client, author_id: user.id)
     end
 
     context "when the client is invalid" do
@@ -154,6 +155,7 @@ RSpec.describe "Admin::APIClientsController" do
           name: "Gamma Induction Platform",
           redirect_uris: %w[https://alpha.example.com/new-callback https://alpha.example.com/callback]
         )
+        expect(Event.sole).to have_attributes(event_type: "api_client_updated", oauth_client: client, author_id: user.id)
       end
 
       it "shows the errors and keeps what was entered when invalid" do

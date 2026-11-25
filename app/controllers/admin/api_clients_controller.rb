@@ -16,24 +16,21 @@ module Admin
     end
 
     def create
-      @client = API::OAuth::Client.new(**client_params, grant_types: API::OAuth::Client::GRANT_TYPES)
-
-      if @client.save
-        no_store
-      else
-        render :new, status: :unprocessable_content
-      end
+      @client = API::OAuth::Clients.new(author: current_user).create!(params: client_params)
+      no_store
+    rescue ActiveRecord::RecordInvalid => e
+      @client = e.record
+      render :new, status: :unprocessable_content
     end
 
     def edit
     end
 
     def update
-      if @client.update(client_params)
-        redirect_to admin_api_client_path(@client), alert: "Client details updated"
-      else
-        render :edit, status: :unprocessable_content
-      end
+      API::OAuth::Clients.new(author: current_user).update!(client: @client, params: client_params)
+      redirect_to admin_api_client_path(@client), alert: "Client details updated"
+    rescue ActiveRecord::RecordInvalid
+      render :edit, status: :unprocessable_content
     end
 
   private

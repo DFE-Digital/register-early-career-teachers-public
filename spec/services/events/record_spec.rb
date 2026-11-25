@@ -2136,6 +2136,66 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe ".record_api_client_created_event!" do
+    let(:client) { FactoryBot.create(:api_oauth_client, name: "Alpha Induction Platform") }
+
+    it "records an event with the correct values" do
+      freeze_time do
+        modifications = { "name" => [nil, "Alpha Induction Platform"] }
+        Events::Record.record_api_client_created_event!(author:, client:, modifications:)
+
+        expect(Event.sole).to have_attributes(
+          heading: "API client 'Alpha Induction Platform' added",
+          event_type: "api_client_created",
+          oauth_client: client,
+          modifications: ["Name set to 'Alpha Induction Platform'"],
+          metadata: modifications,
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      end
+    end
+  end
+
+  describe ".record_api_client_updated_event!" do
+    let(:client) { FactoryBot.create(:api_oauth_client, name: "Alpha Induction Platform") }
+
+    it "records an event with the correct values" do
+      freeze_time do
+        modifications = { "name" => ["Beta Induction Platform", "Alpha Induction Platform"] }
+        Events::Record.record_api_client_updated_event!(author:, client:, modifications:)
+
+        expect(Event.sole).to have_attributes(
+          heading: "API client 'Alpha Induction Platform' updated",
+          event_type: "api_client_updated",
+          oauth_client: client,
+          modifications: ["Name changed from 'Beta Induction Platform' to 'Alpha Induction Platform'"],
+          metadata: modifications,
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      end
+    end
+  end
+
+  describe ".record_api_client_secret_rotated_event!" do
+    let(:client) { FactoryBot.create(:api_oauth_client, name: "Alpha Induction Platform") }
+
+    it "records an event with the correct values" do
+      freeze_time do
+        Events::Record.record_api_client_secret_rotated_event!(author:, client:)
+
+        expect(Event.sole).to have_attributes(
+          heading: "API client 'Alpha Induction Platform' secret rotated",
+          event_type: "api_client_secret_rotated",
+          oauth_client: client,
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      end
+    end
+  end
+
   describe ".record_statement_adjustment_added_event!" do
     let(:statement) { FactoryBot.create(:statement) }
     let(:statement_adjustment) { FactoryBot.create(:statement_adjustment, statement:) }
