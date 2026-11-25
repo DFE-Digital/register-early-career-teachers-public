@@ -1,4 +1,6 @@
 class Event < ApplicationRecord
+  include APIReactions
+
   EVENT_TYPES = %w[
     active_lead_provider_created
     active_lead_provider_deleted
@@ -120,7 +122,7 @@ class Event < ApplicationRecord
     band_deleted
     api_oauth_authorization_code_exchanged
     api_oauth_access_token_revoked
-  ].freeze
+  ].concat(API_REACTION_EVENT_TYPES).freeze
 
   belongs_to :author, class_name: "User"
   belongs_to :user

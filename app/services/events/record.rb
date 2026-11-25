@@ -129,7 +129,7 @@ module Events
 
     def record_event!
       check_relationship_attributes_are_persisted
-      Event.create!(**attributes)
+      Event.create!(**attributes).tap { Reactor.dispatch(it) }
     end
 
     # Induction Period Events
@@ -1706,6 +1706,14 @@ module Events
         contract_period:,
         happened_at: Time.zone.now
       ).record_event!
+    end
+
+    def self.record_api_mentorship_event!(action:, lead_provider:, mentorship_period:, in_reaction_to:, payload:)
+      event_type = :"api_mentorship_#{action}"
+      heading = "Mentorship #{action} for #{lead_provider.name}"
+      metadata = { in_reaction_to_event_id: in_reaction_to&.id, payload: }
+
+      new(event_type:, author: Events::SystemAuthor.new, heading:, lead_provider:, mentorship_period:, metadata:, happened_at: Time.zone.now).record_event!
     end
 
     def self.relationship_for(record)

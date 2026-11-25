@@ -55,6 +55,18 @@ describe Event do
         expect(Event.event_type_starts_with("foo").to_sql).to include(%(WHERE "events"."event_type" ILIKE 'foo%'))
       end
     end
+
+    describe ".api_reaction_events and .api_creation_and_update_reaction_events" do
+      it "separates API reaction events by what happened to the resource" do
+        created, updated, deleted, oauth = %i[api_mentorship_created api_mentorship_updated api_mentorship_deleted api_oauth_access_token_revoked].map do |event_type|
+          FactoryBot.create(:event, author_type: "system", event_type:)
+        end
+
+        expect(Event.api_reaction_events).to contain_exactly(created, updated, deleted)
+        expect(Event.api_creation_and_update_reaction_events).to contain_exactly(created, updated)
+        expect(Event.api_reaction_events).not_to include(oauth)
+      end
+    end
   end
 
   describe "validations" do

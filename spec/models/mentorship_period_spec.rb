@@ -13,6 +13,171 @@ describe MentorshipPeriod do
     it { is_expected.to belong_to(:mentee).class_name("ECTAtSchoolPeriod").with_foreign_key(:ect_at_school_period_id).inverse_of(:mentorship_periods) }
     it { is_expected.to belong_to(:mentor).class_name("MentorAtSchoolPeriod").with_foreign_key(:mentor_at_school_period_id).inverse_of(:mentorship_periods) }
     it { is_expected.to have_many(:events) }
+    it { is_expected.to have_many(:api_reaction_events).class_name("Event") }
+  end
+
+  describe ".affected_by" do
+    it "returns the event's mentorship period and the mentorship periods of the event's teacher" do
+      mentorship_period = FactoryBot.create(:mentorship_period)
+      mentored_by_teacher = FactoryBot.create(:mentorship_period)
+      mentoring_teacher = FactoryBot.create(:mentorship_period)
+      FactoryBot.create(:mentorship_period)
+
+      teacher = mentored_by_teacher.mentor.teacher
+      mentoring_teacher.mentee.update!(teacher:)
+
+      expect(MentorshipPeriod.affected_by(Event.new(mentorship_period:, teacher:))).to contain_exactly(mentorship_period, mentored_by_teacher, mentoring_teacher)
+    end
+  end
+
+  describe "lead providers" do
+    let(:school) { FactoryBot.create(:school) }
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school:, started_on: 2.years.ago.to_date, finished_on: nil) }
+    let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school:, started_on: 2.years.ago.to_date, finished_on: nil) }
+    let(:mentorship_period) { FactoryBot.create(:mentorship_period, mentee: ect_at_school_period, mentor: mentor_at_school_period, started_on: 1.year.ago.to_date, finished_on: nil) }
+    let(:ambition_institute) { FactoryBot.create(:lead_provider, name: "Ambition Institute") }
+    let(:teach_first) { FactoryBot.create(:lead_provider, name: "Teach First") }
+
+    before do
+      FactoryBot.create(:training_period, ect_at_school_period:, school_partnership: FactoryBot.create(:school_partnership, :for_year, lead_provider: teach_first, school:), started_on: 2.years.ago.to_date, finished_on: 1.year.ago.to_date)
+      FactoryBot.create(:training_period, ect_at_school_period:, school_partnership: FactoryBot.create(:school_partnership, :for_year, lead_provider: ambition_institute, school:), started_on: 1.year.ago.to_date.tomorrow, finished_on: nil)
+    end
+
+    describe "#lead_providers" do
+      it "returns the lead providers training the ECT since the mentorship started" do
+        expect(mentorship_period.lead_providers).to contain_exactly(ambition_institute)
+      end
+
+      it "leaves out lead providers training the ECT in a contract period that is not open" do
+        ContractPeriod.find_by!(year: 2024).update!(enabled: false)
+
+        expect(mentorship_period.lead_providers).to be_empty
+      end
+    end
+
+    describe "#lead_providers_no_longer_involved" do
+      it "returns lead providers with API events for the mentorship that are no longer involved and have not been told" do
+        best_practice_network = FactoryBot.create(:lead_provider, name: "Best Practice Network")
+        FactoryBot.create(:event, author_type: "system", event_type: :api_mentorship_created, mentorship_period:, lead_provider: teach_first)
+        FactoryBot.create(:event, author_type: "system", event_type: :api_mentorship_created, mentorship_period:, lead_provider: ambition_institute)
+        FactoryBot.create(:event, author_type: "system", event_type: :api_mentorship_created, mentorship_period:, lead_provider: best_practice_network)
+        FactoryBot.create(:event, author_type: "system", event_type: :api_mentorship_deleted, mentorship_period:, lead_provider: best_practice_network)
+
+        expect(mentorship_period.lead_providers_no_longer_involved).to contain_exactly(teach_first)
+      end
+    end
+  end
+
+  describe "#latest_emitted_payload" do
+    let(:mentorship_period) { FactoryBot.create(:mentorship_period) }
+    let(:ambition_institute) { FactoryBot.create(:lead_provider, name: "Ambition Institute") }
+    let(:teach_first) { FactoryBot.create(:lead_provider, name: "Teach First") }
+
+    before do
+      FactoryBot.create(:event, author_type: "system", event_type: :api_mentorship_created, mentorship_period:, lead_provider: ambition_institute, metadata: { payload: { "mentor_email" => "first@example.com" } })
+      FactoryBot.create(:event, author_type: "system", event_type: :api_mentorship_updated, mentorship_period:, lead_provider: ambition_institute, metadata: { payload: { "mentor_email" => "second@example.com" } })
+      FactoryBot.create(:event, author_type: "system", event_type: :api_mentorship_updated, mentorship_period:, lead_provider: teach_first, metadata: { payload: { "mentor_email" => "other@example.com" } })
+    end
+
+    it "returns the payload on the lead provider's latest API event" do
+      expect(mentorship_period.latest_emitted_payload(lead_provider: ambition_institute)).to eq("mentor_email" => "second@example.com")
+      expect(mentorship_period.latest_emitted_payload(lead_provider: FactoryBot.create(:lead_provider))).to be_nil
+    end
+
+    it "returns nothing once the latest API event is a deletion" do
+      FactoryBot.create(:event, author_type: "system", event_type: :api_mentorship_deleted, mentorship_period:, lead_provider: ambition_institute, metadata: { payload: nil })
+
+      expect(mentorship_period.latest_emitted_payload(lead_provider: ambition_institute)).to be_nil
+    end
+  end
+
+  describe "#latest_relevant_timestamp" do
+    context "with created, updated and deleted API events" do
+      let(:mentorship_period) { FactoryBot.create(:mentorship_period) }
+      let(:ambition_institute) { FactoryBot.create(:lead_provider, name: "Ambition Institute") }
+      let(:teach_first) { FactoryBot.create(:lead_provider, name: "Teach First") }
+      let!(:updated) { FactoryBot.create(:event, author_type: "system", event_type: :api_mentorship_updated, mentorship_period:, lead_provider: ambition_institute, happened_at: 2.days.ago) }
+
+      before do
+        FactoryBot.create(:event, author_type: "system", event_type: :api_mentorship_created, mentorship_period:, lead_provider: ambition_institute, happened_at: 3.days.ago)
+        FactoryBot.create(:event, author_type: "system", event_type: :api_mentorship_deleted, mentorship_period:, lead_provider: ambition_institute, happened_at: 1.day.ago)
+        FactoryBot.create(:event, author_type: "system", event_type: :api_mentorship_updated, mentorship_period:, lead_provider: teach_first, happened_at: 1.hour.ago)
+      end
+
+      it "returns when the lead provider's view of the mentorship last changed" do
+        expect(mentorship_period.latest_relevant_timestamp(lead_provider: ambition_institute)).to eq(updated.happened_at)
+        expect(mentorship_period.latest_relevant_timestamp(lead_provider: FactoryBot.create(:lead_provider))).to be_nil
+      end
+    end
+
+    context "when another mentorship has a later API event" do
+      let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Ambition Institute") }
+      let(:mentorship_period) { FactoryBot.create(:mentorship_period) }
+      let!(:updated) { FactoryBot.create(:event, author_type: "system", event_type: :api_mentorship_updated, mentorship_period:, lead_provider:, happened_at: 1.day.ago) }
+
+      before { FactoryBot.create(:event, author_type: "system", event_type: :api_mentorship_updated, lead_provider:, happened_at: 1.hour.ago) }
+
+      it "returns when the lead provider's view of this mentorship last changed" do
+        expect(mentorship_period.latest_relevant_timestamp(lead_provider:)).to eq(updated.happened_at)
+      end
+    end
+
+    describe "compared with updated_at" do
+      let(:author) { Events::SystemAuthor.new }
+      let(:school) { FactoryBot.create(:school) }
+      let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Ambition Institute") }
+      let(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, lead_provider:, school:) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school:, started_on: 1.year.ago.to_date, finished_on: nil) }
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school:, started_on: 1.year.ago.to_date, finished_on: nil) }
+      let(:mentee) { ect_at_school_period.teacher }
+      let(:mentor) { mentor_at_school_period.teacher }
+      let(:mentorship_period) do
+        FactoryBot.create(:mentorship_period, mentee: ect_at_school_period, mentor: mentor_at_school_period, started_on: 6.months.ago.to_date, finished_on: nil)
+      end
+
+      before do
+        FactoryBot.create(:training_period, ect_at_school_period:, school_partnership:, started_on: 1.year.ago.to_date, finished_on: nil)
+
+        perform_enqueued_jobs do
+          Events::Record.record_teacher_starts_being_mentored_event!(author:, mentor:, mentee:, ect_at_school_period:, mentorship_period:, school:)
+        end
+      end
+
+      def make_change_visible_to_lead_provider!
+        MentorshipPeriods::Finish.new(mentorship_period:, finished_on: Date.current, author:).finish!
+      end
+
+      def make_change_invisible_to_lead_provider!
+        mentorship_period.update!(ecf_end_induction_record_id: SecureRandom.uuid)
+        Events::Record.record_admin_data_fix_event!(
+          author:,
+          body: "Linked the ECF end induction record",
+          zendesk_ticket_id: nil,
+          modifications: mentorship_period.saved_changes,
+          metadata: { gid: mentorship_period.to_global_id.to_s, action: "update" },
+          record: mentorship_period
+        )
+      end
+
+      it "moves, like updated_at, when the lead provider can see the change" do
+        travel 1.day
+
+        expect { make_change_visible_to_lead_provider! }.to emit_events(
+          [:api_mentorship_updated, { lead_provider:, mentorship_period: }]
+        )
+        expect(mentorship_period.updated_at).to eq(Time.current)
+        expect(mentorship_period.latest_relevant_timestamp(lead_provider:)).to eq(Time.current)
+      end
+
+      it "does not move, unlike updated_at, when the lead provider cannot see the change" do
+        timestamp_before = mentorship_period.latest_relevant_timestamp(lead_provider:)
+        travel 1.day
+
+        expect { make_change_invisible_to_lead_provider! }.to emit_no_events
+        expect(mentorship_period.updated_at).to eq(Time.current)
+        expect(mentorship_period.latest_relevant_timestamp(lead_provider:)).to eq(timestamp_before)
+      end
+    end
   end
 
   describe "validations" do

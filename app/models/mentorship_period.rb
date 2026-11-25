@@ -1,6 +1,7 @@
 class MentorshipPeriod < ApplicationRecord
   include Interval
   include DeclarativeUpdates
+  include LeadProviderEventTrackable
 
   # Associations
   belongs_to :mentee,
@@ -34,10 +35,24 @@ class MentorshipPeriod < ApplicationRecord
   # Scopes
   scope :for_mentee, ->(id) { where(ect_at_school_period_id: id) }
   scope :for_mentor, ->(id) { where(mentor_at_school_period_id: id) }
+  scope :involving_teacher, ->(teacher_id) {
+    for_mentee(ECTAtSchoolPeriod.where(teacher_id:).select(:id))
+      .or(for_mentor(MentorAtSchoolPeriod.where(teacher_id:).select(:id)))
+  }
+  scope :affected_by, ->(event) { where(id: event.mentorship_period_id).or(involving_teacher(event.teacher_id)) }
 
   refresh_metadata -> { mentee.teacher }, on_event: %i[create destroy update]
 
   # Instance methods
+  def lead_providers
+    LeadProvider
+      .joins(:training_periods)
+      .where(training_periods: { ect_at_school_period_id: })
+      .where(framework_agreements: { contract_period_year: ContractPeriod.enabled.select(:year) })
+      .where("training_periods.finished_on IS NULL OR training_periods.finished_on > ?", started_on)
+      .distinct
+  end
+
   def siblings
     return MentorshipPeriod.none unless mentee
 
