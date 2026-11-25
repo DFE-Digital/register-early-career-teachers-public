@@ -48,57 +48,30 @@ RSpec.describe TeachingSchoolHub do
       let!(:period) { FactoryBot.create(:appropriate_body_period, name:) }
       let(:name) { "North West Hub" }
 
-      context "when the rule is on" do
-        before do
-          allow(Rails.application.config).to receive(:nullable_appropriate_body_period_names).and_return(true)
-        end
+      it { is_expected.to have_error(:name, "is already used by an ongoing appropriate body.") }
+
+      context "while the period runs to a future end date" do
+        before { period.update!(finished_on: 1.year.from_now.to_date) }
 
         it { is_expected.to have_error(:name, "is already used by an ongoing appropriate body.") }
-
-        context "while the period runs to a future end date" do
-          before { period.update!(finished_on: 1.year.from_now.to_date) }
-
-          it { is_expected.to have_error(:name, "is already used by an ongoing appropriate body.") }
-        end
-
-        context "once the period has finished" do
-          before { period.update!(finished_on: Date.yesterday) }
-
-          it { is_expected.to be_valid }
-        end
       end
 
-      context "when the rule is off" do
+      context "once the period has finished" do
+        before { period.update!(finished_on: Date.yesterday) }
+
         it { is_expected.to be_valid }
       end
     end
 
-    context "when nullable_appropriate_body_period_names is on" do
-      subject(:teaching_school_hub) { FactoryBot.create(:teaching_school_hub, name: "North West Hub") }
+    context "when a national body is actively using the name" do
+      subject!(:teaching_school_hub) { FactoryBot.create(:teaching_school_hub, name: "North West Hub") }
 
       before do
-        allow(Rails.application.config).to receive(:nullable_appropriate_body_period_names).and_return(true)
+        FactoryBot.create(:appropriate_body_period, :national, :nameless,
+                          national_body: FactoryBot.create(:national_body, name: "North West Hub"))
       end
 
-      context "and an ongoing period has no name override" do
-        before do
-          FactoryBot.create(:appropriate_body_period, :nameless,
-                            teaching_school_hub:,
-                            started_on: 1.year.ago)
-        end
-
-        it { is_expected.to be_valid }
-      end
-
-      context "and the name collides with an existing active body" do
-        before do
-          teaching_school_hub
-          FactoryBot.create(:appropriate_body_period, :national, :nameless,
-                            national_body: FactoryBot.create(:national_body, name: "North West Hub"))
-        end
-
-        it { is_expected.to have_error(:name, "is already used by an ongoing appropriate body.") }
-      end
+      it { is_expected.to have_error(:name, "is already used by an ongoing appropriate body.") }
     end
   end
 
