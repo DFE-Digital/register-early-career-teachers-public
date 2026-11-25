@@ -86,9 +86,12 @@ class AppropriateBodyPeriod < ApplicationRecord
 
   # Validations
   validates :started_on, presence: true
+
   validate :name_is_unique_among_overlapping_periods, unless: :teaching_school?
 
   validate :name_is_not_a_teaching_school_hub_name
+
+  validate :covering_induction_periods, if: -> { persisted? && induction_periods.any? }
 
   # Teaching School Hub or Teaching School
   with_options if: :provisioning_school do
@@ -191,6 +194,13 @@ private
     elsif overlapping_periods.where(name: nil).exists?
       errors.add(:base, "Give the overlapping appropriate body a name before adding another.")
     end
+  end
+
+  def covering_induction_periods
+    return if range.nil?
+    return if induction_periods.all? { it.range.nil? || range.cover?(it.range) }
+
+    errors.add(:base, "Date range does not cover all the induction periods")
   end
 
   def siblings

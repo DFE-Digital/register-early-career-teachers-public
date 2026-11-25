@@ -24,7 +24,10 @@ FactoryBot.define do
 
     trait(:cip) { induction_programme { "cip" } }
     trait(:diy) { induction_programme { "diy" } }
-    trait(:pre_2021) { induction_programme { "pre_september_2021" } }
+    trait(:pre_2021) do
+      induction_programme { "pre_september_2021" }
+      association :appropriate_body_period, :teaching_school
+    end
 
     trait :legacy_programme_type do
       after(:build) do |ip, evaluator|

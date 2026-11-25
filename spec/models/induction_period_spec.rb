@@ -203,6 +203,78 @@ RSpec.describe InductionPeriod do
       end
     end
 
+    describe "appropriate body period bounds" do
+      subject(:induction_period) do
+        FactoryBot.build(:induction_period,
+                         appropriate_body_period:,
+                         started_on:,
+                         finished_on:)
+      end
+
+      let(:appropriate_body_period) do
+        FactoryBot.create(:appropriate_body_period, :teaching_school_hub, :nameless,
+                          teaching_school_hub:,
+                          provisioning_school:,
+                          started_on: body_started_on,
+                          finished_on: body_finished_on)
+      end
+      let(:teaching_school_hub) { FactoryBot.create(:teaching_school_hub) }
+      let(:provisioning_school) { FactoryBot.create(:school, :eligible) }
+      let(:body_started_on) { Date.new(2021, 9, 1) }
+      let(:body_finished_on) { Date.new(2024, 8, 31) }
+      let(:started_on) { Date.new(2022, 9, 1) }
+      let(:finished_on) { Date.new(2023, 8, 31) }
+
+      it { is_expected.to be_valid }
+
+      context "when the start date is on or after the appropriate body started" do
+        let(:started_on) { body_started_on }
+
+        it { is_expected.to be_valid }
+      end
+
+      context "when the start date is before the appropriate body started" do
+        let(:started_on) { body_started_on - 1.day }
+
+        it do
+          expect(induction_period).not_to be_valid
+          expect(induction_period).to have_error(:started_on, "The start date cannot be earlier than the appropriate body started (1 September 2021)")
+        end
+      end
+
+      context "when the end date is on or before the appropriate body closed" do
+        let(:finished_on) { body_finished_on }
+
+        it { is_expected.to be_valid }
+      end
+
+      context "when the end date is after the appropriate body closed" do
+        let(:finished_on) { body_finished_on + 1.day }
+
+        it do
+          expect(induction_period).not_to be_valid
+          expect(induction_period).to have_error(:finished_on, "The end date cannot be later than the appropriate body finished (31 August 2024)")
+        end
+      end
+
+      context "when the appropriate body has no end date" do
+        let(:body_finished_on) { nil }
+        let(:finished_on) { Date.new(2025, 7, 31) }
+
+        it { is_expected.to be_valid }
+      end
+
+      context "when the induction has no end date" do
+        subject(:induction_period) do
+          FactoryBot.build(:induction_period, :unfinished,
+                           appropriate_body_period:,
+                           started_on:)
+        end
+
+        it { is_expected.to be_valid }
+      end
+    end
+
     describe "#fail_confirmation_sent_on_not_in_future" do
       subject do
         FactoryBot.build(:induction_period, :fail, appropriate_body_period:, fail_confirmation_sent_on:)

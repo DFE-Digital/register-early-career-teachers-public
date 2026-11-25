@@ -9,9 +9,15 @@ brookfield_school = School.find_by!(urn: 2_976_163)
 ashford_independent_school = School.find_by!(urn: 9_123_458)
 
 # Appropriate bodies
+#
+# 01 Sep 2021 -> 01 Sep 2024
 south_yorkshire_studio_hub = AppropriateBodyPeriod.with_display_name("South Yorkshire Studio Hub").first!
+# 01 Sep 2021 -> now
 golden_leaf_teaching_school_hub = AppropriateBodyPeriod.with_display_name("Golden Leaf Teaching School Hub").first!
+# 01 Sep 2021 -> now
 umber_teaching_school_hub = AppropriateBodyPeriod.with_display_name("Umber Teaching School Hub").first!
+# 31 Aug 2011 -> now
+istip = AppropriateBodyPeriod.with_display_name("Independent Schools Teacher Induction Panel (ISTIP)").first!
 
 def teacher(...) = TeacherHistories::TeacherBuilder.teacher(...)
 
@@ -37,10 +43,14 @@ Induction::ScenarioBuilder.define do
   scenario :released_ect_to_claim, id: 3 do |trn:, name:, **|
     teacher(trn, name) do
       description("Previously released ECT, ready to claim")
-      ect_at_school_period(ackley_bridge, "2025-09-01") do
-        school_led_training_period("2025-09-01")
+      ect_at_school_period(brookfield_school, "2021-09-01 -> 2022-08-31", school_reported_appropriate_body: istip) do
+        school_led_training_period("2021-09-01 -> 2022-08-31")
       end
-      induction_period(south_yorkshire_studio_hub, "2025-09-01 -> 2026-01-01")
+      induction_period(istip, "2021-09-01 -> 2022-08-31")
+      ect_at_school_period(ackley_bridge, "2022-09-01", school_reported_appropriate_body: south_yorkshire_studio_hub) do
+        school_led_training_period("2022-09-01")
+      end
+      induction_period(south_yorkshire_studio_hub, "2022-09-01 -> 2023-01-01")
     end
   end
 

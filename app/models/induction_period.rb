@@ -49,6 +49,8 @@ class InductionPeriod < ApplicationRecord
   validate :teacher_distinct_period, if: -> { valid_date_order? }
   validate :end_date_admin_only, if: -> { started_on.present? }
   validate :at_most_one_outcome_per_teacher, if: -> { outcome.present? }
+  validate :started_on_or_after_appropriate_body_period_started
+  validate :finished_on_or_before_appropriate_body_period_finished
 
   # Scopes
   scope :for_teacher, ->(teacher) { where(teacher:) }
@@ -81,6 +83,26 @@ class InductionPeriod < ApplicationRecord
   end
 
 private
+
+  def started_on_or_after_appropriate_body_period_started
+    return if started_on.blank?
+
+    body_started_on = appropriate_body_period&.started_on
+    return if body_started_on.blank?
+    return if started_on >= body_started_on
+
+    errors.add(:started_on, "The start date cannot be earlier than the appropriate body started (#{body_started_on.to_fs(:govuk)})")
+  end
+
+  def finished_on_or_before_appropriate_body_period_finished
+    return if finished_on.blank?
+
+    body_finished_on = appropriate_body_period&.finished_on
+    return if body_finished_on.blank?
+    return if finished_on <= body_finished_on
+
+    errors.add(:finished_on, "The end date cannot be later than the appropriate body finished (#{body_finished_on.to_fs(:govuk)})")
+  end
 
   # Ensure admin users inserting new induction periods include end dates.
   def end_date_admin_only
