@@ -6,8 +6,7 @@
       :name,
       label: { text: "Lead provider" },
       options: { selected: lead_provider_id, include_blank: "All" },
-      form_group: { class: 'filter-form-group' }
-    %>
+      form_group: { class: 'filter-form-group' } %>
 
     <%= f.govuk_collection_select :contract_period_year,
       contract_periods,
@@ -15,8 +14,7 @@
       :year,
       label: { text: "Contract year" },
       options: { selected: contract_period_year, include_blank: "All" },
-      form_group: { class: 'filter-form-group' }
-    %>
+      form_group: { class: 'filter-form-group' } %>
 
     <%= f.govuk_collection_select :statement_date,
       statement_dates,
@@ -24,8 +22,7 @@
       :name,
       label: { text: "Statement date" },
       options: { selected: statement_date, include_blank: "All" },
-      form_group: { class: 'filter-form-group' }
-    %>
+      form_group: { class: 'filter-form-group' } %>
 
     <%= f.govuk_collection_select :statement_type,
       statement_types,
@@ -33,8 +30,7 @@
       :name,
       label: { text: "Statement type" },
       options: { selected: statement_type, include_blank: false },
-      form_group: { class: 'filter-form-group' }
-    %>
+      form_group: { class: 'filter-form-group' } %>
 
     <%= f.govuk_submit "View", secondary: true, class: "filter-button" %>
   </div>

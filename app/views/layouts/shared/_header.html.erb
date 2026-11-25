@@ -6,7 +6,8 @@
     full_width_border: true,
     html_attributes: { class: ["app-header", environment_specific_header_colour_class] },
     header_html_attributes: { class: class_names("x-govuk-header--inverse" => inverse) }
-  ) do |header| %>
+  ) do |header|
+%>
 
   <% if multi_role_user? %>
     <div class="app-header__item">
