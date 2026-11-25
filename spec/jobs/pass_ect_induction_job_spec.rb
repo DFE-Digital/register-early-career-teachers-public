@@ -7,7 +7,7 @@ RSpec.describe PassECTInductionJob, type: :job do
   let(:refresh_service) { instance_double(Teachers::RefreshTRSAttributes) }
 
   before do
-    allow(TRS::APIClient).to receive(:new).and_return(api_client)
+    allow(TRS::APIClient).to receive(:build).and_return(api_client)
     allow(Teachers::RefreshTRSAttributes)
       .to receive(:new)
       .with(teacher, api_client:)
