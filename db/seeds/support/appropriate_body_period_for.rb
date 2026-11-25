@@ -5,7 +5,7 @@ def appropriate_body_period_for(operator)
   when AppropriateBodyPeriod then operator
   when TeachingSchoolHub, NationalBody then find_period_displayed_as(operator.name)
   when LocalAuthority then operator.appropriate_body_period
-  when School then AppropriateBodyPeriod.teaching_school.find_by!(school_id: operator)
+  when School then AppropriateBodyPeriod.teaching_school.find_by!(provisioning_school_id: operator)
   else
     raise ArgumentError, "not an appropriate body: #{operator.inspect}"
   end

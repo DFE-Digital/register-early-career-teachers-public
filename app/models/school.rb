@@ -32,7 +32,7 @@ class School < ApplicationRecord
   has_many :contract_period_metadata, class_name: "Metadata::SchoolContractPeriod", dependent: :delete_all
   has_many :training_periods, through: :school_partnerships
   has_many :school_funding_eligibilities, through: :gias_school
-  has_many :region_awards, class_name: "Region::Award", inverse_of: :school, dependent: :destroy
+  has_many :region_awards, class_name: "Region::Award", foreign_key: :lead_school_id, inverse_of: :lead_school, dependent: :destroy
   has_many :awarded_regions, through: :region_awards, source: :region
   has_many :appropriate_body_periods, -> { distinct }, through: :region_awards, source: :appropriate_body_period
 

@@ -14,7 +14,7 @@ erDiagram
   Region_Award {
     integer id
     integer appropriate_body_period_id
-    integer school_id
+    integer lead_school_id
     integer region_id
     datetime deactivated_at
     string deactivation_reason
@@ -487,7 +487,7 @@ erDiagram
     integer local_authority_id
     string name
     integer national_body_id
-    integer school_id
+    integer provisioning_school_id
     integer teaching_school_hub_id
     datetime updated_at
     date started_on

@@ -3,7 +3,7 @@ shared:
   :region_awards:
     - id
     - appropriate_body_period_id
-    - school_id
+    - lead_school_id
     - region_id
     - created_at
     - updated_at

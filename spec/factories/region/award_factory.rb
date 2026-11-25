@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory(:region_award, class: "Region::Award") do
     appropriate_body_period { association :appropriate_body_period, :teaching_school_hub }
-    school { association :school }
+    lead_school { association :school }
     region { association :region }
 
     deactivated_at { nil }

@@ -118,7 +118,7 @@ module AppropriateBody
       region = Region.create_with(districts:).find_or_create_by!(code:)
       award = Region::Award.find_or_initialize_by(appropriate_body_period: @period, region:)
       award.assign_attributes(
-        school: lookup_school(lead_school),
+        lead_school: lookup_school(lead_school),
         deactivated_at: deactivated_on && Date.parse(deactivated_on).end_of_day,
         deactivation_reason: reason || award.deactivation_reason
       )

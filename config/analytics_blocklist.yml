@@ -36,7 +36,7 @@
     - body_type
     - local_authority_id
     - national_body_id
-    - school_id
+    - provisioning_school_id
     - teaching_school_hub_id
     - external_id
     - started_on
