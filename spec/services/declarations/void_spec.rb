@@ -1,6 +1,6 @@
 RSpec.describe Declarations::Void do
   subject(:instance) do
-    described_class.new(author:, declaration:, voided_by_user_id:)
+    described_class.new(author:, declaration:)
   end
 
   let(:declaration) { FactoryBot.create(:declaration, :payable) }
@@ -8,7 +8,6 @@ RSpec.describe Declarations::Void do
     lead_provider = declaration.training_period.lead_provider
     Events::LeadProviderAPIAuthor.new(lead_provider:)
   end
-  let(:voided_by_user_id) { FactoryBot.create(:user).id }
 
   describe "#void" do
     subject(:void) { instance.void }
@@ -43,31 +42,22 @@ RSpec.describe Declarations::Void do
         )
     end
 
-    context "when there is a voided_by_user_id" do
-      it "assigns the voided_by_user" do
-        expect { void }
-          .to change(declaration, :voided_by_user_id)
-          .to(voided_by_user_id)
-      end
+    context "when the author is a DfE user" do
+      let(:author) { Sessions::Users::DfEPersona.new(email: FactoryBot.create(:user).email) }
 
-      it "touches the voided_by_user_at timestamp" do
+      it "records the author details on the event" do
         freeze_time
 
         expect { void }
-          .to change(declaration, :voided_by_user_at)
-          .to(Time.current)
-      end
-    end
+          .not_to(change { declaration.reload.attributes.slice("voided_by_user_id", "voided_by_user_at") })
 
-    context "when there is no voided_by_user_id" do
-      let(:voided_by_user_id) { nil }
-
-      it "does not assign the voided_by_user" do
-        expect { void }.not_to(change(declaration, :voided_by_user_id))
-      end
-
-      it "does not touch the voided_by_user_at timestamp" do
-        expect { void }.not_to(change(declaration, :voided_by_user_at))
+        expect(declaration.events.sole).to have_attributes(
+          author_id: author.id,
+          author_name: author.name,
+          author_email: author.email,
+          author_type: "dfe_staff_user",
+          happened_at: Time.current
+        )
       end
     end
 

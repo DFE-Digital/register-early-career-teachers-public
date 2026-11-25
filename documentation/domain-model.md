@@ -451,7 +451,6 @@ erDiagram
     integer voided_by_user_id
   }
   Declaration }o--|| TrainingPeriod : belongs_to
-  Declaration }o--|| User : belongs_to
   Declaration }o--|| MentorshipPeriod : belongs_to
   Declaration }o--|| DeliveryPartner : belongs_to
   Declaration }o--|| Statement : belongs_to

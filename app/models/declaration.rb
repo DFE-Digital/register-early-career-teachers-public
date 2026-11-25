@@ -8,7 +8,6 @@ class Declaration < ApplicationRecord
 
   # Associations
   belongs_to :training_period
-  belongs_to :voided_by_user, class_name: "User", optional: true
   belongs_to :mentorship_period, optional: true
   belongs_to :delivery_partner_when_created, class_name: "DeliveryPartner"
   attr_readonly :delivery_partner_when_created_id
@@ -66,8 +65,6 @@ class Declaration < ApplicationRecord
 
   # Validations
   validates :training_period, presence: { message: "Choose a training period" }
-  validates :voided_by_user, presence: { message: "Voided by user must be set as well as the voided date" }, if: :voided_by_user_at
-  validates :voided_by_user_at, presence: { message: "Voided by user at must be set as well as the voided by user" }, if: :voided_by_user
   validates :api_id, uniqueness: { case_sensitive: false, message: "API id already exists for another declaration" }
   validates :evidenced_at, presence: { message: "Evidenced at must be specified" }
   validates :evidenced_at, evidenced_at_within_milestone: true, if: :evidenced_at_or_schedule_changed?

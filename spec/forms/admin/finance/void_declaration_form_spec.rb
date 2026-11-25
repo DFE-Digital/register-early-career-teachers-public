@@ -46,7 +46,7 @@ RSpec.describe Admin::Finance::VoidDeclarationForm, type: :model do
       it { is_expected.to be_truthy }
 
       it "calls the void service" do
-        expect(Declarations::Void).to receive(:new).with(author:, declaration:, voided_by_user_id: author.id).and_call_original
+        expect(Declarations::Void).to receive(:new).with(author:, declaration:).and_call_original
         form.void!
       end
 
@@ -69,7 +69,7 @@ RSpec.describe Admin::Finance::VoidDeclarationForm, type: :model do
       include_examples "does not call the void service"
 
       it "calls the clawback service" do
-        expect(Declarations::Clawback).to receive(:new).with(author:, declaration:, voided_by_user_id: author.id).and_call_original
+        expect(Declarations::Clawback).to receive(:new).with(author:, declaration:).and_call_original
         form.void!
       end
     end

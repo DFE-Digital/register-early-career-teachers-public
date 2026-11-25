@@ -1,7 +1,6 @@
 module Admin
   class DfEUsers
     class CannotRemoveSelfError < StandardError; end
-    class UserReferencedByDeclarationError < StandardError; end
 
     attr_reader :author, :user
 
@@ -38,10 +37,6 @@ module Admin
       @user = User.find(id)
 
       raise CannotRemoveSelfError if user.id == author.id
-
-      if Declaration.exists?(voided_by_user_id: user.id)
-        raise UserReferencedByDeclarationError
-      end
 
       User.transaction do
         user.destroy!

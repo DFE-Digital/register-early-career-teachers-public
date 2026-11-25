@@ -324,7 +324,7 @@ RSpec.describe Schedules::Find do
             end
 
             context "when the previous mentor's declaration is voided" do
-              let!(:declaration) { FactoryBot.create(:declaration, :voided_by_user, :within_mentorship_period, training_period: mentor_training_period) }
+              let!(:declaration) { FactoryBot.create(:declaration, :within_mentorship_period, payment_status: :voided, training_period: mentor_training_period) }
 
               it_behaves_like "no replacement schedule assigned"
             end

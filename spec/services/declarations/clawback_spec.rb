@@ -2,8 +2,7 @@ RSpec.describe Declarations::Clawback do
   subject(:instance) do
     described_class.new(
       author:,
-      declaration:,
-      voided_by_user_id:
+      declaration:
     )
   end
 
@@ -12,7 +11,6 @@ RSpec.describe Declarations::Clawback do
                       framework_agreement: FactoryBot.create(:framework_agreement, contract_period: FactoryBot.create(:contract_period, :previous)))
   end
   let(:author) { Events::LeadProviderAPIAuthor.new(lead_provider:) }
-  let(:voided_by_user_id) { FactoryBot.create(:user).id }
 
   let(:lead_provider) { declaration.training_period.lead_provider }
   let(:contract_period) { declaration.training_period.contract_period }
@@ -71,31 +69,22 @@ RSpec.describe Declarations::Clawback do
         )
     end
 
-    context "when there is a voided_by_user_id" do
-      it "assigns the voided_by_user" do
-        expect { clawback }
-          .to change(declaration, :voided_by_user_id)
-          .to(voided_by_user_id)
-      end
+    context "when the author is a DfE user" do
+      let(:author) { Sessions::Users::DfEPersona.new(email: FactoryBot.create(:user).email) }
 
-      it "touches the voided_by_user_at timestamp" do
+      it "records the author details on the event" do
         freeze_time
 
         expect { clawback }
-          .to change(declaration, :voided_by_user_at)
-          .to(Time.current)
-      end
-    end
+          .not_to(change { declaration.reload.attributes.slice("voided_by_user_id", "voided_by_user_at") })
 
-    context "when there is no voided_by_user_id" do
-      let(:voided_by_user_id) { nil }
-
-      it "does not assign the voided_by_user" do
-        expect { clawback }.not_to(change(declaration, :voided_by_user_id))
-      end
-
-      it "does not touch the voided_by_user_at timestamp" do
-        expect { clawback }.not_to(change(declaration, :voided_by_user_at))
+        expect(declaration.events.sole).to have_attributes(
+          author_id: author.id,
+          author_name: author.name,
+          author_email: author.email,
+          author_type: "dfe_staff_user",
+          happened_at: Time.current
+        )
       end
     end
 
