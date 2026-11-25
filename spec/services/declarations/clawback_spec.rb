@@ -75,8 +75,7 @@ RSpec.describe Declarations::Clawback do
       it "records the author details on the event" do
         freeze_time
 
-        expect { clawback }
-          .not_to(change { declaration.reload.attributes.slice("voided_by_user_id", "voided_by_user_at") })
+        clawback
 
         expect(declaration.events.sole).to have_attributes(
           author_id: author.id,

@@ -359,16 +359,14 @@ RSpec.describe "Admin::Users" do
       end
 
       context "when an admin user previously voided a declaration" do
-        let!(:declaration) do
-          FactoryBot.create(
-            :declaration,
-            :voided,
+        let!(:declaration) { FactoryBot.create(:declaration, :voided) }
+
+        before do
+          Declaration.where(id: declaration.id).update_all(
             voided_by_user_id: user_record.id,
             voided_by_user_at: 2.months.ago
           )
-        end
 
-        before do
           FactoryBot.create(
             :event,
             event_type: "teacher_declaration_voided",
