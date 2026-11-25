@@ -1,0 +1,40 @@
+linter:
+  enabled: true
+  rules:
+    all:
+      enabled: false
+    erb-require-whitespace-inside-tags:
+      enabled: true
+      severity: error
+    erb-no-trailing-whitespace:
+      enabled: true
+      severity: error
+    html-attribute-double-quotes:
+      enabled: true
+      severity: error
+    erb-prefer-direct-output:
+      enabled: true
+      severity: error
+    erb-closing-tag-indent:
+      enabled: true
+      severity: error
+    erb-require-trailing-newline:
+      enabled: true
+      severity: error
+    html-no-self-closing:
+      enabled: true
+      severity: error
+    html-attribute-equals-spacing:
+      enabled: true
+      severity: error
+    # These ones we should take a closer look at:
+    erb-no-instance-variables-in-partials:
+      enabled: false
+    html-no-unescaped-entities:
+      enabled: false
+    erb-no-duplicate-branch-elements:
+      enabled: false
+    erb-no-empty-control-flow:
+      enabled: false
+  exclude:
+    - "./documentation/site/**"
