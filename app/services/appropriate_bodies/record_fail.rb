@@ -57,7 +57,7 @@ module AppropriateBodies
         trn:,
         start_date: first_induction_period.started_on,
         completed_date: last_induction_period.finished_on,
-        use_fake_trs_api: Current.use_fake_trs_api
+        **(Current.use_fake_trs_api ? { use_fake_trs_api: true } : {})
       )
     end
 
