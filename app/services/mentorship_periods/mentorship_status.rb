@@ -29,6 +29,7 @@ module MentorshipPeriods
                .includes(
                  :lead_provider,
                  mentorship_period: {
+                   mentee: { training_periods: :lead_provider },
                    mentor: [
                      :teacher,
                      { training_periods: :lead_provider }

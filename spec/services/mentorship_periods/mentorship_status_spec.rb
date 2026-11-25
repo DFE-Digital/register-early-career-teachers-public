@@ -7,7 +7,7 @@ RSpec.describe MentorshipPeriods::MentorshipStatus do
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
   let(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, school: mentor.school, lead_provider:) }
 
-  before { FactoryBot.create(:training_period, :for_ect, ect_at_school_period: mentee, school_partnership:) }
+  before { FactoryBot.create(:training_period, :for_ect, :unfinished, ect_at_school_period: mentee, school_partnership:) }
 
   it "creates a new status for each lead provider linked to the mentee's training periods" do
     # Other lead provider linked to only the mentor.

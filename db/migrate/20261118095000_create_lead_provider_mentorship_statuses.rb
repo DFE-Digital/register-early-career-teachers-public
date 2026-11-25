@@ -3,6 +3,7 @@ class CreateLeadProviderMentorshipStatuses < ActiveRecord::Migration[8.1]
     create_enum :mentorship_statuses, %w[no-access-required access-and-support-only available-to-train]
     create_enum :mentorship_status_reasons, %w[
       mentorship-expired
+      ect-finished-training-with-provider
       completed-training
       available-to-train
       mentor-training-elsewhere

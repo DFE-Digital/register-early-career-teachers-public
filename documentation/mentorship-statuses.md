@@ -19,16 +19,22 @@ The following rules are evaluated in order:
 | Condition | Status | Reason |
 | --- | --- | --- |
 | The mentorship's `finished_on` is on or before today | `no-access-required` | `mentorship-expired` |
+| All of the mentee training periods for the lead provider have finished | `no-access-required` | `ect-finished-training-with-provider` |
 | The mentor's `mentor_became_ineligible_for_funding_on` is populated | `access-and-support-only` | `completed-training` |
 | The mentor has current or future training with this provider | `available-to-train` | `available-to-train` |
 | The mentor has current or future training, but none confirmed with this provider | `access-and-support-only` | `mentor-training-elsewhere` |
 | The mentor has training periods, all of which have finished | `access-and-support-only` | `mentor-not-currently-training` |
 | The mentor has no training periods | `access-and-support-only` | `no-known-training` |
 
-Only training periods belonging to the mentorship's mentor at school period are
-considered. Training ending today is still current; training with no end date or
-a future end date also counts. An expression-of-interest-only training period
-does not count as confirmed training with the polling provider.
+For the ECT rule, only confirmed training with the polling provider belonging to
+the mentorship's ECT at school period is considered. At least one matching
+training period is required, and all must have a `finished_on` on or before today.
+
+For the mentor rules, only training periods belonging to the mentorship's mentor
+at school period are considered. Training ending today is still current;
+training with no end date or a future end date also counts. An
+expression-of-interest-only training period does not count as confirmed training
+with the polling provider.
 
 ## Automatic refresh
 

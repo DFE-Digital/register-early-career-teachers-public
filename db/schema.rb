@@ -41,7 +41,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_24_141640) do
   create_enum "mentor_became_ineligible_for_funding_reason", ["completed_declaration_received", "completed_during_early_roll_out", "started_not_completed"]
   create_enum "notify_delivery_receipt_notification_type", ["email", "sms"]
   create_enum "notify_delivery_receipt_status", ["delivered", "permanent-failure", "temporary-failure", "technical-failure"]
-  create_enum "mentorship_status_reasons", ["mentorship-expired", "completed-training", "available-to-train", "mentor-training-elsewhere", "mentor-not-currently-training", "no-known-training"]
+  create_enum "mentorship_status_reasons", ["mentorship-expired", "ect-finished-training-with-provider", "completed-training", "available-to-train", "mentor-training-elsewhere", "mentor-not-currently-training", "no-known-training"]
   create_enum "mentorship_statuses", ["no-access-required", "access-and-support-only", "available-to-train"]
   create_enum "oauth_code_challenge_methods", ["S256"]
   create_enum "oauth_grant_types", ["authorization_code"]

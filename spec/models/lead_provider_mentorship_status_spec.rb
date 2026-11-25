@@ -51,6 +51,19 @@ RSpec.describe LeadProviderMentorshipStatus do
         .to("status" => "access-and-support-only", "reason" => "completed-training")
     end
 
+    it "sets a status of no-access-required and reason of ect-finished-training-with-provider when all of the ECT's training periods with the lead provider are finished" do
+      # When the mentorship period is linked to the lead provider via the mentee training period we create here
+      # it will be picked up by callbacks for refreshing the mentorship status automatically, so we need to override
+      # the status and reason explicitly to get a different initial state for the test.
+      FactoryBot.create(:training_period, :for_ect, ect_at_school_period: mentee, school_partnership:, finished_on: Date.yesterday)
+      mentorship_status.update_columns(status: "access-and-support-only", reason: "no-known-training")
+
+      expect { mentorship_status.refresh! }
+        .to change { mentorship_status.reload.attributes.slice("status", "reason") }
+        .from("status" => "access-and-support-only", "reason" => "no-known-training")
+        .to("status" => "no-access-required", "reason" => "ect-finished-training-with-provider")
+    end
+
     context "when the mentor has a training period with the lead provider" do
       it "sets a status of available-to-train and reason of available-to-train when the mentor has an unfinished training period" do
         FactoryBot.create(:training_period, :for_mentor, :unfinished, mentor_at_school_period: mentor, school_partnership:)
