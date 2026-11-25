@@ -15,34 +15,37 @@ module RSpecPlaywright
               .launch(headless:, slowMo:)
   end
 
-  PAGE_SCREENSHOT_DIR = Rails.root.join("tmp/page_screenshots")
+  SAVED_PAGES_DIR = Rails.root.join("tmp/saved_pages")
   ID_SEGMENT = /\A(\d+|\h{8}-\h{4}-\h{4}-\h{4}-\h{12})\z/
   YEAR_SEGMENT = /\A20\d\d\z/
 
-  def self.screenshot_threads
-    @screenshot_threads ||= []
+  def self.save_page_threads
+    @save_page_threads ||= []
   end
 
   # Playwright event handlers run on the connection's dispatch loop, so a blocking call such as
   # page.screenshot made inside one deadlocks. Run it on its own thread and join before closing the page.
-  def self.save_page_screenshot_async(page)
-    screenshot_threads << Thread.new { save_page_screenshot(page) }
+  def self.save_page_async(page)
+    save_page_threads << Thread.new { save_page(page) }
   end
 
-  def self.finish_page_screenshots
-    screenshot_threads.shift.join until screenshot_threads.empty?
+  def self.finish_saving_pages
+    save_page_threads.shift.join until save_page_threads.empty?
   end
 
-  # Saves one screenshot per page path (ids become "_id_", query string ignored); never overwrites.
-  def self.save_page_screenshot(page)
+  # Saves a screenshot and the HTML per page path (ids become "_id_", query string ignored); never overwrites.
+  def self.save_page(page)
     segments = URI(page.url).path.split("/").compact_blank.map do |segment|
       segment.match?(ID_SEGMENT) && !segment.match?(YEAR_SEGMENT) ? "_id_" : segment
     end
-    file = PAGE_SCREENSHOT_DIR.join("#{segments.join('/').presence || 'index'}.png")
-    return if file.exist?
+    base = SAVED_PAGES_DIR.join(segments.join("/").presence || "index")
+    FileUtils.mkdir_p(base.dirname)
 
-    FileUtils.mkdir_p(file.dirname)
-    page.screenshot(path: file.to_s)
+    png = Pathname("#{base}.png")
+    page.screenshot(path: png.to_s) unless png.exist?
+
+    html = Pathname("#{base}.html")
+    html.write(page.content) unless html.exist?
   rescue Playwright::Error
     nil # the page may have navigated or closed mid-capture
   end

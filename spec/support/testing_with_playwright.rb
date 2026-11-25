@@ -25,8 +25,8 @@ RSpec.configure do |config|
                                              javaScriptEnabled: Capybara.current_driver == :js_enabled)
     config.playwright_page.set_default_timeout(RSpecPlaywright::DEFAULT_TIMEOUT)
     config.playwright_page.set_default_navigation_timeout(RSpecPlaywright::DEFAULT_NAVIGATION_TIMEOUT)
-    if ENV["SAVE_SCREENSHOTS"].present?
-      config.playwright_page.on("load", ->(loaded_page) { RSpecPlaywright.save_page_screenshot_async(loaded_page) })
+    if ENV["SAVE_PAGE"].present?
+      config.playwright_page.on("load", ->(loaded_page) { RSpecPlaywright.save_page_async(loaded_page) })
     end
     config.playwright_heading_hierarchy_recorder = HeadingHierarchy::HARPageVisitRecorder.new(
       config.playwright_page,
@@ -74,7 +74,7 @@ RSpec.configure do |config|
       end
 
       begin
-        RSpecPlaywright.finish_page_screenshots
+        RSpecPlaywright.finish_saving_pages
         page.close
       rescue StandardError => e
         teardown_failure ||= e
