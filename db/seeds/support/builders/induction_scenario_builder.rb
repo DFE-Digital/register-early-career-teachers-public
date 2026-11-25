@@ -170,9 +170,11 @@ module Induction
     end
 
     def store_options_for_fake_trs_api(trn)
-      return if @trs_options.empty?
-
-      fake_teacher_store.set_options(trn, **@trs_options)
+      if @trs_options.empty?
+        fake_teacher_store.clear_options(trn)
+      else
+        fake_teacher_store.set_options(trn, **@trs_options)
+      end
     end
 
     def fake_teacher_store
