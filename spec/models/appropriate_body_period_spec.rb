@@ -644,7 +644,6 @@ describe AppropriateBodyPeriod do
 
     context "when an induction period ends after the appropriate body has closed" do
       before do
-        # The child rule refuses this, so the row is written as the data cleanse would find it.
         FactoryBot.build(:induction_period,
                          appropriate_body_period:,
                          started_on: body_started_on,
