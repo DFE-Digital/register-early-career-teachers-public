@@ -362,11 +362,6 @@ RSpec.describe "Admin::Users" do
         let!(:declaration) { FactoryBot.create(:declaration, :voided) }
 
         before do
-          Declaration.where(id: declaration.id).update_all(
-            voided_by_user_id: user_record.id,
-            voided_by_user_at: 2.months.ago
-          )
-
           FactoryBot.create(
             :event,
             event_type: "teacher_declaration_voided",

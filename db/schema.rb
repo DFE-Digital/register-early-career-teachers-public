@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_24_165223) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_25_171507) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gist"
   enable_extension "citext"
@@ -278,8 +278,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_24_165223) do
     t.boolean "sparsity_uplift", default: false, null: false
     t.bigint "training_period_id"
     t.datetime "updated_at", null: false
-    t.datetime "voided_by_user_at"
-    t.bigint "voided_by_user_id"
     t.index ["api_id"], name: "index_declarations_on_api_id", unique: true
     t.index ["clawback_statement_id"], name: "index_declarations_on_clawback_statement_id"
     t.index ["delivery_partner_when_created_id"], name: "index_declarations_on_delivery_partner_when_created_id"
@@ -288,7 +286,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_24_165223) do
     t.index ["training_period_id", "declaration_type", "payment_status"], name: "idx_unique_declarations", unique: true, where: "((payment_status = ANY (ARRAY['no_payment'::declaration_payment_statuses, 'eligible'::declaration_payment_statuses, 'payable'::declaration_payment_statuses, 'paid'::declaration_payment_statuses])) AND (clawback_status = 'no_clawback'::declaration_clawback_statuses))"
     t.index ["training_period_id"], name: "index_declarations_on_training_period_id"
     t.index ["updated_at"], name: "index_declarations_on_updated_at"
-    t.index ["voided_by_user_id"], name: "index_declarations_on_voided_by_user_id"
   end
 
   create_table "delivery_partners", force: :cascade do |t|
