@@ -108,9 +108,13 @@ jobs:
           ruby-version: .ruby-version
           bundler-cache: true
 
-      - name: Lint ERB Templates
+      - name: Analyse ERB Templates
         run: |-
           bundle exec herb analyze app
+
+      - name: Lint ERB Templates
+        run: |-
+          bundle exec herb lint app
 
   terraform_linting:
     name: Lint Terraform
