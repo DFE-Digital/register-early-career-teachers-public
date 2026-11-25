@@ -19,6 +19,20 @@ module RSpecPlaywright
   ID_SEGMENT = /\A(\d+|\h{8}-\h{4}-\h{4}-\h{4}-\h{12})\z/
   YEAR_SEGMENT = /\A20\d\d\z/
 
+  def self.screenshot_threads
+    @screenshot_threads ||= []
+  end
+
+  # Playwright event handlers run on the connection's dispatch loop, so a blocking call such as
+  # page.screenshot made inside one deadlocks. Run it on its own thread and join before closing the page.
+  def self.save_page_screenshot_async(page)
+    screenshot_threads << Thread.new { save_page_screenshot(page) }
+  end
+
+  def self.finish_page_screenshots
+    screenshot_threads.shift.join until screenshot_threads.empty?
+  end
+
   # Saves one screenshot per page path (ids become "_id_", query string ignored); never overwrites.
   def self.save_page_screenshot(page)
     segments = URI(page.url).path.split("/").compact_blank.map do |segment|
