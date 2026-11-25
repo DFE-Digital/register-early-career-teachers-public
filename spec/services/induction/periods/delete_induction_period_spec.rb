@@ -5,8 +5,6 @@ describe Induction::Periods::DeleteInductionPeriod do
     described_class.new(author:, induction_period:, note:, zendesk_ticket_id:)
   end
 
-  include_context "test TRS API returns a teacher"
-
   let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
   let(:note) { "Induction period created in error" }
   let(:zendesk_ticket_id) { "#123456" }
@@ -21,7 +19,7 @@ describe Induction::Periods::DeleteInductionPeriod do
   end
 
   before do
-    allow(TRS::APIClient).to receive(:new).and_return(trs_client)
+    allow(TRS::APIClient).to receive(:build).and_return(trs_client)
     allow(trs_client).to receive(:reset_teacher_induction!)
     allow(trs_client).to receive(:begin_induction!)
   end
