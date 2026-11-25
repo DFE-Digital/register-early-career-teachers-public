@@ -4,12 +4,12 @@
 ) %>
 
 <p class="govuk-body">Our records show that your school does not have an induction tutor.</p>
-<p class="govuk-body">You need to have an induction tutor to set up and manage the early career teacher entitlement (ECTE) 
+<p class="govuk-body">You need to have an induction tutor to set up and manage the early career teacher entitlement (ECTE)
 at your school. The induction tutor will be your primary contact for the DfE and your ECTE providers and partners.</p>
-<p class="govuk-body">Read our guidance 
+<p class="govuk-body">Read our guidance
 <%= govuk_link_to("on school induction tutor responsibilities (opens in a new tab)", 
 "https://www.gov.uk/government/publications/early-career-teacher-entitlement-roles-and-responsibilities/induction-tutors-responsibilities-for-early-career-teacher-entitlement", 
-target: "_blank" )%>.
+target: "_blank" ) %>.
 </p>
 
 
@@ -20,8 +20,7 @@ target: "_blank" )%>.
     <%= f.govuk_text_field :induction_tutor_name,
                             label: {
                               text: "Full name"
-                            }
-                          %>
+                            } %>
     <%= f.govuk_text_field :induction_tutor_email,
                             label: {
                               text: "Email"

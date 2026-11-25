@@ -3,8 +3,7 @@
   error: @pending_induction_submission.errors.any?,
   caption: "TRN: #{@pending_induction_submission.trn}",
   header: "View #{pending_induction_submission_full_name(@pending_induction_submission)}'s details",
-  backlink_href: new_admin_import_ect_find_path)
-%>
+  backlink_href: new_admin_import_ect_find_path) %>
 
 <%= render Admin::ImportECTEligibilityComponent.new(pending_induction_submission: @pending_induction_submission) %>
 

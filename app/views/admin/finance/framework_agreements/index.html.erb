@@ -10,7 +10,7 @@
 <% end %>
 
 <% if @framework_agreements.none? %>
-  <p class='govuk-body'>No lead provider framework agreements for <%= @contract_period.year %></p>
+  <p class="govuk-body">No lead provider framework agreements for <%= @contract_period.year %></p>
 <% else %>
   <%= govuk_table do |table| %>
     <% table.with_head do |head| %>

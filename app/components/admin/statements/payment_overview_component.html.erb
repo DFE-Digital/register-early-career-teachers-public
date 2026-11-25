@@ -11,7 +11,7 @@
           <div class="govuk-heading-m govuk-!-padding-top-0"><%= @statement.formatted_payment_date %></div>
         </div>
       </div>
-      <div class = "finance-panel__summary__total-payment-breakdown">
+      <div class="finance-panel__summary__total-payment-breakdown">
         <div>
           <h2 class="govuk-heading-l">Total <%= number_to_pounds(total_amount) %></h2>
         </div>
@@ -23,8 +23,7 @@
               { text: "Payment", numeric: true }
             ],
             rows: 
-          )
-        %>
+          ) %>
       </div>
 
       <p class="govuk-body-s govuk-!-text-align-right govuk-!-display-none-print">

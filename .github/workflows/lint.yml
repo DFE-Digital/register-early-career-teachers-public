@@ -108,9 +108,21 @@ jobs:
           ruby-version: .ruby-version
           bundler-cache: true
 
-      - name: Lint ERB Templates
+      - name: Analyse ERB Templates
         run: |-
           bundle exec herb analyze app
+
+      - name: Set up Node
+        uses: actions/setup-node@v7.1.0
+        with:
+          node-version: ${{ inputs.node-version }}
+
+      - name: Lint install
+        run: npm ci
+
+      - name: Lint ERB Templates
+        run: |-
+          bundle exec herb lint app
 
   terraform_linting:
     name: Lint Terraform

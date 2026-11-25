@@ -1,6 +1,6 @@
 <% if school_partnerships.any? %>
   <% contract_years.each do |year| %>
-    <h3 class="govuk-heading-m"><%= "#{year} partnerships" %></h3>
+    <h3 class="govuk-heading-m"><%= year %> partnerships</h3>
 
     <% school_partnerships_by_year[year].each do |school_partnership| %>
       <%= govuk_summary_card(title: school_partnership_title(school_partnership), heading_level: 4) do |card| %>

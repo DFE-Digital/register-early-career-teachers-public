@@ -31,8 +31,7 @@
                   secondary: true,
                   no_visited_state: true,
                   visually_hidden_suffix: band_label(band:),
-                  class: "govuk-!-margin-bottom-0")
-                %>
+                  class: "govuk-!-margin-bottom-0") %>
               <% end %>
               <% if band.deletable? %>
                 <%= govuk_button_to(
@@ -41,8 +40,7 @@
                   method: :delete,
                   warning: true,
                   visually_hidden_suffix: band_label(band:),
-                  class: "govuk-!-margin-bottom-0")
-                %>
+                  class: "govuk-!-margin-bottom-0") %>
               <% end %>
             </div>
           <% end %>

@@ -6,8 +6,7 @@
       :name,
       label: { text: "View a different provider" },
       options: { selected: lead_provider_id, include_blank: false },
-      form_group: { class: 'filter-form-group' }
-    %>
+      form_group: { class: 'filter-form-group' } %>
 
     <%= f.govuk_collection_select :contract_period_year,
       contract_periods,
@@ -15,8 +14,7 @@
       :year,
       label: { text: "View a different contract year" },
       options: { selected: contract_period_year, include_blank: false },
-      form_group: { class: 'filter-form-group' }
-    %>
+      form_group: { class: 'filter-form-group' } %>
 
     <%= f.govuk_collection_select :statement_date,
       statement_dates,
@@ -24,8 +22,7 @@
       :name,
       label: { text: "View a different statement" },
       options: { selected: statement_date, include_blank: false },
-      form_group: { class: 'filter-form-group' }
-    %>
+      form_group: { class: 'filter-form-group' } %>
 
     <%= f.govuk_submit "View", secondary: true, class: "filter-button" %>
   </div>

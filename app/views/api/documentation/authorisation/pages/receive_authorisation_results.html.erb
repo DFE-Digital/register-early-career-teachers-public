@@ -41,10 +41,10 @@ sequenceDiagram
 <h4 class="govuk-heading-s">What the diagram shows</h4>
 
 <ol class="govuk-list govuk-list--number">
-  <li>The user approves the connection in the authorisation API.</li> 
-  <li>The authorisation API redirects the user’s browser to your redirect URI.</li> 
-  <li>The browser sends a GET request to your endpoint.</li> 
-  <li>Your application validates the <code>state</code> value.</li> 
+  <li>The user approves the connection in the authorisation API.</li>
+  <li>The authorisation API redirects the user’s browser to your redirect URI.</li>
+  <li>The browser sends a GET request to your endpoint.</li>
+  <li>Your application validates the <code>state</code> value.</li>
 </ol>
 
 <h4 class="govuk-heading-s">Query parameters</h4>
@@ -108,7 +108,7 @@ https://www.myapp.example.com/callback?error=access_denied
 <h4 class="govuk-heading-s">Error scenarios</h4>
 
 <p class="govuk-body">
-If the <code>client_id</code> or the <code>redirect_uri</code>do not match our records, we will not redirect to your <code>redirect_uri</code>. We return HTTP status <code>400</code> (Bad Request) instead. 
+If the <code>client_id</code> or the <code>redirect_uri</code>do not match our records, we will not redirect to your <code>redirect_uri</code>. We return HTTP status <code>400</code> (Bad Request) instead.
 </p>
 
 <p class="govuk-body">

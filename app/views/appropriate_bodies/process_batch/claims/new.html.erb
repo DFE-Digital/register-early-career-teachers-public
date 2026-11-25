@@ -24,12 +24,12 @@
       'their induction period start date in YYYY-MM-DD format',
       ], type: :bullet) 
   %>
-  
+
   <p class="govuk-body">
     For dates, you may need to reformat the cells so they follow our formatting before you save and upload the CSV file.
   </p>
 
-  <%= batch_example_claim %>    
+  <%= batch_example_claim %>
 <% end %>
 
 
@@ -40,8 +40,7 @@
   <%= f.govuk_file_field :csv_file, 
     accept: '.csv', 
     label: { text: 'Upload a file' }, 
-    hint: { text: 'File type must be a CSV' } 
-  %>  
-  
+    hint: { text: 'File type must be a CSV' } %>
+
   <%= f.govuk_submit 'Continue' %>
 <% end %>

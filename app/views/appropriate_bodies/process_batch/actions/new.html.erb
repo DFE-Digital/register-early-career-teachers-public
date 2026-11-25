@@ -25,12 +25,12 @@
       'their outcome - must be either a pass or release. To record a fail, go to the individual ECT record.'
       ], type: :bullet) 
   %>
-  
+
   <p class="govuk-body">
     For dates, you may need to reformat the cells so they follow our formatting before you save and upload the CSV file.
   </p>
 
-  <%= batch_example_action %>    
+  <%= batch_example_action %>
 <% end %>
 
 
@@ -41,8 +41,7 @@
   <%= f.govuk_file_field :csv_file, 
     accept: '.csv', 
     label: { text: 'Upload a file' }, 
-    hint: { text: 'File type must be a CSV' } 
-  %>  
-  
+    hint: { text: 'File type must be a CSV' } %>
+
   <%= f.govuk_submit 'Continue' %>
 <% end %>

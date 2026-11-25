@@ -1,27 +1,27 @@
-<h1 class='govuk-heading-l'>CSV file summary</h1>
+<h1 class="govuk-heading-l">CSV file summary</h1>
 
 <% if batch.no_valid_data? %>
-  <p class='govuk-body'>
+  <p class="govuk-body">
     Your CSV named '<%= batch.file_name %>' has <%= pluralize(batch.pending_induction_submissions.with_errors.count, 'ECT') %> with errors.
   </p>
 
-  <p class='govuk-body'>
+  <p class="govuk-body">
     <%= govuk_link_to 'Download CSV with error messages included', ab_batch_claim_path(batch, format: :csv) %>.
     You'll need to fix these errors before you try again.
   </p>
 
-  <p class='govuk-body'>
+  <p class="govuk-body">
     <%= govuk_link_to 'Go back to your overview', ab_batch_claims_path %>
   </p>
 
 <% else %>
-  <p class='govuk-body'>
+  <p class="govuk-body">
     Your CSV named '<%= batch.file_name %>' has <%= pluralize(batch.pending_induction_submissions.without_errors.count, 'ECT record') %> that you can claim.
   </p>
 
   <% if batch.pending_induction_submissions.with_errors.any? %>
-    <p class='govuk-body'>
-      You have <%= pluralize(batch.pending_induction_submissions.with_errors.count, 'ECT') %> with errors. 
+    <p class="govuk-body">
+      You have <%= pluralize(batch.pending_induction_submissions.with_errors.count, 'ECT') %> with errors.
       You can download a CSV with error messages included after you claim your ECTs.
     </p>
   <% end %>
@@ -31,7 +31,7 @@
     <%= f.govuk_submit 'Claim ECTs' %>
   <% end %>
 
-  <p class='govuk-body'>
+  <p class="govuk-body">
     <%= govuk_link_to 'Cancel and go back to your overview', ab_batch_claims_path %>
   </p>
 <% end %>

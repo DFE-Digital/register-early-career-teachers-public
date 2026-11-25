@@ -3,8 +3,8 @@
     error: @wizard.current_step.errors.present?,
 ) %>
 
-<p class="govuk-body">This person will be your main point of contact for early career 
-training and induction. We share these details with your appropriate body and lead providers 
+<p class="govuk-body">This person will be your main point of contact for early career
+training and induction. We share these details with your appropriate body and lead providers
 (if your school uses provider-led training programmes).</p>
 
 <p class="govuk-body">Our records show that the following person is currently your school’s induction tutor:</p>
@@ -19,7 +19,7 @@ training and induction. We share these details with your appropriate body and le
     row.with_key(text: "Email")
     row.with_value(text: @wizard.school.induction_tutor_email)
   end
-end %>  
+end %>
 
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
@@ -32,8 +32,7 @@ end %>
       <%= f.govuk_text_field :induction_tutor_name,
                              label: {
                                text: "Full name"
-                             }
-                            %>
+                             } %>
        <%= f.govuk_text_field :induction_tutor_email,
                              label: {
                                text: "Email"

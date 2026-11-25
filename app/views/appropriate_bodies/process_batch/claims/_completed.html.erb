@@ -7,29 +7,29 @@
 
 <%= govuk_panel(title_text: "ECTs successfully claimed") %>
 
-<p class='govuk-body'>
+<p class="govuk-body">
   You claimed <%= batch.recorded_count %> ECT records.
 </p>
 
 <% if batch.errored? %>
-  <p class='govuk-body'>
+  <p class="govuk-body">
     You had <%= pluralize(batch.tally[:errored_count], 'ECT') %> with errors.
   </p>
 
-  <p class='govuk-body'>
+  <p class="govuk-body">
     <%= govuk_link_to 'Download CSV with error messages included', ab_batch_claim_path(batch, format: :csv) %>.
     You'll need to fix these errors before you try again.
   </p>
 <% else %>
-  <p class='govuk-body'>
+  <p class="govuk-body">
     You can view these records on your overview.
   </p>
 <% end %>
 
-<p class='govuk-body'>
+<p class="govuk-body">
   <%= govuk_link_to 'Go back to your overview', ab_batch_claims_path %>
 </p>
 
-<p class='govuk-body'>
+<p class="govuk-body">
   <%= govuk_link_to 'Go back to your homepage', ab_teachers_path %>
 </p>
