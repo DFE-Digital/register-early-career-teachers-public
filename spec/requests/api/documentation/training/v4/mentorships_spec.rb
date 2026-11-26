@@ -16,7 +16,7 @@ RSpec.describe "Training mentorships endpoint", openapi_spec: "training/v4/swagg
     responds_with 200, "An empty response. This endpoint is a placeholder." do
     end
 
-    responds_with 401, "The lead provider API token is missing, unknown or revoked." do
+    responds_with 401, "The access token is missing, unknown, expired or revoked. A missing token returns no body." do
       let(:Authorization) { "Bearer unknown-token" }
 
       serialized_using API::OAuth::ErrorSerializer, include_namespace: true

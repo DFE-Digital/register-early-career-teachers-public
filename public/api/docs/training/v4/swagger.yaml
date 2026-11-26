@@ -24,7 +24,8 @@ paths:
         '200':
           description: An empty response. This endpoint is a placeholder.
         '401':
-          description: The lead provider API token is missing, unknown or revoked.
+          description: The access token is missing, unknown, expired or revoked. A
+            missing token returns no body.
           content:
             application/json:
               schema:
