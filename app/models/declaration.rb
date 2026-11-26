@@ -6,8 +6,6 @@ class Declaration < ApplicationRecord
   BILLABLE_PAYMENT_STATUSES = %w[eligible payable paid].freeze
   REFUNDABLE_CLAWBACK_STATUSES = %w[awaiting_clawback clawed_back].freeze
 
-  self.ignored_columns = %i[voided_by_user_id voided_by_user_at]
-
   # Associations
   belongs_to :training_period
   belongs_to :mentorship_period, optional: true
