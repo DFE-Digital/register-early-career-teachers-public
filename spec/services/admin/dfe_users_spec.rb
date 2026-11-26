@@ -75,29 +75,6 @@ RSpec.describe Admin::DfEUsers do
       end
     end
 
-    context "when the user previously voided a declaration" do
-      before do
-        declaration = FactoryBot.create(:declaration, :voided)
-        Declaration.where(id: declaration.id).update_all(
-          voided_by_user_id: user.id,
-          voided_by_user_at: 2.months.ago
-        )
-      end
-
-      it "removes the user" do
-        expect { remove_user }
-          .to change(User, :count).by(-1)
-      end
-
-      it "records a deletion event" do
-        remove_user
-
-        expect(Events::Record)
-          .to have_received(:record_dfe_user_deleted_event!)
-          .once
-      end
-    end
-
     %i[voided awaiting_clawback clawed_back].each do |status|
       context "when the user previously voided a declaration that is #{status}" do
         let(:voided_at) { 2.months.ago.change(usec: 0) }
@@ -114,13 +91,6 @@ RSpec.describe Admin::DfEUsers do
             author_name: user.name,
             author_email: user.email,
             author_type: "dfe_staff_user"
-          )
-        end
-
-        before do
-          Declaration.where(id: declaration.id).update_all(
-            voided_by_user_id: user.id,
-            voided_by_user_at: voided_at
           )
         end
 

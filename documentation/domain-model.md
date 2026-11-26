@@ -447,8 +447,6 @@ erDiagram
     boolean sparsity_uplift
     integer training_period_id
     datetime updated_at
-    datetime voided_by_user_at
-    integer voided_by_user_id
   }
   Declaration }o--|| TrainingPeriod : belongs_to
   Declaration }o--|| MentorshipPeriod : belongs_to
