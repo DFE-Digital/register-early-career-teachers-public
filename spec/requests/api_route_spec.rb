@@ -1,5 +1,5 @@
 RSpec.describe APIRoute do
-  subject { described_class.only(:induction, :hello, :oauth, except: purposefully_unauthenticated + web_pages) }
+  subject { described_class.only(:training, :induction, :hello, :oauth, except: purposefully_unauthenticated + web_pages) }
 
   let(:purposefully_unauthenticated) { [API::Hello::WorldsController] }
   let(:web_pages) { [API::OAuth::AuthorizationsController] }

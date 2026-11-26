@@ -3,10 +3,13 @@ module API::OAuth::TokenAuthenticable
   include ActionController::HttpAuthentication::Token::ControllerMethods
 
   included do
+    class_attribute :accept_legacy_lead_provider_api_tokens, default: false
+
     before_action :authenticate
-    attr_reader :current_authorization
+    attr_reader :current_authorization, :current_legacy_lead_provider_api_token
 
     delegate :appropriate_body, :client, to: :current_authorization, private: true
+    delegate :lead_provider, to: :current_legacy_lead_provider_api_token, private: true
   end
 
 private
@@ -17,7 +20,13 @@ private
 
   def authenticate_request
     authenticate_with_http_token do |token|
-      @current_authorization = API::OAuth::Authorization.active.with_token(token).take
+      if accept_legacy_lead_provider_api_tokens
+        @current_legacy_lead_provider_api_token = API::TokenManager.find_lead_provider_api_token(token:)
+      else
+        @current_authorization = API::OAuth::Authorization.active.with_token(token).take
+      end
+
+      current_authorization || current_legacy_lead_provider_api_token
     end
   end
 
