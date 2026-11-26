@@ -91,7 +91,7 @@ class AppropriateBodyPeriod < ApplicationRecord
 
   # Validations
   validates :started_on, presence: true
-  validates_associated :last_chosen_by_schools, if: :will_save_change_to_body_type?
+  validate :last_chosen_by_compatible_schools, if: -> { persisted? && will_save_change_to_body_type? }
 
   validate :name_is_unique_among_overlapping_periods, unless: :teaching_school?
 
@@ -167,7 +167,21 @@ class AppropriateBodyPeriod < ApplicationRecord
   # @return [Array<Region::Award>]
   def active_region_awards = region_awards.select(&:active?)
 
+  def compatible_with_independent_schools? = national? || teaching_school_hub?
+  def compatible_with_state_funded_schools? = teaching_school_hub?
+
 private
+
+  def last_chosen_by_compatible_schools
+    independent_types = compatible_with_independent_schools? ? [] : GIAS::Types::INDEPENDENT_SCHOOLS_TYPES
+    state_funded_types = compatible_with_state_funded_schools? ? [] : GIAS::Types::STATE_SCHOOL_TYPES
+
+    incompatible_schools = last_chosen_by_schools.in_gias_schools.where(
+      gias_schools: { type_name: independent_types + state_funded_types }
+    )
+
+    errors.add(:last_chosen_by_schools, :invalid) if incompatible_schools.exists?
+  end
 
   def name_is_not_a_teaching_school_hub_name
     return if name.blank?

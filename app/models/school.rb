@@ -126,14 +126,14 @@ class School < ApplicationRecord
 
   def last_chosen_appropriate_body_for_independent_school
     return if last_chosen_appropriate_body.blank?
-    return if last_chosen_appropriate_body.national? || last_chosen_appropriate_body.teaching_school_hub?
+    return if last_chosen_appropriate_body.compatible_with_independent_schools?
 
     errors.add(:last_chosen_appropriate_body_id, "Must be national or teaching school hub")
   end
 
   def last_chosen_appropriate_body_for_state_funded_school
     return if last_chosen_appropriate_body.blank?
-    return if last_chosen_appropriate_body.teaching_school_hub?
+    return if last_chosen_appropriate_body.compatible_with_state_funded_schools?
 
     errors.add(:last_chosen_appropriate_body_id, "Must be teaching school hub")
   end

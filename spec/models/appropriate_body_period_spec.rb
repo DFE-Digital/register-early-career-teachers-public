@@ -244,19 +244,30 @@ describe AppropriateBodyPeriod do
 
     describe "changing the body type" do
       let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, :teaching_school_hub) }
-
-      it "rejects changing to national when a state-funded school last chose the appropriate body" do
-        FactoryBot.create(:school, :state_funded, last_chosen_appropriate_body: appropriate_body_period)
-
-        appropriate_body_period.reload
-        appropriate_body_period.assign_attributes(
+      let(:national_body_attributes) do
+        {
           body_type: :national,
           national_body: FactoryBot.build(:national_body),
           teaching_school_hub: nil,
           provisioning_school: nil
-        )
+        }
+      end
+
+      it "rejects changing to national when a state-funded school last chose the appropriate body" do
+        FactoryBot.create(:school, :state_funded, last_chosen_appropriate_body: appropriate_body_period)
+
+        appropriate_body_period.reload.assign_attributes(national_body_attributes)
 
         expect(appropriate_body_period).to have_error(:last_chosen_by_schools, "is invalid")
+      end
+
+      it "allows changing to national when an independent school has incomplete induction tutor details" do
+        school = FactoryBot.create(:school, :independent, last_chosen_appropriate_body: appropriate_body_period)
+        school.update_column(:induction_tutor_email, nil)
+
+        appropriate_body_period.reload.assign_attributes(national_body_attributes)
+
+        expect(appropriate_body_period).to be_valid
       end
     end
 
