@@ -13,7 +13,7 @@
 
   <% list.with_row do |row| %>
     <% row.with_key { 'New name' } %>
-    <% row.with_value { @wizard.store.name } %>
+    <% row.with_value { @wizard.current_step.new_name } %>
   <% end %>
 <% end %>
 
