@@ -13,6 +13,8 @@ module Schools
 
         def email = self[:email].presence || mentor_at_school_period.email
         def original_email = self[:original_email].presence || mentor_at_school_period.email
+
+        def details_changed? = !email.casecmp?(mentor_at_school_period.email)
       end
     end
   end

@@ -29,4 +29,16 @@ RSpec.describe Schools::Mentors::ChangeEmailAddressWizard::StateStore do
       expect(other_state_store.email).to eq("other@example.com")
     end
   end
+
+  describe "#details_changed?" do
+    it "returns false when the email has not changed" do
+      expect(state_store.details_changed?).to be false
+    end
+
+    it "returns true when the email has changed" do
+      state_store.write(email: "new_email@example.com")
+
+      expect(state_store.details_changed?).to be true
+    end
+  end
 end

@@ -8,6 +8,7 @@ module Schools
       before_action :set_mentor_at_school_period
       before_action :reset_store_on_entry, only: :new
       before_action :initialize_wizard
+      before_action :reject_incomplete_check_answers, only: :create, if: -> { current_step == :check_answers }
       before_action :check_allowed_step
 
       def new
@@ -59,6 +60,13 @@ module Schools
         return if @wizard.valid_path_to_current_step?
 
         redirect_to @wizard.furthest_valid_step_path
+      end
+
+      def reject_incomplete_check_answers
+        return if @wizard.state_store.details_changed?
+
+        redirect_to @wizard.resolve_step_path(@wizard.root_step),
+                    flash: { error: WizardStoreRescuable::EMPTY_STORE_FLASH_MESSAGE }
       end
 
       def reset_store_on_entry

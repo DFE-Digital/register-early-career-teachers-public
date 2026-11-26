@@ -127,6 +127,17 @@ describe "Schools::Mentors::ChangeEmailAddressWizardController" do
         end
       end
 
+      context "when check answers is submitted without a saved email change" do
+        it "returns to edit without updating the email or recording an event" do
+          post path_for_step("check-answers")
+
+          expect(mentor_at_school_period.reload.email).to eq("mentor@example.com")
+          expect(Event.where(event_type: "teacher_email_address_updated")).to be_empty
+          expect(response).to redirect_to(path_for_step("edit"))
+          expect(flash[:error]).to eq(WizardStoreRescuable::EMPTY_STORE_FLASH_MESSAGE)
+        end
+      end
+
       context "when the email is valid" do
         let(:new_email) { "new-mentor@example.com" }
 
