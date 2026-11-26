@@ -27,6 +27,46 @@ linter:
     html-attribute-equals-spacing:
       enabled: true
       severity: error
+    # Avoid generic link text like "Click here" or "Read more"
+    a11y-avoid-generic-link-text:
+      enabled: true
+      severity: error
+    # Prevent usage of the disabled attribute on unsupported elements
+    a11y-disabled-attribute:
+      enabled: true
+      severity: error
+    # Disallow nesting interactive elements
+    a11y-nested-interactive-elements:
+      enabled: true
+      severity: error
+    # Prevent usage of the accesskey attribute
+    a11y-no-accesskey-attribute:
+      enabled: true
+      severity: error
+    # Prevent aria-label and aria-labelledby on non-interactive elements
+    a11y-no-aria-label-misuse:
+      enabled: true
+      severity: error
+    # Prevent usage of ARIA on unsupported elements
+    a11y-no-aria-unsupported-elements:
+      enabled: true
+      severity: error
+    # Prevent usage of the autofocus attribute
+    a11y-no-autofocus-attribute:
+      enabled: true
+      severity: error
+    # Prevent redundant words in <img> alt attributes
+    a11y-no-redundant-image-alt:
+      enabled: true
+      severity: error
+    # Prevent visually hidden interactive elements
+    a11y-no-visually-hidden-interactive-elements:
+      enabled: true
+      severity: error
+    # Require accessible text on <svg> elements
+    a11y-svg-has-accessible-text:
+      enabled: true
+      severity: error
     # These ones we should take a closer look at:
     erb-no-instance-variables-in-partials:
       enabled: false
