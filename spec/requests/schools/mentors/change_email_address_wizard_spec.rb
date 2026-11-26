@@ -52,6 +52,12 @@ describe "Schools::Mentors::ChangeEmailAddressWizardController" do
           expect(response).to have_http_status(:ok)
         end
 
+        it "prefills the email from the mentor" do
+          get path_for_step("edit")
+
+          expect(response.body).to include("mentor@example.com")
+        end
+
         it "resets the saved email when starting a new journey" do
           post path_for_step("edit"), params: { edit: { email: "new-mentor@example.com" } }
           follow_redirect!

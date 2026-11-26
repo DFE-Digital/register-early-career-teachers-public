@@ -12,6 +12,7 @@ module Schools
       before_action :check_allowed_step
 
       def new
+        prefill_from_mentor if current_step == :edit
         render @current_step
       end
 
@@ -60,6 +61,10 @@ module Schools
         return if @wizard.valid_path_to_current_step?
 
         redirect_to @wizard.furthest_valid_step_path
+      end
+
+      def prefill_from_mentor
+        @wizard.current_step.email = @wizard.current_step.email.presence || @mentor_at_school_period.email
       end
 
       def reject_incomplete_check_answers
