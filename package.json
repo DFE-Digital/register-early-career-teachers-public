@@ -7,7 +7,7 @@
     "esbuild": "^0.28.2",
     "govuk-frontend": "6.6.0",
     "sass": "^1.108.2",
-    "swagger-ui-dist": "^5.35.1"
+    "swagger-ui-dist": "^5.36.0"
   },
   "devDependencies": {
     "@herb-tools/linter": "^0.11.2",
