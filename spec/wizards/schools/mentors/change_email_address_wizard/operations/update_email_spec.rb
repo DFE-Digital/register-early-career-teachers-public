@@ -7,7 +7,6 @@ RSpec.describe Schools::Mentors::ChangeEmailAddressWizard::Operations::UpdateEma
   let(:state_store) do
     Schools::Mentors::ChangeEmailAddressWizard::StateStore.new(
       repository: DfE::Wizard::Repository::InMemory.new,
-      author:,
       mentor_at_school_period:
     )
   end
@@ -19,6 +18,7 @@ RSpec.describe Schools::Mentors::ChangeEmailAddressWizard::Operations::UpdateEma
 
   before do
     state_store.write(email: "new@example.com")
+    allow(wizard).to receive(:author).and_return(author)
   end
 
   it "succeeds" do

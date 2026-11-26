@@ -46,8 +46,7 @@ module Schools
           current_step_params: params,
           state_store: ChangeEmailAddressWizard::StateStore.new(
             repository: store,
-            mentor_at_school_period: @mentor_at_school_period,
-            author: current_user
+            mentor_at_school_period: @mentor_at_school_period
           )
         )
       end

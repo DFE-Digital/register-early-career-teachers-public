@@ -11,7 +11,6 @@ describe Schools::Mentors::ChangeEmailAddressWizard::Steps::ConfirmationStep, ty
   let(:state_store) do
     Schools::Mentors::ChangeEmailAddressWizard::StateStore.new(
       repository: DfE::Wizard::Repository::InMemory.new,
-      author:,
       mentor_at_school_period:
     )
   end
@@ -19,6 +18,10 @@ describe Schools::Mentors::ChangeEmailAddressWizard::Steps::ConfirmationStep, ty
   let(:school) { FactoryBot.create(:school) }
   let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school:) }
   let(:params) { {} }
+
+  before do
+    allow(wizard).to receive(:author).and_return(author)
+  end
 
   describe "#new_email" do
     it "returns the mentor's email" do

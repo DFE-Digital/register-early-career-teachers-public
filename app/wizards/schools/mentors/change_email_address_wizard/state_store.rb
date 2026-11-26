@@ -4,12 +4,11 @@ module Schools
       class StateStore
         include DfE::Wizard::StateStore
 
-        attr_reader :mentor_at_school_period, :author
+        attr_reader :mentor_at_school_period
 
-        def initialize(mentor_at_school_period:, author:, **)
+        def initialize(mentor_at_school_period:, **)
           super(**)
           @mentor_at_school_period = mentor_at_school_period
-          @author = author
         end
 
         def email = self[:email].presence || mentor_at_school_period.email

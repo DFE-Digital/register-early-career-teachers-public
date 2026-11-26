@@ -1,13 +1,9 @@
 RSpec.describe Schools::Mentors::ChangeEmailAddressWizard::StateStore do
   subject(:state_store) do
-    described_class.new(
-      mentor_at_school_period:,
-      author:
-    )
+    described_class.new(mentor_at_school_period:)
   end
 
   let(:school) { FactoryBot.create(:school) }
-  let(:author) { FactoryBot.build(:school_user, school_urn: school.urn) }
   let(:mentor_at_school_period) do
     FactoryBot.create(:mentor_at_school_period, school:, email: "mentor@example.com")
   end
@@ -28,10 +24,7 @@ RSpec.describe Schools::Mentors::ChangeEmailAddressWizard::StateStore do
     it "does not share a saved email with another mentor's wizard" do
       state_store.write(email: "new_email@example.com")
       other_mentor = FactoryBot.create(:mentor_at_school_period, school:, email: "other@example.com")
-      other_state_store = described_class.new(
-        mentor_at_school_period: other_mentor,
-        author:
-      )
+      other_state_store = described_class.new(mentor_at_school_period: other_mentor)
 
       expect(other_state_store.email).to eq("other@example.com")
     end

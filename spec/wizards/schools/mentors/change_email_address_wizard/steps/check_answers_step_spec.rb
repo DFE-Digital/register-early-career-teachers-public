@@ -11,7 +11,6 @@ describe Schools::Mentors::ChangeEmailAddressWizard::Steps::CheckAnswersStep, ty
   let(:state_store) do
     Schools::Mentors::ChangeEmailAddressWizard::StateStore.new(
       repository: DfE::Wizard::Repository::InMemory.new,
-      author:,
       mentor_at_school_period:
     )
   end
@@ -24,6 +23,7 @@ describe Schools::Mentors::ChangeEmailAddressWizard::Steps::CheckAnswersStep, ty
 
   before do
     state_store.write(email: "new@example.com")
+    allow(wizard).to receive(:author).and_return(author)
   end
 
   describe "#current_email" do

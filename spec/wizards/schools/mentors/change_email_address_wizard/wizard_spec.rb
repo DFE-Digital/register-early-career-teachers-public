@@ -7,7 +7,6 @@ RSpec.describe Schools::Mentors::ChangeEmailAddressWizard::Wizard do
   let(:state_store) do
     Schools::Mentors::ChangeEmailAddressWizard::StateStore.new(
       repository: DfE::Wizard::Repository::InMemory.new,
-      author:,
       mentor_at_school_period:
     )
   end

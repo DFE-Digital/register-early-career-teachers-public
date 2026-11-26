@@ -33,7 +33,7 @@ module Schools
           end
         end
 
-        delegate :mentor_at_school_period, :author, to: :state_store
+        delegate :mentor_at_school_period, to: :state_store
 
         def teacher_full_name
           ::Teachers::Name.new(mentor_at_school_period.teacher.reload).full_name
@@ -47,6 +47,8 @@ module Schools
 
           resolve_step_path(step_id)
         end
+
+        def author = Current.user
       end
     end
   end
