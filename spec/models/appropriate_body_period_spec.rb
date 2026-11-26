@@ -22,6 +22,7 @@ describe AppropriateBodyPeriod do
     it { is_expected.to have_many(:region_awards).class_name("Region::Award").dependent(:destroy) }
     it { is_expected.to have_many(:regions).through(:region_awards) }
     it { is_expected.to have_many(:lead_schools).through(:region_awards).source(:lead_school) }
+    it { is_expected.to have_many(:last_chosen_by_schools).class_name("School").with_foreign_key(:last_chosen_appropriate_body_id) }
   end
 
   describe "scopes" do
