@@ -262,4 +262,55 @@ describe Induction::ScenarioBuilder do
       end
     end
   end
+
+  describe "db/seeds/api/induction" do
+    builder = nil
+
+    before do
+      allow(described_class).to receive(:define).and_wrap_original do |original, &block|
+        original.call(&block).tap { |captured| builder = captured }
+      end
+    end
+
+    include_context "with seeds", %w[
+      contract_periods
+      lead_providers
+      regions
+      schools
+      appropriate_bodies
+      delivery_partners
+      lead_provider_delivery_partnerships
+      school_partnerships
+      schedules_and_milestones
+      contracts
+      statements
+      api/induction
+    ]
+
+    let(:expected_scenarios) do
+      [
+        [1, :new_ect_provider_led_claim,],
+        [2, :new_ect_school_led_claim,],
+        [3, :released_ect_to_claim,],
+        [4, :ongoing_provider_led_ect_to_pass,],
+        [5, :ongoing_school_led_ect_to_pass,],
+        [6, :ongoing_provider_led_ect_to_release,],
+        [7, :ongoing_provider_led_ect_with_another_ab,],
+        [8, :ect_who_has_passed_induction,],
+        [9, :ect_who_has_failed_induction,],
+        [10, :ect_without_qts,],
+        [11, :ect_exempt_from_induction,],
+        [12, :ect_prohibited_from_teaching,],
+        [13, :ect_ongoing_to_be_released_and_claimed,]
+      ]
+    end
+
+    let(:defined_scenarios) do
+      builder.scenarios.to_h.values.map { |scenario| [scenario.id, scenario.label] }
+    end
+
+    it "defines every scenario" do
+      expect(defined_scenarios).to eq(expected_scenarios)
+    end
+  end
 end
