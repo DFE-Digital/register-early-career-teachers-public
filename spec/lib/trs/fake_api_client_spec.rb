@@ -1,5 +1,8 @@
 describe TRS::FakeAPIClient do
-  subject(:client) { TRS::FakeAPIClient.new }
+  subject(:client) { described_class.new(store:) }
+
+  let(:store) { TRS::FakeTeacherStore.new(redis:) }
+  let(:redis) { instance_double(Redis, hgetall: {}) }
 
   describe "initializing" do
     it "fails when used in production" do
@@ -34,6 +37,73 @@ describe TRS::FakeAPIClient do
       it "returns a teacher who is not prohibited from teaching" do
         expect(trs_teacher).not_to be_prohibited_from_teaching
       end
+    end
+
+    context "with options stored for an ordinary TRN" do
+      let(:trn) { 1_234_567 }
+      let(:stored_options) { {} }
+
+      before do
+        allow(redis).to receive(:hgetall)
+          .with("#{trn}:options")
+          .and_return(stored_options)
+      end
+
+      context "without QTS" do
+        let(:stored_options) { { "has_qts" => "false" } }
+
+        it "returns a teacher without QTS" do
+          expect(trs_teacher).to be_no_qts
+        end
+      end
+
+      context "when prohibited from teaching" do
+        let(:stored_options) { { "prohibited_from_teaching" => "true" } }
+
+        it "returns a prohibited teacher" do
+          expect(trs_teacher).to be_prohibited_from_teaching
+        end
+      end
+
+      context "with an induction status override" do
+        let(:stored_options) { { "induction_status" => "Exempt" } }
+
+        it "uses the configured induction status" do
+          expect(trs_teacher.trs_induction_status).to eq("Exempt")
+        end
+      end
+
+      context "when configured as not found" do
+        let(:stored_options) { { "error_type" => "not_found" } }
+
+        it "raises TeacherNotFound" do
+          expect { trs_teacher }.to raise_error(TRS::Errors::TeacherNotFound)
+        end
+      end
+
+      context "when configured as deactivated" do
+        let(:stored_options) { { "error_type" => "deactivated" } }
+
+        it "raises TeacherDeactivated" do
+          expect { trs_teacher }.to raise_error(TRS::Errors::TeacherDeactivated)
+        end
+      end
+
+      context "when configured as merged" do
+        let(:stored_options) { { "error_type" => "merged" } }
+
+        it "raises TeacherMerged" do
+          expect { trs_teacher }.to raise_error(TRS::Errors::TeacherMerged)
+        end
+      end
+    end
+
+    it "does not carry options between lookups on the same client" do
+      prohibited_teacher = client.find_teacher(trn: "7000003")
+      ordinary_teacher = client.find_teacher(trn: "1234567")
+
+      expect(prohibited_teacher).to be_prohibited_from_teaching
+      expect(ordinary_teacher).not_to be_prohibited_from_teaching
     end
 
     context "with TRN is 7_000_001" do
@@ -133,12 +203,20 @@ describe TRS::FakeAPIClient do
   describe "Redis data storing functionality", :redis do
     let(:teacher) { FactoryBot.build(:teacher) }
     let(:trn) { teacher.trn }
-    let(:key) { trn + ":induction" }
+    let(:key) { "#{trn}:induction" }
     let(:start_date) { 3.months.ago.to_date }
-    let(:redis_client) { Redis.new }
+
+    let(:redis) do
+      Redis.new(
+        url: ENV.fetch("REDIS_CACHE_URL", "redis://localhost:6379")
+      )
+    end
+
+    let(:redis_client) { redis }
     let(:trs_teacher) { client.find_teacher(trn:) }
 
-    before { redis_client.del(key) }
+    before { store.clear(trn) }
+    after { store.clear(trn) }
 
     describe "#begin_induction!" do
       before { client.begin_induction!(trn: teacher.trn, start_date:) }

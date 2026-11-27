@@ -1,252 +1,125 @@
 RSpec.describe TRS::APIClient do
-  let(:client) { described_class.build }
+  subject(:client) { described_class.new }
+
   let(:trn) { "1234567" }
-  let(:date_of_birth) { "1990-01-01" }
-  let(:national_insurance_number) { "QQ123456A" }
-  let(:connection) { client.instance_variable_get(:@connection) }
+  let(:http_client) { instance_double(TRS::HttpAPIClient) }
+  let(:fake_client) { instance_double(TRS::FakeAPIClient) }
+  let(:teacher_store) { instance_double(TRS::FakeTeacherStore) }
+  let(:enable_fake) { false }
+  let(:in_store) { false }
 
-  describe "#find_teacher" do
-    let(:response) { instance_double(Faraday::Response, success?: true, body: response_body) }
-    let(:expected_path) { "v3/persons/1234567" }
+  before do
+    allow(Rails.application.config).to receive(:enable_fake_trs_api).and_return(enable_fake)
 
-    context "finding a teacher by TRN and date of birth" do
-      let(:response_body) do
-        { "firstName" => "John", "trn" => trn }.to_json
-      end
-      let(:expected_payload) do
-        {
-          dateOfBirth: "1990-01-01",
-          include: "Alerts,Induction,MandatoryQualifications,RoutesToProfessionalStatuses"
-        }
-      end
+    allow(TRS::FakeTeacherStore).to receive(:new).and_return(teacher_store)
+    allow(teacher_store).to receive(:exists?).with(trn).and_return(in_store)
+    allow(TRS::HttpAPIClient).to receive(:new).and_return(http_client)
+    allow(TRS::FakeAPIClient).to receive(:new).and_return(fake_client)
+  end
+
+  calls = {
+    find_teacher: { date_of_birth: "1990-01-01" },
+    begin_induction!: { start_date: Date.new(2024, 9, 1) },
+    pass_induction!: { start_date: Date.new(2024, 9, 1), completed_date: Date.new(2025, 7, 1) },
+    fail_induction!: { start_date: Date.new(2024, 9, 1), completed_date: Date.new(2025, 7, 1) },
+    reset_teacher_induction!: {},
+    reopen_teacher_induction!: { start_date: Date.new(2024, 9, 1) }
+  }
+
+  calls.each do |method, extra_args|
+    describe "##{method}" do
+      let(:args) { { trn: }.merge(extra_args) }
 
       before do
-        allow(connection).to receive(:get).with(expected_path, expected_payload).and_return(response)
+        allow(http_client).to receive(method).and_return(:http_result)
+        allow(fake_client).to receive(method).and_return(:fake_result)
       end
 
-      it "gets from the persons endpoint with TRN and date of birth" do
-        client.find_teacher(trn:, date_of_birth:)
+      context "when ENABLE_FAKE_TRS_API is set" do
+        let(:enable_fake) { true }
 
-        expect(connection).to have_received(:get).with(expected_path, expected_payload).once
-      end
-
-      it "returns a TRS::Teacher object" do
-        teacher = client.find_teacher(trn:, date_of_birth:)
-
-        expect(teacher).to be_a(TRS::Teacher)
-        expect(teacher.to_h.compact).to eq({
-          trs_alerts: [],
-          trs_first_name: "John",
-          trs_prohibited_from_teaching: false
-        })
-      end
-    end
-
-    context "finding a teacher by TRN and national insurance number" do
-      let(:response_body) do
-        { "firstName" => "John", "trn" => trn }.to_json
-      end
-      let(:expected_payload) do
-        {
-          nationalInsuranceNumber: "QQ123456A",
-          include: "Alerts,Induction,MandatoryQualifications,RoutesToProfessionalStatuses"
-        }
-      end
-
-      before do
-        allow(connection).to receive(:get).with(expected_path, expected_payload).and_return(response)
-      end
-
-      it "gets from the persons endpoint with TRN and national insurance number" do
-        client.find_teacher(trn:, national_insurance_number:)
-
-        expect(connection).to have_received(:get).with(expected_path, expected_payload).once
-      end
-
-      it "returns a TRS::Teacher object" do
-        teacher = client.find_teacher(trn:, national_insurance_number:)
-
-        expect(teacher).to be_a(TRS::Teacher)
-        expect(teacher.to_h.compact).to eq({
-          trs_alerts: [],
-          trs_first_name: "John",
-          trs_prohibited_from_teaching: false
-        })
-      end
-    end
-
-    describe "API failures" do
-      let(:not_found_trn) { "5555555" }
-      let(:gone_trn) { "6666666" }
-      let(:merged_trn) { "7777777" }
-
-      let(:stubbed_connection) do
-        Faraday.new do |builder|
-          builder.adapter(:test) do |stub|
-            stub.get("/v3/persons/#{not_found_trn}") { [404, { "Content-Type" => "text/plain" }, "Not Found"] }
-            stub.get("/v3/persons/#{gone_trn}") { [410, { "Content-Type" => "text/plain" }, "Gone"] }
-            stub.get("/v3/persons/#{merged_trn}") { [308, { "Content-Type" => "text/plain", "location" => "/v3/persons/8888888" }, "Permanent Redirect"] }
-          end
+        it "uses the fake client, forwarding all arguments" do
+          expect(client.public_send(method, **args)).to eq(:fake_result)
+          expect(fake_client).to have_received(method).with(**args)
+          expect(TRS::HttpAPIClient).not_to have_received(:new)
         end
       end
 
-      before { client.instance_variable_set(:@connection, stubbed_connection) }
+      context "when the flag is off and the TRN is in the FakeTeacherStore" do
+        let(:in_store) { true }
 
-      context "when the API request fails with 404" do
-        it do
-          expect { client.find_teacher(trn: not_found_trn) }.to raise_error(TRS::Errors::TeacherNotFound)
+        it "uses the fake client" do
+          expect(client.public_send(method, **args)).to eq(:fake_result)
+          expect(fake_client).to have_received(method).with(**args)
         end
       end
 
-      context "when the API request fails with 410" do
-        it do
-          expect { client.find_teacher(trn: gone_trn) }.to raise_error(TRS::Errors::TeacherDeactivated)
-        end
-      end
-
-      context "when the API request fails with 308" do
-        it do
-          expect { client.find_teacher(trn: merged_trn) }.to raise_error(TRS::Errors::TeacherMerged)
-        end
-
-        it "carries the TRN from the location header" do
-          expect { client.find_teacher(trn: merged_trn) }.to raise_error(TRS::Errors::TeacherMerged) { |error|
-            expect(error.trn).to eq(merged_trn)
-            expect(error.redirected_to).to eq("8888888")
-            expect(error.message).to eq("TRN #{merged_trn} redirects to TRN 8888888")
-          }
+      context "when the flag is off and the TRN is not in the FakeTeacherStore" do
+        it "uses the HTTP client, forwarding all arguments" do
+          expect(client.public_send(method, **args)).to eq(:http_result)
+          expect(http_client).to have_received(method).with(**args)
+          expect(TRS::FakeAPIClient).not_to have_received(:new)
         end
       end
     end
   end
 
-  describe "#begin_induction!" do
-    let(:response) { instance_double(Faraday::Response, success?: true) }
-    let(:trn) { "0000123" }
-    let(:start_date) { Date.new(2024, 1, 1) }
-    let(:modified_at) { 3.years.ago }
-    let(:expected_payload) do
-      {
-        "status" => "InProgress",
-        "startDate" => start_date.iso8601,
-        "completedDate" => nil,
-        "modifiedOn" => modified_at.utc.iso8601(3)
-      }.to_json
-    end
-
-    it "puts to the induction endpoint with the 'begin' parameters" do
-      travel_to(modified_at) do
-        allow(connection).to receive(:put).with("v3/persons/#{trn}/cpd-induction", expected_payload).and_return(response)
-
-        client.begin_induction!(trn:, start_date:, modified_at:)
-
-        expect(connection).to have_received(:put).with("v3/persons/#{trn}/cpd-induction", expected_payload).once
-      end
-    end
-  end
-
-  describe "#pass_induction!" do
-    let(:response) { instance_double(Faraday::Response, success?: true) }
-    let(:trn) { "0000234" }
-    let(:start_date) { Date.new(2024, 1, 1) }
-    let(:completed_date) { Date.new(2024, 2, 2) }
-    let(:modified_at) { "2022-05-03T03:00:00.000Z" }
-    let(:expected_payload) do
-      {
-        "status" => "Passed",
-        "startDate" => start_date.iso8601,
-        "completedDate" => completed_date.iso8601,
-        "modifiedOn" => modified_at
-      }.to_json
-    end
+  describe "routing per call" do
+    let(:other_trn) { "7654321" }
 
     before do
-      allow(connection).to receive(:put).with("v3/persons/#{trn}/cpd-induction", expected_payload).and_return(response)
+      allow(teacher_store).to receive(:exists?).with(other_trn).and_return(true)
+      allow(http_client).to receive(:reset_teacher_induction!).and_return(:http_result)
+      allow(fake_client).to receive(:reset_teacher_induction!).and_return(:fake_result)
     end
 
-    it "puts to the induction endpoint with the 'pass' parameters" do
-      travel_to(modified_at) do
-        client.pass_induction!(trn:, start_date:, completed_date:)
+    it "decides separately for each TRN on the same instance" do
+      expect(client.reset_teacher_induction!(trn:)).to eq(:http_result)
+      expect(client.reset_teacher_induction!(trn: other_trn)).to eq(:fake_result)
+      expect(client.reset_teacher_induction!(trn:)).to eq(:http_result)
+    end
+  end
+
+  describe "client instances" do
+    before do
+      allow(http_client).to receive(:reset_teacher_induction!)
+      allow(fake_client).to receive(:reset_teacher_induction!)
+    end
+
+    it "builds the HTTP client once and reuses it" do
+      2.times { client.reset_teacher_induction!(trn:) }
+
+      expect(TRS::HttpAPIClient).to have_received(:new).once
+    end
+
+    context "when using the fake" do
+      let(:in_store) { true }
+
+      it "builds the fake client once and reuses it" do
+        2.times { client.reset_teacher_induction!(trn:) }
+
+        expect(TRS::FakeAPIClient).to have_received(:new).once
       end
-
-      expect(connection).to have_received(:put).with("v3/persons/#{trn}/cpd-induction", expected_payload).once
     end
   end
 
-  describe "#fail_induction!" do
-    let(:response) { instance_double(Faraday::Response, success?: true) }
-    let(:trn) { "0000345" }
-    let(:start_date) { Date.new(2024, 1, 1) }
-    let(:completed_date) { Date.new(2024, 3, 3) }
-    let(:modified_at) { "2022-05-03T03:00:00.000Z" }
-    let(:expected_payload) do
-      {
-        "status" => "Failed",
-        "startDate" => start_date.iso8601,
-        "completedDate" => completed_date.iso8601,
-        "modifiedOn" => modified_at
-      }.to_json
-    end
+  describe "in production" do
+    let(:in_store) { true }
 
     before do
-      allow(connection).to receive(:put).with("v3/persons/#{trn}/cpd-induction", expected_payload).and_return(response)
+      allow(Rails.env).to receive(:production?).and_return(true)
+      allow(http_client).to receive(:reset_teacher_induction!).and_return(:http_result)
     end
 
-    it "puts to the induction endpoint with the 'fail' parameters" do
-      travel_to(modified_at) do
-        client.fail_induction!(trn:, start_date:, completed_date:)
-      end
-      expect(connection).to have_received(:put).with("v3/persons/#{trn}/cpd-induction", expected_payload).once
+    it "does not consult the store and uses the HTTP client" do
+      expect(client.reset_teacher_induction!(trn:)).to eq(:http_result)
+      expect(teacher_store).not_to have_received(:exists?)
     end
   end
 
-  describe "#reset_teacher_induction!" do
-    let(:response) { instance_double(Faraday::Response, success?: true) }
-    let(:trn) { "0000234" }
-    let(:start_date) { Date.new(2024, 1, 1) }
-    let(:modified_at) { 1.week.ago }
-    let(:expected_payload) do
-      {
-        "status" => "RequiredToComplete",
-        "startDate" => nil,
-        "completedDate" => nil,
-        "modifiedOn" => modified_at.utc
-      }.to_json
-    end
-
-    before do
-      allow(connection).to receive(:put).with("v3/persons/#{trn}/cpd-induction", expected_payload).and_return(response)
-    end
-
-    it "puts to the induction endpoint with the 'reset' parameters" do
-      client.reset_teacher_induction!(trn:, modified_at:)
-
-      expect(connection).to have_received(:put).with("v3/persons/#{trn}/cpd-induction", expected_payload).once
-    end
-  end
-
-  describe "#reopen_teacher_induction!" do
-    let(:response) { instance_double(Faraday::Response, success?: true) }
-    let(:trn) { "0000234" }
-    let(:start_date) { Date.new(2024, 1, 1) }
-    let(:modified_at) { 1.week.ago }
-    let(:expected_payload) do
-      {
-        "status" => "InProgress",
-        "startDate" => start_date.iso8601,
-        "completedDate" => nil,
-        "modifiedOn" => modified_at.utc
-      }.to_json
-    end
-
-    before do
-      allow(connection).to receive(:put).with("v3/persons/#{trn}/cpd-induction", expected_payload).and_return(response)
-    end
-
-    it "puts to the induction endpoint with the 'reopening' parameters" do
-      client.reopen_teacher_induction!(trn:, start_date:, modified_at:)
-
-      expect(connection).to have_received(:put).with("v3/persons/#{trn}/cpd-induction", expected_payload).once
+  describe ".build" do
+    it "returns a router" do
+      expect(described_class.build).to be_a(described_class)
     end
   end
 end
