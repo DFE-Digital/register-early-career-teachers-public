@@ -35,8 +35,7 @@ module AppropriateBodies
       PassECTInductionJob.perform_later(
         trn:,
         start_date: first_induction_period.started_on,
-        completed_date: last_induction_period.finished_on,
-        **(Current.use_fake_trs_api ? { use_fake_trs_api: true } : {})
+        completed_date: last_induction_period.finished_on
       )
     end
   end
