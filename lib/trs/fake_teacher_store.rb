@@ -58,7 +58,7 @@ module TRS
     end
 
     def clear_all_options
-      redis.del(redis.keys("*:options"))
+      redis.scan_each(match: "*:options", count: 100).each_slice(500) { |keys| redis.del(*keys) }.count
     end
 
     # Induction

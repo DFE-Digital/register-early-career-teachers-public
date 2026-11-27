@@ -188,14 +188,15 @@ module TRS
     end
 
     def induction_data(trn, induction_status_override)
-      return { "induction" => { "status" => induction_status_override } } if induction_status_override
+      # allow the stored induction info (if any) to trump the override so that the seeded data
+      # can be modified and returned correctly
 
       if (induction = @store.induction_for(trn))
         { "induction" => induction.slice("status", "startDate", "completedDate") }
       else
         {
           "induction" => {
-            "status" => "InProgress",
+            "status" => induction_status_override || "InProgress",
             "startDate" => 2.years.ago.to_date.to_s,
             "completedDate" => 1.year.ago.to_date.to_s
           }
