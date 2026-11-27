@@ -184,6 +184,14 @@ RSpec.describe School do
               .to contain_exactly("Must be national or teaching school hub")
           end
         end
+
+        context "when the last chosen appropriate body is a teaching school" do
+          subject { FactoryBot.build(:school, :independent, last_chosen_appropriate_body: appropriate_body_period) }
+
+          let(:appropriate_body_period) { FactoryBot.build(:appropriate_body_period, :teaching_school) }
+
+          it { is_expected.to have_error(:last_chosen_appropriate_body_id, "Must be national or teaching school hub") }
+        end
       end
 
       context "when the school is state-funded" do
