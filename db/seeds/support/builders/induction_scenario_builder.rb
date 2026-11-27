@@ -106,30 +106,6 @@ module Induction
 
       @seeded_scenarios << label
     end
-  end
-
-  class ScenarioSeeder
-    attr_reader :scenario
-
-    def initialize(scenario:, client_name:, trn_prefix:)
-      @scenario = scenario
-      @client_name = client_name
-      @trn_prefix = trn_prefix
-      @trs_options = {}
-    end
-
-    def seed(count: 1)
-      count.times do |index|
-        trn = teacher_trn(index)
-        instance_exec(trn:, name: teacher_name(index), index:, &scenario.block)
-        store_options_for_fake_trs_api(trn)
-      end
-    end
-
-    def trs_responds_with(opts = {})
-      @trs_options = opts
-      print_seed_info("TRS response options '#{opts}'", indent: 2, colour: :magenta)
-    end
 
   private
 
@@ -161,6 +137,32 @@ module Induction
       # Re-raise to avoid JSON parser errors exposing the raw credentials.
       raise ArgumentError, "OAUTH_API_CLIENT_SEED_CREDENTIALS must contain valid JSON", cause: nil
     end
+  end
+
+  class ScenarioSeeder
+    attr_reader :scenario
+
+    def initialize(scenario:, client_name:, trn_prefix:)
+      @scenario = scenario
+      @client_name = client_name
+      @trn_prefix = trn_prefix
+      @trs_options = {}
+    end
+
+    def seed(count: 1)
+      count.times do |index|
+        trn = teacher_trn(index)
+        instance_exec(trn:, name: teacher_name(index), index:, &scenario.block)
+        store_options_for_fake_trs_api(trn)
+      end
+    end
+
+    def trs_responds_with(opts = {})
+      @trs_options = opts
+      print_seed_info("TRS response options '#{opts}'", indent: 2, colour: :magenta)
+    end
+
+  private
 
     def teacher_trn(index)
       sprintf("%s%02d%03d", @trn_prefix, scenario.id, index)
