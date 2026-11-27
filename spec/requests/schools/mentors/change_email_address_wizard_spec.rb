@@ -51,6 +51,47 @@ describe "Schools::Mentors::ChangeEmailAddressWizardController" do
 
           expect(response).to have_http_status(:ok)
         end
+
+        it "prefills the email from the mentor" do
+          get path_for_step("edit")
+
+          expect(response.body).to include("mentor@example.com")
+        end
+
+        it "resets the saved email when starting a new journey" do
+          post path_for_step("edit"), params: { edit: { email: "new-mentor@example.com" } }
+          follow_redirect!
+          expect(response).to have_http_status(:ok)
+
+          get path_for_step("edit"), headers: { "HTTP_REFERER" => root_url }
+          expect(response).to have_http_status(:ok)
+
+          get path_for_step("check-answers")
+
+          expect(response).to redirect_to(path_for_step("edit"))
+        end
+
+        it "retains the saved email when returning within the wizard" do
+          post path_for_step("edit"), params: { edit: { email: "new-mentor@example.com" } }
+          follow_redirect!
+          expect(response).to have_http_status(:ok)
+
+          get path_for_step("edit"), headers: { "HTTP_REFERER" => path_for_step("check-answers") }
+          expect(response).to have_http_status(:ok)
+
+          get path_for_step("check-answers")
+
+          expect(response).to have_http_status(:ok)
+          expect(response.body).to include("new-mentor@example.com")
+        end
+      end
+
+      context "when check answers is accessed without a valid edit step" do
+        it "redirects to the edit step" do
+          get path_for_step("check-answers")
+
+          expect(response).to redirect_to(path_for_step("edit"))
+        end
       end
     end
   end
@@ -89,6 +130,17 @@ describe "Schools::Mentors::ChangeEmailAddressWizardController" do
           post(path_for_step("nope"), params:)
 
           expect(response).to have_http_status(:not_found)
+        end
+      end
+
+      context "when check answers is submitted without a saved email change" do
+        it "returns to edit without updating the email or recording an event" do
+          post path_for_step("check-answers")
+
+          expect(mentor_at_school_period.reload.email).to eq("mentor@example.com")
+          expect(Event.where(event_type: "teacher_email_address_updated")).to be_empty
+          expect(response).to redirect_to(path_for_step("edit"))
+          expect(flash[:error]).to eq(WizardStoreRescuable::EMPTY_STORE_FLASH_MESSAGE)
         end
       end
 
