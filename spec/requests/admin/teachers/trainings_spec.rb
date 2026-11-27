@@ -91,6 +91,13 @@ RSpec.describe "Admin::Teachers::Training", type: :request do
         let(:mentor_training_period) { FactoryBot.create(:training_period, :for_mentor) }
         let(:teacher) { mentor_training_period.mentor_at_school_period.teacher }
 
+        it "shows the mentor funding summary" do
+          get admin_teacher_training_path(teacher)
+
+          expect(response.body).to include("Mentor training summary")
+          expect(response.body).to include("Not eligible for funded training yet.")
+        end
+
         it "shows the mentor history section" do
           get admin_teacher_training_path(teacher)
           expect(response.body).to include("Mentor history")
@@ -137,6 +144,13 @@ RSpec.describe "Admin::Teachers::Training", type: :request do
                             finished_on: nil)
         end
 
+        it "shows the mentor funding summary" do
+          get admin_teacher_training_path(teacher)
+
+          expect(response.body).to include("Mentor training summary")
+          expect(response.body).to include("Not eligible for funded training yet.")
+        end
+
         it "shows an API response for the latest mentor period under each lead provider" do
           get admin_teacher_training_path(teacher)
 
@@ -150,6 +164,21 @@ RSpec.describe "Admin::Teachers::Training", type: :request do
         it "shows the empty state message" do
           get admin_teacher_training_path(teacher)
           expect(response.body).to include("There is no training history recorded for this teacher.")
+          expect(response.body).not_to include("Mentor training summary")
+        end
+
+        context "when the teacher has a mentor_at_school_period but still no training period" do
+          before do
+            FactoryBot.create(:mentor_at_school_period, teacher:)
+          end
+
+          it "shows the empty state message" do
+            get admin_teacher_training_path(teacher)
+            expect(response.body).to include("There is no training history recorded for this teacher.")
+            expect(response.body).to include("Mentor training summary")
+            expect(response.body).to include("Not eligible for funded training yet.")
+            expect(response.body).to include("They have not been assigned an ECT on provider-led training.")
+          end
         end
       end
 

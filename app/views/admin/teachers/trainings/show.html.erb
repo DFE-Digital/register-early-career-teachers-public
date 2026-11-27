@@ -16,8 +16,9 @@
   <% end %>
 <% end %>
 
-<% if @mentor_training_periods.any? %>
+<% if @teacher.mentor_at_school_periods.any? %>
   <h3 class="govuk-heading-s">Mentor history</h3>
+  <%= render Admin::Teachers::MentorFundingComponent.new(teacher: @teacher) %>
   <% @mentor_training_periods.each do |training_period| %>
     <%= render Admin::Teachers::TrainingSummaryComponent.new(training_period:, show_api_row: @latest_training_period_ids_with_api_response.include?(training_period.id)) %>
   <% end %>

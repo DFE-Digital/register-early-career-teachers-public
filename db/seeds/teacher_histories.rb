@@ -37,7 +37,15 @@ _caroline_quentin = teacher(next_trn, "Caroline Quentin") do
   end
 end
 
-_emma_thompson = teacher(next_trn, "Emma Thompson", trs_induction_status: "InProgress") do
+_emma_thompson = teacher(
+  next_trn,
+  "Emma Thompson",
+  trs_induction_status: "InProgress",
+  mentor_became_ineligible_for_funding_on: Date.new(2021, 4, 19),
+  mentor_became_ineligible_for_funding_reason: "completed_during_early_roll_out"
+) do
+  description("Mentor training completed during early roll-out")
+
   mentor_at_school_period(abbey_grove_school, "2022-09-01")
 end
 
@@ -69,7 +77,15 @@ _maggie_smith = teacher(next_trn, "Maggie Smith", trs_induction_status: "InProgr
   end
 end
 
-felicity_kendall = teacher(next_trn, "Felicity Kendall") do
+felicity_kendall = teacher(
+  next_trn,
+  "Felicity Kendall",
+  mentor_first_became_eligible_for_training_at: Date.new(2023, 9, 1),
+  mentor_became_ineligible_for_funding_on: Date.new(2024, 11, 20),
+  mentor_became_ineligible_for_funding_reason: "started_not_completed"
+) do
+  description("Mentor started funded training but did not complete it")
+
   induction_period(golden_leaf_teaching_school_hub, "2023-08-28")
 
   mentor_at_school_period(abbey_grove_school, "2023-09-01 -> 2025-05-05") do
@@ -80,8 +96,10 @@ felicity_kendall = teacher(next_trn, "Felicity Kendall") do
   end
 end
 
-hugh_grant = teacher(next_trn, "Hugh Grant") do
+hugh_grant = teacher(next_trn, "Hugh Grant", mentor_first_became_eligible_for_training_at: Date.new(2023, 9, 1)) do
   description("Mentor at 3 schools")
+  description("Eligible for funded mentor training that has not been completed")
+
   mentor_at_school_period(abbey_grove_school, "2023-09-01")
   mentor_at_school_period(ashford_independent_school, "2022-09-01")
   mentor_at_school_period(brookfield_school, "2022-09-01")
@@ -125,8 +143,15 @@ _alan_rickman = teacher(next_trn, "Alan Rickman") do
   end
 end
 
-_dominic_west = teacher(next_trn, "Dominic West") do
+_dominic_west = teacher(
+  next_trn,
+  "Dominic West",
+  mentor_first_became_eligible_for_training_at: Date.new(2022, 9, 1),
+  mentor_became_ineligible_for_funding_on: Date.new(2024, 5, 14),
+  mentor_became_ineligible_for_funding_reason: "completed_declaration_received"
+) do
   description "completed mentor training"
+  description("Funding ended after a lead provider submitted a completed declaration")
 
   mentor_at_school_period(mallory_towers, "2022-09-01 -> 2025-07-24") do
     training_period(teach_first, 2022, "2022-09-01 -> 2025-01-17") do

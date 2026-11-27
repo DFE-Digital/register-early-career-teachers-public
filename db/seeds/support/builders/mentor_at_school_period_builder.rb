@@ -41,6 +41,11 @@ module TeacherHistories
             happened_at: mentor_at_school_period.started_on
           )
         end
+
+        Teachers::SetMentorFundingEligibility.new(
+          teacher: mentor_at_school_period.teacher,
+          author:
+        ).set!
       else
         print_seed_info("Error messages: #{training_period.errors.messages}", error: true, indent: indent(2))
 
