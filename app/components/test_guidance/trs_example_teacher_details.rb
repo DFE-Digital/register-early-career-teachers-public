@@ -68,7 +68,7 @@ module TestGuidance
       end
     end
 
-    # @param [Teacher, nil]
+    # @param teacher [Teacher, nil]
     # @return [String]
     def active_period_with(teacher, inactive: "-")
       return inactive if teacher.nil?
@@ -84,7 +84,7 @@ module TestGuidance
     end
 
     # Teacher is not available for further testing and cannot be claimed until TRS is reset
-    # @param [Teacher, nil]
+    # @param teacher [Teacher, nil]
     # @return [Boolean]
     def exhausted?(teacher)
       return false if teacher.nil?

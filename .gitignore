@@ -11,6 +11,8 @@
 
 bin/konduit.sh
 
+.yardoc
+doc/
 documentation/**/*.html
 !documentation/site/**/*.html
 documentation/site/output

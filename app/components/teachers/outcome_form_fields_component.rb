@@ -8,7 +8,7 @@ module Teachers
 
     # @param mode [Symbol] either :admin or :appropriate_body
     # @param form [GOVUKDesignSystemFormBuilder::FormBuilder]
-    # @param appropriate_body [AppropriateBodyPeriod]
+    # @param appropriate_body_period [AppropriateBodyPeriod]
     def initialize(mode:, form:, appropriate_body_period:)
       super
 

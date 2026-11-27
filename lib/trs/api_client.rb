@@ -39,7 +39,7 @@ module TRS
       RoutesToProfessionalStatuses
     ].freeze
 
-    # GET /v3/persons/{trn}
+    # GET /v3/persons/:trn
     # @param trn [String] NB: some teachers are trnless
     # @param date_of_birth [Date]
     # @param national_insurance_number [String]

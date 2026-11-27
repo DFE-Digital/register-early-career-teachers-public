@@ -1,1 +1,2 @@
 --private
+--load .yard/silence_url_helpers.rb
