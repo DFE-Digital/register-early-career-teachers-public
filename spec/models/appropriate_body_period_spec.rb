@@ -225,12 +225,6 @@ describe AppropriateBodyPeriod do
   end
 
   describe "validations" do
-    describe "name", skip: "during data cleanse" do
-      subject(:appropriate_body_period) { FactoryBot.build(:appropriate_body_period) }
-
-      it { is_expected.to validate_uniqueness_of(:name).allow_nil }
-    end
-
     it "does not allow a retired type to contain today" do
       %i[local_authority teaching_school].each do |trait|
         period = FactoryBot.build(:appropriate_body_period, trait,
