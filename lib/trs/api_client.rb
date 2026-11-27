@@ -1,161 +1,43 @@
 module TRS
   class APIClient
-    private_class_method :new
+    QUERY_PARAMS = HttpAPIClient::QUERY_PARAMS
 
-    def initialize
-      @connection = Faraday.new(url: Rails.application.config.trs_api_base_url) do |faraday|
-        faraday.headers["Authorization"] = "Bearer #{Rails.application.config.trs_api_key}"
-        faraday.headers["Accept"] = "application/json"
-        faraday.headers["X-Api-Version"] = Rails.application.config.trs_api_version
-        faraday.headers["Content-Type"] = "application/json"
-        faraday.response :logger if Rails.env.development?
-      end
-    end
+    # Kept for backwards compatibility with existing callers/stubs
+    def self.build = new
 
-    def self.build
-      if Rails.application.config.enable_fake_trs_api || Current.use_fake_trs_api
-        Rails.logger.warn("Using TRS::FakeAPIClient")
-
-        return TRS::FakeAPIClient.new
-      end
-
-      new
-    end
-
-    # Other available items:
-    #   * InitialTeacherTraining (removed in 20250627)
-    #   * NpqQualifications (removed in 20250627)
-    #   * PendingDetailChanges
-    #   * HigherEducationQualifications
-    #   * Sanctions
-    #   * PreviousNames
-    #   * AllowIdSignInWithProhibitions
-    #
-    # @return [Array<String>]
-    QUERY_PARAMS = %w[
-      Alerts
-      Induction
-      MandatoryQualifications
-      RoutesToProfessionalStatuses
-    ].freeze
-
-    # GET /v3/persons/{trn}
-    # @param trn [String] NB: some teachers are trnless
-    # @param date_of_birth [Date]
-    # @param national_insurance_number [String]
-    # @param include [Array<String>]
-    # @return [TRS::Teacher]
-    def find_teacher(trn:, date_of_birth: nil, national_insurance_number: nil, include: QUERY_PARAMS)
-      params = { dateOfBirth: date_of_birth, nationalInsuranceNumber: national_insurance_number, include: include.join(",") }.compact
-      response = @connection.get(persons_path(trn), params)
-
-      return trs_teacher(response) if response.success?
-
-      case Rack::Utils::HTTP_STATUS_CODES.fetch(response.status)
-      when "Not Found"
-        raise(TRS::Errors::TeacherNotFound)
-      when "Gone"
-        raise(TRS::Errors::TeacherDeactivated)
-      when "Permanent Redirect"
-        raise(TRS::Errors::TeacherMerged.new(trn:, redirected_to: trs_redirected_trn(response)))
-      else
-        fail(TRS::Errors::APIRequestError, "#{response.status} #{response.body}")
-      end
-    end
-
-    def begin_induction!(trn:, start_date:, modified_at: Time.zone.now)
-      update_induction_status(
-        trn:,
-        status: "InProgress",
-        start_date: start_date.iso8601,
-        modified_at: modified_at.utc.iso8601(3)
-      )
-    end
-
-    def pass_induction!(trn:, start_date:, completed_date:, modified_at: Time.zone.now)
-      update_induction_status(
-        trn:,
-        status: "Passed",
-        start_date: start_date.iso8601,
-        completed_date: completed_date.iso8601,
-        modified_at: modified_at.utc.iso8601(3)
-      )
-    end
-
-    def fail_induction!(trn:, start_date:, completed_date:, modified_at: Time.zone.now)
-      update_induction_status(
-        trn:,
-        status: "Failed",
-        start_date: start_date.iso8601,
-        completed_date: completed_date.iso8601,
-        modified_at: modified_at.utc.iso8601(3)
-      )
-    end
-
-    def reset_teacher_induction!(trn:, modified_at: Time.zone.now)
-      update_induction_status(
-        trn:,
-        status: "RequiredToComplete",
-        start_date: nil,
-        completed_date: nil,
-        modified_at: modified_at.utc.iso8601(3)
-      )
-    end
-
-    def reopen_teacher_induction!(trn:, start_date:, modified_at: Time.zone.now)
-      update_induction_status(
-        trn:,
-        status: "InProgress",
-        start_date: start_date.iso8601,
-        completed_date: nil,
-        modified_at: modified_at.utc.iso8601(3)
-      )
-    end
+    def find_teacher(trn:, **)              = client_for(trn).find_teacher(trn:, **)
+    def begin_induction!(trn:, **)          = client_for(trn).begin_induction!(trn:, **)
+    def pass_induction!(trn:, **)           = client_for(trn).pass_induction!(trn:, **)
+    def fail_induction!(trn:, **)           = client_for(trn).fail_induction!(trn:, **)
+    def reset_teacher_induction!(trn:, **)  = client_for(trn).reset_teacher_induction!(trn:, **)
+    def reopen_teacher_induction!(trn:, **) = client_for(trn).reopen_teacher_induction!(trn:, **)
 
   private
 
-    # @param response [Faraday::Response]
-    # @return [TRS::Teacher]
-    def trs_teacher(response)
-      TRS::Teacher.new(JSON.parse(response.body))
+    def client_for(trn)
+      return real_client unless use_fake_client?(trn)
+
+      Rails.logger.warn("Using TRS::FakeAPIClient for TRN #{trn}")
+
+      fake_client
     end
 
-    # @param response [Faraday::Response] "location" => "/v3/persons/1234567"
-    # @return [String]
-    def trs_redirected_trn(response)
-      response.headers[:location].match(%r{/v3/persons/(\d*)})[1]
+    def use_fake_client?(trn)
+      return false if Rails.env.production?
+      return true if Rails.application.config.enable_fake_trs_api
+
+      # when ENABLE_FAKE_TRS_API is not enabled and this isn't production
+      # allow the Fake API to be used when there are TRS response options
+      # recorded for the TRN in the fake teacher store
+      TRS::FakeTeacherStore.new.exists?(trn)
     end
 
-    # Added in version 20250203
-    # PUT /v3/persons/<trn>/cpd-induction
-    #
-    # @return [Boolean]
-    def update_induction_status(trn:, status:, modified_at:, start_date:, completed_date: nil)
-      payload = { "status" => status,
-                  "startDate" => start_date,
-                  "completedDate" => completed_date,
-                  "modifiedOn" => modified_at }.to_json
-
-      response = @connection.put(persons_path(trn, suffix: "cpd-induction"), payload)
-
-      Rails.logger.debug("calling TRS API: #{response}")
-
-      if response.success?
-        Rails.logger.debug("OK")
-
-        # FIXME: is there anything that comes back in legit responses that
-        #        we want to keep hold of?
-        true
-      else
-        Rails.logger.error("Error: #{response.status}")
-        Rails.logger.error("Response: #{response.body}")
-
-        false
-      end
+    def real_client
+      @real_client ||= TRS::HttpAPIClient.new
     end
 
-    def persons_path(trn, suffix: nil)
-      ["v3", "persons", trn, suffix].compact.join("/")
+    def fake_client
+      @fake_client ||= TRS::FakeAPIClient.new
     end
   end
 end

@@ -21,8 +21,14 @@ istip = AppropriateBodyPeriod.with_display_name("Independent Schools Teacher Ind
 
 def teacher(...) = TeacherHistories::TeacherBuilder.teacher(...)
 
+# Each scenario needs a trs_responds_with if seeded into an environment with ENABLE_FAKE_TRS_API: false
+# so that we can determine that we should use the TRS::FakeAPIClient for these TRNs
 Induction::ScenarioBuilder.define do
+  clear_trs_responses
+
   scenario :new_ect_provider_led_claim, id: 1 do |trn:, name:, **|
+    trs_responds_with(induction_status: "RequiredToComplete")
+
     teacher(trn, name) do
       description("New ECT for provider-led, ready to claim")
       ect_at_school_period(abbey_grove_school, "2026-09-01", school_reported_appropriate_body: golden_leaf_teaching_school_hub) do
@@ -32,6 +38,8 @@ Induction::ScenarioBuilder.define do
   end
 
   scenario :new_ect_school_led_claim, id: 2 do |trn:, name:, **|
+    trs_responds_with(induction_status: "RequiredToComplete")
+
     teacher(trn, name) do
       description("New ECT for school-led, ready to claim")
       ect_at_school_period(ackley_bridge, "2026-09-01", school_reported_appropriate_body: golden_leaf_teaching_school_hub) do
@@ -41,6 +49,8 @@ Induction::ScenarioBuilder.define do
   end
 
   scenario :released_ect_to_claim, id: 3 do |trn:, name:, **|
+    trs_responds_with(induction_status: "InProgress")
+
     teacher(trn, name) do
       description("Previously released ECT, ready to claim")
       ect_at_school_period(brookfield_school, "2021-09-01 -> 2022-08-31", school_reported_appropriate_body: istip) do
@@ -55,6 +65,8 @@ Induction::ScenarioBuilder.define do
   end
 
   scenario :ongoing_provider_led_ect_to_pass, id: 4 do |trn:, name:, **|
+    trs_responds_with(induction_status: "InProgress")
+
     teacher(trn, name) do
       description("ECT with ongoing provider-led training, ready to pass")
       ect_at_school_period(abbey_grove_school, "2024-09-01") do
@@ -68,6 +80,8 @@ Induction::ScenarioBuilder.define do
   end
 
   scenario :ongoing_school_led_ect_to_pass, id: 5 do |trn:, name:, **|
+    trs_responds_with(induction_status: "InProgress")
+
     teacher(trn, name) do
       description("ECT with ongoing school-led training, ready to pass")
       ect_at_school_period(brookfield_school, "2024-09-01") do
@@ -78,6 +92,8 @@ Induction::ScenarioBuilder.define do
   end
 
   scenario :ongoing_provider_led_ect_to_release, id: 6 do |trn:, name:, **|
+    trs_responds_with(induction_status: "InProgress")
+
     teacher(trn, name) do
       description("ECT with ongoing induction, ready to release")
       ect_at_school_period(abbey_grove_school, "2025-09-01") do
@@ -91,6 +107,8 @@ Induction::ScenarioBuilder.define do
   end
 
   scenario :ongoing_provider_led_ect_with_another_ab, id: 7 do |trn:, name:, **|
+    trs_responds_with(induction_status: "InProgress")
+
     teacher(trn, name) do
       description("ECT with ongoing induction with another appropriate body, cannot be claimed")
       ect_at_school_period(abbey_grove_school, "2025-09-01") do
@@ -175,6 +193,8 @@ Induction::ScenarioBuilder.define do
   end
 
   scenario :ect_ongoing_to_be_released_and_claimed, id: 13 do |trn:, name:, **|
+    trs_responds_with(induction_status: "InProgress")
+
     teacher(trn, name) do
       description("ECT ongoing induction, to be released and claimed")
       ect_at_school_period(mallory_towers, "2025-09-01", school_reported_appropriate_body: golden_leaf_teaching_school_hub) do

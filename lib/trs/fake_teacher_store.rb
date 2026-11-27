@@ -34,6 +34,11 @@ module TRS
       @redis = redis
     end
 
+    def exists?(trn)
+      # used to determine whether this TRN has been seeded with options
+      safely { redis.exists?(options_key(trn)) }
+    end
+
     # Options
     def options_for(trn)
       stored_options = safely { redis.hgetall(options_key(trn)) } || {}
@@ -50,6 +55,10 @@ module TRS
 
     def clear_options(trn)
       redis.del(options_key(trn))
+    end
+
+    def clear_all_options
+      redis.del(redis.keys("*:options"))
     end
 
     # Induction

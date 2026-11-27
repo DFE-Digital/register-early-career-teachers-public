@@ -47,7 +47,6 @@ module RegisterEarlyCareerTeachers
     config.test_guidance_fixtures = Rails.root.join("spec/fixtures/seeds_trs.csv")
     config.enable_test_guidance = ActiveModel::Type::Boolean.new.cast(ENV.fetch("TEST_GUIDANCE", false))
     config.enable_fake_trs_api = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_FAKE_TRS_API", false))
-    config.fake_trs_api_permitted = ActiveModel::Type::Boolean.new.cast(ENV.fetch("FAKE_TRS_API_PERMITTED", false))
     config.enable_personas = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_PERSONAS", false))
     config.enable_persona_avatars = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_PERSONA_AVATARS", true))
     config.enable_direct_school_dfe_sign_in = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_DIRECT_SCHOOL_DFE_SIGN_IN", false))

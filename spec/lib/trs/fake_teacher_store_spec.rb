@@ -230,6 +230,26 @@ describe TRS::FakeTeacherStore do
     end
   end
 
+  describe "#exists?" do
+    subject { store.exists?(trn) }
+
+    let(:exists_in_redis) { true }
+
+    before do
+      allow(redis).to receive(:exists?).with(options_key).and_return(exists_in_redis)
+    end
+
+    context "when the given TRN is in the store" do
+      it { is_expected.to be true }
+    end
+
+    context "when the given TRN is not in the store" do
+      let(:exists_in_redis) { false }
+
+      it { is_expected.to be false }
+    end
+  end
+
   describe "#clear" do
     it "deletes both options and induction details for the given TRN" do
       expect(redis).to receive(:del).with(options_key, induction_key)

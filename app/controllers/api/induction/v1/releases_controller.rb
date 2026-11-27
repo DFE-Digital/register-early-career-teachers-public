@@ -4,7 +4,6 @@ module API
       class ReleasesController < ActionController::API
         include API::OAuth::TokenAuthenticable
         include API::Induction::ErrorHandleable
-        include API::Induction::UsesFakeTRSAPI
 
         def create
           induction = API::AppropriateBodies::Induction.new(appropriate_body:, client:)

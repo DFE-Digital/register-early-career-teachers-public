@@ -18,20 +18,13 @@ module TRS
 
     MERGED_TRN_REDIRECTS_TO = "7000012"
 
-    def initialize(raise_not_found: false, raise_deactivated: false, raise_merged: false, store: TRS::FakeTeacherStore.new)
+    def initialize(store: TRS::FakeTeacherStore.new)
       fail(FakeAPIClientUsedInProduction) if Rails.env.production?
 
-      @raise_not_found = raise_not_found
-      @raise_deactivated = raise_deactivated
-      @raise_merged = raise_merged
       @store = store
     end
 
-    def find_teacher(trn:, date_of_birth: "1977-02-03", national_insurance_number: nil)
-      raise(TRS::Errors::TeacherNotFound, "Teacher with TRN #{trn} not found") if @raise_not_found
-      raise(TRS::Errors::TeacherDeactivated, "Teacher with TRN #{trn} deactivated") if @raise_deactivated
-      raise(TRS::Errors::TeacherMerged.new(trn:, redirected_to: MERGED_TRN_REDIRECTS_TO)) if @raise_merged
-
+    def find_teacher(trn:, date_of_birth: "1977-02-03", national_insurance_number: nil, **)
       Rails.logger.info("TRSFakeAPIClient pretending to find teacher with TRN=#{trn} and Date of birth=#{date_of_birth} and National Insurance Number=#{national_insurance_number}")
 
       options = @store.options_for(trn)

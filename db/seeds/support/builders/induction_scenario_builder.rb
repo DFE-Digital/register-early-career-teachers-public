@@ -37,6 +37,10 @@ module Induction
       @trn_prefixes = []
     end
 
+    def clear_trs_responses
+      TRS::FakeTeacherStore.new.clear_all_options
+    end
+
     def scenario(label, id:, &block)
       raise ArgumentError, "Invalid scenario ID: #{id}" unless (1..99).cover?(id) && id.is_a?(Integer)
       raise ArgumentError, "Duplicate scenario label: #{label}" if scenarios.key?(label)

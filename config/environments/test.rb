@@ -77,7 +77,6 @@ Rails.application.configure do
   config.enable_notify_delivery_receipts = true
   config.notify_delivery_receipts_bearer_token = "notify-delivery-receipts-test-token"
   config.enable_fake_trs_api = false
-  config.fake_trs_api_permitted = false
   config.dfe_sign_in_enabled = true
   config.enable_test_guidance = false
   config.active_job.queue_adapter = :test
