@@ -174,7 +174,6 @@ shared:
     - api_updated_at
   :mentorship_periods:
     - id
-    - api_id
     - ect_at_school_period_id
     - mentor_at_school_period_id
     - started_on

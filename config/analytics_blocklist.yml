@@ -344,6 +344,7 @@
   - range
   - ecf_end_induction_record_id
   :mentorship_periods:
+  - api_id
   - range
   - ecf_end_induction_record_id
   :mentor_at_school_periods:
