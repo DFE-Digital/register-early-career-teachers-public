@@ -79,7 +79,13 @@ RSpec.describe "Sessions", type: :request do
         FactoryBot.create(:appropriate_body_period, dfe_sign_in_organisation_id:)
 
         allow(Sessions::Users::Builder).to receive(:new).and_return(user_builder)
-        allow(user_builder).to receive(:organisation_name).and_return(dfe_sign_in_organisation_name)
+        allow(user_builder).to receive(:invalid_organisation_details)
+          .and_return({
+            dfe_sign_in_organisation_id:,
+            dfe_sign_in_organisation_urn: school_urn,
+            dfe_sign_in_organisation_name:,
+            dfe_sign_in_user_id:
+          })
         allow(user_builder).to receive(:session_user).and_raise(Sessions::Users::Builder::UnknownOrganisation, dfe_sign_in_organisation_id)
 
         mock_dfe_sign_in_provider!(uid: dfe_sign_in_user_id,
