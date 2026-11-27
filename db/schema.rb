@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_25_171507) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_26_161249) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gist"
   enable_extension "citext"
@@ -548,7 +548,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_25_171507) do
     t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on, '[]'::text)", stored: true
     t.date "started_on", null: false
     t.datetime "updated_at", null: false
+    t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
     t.index "ect_at_school_period_id, ((finished_on IS NULL))", name: "idx_on_ect_at_school_period_id_finished_on_IS_NULL_afd5cf131d", unique: true, where: "(finished_on IS NULL)"
+    t.index ["api_id"], name: "index_mentorship_periods_on_api_id", unique: true
     t.index ["ect_at_school_period_id", "started_on"], name: "index_mentorship_periods_on_ect_at_school_period_id_started_on", unique: true
     t.index ["ect_at_school_period_id"], name: "index_mentorship_periods_on_ect_at_school_period_id"
     t.index ["mentor_at_school_period_id", "ect_at_school_period_id", "started_on"], name: "idx_on_mentor_at_school_period_id_ect_at_school_per_d69dffeecc", unique: true
