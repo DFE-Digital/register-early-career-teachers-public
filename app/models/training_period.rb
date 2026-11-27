@@ -202,9 +202,17 @@ private
 
   def lead_provider_cannot_change_with_billable_declarations
     return unless lead_provider_delivery_partnership_will_change? || will_save_change_to_expression_of_interest_id?
+    return if assigning_matching_school_partnership?
     return unless declarations.billable.exists?
 
     errors.add(:base, "Cannot change the lead provider for a training period with billable declarations")
+  end
+
+  def assigning_matching_school_partnership?
+    will_save_change_to_school_partnership_id?(from: nil) &&
+      expression_of_interest_id.present? &&
+      !will_save_change_to_expression_of_interest_id? &&
+      school_partnership&.framework_agreement&.id == expression_of_interest_id
   end
 
   def lead_provider_delivery_partnership_will_change?

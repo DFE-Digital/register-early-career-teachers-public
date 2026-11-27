@@ -8,11 +8,21 @@ module Teachers
 
         def call
           training_periods_are_incompatible?
+          capture_original_period_associations!
 
           super
         end
 
       private
+
+        def capture_original_period_associations!
+          @original_period_associations = periods.to_h do |period|
+            [
+              period.id,
+              period.slice(:expression_of_interest_id, :school_partnership_id)
+            ]
+          end
+        end
 
         def period_type
           :training_period
@@ -29,16 +39,62 @@ module Teachers
 
         def training_periods_are_incompatible?
           incompatible_attributes.each do |attribute|
-            attribute_name = attribute.to_s.humanize.pluralize.downcase
+            next unless periods_have_different?(attribute)
 
-            if periods_have_different?(attribute)
-              raise CannotMergePeriods, "Periods have different #{attribute_name}"
-            end
+            attribute_name = attribute.to_s.humanize.pluralize.downcase
+            raise CannotMergePeriods, "Periods have different #{attribute_name}"
           end
         end
 
         def periods_have_different?(attribute)
+          if %i[expression_of_interest_id school_partnership_id].include?(attribute) &&
+              periods_match_through_school_partnership?
+            return false
+          end
+
           periods.map(&attribute).uniq.size > 1
+        end
+
+        def periods_match_through_school_partnership?
+          school_partnerships = periods.filter_map(&:school_partnership).uniq
+          return false unless school_partnerships.one?
+
+          school_partnership = school_partnerships.first
+
+          periods.all? do |period|
+            period.school_partnership == school_partnership ||
+              period.expression_of_interest == school_partnership.framework_agreement
+          end
+        end
+
+        def record_event!
+          super(original_period_associations: @original_period_associations)
+          record_school_partnership_assigned!
+        end
+
+        def record_school_partnership_assigned!
+          training_period = successor_period
+          school_partnership = training_period.school_partnership
+
+          return if school_partnership.blank?
+
+          original_school_partnership_id = @original_period_associations
+            .fetch(training_period.id)
+            .fetch(:school_partnership_id)
+
+          return if original_school_partnership_id == school_partnership.id
+
+          Events::Record.record_training_period_assigned_to_school_partnership_event!(
+            author:,
+            training_period:,
+            ect_at_school_period: training_period.ect_at_school_period,
+            mentor_at_school_period: training_period.mentor_at_school_period,
+            teacher:,
+            school_partnership:,
+            lead_provider: school_partnership.lead_provider,
+            delivery_partner: school_partnership.delivery_partner,
+            school: school_partnership.school
+          )
         end
 
         def declarations
@@ -46,6 +102,7 @@ module Teachers
         end
 
         def update_related_records!
+          successor_period.school_partnership ||= periods.filter_map(&:school_partnership).first
           move_declarations!
 
           super
