@@ -25,6 +25,7 @@ unless Rails.application.config.bypass_filter_parameter_logging
     national_insurance_number
     otp
     otp_secret
+    oauth_api_client_seed_credentials
     passw
     q
     salt
