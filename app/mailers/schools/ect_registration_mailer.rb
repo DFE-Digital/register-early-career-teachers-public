@@ -1,4 +1,6 @@
 class Schools::ECTRegistrationMailer < ApplicationMailer
+  include Notify::Trackable
+
   SUBJECT = "You’ve been registered for early career teacher training and support"
   ECT_GUIDANCE_URL = "https://www.gov.uk/government/publications/early-career-teachers-your-training-and-support-entitlement"
 
@@ -6,14 +8,24 @@ class Schools::ECTRegistrationMailer < ApplicationMailer
     ect_at_school_period = params.fetch(:ect_at_school_period)
 
     prepare_personalisation(ect_at_school_period)
-    view_mail(NOTIFY_TEMPLATE_ID, to: ect_at_school_period.email, subject: SUBJECT)
+    view_mail(
+      NOTIFY_TEMPLATE_ID,
+      to: ect_at_school_period.email,
+      subject: SUBJECT,
+      reference: SecureRandom.uuid
+    )
   end
 
   def provider_led_confirmation
     ect_at_school_period = params.fetch(:ect_at_school_period)
 
     prepare_personalisation(ect_at_school_period)
-    view_mail(NOTIFY_TEMPLATE_ID, to: ect_at_school_period.email, subject: SUBJECT)
+    view_mail(
+      NOTIFY_TEMPLATE_ID,
+      to: ect_at_school_period.email,
+      subject: SUBJECT,
+      reference: SecureRandom.uuid
+    )
   end
 
 private

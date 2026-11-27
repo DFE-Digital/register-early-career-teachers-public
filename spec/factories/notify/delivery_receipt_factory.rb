@@ -1,5 +1,7 @@
 FactoryBot.define do
   factory(:notify_delivery_receipt, class: "Notify::DeliveryReceipt") do
+    association :notify_outbound, factory: :notify_outbound
+
     notification_type { "email" }
     recipient { Faker::Internet.email }
     status { "delivered" }

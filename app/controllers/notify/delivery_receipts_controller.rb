@@ -2,6 +2,8 @@ module Notify
   class DeliveryReceiptsController < ActionController::API
     include Notify::TokenAuthenticable
 
+    before_action :skip_untracked_emails
+
     def create
       delivery_receipt = Notify::DeliveryReceipt.new(delivery_receipt_attributes)
 
@@ -14,6 +16,10 @@ module Notify
     end
 
   private
+
+    def skip_untracked_emails
+      head :ok if params[:reference].blank?
+    end
 
     def delivery_receipt_attributes
       payload = params.permit(
@@ -39,6 +45,7 @@ module Notify
         notification_type: payload[:notification_type],
         template_id: payload[:template_id],
         template_version: payload[:template_version],
+        notify_outbound: Notify::Outbound.find_by!(reference: payload[:reference])
       }
     end
 

@@ -633,7 +633,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_25_171507) do
     t.integer "template_version", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "notify_outbound_id", null: false
     t.index ["notification_id"], name: "index_notify_delivery_receipts_on_notification_id", unique: true
+    t.index ["notify_outbound_id"], name: "index_notify_delivery_receipts_on_notify_outbound_id", unique: true
+  end
+
+  create_table "notify_outbounds", force: :cascade do |t|
+    t.string "reference", null: false
+    t.string "mailer", null: false
+    t.string "mailer_action", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["reference"], name: "index_notify_outbounds_on_reference", unique: true
   end
 
   create_table "pending_induction_submission_batches", force: :cascade do |t|
@@ -1119,6 +1130,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_25_171507) do
   add_foreign_key "metadata_teachers_lead_providers", "training_periods", column: "latest_ect_training_period_id", on_delete: :nullify
   add_foreign_key "metadata_teachers_lead_providers", "training_periods", column: "latest_mentor_training_period_id", on_delete: :nullify
   add_foreign_key "milestones", "schedules"
+  add_foreign_key "notify_delivery_receipts", "notify_outbounds"
   add_foreign_key "pending_induction_submission_batches", "appropriate_body_periods"
   add_foreign_key "pending_induction_submissions", "appropriate_body_periods"
   add_foreign_key "pending_induction_submissions", "pending_induction_submission_batches"

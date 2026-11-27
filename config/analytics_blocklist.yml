@@ -373,5 +373,13 @@
   - notification_type
   - template_id
   - template_version
+  - notify_outbound_id
+  - created_at
+  - updated_at
+  :notify_outbounds:
+  - id
+  - reference
+  - mailer
+  - mailer_action
   - created_at
   - updated_at

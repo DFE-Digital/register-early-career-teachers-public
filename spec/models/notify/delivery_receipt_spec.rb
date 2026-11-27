@@ -33,6 +33,10 @@ RSpec.describe Notify::DeliveryReceipt do
     it { is_expected.to have_db_index(:notification_id).unique(true) }
   end
 
+  describe "associations" do
+    it { is_expected.to belong_to(:notify_outbound).class_name("Notify::Outbound").required }
+  end
+
   describe "validations" do
     it { is_expected.to validate_presence_of(:recipient) }
     it { is_expected.to validate_presence_of(:notification_id) }
