@@ -1,10 +1,12 @@
-STATEMENT_STATE_COLOURS = {
-  open: :blue,
-  payable: :cyan,
-  paid: :green,
-}.freeze
+unless defined?(STATEMENT_STATE_COLOURS)
+  STATEMENT_STATE_COLOURS = {
+    open: :blue,
+    payable: :cyan,
+    paid: :green,
+  }.freeze
+end
 
-OUTPUT_FEE_MONTHS = [1, 4, 8, 10].freeze
+OUTPUT_FEE_MONTHS = [1, 4, 8, 10].freeze unless defined?(OUTPUT_FEE_MONTHS)
 
 def describe_group_of_statements(lead_provider, statements, month_col_width: 15, year_col_width: 18)
   return if statements.empty?

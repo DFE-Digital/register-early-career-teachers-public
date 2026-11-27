@@ -1,32 +1,30 @@
-# Example DSL for induction API scenario seeding
-# Keyword block params for scenario:
-# trn - calculated TRN based on client, scenario and index
-# name - calculated teacher name based on client, scenario and index
-# index - index of this iteration
+# @example DSL for induction API scenario seeding
 #
-# Induction::ScenarioBuilder.define do
-#   scenario :new_ect_provider_led, id: 1 do |trn:, name:, index:|
-#     # build seed stuff using TeacherHistories DSL
-#     # ...
+#   Induction::ScenarioBuilder.define do
+#     scenario :new_ect_provider_led, id: 1 do |trn:, name:, index:|
+#       # build seed stuff using TeacherHistories DSL
+#       # ...
+#     end
+#
+#     scenario :new_ect_school_led, id: 2 do |trn:, name:, index:|
+#       # build seed stuff using TeacherHistories DSL
+#       # ...
+#     end
+#
+#     client "ECT Manager", trn_prefix: "90" do
+#       seed :new_ect_provider_led, count: 5
+#       seed :new_ect_school_led, count: 10
+#     end
 #   end
 #
-#   scenario :new_ect_school_led, id: 2 do |trn:, name:, index:|
-#     # build seed stuff using TeacherHistories DSL
-#     # ...
-#   end
-#
-#   client "ECT Manager", trn_prefix: "90" do
-#     seed :new_ect_provider_led, count: 5
-#     seed :new_ect_school_led, count: 10
-#   end
-# end
-
 module Induction
   class ScenarioBuilder
     Scenario = Data.define(:label, :id, :block)
 
     attr_reader :scenarios, :clients
 
+    # @yieldparam builder [ScenarioBuilder]
+    # @return [ScenarioBuilder]
     def self.define(&block)
       new.tap { |builder| builder.instance_eval(&block) }
     end
@@ -37,6 +35,13 @@ module Induction
       @trn_prefixes = []
     end
 
+    # @param label [Symbol] the sceanrio identifier
+    # @param id [Integer] the ID encoded into the TRN
+    # @yieldparam trn [String]
+    # @yieldparam name [String]
+    # @yieldparam index [Integer]
+    # @return [void]
+    # @raise [ArgumentError]
     def scenario(label, id:, &block)
       raise ArgumentError, "Invalid scenario ID: #{id}" unless (1..99).cover?(id) && id.is_a?(Integer)
       raise ArgumentError, "Duplicate scenario label: #{label}" if scenarios.key?(label)
@@ -46,6 +51,11 @@ module Induction
       scenarios[label] = Scenario.new(label:, id:, block:)
     end
 
+    # @param name [String] the name of the consumer
+    # @param trn_prefix [String, Integer] the client code the consumer's TRNs start with
+    # @yieldparam client [ClientBuilder]
+    # @return [void]
+    # @raise [ArgumentError]
     def client(name, trn_prefix:, &block)
       trn_prefix = trn_prefix.to_s
 
@@ -61,9 +71,13 @@ module Induction
     end
   end
 
+  # Seeds scenarios for one API consumer, and creates that consumer's OAuth client.
   class ClientBuilder
     attr_reader :client
 
+    # @param name [String] the name of the consumer
+    # @param trn_prefix [String] the client code the consumer's TRNs start with
+    # @param scenarios [Hash{Symbol => ScenarioBuilder::Scenario}]
     def initialize(name, trn_prefix:, scenarios:)
       @name = name
       @trn_prefix = trn_prefix
@@ -71,6 +85,8 @@ module Induction
       @seeded_scenarios = []
     end
 
+    # @param grant_type [Symbol] the OAuth grant type the client is allowed to use
+    # @return [Api::Oauth::Client] the consumer's OAuth client
     def oauth_client(grant_type: :authorization_code)
       print_seed_info("Seeding induction client '#{@name}'", colour: :green)
 
@@ -83,10 +99,16 @@ module Induction
       )
     end
 
+    # @param count [Integer] how many instances of each scenario to seed
+    # @return [void]
     def seed_all(count: 1)
       @scenarios.each_key { |label| seed(label, count:) }
     end
 
+    # @param label [Symbol] the scenario to seed
+    # @param count [Integer] how many instances to seed
+    # @return [void]
+    # @raise [ArgumentError]
     def seed(label, count: 1)
       scenario = @scenarios.fetch(label)
 
