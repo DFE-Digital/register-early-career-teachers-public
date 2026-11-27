@@ -38,7 +38,7 @@ module Induction
     end
 
     def clear_trs_responses
-      TRS::FakeTeacherStore.new.clear_all_options
+      TRS::FakeTeacherStore.new.clear_all
     end
 
     def scenario(label, id:, &block)
